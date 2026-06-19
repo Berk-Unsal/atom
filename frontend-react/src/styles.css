@@ -66,6 +66,23 @@ input {
   font-size: 0.9rem;
 }
 
+.brand-signature {
+  display: inline-flex;
+  margin-top: 6px;
+  color: #7a8580;
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition:
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.brand-signature:hover {
+  color: #0f766e;
+  transform: translateY(-1px);
+}
+
 .control-panel {
   display: flex;
   flex-direction: column;

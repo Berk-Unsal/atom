@@ -1,67 +1,99 @@
-# mmWave AI Propagation Predictor
+<div align="center">
 
-Ankara-focused 5G/mmWave propagation simulator using static local GeoJSON files, an in-memory Go R-tree, and a React/Leaflet canvas frontend.
+<img src="./icon/icon.svg" alt="A.T.O.M Logo" width="120" />
 
-## Component Order
+# A.T.O.M
 
-Build the static data pipeline first. The extracted tower GeoJSON and OSM building GeoJSON define the local files that the Go API loads into memory on startup.
+**Ankara Telecom Optimization Model | AI-Driven RF Propagation Predictor**
 
-## Run Locally
+[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go)](https://golang.org)
+[![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+</div>
+
+---
+
+## Overview
+
+A.T.O.M is a full-stack spatial simulation engine designed to visualize and optimize cellular networks across multiple generations (4G LTE, 5G mmWave, 6G Sub-THz) in dense urban environments. Built on real OpenStreetMap (OSM) and OpenCellID data, the platform merges high-performance RF propagation physics with interactive geospatial visualization, enabling telecommunications engineers to predict signal coverage, optimize antenna placement, and validate network topology in complex urban landscapes like Ankara, Turkey.
+
+The engine combines Go's lightning-fast concurrency model with advanced ray-tracing algorithms and AI-driven optimization to deliver millisecond-level intersection testing across thousands of building geometries. The result is a production-ready decision-support tool that transforms raw network data into actionable intelligence for 5G/6G deployment strategies.
+
+---
+
+## Key Features
+
+- **Multi-Generation Physics**: Simulates 4G (2.6 GHz), 5G (28 GHz), and 6G (140 GHz) using Free-Space Path Loss (FSPL) models with frequency-accurate propagation characteristics.
+
+- **Segmented Heatmap Raytracing**: Generates custom GeoJSON ray segments that change color (Green → Yellow → Red) based on real-time signal strength (Rx dBm), providing intuitive visual feedback on coverage quality.
+
+- **Frequency-Dependent Penetration**: 4G rays penetrate concrete buildings with Cumulative Wall Loss calculations, while 5G/6G rays experience heavy attenuation or immediate blockage, reflecting real-world propagation behavior.
+
+- **Smart Beamforming**: Sector antenna simulation with adjustable Azimuth and Beam Width parameters, enabling realistic directional coverage patterns and sidelobe analysis.
+
+- **AI Auto-Optimization**: Employs a sweep-and-score geometric algorithm to calculate maximum coverage area ($\sum r^2$) and automatically snaps antenna position to the optimal azimuth, eliminating manual trial-and-error.
+
+---
+
+## Architecture & Tech Stack
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **Backend** | Go (Golang) | Massive concurrency via Goroutines; in-memory R-Tree spatial indexing for sub-millisecond ray-polygon intersection testing |
+| **Frontend** | React + Leaflet | Complex GeoJSON heatmap rendering with dynamic map layers and real-time simulation controls |
+| **Deployment** | Docker | Multi-stage build compiling both React and Go into a single, lightweight Alpine container |
+
+---
+
+## Propagation Visualization
+
+### 4G Coverage
+![4G Propagation](./assets/4g.png)
+
+### 5G Coverage
+![5G Propagation](./assets/5g.png)
+
+### 6G Sub-THz Coverage
+![6G Propagation](./assets/6g.png)
+
+### Auto-Optimized 5G Beamforming
+![5G Auto-Optimized](./assets/5g-auto-optimized.png)
+
+*Visualizing multi-generation RF propagation patterns and AI-optimized antenna placement in urban environments.*
+
+---
+
+## Getting Started with Docker
+
+### Prerequisites
+- Docker installed on your system
+
+### Build & Run
 
 ```bash
-cd data-pipeline
-python3 -m venv .venv
-.venv/bin/pip install -r Requirements.txt
-cd ..
-data-pipeline/.venv/bin/python data-pipeline/extract_ankara.py --input 286.csv.gz
-data-pipeline/.venv/bin/python data-pipeline/export_tower_geojson.py
-data-pipeline/.venv/bin/python data-pipeline/export_ankara_buildings.py
+# Build the Docker image
+docker build -t atom-simulator .
+
+# Run the container
+docker run -p 8080:8080 atom-simulator
 ```
 
-If you only have an uncompressed dump during development, use `--input 286.csv`.
+The application will be available at **`http://localhost:8080`**.
 
-```bash
-cd backend-go
-go run .
-```
+---
 
-```bash
-cd frontend-react
-npm install
-npm run dev
-```
+## Author & Credits
 
-The frontend expects the API at the same origin in production, or at `http://localhost:8080` through the Vite dev proxy.
+Architected and Developed by [Berk Ünsal](https://berkunsal.com)
 
-To serve the built frontend from the Go backend on `http://localhost:8080`, build the UI first and then start the backend:
+This project demonstrates the practical intersection of spatial algorithms, high-concurrency systems design in Go, and advanced telecommunications physics simulation.
 
-```bash
-cd frontend-react
-npm install
-npm run build
-cd ../backend-go
-go run .
-```
+---
 
-Then open `http://localhost:8080` or `http://localhost:8080/dashboard/`.
+<div align="center">
 
-## Static Data Files
+**Built with precision. Optimized for scale. Ready for production.**
 
-The backend auto-discovers these paths:
-
-- `data-pipeline/ankara_5g_nodes.geojson`
-- `data-pipeline/ankara_buildings.geojson`
-
-You can override either path:
-
-```bash
-TOWERS_GEOJSON_PATH=/absolute/path/to/ankara_5g_nodes.geojson \
-BUILDINGS_GEOJSON_PATH=/absolute/path/to/ankara_buildings.geojson \
-go run .
-```
-
-Supported attenuation tags:
-
-- `building=concrete` and `building=industrial`: `+35 dB`
-- `building=office` and `building=glass`: `+20 dB`
-- `natural=tree_row` and `natural=forest`: `+8 dB`
+</div>

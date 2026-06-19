@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"ankara-5g-raytracer/raytracer"
@@ -80,7 +81,7 @@ func main() {
 	registerFrontendRoutes(router)
 
 	addr := ":" + getenv("PORT", "8080")
-	log.Printf("Ankara static raytracer API listening on %s", addr)
+	log.Printf("A.T.O.M API listening on %s", addr)
 	if err := router.Run(addr); err != nil {
 		log.Fatalf("run server: %v", err)
 	}
@@ -117,7 +118,7 @@ func registerFrontendRoutes(router *gin.Engine) {
 		log.Printf("frontend dist not found at %s; serving API only", distPath)
 		router.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
-				"service": "mmWave AI Propagation Predictor API",
+				"service": "A.T.O.M API",
 				"routes":  []string{"/healthz", "/api/towers", "/api/simulate", "/api/optimize-azimuth"},
 			})
 		})
@@ -127,12 +128,36 @@ func registerFrontendRoutes(router *gin.Engine) {
 	router.Static("/assets", filepath.Join(distPath, "assets"))
 	router.Static("/icon", filepath.Join(distPath, "icon"))
 	router.GET("/", serveIndex(indexPath))
-	router.GET("/dashboard", serveIndex(indexPath))
-	router.GET("/dashboard/*path", serveIndex(indexPath))
+	router.NoRoute(serveSPAFallback(distPath, indexPath))
 }
 
 func serveIndex(indexPath string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		c.File(indexPath)
+	}
+}
+
+func serveSPAFallback(distPath string, indexPath string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if strings.HasPrefix(c.Request.URL.Path, "/api/") {
+			c.JSON(http.StatusNotFound, gin.H{"error": "api route not found"})
+			return
+		}
+		if c.Request.Method != http.MethodGet && c.Request.Method != http.MethodHead {
+			c.JSON(http.StatusNotFound, gin.H{"error": "route not found"})
+			return
+		}
+
+		requestedPath := strings.TrimPrefix(c.Request.URL.Path, "/")
+		if requestedPath != "" {
+			staticPath := filepath.Join(distPath, filepath.Clean(requestedPath))
+			if strings.HasPrefix(staticPath, filepath.Clean(distPath)+string(os.PathSeparator)) {
+				if info, err := os.Stat(staticPath); err == nil && !info.IsDir() {
+					c.File(staticPath)
+					return
+				}
+			}
+		}
 		c.File(indexPath)
 	}
 }

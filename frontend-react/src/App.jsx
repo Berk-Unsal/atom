@@ -160,8 +160,16 @@ export default function App() {
         <div className="brand-block">
           <img src={APP_ICON_URL} alt="" aria-hidden="true" />
           <div>
-            <h1>mmWave AI Propagation Predictor</h1>
-            <p>Ankara core simulation</p>
+            <h1>A.T.O.M</h1>
+            <p>Ankara Telecom Optimization Model</p>
+            <a
+              className="brand-signature"
+              href="https://berkunsal.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              by Berk Ünsal
+            </a>
           </div>
         </div>
 

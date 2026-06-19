@@ -1,4 +1,17 @@
 services:
+  atom:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: atom:local
+    container_name: atom-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      GIN_MODE: release
+      PORT: "8080"
+
   mongodb:
     image: mongo:7.0
     container_name: ankara-raytracer-mongodb

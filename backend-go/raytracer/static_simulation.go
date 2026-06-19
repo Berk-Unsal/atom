@@ -7,6 +7,10 @@ import (
 	"sync"
 )
 
+const ReceiverSensitivity = -115.0 // dBm
+const AntennaGainDBi = 25.0
+const SegmentStepMeters = 25.0
+
 type StaticSimulationRequest struct {
 	TowerLon     float64 `json:"tower_lon"`
 	TowerLat     float64 `json:"tower_lat"`
@@ -14,11 +18,29 @@ type StaticSimulationRequest struct {
 	RadiusMeters float64 `json:"radius_m"`
 	FrequencyGHz float64 `json:"frequency_ghz"`
 	TxPowerDBm   float64 `json:"tx_power_dbm"`
+	AzimuthDeg   float64 `json:"azimuth"`
+	BeamWidthDeg float64 `json:"beam_width"`
 }
 
 type RayFeatureCollection struct {
 	Type     string       `json:"type"`
 	Features []RayFeature `json:"features"`
+}
+
+type StaticSimulationResponse struct {
+	GeoJSON RayFeatureCollection `json:"geojson"`
+	Stats   SimulationStats      `json:"stats"`
+}
+
+type AzimuthOptimizationResponse struct {
+	OptimalAzimuth float64 `json:"optimal_azimuth"`
+}
+
+type SimulationStats struct {
+	BlockedPct float64 `json:"blocked_pct"`
+	AvgRxDBm   float64 `json:"avg_rx_dbm"`
+	MinRangeM  float64 `json:"min_range_m"`
+	MaxRangeM  float64 `json:"max_range_m"`
 }
 
 type RayFeature struct {
@@ -29,10 +51,16 @@ type RayFeature struct {
 
 type RayProperties struct {
 	AngleDeg        float64 `json:"angle_deg"`
+	RayIndex        int     `json:"ray_index"`
+	SegmentIndex    int     `json:"segment_index"`
 	SignalDBm       float64 `json:"signal_dbm"`
+	SignalStartDBm  float64 `json:"signal_start_dbm"`
+	SignalEndDBm    float64 `json:"signal_end_dbm"`
 	PathLossDB      float64 `json:"path_loss_db"`
 	IsBlocked       bool    `json:"is_blocked"`
 	DistanceMeters  float64 `json:"distance_m"`
+	SegmentStartM   float64 `json:"segment_start_m"`
+	SegmentEndM     float64 `json:"segment_end_m"`
 	HitBuildingID   string  `json:"hit_building_id,omitempty"`
 	CandidateChecks int     `json:"candidate_checks"`
 }
@@ -55,11 +83,22 @@ func NormalizeStaticSimulationRequest(req *StaticSimulationRequest) {
 	if req.TxPowerDBm == 0 {
 		req.TxPowerDBm = 30
 	}
+	req.AzimuthDeg = normalizeDegrees(req.AzimuthDeg)
+	if req.BeamWidthDeg == 0 {
+		req.BeamWidthDeg = 120
+	}
+	if req.BeamWidthDeg < 10 {
+		req.BeamWidthDeg = 10
+	}
+	if req.BeamWidthDeg > 360 {
+		req.BeamWidthDeg = 360
+	}
 }
 
-func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) RayFeatureCollection {
+func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) StaticSimulationResponse {
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
-	features := make([]RayFeature, req.Rays)
+	rayFeatures := make([][]RayFeature, req.Rays)
+	terminals := make([]rayTerminal, req.Rays)
 
 	workerCount := runtime.NumCPU()
 	if req.Rays < workerCount {
@@ -77,8 +116,8 @@ func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) R
 		go func() {
 			defer waitGroup.Done()
 			for index := range jobs {
-				angle := float64(index) * 360 / float64(req.Rays)
-				features[index] = simulateStaticRay(origin, angle, req, buildings)
+				angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
+				rayFeatures[index], terminals[index] = simulateSegmentedRay(origin, index, angle, req, buildings)
 			}
 		}()
 	}
@@ -89,75 +128,319 @@ func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) R
 	close(jobs)
 	waitGroup.Wait()
 
+	features := make([]RayFeature, 0, req.Rays*int(math.Ceil(req.RadiusMeters/SegmentStepMeters)))
+	for _, segments := range rayFeatures {
+		features = append(features, segments...)
+	}
+
 	sort.SliceStable(features, func(i, j int) bool {
+		if features[i].Properties.AngleDeg == features[j].Properties.AngleDeg {
+			return features[i].Properties.SegmentIndex < features[j].Properties.SegmentIndex
+		}
 		return features[i].Properties.AngleDeg < features[j].Properties.AngleDeg
 	})
 
-	return RayFeatureCollection{
+	geojson := RayFeatureCollection{
 		Type:     "FeatureCollection",
 		Features: features,
 	}
+	return StaticSimulationResponse{
+		GeoJSON: geojson,
+		Stats:   CalculateSimulationStats(terminals),
+	}
 }
 
-func simulateStaticRay(origin Point, angle float64, req StaticSimulationRequest, buildings *BuildingIndex) RayFeature {
-	fullEnd := DestinationPoint(origin, angle, req.RadiusMeters)
-	end := fullEnd
-	blocked := false
-	hitID := ""
-	attenuation := 0.0
-	distanceMeters := req.RadiusMeters
-	candidateChecks := 0
+func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) AzimuthOptimizationResponse {
+	NormalizeStaticSimulationRequest(&req)
+	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 
-	candidates := buildings.SearchRay(origin, fullEnd)
-	candidateChecks = len(candidates)
+	type sweepResult struct {
+		azimuth float64
+		score   float64
+	}
+
+	candidateCount := 36
+	results := make([]sweepResult, candidateCount)
+	jobs := make(chan int)
+	workerCount := runtime.NumCPU()
+	if workerCount > candidateCount {
+		workerCount = candidateCount
+	}
+	if workerCount < 1 {
+		workerCount = 1
+	}
+
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(workerCount)
+	for worker := 0; worker < workerCount; worker++ {
+		go func() {
+			defer waitGroup.Done()
+			for index := range jobs {
+				testAzimuth := float64(index * 10)
+				testReq := req
+				testReq.AzimuthDeg = testAzimuth
+				score := CoverageAreaScore(origin, testReq, buildings)
+				results[index] = sweepResult{
+					azimuth: testAzimuth,
+					score:   score,
+				}
+			}
+		}()
+	}
+
+	for index := 0; index < candidateCount; index++ {
+		jobs <- index
+	}
+	close(jobs)
+	waitGroup.Wait()
+
+	best := results[0]
+	for _, result := range results[1:] {
+		if result.score > best.score {
+			best = result
+		}
+	}
+	return AzimuthOptimizationResponse{
+		OptimalAzimuth: best.azimuth,
+	}
+}
+
+func CoverageAreaScore(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) float64 {
+	total := 0.0
+	for index := 0; index < req.Rays; index++ {
+		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
+		terminal := simulateRayTerminal(origin, index, angle, req, buildings)
+		total += terminal.distanceMeters * terminal.distanceMeters
+	}
+	return total
+}
+
+func BeamAngleForIndex(azimuthDeg float64, beamWidthDeg float64, rayCount int, index int) float64 {
+	if rayCount <= 0 {
+		return normalizeDegrees(azimuthDeg)
+	}
+	startAngle := azimuthDeg - beamWidthDeg/2
+	angleStep := beamWidthDeg / float64(rayCount)
+	return normalizeDegrees(startAngle + float64(index)*angleStep)
+}
+
+func simulateSegmentedRay(origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex) ([]RayFeature, rayTerminal) {
+	return simulateSegmentedRayInternal(origin, rayIndex, angle, req, buildings, true)
+}
+
+func simulateRayTerminal(origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex) rayTerminal {
+	_, terminal := simulateSegmentedRayInternal(origin, rayIndex, angle, req, buildings, false)
+	return terminal
+}
+
+func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex, collectFeatures bool) ([]RayFeature, rayTerminal) {
+	clearAirLimit := MaxTheoreticalDistanceMeters(req.TxPowerDBm, req.FrequencyGHz, 0)
+	castDistance := math.Min(req.RadiusMeters, clearAirLimit)
+
+	if castDistance <= 0 {
+		return nil, rayTerminal{
+			blocked:        false,
+			distanceMeters: 0,
+			signalDBm:      ReceiverSensitivity,
+		}
+	}
+
+	var segments []RayFeature
+	if collectFeatures {
+		segments = make([]RayFeature, 0, int(math.Ceil(castDistance/SegmentStepMeters)))
+	}
+	terminal := rayTerminal{
+		blocked:        false,
+		distanceMeters: castDistance,
+		signalDBm:      ReceivedPowerDBm(castDistance, req.FrequencyGHz, req.TxPowerDBm, 0),
+	}
+
+	segmentIndex := 0
+	currentPoint := origin
+	for startDistance := 0.0; startDistance < castDistance; startDistance += SegmentStepMeters {
+		endDistance := math.Min(startDistance+SegmentStepMeters, castDistance)
+		start := currentPoint
+		nextPoint := DestinationPoint(origin, angle, endDistance)
+		startRx := ReceivedPowerDBm(math.Max(startDistance, 1), req.FrequencyGHz, req.TxPowerDBm, 0)
+		endRx := ReceivedPowerDBm(endDistance, req.FrequencyGHz, req.TxPowerDBm, 0)
+
+		if startDistance > 0 && startRx <= ReceiverSensitivity {
+			terminal = rayTerminal{
+				blocked:        false,
+				distanceMeters: startDistance,
+				signalDBm:      startRx,
+			}
+			break
+		}
+
+		hit, hitPoint, hitBuilding, candidateChecks := firstBuildingHitForSegment(origin, start, nextPoint, buildings)
+		if hit {
+			hitDistance := startDistance + ApproxDistanceMeters(start, hitPoint)
+			attenuation := hitBuilding.AttenuationDB
+			if attenuation == 0 {
+				attenuation = DefaultBuildingAttenuationDB
+			}
+			wallRx := ReceivedPowerDBm(hitDistance, req.FrequencyGHz, req.TxPowerDBm, attenuation)
+			pathLoss := FreeSpacePathLossMetersGHz(hitDistance, req.FrequencyGHz) + attenuation
+			if collectFeatures {
+				segments = append(segments, makeRaySegmentFeature(
+					start,
+					hitPoint,
+					angle,
+					rayIndex,
+					segmentIndex,
+					startDistance,
+					hitDistance,
+					startRx,
+					wallRx,
+					pathLoss,
+					true,
+					hitBuilding.ID,
+					candidateChecks,
+				))
+			}
+			terminal = rayTerminal{
+				blocked:        true,
+				distanceMeters: hitDistance,
+				signalDBm:      wallRx,
+			}
+			break
+		}
+
+		pathLoss := FreeSpacePathLossMetersGHz(endDistance, req.FrequencyGHz)
+		if collectFeatures {
+			segments = append(segments, makeRaySegmentFeature(
+				start,
+				nextPoint,
+				angle,
+				rayIndex,
+				segmentIndex,
+				startDistance,
+				endDistance,
+				startRx,
+				endRx,
+				pathLoss,
+				false,
+				"",
+				candidateChecks,
+			))
+		}
+
+		terminal = rayTerminal{
+			blocked:        false,
+			distanceMeters: endDistance,
+			signalDBm:      endRx,
+		}
+		segmentIndex++
+		currentPoint = nextPoint
+	}
+
+	return segments, terminal
+}
+
+type buildingIntersection struct {
+	distanceMeters float64
+	point          Point
+	building       *BuildingFootprint
+}
+
+type rayTerminal struct {
+	blocked        bool
+	distanceMeters float64
+	signalDBm      float64
+}
+
+func firstBuildingHitForSegment(origin Point, start Point, end Point, buildings *BuildingIndex) (bool, Point, *BuildingFootprint, int) {
+	candidates := buildings.SearchRay(start, end)
 	closestDistance := math.Inf(1)
+	var closestPoint Point
+	var closestBuilding *BuildingFootprint
 
 	for _, building := range candidates {
-		hit, point := SegmentPolygonFirstIntersection(origin, fullEnd, building.Vertices)
+		if PointInPolygon(origin, building.Vertices) {
+			continue
+		}
+		hit, point := SegmentPolygonFirstIntersection(start, end, building.Vertices)
 		if !hit {
 			continue
 		}
-		hitDistance := ApproxDistanceMeters(origin, point)
-		if hitDistance < closestDistance {
-			closestDistance = hitDistance
-			end = point
-			blocked = true
-			hitID = building.ID
-			attenuation = building.AttenuationDB
-			distanceMeters = hitDistance
+		distance := ApproxDistanceMeters(start, point)
+		if distance < closestDistance {
+			closestDistance = distance
+			closestPoint = point
+			closestBuilding = building
 		}
 	}
 
-	exponent := 2.0
+	return closestBuilding != nil, closestPoint, closestBuilding, len(candidates)
+}
+
+func makeRaySegmentFeature(
+	start Point,
+	end Point,
+	angle float64,
+	rayIndex int,
+	segmentIndex int,
+	startDistance float64,
+	endDistance float64,
+	startRx float64,
+	endRx float64,
+	pathLoss float64,
+	blocked bool,
+	hitBuildingID string,
+	candidateChecks int,
+) RayFeature {
+	signalDBm := startRx
 	if blocked {
-		exponent = 4.5
-		if attenuation == 0 {
-			attenuation = DefaultBuildingAttenuationDB
-		}
+		signalDBm = endRx
 	}
-
-	pathLoss := LogDistancePathLoss(distanceMeters, req.FrequencyGHz, exponent, attenuation)
-	signal := req.TxPowerDBm - pathLoss
 
 	return RayFeature{
 		Type: "Feature",
 		Properties: RayProperties{
 			AngleDeg:        normalizeDegrees(angle),
-			SignalDBm:       math.Round(signal*10) / 10,
+			RayIndex:        rayIndex,
+			SegmentIndex:    segmentIndex,
+			SignalDBm:       math.Round(signalDBm*10) / 10,
+			SignalStartDBm:  math.Round(startRx*10) / 10,
+			SignalEndDBm:    math.Round(endRx*10) / 10,
 			PathLossDB:      math.Round(pathLoss*10) / 10,
 			IsBlocked:       blocked,
-			DistanceMeters:  math.Round(distanceMeters*10) / 10,
-			HitBuildingID:   hitID,
+			DistanceMeters:  math.Round(endDistance*10) / 10,
+			SegmentStartM:   math.Round(startDistance*10) / 10,
+			SegmentEndM:     math.Round(endDistance*10) / 10,
+			HitBuildingID:   hitBuildingID,
 			CandidateChecks: candidateChecks,
 		},
 		Geometry: LineGeometry{
 			Type: "LineString",
 			Coordinates: [][]float64{
-				{origin.Lon, origin.Lat},
+				{start.Lon, start.Lat},
 				{end.Lon, end.Lat},
 			},
 		},
 	}
+}
+
+func FreeSpacePathLossMetersGHz(distanceMeters float64, frequencyGHz float64) float64 {
+	distance := math.Max(distanceMeters, 1)
+	return 20*math.Log10(distance) + 20*math.Log10(frequencyGHz) + 92.45
+}
+
+func ReceivedPowerDBm(distanceMeters float64, frequencyGHz float64, txPowerDBm float64, attenuationDB float64) float64 {
+	return EffectiveIsotropicRadiatedPowerDBm(txPowerDBm) - FreeSpacePathLossMetersGHz(distanceMeters, frequencyGHz) - attenuationDB
+}
+
+func MaxTheoreticalDistanceMeters(txPowerDBm float64, frequencyGHz float64, attenuationDB float64) float64 {
+	if frequencyGHz <= 0 {
+		return 0
+	}
+	exponent := (EffectiveIsotropicRadiatedPowerDBm(txPowerDBm) - ReceiverSensitivity - attenuationDB - 20*math.Log10(frequencyGHz) - 92.45) / 20
+	return math.Pow(10, exponent)
+}
+
+func EffectiveIsotropicRadiatedPowerDBm(txPowerDBm float64) float64 {
+	return txPowerDBm + AntennaGainDBi
 }
 
 func SegmentPolygonFirstIntersection(a Point, b Point, polygon []Point) (bool, Point) {
@@ -207,6 +490,33 @@ func SegmentIntersectionPoint(p1 Point, p2 Point, q1 Point, q2 Point) (bool, Poi
 	return true, Point{
 		Lon: x1 + t*(x2-x1),
 		Lat: y1 + t*(y2-y1),
+	}
+}
+
+func CalculateSimulationStats(terminals []rayTerminal) SimulationStats {
+	if len(terminals) == 0 {
+		return SimulationStats{}
+	}
+
+	blocked := 0
+	totalSignal := 0.0
+	minRange := math.Inf(1)
+	maxRange := math.Inf(-1)
+
+	for _, terminal := range terminals {
+		if terminal.blocked {
+			blocked++
+		}
+		totalSignal += terminal.signalDBm
+		minRange = math.Min(minRange, terminal.distanceMeters)
+		maxRange = math.Max(maxRange, terminal.distanceMeters)
+	}
+
+	return SimulationStats{
+		BlockedPct: math.Round((float64(blocked)/float64(len(terminals)))*1000) / 10,
+		AvgRxDBm:   math.Round((totalSignal/float64(len(terminals)))*10) / 10,
+		MinRangeM:  math.Round(minRange*10) / 10,
+		MaxRangeM:  math.Round(maxRange*10) / 10,
 	}
 }
 

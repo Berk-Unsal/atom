@@ -1,14 +1,11 @@
-export function rxPowerColor(receivedPowerDbm, blocked) {
-  if (blocked) {
-    return "rgba(185, 28, 28, 0.8)";
+export function rxPowerColor(receivedPowerDbm) {
+  if (receivedPowerDbm >= -85) {
+    return "#10b981";
   }
-  if (receivedPowerDbm >= -70) {
-    return "rgba(22, 163, 74, 0.85)";
+  if (receivedPowerDbm >= -105) {
+    return "#f59e0b";
   }
-  if (receivedPowerDbm >= -95) {
-    return "rgba(234, 179, 8, 0.85)";
-  }
-  return "rgba(217, 119, 6, 0.8)";
+  return "#e11d48";
 }
 
 export function simulationToFeatureCollection(simulation) {

@@ -58,23 +58,24 @@ func main() {
 			return
 		}
 		raytracer.NormalizeStaticSimulationRequest(&req)
-		if req.TowerLon < -180 || req.TowerLon > 180 || req.TowerLat < -90 || req.TowerLat > 90 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "tower_lon and tower_lat must be valid coordinates"})
-			return
-		}
-		if req.Rays < 8 || req.Rays > 720 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "rays must be between 8 and 720"})
-			return
-		}
-		if req.RadiusMeters < 25 || req.RadiusMeters > 5000 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "radius_m must be between 25 and 5000"})
-			return
-		}
-		if req.FrequencyGHz <= 0 || req.FrequencyGHz > 100 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "frequency_ghz must be between 0 and 100"})
+		if validationError := validateSimulationRequest(req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
 		c.JSON(http.StatusOK, raytracer.SimulateStaticRays(req, buildingIndex))
+	})
+	router.POST("/api/optimize-azimuth", func(c *gin.Context) {
+		var req raytracer.StaticSimulationRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid optimization JSON: " + err.Error()})
+			return
+		}
+		raytracer.NormalizeStaticSimulationRequest(&req)
+		if validationError := validateSimulationRequest(req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		c.JSON(http.StatusOK, raytracer.OptimizeAzimuth(req, buildingIndex))
 	})
 	registerFrontendRoutes(router)
 
@@ -83,6 +84,22 @@ func main() {
 	if err := router.Run(addr); err != nil {
 		log.Fatalf("run server: %v", err)
 	}
+}
+
+func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
+	if req.TowerLon < -180 || req.TowerLon > 180 || req.TowerLat < -90 || req.TowerLat > 90 {
+		return "tower_lon and tower_lat must be valid coordinates"
+	}
+	if req.Rays < 8 || req.Rays > 720 {
+		return "rays must be between 8 and 720"
+	}
+	if req.RadiusMeters < 25 || req.RadiusMeters > 5000 {
+		return "radius_m must be between 25 and 5000"
+	}
+	if req.FrequencyGHz <= 0 || req.FrequencyGHz > 100 {
+		return "frequency_ghz must be between 0 and 100"
+	}
+	return ""
 }
 
 func getenv(key string, fallback string) string {
@@ -101,13 +118,14 @@ func registerFrontendRoutes(router *gin.Engine) {
 		router.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"service": "mmWave AI Propagation Predictor API",
-				"routes":  []string{"/healthz", "/api/towers", "/api/simulate"},
+				"routes":  []string{"/healthz", "/api/towers", "/api/simulate", "/api/optimize-azimuth"},
 			})
 		})
 		return
 	}
 
 	router.Static("/assets", filepath.Join(distPath, "assets"))
+	router.Static("/icon", filepath.Join(distPath, "icon"))
 	router.GET("/", serveIndex(indexPath))
 	router.GET("/dashboard", serveIndex(indexPath))
 	router.GET("/dashboard/*path", serveIndex(indexPath))

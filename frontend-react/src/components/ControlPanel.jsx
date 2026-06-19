@@ -1,6 +1,13 @@
-import { Gauge, SlidersHorizontal, Zap } from "lucide-react";
+import { Compass, Gauge, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
 
-export default function ControlPanel({ settings, onChange, onRun, isLoading }) {
+export default function ControlPanel({
+  settings,
+  onChange,
+  onRun,
+  onOptimizeAzimuth,
+  isLoading,
+  isOptimizing,
+}) {
   const update = (key, value) => {
     onChange((current) => ({
       ...current,
@@ -59,7 +66,39 @@ export default function ControlPanel({ settings, onChange, onRun, isLoading }) {
         onChange={(value) => update("radiusMeters", value)}
       />
 
-      <button type="button" className="apply-small" onClick={onRun} disabled={isLoading}>
+      <RangeField
+        icon={<Compass size={18} />}
+        label="Azimuth (Direction)"
+        suffix="deg"
+        min={0}
+        max={360}
+        step={1}
+        value={settings.azimuthDeg}
+        onChange={(value) => update("azimuthDeg", value)}
+      />
+
+      <button
+        type="button"
+        className="optimize-button"
+        onClick={onOptimizeAzimuth}
+        disabled={isLoading || isOptimizing}
+      >
+        <Sparkles size={16} className={isOptimizing ? "spin" : ""} />
+        <span>{isOptimizing ? "Calculating Best Angle..." : "Auto-Optimize"}</span>
+      </button>
+
+      <RangeField
+        icon={<SlidersHorizontal size={18} />}
+        label="Beam Width"
+        suffix="deg"
+        min={10}
+        max={360}
+        step={10}
+        value={settings.beamWidthDeg}
+        onChange={(value) => update("beamWidthDeg", value)}
+      />
+
+      <button type="button" className="apply-small" onClick={onRun} disabled={isLoading || isOptimizing}>
         Apply
       </button>
     </section>

@@ -42,13 +42,15 @@ input {
 
 .brand-block {
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-columns: 52px minmax(0, 1fr);
   gap: 12px;
   align-items: center;
 }
 
-.brand-block svg {
-  color: #0369a1;
+.brand-block img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
 }
 
 .brand-block h1 {
@@ -105,6 +107,7 @@ input {
 
 .segmented-control button,
 .apply-small,
+.optimize-button,
 .refresh-button {
   border: 0;
   cursor: pointer;
@@ -160,7 +163,21 @@ input {
   font-weight: 750;
 }
 
+.optimize-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  border: 1px solid #a7d4c4;
+  border-radius: 8px;
+  color: #064e3b;
+  background: #e6f7ef;
+  font-weight: 750;
+}
+
 .apply-small:disabled,
+.optimize-button:disabled,
 .refresh-button:disabled {
   cursor: wait;
   opacity: 0.7;

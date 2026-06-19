@@ -1,23 +1,30 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { RadioTower, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const APP_ICON_URL = "/icon/icon.svg?v=967c137f";
 
 const DEFAULT_SIMULATION = {
   frequencyGHz: 28,
   txPowerDbm: 30,
   rayCount: 120,
   radiusMeters: 400,
+  azimuthDeg: 90,
+  beamWidthDeg: 120,
 };
 
 export default function App() {
   const [settings, setSettings] = useState(DEFAULT_SIMULATION);
   const [towers, setTowers] = useState([]);
   const [selectedTower, setSelectedTower] = useState(null);
-  const [simulation, setSimulation] = useState({ type: "FeatureCollection", features: [] });
+  const [simulation, setSimulation] = useState({
+    geojson: { type: "FeatureCollection", features: [] },
+    stats: null,
+  });
   const [isLoading, setIsLoading] = useState(false);
+  const [isOptimizing, setIsOptimizing] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -74,6 +81,8 @@ export default function App() {
           radius_m: settings.radiusMeters,
           frequency_ghz: settings.frequencyGHz,
           tx_power_dbm: settings.txPowerDbm,
+          azimuth: settings.azimuthDeg,
+          beam_width: settings.beamWidthDeg,
         }),
       });
       const payload = await response.json();
@@ -88,6 +97,44 @@ export default function App() {
     }
   }, [selectedTower, settings]);
 
+  const optimizeAzimuth = useCallback(async () => {
+    if (!selectedTower) {
+      setError("No tower selected");
+      return;
+    }
+
+    setIsOptimizing(true);
+    setError("");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/optimize-azimuth`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tower_lon: selectedTower.coordinates[0],
+          tower_lat: selectedTower.coordinates[1],
+          rays: settings.rayCount,
+          radius_m: settings.radiusMeters,
+          frequency_ghz: settings.frequencyGHz,
+          tx_power_dbm: settings.txPowerDbm,
+          azimuth: settings.azimuthDeg,
+          beam_width: settings.beamWidthDeg,
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Optimization request failed");
+      }
+      setSettings((current) => ({
+        ...current,
+        azimuthDeg: Number(payload.optimal_azimuth),
+      }));
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsOptimizing(false);
+    }
+  }, [selectedTower, settings]);
+
   useEffect(() => {
     if (selectedTower) {
       runSimulation();
@@ -95,19 +142,13 @@ export default function App() {
   }, [selectedTower, runSimulation]);
 
   const stats = useMemo(() => {
-    const rays = simulation?.features ?? [];
-    const blocked = rays.filter((ray) => ray.properties?.is_blocked).length;
-    const avgPower =
-      rays.length === 0
-        ? null
-        : rays.reduce((sum, ray) => sum + ray.properties.signal_dbm, 0) / rays.length;
-
     return {
       towerCount: towers.length,
-      rayCount: rays.length,
-      blocked,
-      avgPower,
-      blockedRatio: rays.length === 0 ? 0 : Math.round((blocked / rays.length) * 100),
+      rayCount: simulation?.geojson?.features?.length ?? 0,
+      blockedRatio: simulation?.stats?.blocked_pct ?? 0,
+      avgPower: simulation?.stats?.avg_rx_dbm ?? null,
+      minRange: simulation?.stats?.min_range_m ?? null,
+      maxRange: simulation?.stats?.max_range_m ?? null,
     };
   }, [simulation, towers]);
 
@@ -115,7 +156,7 @@ export default function App() {
     <main className="app-shell">
       <aside className="control-rail">
         <div className="brand-block">
-          <RadioTower size={28} strokeWidth={1.8} />
+          <img src={APP_ICON_URL} alt="" aria-hidden="true" />
           <div>
             <h1>mmWave AI Propagation Predictor</h1>
             <p>Ankara core simulation</p>
@@ -126,16 +167,24 @@ export default function App() {
           settings={settings}
           onChange={setSettings}
           onRun={runSimulation}
+          onOptimizeAzimuth={optimizeAzimuth}
           isLoading={isLoading}
+          isOptimizing={isOptimizing}
         />
 
         <section className="stats-grid" aria-label="Simulation stats">
-          <Stat label="Towers" value={stats.towerCount} />
-          <Stat label="Rays" value={stats.rayCount} />
           <Stat label="Blocked" value={`${stats.blockedRatio}%`} />
           <Stat
             label="Avg Rx"
             value={stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`}
+          />
+          <Stat
+            label="Max Range"
+            value={stats.maxRange === null ? "n/a" : `${stats.maxRange.toFixed(1)} m`}
+          />
+          <Stat
+            label="Min Range"
+            value={stats.minRange === null ? "n/a" : `${stats.minRange.toFixed(1)} m`}
           />
         </section>
 
@@ -156,7 +205,7 @@ export default function App() {
           towers={towers}
           selectedTower={selectedTower}
           onSelectTower={setSelectedTower}
-          simulation={simulation}
+          simulation={simulation.geojson}
         />
       </section>
     </main>

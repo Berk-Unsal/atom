@@ -1,4 +1,5 @@
 import { Compass, Gauge, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
+import { NETWORK_TECH_OPTIONS } from "../utils/networkTech.js";
 
 export default function ControlPanel({
   settings,
@@ -18,16 +19,17 @@ export default function ControlPanel({
   return (
     <section className="control-panel" aria-label="Simulation controls">
       <div className="field-group">
-        <label>Frequency</label>
+        <label>Network Tech (Frequency)</label>
         <div className="segmented-control">
-          {[28, 39].map((frequency) => (
+          {NETWORK_TECH_OPTIONS.map((option) => (
             <button
-              key={frequency}
+              key={option.label}
               type="button"
-              className={settings.frequencyGHz === frequency ? "active" : ""}
-              onClick={() => update("frequencyGHz", frequency)}
+              className={settings.frequencyGHz === option.frequencyGHz ? "active" : ""}
+              onClick={() => update("frequencyGHz", option.frequencyGHz)}
             >
-              {frequency} GHz
+              <span>{option.label}</span>
+              <small>{option.frequencyGHz} GHz</small>
             </button>
           ))}
         </div>

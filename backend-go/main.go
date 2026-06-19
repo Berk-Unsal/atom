@@ -96,8 +96,8 @@ func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
 	if req.RadiusMeters < 25 || req.RadiusMeters > 5000 {
 		return "radius_m must be between 25 and 5000"
 	}
-	if req.FrequencyGHz <= 0 || req.FrequencyGHz > 100 {
-		return "frequency_ghz must be between 0 and 100"
+	if req.FrequencyGHz <= 0 || req.FrequencyGHz > 300 {
+		return "frequency_ghz must be between 0 and 300"
 	}
 	return ""
 }

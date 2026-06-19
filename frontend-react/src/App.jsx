@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
+import { networkTechLabelForFrequency } from "./utils/networkTech.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const APP_ICON_URL = "/icon/icon.svg?v=967c137f";
@@ -151,6 +152,7 @@ export default function App() {
       maxRange: simulation?.stats?.max_range_m ?? null,
     };
   }, [simulation, towers]);
+  const activeNetworkTech = networkTechLabelForFrequency(settings.frequencyGHz);
 
   return (
     <main className="app-shell">
@@ -206,6 +208,7 @@ export default function App() {
           selectedTower={selectedTower}
           onSelectTower={setSelectedTower}
           simulation={simulation.geojson}
+          activeNetworkTech={activeNetworkTech}
         />
       </section>
     </main>

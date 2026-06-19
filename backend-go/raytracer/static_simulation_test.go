@@ -42,3 +42,74 @@ func TestOptimizeAzimuthReturnsFirstBestCandidateOnTie(t *testing.T) {
 		t.Fatalf("OptimizeAzimuth() = %.1f, want 0.0 on equal-score tie", got.OptimalAzimuth)
 	}
 }
+
+func TestPenetrationLossForFrequencyGHz(t *testing.T) {
+	tests := []struct {
+		frequencyGHz float64
+		expectedDB   float64
+	}{
+		{frequencyGHz: 2.6, expectedDB: 8},
+		{frequencyGHz: 28, expectedDB: 30},
+		{frequencyGHz: 140, expectedDB: 80},
+	}
+
+	for _, tt := range tests {
+		got := PenetrationLossForFrequencyGHz(tt.frequencyGHz)
+		if got != tt.expectedDB {
+			t.Fatalf("PenetrationLossForFrequencyGHz(%.1f) = %.1f, want %.1f", tt.frequencyGHz, got, tt.expectedDB)
+		}
+	}
+}
+
+func TestFrequencyDependentPenetrationAllowsLTEAndStops6G(t *testing.T) {
+	origin := Point{Lon: 32, Lat: 39}
+	buildings := testBuildingWallIndex(t)
+
+	lteReq := StaticSimulationRequest{
+		TowerLon:     origin.Lon,
+		TowerLat:     origin.Lat,
+		Rays:         12,
+		RadiusMeters: 100,
+		FrequencyGHz: 2.6,
+		TxPowerDBm:   30,
+		BeamWidthDeg: 120,
+	}
+	lteTerminal := simulateRayTerminal(origin, 0, 90, lteReq, buildings)
+	if lteTerminal.blocked {
+		t.Fatalf("LTE terminal marked blocked; expected it to penetrate the test wall")
+	}
+	if lteTerminal.distanceMeters < 99 {
+		t.Fatalf("LTE terminal distance = %.1f, want near full 100m radius", lteTerminal.distanceMeters)
+	}
+
+	subTHzReq := lteReq
+	subTHzReq.FrequencyGHz = 140
+	subTHzTerminal := simulateRayTerminal(origin, 0, 90, subTHzReq, buildings)
+	if !subTHzTerminal.blocked {
+		t.Fatalf("6G terminal was not blocked after wall penetration loss")
+	}
+	if subTHzTerminal.distanceMeters >= 20 {
+		t.Fatalf("6G terminal distance = %.1f, want truncation at first wall", subTHzTerminal.distanceMeters)
+	}
+}
+
+func testBuildingWallIndex(t *testing.T) *BuildingIndex {
+	t.Helper()
+	vertices := []Point{
+		{Lon: 32.00010, Lat: 38.99990},
+		{Lon: 32.00016, Lat: 38.99990},
+		{Lon: 32.00016, Lat: 39.00010},
+		{Lon: 32.00010, Lat: 39.00010},
+	}
+	bounds, ok := BoundsFromPoints(vertices)
+	if !ok {
+		t.Fatal("test wall bounds could not be calculated")
+	}
+	return NewBuildingIndex([]*BuildingFootprint{{
+		ID:            "test-wall",
+		Kind:          "building:test",
+		AttenuationDB: DefaultBuildingAttenuationDB,
+		Bounds:        bounds,
+		Vertices:      vertices,
+	}})
+}

@@ -3,7 +3,13 @@ import { rxPowerColor } from "../utils/geojson.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
 
-export default function MapCanvas({ towers, selectedTower, onSelectTower, simulation }) {
+export default function MapCanvas({
+  towers,
+  selectedTower,
+  onSelectTower,
+  simulation,
+  activeNetworkTech,
+}) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map">
       <TileLayer
@@ -30,10 +36,16 @@ export default function MapCanvas({ towers, selectedTower, onSelectTower, simula
             }}
           >
             <Popup>
-              <strong>Cell {tower.cellId}</strong>
-              <br />
-              {tower.radioType}
-              {tower.isSimulated ? " simulated 5G" : ""}
+              <dl className="tower-popup">
+                <div>
+                  <dt>Cell ID</dt>
+                  <dd>{tower.cellId}</dd>
+                </div>
+                <div>
+                  <dt>Active Node</dt>
+                  <dd>{activeNetworkTech}</dd>
+                </div>
+              </dl>
             </Popup>
           </CircleMarker>
         );

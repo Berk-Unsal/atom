@@ -99,7 +99,7 @@ input {
 
 .segmented-control {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border: 1px solid #cfdbd0;
   border-radius: 8px;
   overflow: hidden;
@@ -114,15 +114,29 @@ input {
 }
 
 .segmented-control button {
+  display: grid;
+  gap: 3px;
+  place-items: center;
   min-height: 40px;
+  padding: 8px 6px;
   background: #f7faf5;
   color: #405047;
+  line-height: 1.1;
+}
+
+.segmented-control button small {
+  color: #69756d;
+  font-size: 0.72rem;
 }
 
 .segmented-control button.active {
   background: #0f766e;
   color: #ffffff;
   font-weight: 700;
+}
+
+.segmented-control button.active small {
+  color: #d9f5ed;
 }
 
 .number-wrap {
@@ -246,6 +260,33 @@ input {
 .leaflet-map {
   width: 100%;
   height: 100vh;
+}
+
+.tower-popup {
+  display: grid;
+  gap: 8px;
+  min-width: 150px;
+  margin: 0;
+}
+
+.tower-popup div {
+  display: grid;
+  gap: 2px;
+}
+
+.tower-popup dt {
+  color: #647067;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.tower-popup dd {
+  margin: 0;
+  color: #17201b;
+  font-size: 0.95rem;
+  font-weight: 750;
 }
 
 .signal-canvas {

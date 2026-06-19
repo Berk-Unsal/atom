@@ -57,6 +57,7 @@ type RayProperties struct {
 	SignalStartDBm  float64 `json:"signal_start_dbm"`
 	SignalEndDBm    float64 `json:"signal_end_dbm"`
 	PathLossDB      float64 `json:"path_loss_db"`
+	WallLossDB      float64 `json:"wall_loss_db"`
 	IsBlocked       bool    `json:"is_blocked"`
 	DistanceMeters  float64 `json:"distance_m"`
 	SegmentStartM   float64 `json:"segment_start_m"`
@@ -236,6 +237,7 @@ func simulateRayTerminal(origin Point, rayIndex int, angle float64, req StaticSi
 func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex, collectFeatures bool) ([]RayFeature, rayTerminal) {
 	clearAirLimit := MaxTheoreticalDistanceMeters(req.TxPowerDBm, req.FrequencyGHz, 0)
 	castDistance := math.Min(req.RadiusMeters, clearAirLimit)
+	wallLossPerIntersection := PenetrationLossForFrequencyGHz(req.FrequencyGHz)
 
 	if castDistance <= 0 {
 		return nil, rayTerminal{
@@ -257,73 +259,129 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 
 	segmentIndex := 0
 	currentPoint := origin
+	cumulativeWallLoss := 0.0
 	for startDistance := 0.0; startDistance < castDistance; startDistance += SegmentStepMeters {
 		endDistance := math.Min(startDistance+SegmentStepMeters, castDistance)
 		start := currentPoint
 		nextPoint := DestinationPoint(origin, angle, endDistance)
-		startRx := ReceivedPowerDBm(math.Max(startDistance, 1), req.FrequencyGHz, req.TxPowerDBm, 0)
-		endRx := ReceivedPowerDBm(endDistance, req.FrequencyGHz, req.TxPowerDBm, 0)
+		startRx := ReceivedPowerDBm(math.Max(startDistance, 1), req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
 
 		if startDistance > 0 && startRx <= ReceiverSensitivity {
 			terminal = rayTerminal{
-				blocked:        false,
+				blocked:        cumulativeWallLoss > 0,
 				distanceMeters: startDistance,
 				signalDBm:      startRx,
 			}
 			break
 		}
 
-		hit, hitPoint, hitBuilding, candidateChecks := firstBuildingHitForSegment(origin, start, nextPoint, buildings)
-		if hit {
-			hitDistance := startDistance + ApproxDistanceMeters(start, hitPoint)
-			attenuation := hitBuilding.AttenuationDB
-			if attenuation == 0 {
-				attenuation = DefaultBuildingAttenuationDB
-			}
-			wallRx := ReceivedPowerDBm(hitDistance, req.FrequencyGHz, req.TxPowerDBm, attenuation)
-			pathLoss := FreeSpacePathLossMetersGHz(hitDistance, req.FrequencyGHz) + attenuation
+		intersections, candidateChecks := wallIntersectionsForSegment(origin, start, nextPoint, buildings)
+		segmentStartPoint := start
+		segmentStartDistance := startDistance
+		segmentStartRx := startRx
+		rayStopped := false
+
+		for _, intersection := range intersections {
+			hitDistance := startDistance + intersection.distanceMeters
+			cumulativeWallLoss += wallLossPerIntersection
+			wallRx := ReceivedPowerDBm(hitDistance, req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
+			pathLoss := FreeSpacePathLossMetersGHz(hitDistance, req.FrequencyGHz) + cumulativeWallLoss
+			isTerminalBlock := wallRx <= ReceiverSensitivity
 			if collectFeatures {
+				if ApproxDistanceMeters(segmentStartPoint, intersection.point) > 0.01 {
+					segments = append(segments, makeRaySegmentFeature(
+						segmentStartPoint,
+						intersection.point,
+						angle,
+						rayIndex,
+						segmentIndex,
+						segmentStartDistance,
+						hitDistance,
+						segmentStartRx,
+						wallRx,
+						pathLoss,
+						cumulativeWallLoss,
+						isTerminalBlock,
+						intersection.buildingID,
+						candidateChecks,
+					))
+					segmentIndex++
+				}
+			}
+
+			if isTerminalBlock {
+				terminal = rayTerminal{
+					blocked:        true,
+					distanceMeters: hitDistance,
+					signalDBm:      wallRx,
+				}
+				rayStopped = true
+				break
+			}
+
+			segmentStartPoint = intersection.point
+			segmentStartDistance = hitDistance
+			segmentStartRx = wallRx
+		}
+		if rayStopped {
+			break
+		}
+
+		endRx := ReceivedPowerDBm(endDistance, req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
+		if endRx <= ReceiverSensitivity {
+			stopDistance := MaxTheoreticalDistanceMeters(req.TxPowerDBm, req.FrequencyGHz, cumulativeWallLoss)
+			if stopDistance < segmentStartDistance {
+				stopDistance = segmentStartDistance
+			}
+			stopPoint := DestinationPoint(origin, angle, stopDistance)
+			stopRx := ReceivedPowerDBm(stopDistance, req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
+			pathLoss := FreeSpacePathLossMetersGHz(stopDistance, req.FrequencyGHz) + cumulativeWallLoss
+			if collectFeatures && ApproxDistanceMeters(segmentStartPoint, stopPoint) > 0.01 {
 				segments = append(segments, makeRaySegmentFeature(
-					start,
-					hitPoint,
+					segmentStartPoint,
+					stopPoint,
 					angle,
 					rayIndex,
 					segmentIndex,
-					startDistance,
-					hitDistance,
-					startRx,
-					wallRx,
+					segmentStartDistance,
+					stopDistance,
+					segmentStartRx,
+					stopRx,
 					pathLoss,
-					true,
-					hitBuilding.ID,
+					cumulativeWallLoss,
+					cumulativeWallLoss > 0,
+					"",
 					candidateChecks,
 				))
 			}
+
 			terminal = rayTerminal{
-				blocked:        true,
-				distanceMeters: hitDistance,
-				signalDBm:      wallRx,
+				blocked:        cumulativeWallLoss > 0,
+				distanceMeters: stopDistance,
+				signalDBm:      stopRx,
 			}
 			break
 		}
 
-		pathLoss := FreeSpacePathLossMetersGHz(endDistance, req.FrequencyGHz)
+		pathLoss := FreeSpacePathLossMetersGHz(endDistance, req.FrequencyGHz) + cumulativeWallLoss
 		if collectFeatures {
 			segments = append(segments, makeRaySegmentFeature(
-				start,
+				segmentStartPoint,
 				nextPoint,
 				angle,
 				rayIndex,
 				segmentIndex,
-				startDistance,
+				segmentStartDistance,
 				endDistance,
-				startRx,
+				segmentStartRx,
 				endRx,
 				pathLoss,
+				cumulativeWallLoss,
 				false,
 				"",
 				candidateChecks,
 			))
+			segmentIndex++
 		}
 
 		terminal = rayTerminal{
@@ -331,7 +389,6 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			distanceMeters: endDistance,
 			signalDBm:      endRx,
 		}
-		segmentIndex++
 		currentPoint = nextPoint
 	}
 
@@ -342,6 +399,12 @@ type buildingIntersection struct {
 	distanceMeters float64
 	point          Point
 	building       *BuildingFootprint
+}
+
+type wallIntersection struct {
+	distanceMeters float64
+	point          Point
+	buildingID     string
 }
 
 type rayTerminal struct {
@@ -375,6 +438,47 @@ func firstBuildingHitForSegment(origin Point, start Point, end Point, buildings 
 	return closestBuilding != nil, closestPoint, closestBuilding, len(candidates)
 }
 
+func wallIntersectionsForSegment(origin Point, start Point, end Point, buildings *BuildingIndex) ([]wallIntersection, int) {
+	candidates := buildings.SearchRay(start, end)
+	intersections := make([]wallIntersection, 0, len(candidates))
+
+	for _, building := range candidates {
+		if PointInPolygon(origin, building.Vertices) {
+			continue
+		}
+
+		points := SegmentPolygonIntersections(start, end, building.Vertices)
+		for _, point := range points {
+			distance := ApproxDistanceMeters(start, point)
+			if distance <= 0.05 {
+				continue
+			}
+			intersections = appendUniqueWallIntersection(intersections, wallIntersection{
+				distanceMeters: distance,
+				point:          point,
+				buildingID:     building.ID,
+			})
+		}
+	}
+
+	sort.SliceStable(intersections, func(i, j int) bool {
+		return intersections[i].distanceMeters < intersections[j].distanceMeters
+	})
+	return intersections, len(candidates)
+}
+
+func appendUniqueWallIntersection(intersections []wallIntersection, candidate wallIntersection) []wallIntersection {
+	for _, existing := range intersections {
+		if existing.buildingID != candidate.buildingID {
+			continue
+		}
+		if math.Abs(existing.distanceMeters-candidate.distanceMeters) <= 0.05 {
+			return intersections
+		}
+	}
+	return append(intersections, candidate)
+}
+
 func makeRaySegmentFeature(
 	start Point,
 	end Point,
@@ -386,25 +490,22 @@ func makeRaySegmentFeature(
 	startRx float64,
 	endRx float64,
 	pathLoss float64,
+	wallLoss float64,
 	blocked bool,
 	hitBuildingID string,
 	candidateChecks int,
 ) RayFeature {
-	signalDBm := startRx
-	if blocked {
-		signalDBm = endRx
-	}
-
 	return RayFeature{
 		Type: "Feature",
 		Properties: RayProperties{
 			AngleDeg:        normalizeDegrees(angle),
 			RayIndex:        rayIndex,
 			SegmentIndex:    segmentIndex,
-			SignalDBm:       math.Round(signalDBm*10) / 10,
+			SignalDBm:       math.Round(endRx*10) / 10,
 			SignalStartDBm:  math.Round(startRx*10) / 10,
 			SignalEndDBm:    math.Round(endRx*10) / 10,
 			PathLossDB:      math.Round(pathLoss*10) / 10,
+			WallLossDB:      math.Round(wallLoss*10) / 10,
 			IsBlocked:       blocked,
 			DistanceMeters:  math.Round(endDistance*10) / 10,
 			SegmentStartM:   math.Round(startDistance*10) / 10,
@@ -425,6 +526,17 @@ func makeRaySegmentFeature(
 func FreeSpacePathLossMetersGHz(distanceMeters float64, frequencyGHz float64) float64 {
 	distance := math.Max(distanceMeters, 1)
 	return 20*math.Log10(distance) + 20*math.Log10(frequencyGHz) + 92.45
+}
+
+func PenetrationLossForFrequencyGHz(frequencyGHz float64) float64 {
+	switch {
+	case frequencyGHz < 10:
+		return 8
+	case frequencyGHz < 100:
+		return 30
+	default:
+		return 80
+	}
 }
 
 func ReceivedPowerDBm(distanceMeters float64, frequencyGHz float64, txPowerDBm float64, attenuationDB float64) float64 {
@@ -468,6 +580,32 @@ func SegmentPolygonFirstIntersection(a Point, b Point, polygon []Point) (bool, P
 		}
 	}
 	return found, closestPoint
+}
+
+func SegmentPolygonIntersections(a Point, b Point, polygon []Point) []Point {
+	if len(polygon) < 3 {
+		return nil
+	}
+
+	points := make([]Point, 0, 2)
+	for index := range polygon {
+		next := (index + 1) % len(polygon)
+		hit, point := SegmentIntersectionPoint(a, b, polygon[index], polygon[next])
+		if !hit {
+			continue
+		}
+		points = appendUniquePoint(points, point)
+	}
+	return points
+}
+
+func appendUniquePoint(points []Point, candidate Point) []Point {
+	for _, existing := range points {
+		if ApproxDistanceMeters(existing, candidate) <= 0.05 {
+			return points
+		}
+	}
+	return append(points, candidate)
 }
 
 func SegmentIntersectionPoint(p1 Point, p2 Point, q1 Point, q2 Point) (bool, Point) {

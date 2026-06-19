@@ -1,0 +1,1937 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
+      
+      
+        <meta name="author" content="Berk Ünsal">
+      
+      
+      
+        <link rel="prev" href="overview.html">
+      
+      
+        <link rel="next" href="architecture.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../icon/icon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Features - A.T.O.M Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+        <script src="https://unpkg.com/iframe-worker/shim"></script>
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#features" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            A.T.O.M Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Features
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="overview.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="features.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Features
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="architecture.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="visualization.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Propagation Visualization
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="algorithms.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Algorithms & Physics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="api.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="getting-started.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="deployment.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Deployment
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="faq.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="contributing.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    A.T.O.M Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="features.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#multi-generation-physics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Generation Physics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-Generation Physics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-frequency-bands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Frequency Bands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#free-space-path-loss-fspl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Free-Space Path Loss (FSPL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#material-attenuation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Material Attenuation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#segmented-heatmap-raytracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Segmented Heatmap Raytracing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Segmented Heatmap Raytracing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#color-coded-signal-strength" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Color-Coded Signal Strength
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ray-segmentation-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ray Segmentation Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequency-dependent-penetration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frequency-Dependent Penetration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frequency-Dependent Penetration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4g-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4G Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5g-mmwave-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5G mmWave Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6g-sub-thz-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6G Sub-THz Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#smart-beamforming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Smart Beamforming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Smart Beamforming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#antenna-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Antenna Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sector-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sector Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-auto-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Auto-Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI Auto-Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coverage-maximization-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage Maximization Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive Visualization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interactive Visualization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#web-based-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web-Based UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-panel-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control Panel Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#geojson-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoJSON Export
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GeoJSON Export">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benefits
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concurrency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#openstreetmap-osm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenStreetMap (OSM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opencellid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenCellID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="visualization.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propagation Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms & Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting-started.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="faq.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contributing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#multi-generation-physics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Generation Physics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-Generation Physics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-frequency-bands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Frequency Bands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#free-space-path-loss-fspl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Free-Space Path Loss (FSPL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#material-attenuation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Material Attenuation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#segmented-heatmap-raytracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Segmented Heatmap Raytracing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Segmented Heatmap Raytracing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#color-coded-signal-strength" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Color-Coded Signal Strength
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ray-segmentation-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ray Segmentation Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequency-dependent-penetration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frequency-Dependent Penetration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frequency-Dependent Penetration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4g-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4G Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5g-mmwave-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5G mmWave Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6g-sub-thz-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6G Sub-THz Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#smart-beamforming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Smart Beamforming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Smart Beamforming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#antenna-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Antenna Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sector-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sector Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-auto-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Auto-Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI Auto-Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coverage-maximization-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage Maximization Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive Visualization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interactive Visualization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#web-based-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web-Based UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-panel-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control Panel Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#geojson-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoJSON Export
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GeoJSON Export">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benefits
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concurrency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#openstreetmap-osm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenStreetMap (OSM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opencellid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenCellID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="features">Features</h1>
+<p>A.T.O.M provides a comprehensive suite of RF simulation and optimization capabilities.</p>
+<h2 id="multi-generation-physics">Multi-Generation Physics</h2>
+<h3 id="supported-frequency-bands">Supported Frequency Bands</h3>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Frequency</th>
+<th>Wavelength</th>
+<th>Primary Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4G LTE</strong></td>
+<td>2.6 GHz</td>
+<td>11.5 cm</td>
+<td>Wide-area coverage</td>
+</tr>
+<tr>
+<td><strong>5G mmWave</strong></td>
+<td>28 GHz</td>
+<td>1.07 cm</td>
+<td>High-capacity urban</td>
+</tr>
+<tr>
+<td><strong>6G Sub-THz</strong></td>
+<td>140 GHz</td>
+<td>2.14 mm</td>
+<td>Ultra-high-capacity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="free-space-path-loss-fspl">Free-Space Path Loss (FSPL)</h3>
+<p>All bands use the standard FSPL equation:</p>
+<div class="arithmatex">\[L = 20 \log_{10}(d) + 20 \log_{10}(f) + 20 \log_{10}\left(\frac{4\pi}{c}\right)\]</div>
+<p>Where:
+- <span class="arithmatex">\(d\)</span> = distance in meters
+- <span class="arithmatex">\(f\)</span> = frequency in Hz
+- <span class="arithmatex">\(c\)</span> = speed of light (3×10⁸ m/s)
+- <span class="arithmatex">\(L\)</span> = path loss in dB</p>
+<h3 id="material-attenuation">Material Attenuation</h3>
+<p>Building materials introduce frequency-dependent losses:</p>
+<table>
+<thead>
+<tr>
+<th>Material</th>
+<th>4G (2.6 GHz)</th>
+<th>5G (28 GHz)</th>
+<th>6G (140 GHz)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Concrete</td>
+<td>+35 dB</td>
+<td>+25 dB</td>
+<td>+40 dB</td>
+</tr>
+<tr>
+<td>Office/Glass</td>
+<td>+20 dB</td>
+<td>+15 dB</td>
+<td>+30 dB</td>
+</tr>
+<tr>
+<td>Forest/Foliage</td>
+<td>+8 dB</td>
+<td>+12 dB</td>
+<td>+20 dB</td>
+</tr>
+</tbody>
+</table>
+<h2 id="segmented-heatmap-raytracing">Segmented Heatmap Raytracing</h2>
+<h3 id="color-coded-signal-strength">Color-Coded Signal Strength</h3>
+<p>Rays are visualized with <strong>dynamic color gradients</strong> based on received signal strength (Rx dBm):</p>
+<ul>
+<li>🟢 <strong>Green</strong> (-50 to -70 dBm): Strong signal, excellent coverage</li>
+<li>🟡 <strong>Yellow</strong> (-70 to -90 dBm): Moderate signal, usable coverage</li>
+<li>🔴 <strong>Red</strong> (-90 to -110 dBm): Weak signal, marginal coverage</li>
+</ul>
+<h3 id="ray-segmentation-algorithm">Ray Segmentation Algorithm</h3>
+<p>Instead of single rays from TX to each point, A.T.O.M generates <strong>discrete segments</strong>:</p>
+<ol>
+<li>Start at transmitter antenna</li>
+<li>Cast ray toward target location</li>
+<li>Check polygon (building) intersections</li>
+<li>Apply cumulative wall loss</li>
+<li>Color segment based on final Rx dBm</li>
+<li>Export as GeoJSON linestring</li>
+</ol>
+<p>This enables:
+- Precise visualization of signal degradation
+- Identification of urban canyons and shadow areas
+- Intuitive understanding of frequency-band differences</p>
+<h2 id="frequency-dependent-penetration">Frequency-Dependent Penetration</h2>
+<h3 id="4g-propagation">4G Propagation</h3>
+<ul>
+<li><strong>Penetrates</strong> concrete buildings with cumulative losses</li>
+<li><strong>Diffracts</strong> over rooftops</li>
+<li><strong>Reaches</strong> interior locations with degradation</li>
+<li><strong>Result</strong>: Wide coverage area despite obstacles</li>
+</ul>
+<h3 id="5g-mmwave-propagation">5G mmWave Propagation</h3>
+<ul>
+<li><strong>Heavily attenuates</strong> through walls</li>
+<li><strong>Requires</strong> line-of-sight in many cases</li>
+<li><strong>Blocks</strong> at forest edges</li>
+<li><strong>Result</strong>: Tight, directional coverage in dense areas</li>
+</ul>
+<h3 id="6g-sub-thz-propagation">6G Sub-THz Propagation</h3>
+<ul>
+<li><strong>Nearly blocked</strong> by most building materials</li>
+<li><strong>Ultra-tight</strong> spatial requirements</li>
+<li><strong>Requires</strong> optimal beamforming angles</li>
+<li><strong>Result</strong>: Localized coverage with high spectral efficiency</li>
+</ul>
+<h2 id="smart-beamforming">Smart Beamforming</h2>
+<h3 id="antenna-parameters">Antenna Parameters</h3>
+<p>Each transmitter can be configured with:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Range</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Azimuth</strong></td>
+<td>0° - 360°</td>
+<td>Horizontal direction of main lobe</td>
+</tr>
+<tr>
+<td><strong>Beam Width</strong></td>
+<td>5° - 180°</td>
+<td>Angular width of coverage sector</td>
+</tr>
+<tr>
+<td><strong>Tilt</strong></td>
+<td>-20° to +90°</td>
+<td>Vertical angle from horizontal</td>
+</tr>
+<tr>
+<td><strong>Power</strong></td>
+<td>0 - 50 dBm</td>
+<td>Transmit power level</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sector-coverage">Sector Coverage</h3>
+<p>Beamforming creates <strong>directional sectors</strong> instead of omnidirectional patterns:</p>
+<ul>
+<li>Typical 3-sector setup: 120° coverage each</li>
+<li>Each sector independently optimizable</li>
+<li>Reduces interference between sectors</li>
+<li>Improves spectral efficiency</li>
+</ul>
+<h2 id="ai-auto-optimization">AI Auto-Optimization</h2>
+<h3 id="coverage-maximization-algorithm">Coverage Maximization Algorithm</h3>
+<p>A.T.O.M uses a <strong>sweep-and-score</strong> geometric optimization to find the optimal antenna azimuth:</p>
+<p><strong>Algorithm</strong>:</p>
+<ol>
+<li>Define candidate azimuth angles (5° intervals)</li>
+<li>For each azimuth:</li>
+<li>Cast rays to surrounding area</li>
+<li>Calculate coverage area: <span class="arithmatex">\(\sum r^2\)</span> (sum of squared ray distances)</li>
+<li>Apply frequency-specific attenuation</li>
+<li>Compute total coverage score</li>
+<li>Select azimuth with maximum coverage</li>
+<li>Automatically snap antenna to optimal angle</li>
+</ol>
+<p><strong>Result</strong>: Engineers don't manually guess antenna directions; A.T.O.M finds optimal placement in seconds.</p>
+<h3 id="performance">Performance</h3>
+<ul>
+<li>Typical optimization runtime: &lt; 500 ms for 360° sweep</li>
+<li>Tested on 12,000+ building geometries</li>
+<li>Supports batch multi-site optimization</li>
+</ul>
+<h2 id="interactive-visualization">Interactive Visualization</h2>
+<h3 id="web-based-ui">Web-Based UI</h3>
+<ul>
+<li><strong>Leaflet Maps</strong>: Standard web mapping library</li>
+<li><strong>GeoJSON Layers</strong>: Dynamic overlay of coverage heatmaps</li>
+<li><strong>Real-time Updates</strong>: Instant response to parameter changes</li>
+<li><strong>Responsive Design</strong>: Works on desktop and tablet</li>
+</ul>
+<h3 id="control-panel-features">Control Panel Features</h3>
+<ul>
+<li>Frequency band selector (4G/5G/6G)</li>
+<li>Azimuth angle adjustment (slider or numeric input)</li>
+<li>Beam width configuration</li>
+<li>Transmit power control</li>
+<li>Coverage area display</li>
+<li>Signal strength colorbar</li>
+</ul>
+<h2 id="geojson-export">GeoJSON Export</h2>
+<p>All visualization data is stored in <strong>GeoJSON format</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5G&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;azimuth&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;rx_dbm&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-75</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;signal_quality&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;good&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LineString&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="benefits">Benefits</h3>
+<ul>
+<li>📁 <strong>Portable</strong>: Import into ArcGIS, QGIS, Google Earth Pro</li>
+<li>🔄 <strong>Interoperable</strong>: Standard format supported by all GIS tools</li>
+<li>📊 <strong>Archivable</strong>: Version control your simulation outputs</li>
+<li>🔗 <strong>Shareable</strong>: Send results to team members instantly</li>
+</ul>
+<h2 id="performance-characteristics">Performance Characteristics</h2>
+<h3 id="scalability">Scalability</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Building geometries</td>
+<td>Up to 50,000 per simulation</td>
+</tr>
+<tr>
+<td>Ray-polygon intersections</td>
+<td>Sub-millisecond per query (R-Tree)</td>
+</tr>
+<tr>
+<td>Heatmap generation</td>
+<td>&lt; 2 seconds for 10,000-point grid</td>
+</tr>
+<tr>
+<td>API response time</td>
+<td>&lt; 100 ms (p99)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="concurrency">Concurrency</h3>
+<ul>
+<li><strong>Go Goroutines</strong>: Each ray batch processes in parallel</li>
+<li><strong>Multi-core utilization</strong>: Automatic load balancing</li>
+<li><strong>Memory efficiency</strong>: In-memory R-Tree (typically &lt; 500 MB for Ankara)</li>
+<li><strong>No external processes</strong>: Self-contained in single container</li>
+</ul>
+<h2 id="data-sources">Data Sources</h2>
+<h3 id="openstreetmap-osm">OpenStreetMap (OSM)</h3>
+<ul>
+<li>Building footprints with material tags</li>
+<li>Street geometry and terrain features</li>
+<li>Vegetation layer for obstruction modeling</li>
+</ul>
+<h3 id="opencellid">OpenCellID</h3>
+<ul>
+<li>Real 5G tower locations</li>
+<li>Equipment specifications</li>
+<li>Historical coverage data</li>
+</ul>
+<h3 id="custom-data">Custom Data</h3>
+<p>Users can import:
+- Custom building geometries (Shapefile, GeoJSON)
+- Terrain elevation models (GeoTIFF)
+- Custom antenna specifications
+- Proprietary building material database</p>
+<hr />
+<p><strong>Next</strong>: Dive into <a href="architecture.html">Architecture</a> or see visual examples in <a href="visualization.html">Visualization</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

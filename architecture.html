@@ -1,0 +1,1744 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
+      
+      
+        <meta name="author" content="Berk Ünsal">
+      
+      
+      
+        <link rel="prev" href="features.html">
+      
+      
+        <link rel="next" href="visualization.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../icon/icon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Architecture - A.T.O.M Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+        <script src="https://unpkg.com/iframe-worker/shim"></script>
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            A.T.O.M Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="overview.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="features.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Features
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="architecture.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="visualization.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Propagation Visualization
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="algorithms.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Algorithms & Physics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="api.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="getting-started.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="deployment.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Deployment
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="faq.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="contributing.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    A.T.O.M Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="features.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="architecture.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#system-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technology Stack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-go-golang" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend: Go (Golang)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend-react-leaflet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend: React + Leaflet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment: Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-deep-dive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Deep Dive
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Deep Dive">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-frontend-react-leaflet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Frontend (React + Leaflet)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-backend-api-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Backend API (Go)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-ray-tracing-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Ray Tracing Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-spatial-index-r-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Spatial Index (R-Tree)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-optimization-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Optimization Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#startup-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Startup Sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simulation-request-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation Request Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scalability-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalability Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scalability Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#horizontal-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Horizontal Scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vertical-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vertical Scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regional-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regional Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="visualization.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propagation Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms & Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting-started.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="faq.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contributing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#system-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technology Stack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-go-golang" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend: Go (Golang)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend-react-leaflet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend: React + Leaflet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment: Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-deep-dive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Deep Dive
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Deep Dive">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-frontend-react-leaflet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Frontend (React + Leaflet)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-backend-api-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Backend API (Go)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-ray-tracing-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Ray Tracing Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-spatial-index-r-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Spatial Index (R-Tree)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-optimization-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Optimization Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#startup-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Startup Sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simulation-request-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation Request Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scalability-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalability Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scalability Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#horizontal-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Horizontal Scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vertical-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vertical Scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regional-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regional Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="architecture">Architecture</h1>
+<p>A.T.O.M is designed as a modern, cloud-native full-stack application with clear separation of concerns.</p>
+<h2 id="system-architecture">System Architecture</h2>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────┐
+│                  Frontend (React + Leaflet)          │
+│  ┌─────────────────────────────────────────────┐    │
+│  │  - Interactive Map Canvas                    │    │
+│  │  - Control Panel (Azimuth, Beam Width, etc)  │    │
+│  │  - Real-time Heatmap Rendering              │    │
+│  │  - GeoJSON Layer Management                  │    │
+│  └─────────────────────────────────────────────┘    │
+└────────────────────┬────────────────────────────────┘
+                     │ REST API (JSON)
+┌────────────────────┴────────────────────────────────┐
+│              Backend API (Go)                        │
+│  ┌─────────────────────────────────────────────┐    │
+│  │  HTTP Handlers &amp; Request Validation         │    │
+│  │  ┌──────────────────────────────────────┐   │    │
+│  │  │ Ray Tracing Engine (Goroutines)      │   │    │
+│  │  │  - FSPL Calculation                  │   │    │
+│  │  │  - Polygon Intersection Testing      │   │    │
+│  │  │  - Material Attenuation Lookup       │   │    │
+│  │  └──────────────────────────────────────┘   │    │
+│  │  ┌──────────────────────────────────────┐   │    │
+│  │  │ Spatial Index (In-Memory R-Tree)     │   │    │
+│  │  │  - Building Geometries               │   │    │
+│  │  │  - Fast Intersection Queries         │   │    │
+│  │  └──────────────────────────────────────┘   │    │
+│  │  ┌──────────────────────────────────────┐   │    │
+│  │  │ Optimization Engine (Sweep &amp; Score)  │   │    │
+│  │  │  - Coverage Calculation              │   │    │
+│  │  │  - Azimuth Optimization              │   │    │
+│  │  └──────────────────────────────────────┘   │    │
+│  └─────────────────────────────────────────────┘    │
+└────────────────────┬────────────────────────────────┘
+                     │ Load at Startup
+┌────────────────────┴────────────────────────────────┐
+│            Static Data Files (GeoJSON)              │
+│  - ankara_5g_nodes.geojson (tower locations)       │
+│  - ankara_buildings.geojson (building footprints)  │
+└─────────────────────────────────────────────────────┘
+</code></pre></div>
+<h2 id="technology-stack">Technology Stack</h2>
+<h3 id="backend-go-golang">Backend: Go (Golang)</h3>
+<p><strong>Why Go?</strong></p>
+<ul>
+<li>⚡ <strong>Speed</strong>: Compiled to native binary; minimal overhead</li>
+<li>🔄 <strong>Concurrency</strong>: Goroutines enable 1000s of concurrent operations</li>
+<li>💾 <strong>Memory Efficiency</strong>: Garbage collection optimized for server workloads</li>
+<li>🎯 <strong>Simplicity</strong>: Clear, readable syntax for high-performance code</li>
+<li>🐳 <strong>Deployment</strong>: Single binary fits in tiny container</li>
+</ul>
+<p><strong>Key Packages</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/go-chi/chi</code></td>
+<td>HTTP router and middleware</td>
+</tr>
+<tr>
+<td><code>encoding/json</code></td>
+<td>GeoJSON serialization</td>
+</tr>
+<tr>
+<td>Custom R-Tree</td>
+<td>Spatial indexing for buildings</td>
+</tr>
+<tr>
+<td><code>math</code></td>
+<td>FSPL calculations and geometry</td>
+</tr>
+</tbody>
+</table>
+<h3 id="frontend-react-leaflet">Frontend: React + Leaflet</h3>
+<p><strong>Why React?</strong></p>
+<ul>
+<li>⚛️ <strong>Component Model</strong>: Reusable UI components for control panel</li>
+<li>🎨 <strong>Reactivity</strong>: Instant response to parameter changes</li>
+<li>📦 <strong>Ecosystem</strong>: Rich library support for visualization</li>
+</ul>
+<p><strong>Why Leaflet?</strong></p>
+<ul>
+<li>🗺️ <strong>Proven Standard</strong>: Industry-standard web mapping library</li>
+<li>⚖️ <strong>Lightweight</strong>: Only ~40 KB minified (vs ~250 KB for Mapbox)</li>
+<li>🎯 <strong>GeoJSON Native</strong>: First-class support for feature layers</li>
+<li>📱 <strong>Mobile-Friendly</strong>: Touch controls and responsive design</li>
+</ul>
+<p><strong>Key Libraries</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>react</code></td>
+<td>UI framework</td>
+</tr>
+<tr>
+<td><code>leaflet</code></td>
+<td>Map rendering</td>
+</tr>
+<tr>
+<td><code>vite</code></td>
+<td>Build tool (fast bundling)</td>
+</tr>
+<tr>
+<td><code>axios</code></td>
+<td>HTTP client for API calls</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deployment-docker">Deployment: Docker</h3>
+<p><strong>Multi-Stage Build</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="c"># Stage 1: Build React</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">node:18-alpine</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">frontend-builder</span>
+<span class="k">COPY</span><span class="w"> </span>frontend-react<span class="w"> </span>/app
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+<span class="k">RUN</span><span class="w"> </span>npm<span class="w"> </span>install<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>build
+
+<span class="c"># Stage 2: Build Go</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">golang:1.21-alpine</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">backend-builder</span>
+<span class="k">COPY</span><span class="w"> </span>backend-go<span class="w"> </span>/app
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+<span class="k">RUN</span><span class="w"> </span>go<span class="w"> </span>build<span class="w"> </span>-o<span class="w"> </span>api<span class="w"> </span>.
+
+<span class="c"># Stage 3: Runtime</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">alpine:latest</span>
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>frontend-builder<span class="w"> </span>/app/dist<span class="w"> </span>/var/www
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>backend-builder<span class="w"> </span>/app/api<span class="w"> </span>/app/api
+<span class="k">COPY</span><span class="w"> </span>data-pipeline/*.geojson<span class="w"> </span>/app/data/
+<span class="k">EXPOSE</span><span class="w"> </span><span class="s">8080</span>
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/app/api&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p><strong>Result</strong>: Single image (~150 MB) containing both frontend and backend.</p>
+<h2 id="component-deep-dive">Component Deep Dive</h2>
+<h3 id="1-frontend-react-leaflet">1. Frontend (React + Leaflet)</h3>
+<p><strong>File Structure</strong>:</p>
+<div class="highlight"><pre><span></span><code>frontend-react/
+├── src/
+│   ├── App.jsx              # Root component
+│   ├── main.jsx             # Entry point
+│   ├── components/
+│   │   ├── MapCanvas.jsx    # Leaflet map renderer
+│   │   └── ControlPanel.jsx # Parameter controls
+│   └── utils/
+│       ├── geojson.js       # GeoJSON helpers
+│       └── networkTech.js   # Tech-specific constants
+└── vite.config.js
+</code></pre></div>
+<p><strong>Data Flow</strong>:</p>
+<ol>
+<li>User adjusts azimuth slider → React state update</li>
+<li>Component calls <code>/api/simulate</code> with new parameters</li>
+<li>Backend returns GeoJSON heatmap</li>
+<li>Leaflet layer updates with new colors</li>
+<li>User sees real-time visualization</li>
+</ol>
+<h3 id="2-backend-api-go">2. Backend API (Go)</h3>
+<p><strong>Endpoints</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/health</code></td>
+<td>Liveness check</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/buildings</code></td>
+<td>Fetch building GeoJSON</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/towers</code></td>
+<td>Fetch tower locations</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/simulate</code></td>
+<td>Run propagation simulation</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/optimize</code></td>
+<td>Auto-optimize antenna azimuth</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request/Response Example</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="err">POST</span><span class="w"> </span><span class="err">/simula</span><span class="kc">te</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;tower_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ankara_001&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5G&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;azimuth&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;beam_width&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">65</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;power_dbm&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span>
+<span class="p">}</span>
+
+<span class="err">Respo</span><span class="kc">nse</span><span class="p">:</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;rx_dbm&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-75</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LineString&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="3-ray-tracing-engine">3. Ray Tracing Engine</h3>
+<p><strong>Algorithm Overview</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span><span class="nx">each</span><span class="w"> </span><span class="nx">grid_point</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">coverage_area</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 1. Calculate FSPL</span>
+<span class="w">    </span><span class="nx">distance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">euclidean_distance</span><span class="p">(</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">grid_point</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">fspl_db</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">calculate_fspl</span><span class="p">(</span><span class="nx">distance</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1">// 2. Query building intersections</span>
+<span class="w">    </span><span class="nx">intersected_buildings</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">rtree</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">ray_segment</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1">// 3. Apply cumulative wall loss</span>
+<span class="w">    </span><span class="nx">total_loss</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">fspl_db</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">building</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">intersected_buildings</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">wall_loss</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">material_attenuation</span><span class="p">(</span><span class="nx">building</span><span class="p">.</span><span class="nx">material</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">)</span>
+<span class="w">        </span><span class="nx">total_loss</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">wall_loss</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// 4. Calculate received power</span>
+<span class="w">    </span><span class="nx">rx_dbm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">tx_power_dbm</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">total_loss</span>
+
+<span class="w">    </span><span class="c1">// 5. Color ray</span>
+<span class="w">    </span><span class="nx">color</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">signal_strength_to_color</span><span class="p">(</span><span class="nx">rx_dbm</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1">// 6. Append to GeoJSON</span>
+<span class="w">    </span><span class="nx">output</span><span class="p">.</span><span class="nb">append</span><span class="p">(</span><span class="nx">linestring</span><span class="p">(</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">grid_point</span><span class="p">,</span><span class="w"> </span><span class="nx">color</span><span class="p">,</span><span class="w"> </span><span class="nx">rx_dbm</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Performance</strong>:</p>
+<ul>
+<li><strong>Grid size</strong>: 10×10 meter resolution</li>
+<li><strong>Coverage radius</strong>: 3-5 km typical</li>
+<li><strong>Total rays</strong>: ~90,000 per simulation</li>
+<li><strong>Runtime</strong>: ~2 seconds (parallelized across cores)</li>
+</ul>
+<h3 id="4-spatial-index-r-tree">4. Spatial Index (R-Tree)</h3>
+<p><strong>Why R-Tree?</strong></p>
+<ul>
+<li>🚀 <strong>Fast Range Queries</strong>: O(log n) lookup for intersecting buildings</li>
+<li>🎯 <strong>Optimal for 2D</strong>: Minimizes tree depth for geographic data</li>
+<li>💾 <strong>Memory Efficient</strong>: Packed node structure</li>
+</ul>
+<p><strong>Usage</strong>:</p>
+<div class="highlight"><pre><span></span><code>Load Phase:
+  - Parse ankara_buildings.geojson
+  - Insert each polygon into R-Tree
+  - Result: ~12,000 nodes indexed
+
+Query Phase (per ray):
+  - Call rtree.query(ray_segment)
+  - Returns list of building geometries that intersect ray
+  - Apply material attenuation for each
+  - O(log n) complexity
+</code></pre></div>
+<h3 id="5-optimization-engine">5. Optimization Engine</h3>
+<p><strong>Sweep &amp; Score Algorithm</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">best_azimuth</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="nx">best_coverage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="k">for</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">360</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Simulate at this azimuth</span>
+<span class="w">    </span><span class="nx">rays</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">simulate</span><span class="p">(</span><span class="nx">tx_location</span><span class="p">,</span><span class="w"> </span><span class="nx">azimuth</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1">// Calculate coverage area</span>
+<span class="w">    </span><span class="nx">coverage_area</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">ray</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">rays</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">ray</span><span class="p">.</span><span class="nx">rx_dbm</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="o">-</span><span class="mi">100</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// Threshold</span>
+<span class="w">            </span><span class="nx">distance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">ray</span><span class="p">.</span><span class="nx">distance</span>
+<span class="w">            </span><span class="nx">coverage_area</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">distance</span><span class="p">^</span><span class="mi">2</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Track best</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">coverage_area</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nx">best_coverage</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">best_coverage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">coverage_area</span>
+<span class="w">        </span><span class="nx">best_azimuth</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">azimuth</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">return</span><span class="w"> </span><span class="nx">best_azimuth</span>
+</code></pre></div>
+<h2 id="data-flow">Data Flow</h2>
+<h3 id="startup-sequence">Startup Sequence</h3>
+<ol>
+<li><strong>Container Launch</strong></li>
+<li>Alpine Linux kernel boot</li>
+<li>
+<p>Golang runtime initialization</p>
+</li>
+<li>
+<p><strong>GeoJSON Loading</strong> (~500 ms)</p>
+</li>
+<li>Read <code>ankara_5g_nodes.geojson</code> (tower list)</li>
+<li>Read <code>ankara_buildings.geojson</code> (building footprints)</li>
+<li>
+<p>Parse JSON into memory</p>
+</li>
+<li>
+<p><strong>R-Tree Construction</strong> (~1 second)</p>
+</li>
+<li>Insert 12,000+ building polygons</li>
+<li>Build spatial index structure</li>
+<li>
+<p>Verify no parse errors</p>
+</li>
+<li>
+<p><strong>HTTP Server Start</strong> (&lt; 100 ms)</p>
+</li>
+<li>Listen on port 8080</li>
+<li>Register endpoints</li>
+<li>
+<p>Ready for requests</p>
+</li>
+<li>
+<p><strong>Frontend Load</strong> (browser)</p>
+</li>
+<li>Fetch React app from <code>/</code> route</li>
+<li>Vite hydrates components</li>
+<li>Map canvas initializes</li>
+<li>Ready for user interaction</li>
+</ol>
+<h3 id="simulation-request-flow">Simulation Request Flow</h3>
+<div class="highlight"><pre><span></span><code>User Action: Adjust azimuth slider to 90°
+    ↓
+React Component: State update
+    ↓
+Frontend: POST /simulate {azimuth: 90, ...}
+    ↓
+Go Handler: Validate request parameters
+    ↓
+Ray Engine: Cast 90,000 rays at azimuth 90°
+    ↓
+R-Tree: Query building intersections (parallelized)
+    ↓
+Attenuation: Apply frequency-dependent losses
+    ↓
+GeoJSON: Serialize heatmap to JSON
+    ↓
+Response: Send heatmap back to frontend (&lt; 100 ms)
+    ↓
+Leaflet: Update layer with new colors
+    ↓
+Screen: User sees updated coverage
+</code></pre></div>
+<h2 id="scalability-considerations">Scalability Considerations</h2>
+<h3 id="horizontal-scaling">Horizontal Scaling</h3>
+<ul>
+<li><strong>Stateless API</strong>: Each request is independent</li>
+<li><strong>Stateless Frontend</strong>: No user sessions required</li>
+<li><strong>No Shared Database</strong>: All data in-memory at startup</li>
+<li><strong>Result</strong>: Deploy multiple instances behind load balancer</li>
+</ul>
+<h3 id="vertical-scaling">Vertical Scaling</h3>
+<ul>
+<li><strong>Goroutine Concurrency</strong>: Linear improvement per CPU core</li>
+<li><strong>Memory Usage</strong>: ~500 MB for Ankara; scales with building count</li>
+<li><strong>Ray Budget</strong>: Can increase grid density on larger machines</li>
+</ul>
+<h3 id="regional-expansion">Regional Expansion</h3>
+<ul>
+<li>Replace GeoJSON files with new city</li>
+<li>Rebuild Docker image</li>
+<li>Deploy same container</li>
+</ul>
+<hr />
+<p><strong>Next</strong>: Explore <a href="algorithms.html">Algorithms &amp; Physics</a> or see visual examples in <a href="visualization.html">Visualization</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

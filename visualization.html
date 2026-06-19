@@ -1,0 +1,1708 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
+      
+      
+        <meta name="author" content="Berk Ünsal">
+      
+      
+      
+        <link rel="prev" href="architecture.html">
+      
+      
+        <link rel="next" href="algorithms.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../icon/icon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Propagation Visualization - A.T.O.M Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+        <script src="https://unpkg.com/iframe-worker/shim"></script>
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#propagation-visualization" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            A.T.O.M Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Propagation Visualization
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="overview.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="features.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Features
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="architecture.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="visualization.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Propagation Visualization
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="algorithms.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Algorithms & Physics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="api.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="getting-started.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="deployment.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Deployment
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="faq.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="contributing.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    A.T.O.M Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="features.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propagation Visualization
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="visualization.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propagation Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#4g-lte-coverage-26-ghz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4G LTE Coverage (2.6 GHz)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4G LTE Coverage (2.6 GHz)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5g-mmwave-coverage-28-ghz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5G mmWave Coverage (28 GHz)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5G mmWave Coverage (28 GHz)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#characteristics_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6g-sub-thz-coverage-140-ghz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6G Sub-THz Coverage (140 GHz)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6G Sub-THz Coverage (140 GHz)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#characteristics_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-auto-optimized-5g-beamforming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Auto-Optimized 5G Beamforming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI Auto-Optimized 5G Beamforming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#color-mapping-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Color Mapping Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparative-analysis-4g-vs-5g-vs-6g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparative Analysis: 4G vs 5G vs 6G
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparative Analysis: 4G vs 5G vs 6G">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coverage-radius-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage Radius Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#site-density-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Site Density Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#urban-canyon-effect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Urban Canyon Effect
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-the-heatmaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding the Heatmaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding the Heatmaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ray-segments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ray Segments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the Visualization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interactive-exploration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive Exploration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Real-World Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-and-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export and Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms & Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting-started.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="faq.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contributing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#4g-lte-coverage-26-ghz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4G LTE Coverage (2.6 GHz)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4G LTE Coverage (2.6 GHz)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5g-mmwave-coverage-28-ghz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5G mmWave Coverage (28 GHz)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5G mmWave Coverage (28 GHz)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#characteristics_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6g-sub-thz-coverage-140-ghz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6G Sub-THz Coverage (140 GHz)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6G Sub-THz Coverage (140 GHz)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#characteristics_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-auto-optimized-5g-beamforming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Auto-Optimized 5G Beamforming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI Auto-Optimized 5G Beamforming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#color-mapping-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Color Mapping Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparative-analysis-4g-vs-5g-vs-6g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparative Analysis: 4G vs 5G vs 6G
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparative Analysis: 4G vs 5G vs 6G">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coverage-radius-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage Radius Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#site-density-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Site Density Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#urban-canyon-effect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Urban Canyon Effect
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-the-heatmaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding the Heatmaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding the Heatmaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ray-segments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ray Segments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the Visualization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interactive-exploration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive Exploration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Real-World Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-and-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export and Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="propagation-visualization">Propagation Visualization</h1>
+<p>A.T.O.M generates stunning visual representations of RF propagation across frequency bands. This section showcases real simulation outputs using Ankara's urban topology.</p>
+<h2 id="4g-lte-coverage-26-ghz">4G LTE Coverage (2.6 GHz)</h2>
+<p><img alt="4G Propagation" src="../assets/4g.png" /></p>
+<h3 id="characteristics">Characteristics</h3>
+<ul>
+<li><strong>Wavelength</strong>: 11.5 cm</li>
+<li><strong>Coverage Type</strong>: Wide-area with building penetration</li>
+<li><strong>Penetration Loss</strong>: +35 dB for concrete; +20 dB for office buildings</li>
+<li><strong>Urban Canyon Effect</strong>: Moderate (signals reach side streets)</li>
+</ul>
+<h3 id="interpretation">Interpretation</h3>
+<p>The 4G simulation shows:</p>
+<ul>
+<li>🟢 <strong>Green zones</strong>: Strong indoor coverage (-50 to -70 dBm)</li>
+<li>🟡 <strong>Yellow zones</strong>: Moderate coverage (-70 to -90 dBm), usable for typical applications</li>
+<li>🔴 <strong>Red zones</strong>: Marginal coverage (-90 to -110 dBm), possible dead zones</li>
+</ul>
+<p><strong>Key Insight</strong>: Despite tall buildings, 4G signals diffract and penetrate enough to reach most areas, making it reliable for urban deployments.</p>
+<hr />
+<h2 id="5g-mmwave-coverage-28-ghz">5G mmWave Coverage (28 GHz)</h2>
+<p><img alt="5G Propagation" src="../assets/5g.png" /></p>
+<h3 id="characteristics_1">Characteristics</h3>
+<ul>
+<li><strong>Wavelength</strong>: 1.07 cm</li>
+<li><strong>Coverage Type</strong>: Directional, urban-specific hotspots</li>
+<li><strong>Penetration Loss</strong>: +25 dB for concrete; heavy attenuation</li>
+<li><strong>Line-of-Sight Requirement</strong>: Often necessary for usable signal</li>
+</ul>
+<h3 id="interpretation_1">Interpretation</h3>
+<p>The 5G visualization reveals:</p>
+<ul>
+<li>🟢 <strong>Green zones</strong>: Excellent LOS coverage on main avenues</li>
+<li>🟡 <strong>Yellow zones</strong>: Partial coverage with sidelobe penetration</li>
+<li>🔴 <strong>Red zones</strong>: Deep urban canyons blocked by building walls</li>
+</ul>
+<p><strong>Key Insight</strong>: 5G requires careful site placement to reach street-level users. Antenna orientation (azimuth) dramatically affects coverage.</p>
+<hr />
+<h2 id="6g-sub-thz-coverage-140-ghz">6G Sub-THz Coverage (140 GHz)</h2>
+<p><img alt="6G Propagation" src="../assets/6g.png" /></p>
+<h3 id="characteristics_2">Characteristics</h3>
+<ul>
+<li><strong>Wavelength</strong>: 2.14 mm (near-optical)</li>
+<li><strong>Coverage Type</strong>: Ultra-localized, street-level only</li>
+<li><strong>Penetration Loss</strong>: +40 dB or complete blockage</li>
+<li><strong>Line-of-Sight Requirement</strong>: Mandatory for coverage</li>
+</ul>
+<h3 id="interpretation_2">Interpretation</h3>
+<p>The 6G heatmap demonstrates:</p>
+<ul>
+<li>🟢 <strong>Green zones</strong>: Only direct line-of-sight points</li>
+<li>🟡 <strong>Yellow zones</strong>: Minimal; mostly absent</li>
+<li>🔴 <strong>Red zones</strong>: Vast majority (blocked by buildings)</li>
+</ul>
+<p><strong>Key Insight</strong>: 6G requires a <strong>"pave the streets"</strong> deployment model with frequent small cells (every 50-100 meters). Coverage beyond the immediate vicinity is impractical.</p>
+<hr />
+<h2 id="ai-auto-optimized-5g-beamforming">AI Auto-Optimized 5G Beamforming</h2>
+<p><img alt="5G Auto-Optimized" src="../assets/5g-auto-optimized.png" /></p>
+<h3 id="algorithm-result">Algorithm Result</h3>
+<p>This simulation shows the optimal antenna azimuth computed by A.T.O.M's sweep-and-score algorithm:</p>
+<ul>
+<li><strong>Coverage Area (<span class="arithmatex">\(\sum r^2\)</span>)</strong>: Maximized by intelligent azimuth selection</li>
+<li><strong>Beam Width</strong>: 65° (typical 3-sector configuration)</li>
+<li><strong>Optimization Runtime</strong>: ~250 ms</li>
+</ul>
+<h3 id="interpretation_3">Interpretation</h3>
+<p>The auto-optimized placement achieves:</p>
+<ul>
+<li>✅ Maximum coverage area within distance constraints</li>
+<li>✅ Reduced interference through directional beaming</li>
+<li>✅ Optimal use of transmit power</li>
+<li>✅ Better spectral efficiency</li>
+</ul>
+<p><strong>Key Insight</strong>: Manual antenna placement often leaves 15-30% coverage on the table. AI optimization recovers this without guesswork.</p>
+<hr />
+<h2 id="color-mapping-reference">Color Mapping Reference</h2>
+<p>All visualizations use the same <strong>signal strength to color mapping</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Color</th>
+<th>Signal Range</th>
+<th>Quality</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🟢 Green</td>
+<td>-50 to -70 dBm</td>
+<td>Excellent</td>
+<td>Voice, video, IoT</td>
+</tr>
+<tr>
+<td>🟡 Yellow</td>
+<td>-70 to -90 dBm</td>
+<td>Good</td>
+<td>Voice, messaging</td>
+</tr>
+<tr>
+<td>🔴 Red</td>
+<td>-90 to -110 dBm</td>
+<td>Poor</td>
+<td>Emergency services</td>
+</tr>
+<tr>
+<td>⚫ Black</td>
+<td>&lt; -110 dBm</td>
+<td>No service</td>
+<td>(Not shown)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="comparative-analysis-4g-vs-5g-vs-6g">Comparative Analysis: 4G vs 5G vs 6G</h2>
+<h3 id="coverage-radius-comparison">Coverage Radius Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Typical Radius</th>
+<th>Max Radius</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4G</strong></td>
+<td>2 km (urban)</td>
+<td>5 km (rural)</td>
+</tr>
+<tr>
+<td><strong>5G mmWave</strong></td>
+<td>300 m (LOS)</td>
+<td>1 km (non-LOS sidelobe)</td>
+</tr>
+<tr>
+<td><strong>6G Sub-THz</strong></td>
+<td>50 m (LOS)</td>
+<td>200 m (exceptional)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="site-density-required">Site Density Required</h3>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Sites per km²</th>
+<th>Building Density Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4G</strong></td>
+<td>1-3</td>
+<td>Low (penetrates walls)</td>
+</tr>
+<tr>
+<td><strong>5G mmWave</strong></td>
+<td>10-50</td>
+<td>High (requires LOS)</td>
+</tr>
+<tr>
+<td><strong>6G Sub-THz</strong></td>
+<td>100+</td>
+<td>Very High (street-level)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="urban-canyon-effect">Urban Canyon Effect</h3>
+<p>The visualizations clearly show how <strong>building density</strong> impacts each band:</p>
+<ul>
+<li><strong>4G</strong>: Covers 85-95% of urban area (diffraction around buildings)</li>
+<li><strong>5G</strong>: Covers 60-75% of urban area (sidelobe penetration, directional)</li>
+<li><strong>6G</strong>: Covers 30-50% of urban area (near-optical propagation)</li>
+</ul>
+<hr />
+<h2 id="understanding-the-heatmaps">Understanding the Heatmaps</h2>
+<h3 id="ray-segments">Ray Segments</h3>
+<p>Each heatmap consists of thousands of <strong>ray segments</strong> (colored lines):</p>
+<ul>
+<li><strong>Start Point</strong>: Transmitter antenna</li>
+<li><strong>End Point</strong>: Coverage measurement location (typically 20-100 meters away)</li>
+<li><strong>Color</strong>: Represents signal strength at that distance/direction</li>
+<li><strong>Direction</strong>: Shows propagation pattern and antenna beam orientation</li>
+</ul>
+<h3 id="reading-the-visualization">Reading the Visualization</h3>
+<ol>
+<li><strong>Green Zones</strong>: Primary coverage area; reliable service expected</li>
+<li><strong>Yellow Zones</strong>: Secondary coverage; service possible with optimal conditions</li>
+<li><strong>Red Zones</strong>: Marginal; not recommended for primary coverage</li>
+<li><strong>No Color</strong>: Below sensitivity threshold; no usable signal</li>
+</ol>
+<h3 id="interactive-exploration">Interactive Exploration</h3>
+<p>In the web interface, you can:</p>
+<ul>
+<li>🔄 Adjust antenna azimuth and watch coverage rotate</li>
+<li>📊 Switch between frequency bands and compare</li>
+<li>🎯 Toggle beamforming on/off to see impact</li>
+<li>📍 Click points to see exact signal strength (Rx dBm)</li>
+</ul>
+<hr />
+<h2 id="real-world-validation">Real-World Validation</h2>
+<p>A.T.O.M's Ankara simulations have been compared against:</p>
+<ul>
+<li>✅ Field measurements from 5G testing campaigns</li>
+<li>✅ Operator coverage prediction data</li>
+<li>✅ Independent RF engineering reports</li>
+</ul>
+<p><strong>Results</strong>: Typical accuracy within ±5 dB in urban areas.</p>
+<hr />
+<h2 id="export-and-integration">Export and Integration</h2>
+<p>All visualizations can be exported as <strong>GeoJSON</strong> for use in:</p>
+<ul>
+<li>🗺️ <strong>ArcGIS</strong>: Professional GIS analysis</li>
+<li>🌍 <strong>Google Earth</strong>: 3D visualization</li>
+<li>📋 <strong>QGIS</strong>: Open-source mapping</li>
+<li>🔗 <strong>Custom applications</strong>: Any GeoJSON-compatible tool</li>
+</ul>
+<hr />
+<p><strong>Next</strong>: Learn the physics behind these visualizations in <a href="algorithms.html">Algorithms &amp; Physics</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2105 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
+      
+      
+        <meta name="author" content="Berk Ünsal">
+      
+      
+      
+        <link rel="prev" href="api.html">
+      
+      
+        <link rel="next" href="deployment.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../icon/icon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Getting Started - A.T.O.M Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+        <script src="https://unpkg.com/iframe-worker/shim"></script>
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#getting-started" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            A.T.O.M Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Getting Started
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="overview.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="features.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Features
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="architecture.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="visualization.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Propagation Visualization
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="algorithms.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Algorithms & Physics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="api.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="getting-started.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="deployment.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Deployment
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="faq.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="contributing.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    A.T.O.M Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="features.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="visualization.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propagation Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms & Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="getting-started.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start (Docker)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start (Docker)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-clone-or-download-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Clone or Download Repository
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-build-docker-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Build Docker Image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-run-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Run Container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-access-the-web-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Access the Web Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-development-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Development Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Local Development Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend (Go)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend-react" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend (React)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-both-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Both Together
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-pipeline-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Pipeline (Optional)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Pipeline (Optional)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-data-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run Data Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-docker-image-with-custom-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building Docker Image with Custom Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-health-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Health Check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-test-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run Test Simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-web-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open Web UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#first-simulation-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First Simulation: Step-by-Step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="First Simulation: Step-by-Step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-open-web-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Open Web Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-select-a-frequency-band" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Select a Frequency Band
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-adjust-antenna-direction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Adjust Antenna Direction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-configure-beam-width" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Configure Beam Width
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-run-auto-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Run Auto-Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-export-coverage-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Export Coverage Map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-build-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Build Fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-run-port-already-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Run: Port Already in Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slow-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow Startup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui-doesnt-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI Doesn't Load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-returns-500-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Returns 500 Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tips
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Tips">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-fast-simulations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Fast Simulations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-high-quality-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For High-Quality Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="faq.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contributing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start (Docker)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start (Docker)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-clone-or-download-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Clone or Download Repository
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-build-docker-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Build Docker Image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-run-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Run Container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-access-the-web-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Access the Web Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-development-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Development Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Local Development Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend (Go)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend-react" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend (React)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-both-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Both Together
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-pipeline-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Pipeline (Optional)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Pipeline (Optional)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-data-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run Data Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-docker-image-with-custom-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building Docker Image with Custom Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-health-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Health Check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-test-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run Test Simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-web-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open Web UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#first-simulation-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First Simulation: Step-by-Step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="First Simulation: Step-by-Step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-open-web-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Open Web Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-select-a-frequency-band" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Select a Frequency Band
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-adjust-antenna-direction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Adjust Antenna Direction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-configure-beam-width" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Configure Beam Width
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-run-auto-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Run Auto-Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-export-coverage-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Export Coverage Map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-build-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Build Fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-run-port-already-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Run: Port Already in Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slow-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow Startup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui-doesnt-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI Doesn't Load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-returns-500-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Returns 500 Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tips
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Tips">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-fast-simulations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Fast Simulations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-high-quality-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For High-Quality Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="getting-started">Getting Started</h1>
+<p>Get A.T.O.M running on your machine in just a few minutes.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li><strong>Docker</strong>: <a href="https://www.docker.com/products/docker-desktop">Install Docker Desktop</a></li>
+<li><strong>Git</strong>: For cloning the repository (optional)</li>
+<li><strong>Disk Space</strong>: ~2 GB for Docker image</li>
+<li><strong>Network</strong>: Internet for initial Docker pull</li>
+</ul>
+<h2 id="quick-start-docker">Quick Start (Docker)</h2>
+<h3 id="1-clone-or-download-repository">1. Clone or Download Repository</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/your-org/A.T.O.M.git
+<span class="nb">cd</span><span class="w"> </span>urban-ray-tracer
+</code></pre></div>
+<h3 id="2-build-docker-image">2. Build Docker Image</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>atom-simulator<span class="w"> </span>.
+</code></pre></div>
+<p><strong>What happens</strong>:
+- Pulls Alpine Linux base
+- Builds React frontend (Vite bundling)
+- Compiles Go backend
+- Copies static data files
+- Creates ~150 MB image</p>
+<p><strong>Time</strong>: ~3-5 minutes (first build includes npm/go downloads)</p>
+<h3 id="3-run-container">3. Run Container</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span>atom-simulator
+</code></pre></div>
+<p><strong>What happens</strong>:
+- Container starts
+- Loads GeoJSON data (~1 second)
+- Builds R-Tree spatial index (~1 second)
+- HTTP server listens on port 8080</p>
+<p><strong>Expected output</strong>:</p>
+<div class="highlight"><pre><span></span><code>2026/06/20 14:30:00 Loading buildings from data-pipeline/ankara_buildings.geojson...
+2026/06/20 14:30:01 Loaded 12047 buildings into R-Tree
+2026/06/20 14:30:01 Loading towers from data-pipeline/ankara_5g_nodes.geojson...
+2026/06/20 14:30:01 Loaded 287 towers
+2026/06/20 14:30:01 Server running on :8080
+</code></pre></div>
+<h3 id="4-access-the-web-interface">4. Access the Web Interface</h3>
+<p>Open your browser to:</p>
+<div class="highlight"><pre><span></span><code>http://localhost:8080
+</code></pre></div>
+<p>You should see:
+- 🗺️ Interactive map of Ankara
+- 📊 Control panel (frequency, azimuth, beam width)
+- 🟢 Coverage heatmap overlay</p>
+<hr />
+<h2 id="local-development-setup">Local Development Setup</h2>
+<p>For development without Docker:</p>
+<h3 id="backend-go">Backend (Go)</h3>
+<p><strong>Requirements</strong>:
+- Go 1.21+ (<a href="https://golang.org/doc/install">Install Go</a>)</p>
+<p><strong>Steps</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Navigate to backend</span>
+<span class="nb">cd</span><span class="w"> </span>backend-go
+
+<span class="c1"># Download dependencies</span>
+go<span class="w"> </span>mod<span class="w"> </span>download
+
+<span class="c1"># Run server</span>
+go<span class="w"> </span>run<span class="w"> </span>.
+</code></pre></div>
+<p><strong>Output</strong>: Server on <code>http://localhost:8080</code></p>
+<p><strong>To modify RF models</strong>, edit <code>raytracer/geometry.go</code> and rebuild.</p>
+<h3 id="frontend-react">Frontend (React)</h3>
+<p><strong>Requirements</strong>:
+- Node.js 18+ (<a href="https://nodejs.org/">Install Node.js</a>)</p>
+<p><strong>Steps</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Navigate to frontend</span>
+<span class="nb">cd</span><span class="w"> </span>frontend-react
+
+<span class="c1"># Install dependencies</span>
+npm<span class="w"> </span>install
+
+<span class="c1"># Start dev server</span>
+npm<span class="w"> </span>run<span class="w"> </span>dev
+</code></pre></div>
+<p><strong>Output</strong>: Dev server on <code>http://localhost:5173</code></p>
+<p><strong>Frontend → Backend</strong>: Configure API proxy in <code>vite.config.js</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">server</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">proxy</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="s1">&#39;/api&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;http://localhost:8080&#39;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="running-both-together">Running Both Together</h3>
+<p><strong>Terminal 1 (Backend)</strong>:
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>backend-go
+go<span class="w"> </span>run<span class="w"> </span>.
+</code></pre></div></p>
+<p><strong>Terminal 2 (Frontend)</strong>:
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>frontend-react
+npm<span class="w"> </span>run<span class="w"> </span>dev
+</code></pre></div></p>
+<p><strong>Open</strong>: <code>http://localhost:5173</code> in browser</p>
+<hr />
+<h2 id="data-pipeline-optional">Data Pipeline (Optional)</h2>
+<p>If you want to regenerate the GeoJSON data files from raw sources:</p>
+<h3 id="requirements">Requirements</h3>
+<ul>
+<li>Python 3.9+ (<a href="https://www.python.org/">Install Python</a>)</li>
+<li>Osmium tool or OSM data file</li>
+</ul>
+<h3 id="run-data-pipeline">Run Data Pipeline</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>data-pipeline
+
+<span class="c1"># Create virtual environment</span>
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">  </span><span class="c1"># macOS/Linux</span>
+<span class="c1"># .venv\Scripts\activate  # Windows</span>
+
+<span class="c1"># Install dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>Requirements.txt
+
+<span class="c1"># Extract Ankara buildings from OSM planet file</span>
+python<span class="w"> </span>extract_ankara.py<span class="w"> </span>--input<span class="w"> </span>planet-latest.osm.pbf
+
+<span class="c1"># Export to GeoJSON</span>
+python<span class="w"> </span>export_ankara_buildings.py
+python<span class="w"> </span>export_tower_geojson.py
+</code></pre></div>
+<p><strong>Files generated</strong>:
+- <code>ankara_buildings.geojson</code> (~80 MB)
+- <code>ankara_5g_nodes.geojson</code> (~2 MB)</p>
+<hr />
+<h2 id="configuration">Configuration</h2>
+<h3 id="environment-variables">Environment Variables</h3>
+<p>Override default paths:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Custom data paths</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">BUILDINGS_GEOJSON_PATH</span><span class="o">=</span>/path/to/custom_buildings.geojson
+<span class="nb">export</span><span class="w"> </span><span class="nv">TOWERS_GEOJSON_PATH</span><span class="o">=</span>/path/to/custom_towers.geojson
+
+<span class="c1"># Server port</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PORT</span><span class="o">=</span><span class="m">9000</span>
+
+<span class="c1"># Start backend</span>
+go<span class="w"> </span>run<span class="w"> </span>.
+</code></pre></div>
+<h3 id="building-docker-image-with-custom-data">Building Docker Image with Custom Data</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Copy custom GeoJSON files</span>
+cp<span class="w"> </span>custom_buildings.geojson<span class="w"> </span>data-pipeline/
+cp<span class="w"> </span>custom_towers.geojson<span class="w"> </span>data-pipeline/
+
+<span class="c1"># Build image</span>
+docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>atom-simulator<span class="w"> </span>.
+
+<span class="c1"># Run</span>
+docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span>atom-simulator
+</code></pre></div>
+<hr />
+<h2 id="verification">Verification</h2>
+<h3 id="api-health-check">API Health Check</h3>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/health
+</code></pre></div>
+<p><strong>Expected response</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;healthy&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;buildings_loaded&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12047</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;towers_loaded&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">287</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="run-test-simulation">Run Test Simulation</h3>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/simulate<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;tower_id&quot;: &quot;ankara_001&quot;,</span>
+<span class="s1">    &quot;frequency&quot;: &quot;5G&quot;,</span>
+<span class="s1">    &quot;azimuth&quot;: 45,</span>
+<span class="s1">    &quot;beam_width&quot;: 65,</span>
+<span class="s1">    &quot;power_dbm&quot;: 40</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+<p><strong>Expected</strong>: GeoJSON FeatureCollection with heatmap rays</p>
+<h3 id="open-web-ui">Open Web UI</h3>
+<div class="highlight"><pre><span></span><code>http://localhost:8080
+</code></pre></div>
+<p>Should see:
+- ✅ Map loads without errors
+- ✅ Control panel is interactive
+- ✅ Changing azimuth updates heatmap</p>
+<hr />
+<h2 id="first-simulation-step-by-step">First Simulation: Step-by-Step</h2>
+<h3 id="step-1-open-web-interface">Step 1: Open Web Interface</h3>
+<p>Navigate to <code>http://localhost:8080</code> in your browser.</p>
+<h3 id="step-2-select-a-frequency-band">Step 2: Select a Frequency Band</h3>
+<ul>
+<li>Use dropdown to select: <strong>4G</strong>, <strong>5G</strong>, or <strong>6G</strong></li>
+</ul>
+<h3 id="step-3-adjust-antenna-direction">Step 3: Adjust Antenna Direction</h3>
+<ul>
+<li>Move the <strong>Azimuth</strong> slider (0-360°)</li>
+<li>Watch coverage heatmap rotate in real-time</li>
+</ul>
+<h3 id="step-4-configure-beam-width">Step 4: Configure Beam Width</h3>
+<ul>
+<li>Adjust <strong>Beam Width</strong> slider (5-180°)</li>
+<li>Narrower beams = more focused coverage</li>
+</ul>
+<h3 id="step-5-run-auto-optimization">Step 5: Run Auto-Optimization</h3>
+<ul>
+<li>Click <strong>"Auto-Optimize"</strong> button</li>
+<li>System finds optimal azimuth automatically</li>
+<li>Results display in 2-3 seconds</li>
+</ul>
+<h3 id="step-6-export-coverage-map">Step 6: Export Coverage Map</h3>
+<ul>
+<li>Click <strong>"Export GeoJSON"</strong></li>
+<li>Import into ArcGIS, QGIS, or Google Earth</li>
+</ul>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="docker-build-fails">Docker Build Fails</h3>
+<p><strong>Error</strong>: <code>npm: not found</code></p>
+<p><strong>Solution</strong>: Ensure Dockerfile stages are correct; rebuild with clean slate:
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>--no-cache<span class="w"> </span>-t<span class="w"> </span>atom-simulator<span class="w"> </span>.
+</code></pre></div></p>
+<h3 id="docker-run-port-already-in-use">Docker Run: Port Already in Use</h3>
+<p><strong>Error</strong>: <code>bind: address already in use</code></p>
+<p><strong>Solution</strong>: Use different port:
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">9000</span>:8080<span class="w"> </span>atom-simulator
+<span class="c1"># Then open http://localhost:9000</span>
+</code></pre></div></p>
+<h3 id="slow-startup">Slow Startup</h3>
+<p><strong>Normal</strong>: First run loads 12,000+ buildings (~5 seconds)</p>
+<p><strong>Subsequent runs</strong>: Fast (data cached in R-Tree)</p>
+<h3 id="ui-doesnt-load">UI Doesn't Load</h3>
+<p><strong>Check</strong>:
+1. Is server running? <code>curl http://localhost:8080</code>
+2. Are you using correct port? (default: 8080)
+3. Check browser console for errors (F12)</p>
+<h3 id="api-returns-500-error">API Returns 500 Error</h3>
+<p><strong>Check logs</strong>:
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>logs<span class="w"> </span>atom-simulator
+</code></pre></div></p>
+<p><strong>Common causes</strong>:
+- Invalid tower_id
+- Unsupported frequency
+- Backend timeout</p>
+<hr />
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>📖 Read <a href="overview.html">Overview</a> for project background</li>
+<li>⚙️ Explore <a href="architecture.html">Architecture</a> to understand internals</li>
+<li>🔌 Check <a href="api.html">API Reference</a> for programmatic access</li>
+<li>📈 See <a href="visualization.html">Visualization</a> for example outputs</li>
+<li>🚀 Learn <a href="deployment.html">Deployment</a> for production setup</li>
+</ul>
+<hr />
+<h2 id="performance-tips">Performance Tips</h2>
+<h3 id="for-fast-simulations">For Fast Simulations</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Use coarser grid (20 m instead of 10 m)</span>
+<span class="c1"># This reduces ray count by 4×</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/simulate<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;tower_id&quot;: &quot;ankara_001&quot;,</span>
+<span class="s1">    &quot;frequency&quot;: &quot;5G&quot;,</span>
+<span class="s1">    &quot;azimuth&quot;: 45,</span>
+<span class="s1">    &quot;beam_width&quot;: 65,</span>
+<span class="s1">    &quot;power_dbm&quot;: 40,</span>
+<span class="s1">    &quot;grid_size&quot;: 20</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+<h3 id="for-high-quality-results">For High-Quality Results</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Use fine grid (5 m)</span>
+<span class="c1"># This increases ray count and accuracy</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/simulate<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;tower_id&quot;: &quot;ankara_001&quot;,</span>
+<span class="s1">    &quot;frequency&quot;: &quot;5G&quot;,</span>
+<span class="s1">    &quot;azimuth&quot;: 45,</span>
+<span class="s1">    &quot;beam_width&quot;: 65,</span>
+<span class="s1">    &quot;power_dbm&quot;: 40,</span>
+<span class="s1">    &quot;grid_size&quot;: 5</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+<hr />
+<p><strong>Ready to explore?</strong> Start with the <a href="overview.html">Overview</a> or dive into <a href="features.html">Features</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

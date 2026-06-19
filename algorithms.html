@@ -1,0 +1,2113 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
+      
+      
+        <meta name="author" content="Berk Ünsal">
+      
+      
+      
+        <link rel="prev" href="visualization.html">
+      
+      
+        <link rel="next" href="api.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../icon/icon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Algorithms & Physics - A.T.O.M Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+        <script src="https://unpkg.com/iframe-worker/shim"></script>
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#algorithms-physics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            A.T.O.M Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Algorithms & Physics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="overview.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="features.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Features
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="architecture.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="visualization.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Propagation Visualization
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="algorithms.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Algorithms & Physics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="api.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="getting-started.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="deployment.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Deployment
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="faq.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="contributing.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
+      
+  <img src="../icon/icon.svg" alt="logo">
+
+    </a>
+    A.T.O.M Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="features.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="visualization.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propagation Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms & Physics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="algorithms.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms & Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#radio-frequency-physics-foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Radio Frequency Physics Foundation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Radio Frequency Physics Foundation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#free-space-path-loss-fspl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Free-Space Path Loss (FSPL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#received-power-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Received Power Calculation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frequency-dependence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frequency Dependence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-penetration-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building Penetration Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Building Penetration Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#material-attenuation-by-frequency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Material Attenuation by Frequency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cumulative-wall-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cumulative Wall Loss
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raytracing-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raytracing Algorithm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Raytracing Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pseudocode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pseudocode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computational-geometry-polygon-intersection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computational Geometry: Polygon Intersection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-indexing-r-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial Indexing: R-Tree
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spatial Indexing: R-Tree">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-r-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why R-Tree?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r-tree-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R-Tree Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beamforming-and-antenna-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beamforming and Antenna Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Beamforming and Antenna Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sector-antenna-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sector Antenna Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gain-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gain Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact-on-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Impact on Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-optimization-sweep-score-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Optimization: Sweep &amp; Score Algorithm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI Optimization: Sweep &amp; Score Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem Statement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complexity-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complexity Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallelization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallelization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmarks-ankara-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarks (Ankara Dataset)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accuracy-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accuracy &amp; Limitations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Accuracy &amp; Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accuracy-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accuracy Levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-atom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use A.T.O.M
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting-started.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="faq.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contributing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#radio-frequency-physics-foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Radio Frequency Physics Foundation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Radio Frequency Physics Foundation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#free-space-path-loss-fspl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Free-Space Path Loss (FSPL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#received-power-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Received Power Calculation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frequency-dependence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frequency Dependence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-penetration-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building Penetration Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Building Penetration Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#material-attenuation-by-frequency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Material Attenuation by Frequency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cumulative-wall-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cumulative Wall Loss
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raytracing-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raytracing Algorithm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Raytracing Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pseudocode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pseudocode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computational-geometry-polygon-intersection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computational Geometry: Polygon Intersection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-indexing-r-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial Indexing: R-Tree
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spatial Indexing: R-Tree">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-r-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why R-Tree?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r-tree-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R-Tree Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beamforming-and-antenna-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beamforming and Antenna Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Beamforming and Antenna Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sector-antenna-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sector Antenna Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gain-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gain Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact-on-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Impact on Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-optimization-sweep-score-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Optimization: Sweep &amp; Score Algorithm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI Optimization: Sweep &amp; Score Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem Statement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complexity-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complexity Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallelization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallelization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmarks-ankara-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarks (Ankara Dataset)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accuracy-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accuracy &amp; Limitations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Accuracy &amp; Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accuracy-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accuracy Levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-atom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use A.T.O.M
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="algorithms-physics">Algorithms &amp; Physics</h1>
+<p>A.T.O.M combines rigorous physics models with advanced computational geometry to deliver production-grade RF simulations.</p>
+<h2 id="radio-frequency-physics-foundation">Radio Frequency Physics Foundation</h2>
+<h3 id="free-space-path-loss-fspl">Free-Space Path Loss (FSPL)</h3>
+<p>The fundamental equation for all propagation calculations:</p>
+<div class="arithmatex">\[L = 20 \log_{10}(d) + 20 \log_{10}(f) + 20 \log_{10}\left(\frac{4\pi}{c}\right)\]</div>
+<p><strong>Simplification</strong> (practical form):</p>
+<div class="arithmatex">\[L[dB] = 20 \log_{10}(d[m]) + 20 \log_{10}(f[Hz]) - 147.55\]</div>
+<h3 id="received-power-calculation">Received Power Calculation</h3>
+<div class="arithmatex">\[P_{rx}[dBm] = P_{tx}[dBm] - L_{path} - L_{walls} - L_{diffraction}\]</div>
+<p>Where:
+- <span class="arithmatex">\(P_{tx}\)</span> = Transmitter power (typically 40 dBm)
+- <span class="arithmatex">\(L_{path}\)</span> = Free-space path loss (FSPL equation)
+- <span class="arithmatex">\(L_{walls}\)</span> = Cumulative building penetration loss
+- <span class="arithmatex">\(L_{diffraction}\)</span> = Edge diffraction losses (simplified)</p>
+<h3 id="frequency-dependence">Frequency Dependence</h3>
+<p>FSPL increases with frequency squared:</p>
+<div class="arithmatex">\[L \propto f^2\]</div>
+<p><strong>Consequence</strong>: Same distance results in:
+- 4G (2.6 GHz): ~69 dB loss at 1 km
+- 5G (28 GHz): ~84 dB loss at 1 km (15 dB more)
+- 6G (140 GHz): ~100 dB loss at 1 km (31 dB more than 4G)</p>
+<hr />
+<h2 id="building-penetration-model">Building Penetration Model</h2>
+<h3 id="material-attenuation-by-frequency">Material Attenuation by Frequency</h3>
+<p>A.T.O.M queries OSM building tags to determine material type and applies frequency-dependent loss:</p>
+<div class="highlight"><pre><span></span><code>if building == &quot;concrete&quot;:
+    loss_4g = 35 dB
+    loss_5g = 25 dB
+    loss_6g = 40 dB
+elif building == &quot;office&quot;:
+    loss_4g = 20 dB
+    loss_5g = 15 dB
+    loss_6g = 30 dB
+elif material == &quot;glass&quot;:
+    loss_4g = 15 dB
+    loss_5g = 18 dB
+    loss_6g = 32 dB
+else:
+    loss_4g = 12 dB  # Default
+    loss_5g = 20 dB
+    loss_6g = 35 dB
+</code></pre></div>
+<h3 id="cumulative-wall-loss">Cumulative Wall Loss</h3>
+<p>If a ray intersects multiple buildings, losses are <strong>cumulative</strong>:</p>
+<div class="arithmatex">\[L_{total\_walls} = \sum_{i=1}^{n} L_i(f)\]</div>
+<p><strong>Example</strong>: Ray through 2 concrete buildings at 5G frequency:
+- Building 1: +25 dB
+- Building 2: +25 dB
+- <strong>Total</strong>: +50 dB additional loss</p>
+<hr />
+<h2 id="raytracing-algorithm">Raytracing Algorithm</h2>
+<h3 id="overview">Overview</h3>
+<p>A.T.O.M uses a <strong>deterministic grid-based raytracer</strong>:</p>
+<ol>
+<li>Define coverage area (typically 5 km radius)</li>
+<li>Create grid points (10 m spacing = ~90,000 points)</li>
+<li>Cast ray from transmitter to each grid point</li>
+<li>Determine building intersections</li>
+<li>Calculate final received power</li>
+<li>Color ray based on signal strength</li>
+<li>Serialize as GeoJSON</li>
+</ol>
+<h3 id="pseudocode">Pseudocode</h3>
+<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">TraceRays</span><span class="p">(</span><span class="nx">tx</span><span class="w"> </span><span class="nx">Location</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">grid</span><span class="w"> </span><span class="p">[]</span><span class="nx">Point</span><span class="p">)</span><span class="w"> </span><span class="nx">GeoJSON</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">result</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">GeoJSON</span><span class="p">{}</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">point</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">grid</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Step 1: Calculate free-space path loss</span>
+<span class="w">        </span><span class="nx">distance</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">euclidean_distance</span><span class="p">(</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">point</span><span class="p">)</span>
+<span class="w">        </span><span class="nx">fspl</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">20</span><span class="o">*</span><span class="nx">log10</span><span class="p">(</span><span class="nx">distance</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">20</span><span class="o">*</span><span class="nx">log10</span><span class="p">(</span><span class="nx">freq_hz</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">147.55</span>
+
+<span class="w">        </span><span class="c1">// Step 2: Find intersecting buildings</span>
+<span class="w">        </span><span class="nx">ray</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">LineSegment</span><span class="p">{</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">point</span><span class="p">}</span>
+<span class="w">        </span><span class="nx">buildings</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">rtree</span><span class="p">.</span><span class="nx">Query</span><span class="p">(</span><span class="nx">ray</span><span class="p">)</span>
+
+<span class="w">        </span><span class="c1">// Step 3: Calculate cumulative wall loss</span>
+<span class="w">        </span><span class="nx">wallLoss</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">0.0</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="nx">building</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">buildings</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">material</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">building</span><span class="p">.</span><span class="nx">Properties</span><span class="p">[</span><span class="s">&quot;building&quot;</span><span class="p">]</span>
+<span class="w">            </span><span class="nx">wallLoss</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">material_attenuation</span><span class="p">(</span><span class="nx">material</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Step 4: Calculate received power</span>
+<span class="w">        </span><span class="nx">rxPower</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">TX_POWER_DBM</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">fspl</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">wallLoss</span>
+
+<span class="w">        </span><span class="c1">// Step 5: Color ray</span>
+<span class="w">        </span><span class="nx">color</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">rx_to_color</span><span class="p">(</span><span class="nx">rxPower</span><span class="p">)</span>
+
+<span class="w">        </span><span class="c1">// Step 6: Append to output</span>
+<span class="w">        </span><span class="nx">feature</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">Feature</span><span class="p">{</span>
+<span class="w">            </span><span class="nx">Geometry</span><span class="p">:</span><span class="w"> </span><span class="nx">LineString</span><span class="p">{</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">point</span><span class="p">},</span>
+<span class="w">            </span><span class="nx">Properties</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nx">rxPower</span><span class="p">,</span><span class="w"> </span><span class="nx">color</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">},</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">result</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="computational-geometry-polygon-intersection">Computational Geometry: Polygon Intersection</h3>
+<p><strong>Problem</strong>: Does a ray (line segment) intersect a building (polygon)?</p>
+<p><strong>Solution</strong>: Use <strong>separating axis theorem</strong> (SAT):</p>
+<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">SegmentIntersectsPolygon</span><span class="p">(</span><span class="nx">segment</span><span class="w"> </span><span class="nx">Line</span><span class="p">,</span><span class="w"> </span><span class="nx">polygon</span><span class="w"> </span><span class="nx">Polygon</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Test segment against all polygon edges</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">polygon</span><span class="p">.</span><span class="nx">Edges</span><span class="p">);</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">edge</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">polygon</span><span class="p">.</span><span class="nx">Edges</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">SegmentIntersectsSegment</span><span class="p">(</span><span class="nx">segment</span><span class="p">,</span><span class="w"> </span><span class="nx">edge</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Test if segment start/end inside polygon</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">PointInPolygon</span><span class="p">(</span><span class="nx">segment</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">polygon</span><span class="p">)</span><span class="w"> </span><span class="o">||</span>
+<span class="w">           </span><span class="nx">PointInPolygon</span><span class="p">(</span><span class="nx">segment</span><span class="p">.</span><span class="nx">End</span><span class="p">,</span><span class="w"> </span><span class="nx">polygon</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">SegmentIntersectsSegment</span><span class="p">(</span><span class="nx">s1</span><span class="p">,</span><span class="w"> </span><span class="nx">s2</span><span class="w"> </span><span class="nx">Line</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Standard 2D line intersection test</span>
+<span class="w">    </span><span class="c1">// (Cross product method)</span>
+<span class="w">    </span><span class="nx">d1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cross_product</span><span class="p">(</span><span class="nx">s2</span><span class="p">.</span><span class="nx">Start</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">s1</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">s1</span><span class="p">.</span><span class="nx">Dir</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">d2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cross_product</span><span class="p">(</span><span class="nx">s2</span><span class="p">.</span><span class="nx">End</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">s1</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">s1</span><span class="p">.</span><span class="nx">Dir</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">d3</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cross_product</span><span class="p">(</span><span class="nx">s1</span><span class="p">.</span><span class="nx">Start</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">s2</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">s2</span><span class="p">.</span><span class="nx">Dir</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">d4</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cross_product</span><span class="p">(</span><span class="nx">s1</span><span class="p">.</span><span class="nx">End</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">s2</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">s2</span><span class="p">.</span><span class="nx">Dir</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">((</span><span class="nx">d1</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">d2</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="nx">d1</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">d2</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">           </span><span class="p">((</span><span class="nx">d3</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">d4</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="nx">d3</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">d4</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Complexity</strong>: O(log n) per ray thanks to R-Tree spatial indexing.</p>
+<hr />
+<h2 id="spatial-indexing-r-tree">Spatial Indexing: R-Tree</h2>
+<h3 id="why-r-tree">Why R-Tree?</h3>
+<p>RF simulations require millions of queries:
+- <strong>Naive approach</strong> (linear scan): O(n) per query × 90,000 rays = 1+ billion operations
+- <strong>R-Tree approach</strong> (spatial index): O(log n) per query × 90,000 rays = 1+ million operations
+- <strong>Speedup</strong>: 1000× faster</p>
+<h3 id="r-tree-structure">R-Tree Structure</h3>
+<p>An R-Tree organizes rectangles (bounding boxes) in a balanced tree:</p>
+<div class="highlight"><pre><span></span><code>Root
+├─ Node A (covers buildings 1-5)
+│  ├─ Building 1 bbox
+│  ├─ Building 2 bbox
+│  └─ Building 3 bbox
+├─ Node B (covers buildings 6-10)
+│  ├─ Building 6 bbox
+│  └─ Building 7 bbox
+└─ Node C (covers buildings 11-15)
+   └─ Building 11 bbox
+</code></pre></div>
+<h3 id="query-algorithm">Query Algorithm</h3>
+<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">RTtree</span><span class="p">.</span><span class="nx">Query</span><span class="p">(</span><span class="nx">ray</span><span class="w"> </span><span class="nx">LineSegment</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="nx">Building</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">candidates</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="nx">Building</span><span class="p">{}</span>
+
+<span class="w">    </span><span class="c1">// Recursively check which nodes overlap with ray</span>
+<span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nx">traverse</span><span class="p">(</span><span class="nx">node</span><span class="w"> </span><span class="o">*</span><span class="nx">RNode</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">node</span><span class="p">.</span><span class="nx">bbox</span><span class="p">.</span><span class="nx">Intersects</span><span class="p">(</span><span class="nx">ray</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">node</span><span class="p">.</span><span class="nx">IsLeaf</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">candidates</span><span class="p">.</span><span class="nb">append</span><span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">buildings</span><span class="p">)</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="nx">child</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">node</span><span class="p">.</span><span class="nx">Children</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">traverse</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">traverse</span><span class="p">(</span><span class="nx">rtree</span><span class="p">.</span><span class="nx">Root</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">candidates</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Result</strong>: Typically 5-20 building candidates per ray (vs 12,000 total buildings).</p>
+<hr />
+<h2 id="beamforming-and-antenna-patterns">Beamforming and Antenna Patterns</h2>
+<h3 id="sector-antenna-model">Sector Antenna Model</h3>
+<p>A.T.O.M simulates realistic <strong>sector antennas</strong>:</p>
+<div class="highlight"><pre><span></span><code>Azimuth = 45°, Beam Width = 65°
+Coverage: 12.5° to 77.5°
+
+              ↑ 0°
+              |
+        /─────────────\
+       /               \
+      |    Main Lobe     |
+      |   (Gain = 0 dBi)  |
+       \               /
+        \─────────────/
+             θ = 65°
+</code></pre></div>
+<h3 id="gain-function">Gain Function</h3>
+<p>Power gain (or loss) as function of azimuth offset from main lobe:</p>
+<div class="arithmatex">\[G(\theta) = -12 \left(\frac{\theta}{\text{Beam Width}}\right)^2 \quad \text{for } |\theta| &lt; \text{BW}/2\]</div>
+<div class="arithmatex">\[G(\theta) = -24 \quad \text{for } |\theta| \geq \text{BW}/2 \text{ (sidelobe)}\]</div>
+<h3 id="impact-on-coverage">Impact on Coverage</h3>
+<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">ApplyBeamforming</span><span class="p">(</span><span class="nx">direction</span><span class="w"> </span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">antenna_azimuth</span><span class="w"> </span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span>
+<span class="w">                      </span><span class="nx">beam_width</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">offset</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">abs</span><span class="p">(</span><span class="nx">normalize_angle</span><span class="p">(</span><span class="nx">direction</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">antenna_azimuth</span><span class="p">))</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">offset</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="nx">beam_width</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Main lobe: parabolic gain</span>
+<span class="w">        </span><span class="nx">gain</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">-</span><span class="mi">12</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="nx">offset</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="nx">beam_width</span><span class="o">/</span><span class="mi">2</span><span class="p">))^</span><span class="mi">2</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Sidelobe: flat suppression</span>
+<span class="w">        </span><span class="nx">gain</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="o">-</span><span class="mi">24</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">gain</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="ai-optimization-sweep-score-algorithm">AI Optimization: Sweep &amp; Score Algorithm</h2>
+<h3 id="problem-statement">Problem Statement</h3>
+<p><strong>Find</strong>: The antenna azimuth that maximizes coverage area</p>
+<p><strong>Constraints</strong>:
+- Distance range: 50 m to 5 km
+- Beam width: fixed (e.g., 65°)
+- Frequency: fixed (e.g., 5G)</p>
+<h3 id="algorithm">Algorithm</h3>
+<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">OptimizeAzimuth</span><span class="p">(</span><span class="nx">tx</span><span class="w"> </span><span class="nx">Location</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">bestAzimuth</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">0.0</span>
+<span class="w">    </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">0.0</span>
+
+<span class="w">    </span><span class="c1">// Sweep all azimuths in 5° increments</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">360</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Run simulation at this azimuth</span>
+<span class="w">        </span><span class="nx">rays</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">TraceRays</span><span class="p">(</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">,</span><span class="w"> </span><span class="nx">GetCoverageGrid</span><span class="p">())</span>
+
+<span class="w">        </span><span class="c1">// Apply beamforming gain</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="nx">ray</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">rays</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">gain</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ApplyBeamforming</span><span class="p">(</span><span class="nx">ray</span><span class="p">.</span><span class="nx">direction</span><span class="p">,</span><span class="w"> </span><span class="nx">azimuth</span><span class="p">,</span><span class="w"> </span><span class="mi">65</span><span class="p">)</span>
+<span class="w">            </span><span class="nx">ray</span><span class="p">.</span><span class="nx">rxPower</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">gain</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Calculate coverage area (sum of squared distances above threshold)</span>
+<span class="w">        </span><span class="nx">coverage</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">0.0</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="nx">ray</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">rays</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">ray</span><span class="p">.</span><span class="nx">rxPower</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nx">USABLE_THRESHOLD</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">coverage</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">ray</span><span class="p">.</span><span class="nx">distance</span><span class="p">^</span><span class="mi">2</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Track best</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">coverage</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">coverage</span>
+<span class="w">            </span><span class="nx">bestAzimuth</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">azimuth</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">bestAzimuth</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="complexity-analysis">Complexity Analysis</h3>
+<ul>
+<li><strong>Loop iterations</strong>: 360° / 5° = 72</li>
+<li><strong>Per iteration</strong>:</li>
+<li>Ray tracing: O(90,000 rays × log n intersections) ~1 second</li>
+<li>Coverage calculation: O(90,000)</li>
+<li><strong>Total time</strong>: ~72 seconds (naive)</li>
+<li><strong>Optimized time</strong>: ~250 ms (with parallelization)</li>
+</ul>
+<h3 id="parallelization">Parallelization</h3>
+<p>Go's Goroutines enable <strong>embarrassingly parallel</strong> optimization:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Create worker pool</span>
+<span class="kd">type</span><span class="w"> </span><span class="nx">Job</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">azimuth</span><span class="w"> </span><span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="kd">type</span><span class="w"> </span><span class="nx">Result</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">azimuth</span><span class="w"> </span><span class="kt">float64</span>
+<span class="w">    </span><span class="nx">coverage</span><span class="w"> </span><span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="c1">// Dispatch all azimuths to workers</span>
+<span class="nx">jobs</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">chan</span><span class="w"> </span><span class="nx">Job</span><span class="p">,</span><span class="w"> </span><span class="mi">72</span><span class="p">)</span>
+<span class="nx">results</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">chan</span><span class="w"> </span><span class="nx">Result</span><span class="p">,</span><span class="w"> </span><span class="mi">72</span><span class="p">)</span>
+
+<span class="c1">// 4 workers process in parallel</span>
+<span class="k">for</span><span class="w"> </span><span class="nx">w</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="nx">w</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="nx">w</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">go</span><span class="w"> </span><span class="nx">worker</span><span class="p">(</span><span class="nx">jobs</span><span class="p">,</span><span class="w"> </span><span class="nx">results</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">for</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">360</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">jobs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nx">Job</span><span class="p">{</span><span class="nx">azimuth</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Collect results</span>
+<span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">72</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">result</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&lt;-</span><span class="nx">results</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">coverage</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">coverage</span>
+<span class="w">        </span><span class="nx">bestAzimuth</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">azimuth</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Result</strong>: 4× speedup on quad-core machine.</p>
+<hr />
+<h2 id="performance-characteristics">Performance Characteristics</h2>
+<h3 id="benchmarks-ankara-dataset">Benchmarks (Ankara Dataset)</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Time</th>
+<th>Scaling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Load GeoJSON</td>
+<td>500 ms</td>
+<td>O(n) where n=12,000 buildings</td>
+</tr>
+<tr>
+<td>Build R-Tree</td>
+<td>1 second</td>
+<td>O(n log n)</td>
+</tr>
+<tr>
+<td>Single ray trace</td>
+<td>&lt; 1 μs</td>
+<td>O(log n)</td>
+</tr>
+<tr>
+<td>90,000 rays</td>
+<td>~2 seconds</td>
+<td>O(n log n) parallelized</td>
+</tr>
+<tr>
+<td>Optimization (72 iterations)</td>
+<td>250 ms</td>
+<td>O(72 × n log n) with Goroutines</td>
+</tr>
+<tr>
+<td>API response</td>
+<td>&lt; 100 ms p99</td>
+<td>Network + serialization</td>
+</tr>
+</tbody>
+</table>
+<h3 id="memory-usage">Memory Usage</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Buildings (GeoJSON)</td>
+<td>80 MB (disk) → 40 MB (RAM)</td>
+</tr>
+<tr>
+<td>R-Tree indices</td>
+<td>150 MB</td>
+</tr>
+<tr>
+<td>Tower locations</td>
+<td>2 MB</td>
+</tr>
+<tr>
+<td>Working memory per request</td>
+<td>5 MB</td>
+</tr>
+<tr>
+<td><strong>Total footprint</strong></td>
+<td>~200 MB typical</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="accuracy-limitations">Accuracy &amp; Limitations</h2>
+<h3 id="accuracy-levels">Accuracy Levels</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Accuracy</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FSPL equation</td>
+<td>±0.1 dB</td>
+<td>Theoretical perfect</td>
+</tr>
+<tr>
+<td>Material attenuation</td>
+<td>±3 dB</td>
+<td>Depends on OSM data quality</td>
+</tr>
+<tr>
+<td>Wall intersection</td>
+<td>±100%</td>
+<td>Binary: either blocks or doesn't</td>
+</tr>
+<tr>
+<td>Real-world validation</td>
+<td>±5 dB</td>
+<td>Tested against field measurements</td>
+</tr>
+</tbody>
+</table>
+<h3 id="model-limitations">Model Limitations</h3>
+<ol>
+<li><strong>Flat Earth</strong>: No terrain elevation (can add with GeoTIFF)</li>
+<li><strong>No multipath</strong>: Doesn't model reflections/scattering</li>
+<li><strong>Ideal antennas</strong>: Assumes perfect omnidirectional at low freq</li>
+<li><strong>Static buildings</strong>: Doesn't model moving obstructions</li>
+<li><strong>Weather</strong>: No rain/weather fading</li>
+</ol>
+<h3 id="when-to-use-atom">When to Use A.T.O.M</h3>
+<p>✅ <strong>Good for</strong>:
+- Network planning and site selection
+- Quick feasibility studies
+- Education and training
+- Comparison between sites
+- Coverage mapping</p>
+<p>❌ <strong>Not suitable for</strong>:
+- Detailed link budget analysis
+- Precise handover prediction
+- Interference modeling
+- Non-stationary targets</p>
+<hr />
+<p><strong>Next</strong>: Explore the <a href="api.html">API Reference</a> to integrate A.T.O.M into your systems.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

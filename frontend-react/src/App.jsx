@@ -5,7 +5,7 @@ import MapCanvas from "./components/MapCanvas.jsx";
 import { networkTechLabelForFrequency } from "./utils/networkTech.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
-const APP_ICON_URL = "/icon/icon.svg?v=967c137f";
+const APP_ICON_URL = "/icon/icon.svg";
 
 const DEFAULT_SIMULATION = {
   frequencyGHz: 28,

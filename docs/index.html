@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <link rel="icon" type="image/svg+xml" href="../icon/icon.svg" />
+  <title>A.T.O.M Docs - Ankara Telecom Optimization Model</title>
+  <style>
+    :root {
+      --bg: #f5f3ee;
+      --panel: rgba(255, 255, 255, 0.9);
+      --panel-strong: #ffffff;
+      --border: rgba(15, 23, 42, 0.12);
+      --text: #102033;
+      --muted: #526071;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --accent-soft: rgba(15, 118, 110, 0.12);
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --max: 1440px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.2)),
+        var(--bg);
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--accent);
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 22px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      object-fit: contain;
+      padding: 6px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.15;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .sidebar .meta {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .meta strong {
+      display: block;
+      font-size: 0.92rem;
+      margin-bottom: 2px;
+    }
+
+    .meta span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .nav-list,
+    .doc-list,
+    .tick-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-list a,
+    .doc-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .nav-list a:hover,
+    .doc-link:hover {
+      color: var(--text);
+      border-color: var(--border);
+      background: #fff;
+    }
+
+    .nav-list span:last-child,
+    .doc-link span:last-child {
+      color: var(--accent);
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    .content {
+      display: grid;
+      gap: 22px;
+    }
+
+    .hero,
+    .panel,
+    .figure-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      padding: 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .hero .subtitle {
+      margin: 12px 0 0;
+      font-size: 1.2rem;
+      color: var(--muted);
+      max-width: 58ch;
+    }
+
+    .hero .lede {
+      margin: 18px 0 0;
+      max-width: 66ch;
+      color: #344255;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-weight: 600;
+    }
+
+    .button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .button.primary:hover {
+      color: #fff;
+      filter: brightness(1.03);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--panel-strong);
+    }
+
+    .card h3,
+    .panel h3,
+    .figure-panel h3,
+    .panel h4 {
+      margin: 0 0 10px;
+      line-height: 1.15;
+    }
+
+    .card p,
+    .panel p,
+    .figure-panel p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 1.35rem;
+      line-height: 1.15;
+    }
+
+    .section-copy {
+      margin: 0 0 18px;
+      color: var(--muted);
+      max-width: 78ch;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: rgba(15, 118, 110, 0.06);
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .figure-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .figure-panel {
+      padding: 16px;
+    }
+
+    .figure-panel img {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: #fff;
+    }
+
+    .figure-panel figcaption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .code {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      overflow-x: auto;
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .callout {
+      display: grid;
+      gap: 10px;
+      padding: 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(15, 118, 110, 0.2);
+      background: rgba(15, 118, 110, 0.08);
+    }
+
+    .callout strong {
+      color: var(--accent);
+    }
+
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .doc-link {
+      align-items: center;
+    }
+
+    .footer {
+      padding: 4px 2px 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 1100px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .hero,
+      .split,
+      .section-grid,
+      .figure-grid,
+      .doc-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 20px;
+      }
+
+      .panel,
+      .figure-panel {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="sidebar" aria-label="Documentation navigation">
+      <div class="brand">
+        <img class="brand-mark" src="../icon/icon.svg" alt="A.T.O.M icon" />
+        <div>
+          <h1>A.T.O.M</h1>
+          <p>Ankara Telecom Optimization Model</p>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div>
+          <strong>What this is</strong>
+          <span>Static documentation for the Ankara-focused RF propagation simulator.</span>
+        </div>
+        <div>
+          <strong>Current stack</strong>
+          <span>Go backend, React + Leaflet frontend, GeoJSON data, Docker deployment.</span>
+        </div>
+      </div>
+
+      <nav>
+        <ul class="nav-list">
+          <li><a href="#overview"><span>Overview</span><span>01</span></a></li>
+          <li><a href="#features"><span>Features</span><span>02</span></a></li>
+          <li><a href="#architecture"><span>Architecture</span><span>03</span></a></li>
+          <li><a href="#visuals"><span>Visualization</span><span>04</span></a></li>
+          <li><a href="#getting-started"><span>Getting Started</span><span>05</span></a></li>
+          <li><a href="#api"><span>API</span><span>06</span></a></li>
+          <li><a href="#deployment"><span>Deployment</span><span>07</span></a></li>
+          <li><a href="#docs"><span>Source Docs</span><span>08</span></a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <section class="hero" id="top">
+        <div>
+          <div class="eyebrow">Documentation website</div>
+          <h2>
+            <span style="display:inline-flex;align-items:center;gap:14px;flex-wrap:wrap;">
+              <img src="../icon/icon.svg" alt="" aria-hidden="true" style="width:64px;height:64px;object-fit:contain;border-radius:16px;border:1px solid var(--border);background:#fff;padding:8px;" />
+              <span>A.T.O.M</span>
+            </span>
+          </h2>
+          <p class="subtitle">Ankara Telecom Optimization Model</p>
+          <p class="lede">
+            A.T.O.M is a geospatial RF planning tool for comparing 4G LTE, 5G mmWave, and 6G Sub-THz propagation across Ankara. The docs in this folder explain the physics, the data flow, the Go backend, and the React map UI that turns raw tower and building data into readable coverage heatmaps.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#getting-started">Get started</a>
+            <a class="button" href="#visuals">View propagation</a>
+            <a class="button" href="https://berkunsal.com" target="_blank" rel="noopener noreferrer">Berk Ünsal</a>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Current defaults">
+          <div class="stat">
+            <small>Default tech</small>
+            <strong>5G mmWave, 28.0 GHz</strong>
+          </div>
+          <div class="stat">
+            <small>Beam width</small>
+            <strong>120 degrees</strong>
+          </div>
+          <div class="stat">
+            <small>Receiver threshold</small>
+            <strong>-115.0 dBm</strong>
+          </div>
+          <div class="stat">
+            <small>API surface</small>
+            <strong>/healthz and /api/*</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="overview">
+        <h3 class="section-title">Project overview</h3>
+        <p class="section-copy">
+          The system is built around a simple idea: load Ankara buildings and towers from local GeoJSON files, build an in-memory spatial index, and sweep a directional beam through the city to score signal coverage. The result is an engine that favors fast local computation over external dependencies, which keeps the app predictable and easy to run.
+        </p>
+
+        <div class="section-grid">
+          <div class="card">
+            <h3>Local-first data</h3>
+            <p>Buildings and towers are loaded at startup, then reused entirely in memory for fast simulation requests.</p>
+          </div>
+          <div class="card">
+            <h3>Directional simulation</h3>
+            <p>Azimuth and beam width define a sector instead of a full 360 degree broadcast pattern.</p>
+          </div>
+          <div class="card">
+            <h3>Heatmap output</h3>
+            <p>Ray segments are colored by signal strength so the map reads like an RF heatmap instead of a flat overlay.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="features">
+        <h3 class="section-title">Features at a glance</h3>
+        <p class="section-copy">
+          The markdown docs in this repository break the project down into a few consistent themes: multi-band physics, segmented ray tracing, beamforming, auto-optimization, and GeoJSON-based visualization.
+        </p>
+        <div class="section-grid">
+          <div class="card">
+            <h3>Multi-generation physics</h3>
+            <p>4G LTE, 5G mmWave, and 6G Sub-THz each use frequency-aware path loss behavior.</p>
+          </div>
+          <div class="card">
+            <h3>Frequency-dependent penetration</h3>
+            <p>Lower bands penetrate more readily, while higher bands attenuate sharply at walls and rooftops.</p>
+          </div>
+          <div class="card">
+            <h3>Auto-optimize azimuth</h3>
+            <p>Sector direction can be swept and scored automatically to maximize coverage area.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="architecture">
+        <h3 class="section-title">Architecture</h3>
+        <div class="split">
+          <div>
+            <p class="section-copy">
+              The backend uses Go and Gin, the frontend uses React and Leaflet, and the data lives in local GeoJSON files. The server exposes a small set of API routes and serves the built frontend when available.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Layer</th>
+                    <th>Technology</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Backend</td>
+                    <td>Go + Gin</td>
+                    <td>HTTP API, simulation engine, optimization endpoint</td>
+                  </tr>
+                  <tr>
+                    <td>Frontend</td>
+                    <td>React + Leaflet</td>
+                    <td>Controls, tower popups, ray overlays, stats panel</td>
+                  </tr>
+                  <tr>
+                    <td>Data</td>
+                    <td>GeoJSON files</td>
+                    <td>Towers and building footprints loaded locally on startup</td>
+                  </tr>
+                  <tr>
+                    <td>Deployment</td>
+                    <td>Multi-stage Docker</td>
+                    <td>Builds frontend and backend into one production image</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="callout">
+            <strong>Current API routes</strong>
+            <div>GET <code>/healthz</code></div>
+            <div>GET <code>/api/towers</code></div>
+            <div>GET <code>/api/buildings</code></div>
+            <div>POST <code>/api/simulate</code></div>
+            <div>POST <code>/api/optimize-azimuth</code></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="visuals">
+        <h3 class="section-title">Propagation visualization</h3>
+        <p class="section-copy">
+          The screenshots below use the project assets already in the repository. They show how the same area changes as the network moves from 4G to 5G to 6G and then through automatic beam optimization.
+        </p>
+        <div class="figure-grid">
+          <figure class="figure-panel">
+            <img src="../assets/4g.png" alt="4G LTE propagation visualization" />
+            <figcaption>4G LTE at 2.6 GHz, with broad coverage and stronger wall penetration.</figcaption>
+          </figure>
+          <figure class="figure-panel">
+            <img src="../assets/5g.png" alt="5G mmWave propagation visualization" />
+            <figcaption>5G mmWave at 28 GHz, with a narrower directional footprint.</figcaption>
+          </figure>
+          <figure class="figure-panel">
+            <img src="../assets/6g.png" alt="6G Sub-THz propagation visualization" />
+            <figcaption>6G Sub-THz at 140 GHz, with highly localized coverage and rapid attenuation.</figcaption>
+          </figure>
+          <figure class="figure-panel">
+            <img src="../assets/5g-auto-optimized.png" alt="Auto-optimized 5G beamforming visualization" />
+            <figcaption>Auto-optimized 5G beamforming, where azimuth is chosen to maximize sector coverage.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="panel" id="getting-started">
+        <h3 class="section-title">Getting started</h3>
+        <p class="section-copy">
+          The easiest way to run the project is through Docker Compose. That keeps the frontend build, backend binary, and local geospatial files in one place.
+        </p>
+        <pre class="code"><code>docker compose up --build -d atom</code></pre>
+        <p class="section-copy" style="margin-top: 14px;">
+          For local development, the backend can be started with <code>go run .</code> inside <code>backend-go/</code>, and the frontend with <code>npm run dev</code> inside <code>frontend-react/</code>.
+        </p>
+      </section>
+
+      <section class="panel" id="api">
+        <h3 class="section-title">API reference</h3>
+        <p class="section-copy">
+          The backend keeps the request surface intentionally small. Simulate a sector, optimize the azimuth, and fetch the local tower and building GeoJSON.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Route</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>GET</td>
+                <td><code>/healthz</code></td>
+                <td>Liveness and data-loading status</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/towers</code></td>
+                <td>Return tower locations as GeoJSON</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/buildings</code></td>
+                <td>Return building footprints as GeoJSON</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td><code>/api/simulate</code></td>
+                <td>Run the sector ray-tracing simulation</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td><code>/api/optimize-azimuth</code></td>
+                <td>Sweep candidate azimuths and return the best one</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="deployment">
+        <h3 class="section-title">Deployment</h3>
+        <p class="section-copy">
+          The production setup uses a multi-stage Docker image. The final image contains the compiled Go server, the built React app, and the local geospatial assets needed at startup.
+        </p>
+        <div class="section-grid">
+          <div class="card">
+            <h3>Frontend build</h3>
+            <p>Node builds the React app into <code>dist/</code>.</p>
+          </div>
+          <div class="card">
+            <h3>Backend build</h3>
+            <p>Go compiles a single binary that serves both the API and the static site.</p>
+          </div>
+          <div class="card">
+            <h3>Runtime image</h3>
+            <p>Alpine keeps the production container lean and easy to ship.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="docs">
+        <h3 class="section-title">Source markdown files</h3>
+        <p class="section-copy">
+          These pages are the canonical source for the documentation content. The HTML page is a friendly landing layer on top of the same material.
+        </p>
+        <div class="doc-grid">
+          <a class="doc-link" href="./overview.md"><span>overview.md</span><span>Project context</span></a>
+          <a class="doc-link" href="./features.md"><span>features.md</span><span>Capabilities</span></a>
+          <a class="doc-link" href="./architecture.md"><span>architecture.md</span><span>System design</span></a>
+          <a class="doc-link" href="./visualization.md"><span>visualization.md</span><span>RF maps</span></a>
+          <a class="doc-link" href="./algorithms.md"><span>algorithms.md</span><span>Math details</span></a>
+          <a class="doc-link" href="./getting-started.md"><span>getting-started.md</span><span>Run locally</span></a>
+          <a class="doc-link" href="./api.md"><span>api.md</span><span>REST routes</span></a>
+          <a class="doc-link" href="./deployment.md"><span>deployment.md</span><span>Docker and prod</span></a>
+          <a class="doc-link" href="./faq.md"><span>faq.md</span><span>Common questions</span></a>
+          <a class="doc-link" href="./contributing.md"><span>contributing.md</span><span>Contributor guide</span></a>
+        </div>
+      </section>
+
+      <div class="footer">
+        Built for A.T.O.M, the Ankara Telecom Optimization Model. Created by Berk Ünsal.
+      </div>
+    </main>
+  </div>
+</body>
+</html>

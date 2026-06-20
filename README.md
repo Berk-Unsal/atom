@@ -84,6 +84,12 @@ The application will be available at **`http://localhost:8080`**.
 
 ---
 
+## Documentation
+
+The full docs site lives in [docs/index.html](docs/index.html), with the source markdown pages alongside it in `docs/`.
+
+---
+
 ## Author & Credits
 
 Architected and Developed by [Berk Ünsal](https://berkunsal.com)

@@ -4,7 +4,7 @@ A.T.O.M generates stunning visual representations of RF propagation across frequ
 
 ## 4G LTE Coverage (2.6 GHz)
 
-![4G Propagation](../assets/4g.png)
+![4G Propagation](./assets/4g.png)
 
 ### Characteristics
 
@@ -27,7 +27,7 @@ The 4G simulation shows:
 
 ## 5G mmWave Coverage (28 GHz)
 
-![5G Propagation](../assets/5g.png)
+![5G Propagation](./assets/5g.png)
 
 ### Characteristics
 
@@ -50,7 +50,7 @@ The 5G visualization reveals:
 
 ## 6G Sub-THz Coverage (140 GHz)
 
-![6G Propagation](../assets/6g.png)
+![6G Propagation](./assets/6g.png)
 
 ### Characteristics
 
@@ -73,7 +73,7 @@ The 6G heatmap demonstrates:
 
 ## AI Auto-Optimized 5G Beamforming
 
-![5G Auto-Optimized](../assets/5g-auto-optimized.png)
+![5G Auto-Optimized](./assets/5g-auto-optimized.png)
 
 ### Algorithm Result
 

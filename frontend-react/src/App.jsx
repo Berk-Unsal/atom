@@ -26,6 +26,7 @@ export default function App() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [optimizationDiagnostics, setOptimizationDiagnostics] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -125,6 +126,7 @@ export default function App() {
       if (!response.ok) {
         throw new Error(payload.error ?? "Optimization request failed");
       }
+      setOptimizationDiagnostics(payload);
       setSettings((current) => ({
         ...current,
         azimuthDeg: Number(payload.optimal_azimuth),
@@ -180,6 +182,7 @@ export default function App() {
           onOptimizeAzimuth={optimizeAzimuth}
           isLoading={isLoading}
           isOptimizing={isOptimizing}
+          optimizationDiagnostics={optimizationDiagnostics}
         />
 
         <section className="stats-grid" aria-label="Simulation stats">

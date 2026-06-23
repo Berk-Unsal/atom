@@ -19,10 +19,19 @@ func main() {
 	if err != nil {
 		log.Printf("building index unavailable: %v", err)
 	}
+	buildingDemandSummary := buildingIndex.DemandSummary(buildingStats.SourcePath)
 	log.Printf(
 		"building spatial index ready: %d footprints indexed from %s",
 		buildingIndex.Len(),
 		buildingStats.SourcePath,
+	)
+	log.Printf(
+		"building demand data: %s (%d/%d demand-weighted, avg %.2f, max %.2f)",
+		buildingDemandSummary.DataQuality,
+		buildingDemandSummary.DemandWeightedBuildings,
+		buildingDemandSummary.TotalBuildings,
+		buildingDemandSummary.AvgDemandWeight,
+		buildingDemandSummary.MaxDemandWeight,
 	)
 
 	towers, towerGeoJSONPath, err := loadTowers()
@@ -46,12 +55,16 @@ func main() {
 			"status":          "ok",
 			"backend":         "static-in-memory",
 			"buildingIndex":   buildingStats,
+			"buildingDemand":  buildingDemandSummary,
 			"rtreeFootprints": buildingIndex.Len(),
 			"towerCount":      len(towers),
 		})
 	})
 	router.GET("/api/towers", serveGeoJSONFile(towerGeoJSONPath, "ankara_5g_nodes.geojson is not configured"))
 	router.GET("/api/buildings", serveBuildingGeoJSON(buildingStats.SourcePath))
+	router.GET("/api/buildings/summary", func(c *gin.Context) {
+		c.JSON(http.StatusOK, buildingDemandSummary)
+	})
 	router.POST("/api/simulate", func(c *gin.Context) {
 		var req raytracer.StaticSimulationRequest
 		if err := c.ShouldBindJSON(&req); err != nil {

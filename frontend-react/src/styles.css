@@ -207,6 +207,43 @@ input {
   font-weight: 750;
 }
 
+.optimizer-status {
+  display: grid;
+  gap: 3px;
+  min-height: 44px;
+  padding: 9px 10px;
+  border: 1px solid #d8e2dc;
+  border-radius: 8px;
+  background: #f8faf8;
+  color: #334139;
+}
+
+.optimizer-status span {
+  font-size: 0.82rem;
+  font-weight: 750;
+  text-transform: capitalize;
+}
+
+.optimizer-status small {
+  color: #65726b;
+  font-size: 0.76rem;
+}
+
+.optimizer-status.good {
+  border-color: #99d8bd;
+  background: #ecfdf5;
+}
+
+.optimizer-status.moderate {
+  border-color: #f3d38b;
+  background: #fffbeb;
+}
+
+.optimizer-status.sparse {
+  border-color: #fecdd3;
+  background: #fff1f2;
+}
+
 .apply-small:disabled,
 .optimize-button:disabled,
 .refresh-button:disabled {

@@ -496,7 +496,8 @@
           <li><a href="#getting-started"><span>Getting Started</span><span>05</span></a></li>
           <li><a href="#api"><span>API</span><span>06</span></a></li>
           <li><a href="#deployment"><span>Deployment</span><span>07</span></a></li>
-          <li><a href="#docs"><span>Source Docs</span><span>08</span></a></li>
+          <li><a href="#faq"><span>FAQ</span><span>08</span></a></li>
+          <li><a href="#contributing"><span>Contributing</span><span>09</span></a></li>
         </ul>
       </nav>
     </aside>
@@ -739,22 +740,64 @@
         </div>
       </section>
 
+      <section class="panel" id="faq">
+        <h3 class="section-title">FAQ</h3>
+        <p class="section-copy">
+          A.T.O.M is designed to run fully offline once the repository is available locally, and the Ankara dataset can be replaced with any other city as long as you provide equivalent building and tower GeoJSON files. The current simulator emphasizes fast deterministic coverage planning rather than full multipath or reflection-heavy RF modeling.
+        </p>
+        <div class="section-grid">
+          <div class="card">
+            <h3>Can I use another city?</h3>
+            <p>Yes. Swap the Ankara GeoJSON files for your own building footprints and tower points, then redeploy.</p>
+          </div>
+          <div class="card">
+            <h3>Does it need live APIs?</h3>
+            <p>No. The backend loads static local data at startup and serves everything from memory.</p>
+          </div>
+          <div class="card">
+            <h3>Why no reflections?</h3>
+            <p>The current model is tuned for responsive planning workflows, so it focuses on directional loss, obstruction, and penetration.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="contributing">
+        <h3 class="section-title">Contributing</h3>
+        <p class="section-copy">
+          The project is organized so backend RF logic, frontend map behavior, and static documentation can evolve independently. Good contributions usually stay scoped to one of those surfaces and keep the local-first deployment story intact.
+        </p>
+        <div class="section-grid">
+          <div class="card">
+            <h3>Backend work</h3>
+            <p>Simulation math, spatial indexing, path-loss logic, and API contracts live in the Go backend.</p>
+          </div>
+          <div class="card">
+            <h3>Frontend work</h3>
+            <p>Leaflet layers, tower interactions, metrics, and control-panel UX live in the React app.</p>
+          </div>
+          <div class="card">
+            <h3>Docs work</h3>
+            <p>Everything needed for GitHub Pages now lives inside <code>docs/</code>, including icons and screenshots.</p>
+          </div>
+        </div>
+      </section>
+
       <section class="panel" id="docs">
         <h3 class="section-title">Source markdown files</h3>
         <p class="section-copy">
-          These pages are the canonical source for the documentation content. The HTML page is a friendly landing layer on top of the same material.
+          These markdown files remain the canonical source material, but the published navigation stays inside this single docs page so GitHub Pages never has to hop between mixed markdown and HTML routes.
         </p>
         <div class="doc-grid">
-          <a class="doc-link" href="./overview.md"><span>overview.md</span><span>Project context</span></a>
-          <a class="doc-link" href="./features.md"><span>features.md</span><span>Capabilities</span></a>
-          <a class="doc-link" href="./architecture.md"><span>architecture.md</span><span>System design</span></a>
-          <a class="doc-link" href="./visualization.md"><span>visualization.md</span><span>RF maps</span></a>
-          <a class="doc-link" href="./algorithms.md"><span>algorithms.md</span><span>Math details</span></a>
-          <a class="doc-link" href="./getting-started.md"><span>getting-started.md</span><span>Run locally</span></a>
-          <a class="doc-link" href="./api.md"><span>api.md</span><span>REST routes</span></a>
-          <a class="doc-link" href="./deployment.md"><span>deployment.md</span><span>Docker and prod</span></a>
-          <a class="doc-link" href="./faq.md"><span>faq.md</span><span>Common questions</span></a>
-          <a class="doc-link" href="./contributing.md"><span>contributing.md</span><span>Contributor guide</span></a>
+          <a class="doc-link" href="#overview"><span>overview.md</span><span>Project context</span></a>
+          <a class="doc-link" href="#features"><span>features.md</span><span>Capabilities</span></a>
+          <a class="doc-link" href="#architecture"><span>architecture.md</span><span>System design</span></a>
+          <a class="doc-link" href="#visuals"><span>visualization.md</span><span>RF maps</span></a>
+          <a class="doc-link" href="#architecture"><span>algorithms.md</span><span>Math details</span></a>
+          <a class="doc-link" href="#getting-started"><span>getting-started.md</span><span>Run locally</span></a>
+          <a class="doc-link" href="#api"><span>api.md</span><span>REST routes</span></a>
+          <a class="doc-link" href="#deployment"><span>deployment.md</span><span>Docker and prod</span></a>
+          <a class="doc-link" href="#faq"><span>faq.md</span><span>Common questions</span></a>
+          <a class="doc-link" href="#contributing"><span>contributing.md</span><span>Contributor guide</span></a>
         </div>
       </section>
 

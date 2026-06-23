@@ -21,16 +21,22 @@ type Bounds struct {
 }
 
 type BuildingFootprint struct {
-	ID               string            `json:"id"`
-	Kind             string            `json:"kind"`
-	Tags             map[string]string `json:"tags"`
-	Weight           float64           `json:"weight"`
-	DemandWeight     float64           `json:"demandWeight"`
-	WeightReason     string            `json:"weightReason"`
-	WeightConfidence string            `json:"weightConfidence"`
-	AttenuationDB    float64           `json:"attenuationDb"`
-	Bounds           Bounds            `json:"bounds"`
-	Vertices         []Point           `json:"vertices"`
+	ID                    string            `json:"id"`
+	Kind                  string            `json:"kind"`
+	Tags                  map[string]string `json:"tags"`
+	Weight                float64           `json:"weight"`
+	DemandWeight          float64           `json:"demandWeight"`
+	ResidentialDemand     float64           `json:"residentialDemand"`
+	DensityScore          float64           `json:"densityScore"`
+	NearbyBuildings       int               `json:"nearbyBuildings"`
+	NearbyResidential     int               `json:"nearbyResidentialBuildings"`
+	WeightReason          string            `json:"weightReason"`
+	WeightConfidence      string            `json:"weightConfidence"`
+	ResidentialReason     string            `json:"residentialReason"`
+	ResidentialConfidence string            `json:"residentialConfidence"`
+	AttenuationDB         float64           `json:"attenuationDb"`
+	Bounds                Bounds            `json:"bounds"`
+	Vertices              []Point           `json:"vertices"`
 }
 
 type BuildingIndex struct {
@@ -45,13 +51,19 @@ type BuildingIndexStats struct {
 }
 
 type BuildingDemandSummary struct {
-	SourcePath              string             `json:"source_path"`
-	TotalBuildings          int                `json:"total_buildings"`
-	DemandWeightedBuildings int                `json:"demand_weighted_buildings"`
-	AvgDemandWeight         float64            `json:"avg_demand_weight"`
-	MaxDemandWeight         float64            `json:"max_demand_weight"`
-	TagCoveragePct          map[string]float64 `json:"tag_coverage_pct"`
-	DataQuality             string             `json:"data_quality"`
+	SourcePath                   string             `json:"source_path"`
+	TotalBuildings               int                `json:"total_buildings"`
+	DemandWeightedBuildings      int                `json:"demand_weighted_buildings"`
+	ResidentialWeightedBuildings int                `json:"residential_weighted_buildings"`
+	DensityWeightedBuildings     int                `json:"density_weighted_buildings"`
+	AvgDemandWeight              float64            `json:"avg_demand_weight"`
+	MaxDemandWeight              float64            `json:"max_demand_weight"`
+	AvgResidentialDemand         float64            `json:"avg_residential_demand"`
+	MaxResidentialDemand         float64            `json:"max_residential_demand"`
+	AvgDensityScore              float64            `json:"avg_density_score"`
+	MaxDensityScore              float64            `json:"max_density_score"`
+	TagCoveragePct               map[string]float64 `json:"tag_coverage_pct"`
+	DataQuality                  string             `json:"data_quality"`
 }
 
 func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexStats, error) {
@@ -80,6 +92,22 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 		if demandWeight < 0 {
 			demandWeight = 0
 		}
+		residentialDemand := feature.FloatProperty("residential_demand", 0)
+		if residentialDemand < 0 {
+			residentialDemand = 0
+		}
+		densityScore := feature.FloatProperty("density_score", 0)
+		if densityScore < 0 {
+			densityScore = 0
+		}
+		nearbyBuildings := int(math.Round(feature.FloatProperty("nearby_buildings", 0)))
+		if nearbyBuildings < 0 {
+			nearbyBuildings = 0
+		}
+		nearbyResidential := int(math.Round(feature.FloatProperty("nearby_residential_buildings", 0)))
+		if nearbyResidential < 0 {
+			nearbyResidential = 0
+		}
 		weightReason := strings.TrimSpace(feature.StringProperty("weight_reason", "generic"))
 		if weightReason == "" {
 			weightReason = "generic"
@@ -87,6 +115,14 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 		weightConfidence := strings.TrimSpace(feature.StringProperty("weight_confidence", "none"))
 		if weightConfidence == "" {
 			weightConfidence = "none"
+		}
+		residentialReason := strings.TrimSpace(feature.StringProperty("residential_reason", "none"))
+		if residentialReason == "" {
+			residentialReason = "none"
+		}
+		residentialConfidence := strings.TrimSpace(feature.StringProperty("residential_confidence", "none"))
+		if residentialConfidence == "" {
+			residentialConfidence = "none"
 		}
 
 		rings := feature.Geometry.OuterRings()
@@ -102,16 +138,22 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 			}
 
 			footprints = append(footprints, &BuildingFootprint{
-				ID:               id,
-				Kind:             kind,
-				Tags:             tags,
-				Weight:           weight,
-				DemandWeight:     demandWeight,
-				WeightReason:     weightReason,
-				WeightConfidence: weightConfidence,
-				AttenuationDB:    attenuation,
-				Bounds:           bounds,
-				Vertices:         ring,
+				ID:                    id,
+				Kind:                  kind,
+				Tags:                  tags,
+				Weight:                weight,
+				DemandWeight:          demandWeight,
+				ResidentialDemand:     residentialDemand,
+				DensityScore:          densityScore,
+				NearbyBuildings:       nearbyBuildings,
+				NearbyResidential:     nearbyResidential,
+				WeightReason:          weightReason,
+				WeightConfidence:      weightConfidence,
+				ResidentialReason:     residentialReason,
+				ResidentialConfidence: residentialConfidence,
+				AttenuationDB:         attenuation,
+				Bounds:                bounds,
+				Vertices:              ring,
 			})
 		}
 	}
@@ -195,12 +237,24 @@ func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary
 		"name":            0,
 	}
 	totalDemandWeight := 0.0
+	totalResidentialDemand := 0.0
+	totalDensityScore := 0.0
 	for _, footprint := range idx.footprints {
 		if footprint.DemandWeight > 0 {
 			summary.DemandWeightedBuildings++
 			totalDemandWeight += footprint.DemandWeight
 			summary.MaxDemandWeight = math.Max(summary.MaxDemandWeight, footprint.DemandWeight)
 		}
+		if footprint.ResidentialDemand > 0 {
+			summary.ResidentialWeightedBuildings++
+			totalResidentialDemand += footprint.ResidentialDemand
+			summary.MaxResidentialDemand = math.Max(summary.MaxResidentialDemand, footprint.ResidentialDemand)
+		}
+		if footprint.DensityScore >= 25 {
+			summary.DensityWeightedBuildings++
+		}
+		totalDensityScore += footprint.DensityScore
+		summary.MaxDensityScore = math.Max(summary.MaxDensityScore, footprint.DensityScore)
 		for tag := range tagHits {
 			if meaningfulTagValue(footprint.Tags[tag]) {
 				tagHits[tag]++
@@ -210,12 +264,18 @@ func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary
 	if summary.DemandWeightedBuildings > 0 {
 		summary.AvgDemandWeight = math.Round((totalDemandWeight/float64(summary.DemandWeightedBuildings))*100) / 100
 	}
+	if summary.ResidentialWeightedBuildings > 0 {
+		summary.AvgResidentialDemand = math.Round((totalResidentialDemand/float64(summary.ResidentialWeightedBuildings))*100) / 100
+	}
 	summary.MaxDemandWeight = math.Round(summary.MaxDemandWeight*100) / 100
+	summary.MaxResidentialDemand = math.Round(summary.MaxResidentialDemand*100) / 100
+	summary.AvgDensityScore = math.Round((totalDensityScore/float64(summary.TotalBuildings))*100) / 100
+	summary.MaxDensityScore = math.Round(summary.MaxDensityScore*100) / 100
 	for tag, count := range tagHits {
 		summary.TagCoveragePct[tag] = math.Round((float64(count)/float64(summary.TotalBuildings))*10000) / 100
 	}
 
-	weightedPct := float64(summary.DemandWeightedBuildings) / float64(summary.TotalBuildings) * 100
+	weightedPct := float64(summary.DemandWeightedBuildings+summary.ResidentialWeightedBuildings) / float64(summary.TotalBuildings) * 100
 	switch {
 	case weightedPct >= 10:
 		summary.DataQuality = "good"

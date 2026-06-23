@@ -93,8 +93,13 @@ export default function ControlPanel({
         <div className={`optimizer-status ${optimizationDiagnostics.data_quality ?? "sparse"}`}>
           <span>Demand data: {optimizationDiagnostics.data_quality ?? "unknown"}</span>
           <small>
-            {optimizationDiagnostics.hit_demand_buildings ?? 0} demand hits ·{" "}
-            {formatScore(optimizationDiagnostics.demand_score)} demand
+            {optimizationDiagnostics.hit_demand_buildings ?? 0} POI ·{" "}
+            {optimizationDiagnostics.hit_residential_buildings ?? 0} residential
+          </small>
+          <small>
+            {formatScore(optimizationDiagnostics.demand_score)} demand ·{" "}
+            {formatScore(optimizationDiagnostics.residential_score)} residential ·{" "}
+            {formatScore(optimizationDiagnostics.coverage_score)} coverage
           </small>
         </div>
       ) : null}

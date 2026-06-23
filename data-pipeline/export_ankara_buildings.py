@@ -15,13 +15,16 @@ from pathlib import Path
 
 import osmnx as ox
 import geopandas as gpd
+import numpy as np
 import pandas as pd
+from shapely import STRtree
 
 
 MIN_LON = 32.55
 MIN_LAT = 39.75
 MAX_LON = 33.00
 MAX_LAT = 40.05
+NEIGHBOR_RADIUS_M = 150.0
 
 DEMAND_AMENITIES = {
     "cafe": 50,
@@ -45,6 +48,15 @@ DEMAND_BUILDING_TYPES = {
     "hospital": 70,
     "dormitory": 30,
     "public": 20,
+}
+RESIDENTIAL_BUILDING_TYPES = {
+    "apartments": 24,
+    "residential": 20,
+    "house": 12,
+    "detached": 10,
+    "semidetached_house": 10,
+    "terrace": 12,
+    "dormitory": 25,
 }
 NAME_KEYWORDS = {
     "avm": 100,
@@ -114,6 +126,43 @@ def geometry_area_demand(area_m2) -> float:
     return 0.0
 
 
+def is_residential_like(value) -> bool:
+    return clean_tag(value) in RESIDENTIAL_BUILDING_TYPES
+
+
+def add_density_metrics(buildings: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    projected = buildings.to_crs("EPSG:3857")
+    centroids = np.array(projected.geometry.representative_point().values, dtype=object)
+    tree = STRtree(centroids)
+    left_indexes, right_indexes = tree.query(
+        centroids,
+        predicate="dwithin",
+        distance=NEIGHBOR_RADIUS_M,
+    )
+
+    building_count = len(buildings)
+    residential_mask = buildings["building"].apply(is_residential_like).to_numpy(dtype=bool)
+    nearby_buildings = np.bincount(left_indexes, minlength=building_count).astype(int) - 1
+    nearby_residential = (
+        np.bincount(
+            left_indexes,
+            weights=residential_mask[right_indexes].astype(int),
+            minlength=building_count,
+        ).astype(int)
+        - residential_mask.astype(int)
+    )
+
+    nearby_buildings = np.maximum(nearby_buildings, 0)
+    nearby_residential = np.maximum(nearby_residential, 0)
+    buildings["nearby_buildings"] = nearby_buildings
+    buildings["nearby_residential_buildings"] = nearby_residential
+    buildings["density_score"] = np.minimum(
+        100,
+        nearby_buildings * 1.4 + nearby_residential * 3.0,
+    ).round(2)
+    return buildings
+
+
 def calculate_building_weight(row) -> float:
     weight = 1.0
 
@@ -156,7 +205,6 @@ def calculate_demand_profile(row) -> pd.Series:
     shop = clean_tag(row.get("shop"))
     office = clean_tag(row.get("office"))
     name = clean_tag(row.get("name"))
-    levels = parse_levels(row.get("building:levels"))
 
     if shop in DEMAND_SHOPS:
         add(DEMAND_SHOPS[shop], f"shop:{shop}", 3)
@@ -166,9 +214,6 @@ def calculate_demand_profile(row) -> pd.Series:
         add(35, f"office:{office}", 3)
     if building in DEMAND_BUILDING_TYPES:
         add(DEMAND_BUILDING_TYPES[building], f"building:{building}", 3)
-
-    if levels is not None and levels >= 8:
-        add(min(levels * 1.5, 80), f"levels:{levels:g}", 2)
 
     for keyword, score in NAME_KEYWORDS.items():
         if keyword in name:
@@ -195,6 +240,57 @@ def calculate_demand_profile(row) -> pd.Series:
     )
 
 
+def calculate_residential_profile(row) -> pd.Series:
+    residential_demand = 0.0
+    reasons: list[str] = []
+    confidence_rank = 0
+
+    def add(score: float, reason: str, confidence: int) -> None:
+        nonlocal residential_demand, confidence_rank
+        if score <= 0:
+            return
+        residential_demand += score
+        reasons.append(reason)
+        confidence_rank = max(confidence_rank, confidence)
+
+    building = clean_tag(row.get("building"))
+    levels = parse_levels(row.get("building:levels"))
+    density_score = float(row.get("density_score") or 0)
+    nearby_buildings = int(row.get("nearby_buildings") or 0)
+    nearby_residential = int(row.get("nearby_residential_buildings") or 0)
+
+    if building in RESIDENTIAL_BUILDING_TYPES:
+        add(RESIDENTIAL_BUILDING_TYPES[building], f"residential:{building}", 3)
+        if levels is not None:
+            add(min(levels * 2.0, 80), f"residential_levels:{levels:g}", 3)
+        if density_score >= 25:
+            add(min(density_score * 0.25, 30), "density:residential_cluster", 2)
+    elif building == "yes":
+        if nearby_buildings >= 18 and nearby_residential >= 4:
+            add(
+                min(8 + nearby_buildings * 0.25 + nearby_residential * 1.5, 40),
+                "generic_dense_settlement",
+                2,
+            )
+        elif nearby_buildings >= 35:
+            add(min(nearby_buildings * 0.15, 12), "density:built_cluster", 1)
+
+    confidence = {
+        0: "none",
+        1: "low",
+        2: "medium",
+        3: "high",
+    }[confidence_rank]
+
+    return pd.Series(
+        {
+            "residential_demand": round(residential_demand, 2),
+            "residential_reason": "|".join(reasons) if reasons else "none",
+            "residential_confidence": confidence,
+        }
+    )
+
+
 def print_export_summary(buildings) -> None:
     total = len(buildings)
     if total == 0:
@@ -202,14 +298,23 @@ def print_export_summary(buildings) -> None:
         return
 
     demand = pd.to_numeric(buildings["demand_weight"], errors="coerce").fillna(0)
+    residential = pd.to_numeric(buildings["residential_demand"], errors="coerce").fillna(0)
+    density = pd.to_numeric(buildings["density_score"], errors="coerce").fillna(0)
     weighted = int((demand > 0).sum())
+    residential_weighted = int((residential > 0).sum())
+    density_weighted = int((density >= 25).sum())
     confidence_counts = buildings["weight_confidence"].value_counts().to_dict()
+    residential_confidence_counts = buildings["residential_confidence"].value_counts().to_dict()
     tag_columns = ["building:levels", "height", "amenity", "shop", "office", "name"]
     print("Demand summary")
     print(f"  buildings: {total}")
     print(f"  demand_weight > 0: {weighted} ({weighted / total * 100:.2f}%)")
+    print(f"  residential_demand > 0: {residential_weighted} ({residential_weighted / total * 100:.2f}%)")
+    print(f"  density_score >= 25: {density_weighted} ({density_weighted / total * 100:.2f}%)")
     print(f"  demand_weight avg/max: {demand.mean():.2f}/{demand.max():.2f}")
+    print(f"  residential_demand avg/max: {residential.mean():.2f}/{residential.max():.2f}")
     print(f"  confidence: {confidence_counts}")
+    print(f"  residential confidence: {residential_confidence_counts}")
     for column in tag_columns:
         if column in buildings.columns:
             present = int(buildings[column].notna().sum())
@@ -263,10 +368,15 @@ def main() -> None:
         ensure_column(buildings, column)
 
     area_m2 = buildings.to_crs("EPSG:3857").geometry.area
-    buildings["area_m2"] = area_m2.where(area_m2.apply(math.isfinite), 0)
+    buildings["area_m2"] = area_m2.where(np.isfinite(area_m2), 0)
+    buildings = add_density_metrics(buildings)
     buildings["weight"] = buildings.apply(calculate_building_weight, axis=1)
     buildings[["demand_weight", "weight_reason", "weight_confidence"]] = buildings.apply(
         calculate_demand_profile,
+        axis=1,
+    )
+    buildings[["residential_demand", "residential_reason", "residential_confidence"]] = buildings.apply(
+        calculate_residential_profile,
         axis=1,
     )
 
@@ -285,18 +395,40 @@ def main() -> None:
             "demand_weight",
             "weight_reason",
             "weight_confidence",
+            "residential_demand",
+            "residential_reason",
+            "residential_confidence",
+            "density_score",
+            "nearby_buildings",
+            "nearby_residential_buildings",
             "area_m2",
             "geometry",
         ]
         if column in buildings.columns
     ]
     buildings = buildings[keep_columns]
-    tag_columns = {"building", "name", "amenity", "shop", "office", "height", "building:levels"}
+    tag_columns = {
+        "building",
+        "name",
+        "amenity",
+        "shop",
+        "office",
+        "height",
+        "building:levels",
+    }
     for column in tag_columns.intersection(buildings.columns):
         buildings[column] = buildings[column].apply(lambda value: None if clean_tag(value) == "" else value)
-    for column in keep_columns:
-        if column != "geometry":
-            buildings[column] = buildings[column].astype(object).where(pd.notna(buildings[column]), None)
+    numeric_columns = {
+        "weight",
+        "demand_weight",
+        "residential_demand",
+        "density_score",
+        "nearby_buildings",
+        "nearby_residential_buildings",
+        "area_m2",
+    }
+    for column in numeric_columns.intersection(buildings.columns):
+        buildings[column] = pd.to_numeric(buildings[column], errors="coerce").fillna(0)
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)

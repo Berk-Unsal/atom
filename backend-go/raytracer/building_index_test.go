@@ -38,4 +38,10 @@ func TestLoadBuildingIndexDefaultsMissingDemandWeightToZero(t *testing.T) {
 	if footprints[0].DemandWeight != 0 {
 		t.Fatalf("missing demand_weight default = %.1f, want 0", footprints[0].DemandWeight)
 	}
+	if footprints[0].ResidentialDemand != 0 {
+		t.Fatalf("missing residential_demand default = %.1f, want 0", footprints[0].ResidentialDemand)
+	}
+	if footprints[0].DensityScore != 0 {
+		t.Fatalf("missing density_score default = %.1f, want 0", footprints[0].DensityScore)
+	}
 }

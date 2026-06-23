@@ -306,6 +306,36 @@ func (f feature) StringProperties() map[string]string {
 	return tags
 }
 
+func (f feature) FloatProperty(key string, fallback float64) float64 {
+	for propertyKey, value := range f.Properties {
+		if !strings.EqualFold(propertyKey, key) {
+			continue
+		}
+		switch typed := value.(type) {
+		case float64:
+			if !math.IsNaN(typed) {
+				return typed
+			}
+		case string:
+			parsed, err := strconv.ParseFloat(strings.TrimSpace(typed), 64)
+			if err == nil && !math.IsNaN(parsed) {
+				return parsed
+			}
+		}
+		return fallback
+	}
+	return fallback
+}
+
+func (f feature) StringProperty(key string, fallback string) string {
+	for propertyKey, value := range f.Properties {
+		if strings.EqualFold(propertyKey, key) {
+			return toString(value)
+		}
+	}
+	return fallback
+}
+
 type geometry struct {
 	Type        string          `json:"type"`
 	Coordinates json.RawMessage `json:"coordinates"`

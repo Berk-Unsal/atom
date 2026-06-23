@@ -8,6 +8,7 @@ export default function ControlPanel({
   onOptimizeAzimuth,
   isLoading,
   isOptimizing,
+  optimizationDiagnostics,
 }) {
   const update = (key, value) => {
     onChange((current) => ({
@@ -88,6 +89,15 @@ export default function ControlPanel({
         <Sparkles size={16} className={isOptimizing ? "spin" : ""} />
         <span>{isOptimizing ? "Calculating Best Angle..." : "Auto-Optimize"}</span>
       </button>
+      {optimizationDiagnostics ? (
+        <div className={`optimizer-status ${optimizationDiagnostics.data_quality ?? "sparse"}`}>
+          <span>Demand data: {optimizationDiagnostics.data_quality ?? "unknown"}</span>
+          <small>
+            {optimizationDiagnostics.hit_demand_buildings ?? 0} demand hits ·{" "}
+            {formatScore(optimizationDiagnostics.demand_score)} demand
+          </small>
+        </div>
+      ) : null}
 
       <RangeField
         icon={<SlidersHorizontal size={18} />}
@@ -105,6 +115,13 @@ export default function ControlPanel({
       </button>
     </section>
   );
+}
+
+function formatScore(value) {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "0";
+  }
+  return Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
 function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {

@@ -33,7 +33,11 @@ type StaticSimulationResponse struct {
 }
 
 type AzimuthOptimizationResponse struct {
-	OptimalAzimuth float64 `json:"optimal_azimuth"`
+	OptimalAzimuth     float64 `json:"optimal_azimuth"`
+	CoverageScore      float64 `json:"coverage_score"`
+	DemandScore        float64 `json:"demand_score"`
+	HitDemandBuildings int     `json:"hit_demand_buildings"`
+	DataQuality        string  `json:"data_quality"`
 }
 
 type SimulationStats struct {
@@ -156,8 +160,8 @@ func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) Azim
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 
 	type sweepResult struct {
-		azimuth float64
-		score   float64
+		azimuth   float64
+		breakdown CoverageScoreBreakdown
 	}
 
 	candidateCount := 36
@@ -180,10 +184,10 @@ func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) Azim
 				testAzimuth := float64(index * 10)
 				testReq := req
 				testReq.AzimuthDeg = testAzimuth
-				score := CoverageAreaScore(origin, testReq, buildings)
+				breakdown := CoverageAreaScoreBreakdown(origin, testReq, buildings)
 				results[index] = sweepResult{
-					azimuth: testAzimuth,
-					score:   score,
+					azimuth:   testAzimuth,
+					breakdown: breakdown,
 				}
 			}
 		}()
@@ -197,23 +201,51 @@ func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) Azim
 
 	best := results[0]
 	for _, result := range results[1:] {
-		if result.score > best.score {
+		if result.breakdown.TotalScore > best.breakdown.TotalScore {
 			best = result
 		}
 	}
+	demandSummary := buildings.DemandSummary("")
 	return AzimuthOptimizationResponse{
-		OptimalAzimuth: best.azimuth,
+		OptimalAzimuth:     best.azimuth,
+		CoverageScore:      math.Round(best.breakdown.CoverageScore*10) / 10,
+		DemandScore:        math.Round(best.breakdown.DemandScore*10) / 10,
+		HitDemandBuildings: best.breakdown.HitDemandBuildings,
+		DataQuality:        demandSummary.DataQuality,
 	}
 }
 
 func CoverageAreaScore(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) float64 {
-	total := 0.0
+	return CoverageAreaScoreBreakdown(origin, req, buildings).TotalScore
+}
+
+type CoverageScoreBreakdown struct {
+	CoverageScore      float64
+	DemandScore        float64
+	TotalScore         float64
+	HitDemandBuildings int
+}
+
+func CoverageAreaScoreBreakdown(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) CoverageScoreBreakdown {
+	breakdown := CoverageScoreBreakdown{}
+	uniqueDemandWeights := make(map[string]float64)
 	for index := 0; index < req.Rays; index++ {
 		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
 		terminal := simulateRayTerminal(origin, index, angle, req, buildings)
-		total += terminal.distanceMeters * terminal.distanceMeters
+		breakdown.CoverageScore += terminal.distanceMeters * terminal.distanceMeters
+		for buildingID, demandWeight := range terminal.hitBuildingDemandWeights {
+			uniqueDemandWeights[buildingID] = demandWeight
+		}
 	}
-	return total
+	for _, demandWeight := range uniqueDemandWeights {
+		if demandWeight <= 0 {
+			continue
+		}
+		breakdown.DemandScore += demandWeight * 10000
+	}
+	breakdown.HitDemandBuildings = len(uniqueDemandWeights)
+	breakdown.TotalScore = breakdown.CoverageScore + breakdown.DemandScore
+	return breakdown
 }
 
 func BeamAngleForIndex(azimuthDeg float64, beamWidthDeg float64, rayCount int, index int) float64 {
@@ -260,6 +292,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 	segmentIndex := 0
 	currentPoint := origin
 	cumulativeWallLoss := 0.0
+	hitBuildingDemandWeights := make(map[string]float64)
 	for startDistance := 0.0; startDistance < castDistance; startDistance += SegmentStepMeters {
 		endDistance := math.Min(startDistance+SegmentStepMeters, castDistance)
 		start := currentPoint
@@ -268,9 +301,10 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 
 		if startDistance > 0 && startRx <= ReceiverSensitivity {
 			terminal = rayTerminal{
-				blocked:        cumulativeWallLoss > 0,
-				distanceMeters: startDistance,
-				signalDBm:      startRx,
+				blocked:                  cumulativeWallLoss > 0,
+				distanceMeters:           startDistance,
+				signalDBm:                startRx,
+				hitBuildingDemandWeights: hitBuildingDemandWeights,
 			}
 			break
 		}
@@ -283,6 +317,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 
 		for _, intersection := range intersections {
 			hitDistance := startDistance + intersection.distanceMeters
+			recordHitBuildingDemandWeight(hitBuildingDemandWeights, intersection.building)
 			cumulativeWallLoss += wallLossPerIntersection
 			wallRx := ReceivedPowerDBm(hitDistance, req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
 			pathLoss := FreeSpacePathLossMetersGHz(hitDistance, req.FrequencyGHz) + cumulativeWallLoss
@@ -311,9 +346,10 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 
 			if isTerminalBlock {
 				terminal = rayTerminal{
-					blocked:        true,
-					distanceMeters: hitDistance,
-					signalDBm:      wallRx,
+					blocked:                  true,
+					distanceMeters:           hitDistance,
+					signalDBm:                wallRx,
+					hitBuildingDemandWeights: hitBuildingDemandWeights,
 				}
 				rayStopped = true
 				break
@@ -356,9 +392,10 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			}
 
 			terminal = rayTerminal{
-				blocked:        cumulativeWallLoss > 0,
-				distanceMeters: stopDistance,
-				signalDBm:      stopRx,
+				blocked:                  cumulativeWallLoss > 0,
+				distanceMeters:           stopDistance,
+				signalDBm:                stopRx,
+				hitBuildingDemandWeights: hitBuildingDemandWeights,
 			}
 			break
 		}
@@ -385,9 +422,10 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 		}
 
 		terminal = rayTerminal{
-			blocked:        false,
-			distanceMeters: endDistance,
-			signalDBm:      endRx,
+			blocked:                  false,
+			distanceMeters:           endDistance,
+			signalDBm:                endRx,
+			hitBuildingDemandWeights: hitBuildingDemandWeights,
 		}
 		currentPoint = nextPoint
 	}
@@ -405,12 +443,14 @@ type wallIntersection struct {
 	distanceMeters float64
 	point          Point
 	buildingID     string
+	building       *BuildingFootprint
 }
 
 type rayTerminal struct {
-	blocked        bool
-	distanceMeters float64
-	signalDBm      float64
+	blocked                  bool
+	distanceMeters           float64
+	signalDBm                float64
+	hitBuildingDemandWeights map[string]float64
 }
 
 func firstBuildingHitForSegment(origin Point, start Point, end Point, buildings *BuildingIndex) (bool, Point, *BuildingFootprint, int) {
@@ -457,6 +497,7 @@ func wallIntersectionsForSegment(origin Point, start Point, end Point, buildings
 				distanceMeters: distance,
 				point:          point,
 				buildingID:     building.ID,
+				building:       building,
 			})
 		}
 	}
@@ -477,6 +518,17 @@ func appendUniqueWallIntersection(intersections []wallIntersection, candidate wa
 		}
 	}
 	return append(intersections, candidate)
+}
+
+func recordHitBuildingDemandWeight(weights map[string]float64, building *BuildingFootprint) {
+	if weights == nil || building == nil || building.ID == "" {
+		return
+	}
+	demandWeight := building.DemandWeight
+	if demandWeight <= 0 {
+		return
+	}
+	weights[building.ID] = demandWeight
 }
 
 func makeRaySegmentFeature(

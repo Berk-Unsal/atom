@@ -378,6 +378,14 @@
       padding: 16px;
     }
 
+    .report-cards {
+      margin-top: 18px;
+    }
+
+    .report-figure {
+      margin-top: 18px;
+    }
+
     .figure-panel img {
       width: 100%;
       border-radius: 14px;
@@ -490,14 +498,15 @@
       <nav>
         <ul class="nav-list">
           <li><a href="#overview"><span>Overview</span><span>01</span></a></li>
-          <li><a href="#features"><span>Features</span><span>02</span></a></li>
-          <li><a href="#architecture"><span>Architecture</span><span>03</span></a></li>
-          <li><a href="#visuals"><span>Visualization</span><span>04</span></a></li>
-          <li><a href="#getting-started"><span>Getting Started</span><span>05</span></a></li>
-          <li><a href="#api"><span>API</span><span>06</span></a></li>
-          <li><a href="#deployment"><span>Deployment</span><span>07</span></a></li>
-          <li><a href="#faq"><span>FAQ</span><span>08</span></a></li>
-          <li><a href="#contributing"><span>Contributing</span><span>09</span></a></li>
+          <li><a href="#academic-report"><span>Academic Report</span><span>02</span></a></li>
+          <li><a href="#features"><span>Features</span><span>03</span></a></li>
+          <li><a href="#architecture"><span>Architecture</span><span>04</span></a></li>
+          <li><a href="#visuals"><span>Visualization</span><span>05</span></a></li>
+          <li><a href="#getting-started"><span>Getting Started</span><span>06</span></a></li>
+          <li><a href="#api"><span>API</span><span>07</span></a></li>
+          <li><a href="#deployment"><span>Deployment</span><span>08</span></a></li>
+          <li><a href="#faq"><span>FAQ</span><span>09</span></a></li>
+          <li><a href="#contributing"><span>Contributing</span><span>10</span></a></li>
         </ul>
       </nav>
     </aside>
@@ -518,6 +527,7 @@
           </p>
           <div class="hero-actions">
             <a class="button primary" href="#getting-started">Get started</a>
+            <a class="button" href="#academic-report">Read report</a>
             <a class="button" href="#visuals">View propagation</a>
             <a class="button" href="https://berkunsal.com" target="_blank" rel="noopener noreferrer">Berk Ünsal</a>
           </div>
@@ -563,6 +573,37 @@
             <p>Ray segments are colored by signal strength so the map reads like an RF heatmap instead of a flat overlay.</p>
           </div>
         </div>
+      </section>
+
+      <section class="panel" id="academic-report">
+        <h3 class="section-title">Academic report</h3>
+        <p class="section-copy">
+          The academic report documents the full A.T.O.M engineering process: local datasets, RF model evolution, segmented ray tracing, demand-aware optimization, before/after analysis, and the charted evidence behind the final residential-density demand surface.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="./academic-report.pdf">Open PDF</a>
+          <a class="button" href="./academic-report.md">View Markdown source</a>
+        </div>
+
+        <div class="section-grid report-cards">
+          <div class="card">
+            <h3>Before/after analysis</h3>
+            <p>Compares geometry-only coverage, POI weighting, and the final residential-density optimizer.</p>
+          </div>
+          <div class="card">
+            <h3>Demand surface metrics</h3>
+            <p>Explains how building metadata, residential signals, and local density became optimizer inputs.</p>
+          </div>
+          <div class="card">
+            <h3>RF model methodology</h3>
+            <p>Summarizes FSPL, EIRP, receiver sensitivity, wall penetration, beamforming, and segmented rays.</p>
+          </div>
+        </div>
+
+        <figure class="figure-panel report-figure">
+          <img src="./report/charts/before-after-demand-coverage.svg" alt="Before and after demand coverage chart" />
+          <figcaption>Demand visibility improved from geometry-only obstruction to POI and residential-density aware optimization.</figcaption>
+        </figure>
       </section>
 
       <section class="panel" id="features">
@@ -788,6 +829,8 @@
           These markdown files remain the canonical source material, but the published navigation stays inside this single docs page so GitHub Pages never has to hop between mixed markdown and HTML routes.
         </p>
         <div class="doc-grid">
+          <a class="doc-link" href="./academic-report.md"><span>academic-report.md</span><span>Academic report</span></a>
+          <a class="doc-link" href="./academic-report.pdf"><span>academic-report.pdf</span><span>Printable PDF</span></a>
           <a class="doc-link" href="#overview"><span>overview.md</span><span>Project context</span></a>
           <a class="doc-link" href="#features"><span>features.md</span><span>Capabilities</span></a>
           <a class="doc-link" href="#architecture"><span>architecture.md</span><span>System design</span></a>

@@ -26,8 +26,8 @@ export default function MapCanvas({
             center={[lat, lon]}
             radius={isSelected ? 8 : 5}
             pathOptions={{
-              color: isSelected ? "#0f172a" : "#0369a1",
-              fillColor: isSelected ? "#f8fafc" : "#38bdf8",
+              color: isSelected ? "#0b4f49" : "#1d4ed8",
+              fillColor: isSelected ? "#ffffff" : "#60a5fa",
               fillOpacity: isSelected ? 1 : 0.82,
               weight: isSelected ? 3 : 2,
             }}

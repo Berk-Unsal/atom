@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { Database, RefreshCw, RadioTower } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 import { networkTechLabelForFrequency } from "./utils/networkTech.js";
@@ -24,6 +24,7 @@ export default function App() {
     geojson: { type: "FeatureCollection", features: [] },
     stats: null,
   });
+  const [buildingSummary, setBuildingSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizationDiagnostics, setOptimizationDiagnostics] = useState(null);
@@ -31,13 +32,15 @@ export default function App() {
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`${API_BASE_URL}/api/towers`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Tower GeoJSON could not be loaded");
-        }
-        return response.json();
-      })
+    const loadJSON = async (path, label) => {
+      const response = await fetch(`${API_BASE_URL}${path}`);
+      if (!response.ok) {
+        throw new Error(`${label} could not be loaded`);
+      }
+      return response.json();
+    };
+
+    loadJSON("/api/towers", "Tower GeoJSON")
       .then((geojson) => {
         if (!isMounted) {
           return;
@@ -57,6 +60,30 @@ export default function App() {
       .catch((requestError) => {
         if (isMounted) {
           setError(requestError.message);
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch(`${API_BASE_URL}/api/buildings/summary`)
+      .then((response) => {
+        if (!response.ok) {
+          return null;
+        }
+        return response.json();
+      })
+      .then((summary) => {
+        if (isMounted && summary) {
+          setBuildingSummary(summary);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setBuildingSummary(null);
         }
       });
     return () => {
@@ -155,6 +182,7 @@ export default function App() {
     };
   }, [simulation, towers]);
   const activeNetworkTech = networkTechLabelForFrequency(settings.frequencyGHz);
+  const selectedTowerLabel = selectedTower?.cellId ?? "No tower";
 
   return (
     <main className="app-shell">
@@ -174,6 +202,17 @@ export default function App() {
             </a>
           </div>
         </div>
+
+        <section className="active-context" aria-label="Active simulation context">
+          <div>
+            <span>Active tower</span>
+            <strong>{selectedTowerLabel}</strong>
+          </div>
+          <div>
+            <span>Network</span>
+            <strong>{activeNetworkTech}</strong>
+          </div>
+        </section>
 
         <ControlPanel
           settings={settings}
@@ -201,6 +240,8 @@ export default function App() {
           />
         </section>
 
+        <DatasetPanel summary={buildingSummary} diagnostics={optimizationDiagnostics} />
+
         {error ? (
           <div className="error-banner" role="alert">
             {error}
@@ -214,6 +255,26 @@ export default function App() {
       </aside>
 
       <section className="map-stage" aria-label="Ankara propagation map">
+        <div className="map-hud" aria-label="Map simulation status">
+          <div className="hud-cluster">
+            <RadioTower size={18} />
+            <div>
+              <span>Cell {selectedTowerLabel}</span>
+              <strong>{activeNetworkTech}</strong>
+            </div>
+          </div>
+          <div className="hud-metrics">
+            <HudMetric label="Rays" value={stats.rayCount.toLocaleString()} />
+            <HudMetric
+              label="Avg Rx"
+              value={stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`}
+            />
+            <HudMetric
+              label="Range"
+              value={stats.maxRange === null ? "n/a" : `${stats.maxRange.toFixed(1)} m`}
+            />
+          </div>
+        </div>
         <MapCanvas
           towers={towers}
           selectedTower={selectedTower}
@@ -223,6 +284,55 @@ export default function App() {
         />
       </section>
     </main>
+  );
+}
+
+function DatasetPanel({ summary, diagnostics }) {
+  const dataQuality = diagnostics?.data_quality ?? summary?.data_quality ?? "unknown";
+  const totalBuildings = summary?.total_buildings ?? null;
+  const residential = summary?.residential_weighted_buildings ?? null;
+  const demand = summary?.demand_weighted_buildings ?? null;
+
+  return (
+    <section className="dataset-panel" aria-label="Dataset confidence">
+      <div className="panel-title">
+        <Database size={16} />
+        <span>Demand Surface</span>
+      </div>
+      <div className={`quality-meter ${dataQuality}`}>
+        <span>Data quality</span>
+        <strong>{dataQuality}</strong>
+      </div>
+      <div className="dataset-grid">
+        <MiniDatum
+          label="Buildings"
+          value={totalBuildings === null ? "n/a" : totalBuildings.toLocaleString()}
+        />
+        <MiniDatum label="POI demand" value={demand === null ? "n/a" : demand.toLocaleString()} />
+        <MiniDatum
+          label="Residential"
+          value={residential === null ? "n/a" : residential.toLocaleString()}
+        />
+      </div>
+    </section>
+  );
+}
+
+function HudMetric({ label, value }) {
+  return (
+    <div className="hud-metric">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function MiniDatum({ label, value }) {
+  return (
+    <div className="mini-datum">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
   );
 }
 

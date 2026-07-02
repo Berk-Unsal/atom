@@ -91,6 +91,32 @@ func main() {
 		}
 		c.JSON(http.StatusOK, raytracer.OptimizeAzimuth(req, buildingIndex))
 	})
+	router.POST("/api/optimize-network", func(c *gin.Context) {
+		var req raytracer.NetworkOptimizationRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid network optimization JSON: " + err.Error()})
+			return
+		}
+		raytracer.NormalizeNetworkOptimizationRequest(&req)
+		if validationError := validateNetworkOptimizationRequest(req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		c.JSON(http.StatusOK, raytracer.OptimizeNetwork(req, buildingIndex))
+	})
+	router.POST("/api/evaluate-network", func(c *gin.Context) {
+		var req raytracer.NetworkOptimizationRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid network evaluation JSON: " + err.Error()})
+			return
+		}
+		raytracer.NormalizeNetworkOptimizationRequest(&req)
+		if validationError := validateNetworkOptimizationRequest(req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		c.JSON(http.StatusOK, raytracer.EvaluateNetwork(req, buildingIndex))
+	})
 	router.POST("/api/coverage-gaps", func(c *gin.Context) {
 		var req raytracer.StaticSimulationRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -129,6 +155,27 @@ func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
 	return ""
 }
 
+func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest) string {
+	if len(req.Towers) < 2 || len(req.Towers) > 6 {
+		return "towers must contain between 2 and 6 selected towers"
+	}
+	if req.Rays < 8 || req.Rays > 720 {
+		return "rays must be between 8 and 720"
+	}
+	if req.RadiusMeters < 25 || req.RadiusMeters > 5000 {
+		return "radius_m must be between 25 and 5000"
+	}
+	if req.FrequencyGHz <= 0 || req.FrequencyGHz > 300 {
+		return "frequency_ghz must be between 0 and 300"
+	}
+	for _, tower := range req.Towers {
+		if tower.TowerLon < -180 || tower.TowerLon > 180 || tower.TowerLat < -90 || tower.TowerLat > 90 {
+			return "each tower must include valid tower_lon and tower_lat coordinates"
+		}
+	}
+	return ""
+}
+
 func getenv(key string, fallback string) string {
 	value := os.Getenv(key)
 	if value == "" {
@@ -145,7 +192,7 @@ func registerFrontendRoutes(router *gin.Engine) {
 		router.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"service": "A.T.O.M API",
-				"routes":  []string{"/healthz", "/api/towers", "/api/simulate", "/api/optimize-azimuth", "/api/coverage-gaps"},
+				"routes":  []string{"/healthz", "/api/towers", "/api/simulate", "/api/optimize-azimuth", "/api/optimize-network", "/api/evaluate-network", "/api/coverage-gaps"},
 			})
 		})
 		return

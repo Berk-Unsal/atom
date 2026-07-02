@@ -10,6 +10,7 @@ export function buildPlanningReport({
   comparison,
   coverageGaps,
   diagnostics,
+  networkOptimization,
   selectedTower,
   settings,
   simulation,
@@ -41,6 +42,7 @@ export function buildPlanningReport({
     gapStats,
     generatedAt,
     mapSvg,
+    networkOptimization,
     reportId,
     selectedTower,
     settings,
@@ -117,6 +119,8 @@ Generated: ${generatedAt}
 | Coverage tie-break | ${formatCompactNumber(report.diagnostics?.coverage_score)} |
 
 ${renderMarkdownComparisonSection(report)}
+
+${renderMarkdownNetworkSection(report)}
 
 ## Dataset Context
 
@@ -336,6 +340,7 @@ function renderPrintableReport(report) {
       <div class="map-wrap">${report.mapSvg}</div>
     </section>
     ${printComparisonSection(report)}
+    ${printNetworkSection(report)}
     <section class="grid">
       ${printTable("Decision Context", [
         ["Longitude", formatNumber(towerCoordinates[0], 6)],
@@ -526,6 +531,58 @@ export function getComparisonMetrics(comparison) {
     return [];
   }
 
+  if (comparison?.kind === "network") {
+    return [
+      createComparisonMetric({
+        after: after.networkScore,
+        before: before.networkScore,
+        compact: true,
+        digits: 1,
+        higherIsBetter: true,
+        key: "networkScore",
+        label: "Network score",
+        unit: "score",
+      }),
+      createComparisonMetric({
+        after: after.uniqueDemandBuildings,
+        before: before.uniqueDemandBuildings,
+        digits: 0,
+        higherIsBetter: true,
+        key: "uniqueDemandBuildings",
+        label: "Unique POI",
+        unit: "buildings",
+      }),
+      createComparisonMetric({
+        after: after.uniqueResidentialBuildings,
+        before: before.uniqueResidentialBuildings,
+        digits: 0,
+        higherIsBetter: true,
+        key: "uniqueResidentialBuildings",
+        label: "Unique residential",
+        unit: "buildings",
+      }),
+      createComparisonMetric({
+        after: after.overlapBuildings,
+        before: before.overlapBuildings,
+        digits: 0,
+        higherIsBetter: false,
+        key: "overlapBuildings",
+        label: "Overlap",
+        unit: "buildings",
+      }),
+      createComparisonMetric({
+        after: after.overlapPenalty,
+        before: before.overlapPenalty,
+        compact: true,
+        digits: 1,
+        higherIsBetter: false,
+        key: "overlapPenalty",
+        label: "Overlap penalty",
+        unit: "score",
+      }),
+    ].filter(Boolean);
+  }
+
   return [
     createComparisonMetric({
       after: after.avgPower,
@@ -674,7 +731,11 @@ function renderMarkdownComparisonSection(report) {
     return "";
   }
 
-  return `## Before/After Optimization Results
+  const title = report.comparison?.kind === "network"
+    ? "Network Before/After Optimization Results"
+    : "Before/After Optimization Results";
+
+  return `## ${title}
 
 ${renderMarkdownComparisonTable(report.comparisonMetrics)}
 
@@ -698,9 +759,12 @@ function printComparisonSection(report) {
   if (!report.comparisonMetrics?.length) {
     return "";
   }
+  const title = report.comparison?.kind === "network"
+    ? "Network Before/After Optimization Results"
+    : "Before/After Optimization Results";
 
   return `<section>
-      <h2>Before/After Optimization Results</h2>
+      <h2>${escapeHtml(title)}</h2>
       <div class="chart-wrap">
         ${report.comparisonBarChartSvg}
         ${report.comparisonSlopeChartSvg}
@@ -716,6 +780,64 @@ function printComparisonTable(metrics) {
         `<tr><td>${escapeHtml(metric.label)}</td><td>${escapeHtml(formatMetricValue(metric, metric.before))}</td><td>${escapeHtml(formatMetricValue(metric, metric.after))}</td><td>${escapeHtml(metric.deltaLabel)}</td></tr>`,
     )
     .join("")}</tbody></table>`;
+}
+
+function renderMarkdownNetworkSection(report) {
+  const optimization = report.networkOptimization;
+  if (!optimization?.stats) {
+    return "";
+  }
+  const stats = optimization.stats;
+  const towerRows = (optimization.optimized_towers ?? []).map(
+    (tower) =>
+      `| ${markdownValue(tower.id)} | ${formatNumber(tower.optimal_azimuth, 0)} deg | ${formatCompactNumber(tower.score)} |`,
+  );
+  return `## Multi-Tower Network Optimization
+
+| Metric | Value |
+|---|---:|
+| Network score | ${formatCompactNumber(stats.network_score)} |
+| Unique POI buildings | ${formatNumber(stats.unique_demand_buildings, 0)} |
+| Unique residential buildings | ${formatNumber(stats.unique_residential_buildings, 0)} |
+| Overlap buildings | ${formatNumber(stats.overlap_buildings, 0)} |
+| Demand score | ${formatCompactNumber(stats.demand_score)} |
+| Residential score | ${formatCompactNumber(stats.residential_score)} |
+| Coverage score | ${formatCompactNumber(stats.coverage_score)} |
+| Overlap penalty | ${formatCompactNumber(stats.overlap_penalty)} |
+| Data quality | ${markdownValue(stats.data_quality)} |
+
+| Cell | Optimized azimuth | Network score |
+|---|---:|---:|
+${towerRows.join("\n")}
+`;
+}
+
+function printNetworkSection(report) {
+  const optimization = report.networkOptimization;
+  if (!optimization?.stats) {
+    return "";
+  }
+  const stats = optimization.stats;
+  const towerRows = (optimization.optimized_towers ?? [])
+    .map(
+      (tower) =>
+        `<tr><td>${escapeHtml(tower.id)}</td><td>${formatNumber(tower.optimal_azimuth, 0)} deg</td><td>${formatCompactNumber(tower.score)}</td></tr>`,
+    )
+    .join("");
+  return `<section class="grid">
+      ${printTable("Network Optimization", [
+        ["Network score", formatCompactNumber(stats.network_score)],
+        ["Unique POI buildings", formatNumber(stats.unique_demand_buildings, 0)],
+        ["Unique residential buildings", formatNumber(stats.unique_residential_buildings, 0)],
+        ["Overlap buildings", formatNumber(stats.overlap_buildings, 0)],
+        ["Overlap penalty", formatCompactNumber(stats.overlap_penalty)],
+        ["Data quality", stats.data_quality ?? "n/a"],
+      ])}
+      <div>
+        <h2>Optimized Sectors</h2>
+        <table><thead><tr><th>Cell</th><th>Azimuth</th><th>Score</th></tr></thead><tbody>${towerRows}</tbody></table>
+      </div>
+    </section>`;
 }
 
 function createComparisonMetric({ after, before, compact = false, digits, higherIsBetter, key, label, unit }) {

@@ -318,6 +318,92 @@ func TestCoverageGapFinderIgnoresDemandOutsideBeam(t *testing.T) {
 	}
 }
 
+func TestNetworkCoverageCountsDuplicateDemandOnceAndPenalizesOverlap(t *testing.T) {
+	origin := Point{Lon: 32, Lat: 39}
+	buildings := testDemandBuildingAt(t, "shared-demand", DestinationPoint(origin, 90, 18), 4)
+	req := NetworkOptimizationRequest{
+		Towers: []NetworkTowerRequest{
+			{ID: "a", TowerLon: origin.Lon, TowerLat: origin.Lat, AzimuthDeg: 90},
+			{ID: "b", TowerLon: origin.Lon - 0.00005, TowerLat: origin.Lat, AzimuthDeg: 90},
+		},
+		Rays:         3,
+		RadiusMeters: 80,
+		FrequencyGHz: 2.6,
+		TxPowerDBm:   30,
+		BeamWidthDeg: 40,
+	}
+
+	score := NetworkCoverageScoreBreakdown(req, []float64{90, 90}, buildings)
+	if score.UniqueDemandBuildings != 1 {
+		t.Fatalf("unique demand buildings = %d, want 1", score.UniqueDemandBuildings)
+	}
+	if score.DemandScore != 25*DemandScoreMultiplier {
+		t.Fatalf("demand score = %.1f, want one demand building reward", score.DemandScore)
+	}
+	if score.OverlapBuildings != 1 {
+		t.Fatalf("overlap buildings = %d, want 1", score.OverlapBuildings)
+	}
+	if score.OverlapPenalty != NetworkOverlapPenaltyPerBuilding {
+		t.Fatalf("overlap penalty = %.1f, want %.1f", score.OverlapPenalty, NetworkOverlapPenaltyPerBuilding)
+	}
+}
+
+func TestOptimizeNetworkImprovesOrEqualsBaselineClusterScore(t *testing.T) {
+	origin := Point{Lon: 32, Lat: 39}
+	buildings := testDemandBuildingAt(t, "east-demand", DestinationPoint(origin, 90, 18), 4)
+	req := NetworkOptimizationRequest{
+		Towers: []NetworkTowerRequest{
+			{ID: "a", TowerLon: origin.Lon, TowerLat: origin.Lat, AzimuthDeg: 0},
+			{ID: "b", TowerLon: origin.Lon - 0.00005, TowerLat: origin.Lat, AzimuthDeg: 0},
+		},
+		Rays:         3,
+		RadiusMeters: 80,
+		FrequencyGHz: 2.6,
+		TxPowerDBm:   30,
+		BeamWidthDeg: 40,
+	}
+
+	baseline := NetworkCoverageScoreBreakdown(req, []float64{0, 0}, buildings)
+	optimized := OptimizeNetwork(req, buildings)
+	if optimized.Stats.NetworkScore < baseline.NetworkScore {
+		t.Fatalf("optimized network score = %.1f, baseline = %.1f; want optimized >= baseline", optimized.Stats.NetworkScore, baseline.NetworkScore)
+	}
+	if len(optimized.OptimizedTowers) != 2 {
+		t.Fatalf("optimized towers = %d, want 2", len(optimized.OptimizedTowers))
+	}
+}
+
+func TestEvaluateNetworkUsesCurrentTowerAzimuths(t *testing.T) {
+	origin := Point{Lon: 32, Lat: 39}
+	buildings := testDemandBuildingAt(t, "east-demand", DestinationPoint(origin, 90, 18), 4)
+	req := NetworkOptimizationRequest{
+		Towers: []NetworkTowerRequest{
+			{ID: "a", TowerLon: origin.Lon, TowerLat: origin.Lat, AzimuthDeg: 0},
+			{ID: "b", TowerLon: origin.Lon - 0.00005, TowerLat: origin.Lat, AzimuthDeg: 0},
+		},
+		Rays:         3,
+		RadiusMeters: 80,
+		FrequencyGHz: 2.6,
+		TxPowerDBm:   30,
+		BeamWidthDeg: 40,
+	}
+
+	evaluated := EvaluateNetwork(req, buildings)
+	baseline := NetworkCoverageScoreBreakdown(req, []float64{0, 0}, buildings).rounded()
+	if evaluated.Stats.NetworkScore != baseline.NetworkScore {
+		t.Fatalf("evaluated network score = %.1f, baseline = %.1f", evaluated.Stats.NetworkScore, baseline.NetworkScore)
+	}
+	if evaluated.Stats.UniqueDemandBuildings != baseline.UniqueDemandBuildings {
+		t.Fatalf("evaluated unique demand = %d, baseline = %d", evaluated.Stats.UniqueDemandBuildings, baseline.UniqueDemandBuildings)
+	}
+	if len(evaluated.OptimizedTowers) != 2 {
+		t.Fatalf("evaluated towers = %d, want 2", len(evaluated.OptimizedTowers))
+	}
+	if evaluated.OptimizedTowers[0].OptimalAzimuth != 0 {
+		t.Fatalf("evaluated azimuth = %.1f, want current azimuth 0", evaluated.OptimizedTowers[0].OptimalAzimuth)
+	}
+}
+
 func testDemandBuildingAt(t *testing.T, id string, center Point, halfSizeMeters float64) *BuildingIndex {
 	t.Helper()
 	latDelta := halfSizeMeters / 111_320

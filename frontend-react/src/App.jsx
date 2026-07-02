@@ -11,6 +11,7 @@ import {
 import ControlPanel from "./components/ControlPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 import { networkTechLabelForFrequency } from "./utils/networkTech.js";
+import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/polygonSelection.js";
 import {
   buildPlanningReport,
   buildComparisonBarChartSvg,
@@ -34,9 +35,14 @@ const DEFAULT_SIMULATION = {
 
 export default function App() {
   const [activeInspectorTab, setActiveInspectorTab] = useState("plan");
+  const [planningMode, setPlanningMode] = useState("single");
+  const [isDrawingSelection, setIsDrawingSelection] = useState(false);
+  const [selectionPolygon, setSelectionPolygon] = useState([]);
+  const [selectionNotice, setSelectionNotice] = useState("");
   const [settings, setSettings] = useState(DEFAULT_SIMULATION);
   const [towers, setTowers] = useState([]);
   const [selectedTower, setSelectedTower] = useState(null);
+  const [selectedNetworkTowerIds, setSelectedNetworkTowerIds] = useState([]);
   const [simulation, setSimulation] = useState({
     geojson: { type: "FeatureCollection", features: [] },
     stats: null,
@@ -51,6 +57,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizationDiagnostics, setOptimizationDiagnostics] = useState(null);
+  const [networkOptimization, setNetworkOptimization] = useState(null);
   const [comparison, setComparison] = useState({ before: null, after: null });
   const [error, setError] = useState("");
   const skipNextSimulationRun = useRef(false);
@@ -125,6 +132,14 @@ export default function App() {
     return { coverageGaps: gapPayload, simulation: simulationPayload };
   }, []);
 
+  const simulateRaysForSettings = useCallback(async (tower, nextSettings) => {
+    return postJSON(
+      "/api/simulate",
+      buildSimulationPayload(tower, nextSettings),
+      "Simulation request failed",
+    );
+  }, []);
+
   const runSimulation = useCallback(async () => {
     if (!selectedTower) {
       setError("No tower selected");
@@ -140,6 +155,7 @@ export default function App() {
       );
       setSimulation(simulationPayload);
       setCoverageGaps(gapPayload);
+      setNetworkOptimization(null);
       setSimulationRevision((current) => current + 1);
       setCoverageGapRevision((current) => current + 1);
     } catch (requestError) {
@@ -212,16 +228,172 @@ export default function App() {
     simulation,
   ]);
 
-  const updateSettings = useCallback((nextSettings) => {
-    setOptimizationDiagnostics(null);
+  const optimizeNetwork = useCallback(async () => {
+    const selectedNetworkTowers = towers.filter((tower) => selectedNetworkTowerIds.includes(tower.id));
+    if (selectedNetworkTowers.length < 2) {
+      setError("Select at least 2 towers for network optimization");
+      return;
+    }
+
+    setIsOptimizing(true);
+    setError("");
+    try {
+      const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings);
+      const baselinePayload = await postJSON(
+        "/api/evaluate-network",
+        networkRequest,
+        "Network baseline request failed",
+      );
+      const payload = await postJSON(
+        "/api/optimize-network",
+        networkRequest,
+        "Network optimization request failed",
+      );
+      const optimizedByID = new Map(
+        (payload.optimized_towers ?? []).map((tower) => [String(tower.id), tower]),
+      );
+      const simulations = await Promise.all(
+        selectedNetworkTowers.map((tower) => {
+          const optimizedTower = optimizedByID.get(String(tower.cellId ?? tower.id));
+          return simulateRaysForSettings(tower, {
+            ...settings,
+            azimuthDeg: Number(optimizedTower?.optimal_azimuth ?? settings.azimuthDeg),
+          });
+        }),
+      );
+      const beforeSnapshot = buildNetworkComparisonSnapshot({
+        label: "Before",
+        optimization: baselinePayload,
+        settings,
+        towers: selectedNetworkTowers,
+      });
+      const afterSnapshot = buildNetworkComparisonSnapshot({
+        label: "After",
+        optimization: payload,
+        settings,
+        towers: selectedNetworkTowers,
+      });
+      setNetworkOptimization(payload);
+      setOptimizationDiagnostics(null);
+      setComparison({ kind: "network", before: beforeSnapshot, after: afterSnapshot });
+      setSimulation(combineNetworkSimulations(simulations));
+      setCoverageGaps({ geojson: { type: "FeatureCollection", features: [] }, stats: null });
+      setSimulationRevision((current) => current + 1);
+      setCoverageGapRevision((current) => current + 1);
+      setActiveInspectorTab("results");
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsOptimizing(false);
+    }
+  }, [selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+
+  const resetNetworkArtifacts = useCallback(() => {
+    setNetworkOptimization(null);
     setComparison({ before: null, after: null });
-    setSettings(nextSettings);
   }, []);
 
-  const selectTower = useCallback((tower) => {
+  const updateSettings = useCallback((nextSettings) => {
     setOptimizationDiagnostics(null);
-    setComparison({ before: null, after: null });
+    resetNetworkArtifacts();
+    setSettings(nextSettings);
+  }, [resetNetworkArtifacts]);
+
+  const selectTower = useCallback((tower) => {
+    if (planningMode === "network") {
+      resetNetworkArtifacts();
+      setSelectionNotice("");
+      setSelectedNetworkTowerIds((current) => {
+        if (current.includes(tower.id)) {
+          return current.filter((id) => id !== tower.id);
+        }
+        if (current.length >= 6) {
+          setError("Network optimization supports up to 6 selected towers");
+          return current;
+        }
+        setError("");
+        return [...current, tower.id];
+      });
+      setSelectedTower(tower);
+      return;
+    }
+    setOptimizationDiagnostics(null);
+    resetNetworkArtifacts();
     setSelectedTower(tower);
+  }, [planningMode, resetNetworkArtifacts]);
+
+  const changePlanningMode = useCallback((mode) => {
+    setPlanningMode(mode);
+    setOptimizationDiagnostics(null);
+    resetNetworkArtifacts();
+    setIsDrawingSelection(false);
+    setSelectionPolygon([]);
+    setSelectionNotice("");
+    if (mode === "network") {
+      setSelectedNetworkTowerIds((current) => {
+        if (current.length > 0) {
+          return current;
+        }
+        return selectedTower ? [selectedTower.id] : [];
+      });
+    }
+  }, [resetNetworkArtifacts, selectedTower]);
+
+  const startAreaSelection = useCallback(() => {
+    if (planningMode !== "network") {
+      changePlanningMode("network");
+    }
+    setIsDrawingSelection(true);
+    setSelectionPolygon([]);
+    setSelectionNotice("Click map vertices, then double-click or press Enter to finish.");
+  }, [changePlanningMode, planningMode]);
+
+  const cancelAreaSelection = useCallback(() => {
+    setIsDrawingSelection(false);
+    setSelectionPolygon([]);
+    setSelectionNotice("");
+  }, []);
+
+  const clearNetworkSelection = useCallback(() => {
+    setSelectedNetworkTowerIds([]);
+    setSelectionPolygon([]);
+    setSelectionNotice("");
+    resetNetworkArtifacts();
+  }, [resetNetworkArtifacts]);
+
+  const finishAreaSelection = useCallback((polygon) => {
+    const finalPolygon = polygon ?? selectionPolygon;
+    if (!Array.isArray(finalPolygon) || finalPolygon.length < 3) {
+      setSelectionNotice("Add at least 3 points to finish an area.");
+      return;
+    }
+
+    const inside = towers.filter((tower) => pointInPolygon(tower.coordinates, finalPolygon));
+    if (inside.length < 2) {
+      setSelectionNotice(`${inside.length} tower${inside.length === 1 ? "" : "s"} found. Draw an area with at least 2 towers.`);
+      setIsDrawingSelection(false);
+      setSelectionPolygon(finalPolygon);
+      return;
+    }
+
+    const centroid = polygonCentroid(finalPolygon);
+    const selected = [...inside]
+      .sort((left, right) => distanceToCentroid(left, centroid) - distanceToCentroid(right, centroid))
+      .slice(0, 6);
+    setSelectedNetworkTowerIds(selected.map((tower) => tower.id));
+    setSelectedTower((current) => selected[0] ?? current);
+    resetNetworkArtifacts();
+    setIsDrawingSelection(false);
+    setSelectionPolygon(finalPolygon);
+    setSelectionNotice(
+      inside.length > 6
+        ? `${inside.length} towers found, nearest 6 selected.`
+        : `${selected.length} towers selected from drawn area.`,
+    );
+  }, [resetNetworkArtifacts, selectionPolygon, towers]);
+
+  const addSelectionPolygonPoint = useCallback((coordinate) => {
+    setSelectionPolygon((current) => [...current, coordinate]);
   }, []);
 
   useEffect(() => {
@@ -248,6 +420,15 @@ export default function App() {
   const activeNetworkTech = networkTechLabelForFrequency(settings.frequencyGHz);
   const selectedTowerLabel = selectedTower?.cellId ?? "No tower";
   const runState = isLoading ? "Simulating" : isOptimizing ? "Optimizing" : "Ready";
+  const hudDemandMetric = networkOptimization?.stats
+    ? {
+        label: "Overlap",
+        value: (networkOptimization.stats.overlap_buildings ?? 0).toLocaleString(),
+      }
+    : {
+        label: "Gaps",
+        value: gapStats?.gap_buildings?.toLocaleString() ?? "n/a",
+      };
   const createPlanningReport = useCallback(
     () =>
       buildPlanningReport({
@@ -256,6 +437,7 @@ export default function App() {
         coverageGaps,
         diagnostics: optimizationDiagnostics,
         comparison,
+        networkOptimization,
         selectedTower,
         settings,
         simulation,
@@ -265,6 +447,7 @@ export default function App() {
       activeNetworkTech,
       buildingSummary,
       comparison,
+      networkOptimization,
       coverageGaps,
       optimizationDiagnostics,
       selectedTower,
@@ -315,6 +498,17 @@ export default function App() {
               onOptimizeAzimuth={optimizeAzimuth}
               isLoading={isLoading}
               isOptimizing={isOptimizing}
+              networkSelectionCount={selectedNetworkTowerIds.length}
+              onCancelAreaSelection={cancelAreaSelection}
+              onClearNetworkSelection={clearNetworkSelection}
+              onDrawArea={startAreaSelection}
+              onFinishAreaSelection={() => finishAreaSelection()}
+              onOptimizeNetwork={optimizeNetwork}
+              onPlanningModeChange={changePlanningMode}
+              selectionCanFinish={selectionPolygon.length >= 3}
+              selectionNotice={selectionNotice}
+              planningMode={planningMode}
+              isDrawingSelection={isDrawingSelection}
             />
           ) : null}
 
@@ -322,6 +516,7 @@ export default function App() {
             <ResultsPanel
               comparison={comparison}
               diagnostics={optimizationDiagnostics}
+              networkOptimization={networkOptimization}
               onExportMarkdown={exportMarkdownReport}
               onExportPdf={exportPdfReport}
               gapStats={gapStats}
@@ -360,18 +555,25 @@ export default function App() {
               label="Range"
               value={stats.maxRange === null ? "n/a" : `${stats.maxRange.toFixed(1)} m`}
             />
-            <HudMetric label="Gaps" value={gapStats?.gap_buildings?.toLocaleString() ?? "n/a"} />
+            <HudMetric label={hudDemandMetric.label} value={hudDemandMetric.value} />
           </div>
         </div>
         <MapCanvas
           towers={towers}
           selectedTower={selectedTower}
+          selectedNetworkTowerIds={selectedNetworkTowerIds}
           onSelectTower={selectTower}
           simulation={simulation.geojson}
           rayLayerKey={simulationRevision}
           coverageGaps={coverageGaps.geojson}
           coverageGapLayerKey={coverageGapRevision}
           activeNetworkTech={activeNetworkTech}
+          isDrawingSelection={isDrawingSelection}
+          onAddSelectionPolygonPoint={addSelectionPolygonPoint}
+          onCancelAreaSelection={cancelAreaSelection}
+          onFinishAreaSelection={finishAreaSelection}
+          planningMode={planningMode}
+          selectionPolygon={selectionPolygon}
         />
       </section>
     </main>
@@ -460,6 +662,22 @@ function buildSimulationPayload(selectedTower, settings) {
   };
 }
 
+function buildNetworkOptimizationPayload(selectedNetworkTowers, settings) {
+  return {
+    towers: selectedNetworkTowers.map((tower) => ({
+      id: String(tower.cellId ?? tower.id),
+      tower_lon: tower.coordinates[0],
+      tower_lat: tower.coordinates[1],
+      azimuth: settings.azimuthDeg,
+    })),
+    rays: settings.rayCount,
+    radius_m: settings.radiusMeters,
+    frequency_ghz: settings.frequencyGHz,
+    tx_power_dbm: settings.txPowerDbm,
+    beam_width: settings.beamWidthDeg,
+  };
+}
+
 async function postJSON(path, payload, fallbackMessage) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
@@ -473,7 +691,7 @@ async function postJSON(path, payload, fallbackMessage) {
   return responsePayload;
 }
 
-function ResultsPanel({ comparison, diagnostics, gapStats, onExportMarkdown, onExportPdf, stats }) {
+function ResultsPanel({ comparison, diagnostics, gapStats, networkOptimization, onExportMarkdown, onExportPdf, stats }) {
   return (
     <section className="results-panel" aria-label="Simulation results">
       <div className="panel-title">
@@ -495,10 +713,43 @@ function ResultsPanel({ comparison, diagnostics, gapStats, onExportMarkdown, onE
           value={stats.minRange === null ? "n/a" : `${stats.minRange.toFixed(1)} m`}
         />
       </div>
-      <CoverageGapPanel stats={gapStats} />
-      <OptimizerBreakdown diagnostics={diagnostics} />
+      {networkOptimization ? null : <CoverageGapPanel stats={gapStats} />}
+      {networkOptimization ? null : <OptimizerBreakdown diagnostics={diagnostics} />}
+      <NetworkOptimizationPanel optimization={networkOptimization} />
       <ComparisonPanel comparison={comparison} />
       <ReportExportPanel onExportMarkdown={onExportMarkdown} onExportPdf={onExportPdf} />
+    </section>
+  );
+}
+
+function NetworkOptimizationPanel({ optimization }) {
+  if (!optimization) {
+    return null;
+  }
+  const stats = optimization.stats ?? {};
+  return (
+    <section className="network-card" aria-label="Network optimization summary">
+      <div className="panel-title">
+        <RadioTower size={16} />
+        <span>Network Optimization</span>
+      </div>
+      <div className="metric-list compact">
+        <MetricRow label="Network score" value={formatCompactNumber(stats.network_score)} />
+        <MetricRow label="Unique POI" value={(stats.unique_demand_buildings ?? 0).toLocaleString()} />
+        <MetricRow
+          label="Unique residential"
+          value={(stats.unique_residential_buildings ?? 0).toLocaleString()}
+        />
+        <MetricRow label="Overlap buildings" value={(stats.overlap_buildings ?? 0).toLocaleString()} />
+        <MetricRow label="Overlap penalty" value={formatCompactNumber(stats.overlap_penalty)} />
+      </div>
+      <div className="network-tower-list">
+        {(optimization.optimized_towers ?? []).map((tower) => (
+          <span key={tower.id}>
+            Cell {tower.id}: {Number(tower.optimal_azimuth ?? 0).toFixed(0)} deg
+          </span>
+        ))}
+      </div>
     </section>
   );
 }
@@ -653,8 +904,8 @@ function ComparisonPanel({ comparison }) {
           <span>Before / After</span>
         </div>
         <p className="empty-note">
-          Run Auto-Optimize to capture the current manual plan as Before and compare it with the optimized
-          result.
+          Run Auto-Optimize or Optimize Network to capture the current plan as Before and compare it
+          with the optimized result.
         </p>
       </section>
     );
@@ -725,12 +976,66 @@ function buildComparisonSnapshot({ coverageGaps, diagnostics, label, settings, s
   return {
     coverageGaps,
     diagnostics,
+    kind: "single",
     label,
     settings: { ...settings },
     stats: normalizeSimulationStats(simulation, coverageGaps),
     timestamp: new Date().toISOString(),
     tower,
   };
+}
+
+function buildNetworkComparisonSnapshot({ label, optimization, settings, towers }) {
+  return {
+    kind: "network",
+    label,
+    optimization,
+    settings: { ...settings },
+    stats: normalizeNetworkStats(optimization),
+    timestamp: new Date().toISOString(),
+    towers,
+  };
+}
+
+function combineNetworkSimulations(simulations) {
+  const features = simulations.flatMap((payload, simulationIndex) =>
+    (payload?.geojson?.features ?? []).map((feature) => ({
+      ...feature,
+      properties: {
+        ...(feature.properties ?? {}),
+        network_tower_index: simulationIndex,
+      },
+    })),
+  );
+  const stats = simulations.map((payload) => payload?.stats).filter(Boolean);
+  return {
+    geojson: {
+      type: "FeatureCollection",
+      features,
+    },
+    stats: {
+      avg_rx_dbm: average(stats.map((item) => item.avg_rx_dbm)),
+      blocked_pct: average(stats.map((item) => item.blocked_pct)),
+      max_range_m: Math.max(...stats.map((item) => Number(item.max_range_m ?? 0)), 0),
+      min_range_m: minFinite(stats.map((item) => item.min_range_m)),
+    },
+  };
+}
+
+function average(values) {
+  const numbers = values.map(Number).filter(Number.isFinite);
+  if (numbers.length === 0) {
+    return 0;
+  }
+  return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
+}
+
+function minFinite(values) {
+  const numbers = values.map(Number).filter(Number.isFinite);
+  if (numbers.length === 0) {
+    return 0;
+  }
+  return Math.min(...numbers);
 }
 
 function normalizeSimulationStats(simulation, coverageGaps) {
@@ -744,5 +1049,19 @@ function normalizeSimulationStats(simulation, coverageGaps) {
     rayCount: simulation?.geojson?.features?.length ?? 0,
     totalGapDemand: coverageGaps?.stats?.total_gap_demand ?? null,
     worstRx: coverageGaps?.stats?.worst_rx_dbm ?? null,
+  };
+}
+
+function normalizeNetworkStats(optimization) {
+  const stats = optimization?.stats ?? {};
+  return {
+    coverageScore: stats.coverage_score ?? null,
+    demandScore: stats.demand_score ?? null,
+    networkScore: stats.network_score ?? null,
+    overlapBuildings: stats.overlap_buildings ?? null,
+    overlapPenalty: stats.overlap_penalty ?? null,
+    residentialScore: stats.residential_score ?? null,
+    uniqueDemandBuildings: stats.unique_demand_buildings ?? null,
+    uniqueResidentialBuildings: stats.unique_residential_buildings ?? null,
   };
 }

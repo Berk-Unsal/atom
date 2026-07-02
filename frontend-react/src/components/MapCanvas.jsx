@@ -1,4 +1,5 @@
-import { CircleMarker, GeoJSON, MapContainer, Popup, TileLayer } from "react-leaflet";
+import { useEffect } from "react";
+import { CircleMarker, GeoJSON, MapContainer, Polygon, Polyline, Popup, TileLayer, useMapEvents } from "react-leaflet";
 import { rxPowerColor } from "../utils/geojson.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
@@ -6,12 +7,19 @@ const ANKARA_CENTER = [39.9208, 32.8541];
 export default function MapCanvas({
   towers,
   selectedTower,
+  selectedNetworkTowerIds = [],
   onSelectTower,
   simulation,
   rayLayerKey,
   coverageGaps,
   coverageGapLayerKey,
   activeNetworkTech,
+  isDrawingSelection,
+  onAddSelectionPolygonPoint,
+  onCancelAreaSelection,
+  onFinishAreaSelection,
+  planningMode,
+  selectionPolygon,
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map">
@@ -19,23 +27,37 @@ export default function MapCanvas({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <SelectionPolygonLayer
+        isDrawing={isDrawingSelection}
+        onAddPoint={onAddSelectionPolygonPoint}
+        onCancel={onCancelAreaSelection}
+        onFinish={onFinishAreaSelection}
+        polygon={selectionPolygon}
+      />
 
       {towers.map((tower) => {
         const [lon, lat] = tower.coordinates;
         const isSelected = selectedTower?.id === tower.id;
+        const isNetworkSelected = selectedNetworkTowerIds.includes(tower.id);
         return (
           <CircleMarker
             key={tower.id}
             center={[lat, lon]}
-            radius={isSelected ? 8 : 5}
+            radius={isNetworkSelected ? 8 : isSelected ? 8 : 5}
             pathOptions={{
-              color: isSelected ? "#0b4f49" : "#1d4ed8",
-              fillColor: isSelected ? "#ffffff" : "#60a5fa",
-              fillOpacity: isSelected ? 1 : 0.82,
-              weight: isSelected ? 3 : 2,
+              color: isNetworkSelected ? "#b45309" : isSelected ? "#0b4f49" : "#1d4ed8",
+              fillColor: isNetworkSelected ? "#fef3c7" : isSelected ? "#ffffff" : "#60a5fa",
+              fillOpacity: isNetworkSelected || isSelected ? 1 : 0.82,
+              weight: isNetworkSelected || isSelected ? 3 : 2,
             }}
             eventHandlers={{
-              click: () => onSelectTower(tower),
+              click: (event) => {
+                if (isDrawingSelection) {
+                  return;
+                }
+                event.originalEvent?.stopPropagation();
+                onSelectTower(tower);
+              },
             }}
           >
             <Popup>
@@ -48,6 +70,12 @@ export default function MapCanvas({
                   <dt>Active Node</dt>
                   <dd>{activeNetworkTech}</dd>
                 </div>
+                {planningMode === "network" ? (
+                  <div>
+                    <dt>Cluster</dt>
+                    <dd>{isNetworkSelected ? "Selected" : "Click to add"}</dd>
+                  </div>
+                ) : null}
               </dl>
             </Popup>
           </CircleMarker>
@@ -57,6 +85,84 @@ export default function MapCanvas({
       <RayGeoJSONLayer simulation={simulation} layerKey={rayLayerKey} />
       <CoverageGapLayer gaps={coverageGaps} layerKey={coverageGapLayerKey} />
     </MapContainer>
+  );
+}
+
+function SelectionPolygonLayer({ isDrawing, onAddPoint, onCancel, onFinish, polygon }) {
+  useMapEvents({
+    click(event) {
+      if (!isDrawing) {
+        return;
+      }
+      onAddPoint([event.latlng.lng, event.latlng.lat]);
+    },
+    dblclick(event) {
+      if (!isDrawing) {
+        return;
+      }
+      event.originalEvent?.preventDefault();
+      onFinish(polygon);
+    },
+  });
+
+  useEffect(() => {
+    if (!isDrawing) {
+      return undefined;
+    }
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onCancel();
+      }
+      if (event.key === "Enter") {
+        onFinish(polygon);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isDrawing, onCancel, onFinish, polygon]);
+
+  if (!Array.isArray(polygon) || polygon.length === 0) {
+    return null;
+  }
+
+  const positions = polygon.map(([lon, lat]) => [lat, lon]);
+  return (
+    <>
+      {positions.length >= 3 ? (
+        <Polygon
+          positions={positions}
+          pathOptions={{
+            color: "#b45309",
+            fillColor: "#f59e0b",
+            fillOpacity: 0.15,
+            opacity: 0.9,
+            weight: 2,
+          }}
+        />
+      ) : (
+        <Polyline
+          positions={positions}
+          pathOptions={{
+            color: "#b45309",
+            opacity: 0.9,
+            weight: 2,
+          }}
+        />
+      )}
+      {positions.map((position, index) => (
+        <CircleMarker
+          key={`${position[0]}-${position[1]}-${index}`}
+          center={position}
+          radius={4}
+          pathOptions={{
+            color: "#92400e",
+            fillColor: "#f59e0b",
+            fillOpacity: 0.95,
+            weight: 2,
+          }}
+        />
+      ))}
+    </>
   );
 }
 

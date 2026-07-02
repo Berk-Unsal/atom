@@ -14,6 +14,7 @@ const DemandScoreMultiplier = 10000.0
 const ResidentialScoreMultiplier = 10000.0
 const CoverageTieBreakerPerRay = 100.0
 const CoverageTieBreakerMaxMeters = 500.0
+const NetworkOverlapPenaltyPerBuilding = 2500.0
 const CoveredBuildingThresholdDBm = -100.0
 const MaxCoverageGapFeatures = 500
 
@@ -26,6 +27,22 @@ type StaticSimulationRequest struct {
 	TxPowerDBm   float64 `json:"tx_power_dbm"`
 	AzimuthDeg   float64 `json:"azimuth"`
 	BeamWidthDeg float64 `json:"beam_width"`
+}
+
+type NetworkTowerRequest struct {
+	ID         string  `json:"id"`
+	TowerLon   float64 `json:"tower_lon"`
+	TowerLat   float64 `json:"tower_lat"`
+	AzimuthDeg float64 `json:"azimuth"`
+}
+
+type NetworkOptimizationRequest struct {
+	Towers       []NetworkTowerRequest `json:"towers"`
+	Rays         int                   `json:"rays"`
+	RadiusMeters float64               `json:"radius_m"`
+	FrequencyGHz float64               `json:"frequency_ghz"`
+	TxPowerDBm   float64               `json:"tx_power_dbm"`
+	BeamWidthDeg float64               `json:"beam_width"`
 }
 
 type RayFeatureCollection struct {
@@ -46,6 +63,29 @@ type AzimuthOptimizationResponse struct {
 	HitDemandBuildings      int     `json:"hit_demand_buildings"`
 	HitResidentialBuildings int     `json:"hit_residential_buildings"`
 	DataQuality             string  `json:"data_quality"`
+}
+
+type NetworkOptimizedTower struct {
+	ID             string  `json:"id"`
+	OptimalAzimuth float64 `json:"optimal_azimuth"`
+	Score          float64 `json:"score"`
+}
+
+type NetworkOptimizationStats struct {
+	NetworkScore               float64 `json:"network_score"`
+	UniqueDemandBuildings      int     `json:"unique_demand_buildings"`
+	UniqueResidentialBuildings int     `json:"unique_residential_buildings"`
+	OverlapBuildings           int     `json:"overlap_buildings"`
+	DemandScore                float64 `json:"demand_score"`
+	ResidentialScore           float64 `json:"residential_score"`
+	CoverageScore              float64 `json:"coverage_score"`
+	OverlapPenalty             float64 `json:"overlap_penalty"`
+	DataQuality                string  `json:"data_quality"`
+}
+
+type NetworkOptimizationResponse struct {
+	OptimizedTowers []NetworkOptimizedTower  `json:"optimized_towers"`
+	Stats           NetworkOptimizationStats `json:"stats"`
 }
 
 type CoverageGapResponse struct {
@@ -149,6 +189,33 @@ func NormalizeStaticSimulationRequest(req *StaticSimulationRequest) {
 	}
 	if req.BeamWidthDeg > 360 {
 		req.BeamWidthDeg = 360
+	}
+}
+
+func NormalizeNetworkOptimizationRequest(req *NetworkOptimizationRequest) {
+	if req.Rays == 0 {
+		req.Rays = 72
+	}
+	if req.RadiusMeters == 0 {
+		req.RadiusMeters = 400
+	}
+	if req.FrequencyGHz == 0 {
+		req.FrequencyGHz = 28
+	}
+	if req.TxPowerDBm == 0 {
+		req.TxPowerDBm = 30
+	}
+	if req.BeamWidthDeg == 0 {
+		req.BeamWidthDeg = 120
+	}
+	if req.BeamWidthDeg < 10 {
+		req.BeamWidthDeg = 10
+	}
+	if req.BeamWidthDeg > 360 {
+		req.BeamWidthDeg = 360
+	}
+	for index := range req.Towers {
+		req.Towers[index].AzimuthDeg = normalizeDegrees(req.Towers[index].AzimuthDeg)
 	}
 }
 
@@ -267,6 +334,155 @@ func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) Azim
 		HitResidentialBuildings: best.breakdown.HitResidentialBuildings,
 		DataQuality:             demandSummary.DataQuality,
 	}
+}
+
+func OptimizeNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) NetworkOptimizationResponse {
+	NormalizeNetworkOptimizationRequest(&req)
+	azimuths := make([]float64, len(req.Towers))
+	for index, tower := range req.Towers {
+		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
+	}
+
+	for pass := 0; pass < 2; pass++ {
+		for towerIndex := range req.Towers {
+			bestAzimuth := azimuths[towerIndex]
+			bestScore := math.Inf(-1)
+			for candidate := 0; candidate < 36; candidate++ {
+				testAzimuths := append([]float64(nil), azimuths...)
+				testAzimuths[towerIndex] = float64(candidate * 10)
+				breakdown := NetworkCoverageScoreBreakdown(req, testAzimuths, buildings)
+				if breakdown.NetworkScore > bestScore {
+					bestScore = breakdown.NetworkScore
+					bestAzimuth = testAzimuths[towerIndex]
+				}
+			}
+			azimuths[towerIndex] = bestAzimuth
+		}
+	}
+
+	breakdown := NetworkCoverageScoreBreakdown(req, azimuths, buildings)
+	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
+	for index, tower := range req.Towers {
+		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
+		score := CoverageAreaScoreBreakdown(Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings).TotalScore
+		optimized = append(optimized, NetworkOptimizedTower{
+			ID:             tower.ID,
+			OptimalAzimuth: azimuths[index],
+			Score:          math.Round(score*10) / 10,
+		})
+	}
+
+	demandSummary := buildings.DemandSummary("")
+	breakdown.DataQuality = demandSummary.DataQuality
+	return NetworkOptimizationResponse{
+		OptimizedTowers: optimized,
+		Stats:           breakdown.rounded(),
+	}
+}
+
+func EvaluateNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) NetworkOptimizationResponse {
+	NormalizeNetworkOptimizationRequest(&req)
+	azimuths := make([]float64, len(req.Towers))
+	for index, tower := range req.Towers {
+		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
+	}
+
+	breakdown := NetworkCoverageScoreBreakdown(req, azimuths, buildings)
+	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
+	for index, tower := range req.Towers {
+		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
+		score := CoverageAreaScoreBreakdown(Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings).TotalScore
+		optimized = append(optimized, NetworkOptimizedTower{
+			ID:             tower.ID,
+			OptimalAzimuth: azimuths[index],
+			Score:          math.Round(score*10) / 10,
+		})
+	}
+
+	demandSummary := buildings.DemandSummary("")
+	breakdown.DataQuality = demandSummary.DataQuality
+	return NetworkOptimizationResponse{
+		OptimizedTowers: optimized,
+		Stats:           breakdown.rounded(),
+	}
+}
+
+func NetworkCoverageScoreBreakdown(req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) NetworkOptimizationStats {
+	stats := NetworkOptimizationStats{}
+	if buildings == nil {
+		return stats
+	}
+	buildingByID := make(map[string]*BuildingFootprint, len(buildings.Footprints()))
+	for _, building := range buildings.Footprints() {
+		if building != nil && building.ID != "" {
+			buildingByID[building.ID] = building
+		}
+	}
+
+	servedCounts := make(map[string]int)
+	bestRxByBuilding := make(map[string]float64)
+	for index, tower := range req.Towers {
+		azimuth := tower.AzimuthDeg
+		if index < len(azimuths) {
+			azimuth = azimuths[index]
+		}
+		simReq := networkTowerToStaticRequest(req, tower, azimuth)
+		origin := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
+		towerBreakdown := CoverageAreaScoreBreakdown(origin, simReq, buildings)
+		stats.CoverageScore += towerBreakdown.CoverageScore
+		for buildingID, rx := range BuildingCoverageMap(origin, simReq, buildings) {
+			if rx <= CoveredBuildingThresholdDBm {
+				continue
+			}
+			servedCounts[buildingID]++
+			if existing, ok := bestRxByBuilding[buildingID]; !ok || rx > existing {
+				bestRxByBuilding[buildingID] = rx
+			}
+		}
+	}
+
+	for buildingID := range bestRxByBuilding {
+		building := buildingByID[buildingID]
+		if building == nil {
+			continue
+		}
+		if building.DemandWeight > 0 {
+			stats.UniqueDemandBuildings++
+			stats.DemandScore += building.DemandWeight * DemandScoreMultiplier
+		}
+		if building.ResidentialDemand > 0 {
+			stats.UniqueResidentialBuildings++
+			stats.ResidentialScore += building.ResidentialDemand * ResidentialScoreMultiplier
+		}
+		if servedCounts[buildingID] > 1 {
+			stats.OverlapBuildings++
+		}
+	}
+	stats.OverlapPenalty = float64(stats.OverlapBuildings) * NetworkOverlapPenaltyPerBuilding
+	stats.NetworkScore = stats.DemandScore + stats.ResidentialScore + stats.CoverageScore - stats.OverlapPenalty
+	return stats
+}
+
+func networkTowerToStaticRequest(req NetworkOptimizationRequest, tower NetworkTowerRequest, azimuth float64) StaticSimulationRequest {
+	return StaticSimulationRequest{
+		TowerLon:     tower.TowerLon,
+		TowerLat:     tower.TowerLat,
+		Rays:         req.Rays,
+		RadiusMeters: req.RadiusMeters,
+		FrequencyGHz: req.FrequencyGHz,
+		TxPowerDBm:   req.TxPowerDBm,
+		AzimuthDeg:   normalizeDegrees(azimuth),
+		BeamWidthDeg: req.BeamWidthDeg,
+	}
+}
+
+func (stats NetworkOptimizationStats) rounded() NetworkOptimizationStats {
+	stats.NetworkScore = math.Round(stats.NetworkScore*10) / 10
+	stats.DemandScore = math.Round(stats.DemandScore*10) / 10
+	stats.ResidentialScore = math.Round(stats.ResidentialScore*10) / 10
+	stats.CoverageScore = math.Round(stats.CoverageScore*10) / 10
+	stats.OverlapPenalty = math.Round(stats.OverlapPenalty*10) / 10
+	return stats
 }
 
 func FindCoverageGaps(req StaticSimulationRequest, buildings *BuildingIndex) CoverageGapResponse {

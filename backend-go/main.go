@@ -91,6 +91,19 @@ func main() {
 		}
 		c.JSON(http.StatusOK, raytracer.OptimizeAzimuth(req, buildingIndex))
 	})
+	router.POST("/api/coverage-gaps", func(c *gin.Context) {
+		var req raytracer.StaticSimulationRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid coverage gap JSON: " + err.Error()})
+			return
+		}
+		raytracer.NormalizeStaticSimulationRequest(&req)
+		if validationError := validateSimulationRequest(req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		c.JSON(http.StatusOK, raytracer.FindCoverageGaps(req, buildingIndex))
+	})
 	registerFrontendRoutes(router)
 
 	addr := ":" + getenv("PORT", "8080")
@@ -132,7 +145,7 @@ func registerFrontendRoutes(router *gin.Engine) {
 		router.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"service": "A.T.O.M API",
-				"routes":  []string{"/healthz", "/api/towers", "/api/simulate", "/api/optimize-azimuth"},
+				"routes":  []string{"/healthz", "/api/towers", "/api/simulate", "/api/optimize-azimuth", "/api/coverage-gaps"},
 			})
 		})
 		return

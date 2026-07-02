@@ -79,7 +79,7 @@ The 6G heatmap demonstrates:
 
 This simulation shows the optimal antenna azimuth computed by A.T.O.M's sweep-and-score algorithm:
 
-- **Coverage Area ($\sum r^2$)**: Maximized by intelligent azimuth selection
+- **Demand-aware score**: POI demand, residential-density demand, and capped coverage tie-breakers guide azimuth selection
 - **Beam Width**: 65° (typical 3-sector configuration)
 - **Optimization Runtime**: ~250 ms
 
@@ -87,7 +87,7 @@ This simulation shows the optimal antenna azimuth computed by A.T.O.M's sweep-an
 
 The auto-optimized placement achieves:
 
-- ✅ Maximum coverage area within distance constraints
+- ✅ Stronger demand-serving direction within distance constraints
 - ✅ Reduced interference through directional beaming
 - ✅ Optimal use of transmit power
 - ✅ Better spectral efficiency

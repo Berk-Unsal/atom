@@ -8,7 +8,6 @@ export default function ControlPanel({
   onOptimizeAzimuth,
   isLoading,
   isOptimizing,
-  optimizationDiagnostics,
 }) {
   const update = (key, value) => {
     onChange((current) => ({
@@ -22,7 +21,7 @@ export default function ControlPanel({
       <div className="control-section">
         <div className="section-heading">
           <Radar size={16} />
-          <span>Network Model</span>
+          <span>Radio</span>
         </div>
         <div className="field-group">
           <label>Network Tech (Frequency)</label>
@@ -55,7 +54,7 @@ export default function ControlPanel({
       <div className="control-section">
         <div className="section-heading">
           <SlidersHorizontal size={16} />
-          <span>Beam Geometry</span>
+          <span>Beam</span>
         </div>
         <RangeField
           icon={<Gauge size={18} />}
@@ -101,7 +100,7 @@ export default function ControlPanel({
 
       <div className="control-actions">
         <button type="button" className="apply-small" onClick={onRun} disabled={isLoading || isOptimizing}>
-          Apply
+          {isLoading ? "Simulating..." : "Apply"}
         </button>
         <button
           type="button"
@@ -113,30 +112,8 @@ export default function ControlPanel({
           <span>{isOptimizing ? "Optimizing..." : "Auto-Optimize"}</span>
         </button>
       </div>
-
-      {optimizationDiagnostics ? (
-        <div className={`optimizer-status ${optimizationDiagnostics.data_quality ?? "sparse"}`}>
-          <span>Demand data: {optimizationDiagnostics.data_quality ?? "unknown"}</span>
-          <small>
-            {optimizationDiagnostics.hit_demand_buildings ?? 0} POI ·{" "}
-            {optimizationDiagnostics.hit_residential_buildings ?? 0} residential
-          </small>
-          <small>
-            {formatScore(optimizationDiagnostics.demand_score)} demand ·{" "}
-            {formatScore(optimizationDiagnostics.residential_score)} residential ·{" "}
-            {formatScore(optimizationDiagnostics.coverage_score)} coverage
-          </small>
-        </div>
-      ) : null}
     </section>
   );
-}
-
-function formatScore(value) {
-  if (typeof value !== "number" || Number.isNaN(value)) {
-    return "0";
-  }
-  return Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
 function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {

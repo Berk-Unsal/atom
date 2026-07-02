@@ -2,79 +2,16 @@ package raytracer
 
 import (
 	"encoding/json"
-	"errors"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 )
 
-const (
-	SpeedOfLightMetersPerSecond = 299_792_458.0
-	EarthRadiusMeters           = 6_371_000.0
-)
+const EarthRadiusMeters = 6_371_000.0
 
 type Point struct {
 	Lon float64 `json:"lon" bson:"lon"`
 	Lat float64 `json:"lat" bson:"lat"`
-}
-
-type Obstacle struct {
-	ID            string  `json:"id"`
-	Kind          string  `json:"kind"`
-	AttenuationDB float64 `json:"attenuationDb"`
-	Vertices      []Point `json:"vertices"`
-}
-
-type RayResult struct {
-	AngleDeg        float64  `json:"angleDeg"`
-	DistanceMeters  float64  `json:"distanceMeters"`
-	PathLossDB      float64  `json:"pathLossDb"`
-	ReceivedPowerDB float64  `json:"receivedPowerDbm"`
-	Blocked         bool     `json:"blocked"`
-	Intersections   int      `json:"intersections"`
-	Obstacles       []string `json:"obstacles"`
-	End             Point    `json:"end"`
-}
-
-func FreeSpacePathLossAtOneMeter(frequencyGHz float64) float64 {
-	frequencyHz := frequencyGHz * 1_000_000_000
-	return 20 * math.Log10((4*math.Pi*frequencyHz)/SpeedOfLightMetersPerSecond)
-}
-
-func LogDistancePathLoss(distanceMeters float64, frequencyGHz float64, pathLossExponent float64, attenuationDB float64) float64 {
-	distance := math.Max(distanceMeters, 1)
-	return FreeSpacePathLossAtOneMeter(frequencyGHz) + 10*pathLossExponent*math.Log10(distance) + attenuationDB
-}
-
-func TraceRay(origin Point, angleDeg float64, frequencyGHz float64, txPowerDBm float64, maxDistanceMeters float64, obstacles []Obstacle) RayResult {
-	end := DestinationPoint(origin, angleDeg, maxDistanceMeters)
-	totalAttenuation := 0.0
-	hitKinds := make([]string, 0, 4)
-
-	for _, obstacle := range obstacles {
-		if LineIntersectsPolygon(origin, end, obstacle.Vertices) {
-			totalAttenuation += obstacle.AttenuationDB
-			hitKinds = append(hitKinds, obstacle.Kind)
-		}
-	}
-
-	pathLossExponent := 2.0
-	if len(hitKinds) > 0 {
-		pathLossExponent = 4.5
-	}
-
-	pathLoss := LogDistancePathLoss(maxDistanceMeters, frequencyGHz, pathLossExponent, totalAttenuation)
-	return RayResult{
-		AngleDeg:        normalizeDegrees(angleDeg),
-		DistanceMeters:  maxDistanceMeters,
-		PathLossDB:      pathLoss,
-		ReceivedPowerDB: txPowerDBm - pathLoss,
-		Blocked:         len(hitKinds) > 0,
-		Intersections:   len(hitKinds),
-		Obstacles:       hitKinds,
-		End:             end,
-	}
 }
 
 func DestinationPoint(origin Point, bearingDeg float64, distanceMeters float64) Point {
@@ -95,38 +32,6 @@ func DestinationPoint(origin Point, bearingDeg float64, distanceMeters float64) 
 	}
 }
 
-func LineIntersectsPolygon(a Point, b Point, polygon []Point) bool {
-	if len(polygon) < 3 {
-		return false
-	}
-	if PointInPolygon(a, polygon) || PointInPolygon(b, polygon) {
-		return true
-	}
-
-	for i := range polygon {
-		next := (i + 1) % len(polygon)
-		if SegmentsIntersect(a, b, polygon[i], polygon[next]) {
-			return true
-		}
-	}
-	return false
-}
-
-func SegmentsIntersect(p1 Point, p2 Point, q1 Point, q2 Point) bool {
-	o1 := orientation(p1, p2, q1)
-	o2 := orientation(p1, p2, q2)
-	o3 := orientation(q1, q2, p1)
-	o4 := orientation(q1, q2, p2)
-
-	if o1 != o2 && o3 != o4 {
-		return true
-	}
-	return o1 == 0 && onSegment(p1, q1, p2) ||
-		o2 == 0 && onSegment(p1, q2, p2) ||
-		o3 == 0 && onSegment(q1, p1, q2) ||
-		o4 == 0 && onSegment(q1, p2, q2)
-}
-
 func PointInPolygon(point Point, polygon []Point) bool {
 	inside := false
 	j := len(polygon) - 1
@@ -143,101 +48,76 @@ func PointInPolygon(point Point, polygon []Point) bool {
 	return inside
 }
 
-func AttenuationForTags(tags map[string]string) (string, float64, bool) {
-	building := strings.ToLower(tags["building"])
-	natural := strings.ToLower(tags["natural"])
-
-	switch building {
-	case "concrete", "industrial":
-		return "building:" + building, 35, true
-	case "office", "glass":
-		return "building:" + building, 20, true
+func PolygonCentroid(polygon []Point) (Point, bool) {
+	if len(polygon) < 3 {
+		return Point{}, false
 	}
 
-	switch natural {
-	case "tree_row", "forest":
-		return "natural:" + natural, 8, true
+	base := polygon[0]
+	area := 0.0
+	centroidLon := 0.0
+	centroidLat := 0.0
+	for index := range polygon {
+		next := (index + 1) % len(polygon)
+		x0 := polygon[index].Lon - base.Lon
+		y0 := polygon[index].Lat - base.Lat
+		x1 := polygon[next].Lon - base.Lon
+		y1 := polygon[next].Lat - base.Lat
+		cross := x0*y1 - x1*y0
+		area += cross
+		centroidLon += (x0 + x1) * cross
+		centroidLat += (y0 + y1) * cross
 	}
 
-	if building != "" && building != "no" {
-		return "building:" + building, 25, true
+	area *= 0.5
+	if math.Abs(area) < 1e-14 {
+		return averagePoint(polygon)
 	}
-	return "", 0, false
+
+	return Point{
+		Lon: base.Lon + centroidLon/(6*area),
+		Lat: base.Lat + centroidLat/(6*area),
+	}, true
 }
 
-func LoadObstaclesFromGeoJSON(path string) ([]Obstacle, error) {
-	bytes, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
+func averagePoint(points []Point) (Point, bool) {
+	if len(points) == 0 {
+		return Point{}, false
 	}
 
-	var collection featureCollection
-	if err := json.Unmarshal(bytes, &collection); err != nil {
-		return nil, err
-	}
-	if collection.Type != "FeatureCollection" {
-		return nil, errors.New("expected GeoJSON FeatureCollection")
-	}
-
-	obstacles := make([]Obstacle, 0, len(collection.Features))
-	for idx, feature := range collection.Features {
-		tags := feature.StringProperties()
-		kind, attenuation, ok := AttenuationForTags(tags)
-		if !ok {
+	totalLon := 0.0
+	totalLat := 0.0
+	count := 0
+	for index, point := range points {
+		if index == len(points)-1 && len(points) > 1 && point == points[0] {
 			continue
 		}
-
-		for _, ring := range feature.Geometry.OuterRings() {
-			if len(ring) < 3 {
-				continue
-			}
-			obstacles = append(obstacles, Obstacle{
-				ID:            feature.IDOrIndex(idx),
-				Kind:          kind,
-				AttenuationDB: attenuation,
-				Vertices:      ring,
-			})
-		}
+		totalLon += point.Lon
+		totalLat += point.Lat
+		count++
 	}
-	return obstacles, nil
+	if count == 0 {
+		return Point{}, false
+	}
+	return Point{
+		Lon: totalLon / float64(count),
+		Lat: totalLat / float64(count),
+	}, true
 }
 
-func DefaultAnkaraObstacles() []Obstacle {
-	return []Obstacle{
-		{
-			ID:            "kizilay-office-block",
-			Kind:          "building:office",
-			AttenuationDB: 20,
-			Vertices: []Point{
-				{Lon: 32.8522, Lat: 39.9195},
-				{Lon: 32.8570, Lat: 39.9195},
-				{Lon: 32.8570, Lat: 39.9232},
-				{Lon: 32.8522, Lat: 39.9232},
-			},
-		},
-		{
-			ID:            "sogutozu-industrial",
-			Kind:          "building:industrial",
-			AttenuationDB: 35,
-			Vertices: []Point{
-				{Lon: 32.7850, Lat: 39.9070},
-				{Lon: 32.7940, Lat: 39.9070},
-				{Lon: 32.7940, Lat: 39.9145},
-				{Lon: 32.7850, Lat: 39.9145},
-			},
-		},
-		{
-			ID:            "odtu-forest-edge",
-			Kind:          "natural:forest",
-			AttenuationDB: 8,
-			Vertices: []Point{
-				{Lon: 32.7650, Lat: 39.8850},
-				{Lon: 32.7830, Lat: 39.8850},
-				{Lon: 32.7830, Lat: 39.8970},
-				{Lon: 32.7650, Lat: 39.8970},
-			},
-		},
+func BearingDegrees(origin Point, target Point) float64 {
+	latRadians := origin.Lat * math.Pi / 180
+	dx := (target.Lon - origin.Lon) * math.Cos(latRadians)
+	dy := target.Lat - origin.Lat
+	return normalizeDegrees(math.Atan2(dx, dy) * 180 / math.Pi)
+}
+
+func AngleInBeam(angleDeg float64, azimuthDeg float64, beamWidthDeg float64) bool {
+	if beamWidthDeg >= 360 {
+		return true
 	}
+	delta := math.Abs(normalizeDegrees(angleDeg-azimuthDeg+180) - 180)
+	return delta <= beamWidthDeg/2
 }
 
 func normalizeLongitude(lon float64) float64 {
@@ -256,25 +136,6 @@ func normalizeDegrees(degrees float64) float64 {
 		value += 360
 	}
 	return value
-}
-
-func orientation(a Point, b Point, c Point) int {
-	const epsilon = 1e-12
-	value := (b.Lat-a.Lat)*(c.Lon-b.Lon) - (b.Lon-a.Lon)*(c.Lat-b.Lat)
-	if math.Abs(value) < epsilon {
-		return 0
-	}
-	if value > 0 {
-		return 1
-	}
-	return 2
-}
-
-func onSegment(a Point, b Point, c Point) bool {
-	return b.Lon <= math.Max(a.Lon, c.Lon) &&
-		b.Lon >= math.Min(a.Lon, c.Lon) &&
-		b.Lat <= math.Max(a.Lat, c.Lat) &&
-		b.Lat >= math.Min(a.Lat, c.Lat)
 }
 
 type featureCollection struct {

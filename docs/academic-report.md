@@ -10,7 +10,7 @@ Study Area: Ankara core bounding box, Turkey
 
 ## Abstract
 
-A.T.O.M is a full-stack geospatial simulation system for modeling cellular signal propagation across Ankara, Turkey. The project combines OpenStreetMap building footprints, OpenCellID-derived cellular tower data, frequency-dependent radio propagation physics, and a demand-aware beamforming optimizer. The system evolved from a pure coverage maximization model into a residential-density-aware planning tool that reduces the tendency to optimize toward long empty corridors. This report documents the datasets, implementation, mathematical model, optimization process, and measured improvements produced by the final demand surface.
+A.T.O.M is a full-stack geospatial simulation system for modeling cellular signal propagation across Ankara, Turkey. The project combines OpenStreetMap building footprints, OpenCellID-derived cellular tower data, frequency-dependent radio propagation physics, and a demand-aware beamforming optimizer. The system evolved from a coverage-only model into a residential-density-aware planning tool that reduces the tendency to optimize toward long empty corridors. This report documents the datasets, implementation, mathematical model, optimization process, and measured improvements produced by the final demand surface.
 
 ---
 

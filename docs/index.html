@@ -609,7 +609,7 @@
       <section class="panel" id="features">
         <h3 class="section-title">Features at a glance</h3>
         <p class="section-copy">
-          The markdown docs in this repository break the project down into a few consistent themes: multi-band physics, segmented ray tracing, beamforming, auto-optimization, and GeoJSON-based visualization.
+          The markdown docs in this repository break the project down into a few consistent themes: multi-band physics, segmented ray tracing, beamforming, demand-aware optimization, coverage gap finding, and GeoJSON-based visualization.
         </p>
         <div class="section-grid">
           <div class="card">
@@ -622,7 +622,11 @@
           </div>
           <div class="card">
             <h3>Auto-optimize azimuth</h3>
-            <p>Sector direction can be swept and scored automatically to maximize coverage area.</p>
+            <p>Sector direction can be swept and scored automatically around POI and residential demand.</p>
+          </div>
+          <div class="card">
+            <h3>Coverage gap finder</h3>
+            <p>Demand-weighted buildings below usable Rx are marked so planners can see underserved targets directly.</p>
           </div>
         </div>
       </section>
@@ -674,6 +678,7 @@
             <div>GET <code>/api/towers</code></div>
             <div>GET <code>/api/buildings</code></div>
             <div>POST <code>/api/simulate</code></div>
+            <div>POST <code>/api/coverage-gaps</code></div>
             <div>POST <code>/api/optimize-azimuth</code></div>
           </div>
         </div>
@@ -749,6 +754,11 @@
                 <td>POST</td>
                 <td><code>/api/simulate</code></td>
                 <td>Run the sector ray-tracing simulation</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td><code>/api/coverage-gaps</code></td>
+                <td>Return underserved demand buildings inside the active beam</td>
               </tr>
               <tr>
                 <td>POST</td>

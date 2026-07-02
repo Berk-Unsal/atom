@@ -205,6 +205,7 @@ Then rebuild.
 | `/api/towers` | 100 ms |
 | `/api/buildings` | 1-2 seconds |
 | `/api/simulate` | 1-3 seconds |
+| `/api/coverage-gaps` | 1-3 seconds |
 | `/api/optimize-azimuth` | 3-5 seconds |
 
 ### Can I call the API from my own application?
@@ -215,7 +216,7 @@ Yes! A.T.O.M exposes a REST API. Examples:
 import requests
 
 response = requests.post(
-    'http://atom-api.example.com/api/simulate',
+    'http://localhost:8080/api/simulate',
     json={
         'tower_lon': 32.8541,
         'tower_lat': 39.9208,

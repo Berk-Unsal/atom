@@ -22,7 +22,7 @@ A.T.O.M is a full-stack spatial simulation engine that:
 | **Raytracing Engine** | Fast polygon intersection testing with real-time heatmap rendering |
 | **Building Penetration** | Frequency-dependent material attenuation for concrete, office, and forest |
 | **Beamforming** | Sector antenna simulation with adjustable azimuth and beam width |
-| **AI Optimization** | Automatic coverage maximization and antenna positioning |
+| **AI Optimization** | Demand-aware azimuth scoring for the active tower |
 | **GeoJSON Export** | Native support for web-based visualization and GIS integration |
 
 ## Quick Links

@@ -11,8 +11,6 @@ import (
 	"github.com/tidwall/rtree"
 )
 
-const DefaultBuildingAttenuationDB = 30.0
-
 type Bounds struct {
 	MinLon float64 `json:"minLon"`
 	MinLat float64 `json:"minLat"`
@@ -22,7 +20,6 @@ type Bounds struct {
 
 type BuildingFootprint struct {
 	ID                    string            `json:"id"`
-	Kind                  string            `json:"kind"`
 	Tags                  map[string]string `json:"tags"`
 	Weight                float64           `json:"weight"`
 	DemandWeight          float64           `json:"demandWeight"`
@@ -34,7 +31,6 @@ type BuildingFootprint struct {
 	WeightConfidence      string            `json:"weightConfidence"`
 	ResidentialReason     string            `json:"residentialReason"`
 	ResidentialConfidence string            `json:"residentialConfidence"`
-	AttenuationDB         float64           `json:"attenuationDb"`
 	Bounds                Bounds            `json:"bounds"`
 	Vertices              []Point           `json:"vertices"`
 }
@@ -83,7 +79,6 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 	footprints := make([]*BuildingFootprint, 0, len(collection.Features))
 	for featureIndex, feature := range collection.Features {
 		tags := feature.StringProperties()
-		kind, attenuation := buildingKindAndAttenuation(tags)
 		weight := feature.FloatProperty("weight", 1.0)
 		if weight <= 0 {
 			weight = 1.0
@@ -139,7 +134,6 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 
 			footprints = append(footprints, &BuildingFootprint{
 				ID:                    id,
-				Kind:                  kind,
 				Tags:                  tags,
 				Weight:                weight,
 				DemandWeight:          demandWeight,
@@ -151,7 +145,6 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 				WeightConfidence:      weightConfidence,
 				ResidentialReason:     residentialReason,
 				ResidentialConfidence: residentialConfidence,
-				AttenuationDB:         attenuation,
 				Bounds:                bounds,
 				Vertices:              ring,
 			})
@@ -301,6 +294,24 @@ func BoundsFromSegment(a Point, b Point) Bounds {
 	}
 }
 
+func BoundsAroundPoint(center Point, radiusMeters float64) Bounds {
+	if radiusMeters < 0 {
+		radiusMeters = 0
+	}
+	latDelta := radiusMeters / 111_320
+	cosLat := math.Cos(center.Lat * math.Pi / 180)
+	if math.Abs(cosLat) < 1e-9 {
+		cosLat = 1e-9
+	}
+	lonDelta := radiusMeters / (111_320 * cosLat)
+	return Bounds{
+		MinLon: center.Lon - lonDelta,
+		MinLat: center.Lat - latDelta,
+		MaxLon: center.Lon + lonDelta,
+		MaxLat: center.Lat + latDelta,
+	}
+}
+
 func BoundsFromPoints(points []Point) (Bounds, bool) {
 	if len(points) < 3 {
 		return Bounds{}, false
@@ -344,15 +355,4 @@ func (b Bounds) Min() [2]float64 {
 
 func (b Bounds) Max() [2]float64 {
 	return [2]float64{b.MaxLon, b.MaxLat}
-}
-
-func buildingKindAndAttenuation(tags map[string]string) (string, float64) {
-	if kind, attenuation, ok := AttenuationForTags(tags); ok {
-		return kind, attenuation
-	}
-
-	if building := strings.TrimSpace(tags["building"]); building != "" && building != "no" {
-		return "building:" + strings.ToLower(building), DefaultBuildingAttenuationDB
-	}
-	return "building", DefaultBuildingAttenuationDB
 }

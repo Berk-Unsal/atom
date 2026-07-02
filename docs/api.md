@@ -25,7 +25,8 @@ All responses are **JSON**, but the exact shape depends on the route:
 - `GET /healthz` returns a status object
 - `GET /api/buildings` and `GET /api/towers` return raw GeoJSON
 - `POST /api/simulate` returns `{ geojson, stats }`
-- `POST /api/optimize-azimuth` returns `{ optimal_azimuth }`
+- `POST /api/coverage-gaps` returns `{ geojson, stats }`
+- `POST /api/optimize-azimuth` returns `{ optimal_azimuth, coverage_score, demand_score, residential_score }`
 
 Error responses use a simple object with an `error` message.
 
@@ -210,6 +211,76 @@ Run RF propagation simulation with given parameters.
 
 ---
 
+### Find Coverage Gaps
+
+**Endpoint**: `POST /api/coverage-gaps`
+
+Find demand-weighted buildings inside the selected sector whose estimated received power is below the usable service threshold.
+
+**Request Body**:
+
+Uses the same payload as `POST /api/simulate`.
+
+```json
+{
+  "tower_lon": 32.8541,
+  "tower_lat": 39.9208,
+  "rays": 120,
+  "radius_m": 400,
+  "frequency_ghz": 28,
+  "tx_power_dbm": 30,
+  "azimuth": 45,
+  "beam_width": 120
+}
+```
+
+**Response**:
+
+```json
+{
+  "geojson": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "building_id": "building-2841",
+          "rx_dbm": -117.6,
+          "total_demand": 42.5,
+          "demand_weight": 20,
+          "residential_demand": 22.5,
+          "severity": "outage",
+          "reason": "commercial + residential demand"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [32.8562, 39.9211]
+        }
+      }
+    ]
+  },
+  "stats": {
+    "candidate_buildings": 128,
+    "served_buildings": 97,
+    "gap_buildings": 31,
+    "returned_gaps": 31,
+    "gap_pct": 24.2,
+    "total_gap_demand": 618.5,
+    "worst_rx_dbm": -126.4,
+    "threshold_dbm": -105
+  }
+}
+```
+
+**How it works**:
+
+- Candidate buildings must have `demand_weight + residential_demand > 0`
+- The building centroid must be inside the requested radius and beam sector
+- Received power is estimated with EIRP, FSPL, and cumulative wall penetration loss
+- Returned point features are sorted by demand, then by weakest estimated signal
+
+---
+
 ### Optimize Antenna Placement
 
 **Endpoint**: `POST /api/optimize-azimuth`
@@ -248,7 +319,12 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 
 ```json
 {
-  "optimal_azimuth": 42
+  "optimal_azimuth": 42,
+  "coverage_score": 18320.5,
+  "demand_score": 140000,
+  "residential_score": 86000,
+  "hit_demand_buildings": 18,
+  "data_quality": "good"
 }
 ```
 
@@ -257,6 +333,11 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 | Field | Description |
 |-------|-------------|
 | `optimal_azimuth` | Recommended antenna direction (0-360°) |
+| `coverage_score` | Capped distance-based tie-breaker score |
+| `demand_score` | POI/commercial/critical-building score |
+| `residential_score` | Residential-density demand score |
+| `hit_demand_buildings` | Unique demand-weighted buildings reached by the winning sector |
+| `data_quality` | Summary of local demand metadata quality |
 
 **Status Codes**:
 - `200 OK` - Optimization succeeded
@@ -313,7 +394,24 @@ curl -X POST http://localhost:8080/api/optimize-azimuth \
   }'
 ```
 
-### Example 4: Fetch All Towers
+### Example 4: Find Coverage Gaps
+
+```bash
+curl -X POST http://localhost:8080/api/coverage-gaps \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tower_lon": 32.8541,
+    "tower_lat": 39.9208,
+    "rays": 120,
+    "radius_m": 400,
+    "frequency_ghz": 28,
+    "tx_power_dbm": 30,
+    "azimuth": 90,
+    "beam_width": 120
+  }'
+```
+
+### Example 5: Fetch All Towers
 
 ```bash
 curl -X GET "http://localhost:8080/api/towers?frequency=5G"

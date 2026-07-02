@@ -220,8 +220,8 @@ Before submitting PR, verify:
 
 Found a typo or unclear section? Help us improve!
 
-1. **Edit markdown file** in `docs/` folder
-2. **Verify rendering**: Run `mkdocs serve` (if installed)
+1. **Edit markdown or HTML files** in the `docs/` folder
+2. **Verify rendering**: Run `python3 -m http.server 9000 --directory docs`
 3. **Submit PR** with changes
 
 ### Adding Examples
@@ -304,8 +304,7 @@ export function SimpleVisualization() {
 urban-ray-tracer/
 ├── backend-go/          # Go backend (API, raytracing)
 │   ├── main.go
-│   ├── handlers/        # HTTP endpoint handlers
-│   ├── raytracer/       # RF propagation simulation
+│   ├── raytracer/       # RF propagation, spatial index, optimization
 │   └── go.mod
 ├── frontend-react/      # React frontend (UI, visualization)
 │   ├── src/
@@ -314,10 +313,12 @@ urban-ray-tracer/
 │   └── package.json
 ├── data-pipeline/       # Data processing scripts
 │   ├── extract_ankara.py
+│   ├── fetch_buildings.py
+│   ├── export_ankara_buildings.py
 │   └── export_tower_geojson.py
-└── docs/                # MkDocs documentation
-    ├── index.md
-    ├── architecture.md
+└── docs/                # Static GitHub Pages documentation
+    ├── index.html
+    ├── academic-report.md
     └── ...
 ```
 

@@ -33,7 +33,9 @@ The engine combines Go's lightning-fast concurrency model with advanced ray-trac
 
 - **Smart Beamforming**: Sector antenna simulation with adjustable Azimuth and Beam Width parameters, enabling realistic directional coverage patterns and sidelobe analysis.
 
-- **AI Auto-Optimization**: Employs a sweep-and-score geometric algorithm to calculate maximum coverage area ($\sum r^2$) and automatically snaps antenna position to the optimal azimuth, eliminating manual trial-and-error.
+- **Demand-Aware Auto-Optimization**: Sweeps candidate azimuths and scores sectors with POI demand, residential-density demand, and a capped coverage tie-breaker, eliminating manual trial-and-error.
+
+- **Coverage Gap Finder**: Flags demand-weighted buildings inside the active beam that fall below usable service quality, helping planners see underserved residential and POI targets instead of only raw ray distance.
 
 ---
 
@@ -43,7 +45,24 @@ The engine combines Go's lightning-fast concurrency model with advanced ray-trac
 |-----------|-----------|---------|
 | **Backend** | Go (Golang) | Massive concurrency via Goroutines; in-memory R-Tree spatial indexing for sub-millisecond ray-polygon intersection testing |
 | **Frontend** | React + Leaflet | Complex GeoJSON heatmap rendering with dynamic map layers and real-time simulation controls |
+| **Data Pipeline** | Python + OSMnx | Local tower/building extraction and demand-surface enrichment |
+| **Runtime Data** | GeoJSON + CSV | Static local files loaded into memory at startup; no database required |
 | **Deployment** | Docker | Multi-stage build compiling both React and Go into a single, lightweight Alpine container |
+
+---
+
+## Codebase Structure
+
+```text
+backend-go/       Go API, in-memory R-tree, ray tracing, azimuth optimization
+frontend-react/   React/Vite/Leaflet dashboard and RF heatmap UI
+data-pipeline/    Python scripts for local tower/building data generation
+docs/             GitHub Pages documentation, academic report, charts, screenshots
+assets/           Source screenshots used by README/docs
+Dockerfile        Production multi-stage build for the static in-memory app
+```
+
+Generated artifacts such as `frontend-react/dist/`, local virtual environments, and build caches are intentionally ignored. The large Ankara building GeoJSON is stored through Git LFS.
 
 ---
 

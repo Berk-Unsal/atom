@@ -187,6 +187,160 @@ func TestResidentialDemandBeatsLongEmptyCoverageTieBreaker(t *testing.T) {
 	}
 }
 
+func TestCoverageGapFinderFlagsWeakDemandBuilding(t *testing.T) {
+	origin := Point{Lon: 32, Lat: 39}
+	buildings := testBuildingWallIndex(t)
+	req := StaticSimulationRequest{
+		TowerLon:     origin.Lon,
+		TowerLat:     origin.Lat,
+		Rays:         12,
+		RadiusMeters: 100,
+		FrequencyGHz: 140,
+		TxPowerDBm:   30,
+		AzimuthDeg:   90,
+		BeamWidthDeg: 40,
+	}
+
+	response := FindCoverageGaps(req, buildings)
+	if response.Stats.CandidateBuildings != 1 {
+		t.Fatalf("candidate buildings = %d, want 1", response.Stats.CandidateBuildings)
+	}
+	if response.Stats.GapBuildings != 1 {
+		t.Fatalf("gap buildings = %d, want 1", response.Stats.GapBuildings)
+	}
+	if len(response.GeoJSON.Features) != 1 {
+		t.Fatalf("returned gap features = %d, want 1", len(response.GeoJSON.Features))
+	}
+	if response.GeoJSON.Features[0].Properties.Severity != "outage" {
+		t.Fatalf("gap severity = %q, want outage", response.GeoJSON.Features[0].Properties.Severity)
+	}
+}
+
+func TestCoverageGapFinderTreatsLTEBuildingAsServed(t *testing.T) {
+	origin := Point{Lon: 32, Lat: 39}
+	buildings := testBuildingWallIndex(t)
+	req := StaticSimulationRequest{
+		TowerLon:     origin.Lon,
+		TowerLat:     origin.Lat,
+		Rays:         12,
+		RadiusMeters: 100,
+		FrequencyGHz: 2.6,
+		TxPowerDBm:   30,
+		AzimuthDeg:   90,
+		BeamWidthDeg: 40,
+	}
+
+	response := FindCoverageGaps(req, buildings)
+	if response.Stats.CandidateBuildings != 1 {
+		t.Fatalf("candidate buildings = %d, want 1", response.Stats.CandidateBuildings)
+	}
+	if response.Stats.ServedBuildings != 1 {
+		t.Fatalf("served buildings = %d, want 1", response.Stats.ServedBuildings)
+	}
+	if response.Stats.GapBuildings != 0 {
+		t.Fatalf("gap buildings = %d, want 0", response.Stats.GapBuildings)
+	}
+}
+
+func TestBuildingCoverageMapRecordsPenetratedLTEBuilding(t *testing.T) {
+	origin := Point{Lon: 32, Lat: 39}
+	buildings := testBuildingWallIndex(t)
+	req := StaticSimulationRequest{
+		TowerLon:     origin.Lon,
+		TowerLat:     origin.Lat,
+		Rays:         1,
+		RadiusMeters: 100,
+		FrequencyGHz: 2.6,
+		TxPowerDBm:   30,
+		AzimuthDeg:   100,
+		BeamWidthDeg: 20,
+	}
+
+	coverage := BuildingCoverageMap(origin, req, buildings)
+	rx, ok := coverage["test-wall"]
+	if !ok {
+		t.Fatal("penetrated LTE building was not recorded in coverage map")
+	}
+	if rx <= CoveredBuildingThresholdDBm {
+		t.Fatalf("penetrated LTE building rx = %.1f, want covered above %.1f", rx, CoveredBuildingThresholdDBm)
+	}
+}
+
+func TestCoverageGapFinderServesBuildingBetweenStrongLTERays(t *testing.T) {
+	origin := Point{Lon: 32, Lat: 39}
+	buildings := testDemandBuildingAt(t, "between-rays", DestinationPoint(origin, 80, 50), 2)
+	req := StaticSimulationRequest{
+		TowerLon:     origin.Lon,
+		TowerLat:     origin.Lat,
+		Rays:         2,
+		RadiusMeters: 100,
+		FrequencyGHz: 2.6,
+		TxPowerDBm:   30,
+		AzimuthDeg:   90,
+		BeamWidthDeg: 40,
+	}
+
+	response := FindCoverageGaps(req, buildings)
+	if response.Stats.CandidateBuildings != 1 {
+		t.Fatalf("candidate buildings = %d, want 1", response.Stats.CandidateBuildings)
+	}
+	if response.Stats.ServedBuildings != 1 {
+		t.Fatalf("served buildings = %d, want 1 from interpolated beam coverage", response.Stats.ServedBuildings)
+	}
+	if response.Stats.GapBuildings != 0 {
+		t.Fatalf("gap buildings = %d, want 0 for building between strong LTE rays", response.Stats.GapBuildings)
+	}
+	if len(response.GeoJSON.Features) != 0 {
+		t.Fatalf("returned gap features = %d, want 0", len(response.GeoJSON.Features))
+	}
+}
+
+func TestCoverageGapFinderIgnoresDemandOutsideBeam(t *testing.T) {
+	origin := Point{Lon: 32, Lat: 39}
+	buildings := testBuildingWallIndex(t)
+	req := StaticSimulationRequest{
+		TowerLon:     origin.Lon,
+		TowerLat:     origin.Lat,
+		Rays:         12,
+		RadiusMeters: 100,
+		FrequencyGHz: 140,
+		TxPowerDBm:   30,
+		AzimuthDeg:   0,
+		BeamWidthDeg: 20,
+	}
+
+	response := FindCoverageGaps(req, buildings)
+	if response.Stats.CandidateBuildings != 0 {
+		t.Fatalf("candidate buildings = %d, want 0 outside beam", response.Stats.CandidateBuildings)
+	}
+	if len(response.GeoJSON.Features) != 0 {
+		t.Fatalf("returned gap features = %d, want 0 outside beam", len(response.GeoJSON.Features))
+	}
+}
+
+func testDemandBuildingAt(t *testing.T, id string, center Point, halfSizeMeters float64) *BuildingIndex {
+	t.Helper()
+	latDelta := halfSizeMeters / 111_320
+	lonDelta := halfSizeMeters / (111_320 * 0.777)
+	vertices := []Point{
+		{Lon: center.Lon - lonDelta, Lat: center.Lat - latDelta},
+		{Lon: center.Lon + lonDelta, Lat: center.Lat - latDelta},
+		{Lon: center.Lon + lonDelta, Lat: center.Lat + latDelta},
+		{Lon: center.Lon - lonDelta, Lat: center.Lat + latDelta},
+	}
+	bounds, ok := BoundsFromPoints(vertices)
+	if !ok {
+		t.Fatal("test demand building bounds could not be calculated")
+	}
+	return NewBuildingIndex([]*BuildingFootprint{{
+		ID:           id,
+		Weight:       25,
+		DemandWeight: 25,
+		Bounds:       bounds,
+		Vertices:     vertices,
+	}})
+}
+
 func testBuildingWallIndex(t *testing.T) *BuildingIndex {
 	t.Helper()
 	vertices := []Point{
@@ -200,13 +354,11 @@ func testBuildingWallIndex(t *testing.T) *BuildingIndex {
 		t.Fatal("test wall bounds could not be calculated")
 	}
 	return NewBuildingIndex([]*BuildingFootprint{{
-		ID:            "test-wall",
-		Kind:          "building:test",
-		Weight:        100,
-		DemandWeight:  100,
-		AttenuationDB: DefaultBuildingAttenuationDB,
-		Bounds:        bounds,
-		Vertices:      vertices,
+		ID:           "test-wall",
+		Weight:       100,
+		DemandWeight: 100,
+		Bounds:       bounds,
+		Vertices:     vertices,
 	}})
 }
 
@@ -224,13 +376,11 @@ func testResidentialWallIndex(t *testing.T) *BuildingIndex {
 	}
 	return NewBuildingIndex([]*BuildingFootprint{{
 		ID:                "test-apartments",
-		Kind:              "building:apartments",
 		Weight:            10,
 		ResidentialDemand: 35,
 		DensityScore:      72,
 		NearbyBuildings:   42,
 		NearbyResidential: 18,
-		AttenuationDB:     DefaultBuildingAttenuationDB,
 		Bounds:            bounds,
 		Vertices:          vertices,
 	}})

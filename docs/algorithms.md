@@ -36,26 +36,16 @@ $$L \propto f^2$$
 
 ## Building Penetration Model
 
-### Material Attenuation by Frequency
+### Generation-Specific Wall Loss
 
-A.T.O.M queries OSM building tags to determine material type and applies frequency-dependent loss:
+A.T.O.M uses the selected network generation to apply a fixed loss each time a ray crosses a building boundary. OSM building tags are still used for demand scoring and diagnostics, but wall penetration is intentionally frequency-driven in the current runtime:
 
 ```
-if building == "concrete":
+if frequency_ghz <= 3:
     loss_4g = 8 dB
+elif frequency_ghz <= 40:
     loss_5g = 30 dB
-    loss_6g = 80 dB
-elif building == "office":
-    loss_4g = 8 dB
-    loss_5g = 30 dB
-    loss_6g = 80 dB
-elif material == "glass":
-    loss_4g = 8 dB
-    loss_5g = 30 dB
-    loss_6g = 80 dB
 else:
-    loss_4g = 8 dB  # Default
-    loss_5g = 30 dB
     loss_6g = 80 dB
 ```
 
@@ -65,7 +55,7 @@ If a ray intersects multiple buildings, losses are **cumulative**:
 
 $$L_{total\_walls} = \sum_{i=1}^{n} L_i(f)$$
 
-**Example**: Ray through 2 concrete buildings at 5G frequency:
+**Example**: Ray through two building boundaries at 5G frequency:
 - Building 1: +30 dB
 - Building 2: +30 dB
 - **Total**: +60 dB additional loss
@@ -76,52 +66,50 @@ $$L_{total\_walls} = \sum_{i=1}^{n} L_i(f)$$
 
 ### Overview
 
-A.T.O.M uses a **deterministic grid-based raytracer**:
+A.T.O.M uses a **deterministic segmented sector raytracer**:
 
-1. Define coverage area (typically 5 km radius)
-2. Create grid points (10 m spacing = ~90,000 points)
-3. Cast ray from transmitter to each grid point
-4. Determine building intersections
-5. Calculate final received power
-6. Color ray based on signal strength
-7. Serialize as GeoJSON
+1. Define the antenna azimuth and beam width
+2. Split the selected sector into configurable rays
+3. Split each ray into short segments
+4. Query the R-Tree for buildings intersecting each segment
+5. Apply cumulative wall loss and receiver sensitivity thresholding
+6. Color each segment by received power
+7. Serialize the segments as GeoJSON
 
 ### Pseudocode
 
 ```go
-func TraceRays(tx Location, frequency string, grid []Point) GeoJSON {
+func TraceSector(tx Location, req SimulationRequest) GeoJSON {
     result := GeoJSON{}
-    
-    for point in grid {
-        // Step 1: Calculate free-space path loss
-        distance := euclidean_distance(tx, point)
-        fspl := 20*log10(distance) + 20*log10(freq_ghz) + 92.45
-        
-        // Step 2: Find intersecting buildings
-        ray := LineSegment{tx, point}
-        buildings := rtree.Query(ray)
-        
-        // Step 3: Calculate cumulative wall loss
+    maxDistance := min(req.radius_m, sensitivityLimitedDistance(req))
+
+    for angle in sector_angles(req.azimuth, req.beam_width, req.rays) {
+        current := tx
         wallLoss := 0.0
-        for building in buildings {
-            material := building.Properties["building"]
-            wallLoss += material_attenuation(material, frequency)
+
+        for segmentEnd in stepped_points(tx, angle, maxDistance) {
+            segment := LineSegment{current, segmentEnd}
+            intersections := rtree.Query(segment.Bounds())
+
+            for building in intersections {
+                if segment_intersects_polygon(segment, building.Polygon) {
+                    wallLoss += penetration_loss(req.frequency_ghz)
+                }
+            }
+
+            distance := haversine_distance(tx, segmentEnd)
+            fspl := 20*log10(distance) + 20*log10(req.frequency_ghz) + 92.45
+            rxPower := EIRP_DBM - fspl - wallLoss
+
+            if rxPower < ReceiverSensitivityDBm {
+                break
+            }
+
+            result.Add(LineString{current, segmentEnd}, rxPower)
+            current = segmentEnd
         }
-        
-        // Step 4: Calculate received power
-        rxPower := EIRP_DBM - fspl - wallLoss
-        
-        // Step 5: Color ray
-        color := rx_to_color(rxPower)
-        
-        // Step 6: Append to output
-        feature := Feature{
-            Geometry: LineString{tx, point},
-            Properties: {rxPower, color, frequency},
-        }
-        result.Add(feature)
     }
-    
+
     return result
 }
 ```
@@ -272,42 +260,48 @@ func ApplyBeamforming(direction float64, antenna_azimuth float64,
 
 ### Problem Statement
 
-**Find**: The antenna azimuth that maximizes coverage area
+**Find**: The antenna azimuth that best serves demand-weighted coverage
 
 **Constraints**:
 - Distance range: 50 m to 5 km
-- Beam width: fixed (e.g., 65°)
-- Frequency: fixed (e.g., 5G)
+- Beam width: user configured
+- Frequency: user selected
 
 ### Algorithm
 
 ```go
-func OptimizeAzimuth(tx Location, frequency string) float64 {
+func OptimizeAzimuth(tx Location, request SimulationRequest) float64 {
     bestAzimuth := 0.0
-    bestCoverage := 0.0
+    bestScore := 0.0
     
-    // Sweep all azimuths in 5° increments
-    for azimuth := 0; azimuth < 360; azimuth += 5 {
+    // Sweep all azimuths in 10° increments
+    for azimuth := 0; azimuth < 360; azimuth += 10 {
         // Run simulation at this azimuth
-        rays := TraceRays(tx, frequency, GetCoverageGrid())
+        rays := TraceSector(tx, request.withAzimuth(azimuth))
         
-        // Apply beamforming gain
+        // Track unique buildings reached by the sector
+        demandScore := 0.0
+        residentialScore := 0.0
+        hitBuildings := NewSet()
         for ray in rays {
-            gain := ApplyBeamforming(ray.direction, azimuth, 65)
-            ray.rxPower += gain
-        }
-        
-        // Calculate coverage area (sum of squared distances above threshold)
-        coverage := 0.0
-        for ray in rays {
-            if ray.rxPower > USABLE_THRESHOLD {
-                coverage += ray.distance^2
+            for building in ray.hitBuildings {
+                if hitBuildings.add(building.id) {
+                    demandScore += building.demandWeight * 10000
+                    residentialScore += building.residentialDemand * 10000
+                }
             }
         }
         
+        // Coverage is capped and used as a tie-breaker
+        coverageTieBreaker := 0.0
+        for ray in rays {
+            coverageTieBreaker += min(ray.distance, 500) / 500 * 100
+        }
+        score := demandScore + residentialScore + coverageTieBreaker
+        
         // Track best
-        if coverage > bestCoverage {
-            bestCoverage = coverage
+        if score > bestScore {
+            bestScore = score
             bestAzimuth = azimuth
         }
     }

@@ -14,6 +14,8 @@ const DemandScoreMultiplier = 10000.0
 const ResidentialScoreMultiplier = 10000.0
 const CoverageTieBreakerPerRay = 100.0
 const CoverageTieBreakerMaxMeters = 500.0
+const CoveredBuildingThresholdDBm = -100.0
+const MaxCoverageGapFeatures = 500
 
 type StaticSimulationRequest struct {
 	TowerLon     float64 `json:"tower_lon"`
@@ -44,6 +46,22 @@ type AzimuthOptimizationResponse struct {
 	HitDemandBuildings      int     `json:"hit_demand_buildings"`
 	HitResidentialBuildings int     `json:"hit_residential_buildings"`
 	DataQuality             string  `json:"data_quality"`
+}
+
+type CoverageGapResponse struct {
+	GeoJSON PointFeatureCollection `json:"geojson"`
+	Stats   CoverageGapStats       `json:"stats"`
+}
+
+type CoverageGapStats struct {
+	CandidateBuildings int     `json:"candidate_buildings"`
+	ServedBuildings    int     `json:"served_buildings"`
+	GapBuildings       int     `json:"gap_buildings"`
+	ReturnedGaps       int     `json:"returned_gaps"`
+	GapPct             float64 `json:"gap_pct"`
+	TotalGapDemand     float64 `json:"total_gap_demand"`
+	WorstRxDBm         float64 `json:"worst_rx_dbm"`
+	ThresholdDBm       float64 `json:"threshold_dbm"`
 }
 
 type SimulationStats struct {
@@ -79,6 +97,34 @@ type RayProperties struct {
 type LineGeometry struct {
 	Type        string      `json:"type"`
 	Coordinates [][]float64 `json:"coordinates"`
+}
+
+type PointFeatureCollection struct {
+	Type     string         `json:"type"`
+	Features []PointFeature `json:"features"`
+}
+
+type PointFeature struct {
+	Type       string        `json:"type"`
+	Properties GapProperties `json:"properties"`
+	Geometry   PointGeometry `json:"geometry"`
+}
+
+type GapProperties struct {
+	BuildingID        string  `json:"building_id"`
+	RxDBm             float64 `json:"rx_dbm"`
+	DistanceMeters    float64 `json:"distance_m"`
+	DemandWeight      float64 `json:"demand_weight"`
+	ResidentialDemand float64 `json:"residential_demand"`
+	DensityScore      float64 `json:"density_score"`
+	TotalDemand       float64 `json:"total_demand"`
+	Reason            string  `json:"reason"`
+	Severity          string  `json:"severity"`
+}
+
+type PointGeometry struct {
+	Type        string    `json:"type"`
+	Coordinates []float64 `json:"coordinates"`
 }
 
 func NormalizeStaticSimulationRequest(req *StaticSimulationRequest) {
@@ -223,6 +269,208 @@ func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) Azim
 	}
 }
 
+func FindCoverageGaps(req StaticSimulationRequest, buildings *BuildingIndex) CoverageGapResponse {
+	NormalizeStaticSimulationRequest(&req)
+	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
+	candidates := demandCandidatesInBeam(origin, req, buildings)
+	profiles := buildBeamCoverageProfiles(origin, req, buildings)
+	coverageMap := buildingCoverageMapFromProfiles(profiles)
+	gaps := make([]PointFeature, 0, len(candidates))
+	stats := CoverageGapStats{
+		CandidateBuildings: len(candidates),
+		ThresholdDBm:       CoveredBuildingThresholdDBm,
+		WorstRxDBm:         math.Inf(1),
+	}
+
+	for _, building := range candidates {
+		centroid, ok := PolygonCentroid(building.Vertices)
+		if !ok {
+			continue
+		}
+		distance := ApproxDistanceMeters(origin, centroid)
+		rx, hasCoverage := coverageMap[building.ID]
+		if beamRx, ok := interpolatedBeamRxAtPoint(origin, centroid, profiles); ok {
+			if !hasCoverage || beamRx > rx {
+				rx = beamRx
+				hasCoverage = true
+			}
+		}
+		if !hasCoverage {
+			rx = ReceiverSensitivity
+		}
+		totalDemand := building.DemandWeight + building.ResidentialDemand
+		if hasCoverage && rx > CoveredBuildingThresholdDBm {
+			stats.ServedBuildings++
+			continue
+		}
+
+		stats.GapBuildings++
+		stats.TotalGapDemand += totalDemand
+		stats.WorstRxDBm = math.Min(stats.WorstRxDBm, rx)
+		gaps = append(gaps, makeCoverageGapFeature(building, centroid, distance, rx))
+	}
+
+	sort.SliceStable(gaps, func(i, j int) bool {
+		left := gaps[i].Properties
+		right := gaps[j].Properties
+		if left.TotalDemand == right.TotalDemand {
+			return left.RxDBm < right.RxDBm
+		}
+		return left.TotalDemand > right.TotalDemand
+	})
+	if len(gaps) > MaxCoverageGapFeatures {
+		gaps = gaps[:MaxCoverageGapFeatures]
+	}
+
+	stats.ReturnedGaps = len(gaps)
+	if stats.CandidateBuildings > 0 {
+		stats.GapPct = math.Round((float64(stats.GapBuildings)/float64(stats.CandidateBuildings))*1000) / 10
+	}
+	if math.IsInf(stats.WorstRxDBm, 1) {
+		stats.WorstRxDBm = 0
+	} else {
+		stats.WorstRxDBm = math.Round(stats.WorstRxDBm*10) / 10
+	}
+	stats.TotalGapDemand = math.Round(stats.TotalGapDemand*10) / 10
+
+	return CoverageGapResponse{
+		GeoJSON: PointFeatureCollection{
+			Type:     "FeatureCollection",
+			Features: gaps,
+		},
+		Stats: stats,
+	}
+}
+
+type rayCoverageProfile struct {
+	angle    float64
+	segments []RayFeature
+	terminal rayTerminal
+}
+
+type nearbyBeamSample struct {
+	delta float64
+	rx    float64
+}
+
+func BuildingCoverageMap(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) map[string]float64 {
+	profiles := buildBeamCoverageProfiles(origin, req, buildings)
+	return buildingCoverageMapFromProfiles(profiles)
+}
+
+func buildBeamCoverageProfiles(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) []rayCoverageProfile {
+	NormalizeStaticSimulationRequest(&req)
+	profiles := make([]rayCoverageProfile, 0, req.Rays)
+	for index := 0; index < req.Rays; index++ {
+		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
+		segments, terminal := simulateSegmentedRay(origin, index, angle, req, buildings)
+		profiles = append(profiles, rayCoverageProfile{
+			angle:    angle,
+			segments: segments,
+			terminal: terminal,
+		})
+	}
+	return profiles
+}
+
+func buildingCoverageMapFromProfiles(profiles []rayCoverageProfile) map[string]float64 {
+	coverage := make(map[string]float64)
+	for _, profile := range profiles {
+		for buildingID, rx := range profile.terminal.buildingCoverage {
+			recordBuildingCoverageValue(coverage, buildingID, rx)
+		}
+	}
+	return coverage
+}
+
+func interpolatedBeamRxAtPoint(origin Point, target Point, profiles []rayCoverageProfile) (float64, bool) {
+	if len(profiles) == 0 {
+		return 0, false
+	}
+	targetAngle := BearingDegrees(origin, target)
+	targetDistance := ApproxDistanceMeters(origin, target)
+
+	nearest := make([]nearbyBeamSample, 0, 2)
+	for _, profile := range profiles {
+		rx, ok := rxAtDistanceFromProfile(profile, targetDistance)
+		if !ok {
+			continue
+		}
+		sample := nearbyBeamSample{
+			delta: angularSeparationDegrees(targetAngle, profile.angle),
+			rx:    rx,
+		}
+		nearest = insertNearestBeamSample(nearest, sample)
+	}
+
+	if len(nearest) == 0 {
+		return 0, false
+	}
+	if len(nearest) == 1 || nearest[0].delta <= 1e-9 {
+		return nearest[0].rx, true
+	}
+
+	totalWeight := 0.0
+	weightedRx := 0.0
+	bestRx := nearest[0].rx
+	for _, sample := range nearest {
+		weight := 1 / math.Max(sample.delta, 1e-6)
+		totalWeight += weight
+		weightedRx += sample.rx * weight
+		bestRx = math.Max(bestRx, sample.rx)
+	}
+	if totalWeight == 0 {
+		return bestRx, true
+	}
+
+	return math.Max(bestRx, weightedRx/totalWeight), true
+}
+
+func rxAtDistanceFromProfile(profile rayCoverageProfile, distanceMeters float64) (float64, bool) {
+	if distanceMeters < 0 {
+		return 0, false
+	}
+	for _, segment := range profile.segments {
+		properties := segment.Properties
+		start := properties.SegmentStartM
+		end := properties.SegmentEndM
+		if distanceMeters < start-0.1 || distanceMeters > end+0.1 {
+			continue
+		}
+		if math.Abs(end-start) < 1e-9 {
+			return properties.SignalDBm, true
+		}
+		t := math.Max(0, math.Min(1, (distanceMeters-start)/(end-start)))
+		return properties.SignalStartDBm + t*(properties.SignalEndDBm-properties.SignalStartDBm), true
+	}
+	if distanceMeters <= profile.terminal.distanceMeters+0.1 {
+		return profile.terminal.signalDBm, true
+	}
+	return 0, false
+}
+
+func insertNearestBeamSample(samples []nearbyBeamSample, sample nearbyBeamSample) []nearbyBeamSample {
+	samples = append(samples, sample)
+	sort.SliceStable(samples, func(i, j int) bool {
+		if samples[i].delta == samples[j].delta {
+			return samples[i].rx > samples[j].rx
+		}
+		return samples[i].delta < samples[j].delta
+	})
+	if len(samples) > 2 {
+		samples = samples[:2]
+	}
+	return samples
+}
+
+func angularSeparationDegrees(a float64, b float64) float64 {
+	delta := math.Abs(normalizeDegrees(a-b+180) - 180)
+	if delta > 180 {
+		return 360 - delta
+	}
+	return delta
+}
+
 func CoverageAreaScore(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) float64 {
 	return CoverageAreaScoreBreakdown(origin, req, buildings).TotalScore
 }
@@ -278,6 +526,79 @@ func CoverageTieBreakerScore(distanceMeters float64, radiusMeters float64) float
 	return normalized * CoverageTieBreakerPerRay
 }
 
+func demandCandidatesInBeam(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) []*BuildingFootprint {
+	if buildings == nil {
+		return nil
+	}
+	searchBounds := BoundsAroundPoint(origin, req.RadiusMeters)
+	candidates := buildings.SearchBounds(searchBounds)
+	demandCandidates := make([]*BuildingFootprint, 0, len(candidates))
+	for _, building := range candidates {
+		if building == nil || building.DemandWeight+building.ResidentialDemand <= 0 {
+			continue
+		}
+		centroid, ok := PolygonCentroid(building.Vertices)
+		if !ok {
+			continue
+		}
+		distance := ApproxDistanceMeters(origin, centroid)
+		if distance > req.RadiusMeters {
+			continue
+		}
+		bearing := BearingDegrees(origin, centroid)
+		if !AngleInBeam(bearing, req.AzimuthDeg, req.BeamWidthDeg) {
+			continue
+		}
+		demandCandidates = append(demandCandidates, building)
+	}
+	return demandCandidates
+}
+
+func makeCoverageGapFeature(building *BuildingFootprint, centroid Point, distance float64, rx float64) PointFeature {
+	totalDemand := building.DemandWeight + building.ResidentialDemand
+	severity := "weak"
+	if rx <= ReceiverSensitivity {
+		severity = "outage"
+	}
+	return PointFeature{
+		Type: "Feature",
+		Properties: GapProperties{
+			BuildingID:        building.ID,
+			RxDBm:             math.Round(rx*10) / 10,
+			DistanceMeters:    math.Round(distance*10) / 10,
+			DemandWeight:      math.Round(building.DemandWeight*10) / 10,
+			ResidentialDemand: math.Round(building.ResidentialDemand*10) / 10,
+			DensityScore:      math.Round(building.DensityScore*10) / 10,
+			TotalDemand:       math.Round(totalDemand*10) / 10,
+			Reason:            gapReason(building),
+			Severity:          severity,
+		},
+		Geometry: PointGeometry{
+			Type:        "Point",
+			Coordinates: []float64{centroid.Lon, centroid.Lat},
+		},
+	}
+}
+
+func gapReason(building *BuildingFootprint) string {
+	switch {
+	case building.DemandWeight > 0 && building.ResidentialDemand > 0:
+		return "mixed demand"
+	case building.DemandWeight > 0:
+		if building.WeightReason != "" && building.WeightReason != "generic" {
+			return building.WeightReason
+		}
+		return "poi demand"
+	case building.ResidentialDemand > 0:
+		if building.ResidentialReason != "" && building.ResidentialReason != "none" {
+			return building.ResidentialReason
+		}
+		return "residential demand"
+	default:
+		return "demand"
+	}
+}
+
 func BeamAngleForIndex(azimuthDeg float64, beamWidthDeg float64, rayCount int, index int) float64 {
 	if rayCount <= 0 {
 		return normalizeDegrees(azimuthDeg)
@@ -303,9 +624,10 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 
 	if castDistance <= 0 {
 		return nil, rayTerminal{
-			blocked:        false,
-			distanceMeters: 0,
-			signalDBm:      ReceiverSensitivity,
+			blocked:          false,
+			distanceMeters:   0,
+			signalDBm:        ReceiverSensitivity,
+			buildingCoverage: make(map[string]float64),
 		}
 	}
 
@@ -324,6 +646,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 	cumulativeWallLoss := 0.0
 	hitBuildingDemandWeights := make(map[string]float64)
 	hitBuildingResidentialDemands := make(map[string]float64)
+	buildingCoverage := make(map[string]float64)
 	for startDistance := 0.0; startDistance < castDistance; startDistance += SegmentStepMeters {
 		endDistance := math.Min(startDistance+SegmentStepMeters, castDistance)
 		start := currentPoint
@@ -337,6 +660,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 				signalDBm:                     startRx,
 				hitBuildingDemandWeights:      hitBuildingDemandWeights,
 				hitBuildingResidentialDemands: hitBuildingResidentialDemands,
+				buildingCoverage:              buildingCoverage,
 			}
 			break
 		}
@@ -353,6 +677,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			recordHitBuildingResidentialDemand(hitBuildingResidentialDemands, intersection.building)
 			cumulativeWallLoss += wallLossPerIntersection
 			wallRx := ReceivedPowerDBm(hitDistance, req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
+			recordBuildingCoverage(buildingCoverage, intersection.building, wallRx)
 			pathLoss := FreeSpacePathLossMetersGHz(hitDistance, req.FrequencyGHz) + cumulativeWallLoss
 			isTerminalBlock := wallRx <= ReceiverSensitivity
 			if collectFeatures {
@@ -384,6 +709,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 					signalDBm:                     wallRx,
 					hitBuildingDemandWeights:      hitBuildingDemandWeights,
 					hitBuildingResidentialDemands: hitBuildingResidentialDemands,
+					buildingCoverage:              buildingCoverage,
 				}
 				rayStopped = true
 				break
@@ -406,6 +732,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			stopPoint := DestinationPoint(origin, angle, stopDistance)
 			stopRx := ReceivedPowerDBm(stopDistance, req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
 			pathLoss := FreeSpacePathLossMetersGHz(stopDistance, req.FrequencyGHz) + cumulativeWallLoss
+			recordBuildingsContainingSegmentCoverage(buildingCoverage, origin, segmentStartPoint, stopPoint, buildings, math.Max(segmentStartRx, stopRx))
 			if collectFeatures && ApproxDistanceMeters(segmentStartPoint, stopPoint) > 0.01 {
 				segments = append(segments, makeRaySegmentFeature(
 					segmentStartPoint,
@@ -431,10 +758,12 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 				signalDBm:                     stopRx,
 				hitBuildingDemandWeights:      hitBuildingDemandWeights,
 				hitBuildingResidentialDemands: hitBuildingResidentialDemands,
+				buildingCoverage:              buildingCoverage,
 			}
 			break
 		}
 
+		recordBuildingsContainingSegmentCoverage(buildingCoverage, origin, segmentStartPoint, nextPoint, buildings, math.Max(segmentStartRx, endRx))
 		pathLoss := FreeSpacePathLossMetersGHz(endDistance, req.FrequencyGHz) + cumulativeWallLoss
 		if collectFeatures {
 			segments = append(segments, makeRaySegmentFeature(
@@ -462,17 +791,12 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			signalDBm:                     endRx,
 			hitBuildingDemandWeights:      hitBuildingDemandWeights,
 			hitBuildingResidentialDemands: hitBuildingResidentialDemands,
+			buildingCoverage:              buildingCoverage,
 		}
 		currentPoint = nextPoint
 	}
 
 	return segments, terminal
-}
-
-type buildingIntersection struct {
-	distanceMeters float64
-	point          Point
-	building       *BuildingFootprint
 }
 
 type wallIntersection struct {
@@ -488,31 +812,7 @@ type rayTerminal struct {
 	signalDBm                     float64
 	hitBuildingDemandWeights      map[string]float64
 	hitBuildingResidentialDemands map[string]float64
-}
-
-func firstBuildingHitForSegment(origin Point, start Point, end Point, buildings *BuildingIndex) (bool, Point, *BuildingFootprint, int) {
-	candidates := buildings.SearchRay(start, end)
-	closestDistance := math.Inf(1)
-	var closestPoint Point
-	var closestBuilding *BuildingFootprint
-
-	for _, building := range candidates {
-		if PointInPolygon(origin, building.Vertices) {
-			continue
-		}
-		hit, point := SegmentPolygonFirstIntersection(start, end, building.Vertices)
-		if !hit {
-			continue
-		}
-		distance := ApproxDistanceMeters(start, point)
-		if distance < closestDistance {
-			closestDistance = distance
-			closestPoint = point
-			closestBuilding = building
-		}
-	}
-
-	return closestBuilding != nil, closestPoint, closestBuilding, len(candidates)
+	buildingCoverage              map[string]float64
 }
 
 func wallIntersectionsForSegment(origin Point, start Point, end Point, buildings *BuildingIndex) ([]wallIntersection, int) {
@@ -555,6 +855,40 @@ func appendUniqueWallIntersection(intersections []wallIntersection, candidate wa
 		}
 	}
 	return append(intersections, candidate)
+}
+
+func recordBuildingCoverage(coverage map[string]float64, building *BuildingFootprint, rx float64) {
+	if coverage == nil || building == nil || building.ID == "" {
+		return
+	}
+	recordBuildingCoverageValue(coverage, building.ID, rx)
+}
+
+func recordBuildingCoverageValue(coverage map[string]float64, buildingID string, rx float64) {
+	if coverage == nil || buildingID == "" {
+		return
+	}
+	if existing, ok := coverage[buildingID]; !ok || rx > existing {
+		coverage[buildingID] = rx
+	}
+}
+
+func recordBuildingsContainingSegmentCoverage(coverage map[string]float64, origin Point, start Point, end Point, buildings *BuildingIndex, rx float64) {
+	if coverage == nil || buildings == nil {
+		return
+	}
+	midpoint := Point{
+		Lon: (start.Lon + end.Lon) / 2,
+		Lat: (start.Lat + end.Lat) / 2,
+	}
+	for _, building := range buildings.SearchRay(start, end) {
+		if building == nil || PointInPolygon(origin, building.Vertices) {
+			continue
+		}
+		if PointInPolygon(start, building.Vertices) || PointInPolygon(midpoint, building.Vertices) || PointInPolygon(end, building.Vertices) {
+			recordBuildingCoverage(coverage, building, rx)
+		}
+	}
 }
 
 func recordHitBuildingDemandWeight(weights map[string]float64, building *BuildingFootprint) {

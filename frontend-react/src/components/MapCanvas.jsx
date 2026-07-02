@@ -8,6 +8,9 @@ export default function MapCanvas({
   selectedTower,
   onSelectTower,
   simulation,
+  rayLayerKey,
+  coverageGaps,
+  coverageGapLayerKey,
   activeNetworkTech,
 }) {
   return (
@@ -51,17 +54,14 @@ export default function MapCanvas({
         );
       })}
 
-      <RayGeoJSONLayer simulation={simulation} />
+      <RayGeoJSONLayer simulation={simulation} layerKey={rayLayerKey} />
+      <CoverageGapLayer gaps={coverageGaps} layerKey={coverageGapLayerKey} />
     </MapContainer>
   );
 }
 
-function RayGeoJSONLayer({ simulation }) {
+function RayGeoJSONLayer({ simulation, layerKey }) {
   const features = simulation?.features ?? [];
-  const layerKey = features
-    .map((feature) => `${feature.properties?.ray_index}:${feature.properties?.segment_index}:${feature.properties?.signal_dbm}`)
-    .join("|");
-
   if (features.length === 0) {
     return null;
   }
@@ -79,4 +79,64 @@ function RayGeoJSONLayer({ simulation }) {
       })}
     />
   );
+}
+
+function CoverageGapLayer({ gaps, layerKey }) {
+  const features = gaps?.features ?? [];
+  if (features.length === 0) {
+    return null;
+  }
+
+  return features.map((feature, index) => {
+    const [lon, lat] = feature.geometry?.coordinates ?? [];
+    if (typeof lon !== "number" || typeof lat !== "number") {
+      return null;
+    }
+    const properties = feature.properties ?? {};
+    const isOutage = properties.severity === "outage";
+    const demand = Number(properties.total_demand ?? 0);
+    return (
+      <CircleMarker
+        key={`${layerKey}-${properties.building_id ?? index}`}
+        center={[lat, lon]}
+        radius={Math.max(5, Math.min(12, 5 + demand / 35))}
+        pathOptions={{
+          color: isOutage ? "#881337" : "#b45309",
+          fillColor: isOutage ? "#e11d48" : "#f59e0b",
+          fillOpacity: 0.78,
+          opacity: 0.95,
+          weight: 2,
+        }}
+      >
+        <Popup>
+          <dl className="gap-popup">
+            <div>
+              <dt>Coverage Gap</dt>
+              <dd>{properties.severity ?? "weak"}</dd>
+            </div>
+            <div>
+              <dt>Rx</dt>
+              <dd>{formatNumber(properties.rx_dbm)} dBm</dd>
+            </div>
+            <div>
+              <dt>Demand</dt>
+              <dd>{formatNumber(properties.total_demand)}</dd>
+            </div>
+            <div>
+              <dt>Reason</dt>
+              <dd>{properties.reason ?? "demand"}</dd>
+            </div>
+          </dl>
+        </Popup>
+      </CircleMarker>
+    );
+  });
+}
+
+function formatNumber(value) {
+  const number = Number(value);
+  if (Number.isNaN(number)) {
+    return "n/a";
+  }
+  return number.toFixed(1);
 }

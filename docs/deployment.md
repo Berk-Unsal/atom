@@ -192,7 +192,7 @@ upstream atom_backend {
 
 server {
     listen 80;
-    server_name api.atom.example.com;
+    server_name _;
 
     # Redirect HTTP to HTTPS
     return 301 https://$server_name$request_uri;
@@ -200,7 +200,7 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name api.atom.example.com;
+    server_name _;
 
     ssl_certificate /etc/ssl/certs/cert.pem;
     ssl_certificate_key /etc/ssl/private/key.pem;
@@ -404,8 +404,13 @@ location /api/towers {
     proxy_pass http://atom_backend;
 }
 
-# Don't cache POST /api/simulate (results vary)
+# Don't cache POST /api/simulate or /api/coverage-gaps (results vary)
 location /api/simulate {
+    proxy_cache_bypass $request_method;
+    proxy_pass http://atom_backend;
+}
+
+location /api/coverage-gaps {
     proxy_cache_bypass $request_method;
     proxy_pass http://atom_backend;
 }
@@ -510,7 +515,7 @@ sysctl -w net.core.wmem_max=134217728
 
 ## Documentation: GitHub Pages
 
-Host A.T.O.M's MkDocs documentation for free on GitHub Pages.
+Host A.T.O.M's static documentation for free on GitHub Pages.
 
 ### Setup Steps
 
@@ -518,78 +523,39 @@ Host A.T.O.M's MkDocs documentation for free on GitHub Pages.
 
 1. Go to your repository settings
 2. Navigate to **Settings → Pages**
-3. **Source**: Select "GitHub Actions" (or "Deploy from branch")
-4. **Branch**: Select `gh-pages` branch (auto-created by workflow)
+3. **Source**: Select "Deploy from branch"
+4. **Branch**: Select your publishing branch and the `/docs` folder
 
-#### 2. Configure MkDocs (Already Done!)
+#### 2. Static Files
 
-Your `mkdocs.yml` is ready. For custom domain, edit:
+The docs site is checked in as `docs/index.html`. Supporting markdown, screenshots, report charts, icons, and the academic report PDF live under `docs/`, so GitHub Pages can serve them without a static-site generator or custom build step.
 
-```yaml
-site_name: A.T.O.M Documentation
-site_url: https://your-domain.com/docs/  # Update this
-```
+#### 3. Optional Custom Domain
 
-#### 3. Automatic Deployment
-
-A GitHub Actions workflow is included (`.github/workflows/deploy-docs.yml`).
-
-**How it works**:
-- On push to `main` branch
-- Workflow builds MkDocs
-- Deploys to `gh-pages` branch
-- Available at `https://your-org.github.io/urban-ray-tracer/`
-
-#### 4. Custom Domain (Optional)
-
-If you have a custom domain:
-
-1. Create `docs/CNAME` file:
-```
-docs.atom.berkunsal.com
-```
-
-2. Update DNS records:
-   - Add CNAME record pointing to `your-org.github.io`
-   - Or use Apex domain with A records (GitHub's IP addresses)
-
-3. Enable HTTPS in repository settings
+If you later add a custom domain, configure it in GitHub repository settings and add a matching `docs/CNAME` file. Leave `docs/CNAME` absent when publishing under the normal GitHub Pages project URL.
 
 ### Manual Build & Deploy
 
-If you prefer manual deployment:
+If you prefer manual verification:
 
 ```bash
-# Install mkdocs
-pip install mkdocs mkdocs-material pymdown-extensions
-
-# Build docs
-mkdocs build
-
-# Deploy to gh-pages branch
-mkdocs gh-deploy
+python3 -m http.server 9000 --directory docs
 ```
 
 ### View Live Documentation
 
-- **Default**: `https://your-org.github.io/urban-ray-tracer/`
-- **Custom domain**: `https://docs.atom.berkunsal.com/`
+- **Default**: `https://<github-user>.github.io/<repository>/`
 
 ### Troubleshooting
 
 **Docs not showing up?**
-1. Check branch is `gh-pages` (Settings → Pages)
+1. Check the configured branch and `/docs` folder in Settings → Pages
 2. Wait 1-2 minutes for deployment
-3. Check Actions tab for workflow errors
-
-**Workflow failing?**
-1. View error in Actions tab
-2. Ensure `.github/workflows/deploy-docs.yml` exists
-3. Check mkdocs.yml syntax: `mkdocs serve` locally first
+3. Confirm `docs/index.html` exists in the published branch
 
 **Custom domain not working?**
 1. Verify CNAME file in docs/
-2. Check DNS records: `nslookup docs.atom.berkunsal.com`
+2. Check DNS records for your configured hostname
 3. Wait 24 hours for DNS propagation
 
 ---

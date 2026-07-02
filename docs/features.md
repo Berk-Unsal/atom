@@ -32,7 +32,7 @@ The current backend applies generation-specific penetration losses when a ray cr
 | Solid wall crossing | +8 dB | +30 dB | +80 dB |
 | Dense facade / repeated crossings | cumulative | cumulative | cumulative |
 
-Material tags such as concrete, office, glass, and foliage can still be used to refine the behavior per obstacle type.
+The current runtime intentionally uses frequency-dependent wall loss rather than per-material wall loss. OSM tags are used for demand scoring and diagnostics, while RF penetration is determined by the selected network generation.
 
 ## Segmented Heatmap Raytracing
 
@@ -89,9 +89,8 @@ Each transmitter can be configured with:
 | Parameter | Range | Effect |
 |-----------|-------|--------|
 | **Azimuth** | 0° - 360° | Horizontal direction of main lobe |
-| **Beam Width** | 5° - 180° | Angular width of coverage sector |
-| **Tilt** | -20° to +90° | Vertical angle from horizontal |
-| **Power** | 0 - 50 dBm | Transmit power level |
+| **Beam Width** | 10° - 360° | Angular width of coverage sector |
+| **Power** | 0 - 60 dBm | Transmit power level |
 
 ### Sector Coverage
 
@@ -104,28 +103,43 @@ Beamforming creates **directional sectors** instead of omnidirectional patterns:
 
 ## AI Auto-Optimization
 
-### Coverage Maximization Algorithm
+### Demand-Aware Sector Scoring
 
-A.T.O.M uses a **sweep-and-score** geometric optimization to find the optimal antenna azimuth:
+A.T.O.M uses a **sweep-and-score** optimizer to find the best azimuth for the selected tower:
 
 **Algorithm**:
 
-1. Define candidate azimuth angles (5° intervals)
+1. Define candidate azimuth angles (10° intervals)
 2. For each azimuth:
-   - Cast rays to surrounding area
-   - Calculate coverage area: $\sum r^2$ (sum of squared ray distances)
+   - Cast rays through the selected beam width
    - Apply frequency-specific attenuation
-   - Compute total coverage score
-3. Select azimuth with maximum coverage
+   - Score unique POI and residential-demand buildings hit by the sector
+   - Add capped coverage as a tie-breaker
+3. Select azimuth with the highest demand-aware sector score
 4. Automatically snap antenna to optimal angle
 
-**Result**: Engineers don't manually guess antenna directions; A.T.O.M finds optimal placement in seconds.
+**Result**: Engineers don't manually guess antenna directions; A.T.O.M prioritizes meaningful coverage over long empty corridors.
 
 ### Performance
 
 - Typical optimization runtime: < 500 ms for 360° sweep
-- Tested on 12,000+ building geometries
-- Supports batch multi-site optimization
+- Tested on 160,000+ Ankara building footprints
+- Optimizes the currently selected tower; coordinated multi-site optimization is future work
+
+## Coverage Gap Finder
+
+### Demand-Weighted Underservice Detection
+
+A.T.O.M can identify buildings that sit inside the selected beam but still fall below usable received power. This closes the gap between "the ray reached somewhere" and "the intended users are actually served."
+
+The backend evaluates candidate buildings with nonzero `demand_weight` or `residential_demand`, estimates Rx at each centroid using EIRP, FSPL, beam geometry, and cumulative wall loss, then returns underserved targets as GeoJSON point markers.
+
+### Planning Value
+
+- Prioritizes homes, apartments, schools, hospitals, malls, and commercial buildings
+- Avoids treating empty farmland or wide roads as equivalent to settled demand
+- Shows whether a chosen sector is demand-serving or merely distance-serving
+- Produces compact stats: candidate buildings, served buildings, gap ratio, worst Rx, and total unmet demand
 
 ## Interactive Visualization
 

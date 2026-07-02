@@ -23,7 +23,7 @@ A.T.O.M is designed as a modern, cloud-native full-stack application with clear 
 │  │  │ Ray Tracing Engine (Goroutines)      │   │    │
 │  │  │  - FSPL Calculation                  │   │    │
 │  │  │  - Polygon Intersection Testing      │   │    │
-│  │  │  - Material Attenuation Lookup       │   │    │
+│  │  │  - Frequency Wall-Loss Lookup        │   │    │
 │  │  └──────────────────────────────────────┘   │    │
 │  │  ┌──────────────────────────────────────┐   │    │
 │  │  │ Spatial Index (In-Memory R-Tree)     │   │    │
@@ -32,8 +32,8 @@ A.T.O.M is designed as a modern, cloud-native full-stack application with clear 
 │  │  └──────────────────────────────────────┘   │    │
 │  │  ┌──────────────────────────────────────┐   │    │
 │  │  │ Optimization Engine (Sweep & Score)  │   │    │
-│  │  │  - Coverage Calculation              │   │    │
-│  │  │  - Azimuth Optimization              │   │    │
+│  │  │  - Demand/Residential Scoring        │   │    │
+│  │  │  - Azimuth + Gap Optimization        │   │    │
 │  │  └──────────────────────────────────────┘   │    │
 │  └─────────────────────────────────────────────┘    │
 └────────────────────┬────────────────────────────────┘
@@ -162,6 +162,7 @@ frontend-react/
 | `GET` | `/api/buildings` | Fetch building GeoJSON |
 | `GET` | `/api/towers` | Fetch tower locations |
 | `POST` | `/api/simulate` | Run propagation simulation |
+| `POST` | `/api/coverage-gaps` | Find demand-weighted buildings below usable Rx |
 | `POST` | `/api/optimize-azimuth` | Auto-optimize antenna azimuth |
 
 **Request/Response Example**:
@@ -205,18 +206,18 @@ Response:
 **Algorithm Overview**:
 
 ```go
-for each grid_point in coverage_area {
+for each segment in active_beam {
     // 1. Calculate FSPL
-    distance = euclidean_distance(tx, grid_point)
+    distance = euclidean_distance(tx, segment.end)
     fspl_db = calculate_fspl(distance, frequency_ghz)
     
     // 2. Query building intersections
-    intersected_buildings = rtree.query(ray_segment)
+    intersected_buildings = rtree.query(segment.bounds)
     
     // 3. Apply cumulative wall loss
     total_loss = fspl_db
     for building in intersected_buildings {
-        wall_loss = material_attenuation(building.material, frequency_ghz)
+        wall_loss = penetration_loss_for_frequency(frequency_ghz)
         total_loss += wall_loss
     }
     
@@ -227,7 +228,7 @@ for each grid_point in coverage_area {
     color = signal_strength_to_color(rx_dbm)
     
     // 6. Append to GeoJSON
-    output.append(linestring(tx, grid_point, color, rx_dbm))
+    output.append(linestring(segment.start, segment.end, color, rx_dbm))
 }
 ```
 
@@ -261,36 +262,32 @@ Query Phase (per ray):
   - O(log n) complexity
 ```
 
-### 5. Optimization Engine
+### 5. Optimization And Gap Engine
 
-**Sweep & Score Algorithm**:
+**Demand-Aware Sweep & Score Algorithm**:
 
 ```go
 best_azimuth = 0
-best_coverage = 0
+best_score = 0
 
 for azimuth := 0; azimuth < 360; azimuth += 5 {
-    // Simulate at this azimuth
     rays = simulate(tx_location, azimuth, frequency)
-    
-    // Calculate coverage area
-    coverage_area = 0
-    for ray in rays {
-        if ray.rx_dbm > -100 {  // Threshold
-            distance = ray.distance
-            coverage_area += distance^2
-        }
-    }
-    
-    // Track best
-    if coverage_area > best_coverage {
-        best_coverage = coverage_area
+
+    poi_score = sum_unique_hit_poi_demand(rays)
+    residential_score = sum_unique_hit_residential_demand(rays)
+    coverage_tiebreaker = capped_sum_ray_distance(rays)
+    sector_score = poi_score + residential_score + coverage_tiebreaker
+
+    if sector_score > best_score {
+        best_score = sector_score
         best_azimuth = azimuth
     }
 }
 
 return best_azimuth
 ```
+
+The same spatial and RF primitives power `/api/coverage-gaps`, which evaluates demand-weighted building centroids inside the active sector and returns markers for buildings below the usable service threshold.
 
 ## Data Flow
 

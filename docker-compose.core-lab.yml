@@ -1,0 +1,29 @@
+services:
+  atom:
+    environment:
+      CORE_LAB_ENABLED: "true"
+      CORE_LAB_ADAPTER_URL: "http://core-lab-adapter:8090"
+      CORE_LAB_TIMEOUT_MS: "1500"
+    depends_on:
+      core-lab-adapter:
+        condition: service_started
+
+  core-lab-adapter:
+    build:
+      context: ./core-lab-adapter
+      dockerfile: Dockerfile
+    image: atom-core-lab-adapter:local
+    container_name: atom-core-lab-adapter
+    profiles:
+      - core-lab
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    environment:
+      PORT: "8090"
+      CORE_LAB_MODE: "open5gs"
+      # Optional: point these at a real Open5GS lab when available.
+      # Without them, the adapter exposes a deterministic simulated_overlay
+      # so A.T.O.M can exercise Core Lab UX and reporting locally.
+      OPEN5GS_STATUS_URL: ""
+      OPEN5GS_METRICS_URL: ""

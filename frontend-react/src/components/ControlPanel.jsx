@@ -1,8 +1,13 @@
-import { Compass, Eraser, Gauge, MousePointer2, Radar, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
+import { Compass, Eraser, Gauge, MousePointer2, Radar, Server, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
 import { NETWORK_TECH_OPTIONS } from "../utils/networkTech.js";
 
 export default function ControlPanel({
   settings,
+  coreLabApplicable,
+  coreLabEnabled,
+  coreLabSource,
+  coreLabStartCommand,
+  coreLabState,
   onChange,
   onRun,
   onCancelAreaSelection,
@@ -12,6 +17,7 @@ export default function ControlPanel({
   onOptimizeAzimuth,
   onOptimizeNetwork,
   onPlanningModeChange,
+  onToggleCoreLab,
   isLoading,
   isDrawingSelection,
   isOptimizing,
@@ -119,6 +125,37 @@ export default function ControlPanel({
         ) : null}
       </div>
 
+      <div className="control-section core-lab-control">
+        <div className="section-heading">
+          <Server size={16} />
+          <span>Core Lab</span>
+        </div>
+        <label className="toggle-row">
+          <span>
+            <strong>5G Communication Path</strong>
+            <small>
+              {coreLabApplicable
+                ? coreLabEnabled
+                  ? formatCoreLabState(coreLabState, coreLabSource)
+                  : "Off"
+                : "Not applicable"}
+            </small>
+          </span>
+          <input
+            type="checkbox"
+            checked={coreLabEnabled}
+            disabled={!coreLabApplicable}
+            onChange={(event) => onToggleCoreLab(event.target.checked)}
+          />
+        </label>
+        <p className="selection-note">
+          {coreLabApplicable
+            ? "Optional Open5GS lab bridge for Xn, N2, and N3 path decisions."
+            : "5G Core paths are not applicable to the selected 4G LTE or 6G research mode."}
+        </p>
+        {coreLabApplicable ? <code className="inline-command">{coreLabStartCommand}</code> : null}
+      </div>
+
       <div className="control-section">
         <div className="section-heading">
           <SlidersHorizontal size={16} />
@@ -193,6 +230,28 @@ export default function ControlPanel({
       </div>
     </section>
   );
+}
+
+function formatCoreLabState(state, source) {
+  if (state === "scenario_running") {
+    return "Scenario running";
+  }
+  if (state === "connected" && source === "simulated_overlay") {
+    return "Connected · overlay";
+  }
+  if (state === "connected") {
+    return "Connected";
+  }
+  if (state === "disconnected") {
+    return "Disconnected";
+  }
+  if (state === "disabled") {
+    return "Backend disabled";
+  }
+  if (state === "not_applicable") {
+    return "Not applicable";
+  }
+  return state ?? "Off";
 }
 
 function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {

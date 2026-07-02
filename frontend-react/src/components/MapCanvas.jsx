@@ -20,6 +20,7 @@ export default function MapCanvas({
   onFinishAreaSelection,
   planningMode,
   selectionPolygon,
+  coreLabTopology,
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map">
@@ -83,9 +84,71 @@ export default function MapCanvas({
       })}
 
       <RayGeoJSONLayer simulation={simulation} layerKey={rayLayerKey} />
+      <CommunicationPathLayer topology={coreLabTopology} towers={towers} />
       <CoverageGapLayer gaps={coverageGaps} layerKey={coverageGapLayerKey} />
     </MapContainer>
   );
+}
+
+function CommunicationPathLayer({ topology, towers }) {
+  const routeDecisions = topology?.route_decisions ?? [];
+  if (routeDecisions.length === 0) {
+    return null;
+  }
+
+  const towerByGnbID = new Map();
+  towers.forEach((tower) => {
+    const towerID = String(tower.cellId ?? tower.id);
+    towerByGnbID.set(`gNB-${towerID}`, tower);
+  });
+
+  return routeDecisions.map((route) => {
+    const fromTower = towerByGnbID.get(route.from);
+    const toTower = towerByGnbID.get(route.to);
+    if (!fromTower || !toTower) {
+      return null;
+    }
+    const [fromLon, fromLat] = fromTower.coordinates;
+    const [toLon, toLat] = toTower.coordinates;
+    const isFallback = route.route_type === "ng_fallback";
+    const isDegraded = route.status === "degraded" || route.status === "down";
+    return (
+      <Polyline
+        key={`${route.from}-${route.to}-${route.route_type}-${route.status}`}
+        positions={[
+          [fromLat, fromLon],
+          [toLat, toLon],
+        ]}
+        pathOptions={{
+          color: isFallback ? "#be123c" : "#0f766e",
+          dashArray: isFallback ? "8 8" : undefined,
+          opacity: isDegraded ? 0.9 : 0.82,
+          weight: isFallback ? 4 : 5,
+        }}
+      >
+        <Popup>
+          <dl className="path-popup">
+            <div>
+              <dt>Route</dt>
+              <dd>{formatRouteType(route.route_type)}</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd>{route.status ?? "active"}</dd>
+            </div>
+            <div>
+              <dt>Interfaces</dt>
+              <dd>{isFallback ? "N2 via AMF" : "Xn-C / Xn-U"}</dd>
+            </div>
+            <div>
+              <dt>Reason</dt>
+              <dd>{route.reason ?? "selected 5G neighbor pair"}</dd>
+            </div>
+          </dl>
+        </Popup>
+      </Polyline>
+    );
+  });
 }
 
 function SelectionPolygonLayer({ isDrawing, onAddPoint, onCancel, onFinish, polygon }) {
@@ -245,4 +308,11 @@ function formatNumber(value) {
     return "n/a";
   }
   return number.toFixed(1);
+}
+
+function formatRouteType(value) {
+  return String(value ?? "direct_xn")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }

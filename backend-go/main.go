@@ -130,6 +130,7 @@ func main() {
 		}
 		c.JSON(http.StatusOK, raytracer.FindCoverageGaps(req, buildingIndex))
 	})
+	registerCoreLabRoutes(router)
 	registerFrontendRoutes(router)
 
 	addr := ":" + getenv("PORT", "8080")
@@ -192,7 +193,7 @@ func registerFrontendRoutes(router *gin.Engine) {
 		router.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"service": "A.T.O.M API",
-				"routes":  []string{"/healthz", "/api/towers", "/api/simulate", "/api/optimize-azimuth", "/api/optimize-network", "/api/evaluate-network", "/api/coverage-gaps"},
+				"routes":  []string{"/healthz", "/api/towers", "/api/simulate", "/api/optimize-azimuth", "/api/optimize-network", "/api/evaluate-network", "/api/coverage-gaps", "/api/core/status"},
 			})
 		})
 		return

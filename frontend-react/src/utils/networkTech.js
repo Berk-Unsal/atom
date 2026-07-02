@@ -8,3 +8,7 @@ export function networkTechLabelForFrequency(frequencyGHz) {
   const option = NETWORK_TECH_OPTIONS.find((tech) => tech.frequencyGHz === frequencyGHz);
   return option?.label ?? `${frequencyGHz} GHz`;
 }
+
+export function is5GCoreFrequency(frequencyGHz) {
+  return Number(frequencyGHz) === 28;
+}

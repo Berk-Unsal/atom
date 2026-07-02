@@ -101,6 +101,24 @@ docker run -p 8080:8080 atom-simulator
 
 The application will be available at **`http://localhost:8080`**.
 
+### Optional Core Lab Mode
+
+Core Lab Mode is opt-in. The default app does **not** start any 5G Core containers or require Open5GS.
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.core-lab.yml --profile core-lab up --build
+```
+
+This starts A.T.O.M with `CORE_LAB_ENABLED=true` and a lightweight `core-lab-adapter` sidecar at port `8090`. The adapter exposes stable Core Lab JSON for AMF, SMF, UPF, UDM/UDR, AUSF, PCF, NRF, and NSSF status. If no Open5GS endpoint is configured, scenario effects are marked as a deterministic `simulated_overlay`; point `OPEN5GS_STATUS_URL` or `OPEN5GS_METRICS_URL` at a real Open5GS lab to bridge external emulator state.
+
+Suggested Docker memory allocation:
+
+| Profile | Memory | Use |
+|---|---:|---|
+| `core-lite` | 4-6 GB | A.T.O.M + adapter status bridge |
+| `core-demo` | 8-12 GB | Adapter + simulated gNB/UE session overlays |
+| `core-observe` | 12-16 GB | Full Open5GS lab plus metrics/observability |
+
 ---
 
 ## Documentation

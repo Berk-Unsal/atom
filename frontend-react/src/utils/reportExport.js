@@ -8,6 +8,9 @@ export function buildPlanningReport({
   activeNetworkTech,
   buildingSummary,
   comparison,
+  coreLab,
+  coreLabApplicable,
+  coreLabEnabled,
   coverageGaps,
   diagnostics,
   networkOptimization,
@@ -38,6 +41,9 @@ export function buildPlanningReport({
     comparisonBarChartSvg,
     comparisonMetrics,
     comparisonSlopeChartSvg,
+    coreLab,
+    coreLabApplicable,
+    coreLabEnabled,
     diagnostics,
     gapStats,
     generatedAt,
@@ -121,6 +127,8 @@ Generated: ${generatedAt}
 ${renderMarkdownComparisonSection(report)}
 
 ${renderMarkdownNetworkSection(report)}
+
+${renderMarkdownCoreLabSection(report)}
 
 ## Dataset Context
 
@@ -341,6 +349,7 @@ function renderPrintableReport(report) {
     </section>
     ${printComparisonSection(report)}
     ${printNetworkSection(report)}
+    ${printCoreLabSection(report)}
     <section class="grid">
       ${printTable("Decision Context", [
         ["Longitude", formatNumber(towerCoordinates[0], 6)],
@@ -838,6 +847,121 @@ function printNetworkSection(report) {
         <table><thead><tr><th>Cell</th><th>Azimuth</th><th>Score</th></tr></thead><tbody>${towerRows}</tbody></table>
       </div>
     </section>`;
+}
+
+function renderMarkdownCoreLabSection(report) {
+  const status = report.coreLab?.status;
+  if (!report.coreLabEnabled || !report.coreLabApplicable || !status) {
+    return "";
+  }
+  const functions = status.functions ?? [];
+  const sessions = report.coreLab?.sessions?.sessions ?? [];
+  const events = report.coreLab?.events?.events ?? [];
+  const pathSummary = getCommunicationPathSummary(report.coreLab);
+  const functionRows = functions.map(
+    (fn) =>
+      `| ${markdownValue(fn.name)} | ${markdownValue(fn.status)} | ${formatNumber(fn.latency_ms, 0)} ms | ${formatNumber(fn.load_pct, 0)}% | ${markdownValue(fn.message)} |`,
+  );
+  const eventRows = events.slice(0, 8).map(
+    (event) =>
+      `| ${markdownValue(event.stage)} | ${markdownValue(event.severity)} | ${markdownValue(event.source)} | ${markdownValue(event.message)} |`,
+  );
+  return `## Communication Path
+
+| Field | Value |
+|---|---:|
+| Mode | ${markdownValue(status.mode)} |
+| State | ${markdownValue(status.state)} |
+| Source | ${markdownValue(status.source)} |
+| Scenario | ${markdownValue(status.scenario ?? report.coreLab?.scenario)} |
+| Selected cells | ${markdownValue(pathSummary.selectedCells)} |
+| Xn availability | ${markdownValue(pathSummary.xnAvailability)} |
+| Fallback route | ${markdownValue(pathSummary.fallbackRoute)} |
+| Affected interfaces | ${markdownValue(pathSummary.affectedInterfaces)} |
+| Session count | ${formatNumber(sessions.length, 0)} |
+
+| Function | Status | Latency | Load | Message |
+|---|---|---:|---:|---|
+${functionRows.join("\n") || "| n/a | n/a | n/a | n/a | n/a |"}
+
+| Stage | Severity | Source | Message |
+|---|---|---|---|
+${eventRows.join("\n") || "| n/a | n/a | n/a | n/a |"}
+`;
+}
+
+function printCoreLabSection(report) {
+  const status = report.coreLab?.status;
+  if (!report.coreLabEnabled || !report.coreLabApplicable || !status) {
+    return "";
+  }
+  const functions = status.functions ?? [];
+  const events = report.coreLab?.events?.events ?? [];
+  const pathSummary = getCommunicationPathSummary(report.coreLab);
+  const functionRows = functions
+    .map(
+      (fn) =>
+        `<tr><td>${escapeHtml(fn.name)}</td><td>${escapeHtml(fn.status)}</td><td>${formatNumber(fn.latency_ms, 0)} ms</td><td>${formatNumber(fn.load_pct, 0)}%</td></tr>`,
+    )
+    .join("");
+  const eventRows = events
+    .slice(0, 8)
+    .map(
+      (event) =>
+        `<tr><td>${escapeHtml(event.stage)}</td><td>${escapeHtml(event.severity)}</td><td>${escapeHtml(event.source)}</td><td>${escapeHtml(event.message)}</td></tr>`,
+    )
+    .join("");
+  return `<section>
+      <h2>Communication Path</h2>
+      <div class="grid">
+        ${printTable("5G Communication Path", [
+          ["Mode", status.mode ?? "n/a"],
+          ["State", status.state ?? "n/a"],
+          ["Source", status.source ?? "n/a"],
+          ["Scenario", status.scenario ?? report.coreLab?.scenario ?? "n/a"],
+          ["Selected cells", pathSummary.selectedCells],
+          ["Xn availability", pathSummary.xnAvailability],
+          ["Fallback route", pathSummary.fallbackRoute],
+          ["Affected interfaces", pathSummary.affectedInterfaces],
+          ["Sessions", formatNumber(report.coreLab?.sessions?.sessions?.length, 0)],
+        ])}
+        <div>
+          <h2>Core Functions</h2>
+          <table><thead><tr><th>Function</th><th>Status</th><th>Latency</th><th>Load</th></tr></thead><tbody>${functionRows || "<tr><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td></tr>"}</tbody></table>
+        </div>
+      </div>
+      <h2 style="margin-top:16px">Recent Core Events</h2>
+      <table><thead><tr><th>Stage</th><th>Severity</th><th>Source</th><th>Message</th></tr></thead><tbody>${eventRows || "<tr><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td></tr>"}</tbody></table>
+    </section>`;
+}
+
+function getCommunicationPathSummary(coreLab) {
+  const topology = coreLab?.topology ?? {};
+  const nodes = topology.nodes ?? [];
+  const edges = topology.edges ?? [];
+  const routeDecisions = topology.route_decisions ?? [];
+  const selectedCells = nodes
+    .filter((node) => node.type === "gNB")
+    .map((node) => node.id)
+    .join(", ");
+  const directRoutes = routeDecisions.filter((route) => route.route_type === "direct_xn");
+  const fallbackRoutes = routeDecisions.filter((route) => route.route_type === "ng_fallback");
+  const affectedInterfaces = [...new Set(edges
+    .filter((edge) => edge.status === "degraded" || edge.status === "down" || edge.route_type === "ng_fallback")
+    .map((edge) => edge.interface)
+    .filter(Boolean))]
+    .join(", ");
+  return {
+    affectedInterfaces: affectedInterfaces || "none",
+    fallbackRoute: fallbackRoutes.length > 0 ? "AMF/N2 fallback active" : "none",
+    selectedCells: selectedCells || "n/a",
+    xnAvailability:
+      routeDecisions.length === 0
+        ? "n/a"
+        : fallbackRoutes.length > 0
+          ? `${fallbackRoutes.length} fallback, ${directRoutes.length} direct`
+          : `${directRoutes.length} direct Xn`,
+  };
 }
 
 function createComparisonMetric({ after, before, compact = false, digits, higherIsBetter, key, label, unit }) {

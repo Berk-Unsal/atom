@@ -5,12 +5,14 @@ import {
   Database,
   Download,
   FileText,
+  PlayCircle,
   RadioTower,
+  Server,
   SlidersHorizontal,
 } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
-import { networkTechLabelForFrequency } from "./utils/networkTech.js";
+import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
 import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/polygonSelection.js";
 import {
   buildPlanningReport,
@@ -23,6 +25,18 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const APP_ICON_URL = "/icon/icon.svg";
+const CORE_LAB_START_COMMAND =
+  "docker compose -f docker-compose.yml -f docker-compose.core-lab.yml --profile core-lab up";
+const CORE_LAB_SCENARIOS = [
+  { id: "normal", label: "Normal" },
+  { id: "registration_storm", label: "Registration storm" },
+  { id: "udm_outage", label: "UDM outage" },
+  { id: "ausf_auth_failure", label: "AUSF auth failure" },
+  { id: "pcf_policy_degraded", label: "PCF degraded" },
+  { id: "upf_degraded", label: "UPF degraded" },
+  { id: "xn_degraded", label: "Xn degraded" },
+  { id: "xn_unavailable", label: "Xn unavailable" },
+];
 
 const DEFAULT_SIMULATION = {
   frequencyGHz: 28,
@@ -59,6 +73,16 @@ export default function App() {
   const [optimizationDiagnostics, setOptimizationDiagnostics] = useState(null);
   const [networkOptimization, setNetworkOptimization] = useState(null);
   const [comparison, setComparison] = useState({ before: null, after: null });
+  const [coreLabEnabled, setCoreLabEnabled] = useState(false);
+  const [coreLab, setCoreLab] = useState({
+    events: null,
+    isLoading: false,
+    lastError: "",
+    scenario: "normal",
+    sessions: null,
+    status: null,
+    topology: null,
+  });
   const [error, setError] = useState("");
   const skipNextSimulationRun = useRef(false);
 
@@ -288,6 +312,116 @@ export default function App() {
     }
   }, [selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
+  const selectedNetworkTowers = useMemo(
+    () => towers.filter((tower) => selectedNetworkTowerIds.includes(tower.id)),
+    [selectedNetworkTowerIds, towers],
+  );
+  const coreLabApplicable = is5GCoreFrequency(settings.frequencyGHz);
+
+  const coreLabTowerIDs = useMemo(() => {
+    if (planningMode === "network" && selectedNetworkTowers.length > 0) {
+      return selectedNetworkTowers.map((tower) => String(tower.cellId ?? tower.id));
+    }
+    return selectedTower ? [String(selectedTower.cellId ?? selectedTower.id)] : [];
+  }, [planningMode, selectedNetworkTowers, selectedTower]);
+
+  const refreshCoreLab = useCallback(async () => {
+    if (!coreLabEnabled || !coreLabApplicable) {
+      return;
+    }
+    setCoreLab((current) => ({ ...current, isLoading: true, lastError: "" }));
+    try {
+      const query = buildCoreLabQuery(coreLabTowerIDs, selectedNetworkTowers, selectedTower);
+      const [status, topology, sessions, events] = await Promise.all([
+        getJSON("/api/core/status", "Core Lab status request failed"),
+        getJSON(`/api/core/topology${query}`, "Core Lab topology request failed"),
+        getJSON(`/api/core/sessions${query}`, "Core Lab sessions request failed"),
+        getJSON("/api/core/events", "Core Lab events request failed"),
+      ]);
+      setCoreLab((current) => ({
+        ...current,
+        events,
+        isLoading: false,
+        lastError: "",
+        scenario: status?.scenario ?? current.scenario,
+        sessions,
+        status,
+        topology,
+      }));
+    } catch (requestError) {
+      setCoreLab((current) => ({
+        ...current,
+        isLoading: false,
+        lastError: requestError.message,
+        status: {
+          mode: "open5gs",
+          state: "disconnected",
+          functions: [],
+          message: requestError.message,
+          updated_at: new Date().toISOString(),
+        },
+      }));
+    }
+  }, [coreLabApplicable, coreLabEnabled, coreLabTowerIDs, selectedNetworkTowers, selectedTower]);
+
+  const toggleCoreLab = useCallback((enabled) => {
+    if (enabled && !coreLabApplicable) {
+      setCoreLab((current) => ({
+        ...current,
+        events: null,
+        isLoading: false,
+        lastError: "",
+        sessions: null,
+        status: {
+          mode: "not_applicable",
+          state: "not_applicable",
+          functions: [],
+          message: "5G Communication Path applies only to 5G mmWave.",
+        },
+        topology: null,
+      }));
+      return;
+    }
+    setCoreLabEnabled(enabled);
+    if (!enabled) {
+      setCoreLab((current) => ({
+        ...current,
+        events: null,
+        isLoading: false,
+        lastError: "",
+        sessions: null,
+        status: null,
+        topology: null,
+      }));
+    }
+  }, [coreLabApplicable]);
+
+  const runCoreLabScenario = useCallback(async (scenario) => {
+    if (!coreLabApplicable) {
+      return;
+    }
+    setCoreLab((current) => ({ ...current, isLoading: true, lastError: "" }));
+    try {
+      await postJSON(
+        "/api/core/scenario",
+        {
+          scenario,
+          cluster_tower_ids: coreLabTowerIDs,
+          network_tech: "5g",
+        },
+        "Core Lab scenario request failed",
+      );
+      setCoreLab((current) => ({ ...current, scenario }));
+      await refreshCoreLab();
+    } catch (requestError) {
+      setCoreLab((current) => ({
+        ...current,
+        isLoading: false,
+        lastError: requestError.message,
+      }));
+    }
+  }, [coreLabApplicable, coreLabTowerIDs, refreshCoreLab]);
+
   const resetNetworkArtifacts = useCallback(() => {
     setNetworkOptimization(null);
     setComparison({ before: null, after: null });
@@ -397,6 +531,37 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (!coreLabEnabled || !coreLabApplicable) {
+      return undefined;
+    }
+    refreshCoreLab();
+    const timerID = window.setInterval(refreshCoreLab, 7000);
+    return () => window.clearInterval(timerID);
+  }, [coreLabApplicable, coreLabEnabled, refreshCoreLab]);
+
+  useEffect(() => {
+    if (coreLabApplicable) {
+      return;
+    }
+    setCoreLab((current) => ({
+      ...current,
+      events: null,
+      isLoading: false,
+      lastError: "",
+      sessions: null,
+      status: coreLabEnabled
+        ? {
+            mode: "not_applicable",
+            state: "not_applicable",
+            functions: [],
+            message: "5G Communication Path applies only to 5G mmWave.",
+          }
+        : null,
+      topology: null,
+    }));
+  }, [coreLabApplicable, coreLabEnabled]);
+
+  useEffect(() => {
     if (selectedTower) {
       if (skipNextSimulationRun.current) {
         skipNextSimulationRun.current = false;
@@ -434,6 +599,9 @@ export default function App() {
       buildPlanningReport({
         activeNetworkTech,
         buildingSummary,
+        coreLab,
+        coreLabApplicable,
+        coreLabEnabled,
         coverageGaps,
         diagnostics: optimizationDiagnostics,
         comparison,
@@ -447,6 +615,9 @@ export default function App() {
       activeNetworkTech,
       buildingSummary,
       comparison,
+      coreLab,
+      coreLabApplicable,
+      coreLabEnabled,
       networkOptimization,
       coverageGaps,
       optimizationDiagnostics,
@@ -509,6 +680,12 @@ export default function App() {
               selectionNotice={selectionNotice}
               planningMode={planningMode}
               isDrawingSelection={isDrawingSelection}
+              coreLabEnabled={coreLabEnabled}
+              coreLabApplicable={coreLabApplicable}
+              coreLabState={coreLab.status?.state ?? "off"}
+              coreLabSource={coreLab.status?.source}
+              coreLabStartCommand={CORE_LAB_START_COMMAND}
+              onToggleCoreLab={toggleCoreLab}
             />
           ) : null}
 
@@ -521,6 +698,13 @@ export default function App() {
               onExportPdf={exportPdfReport}
               gapStats={gapStats}
               stats={stats}
+              coreLab={coreLab}
+              coreLabApplicable={coreLabApplicable}
+              coreLabEnabled={coreLabEnabled}
+              coreLabScenarios={CORE_LAB_SCENARIOS}
+              coreLabStartCommand={CORE_LAB_START_COMMAND}
+              coreLabTowerIDs={coreLabTowerIDs}
+              onRunCoreScenario={runCoreLabScenario}
             />
           ) : null}
 
@@ -574,6 +758,7 @@ export default function App() {
           onFinishAreaSelection={finishAreaSelection}
           planningMode={planningMode}
           selectionPolygon={selectionPolygon}
+          coreLabTopology={coreLabApplicable && coreLabEnabled ? coreLab.topology : null}
         />
       </section>
     </main>
@@ -678,6 +863,40 @@ function buildNetworkOptimizationPayload(selectedNetworkTowers, settings) {
   };
 }
 
+function buildCoreLabQuery(towerIDs, selectedNetworkTowers, selectedTower) {
+  const params = new URLSearchParams();
+  params.set("network_tech", "5g");
+  if (towerIDs.length > 0) {
+    params.set("cluster_tower_ids", towerIDs.join(","));
+  }
+  const towerIDSet = new Set(towerIDs.map(String));
+  const seenTowerIDs = new Set();
+  const locationTowers = [...selectedNetworkTowers, selectedTower]
+    .filter(Boolean)
+    .filter((tower) => {
+      const towerID = String(tower.cellId ?? tower.id);
+      if (!towerIDSet.has(towerID) || seenTowerIDs.has(towerID)) {
+        return false;
+      }
+      seenTowerIDs.add(towerID);
+      return true;
+    });
+  const locations = locationTowers
+    .map((tower) => {
+      const towerID = String(tower.cellId ?? tower.id);
+      const [lon, lat] = tower.coordinates ?? [];
+      if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
+        return null;
+      }
+      return `${towerID}:${lon}:${lat}`;
+    })
+    .filter(Boolean);
+  if (locations.length > 0) {
+    params.set("cluster_tower_locations", locations.join(";"));
+  }
+  return `?${params.toString()}`;
+}
+
 async function postJSON(path, payload, fallbackMessage) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
@@ -691,7 +910,31 @@ async function postJSON(path, payload, fallbackMessage) {
   return responsePayload;
 }
 
-function ResultsPanel({ comparison, diagnostics, gapStats, networkOptimization, onExportMarkdown, onExportPdf, stats }) {
+async function getJSON(path, fallbackMessage) {
+  const response = await fetch(`${API_BASE_URL}${path}`);
+  const responsePayload = await response.json();
+  if (!response.ok) {
+    throw new Error(responsePayload.error ?? fallbackMessage);
+  }
+  return responsePayload;
+}
+
+function ResultsPanel({
+  comparison,
+  coreLab,
+  coreLabApplicable,
+  coreLabEnabled,
+  coreLabScenarios,
+  coreLabStartCommand,
+  coreLabTowerIDs,
+  diagnostics,
+  gapStats,
+  networkOptimization,
+  onExportMarkdown,
+  onExportPdf,
+  onRunCoreScenario,
+  stats,
+}) {
   return (
     <section className="results-panel" aria-label="Simulation results">
       <div className="panel-title">
@@ -717,6 +960,15 @@ function ResultsPanel({ comparison, diagnostics, gapStats, networkOptimization, 
       {networkOptimization ? null : <OptimizerBreakdown diagnostics={diagnostics} />}
       <NetworkOptimizationPanel optimization={networkOptimization} />
       <ComparisonPanel comparison={comparison} />
+      <CoreLabPanel
+        coreLab={coreLab}
+        applicable={coreLabApplicable}
+        enabled={coreLabEnabled}
+        scenarios={coreLabScenarios}
+        startCommand={coreLabStartCommand}
+        towerIDs={coreLabTowerIDs}
+        onRunScenario={onRunCoreScenario}
+      />
       <ReportExportPanel onExportMarkdown={onExportMarkdown} onExportPdf={onExportPdf} />
     </section>
   );
@@ -751,6 +1003,118 @@ function NetworkOptimizationPanel({ optimization }) {
         ))}
       </div>
     </section>
+  );
+}
+
+function CoreLabPanel({ applicable, coreLab, enabled, scenarios, startCommand, towerIDs, onRunScenario }) {
+  if (!enabled && !coreLab?.status) {
+    return null;
+  }
+  const status = coreLab?.status ?? {};
+  const state = applicable ? status.state ?? "disabled" : "not_applicable";
+  const functions = status.functions ?? [];
+  const events = coreLab?.events?.events ?? [];
+  const sessions = coreLab?.sessions?.sessions ?? [];
+  const topology = coreLab?.topology ?? {};
+  const routeDecisions = topology.route_decisions ?? [];
+  const n3Edges = (topology.edges ?? []).filter((edge) => edge.interface === "N3");
+  const activeScenario = coreLab?.scenario ?? status.scenario ?? "normal";
+  const stateLabel = formatCoreLabState(state);
+
+  return (
+    <section className={`core-lab-card ${state}`} aria-label="5G Communication Path">
+      <div className="panel-title">
+        <Server size={16} />
+        <span>5G Communication Path</span>
+      </div>
+      <div className="core-state-row">
+        <span className={`core-state-pill ${state}`}>{stateLabel}</span>
+        <span>{applicable ? status.source === "simulated_overlay" ? "Simulated overlay" : status.mode ?? "open5gs" : "4G/6G not applicable"}</span>
+      </div>
+      {!applicable ? (
+        <div className="command-note">
+          <span>5G Core AMF/SMF/UPF and Xn/N2/N3 paths apply only when 5G mmWave is selected.</span>
+        </div>
+      ) : null}
+      {applicable && (state === "disabled" || state === "disconnected") ? (
+        <div className="command-note">
+          <span>{status.message ?? "Start the optional sidecar stack to connect Core Lab."}</span>
+          <code>{startCommand}</code>
+        </div>
+      ) : null}
+      {applicable && towerIDs.length > 0 ? (
+        <div className="gnb-chip-list" aria-label="Virtual gNB mappings">
+          {towerIDs.map((towerID) => (
+            <span key={towerID}>gNB-{towerID}</span>
+          ))}
+        </div>
+      ) : null}
+      {applicable ? (
+        <CommunicationPathSummary routeDecisions={routeDecisions} n3Edges={n3Edges} scenario={activeScenario} />
+      ) : null}
+      {functions.length > 0 ? (
+        <div className="core-function-grid">
+          {functions.map((fn) => (
+            <div key={fn.name} className={`core-function ${fn.status}`}>
+              <span>{fn.name}</span>
+              <strong>{fn.status}</strong>
+              <small>{fn.latency_ms ?? 0} ms · {fn.load_pct ?? 0}%</small>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      <div className="scenario-grid" aria-label="Core Lab scenarios">
+        {scenarios.map((scenario) => (
+          <button
+            key={scenario.id}
+            type="button"
+            className={activeScenario === scenario.id ? "active" : ""}
+            disabled={!applicable || !enabled || state === "disabled" || state === "disconnected" || coreLab?.isLoading}
+            onClick={() => onRunScenario(scenario.id)}
+          >
+            <PlayCircle size={13} />
+            <span>{scenario.label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="core-session-strip">
+        <MiniDatum label="Sessions" value={sessions.length.toLocaleString()} />
+        <MiniDatum label="Scenario" value={formatScenario(activeScenario)} />
+        <MiniDatum label="Events" value={events.length.toLocaleString()} />
+      </div>
+      {coreLab?.lastError ? <p className="core-error">{coreLab.lastError}</p> : null}
+      {events.length > 0 ? (
+        <div className="event-timeline">
+          {events.slice(0, 5).map((event) => (
+            <div key={event.id} className={`event-row ${event.severity}`}>
+              <span>{event.stage}</span>
+              <strong>{event.message}</strong>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function CommunicationPathSummary({ routeDecisions, n3Edges, scenario }) {
+  const hasRoutes = routeDecisions.length > 0;
+  const fallbackCount = routeDecisions.filter((route) => route.route_type === "ng_fallback").length;
+  const directCount = routeDecisions.filter((route) => route.route_type === "direct_xn").length;
+  const n3Degraded = n3Edges.some((edge) => edge.status === "degraded" || edge.status === "down");
+  return (
+    <div className="communication-path-summary" aria-label="Communication path summary">
+      <MiniDatum label="Xn paths" value={hasRoutes ? directCount.toLocaleString() : "n/a"} />
+      <MiniDatum label="N2 fallback" value={hasRoutes ? fallbackCount.toLocaleString() : "n/a"} />
+      <MiniDatum label="N3 user plane" value={n3Degraded ? "Degraded" : n3Edges.length > 0 ? "Active" : "n/a"} />
+      {routeDecisions.slice(0, 3).map((route) => (
+        <div key={`${route.from}-${route.to}`} className={`path-route-row ${route.route_type}`}>
+          <span>{route.interface ?? route.route_type}</span>
+          <strong>{route.from} to {route.to}</strong>
+          <small>{route.reason ?? formatScenario(scenario)}</small>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -952,6 +1316,32 @@ function formatCompactNumber(value) {
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(number);
+}
+
+function formatCoreLabState(state) {
+  if (state === "scenario_running") {
+    return "Scenario running";
+  }
+  if (state === "connected") {
+    return "Connected";
+  }
+  if (state === "disconnected") {
+    return "Disconnected";
+  }
+  if (state === "disabled") {
+    return "Disabled";
+  }
+  if (state === "not_applicable") {
+    return "Not applicable";
+  }
+  return state ?? "Off";
+}
+
+function formatScenario(value) {
+  return String(value ?? "normal")
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function HudMetric({ label, value }) {

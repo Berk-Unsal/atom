@@ -1,4 +1,8 @@
 import { rxPowerColor } from "./geojson.js";
+import {
+  renderMarkdownInterferenceSection,
+  renderPrintableInterferenceSection,
+} from "./interferenceReport.js";
 
 const SVG_WIDTH = 720;
 const SVG_HEIGHT = 460;
@@ -13,6 +17,7 @@ export function buildPlanningReport({
   coreLabEnabled,
   coverageGaps,
   diagnostics,
+  interferenceAnalysis,
   networkOptimization,
   selectedTower,
   settings,
@@ -25,6 +30,7 @@ export function buildPlanningReport({
   const mapSvg = buildMapSvg({
     activeNetworkTech,
     coverageGaps: coverageGaps?.geojson,
+    interference: interferenceAnalysis?.geojson,
     selectedTower,
     settings,
     simulation: simulation?.geojson,
@@ -46,6 +52,7 @@ export function buildPlanningReport({
     coreLabEnabled,
     diagnostics,
     gapStats,
+    interferenceAnalysis,
     generatedAt,
     mapSvg,
     networkOptimization,
@@ -76,7 +83,7 @@ export function openPdfReport(report) {
   }, 350);
 }
 
-function renderMarkdownReport(report) {
+export function renderMarkdownReport(report) {
   const towerCoordinates = report.selectedTower?.coordinates ?? [];
   const generatedAt = report.generatedAt.toLocaleString();
 
@@ -127,6 +134,8 @@ Generated: ${generatedAt}
 ${renderMarkdownComparisonSection(report)}
 
 ${renderMarkdownNetworkSection(report)}
+
+${renderMarkdownInterferenceSection(report)}
 
 ${renderMarkdownCoreLabSection(report)}
 
@@ -349,6 +358,7 @@ function renderPrintableReport(report) {
     </section>
     ${printComparisonSection(report)}
     ${printNetworkSection(report)}
+    ${renderPrintableInterferenceSection(report)}
     ${printCoreLabSection(report)}
     <section class="grid">
       ${printTable("Decision Context", [
@@ -395,11 +405,14 @@ function renderPrintableReport(report) {
 </html>`;
 }
 
-function buildMapSvg({ activeNetworkTech, coverageGaps, selectedTower, settings, simulation }) {
+function buildMapSvg({ activeNetworkTech, coverageGaps, interference, selectedTower, settings, simulation }) {
   const lineFeatures = (simulation?.features ?? []).filter(
     (feature) => feature.geometry?.type === "LineString" && feature.geometry.coordinates?.length >= 2,
   );
   const gapFeatures = (coverageGaps?.features ?? []).filter((feature) => feature.geometry?.type === "Point");
+  const interferenceFeatures = (interference?.features ?? [])
+    .filter((feature) => feature.geometry?.type === "Point")
+    .filter((_, index, features) => index % Math.max(1, Math.ceil(features.length / 600)) === 0);
   const towerCoordinates = selectedTower?.coordinates;
   const allCoordinates = [];
 
@@ -412,6 +425,7 @@ function buildMapSvg({ activeNetworkTech, coverageGaps, selectedTower, settings,
   gapFeatures.forEach((feature) => {
     allCoordinates.push(feature.geometry.coordinates);
   });
+  interferenceFeatures.forEach((feature) => allCoordinates.push(feature.geometry.coordinates));
 
   const bounds = getCoordinateBounds(allCoordinates, towerCoordinates);
   const project = ([lon, lat]) => {
@@ -445,6 +459,15 @@ function buildMapSvg({ activeNetworkTech, coverageGaps, selectedTower, settings,
     })
     .join("\n");
 
+  const interferencePoints = interferenceFeatures
+    .map((feature) => {
+      const [x, y] = project(feature.geometry.coordinates);
+      const rawSINR = feature.properties?.sinr_db;
+      const sinr = rawSINR === null || rawSINR === undefined ? Number.NaN : Number(rawSINR);
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="${interferenceReportColor(sinr)}" opacity="0.5" />`;
+    })
+    .join("\n");
+
   const [towerX, towerY] = Array.isArray(towerCoordinates) ? project(towerCoordinates) : [SVG_WIDTH / 2, SVG_HEIGHT / 2];
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SVG_WIDTH} ${SVG_HEIGHT}" role="img" aria-label="A.T.O.M RF planning map export">
@@ -455,6 +478,7 @@ function buildMapSvg({ activeNetworkTech, coverageGaps, selectedTower, settings,
     ${Array.from({ length: 8 }, (_, index) => `<line x1="${SVG_PADDING}" y1="${SVG_PADDING + index * 54}" x2="${SVG_WIDTH - SVG_PADDING}" y2="${SVG_PADDING + index * 54}" />`).join("")}
     ${Array.from({ length: 11 }, (_, index) => `<line x1="${SVG_PADDING + index * 64}" y1="${SVG_PADDING}" x2="${SVG_PADDING + index * 64}" y2="${SVG_HEIGHT - SVG_PADDING}" />`).join("")}
   </g>
+  <g>${interferencePoints}</g>
   <g>${paths}</g>
   <g>${gaps}</g>
   <g>
@@ -497,6 +521,14 @@ function getCoordinateBounds(coordinates, fallbackCoordinate) {
   minLat -= latPad;
   maxLat += latPad;
   return { minLon, maxLon, minLat, maxLat };
+}
+
+function interferenceReportColor(sinr) {
+  if (!Number.isFinite(sinr)) return "#64748b";
+  if (sinr < 0) return "#be123c";
+  if (sinr < 13) return "#d97706";
+  if (sinr < 20) return "#2563eb";
+  return "#0f766e";
 }
 
 function getTopCoverageGaps(geojson) {
@@ -1052,6 +1084,9 @@ function formatDateSlug(date) {
 }
 
 function formatNumber(value, digits = 1) {
+  if (value === null || value === undefined) {
+    return "n/a";
+  }
   const number = Number(value);
   if (!Number.isFinite(number)) {
     return "n/a";
@@ -1063,6 +1098,9 @@ function formatNumber(value, digits = 1) {
 }
 
 function formatCompactNumber(value) {
+  if (value === null || value === undefined) {
+    return "n/a";
+  }
   const number = Number(value);
   if (!Number.isFinite(number)) {
     return "n/a";

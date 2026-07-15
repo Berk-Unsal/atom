@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import { CircleMarker, GeoJSON, MapContainer, Polygon, Polyline, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import { Fragment, useEffect } from "react";
+import { circleMarker, divIcon, latLngBounds } from "leaflet";
+import { CircleMarker, GeoJSON, MapContainer, Marker, Polygon, Polyline, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { rxPowerColor } from "../utils/geojson.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
@@ -8,6 +9,7 @@ export default function MapCanvas({
   towers,
   selectedTower,
   selectedNetworkTowerIds = [],
+  selectedTowerOrder,
   onSelectTower,
   simulation,
   rayLayerKey,
@@ -21,9 +23,18 @@ export default function MapCanvas({
   planningMode,
   selectionPolygon,
   coreLabTopology,
+  layerVisibility,
+  selectedMapObject,
+  onSelectMapObject,
+  fitRequestVersion,
+  interference,
+  interferenceDemand,
+  interferenceLayerKey,
+  interferenceMetric,
+  interferenceModel,
 }) {
   return (
-    <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map">
+    <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map" preferCanvas>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -35,62 +46,151 @@ export default function MapCanvas({
         onFinish={onFinishAreaSelection}
         polygon={selectionPolygon}
       />
+      <FitSelectionLayer
+        fitRequestVersion={fitRequestVersion}
+        selectedNetworkTowerIds={selectedNetworkTowerIds}
+        selectedTower={selectedTower}
+        towers={towers}
+      />
+
+      {layerVisibility?.interference === false ? null : (
+        <InterferenceLayer
+          demand={interferenceDemand}
+          layerKey={interferenceLayerKey}
+          metric={interferenceMetric}
+          model={interferenceModel}
+          onSelectMapObject={onSelectMapObject}
+          selectedMapObject={selectedMapObject}
+          surface={interference}
+        />
+      )}
 
       {towers.map((tower) => {
         const [lon, lat] = tower.coordinates;
         const isSelected = selectedTower?.id === tower.id;
         const isNetworkSelected = selectedNetworkTowerIds.includes(tower.id);
+        const isNetworkVisible = layerVisibility?.selectedCells !== false && isNetworkSelected;
+        const order = selectedTowerOrder?.get(tower.id);
+        const isInspectorSelected = selectedMapObject?.type === "tower" && selectedMapObject?.payload?.tower?.id === tower.id;
         return (
-          <CircleMarker
-            key={tower.id}
-            center={[lat, lon]}
-            radius={isNetworkSelected ? 8 : isSelected ? 8 : 5}
-            pathOptions={{
-              color: isNetworkSelected ? "#b45309" : isSelected ? "#0b4f49" : "#1d4ed8",
-              fillColor: isNetworkSelected ? "#fef3c7" : isSelected ? "#ffffff" : "#60a5fa",
-              fillOpacity: isNetworkSelected || isSelected ? 1 : 0.82,
-              weight: isNetworkSelected || isSelected ? 3 : 2,
-            }}
-            eventHandlers={{
-              click: (event) => {
-                if (isDrawingSelection) {
-                  return;
-                }
-                event.originalEvent?.stopPropagation();
-                onSelectTower(tower);
-              },
-            }}
-          >
-            <Popup>
-              <dl className="tower-popup">
-                <div>
-                  <dt>Cell ID</dt>
-                  <dd>{tower.cellId}</dd>
-                </div>
-                <div>
-                  <dt>Active Node</dt>
-                  <dd>{activeNetworkTech}</dd>
-                </div>
-                {planningMode === "network" ? (
+          <Fragment key={tower.id}>
+            <CircleMarker
+              center={[lat, lon]}
+              radius={isNetworkVisible || isSelected ? 8 : 5}
+              pathOptions={{
+                color: isInspectorSelected ? "#be123c" : isNetworkVisible ? "#b45309" : isSelected ? "#0b4f49" : "#1d4ed8",
+                fillColor: isNetworkVisible ? "#fef3c7" : isSelected ? "#ffffff" : "#60a5fa",
+                fillOpacity: isNetworkVisible || isSelected ? 1 : 0.82,
+                weight: isInspectorSelected ? 4 : isNetworkVisible || isSelected ? 3 : 2,
+              }}
+              eventHandlers={{
+                click: (event) => {
+                  if (isDrawingSelection) {
+                    return;
+                  }
+                  event.originalEvent?.stopPropagation();
+                  onSelectMapObject?.({
+                    type: "tower",
+                    payload: {
+                      tower,
+                      activeNetworkTech,
+                      isNetworkSelected: planningMode === "network" ? !isNetworkSelected : isNetworkSelected,
+                      order:
+                        planningMode === "network" && !isNetworkSelected
+                          ? order ?? selectedNetworkTowerIds.length + 1
+                          : planningMode === "network"
+                            ? null
+                            : order,
+                    },
+                  });
+                  onSelectTower(tower);
+                },
+              }}
+            >
+              <Popup>
+                <dl className="tower-popup">
                   <div>
-                    <dt>Cluster</dt>
-                    <dd>{isNetworkSelected ? "Selected" : "Click to add"}</dd>
+                    <dt>Cell ID</dt>
+                    <dd>{tower.cellId}</dd>
                   </div>
-                ) : null}
-              </dl>
-            </Popup>
-          </CircleMarker>
+                  <div>
+                    <dt>Active Node</dt>
+                    <dd>{activeNetworkTech}</dd>
+                  </div>
+                  {planningMode === "network" ? (
+                    <div>
+                      <dt>Cluster</dt>
+                      <dd>{isNetworkSelected ? "Selected" : "Click to add"}</dd>
+                    </div>
+                  ) : null}
+                </dl>
+              </Popup>
+            </CircleMarker>
+            {isNetworkVisible && order ? (
+              <Marker
+                position={[lat, lon]}
+                interactive={false}
+                icon={divIcon({
+                  className: "tower-order-badge",
+                  html: `<span>${order}</span>`,
+                  iconAnchor: [8, 22],
+                })}
+              />
+            ) : null}
+          </Fragment>
         );
       })}
 
-      <RayGeoJSONLayer simulation={simulation} layerKey={rayLayerKey} />
-      <CommunicationPathLayer topology={coreLabTopology} towers={towers} />
-      <CoverageGapLayer gaps={coverageGaps} layerKey={coverageGapLayerKey} />
+      {layerVisibility?.rays === false ? null : <RayGeoJSONLayer simulation={simulation} layerKey={rayLayerKey} />}
+      {layerVisibility?.communicationPaths === false ? null : (
+        <CommunicationPathLayer
+          onSelectMapObject={onSelectMapObject}
+          selectedMapObject={selectedMapObject}
+          topology={coreLabTopology}
+          towers={towers}
+        />
+      )}
+      {layerVisibility?.gaps === false ? null : (
+        <CoverageGapLayer
+          gaps={coverageGaps}
+          layerKey={coverageGapLayerKey}
+          onSelectMapObject={onSelectMapObject}
+          selectedMapObject={selectedMapObject}
+        />
+      )}
     </MapContainer>
   );
 }
 
-function CommunicationPathLayer({ topology, towers }) {
+function FitSelectionLayer({ fitRequestVersion, selectedNetworkTowerIds, selectedTower, towers }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!fitRequestVersion) {
+      return;
+    }
+    const selected = towers.filter((tower) => selectedNetworkTowerIds.includes(tower.id));
+    const targets = selected.length > 0 ? selected : selectedTower ? [selectedTower] : [];
+    const points = targets
+      .map((tower) => {
+        const [lon, lat] = tower.coordinates ?? [];
+        return Number.isFinite(lon) && Number.isFinite(lat) ? [lat, lon] : null;
+      })
+      .filter(Boolean);
+    if (points.length === 0) {
+      return;
+    }
+    if (points.length === 1) {
+      map.setView(points[0], Math.max(map.getZoom(), 14), { animate: true });
+      return;
+    }
+    map.fitBounds(latLngBounds(points), { maxZoom: 15, padding: [42, 42] });
+  }, [fitRequestVersion, map, selectedNetworkTowerIds, selectedTower, towers]);
+
+  return null;
+}
+
+function CommunicationPathLayer({ onSelectMapObject, selectedMapObject, topology, towers }) {
   const routeDecisions = topology?.route_decisions ?? [];
   if (routeDecisions.length === 0) {
     return null;
@@ -112,6 +212,10 @@ function CommunicationPathLayer({ topology, towers }) {
     const [toLon, toLat] = toTower.coordinates;
     const isFallback = route.route_type === "ng_fallback";
     const isDegraded = route.status === "degraded" || route.status === "down";
+    const isInspectorSelected =
+      selectedMapObject?.type === "communication_path" &&
+      selectedMapObject?.payload?.route?.from === route.from &&
+      selectedMapObject?.payload?.route?.to === route.to;
     return (
       <Polyline
         key={`${route.from}-${route.to}-${route.route_type}-${route.status}`}
@@ -123,7 +227,16 @@ function CommunicationPathLayer({ topology, towers }) {
           color: isFallback ? "#be123c" : "#0f766e",
           dashArray: isFallback ? "8 8" : undefined,
           opacity: isDegraded ? 0.9 : 0.82,
-          weight: isFallback ? 4 : 5,
+          weight: isInspectorSelected ? 7 : isFallback ? 4 : 5,
+        }}
+        eventHandlers={{
+          click: (event) => {
+            event.originalEvent?.stopPropagation();
+            onSelectMapObject?.({
+              type: "communication_path",
+              payload: { route },
+            });
+          },
         }}
       >
         <Popup>
@@ -250,7 +363,7 @@ function RayGeoJSONLayer({ simulation, layerKey }) {
   );
 }
 
-function CoverageGapLayer({ gaps, layerKey }) {
+function CoverageGapLayer({ gaps, layerKey, onSelectMapObject, selectedMapObject }) {
   const features = gaps?.features ?? [];
   if (features.length === 0) {
     return null;
@@ -264,17 +377,32 @@ function CoverageGapLayer({ gaps, layerKey }) {
     const properties = feature.properties ?? {};
     const isOutage = properties.severity === "outage";
     const demand = Number(properties.total_demand ?? 0);
+    const isInspectorSelected =
+      selectedMapObject?.type === "coverage_gap" &&
+      selectedMapObject?.payload?.properties?.building_id === properties.building_id;
     return (
       <CircleMarker
         key={`${layerKey}-${properties.building_id ?? index}`}
         center={[lat, lon]}
         radius={Math.max(5, Math.min(12, 5 + demand / 35))}
         pathOptions={{
-          color: isOutage ? "#881337" : "#b45309",
+          color: isInspectorSelected ? "#0f172a" : isOutage ? "#881337" : "#b45309",
           fillColor: isOutage ? "#e11d48" : "#f59e0b",
           fillOpacity: 0.78,
           opacity: 0.95,
-          weight: 2,
+          weight: isInspectorSelected ? 4 : 2,
+        }}
+        eventHandlers={{
+          click: (event) => {
+            event.originalEvent?.stopPropagation();
+            onSelectMapObject?.({
+              type: "coverage_gap",
+              payload: {
+                properties,
+                coordinates: [lon, lat],
+              },
+            });
+          },
         }}
       >
         <Popup>
@@ -302,9 +430,110 @@ function CoverageGapLayer({ gaps, layerKey }) {
   });
 }
 
+function InterferenceLayer({ demand, layerKey, metric, model, onSelectMapObject, selectedMapObject, surface }) {
+  const surfaceFeatures = surface?.features ?? [];
+  const demandFeatures = demand?.features ?? [];
+  if (surfaceFeatures.length === 0 && demandFeatures.length === 0) {
+    return null;
+  }
+  const selectedSampleID = selectedMapObject?.type === "interference_sample"
+    ? selectedMapObject?.payload?.properties?.sample_id
+    : null;
+  const selectedFeature = selectedSampleID
+    ? [...surfaceFeatures, ...demandFeatures].find((feature) => feature?.properties?.sample_id === selectedSampleID)
+    : null;
+  const bindFeature = (feature, layer) => {
+    layer.on("click", (event) => {
+      event.originalEvent?.stopPropagation();
+      onSelectMapObject?.({
+        type: "interference_sample",
+        payload: {
+          properties: feature.properties ?? {},
+          coordinates: feature.geometry?.coordinates ?? [],
+          model,
+        },
+      });
+    });
+  };
+  const makeMarker = (isDemand) => (feature, latlng) => {
+    const properties = feature?.properties ?? {};
+    const color = interferenceMetricColor(metric, properties);
+    return circleMarker(latlng, {
+      className: isDemand ? "interference-demand-marker" : "interference-surface-marker",
+      radius: isDemand ? 7 : 5,
+      color: isDemand ? "#7f1d1d" : color,
+      fillColor: color,
+      fillOpacity: isDemand ? 0.88 : 0.58,
+      opacity: 0.92,
+      weight: isDemand ? 2 : 1,
+    });
+  };
+  const [selectedLon, selectedLat] = selectedFeature?.geometry?.coordinates ?? [];
+
+  return (
+    <>
+      {surfaceFeatures.length > 0 ? (
+        <GeoJSON
+          key={`interference-surface-${layerKey}-${metric}`}
+          data={surface}
+          pointToLayer={makeMarker(false)}
+          onEachFeature={bindFeature}
+        />
+      ) : null}
+      {demandFeatures.length > 0 ? (
+        <GeoJSON
+          key={`interference-demand-${layerKey}-${metric}`}
+          data={demand}
+          pointToLayer={makeMarker(true)}
+          onEachFeature={bindFeature}
+        />
+      ) : null}
+      {Number.isFinite(selectedLon) && Number.isFinite(selectedLat) ? (
+        <CircleMarker
+          center={[selectedLat, selectedLon]}
+          radius={9}
+          interactive={false}
+          pathOptions={{
+            color: "#0f172a",
+            fillColor: "transparent",
+            fillOpacity: 0,
+            opacity: 1,
+            weight: 3,
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
+function interferenceMetricColor(metric, properties) {
+  const rawValue = metric === "rsrp" ? properties.rsrp_dbm : metric === "rsrq" ? properties.rsrq_db : properties.sinr_db;
+  if (rawValue === null || rawValue === undefined) {
+    return "#64748b";
+  }
+  const value = Number(rawValue);
+  if (!Number.isFinite(value)) {
+    return "#64748b";
+  }
+  const thresholds = metric === "rsrp" ? [-100, -90, -80] : metric === "rsrq" ? [-20, -15, -10] : [0, 13, 20];
+  if (value < thresholds[0]) {
+    return "#be123c";
+  }
+  if (value < thresholds[1]) {
+    return "#d97706";
+  }
+  if (value < thresholds[2]) {
+    return "#2563eb";
+  }
+  return "#0f766e";
+}
+
 function formatNumber(value) {
+  if (value === null || value === undefined || value === "") {
+    return "n/a";
+  }
   const number = Number(value);
-  if (Number.isNaN(number)) {
+  if (!Number.isFinite(number)) {
     return "n/a";
   }
   return number.toFixed(1);

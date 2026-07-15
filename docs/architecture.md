@@ -159,6 +159,7 @@ frontend-react/
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
 | `GET` | `/healthz` | Liveness check |
+| `GET` | `/readyz` | Dataset and frontend readiness check |
 | `GET` | `/api/buildings` | Fetch building GeoJSON |
 | `GET` | `/api/towers` | Fetch tower locations |
 | `POST` | `/api/simulate` | Run propagation simulation |

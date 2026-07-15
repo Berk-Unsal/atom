@@ -4,7 +4,7 @@
 
 # A.T.O.M
 
-**Ankara Telecom Optimization Model | AI-Driven RF Propagation Predictor**
+**Ankara Telecom Optimization Model | Deterministic RF Planning Simulator**
 
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go)](https://golang.org)
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
@@ -19,7 +19,7 @@
 
 A.T.O.M is a full-stack spatial simulation engine designed to visualize and optimize cellular networks across multiple generations (4G LTE, 5G mmWave, 6G Sub-THz) in dense urban environments. Built on real OpenStreetMap (OSM) and OpenCellID data, the platform merges high-performance RF propagation physics with interactive geospatial visualization, enabling telecommunications engineers to predict signal coverage, optimize antenna placement, and validate network topology in complex urban landscapes like Ankara, Turkey.
 
-The engine combines Go's lightning-fast concurrency model with advanced ray-tracing algorithms and AI-driven optimization to deliver millisecond-level intersection testing across thousands of building geometries. The result is a production-ready decision-support tool that transforms raw network data into actionable intelligence for 5G/6G deployment strategies.
+The engine combines bounded Go worker pools, spatial indexing, deterministic ray tracing, and demand-aware search to evaluate urban RF planning scenarios. Results are planning estimates derived from static OSM and OpenCellID data; they are not drive-test, UE, or PHY measurements.
 
 ---
 
@@ -27,11 +27,13 @@ The engine combines Go's lightning-fast concurrency model with advanced ray-trac
 
 - **Multi-Generation Physics**: Simulates 4G (2.6 GHz), 5G (28 GHz), and 6G (140 GHz) using Free-Space Path Loss (FSPL) models with frequency-accurate propagation characteristics.
 
-- **Segmented Heatmap Raytracing**: Generates custom GeoJSON ray segments that change color (Green → Yellow → Red) based on real-time signal strength (Rx dBm), providing intuitive visual feedback on coverage quality.
+- **Segmented Heatmap Raytracing**: Generates GeoJSON ray segments that change color based on modeled signal strength (Rx dBm), providing interactive visual feedback on coverage quality.
 
 - **Frequency-Dependent Penetration**: 4G rays penetrate concrete buildings with Cumulative Wall Loss calculations, while 5G/6G rays experience heavy attenuation or immediate blockage, reflecting real-world propagation behavior.
 
-- **Smart Beamforming**: Sector antenna simulation with adjustable Azimuth and Beam Width parameters, enabling realistic directional coverage patterns and sidelobe analysis.
+- **Sector Planning**: Sector antenna simulation with adjustable azimuth and beam width. Version 1 uses hard beam eligibility and does not model sidelobes, fading, diffraction, or MIMO scheduling.
+
+- **Interference Analysis**: Produces planning-grade RSRP, SINR, RSRQ, RSSI, serving-cell, and strongest-interferer surfaces for selected 4G and 5G cells.
 
 - **Demand-Aware Auto-Optimization**: Sweeps candidate azimuths and scores sectors with POI demand, residential-density demand, and a capped coverage tie-breaker, eliminating manual trial-and-error.
 
@@ -44,7 +46,7 @@ The engine combines Go's lightning-fast concurrency model with advanced ray-trac
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
 | **Backend** | Go (Golang) | Massive concurrency via Goroutines; in-memory R-Tree spatial indexing for sub-millisecond ray-polygon intersection testing |
-| **Frontend** | React + Leaflet | Complex GeoJSON heatmap rendering with dynamic map layers and real-time simulation controls |
+| **Frontend** | React + Leaflet | GeoJSON and canvas-backed map layers with interactive simulation controls |
 | **Data Pipeline** | Python + OSMnx | Local tower/building extraction and demand-surface enrichment |
 | **Runtime Data** | GeoJSON + CSV | Static local files loaded into memory at startup; no database required |
 | **Deployment** | Docker | Multi-stage build compiling both React and Go into a single, lightweight Alpine container |
@@ -80,7 +82,7 @@ Generated artifacts such as `frontend-react/dist/`, local virtual environments, 
 ### Auto-Optimized 5G Beamforming
 ![5G Auto-Optimized](./assets/5g-auto-optimized.png)
 
-*Visualizing multi-generation RF propagation patterns and AI-optimized antenna placement in urban environments.*
+*Visualizing multi-generation RF propagation patterns and deterministic antenna-placement recommendations in urban environments.*
 
 ---
 
@@ -137,6 +139,6 @@ This project demonstrates the practical intersection of spatial algorithms, high
 
 <div align="center">
 
-**Built with precision. Optimized for scale. Ready for production.**
+**Deterministic, inspectable, and explicit about model limits.**
 
 </div>

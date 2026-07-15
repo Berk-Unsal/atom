@@ -1,6 +1,7 @@
 package raytracer
 
 import (
+	"context"
 	"math"
 	"runtime"
 	"sort"
@@ -220,11 +221,19 @@ func NormalizeNetworkOptimizationRequest(req *NetworkOptimizationRequest) {
 }
 
 func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) StaticSimulationResponse {
+	response, _ := SimulateStaticRaysContext(context.Background(), req, buildings)
+	return response
+}
+
+func SimulateStaticRaysContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (StaticSimulationResponse, error) {
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 	rayFeatures := make([][]RayFeature, req.Rays)
 	terminals := make([]rayTerminal, req.Rays)
 
 	workerCount := runtime.NumCPU()
+	if workerCount > 4 {
+		workerCount = 4
+	}
 	if req.Rays < workerCount {
 		workerCount = req.Rays
 	}
@@ -239,18 +248,35 @@ func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) S
 	for worker := 0; worker < workerCount; worker++ {
 		go func() {
 			defer waitGroup.Done()
-			for index := range jobs {
-				angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
-				rayFeatures[index], terminals[index] = simulateSegmentedRay(origin, index, angle, req, buildings)
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case index, ok := <-jobs:
+					if !ok {
+						return
+					}
+					angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
+					rayFeatures[index], terminals[index] = simulateSegmentedRay(origin, index, angle, req, buildings)
+				}
 			}
 		}()
 	}
 
 	for index := 0; index < req.Rays; index++ {
-		jobs <- index
+		select {
+		case <-ctx.Done():
+			close(jobs)
+			waitGroup.Wait()
+			return StaticSimulationResponse{}, ctx.Err()
+		case jobs <- index:
+		}
 	}
 	close(jobs)
 	waitGroup.Wait()
+	if err := ctx.Err(); err != nil {
+		return StaticSimulationResponse{}, err
+	}
 
 	features := make([]RayFeature, 0, req.Rays*int(math.Ceil(req.RadiusMeters/SegmentStepMeters)))
 	for _, segments := range rayFeatures {
@@ -271,11 +297,16 @@ func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) S
 	return StaticSimulationResponse{
 		GeoJSON: geojson,
 		Stats:   CalculateSimulationStats(terminals),
-	}
+	}, nil
 }
 
 func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) AzimuthOptimizationResponse {
 	NormalizeStaticSimulationRequest(&req)
+	response, _ := OptimizeAzimuthContext(context.Background(), req, buildings)
+	return response
+}
+
+func OptimizeAzimuthContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (AzimuthOptimizationResponse, error) {
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 
 	type sweepResult struct {
@@ -287,6 +318,9 @@ func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) Azim
 	results := make([]sweepResult, candidateCount)
 	jobs := make(chan int)
 	workerCount := runtime.NumCPU()
+	if workerCount > 4 {
+		workerCount = 4
+	}
 	if workerCount > candidateCount {
 		workerCount = candidateCount
 	}
@@ -299,24 +333,44 @@ func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) Azim
 	for worker := 0; worker < workerCount; worker++ {
 		go func() {
 			defer waitGroup.Done()
-			for index := range jobs {
-				testAzimuth := float64(index * 10)
-				testReq := req
-				testReq.AzimuthDeg = testAzimuth
-				breakdown := CoverageAreaScoreBreakdown(origin, testReq, buildings)
-				results[index] = sweepResult{
-					azimuth:   testAzimuth,
-					breakdown: breakdown,
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case index, ok := <-jobs:
+					if !ok {
+						return
+					}
+					testAzimuth := float64(index * 10)
+					testReq := req
+					testReq.AzimuthDeg = testAzimuth
+					breakdown, err := CoverageAreaScoreBreakdownContext(ctx, origin, testReq, buildings)
+					if err != nil {
+						return
+					}
+					results[index] = sweepResult{
+						azimuth:   testAzimuth,
+						breakdown: breakdown,
+					}
 				}
 			}
 		}()
 	}
 
 	for index := 0; index < candidateCount; index++ {
-		jobs <- index
+		select {
+		case <-ctx.Done():
+			close(jobs)
+			waitGroup.Wait()
+			return AzimuthOptimizationResponse{}, ctx.Err()
+		case jobs <- index:
+		}
 	}
 	close(jobs)
 	waitGroup.Wait()
+	if err := ctx.Err(); err != nil {
+		return AzimuthOptimizationResponse{}, err
+	}
 
 	best := results[0]
 	for _, result := range results[1:] {
@@ -333,11 +387,16 @@ func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) Azim
 		HitDemandBuildings:      best.breakdown.HitDemandBuildings,
 		HitResidentialBuildings: best.breakdown.HitResidentialBuildings,
 		DataQuality:             demandSummary.DataQuality,
-	}
+	}, nil
 }
 
 func OptimizeNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) NetworkOptimizationResponse {
 	NormalizeNetworkOptimizationRequest(&req)
+	response, _ := OptimizeNetworkContext(context.Background(), req, buildings)
+	return response
+}
+
+func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
 	azimuths := make([]float64, len(req.Towers))
 	for index, tower := range req.Towers {
 		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
@@ -348,9 +407,15 @@ func OptimizeNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) N
 			bestAzimuth := azimuths[towerIndex]
 			bestScore := math.Inf(-1)
 			for candidate := 0; candidate < 36; candidate++ {
+				if err := ctx.Err(); err != nil {
+					return NetworkOptimizationResponse{}, err
+				}
 				testAzimuths := append([]float64(nil), azimuths...)
 				testAzimuths[towerIndex] = float64(candidate * 10)
-				breakdown := NetworkCoverageScoreBreakdown(req, testAzimuths, buildings)
+				breakdown, err := NetworkCoverageScoreBreakdownContext(ctx, req, testAzimuths, buildings)
+				if err != nil {
+					return NetworkOptimizationResponse{}, err
+				}
 				if breakdown.NetworkScore > bestScore {
 					bestScore = breakdown.NetworkScore
 					bestAzimuth = testAzimuths[towerIndex]
@@ -360,11 +425,18 @@ func OptimizeNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) N
 		}
 	}
 
-	breakdown := NetworkCoverageScoreBreakdown(req, azimuths, buildings)
+	breakdown, err := NetworkCoverageScoreBreakdownContext(ctx, req, azimuths, buildings)
+	if err != nil {
+		return NetworkOptimizationResponse{}, err
+	}
 	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
 	for index, tower := range req.Towers {
 		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
-		score := CoverageAreaScoreBreakdown(Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings).TotalScore
+		towerBreakdown, scoreErr := CoverageAreaScoreBreakdownContext(ctx, Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings)
+		if scoreErr != nil {
+			return NetworkOptimizationResponse{}, scoreErr
+		}
+		score := towerBreakdown.TotalScore
 		optimized = append(optimized, NetworkOptimizedTower{
 			ID:             tower.ID,
 			OptimalAzimuth: azimuths[index],
@@ -377,21 +449,33 @@ func OptimizeNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) N
 	return NetworkOptimizationResponse{
 		OptimizedTowers: optimized,
 		Stats:           breakdown.rounded(),
-	}
+	}, nil
 }
 
 func EvaluateNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) NetworkOptimizationResponse {
 	NormalizeNetworkOptimizationRequest(&req)
+	response, _ := EvaluateNetworkContext(context.Background(), req, buildings)
+	return response
+}
+
+func EvaluateNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
 	azimuths := make([]float64, len(req.Towers))
 	for index, tower := range req.Towers {
 		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
 	}
 
-	breakdown := NetworkCoverageScoreBreakdown(req, azimuths, buildings)
+	breakdown, err := NetworkCoverageScoreBreakdownContext(ctx, req, azimuths, buildings)
+	if err != nil {
+		return NetworkOptimizationResponse{}, err
+	}
 	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
 	for index, tower := range req.Towers {
 		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
-		score := CoverageAreaScoreBreakdown(Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings).TotalScore
+		towerBreakdown, scoreErr := CoverageAreaScoreBreakdownContext(ctx, Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings)
+		if scoreErr != nil {
+			return NetworkOptimizationResponse{}, scoreErr
+		}
+		score := towerBreakdown.TotalScore
 		optimized = append(optimized, NetworkOptimizedTower{
 			ID:             tower.ID,
 			OptimalAzimuth: azimuths[index],
@@ -404,13 +488,18 @@ func EvaluateNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) N
 	return NetworkOptimizationResponse{
 		OptimizedTowers: optimized,
 		Stats:           breakdown.rounded(),
-	}
+	}, nil
 }
 
 func NetworkCoverageScoreBreakdown(req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) NetworkOptimizationStats {
+	stats, _ := NetworkCoverageScoreBreakdownContext(context.Background(), req, azimuths, buildings)
+	return stats
+}
+
+func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) (NetworkOptimizationStats, error) {
 	stats := NetworkOptimizationStats{}
 	if buildings == nil {
-		return stats
+		return stats, nil
 	}
 	buildingByID := make(map[string]*BuildingFootprint, len(buildings.Footprints()))
 	for _, building := range buildings.Footprints() {
@@ -422,15 +511,25 @@ func NetworkCoverageScoreBreakdown(req NetworkOptimizationRequest, azimuths []fl
 	servedCounts := make(map[string]int)
 	bestRxByBuilding := make(map[string]float64)
 	for index, tower := range req.Towers {
+		if err := ctx.Err(); err != nil {
+			return NetworkOptimizationStats{}, err
+		}
 		azimuth := tower.AzimuthDeg
 		if index < len(azimuths) {
 			azimuth = azimuths[index]
 		}
 		simReq := networkTowerToStaticRequest(req, tower, azimuth)
 		origin := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
-		towerBreakdown := CoverageAreaScoreBreakdown(origin, simReq, buildings)
+		towerBreakdown, err := CoverageAreaScoreBreakdownContext(ctx, origin, simReq, buildings)
+		if err != nil {
+			return NetworkOptimizationStats{}, err
+		}
 		stats.CoverageScore += towerBreakdown.CoverageScore
-		for buildingID, rx := range BuildingCoverageMap(origin, simReq, buildings) {
+		coverageMap, err := BuildingCoverageMapContext(ctx, origin, simReq, buildings)
+		if err != nil {
+			return NetworkOptimizationStats{}, err
+		}
+		for buildingID, rx := range coverageMap {
 			if rx <= CoveredBuildingThresholdDBm {
 				continue
 			}
@@ -460,7 +559,7 @@ func NetworkCoverageScoreBreakdown(req NetworkOptimizationRequest, azimuths []fl
 	}
 	stats.OverlapPenalty = float64(stats.OverlapBuildings) * NetworkOverlapPenaltyPerBuilding
 	stats.NetworkScore = stats.DemandScore + stats.ResidentialScore + stats.CoverageScore - stats.OverlapPenalty
-	return stats
+	return stats, nil
 }
 
 func networkTowerToStaticRequest(req NetworkOptimizationRequest, tower NetworkTowerRequest, azimuth float64) StaticSimulationRequest {
@@ -487,9 +586,17 @@ func (stats NetworkOptimizationStats) rounded() NetworkOptimizationStats {
 
 func FindCoverageGaps(req StaticSimulationRequest, buildings *BuildingIndex) CoverageGapResponse {
 	NormalizeStaticSimulationRequest(&req)
+	response, _ := FindCoverageGapsContext(context.Background(), req, buildings)
+	return response
+}
+
+func FindCoverageGapsContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (CoverageGapResponse, error) {
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 	candidates := demandCandidatesInBeam(origin, req, buildings)
-	profiles := buildBeamCoverageProfiles(origin, req, buildings)
+	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
+	if err != nil {
+		return CoverageGapResponse{}, err
+	}
 	coverageMap := buildingCoverageMapFromProfiles(profiles)
 	gaps := make([]PointFeature, 0, len(candidates))
 	stats := CoverageGapStats{
@@ -498,7 +605,12 @@ func FindCoverageGaps(req StaticSimulationRequest, buildings *BuildingIndex) Cov
 		WorstRxDBm:         math.Inf(1),
 	}
 
-	for _, building := range candidates {
+	for index, building := range candidates {
+		if index%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return CoverageGapResponse{}, err
+			}
+		}
 		centroid, ok := PolygonCentroid(building.Vertices)
 		if !ok {
 			continue
@@ -555,7 +667,7 @@ func FindCoverageGaps(req StaticSimulationRequest, buildings *BuildingIndex) Cov
 			Features: gaps,
 		},
 		Stats: stats,
-	}
+	}, nil
 }
 
 type rayCoverageProfile struct {
@@ -570,14 +682,31 @@ type nearbyBeamSample struct {
 }
 
 func BuildingCoverageMap(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) map[string]float64 {
-	profiles := buildBeamCoverageProfiles(origin, req, buildings)
-	return buildingCoverageMapFromProfiles(profiles)
+	NormalizeStaticSimulationRequest(&req)
+	coverage, _ := BuildingCoverageMapContext(context.Background(), origin, req, buildings)
+	return coverage
+}
+
+func BuildingCoverageMapContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) (map[string]float64, error) {
+	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
+	if err != nil {
+		return nil, err
+	}
+	return buildingCoverageMapFromProfiles(profiles), nil
 }
 
 func buildBeamCoverageProfiles(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) []rayCoverageProfile {
 	NormalizeStaticSimulationRequest(&req)
+	profiles, _ := buildBeamCoverageProfilesContext(context.Background(), origin, req, buildings)
+	return profiles
+}
+
+func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) ([]rayCoverageProfile, error) {
 	profiles := make([]rayCoverageProfile, 0, req.Rays)
 	for index := 0; index < req.Rays; index++ {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
 		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
 		segments, terminal := simulateSegmentedRay(origin, index, angle, req, buildings)
 		profiles = append(profiles, rayCoverageProfile{
@@ -586,7 +715,7 @@ func buildBeamCoverageProfiles(origin Point, req StaticSimulationRequest, buildi
 			terminal: terminal,
 		})
 	}
-	return profiles
+	return profiles, nil
 }
 
 func buildingCoverageMapFromProfiles(profiles []rayCoverageProfile) map[string]float64 {
@@ -701,10 +830,18 @@ type CoverageScoreBreakdown struct {
 }
 
 func CoverageAreaScoreBreakdown(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) CoverageScoreBreakdown {
+	breakdown, _ := CoverageAreaScoreBreakdownContext(context.Background(), origin, req, buildings)
+	return breakdown
+}
+
+func CoverageAreaScoreBreakdownContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) (CoverageScoreBreakdown, error) {
 	breakdown := CoverageScoreBreakdown{}
 	uniqueDemandWeights := make(map[string]float64)
 	uniqueResidentialDemands := make(map[string]float64)
 	for index := 0; index < req.Rays; index++ {
+		if err := ctx.Err(); err != nil {
+			return CoverageScoreBreakdown{}, err
+		}
 		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
 		terminal := simulateRayTerminal(origin, index, angle, req, buildings)
 		breakdown.CoverageScore += CoverageTieBreakerScore(terminal.distanceMeters, req.RadiusMeters)
@@ -730,7 +867,7 @@ func CoverageAreaScoreBreakdown(origin Point, req StaticSimulationRequest, build
 	breakdown.HitDemandBuildings = len(uniqueDemandWeights)
 	breakdown.HitResidentialBuildings = len(uniqueResidentialDemands)
 	breakdown.TotalScore = breakdown.CoverageScore + breakdown.DemandScore + breakdown.ResidentialScore
-	return breakdown
+	return breakdown, nil
 }
 
 func CoverageTieBreakerScore(distanceMeters float64, radiusMeters float64) float64 {

@@ -22,10 +22,12 @@ A.T.O.M v1.0 has **no authentication** (suitable for internal/private networks).
 
 All responses are **JSON**, but the exact shape depends on the route:
 
-- `GET /healthz` returns a status object
+- `GET /healthz` returns a liveness status object
+- `GET /readyz` returns dependency readiness
 - `GET /api/buildings` and `GET /api/towers` return raw GeoJSON
 - `POST /api/simulate` returns `{ geojson, stats }`
 - `POST /api/coverage-gaps` returns `{ geojson, stats }`
+- `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`
 - `POST /api/optimize-azimuth` returns `{ optimal_azimuth, coverage_score, demand_score, residential_score }`
 
 Error responses use a simple object with an `error` message.
@@ -38,7 +40,7 @@ Error responses use a simple object with an `error` message.
 
 **Endpoint**: `GET /healthz`
 
-Check if the API is running and all data is loaded.
+Check whether the HTTP process is alive. This endpoint remains `200` even while required datasets or the frontend bundle are unavailable.
 
 **Response**:
 
@@ -55,8 +57,26 @@ Check if the API is running and all data is loaded.
 ```
 
 **Status Codes**:
-- `200 OK` - API is healthy
-- `503 Service Unavailable` - Data not yet loaded (startup)
+- `200 OK` - Process is alive
+
+### Readiness Check
+
+**Endpoint**: `GET /readyz`
+
+Check whether the building index, tower dataset, and frontend bundle are available. Use this route for deployment readiness probes.
+
+```json
+{
+  "status": "ready",
+  "buildings": true,
+  "towers": true,
+  "frontend": true
+}
+```
+
+**Status Codes**:
+- `200 OK` - Instance is ready to receive traffic
+- `503 Service Unavailable` - At least one required dependency is unavailable
 
 ---
 
@@ -72,24 +92,21 @@ Retrieve all building geometries as GeoJSON.
 
 ```json
 {
-  "success": true,
-  "data": {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": {
-          "building": "concrete",
-          "name": "Ankara Central Tower",
-          "height": 45
-        },
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [[[33.8, 39.9], [33.801, 39.9], ...]]
-        }
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "building": "concrete",
+        "name": "Ankara Central Tower",
+        "height": 45
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[33.8, 39.9], [33.801, 39.9], [33.8, 39.9]]]
       }
-    ]
-  }
+    }
+  ]
 }
 ```
 
@@ -103,31 +120,27 @@ Retrieve all building geometries as GeoJSON.
 
 Retrieve all 5G/4G tower locations.
 
-**Query Parameters**:
-- `frequency` (optional): Filter by band (`4G`, `5G`, `6G`)
+**Query Parameters**: None
 
 **Response**:
 
 ```json
 {
-  "success": true,
-  "data": {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": {
-          "cell_id": 20560152,
-          "radio_type": "NR",
-          "is_simulated": false
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [32.8541, 39.9208]
-        }
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "cell_id": 20560152,
+        "radio_type": "NR",
+        "is_simulated": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [32.8541, 39.9208]
       }
-    ]
-  }
+    }
+  ]
 }
 ```
 
@@ -160,12 +173,12 @@ Run RF propagation simulation with given parameters.
 |-----------|------|-------|----------|-------------|
 | `tower_lon` | number | -180 - 180 | Yes | Tower longitude |
 | `tower_lat` | number | -90 - 90 | Yes | Tower latitude |
-| `rays` | number | 8 - 720 | Yes | Ray count used to sample the sector |
-| `radius_m` | number | 25 - 5000 | Yes | Maximum requested simulation radius |
-| `frequency_ghz` | number | 0 - 300 | Yes | Network frequency in GHz |
-| `tx_power_dbm` | number | 0 - 60 | Yes | Transmit power before antenna gain |
-| `azimuth` | number | 0 - 360 | Yes | Antenna direction (degrees) |
-| `beam_width` | number | 10 - 360 | Yes | Sector width (degrees) |
+| `rays` | number | 8 - 720 | No | Ray count used to sample the sector; defaults to 60 |
+| `radius_m` | number | 25 - 5000 | No | Maximum requested simulation radius; defaults to 400 |
+| `frequency_ghz` | number | > 0 - 300 | No | Network frequency in GHz; defaults to 28 |
+| `tx_power_dbm` | number | 0 - 60 | No | Transmit power before antenna gain; defaults to 30 |
+| `azimuth` | number | Any finite angle | No | Antenna direction, normalized to 0-360; defaults to 0 |
+| `beam_width` | number | 10 - 360 | No | Sector width in degrees; defaults to 120 |
 
 **Response**:
 
@@ -201,13 +214,14 @@ Run RF propagation simulation with given parameters.
 **Status Codes**:
 - `200 OK` - Simulation completed successfully
 - `400 Bad Request` - Invalid parameters
-- `404 Not Found` - Tower not found
+- `413 Content Too Large` - Request body exceeds 1 MiB
+- `429 Too Many Requests` - RF worker capacity is busy; inspect `Retry-After`
 - `500 Internal Server Error` - Simulation error
 
 **Performance**:
-- Typical response time: 1-3 seconds (depends on grid size)
-- Maximum rays: 100,000+ per request
-- Timeout: 30 seconds
+- Runtime depends on ray count, radius, and local building density.
+- Maximum rays: 720 per request.
+- The server uses a 120-second write timeout and caps each RF job at four workers.
 
 ---
 
@@ -281,6 +295,46 @@ Uses the same payload as `POST /api/simulate`.
 
 ---
 
+### Analyze Interference and Radio Quality
+
+**Endpoint**: `POST /api/interference`
+
+Calculate planning-grade LTE or NR RSRP, SINR, RSRQ, RSSI, serving-cell, and strongest-interferer estimates over a bounded spatial grid and demand-building centroids.
+
+```json
+{
+  "network_tech": "5g",
+  "towers": [
+    { "id": "cell-1", "tower_lon": 32.8541, "tower_lat": 39.9208, "azimuth": 45 },
+    { "id": "cell-2", "tower_lon": 32.8581, "tower_lat": 39.9218, "azimuth": 225 }
+  ],
+  "radius_m": 400,
+  "frequency_ghz": 28,
+  "tx_power_dbm": 30,
+  "beam_width": 120,
+  "bandwidth_mhz": 100,
+  "load_factor": 0.7,
+  "reuse_factor": 1,
+  "noise_figure_db": 7,
+  "sample_spacing_m": 40
+}
+```
+
+The request accepts 2–6 unique cells. LTE bandwidths are `1.4`, `3`, `5`, `10`, `15`, or `20` MHz; 5G NR bandwidths are `50`, `100`, `200`, or `400` MHz. Reuse must be `1` or `3`. 6G is rejected because standardized project-level RSRP/RSRQ assumptions are not defined for the research overlay.
+
+The response contains:
+
+- `geojson`: up to 3,000 grid samples with radio KPIs and serving/interferer context.
+- `demand_geojson`: up to 500 affected demand-building centroids.
+- `stats`: average and P10 radio quality, serviceable area, interference-limited area, affected demand, and per-cell summaries. `valid_sample_count` reports the number of samples with usable measurements; average and P10 fields are `null` when that count is zero.
+- `model`: bandwidth, SCS, resource blocks, load, reuse, effective spacing, and explicit modeling assumptions.
+
+Results are deterministic planning estimates, not measurements reported by a UE or live radio network.
+
+Optional numeric fields receive defaults only when omitted. Explicit zero values remain explicit: for example, `noise_figure_db: 0` is valid, while `load_factor: 0` is rejected by range validation.
+
+---
+
 ### Optimize Antenna Placement
 
 **Endpoint**: `POST /api/optimize-azimuth`
@@ -342,13 +396,14 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 **Status Codes**:
 - `200 OK` - Optimization succeeded
 - `400 Bad Request` - Invalid parameters
-- `404 Not Found` - Tower not found
+- `413 Content Too Large` - Request body exceeds 1 MiB
+- `429 Too Many Requests` - RF worker capacity is busy
 - `500 Internal Server Error` - Optimization error
 
 **Performance**:
 - Typical response time: 3-5 seconds
-- Parallelization: Uses all available CPU cores
-- Timeout: 60 seconds
+- Parallelization: Up to four workers per RF request
+- Server write timeout: 120 seconds
 
 ---
 
@@ -414,7 +469,7 @@ curl -X POST http://localhost:8080/api/coverage-gaps \
 ### Example 5: Fetch All Towers
 
 ```bash
-curl -X GET "http://localhost:8080/api/towers?frequency=5G"
+curl -X GET "http://localhost:8080/api/towers"
 ```
 
 ---
@@ -488,19 +543,21 @@ const coverage = await simulateRF({
 
 ---
 
-## Rate Limiting
+## Capacity and Rate Limiting
 
-A.T.O.M v1.0 has **no built-in rate limiting**. For production:
+The server allows two concurrent RF jobs by default and immediately returns `429` with `Retry-After: 1` when that capacity is full. Configure the limit with `MAX_CONCURRENT_RF_REQUESTS`.
+
+This is a process-level resource guard, not per-client rate limiting. For internet-facing deployments:
 
 1. Deploy behind reverse proxy (nginx, HAProxy)
 2. Add rate limiting at proxy layer
-3. Implement API key authentication
+3. Add authentication or API keys
 4. Track per-client request counts
 
 **Recommended limits**:
 - 10 requests/second per API key
 - 1000 requests/day per API key
-- 100 concurrent requests max
+- Keep RF concurrency aligned with the CPU allocation; the application default is 2
 
 ---
 

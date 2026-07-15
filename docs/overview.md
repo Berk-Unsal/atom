@@ -4,11 +4,11 @@
 
 The exponential growth of cellular networks has created unprecedented complexity in urban network planning. Engineers must optimize antenna placement, frequency allocation, and coverage patterns across dense building environments—all while meeting regulatory constraints and cost targets.
 
-Traditional network planning relies on expensive commercial simulators or empirical field measurements. A.T.O.M democratizes this process by providing an open-source, production-grade simulation engine that combines:
+Traditional network planning relies on expensive commercial simulators or empirical field measurements. A.T.O.M provides an open-source, planning-grade simulator that combines:
 
 - **Computational efficiency** through Go's concurrent processing
-- **Spatial accuracy** using R-Tree indexing and polygon intersection testing
-- **Physics fidelity** with frequency-dependent propagation models
+- **Spatial processing** using R-Tree indexing and polygon intersection testing
+- **Inspectable RF estimates** using FSPL and fixed frequency-dependent wall loss
 - **Visual intelligence** via interactive GeoJSON rendering
 
 ## Use Cases
@@ -74,7 +74,7 @@ A.T.O.M is optimized for **Ankara's urban topology**:
 - **Building density**: 12,000+ structures in core districts
 - **Terrain complexity**: Hillsides and valleys affecting RF propagation
 - **Data availability**: Complete OSM building and 5G tower data
-- **Real-world validation**: Comparative analysis against measured field data
+- **Field calibration**: Future comparison against measured network data
 
 The same engine scales to any city or region with available GeoJSON geometry.
 
@@ -82,7 +82,7 @@ The same engine scales to any city or region with available GeoJSON geometry.
 
 ### Current (v1.0)
 - ✅ 4G/5G/6G multi-band simulation
-- ✅ AI-driven antenna optimization
+- ✅ Deterministic demand-aware antenna optimization
 - ✅ Interactive web-based visualization
 - ✅ Docker containerization
 

@@ -1,6 +1,6 @@
 # Algorithms & Physics
 
-A.T.O.M combines rigorous physics models with advanced computational geometry to deliver production-grade RF simulations.
+A.T.O.M combines deterministic planning equations with computational geometry to produce inspectable RF estimates. It is not a calibrated propagation solver or a substitute for field measurements.
 
 ## Radio Frequency Physics Foundation
 
@@ -16,13 +16,14 @@ $$L[dB] = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 92.45$$
 
 ### Received Power Calculation
 
-$$P_{rx}[dBm] = EIRP_{dBm} - L_{path} - L_{walls} - L_{diffraction}$$
+$$P_{rx}[dBm] = EIRP_{dBm} - L_{path} - L_{walls}$$
 
 Where:
 - $EIRP$ = Transmit power plus antenna gain
 - $L_{path}$ = Free-space path loss (FSPL equation)
 - $L_{walls}$ = Cumulative building penetration loss
-- $L_{diffraction}$ = Edge diffraction losses (simplified)
+
+The current model does not include diffraction, reflection, fast fading, terrain, or multipath.
 
 ### Frequency Dependence
 
@@ -206,11 +207,11 @@ func RTtree.Query(ray LineSegment) []Building {
 
 ---
 
-## Beamforming and Antenna Patterns
+## Sector Eligibility
 
-### Sector Antenna Model
+### Hard Sector Model
 
-A.T.O.M simulates realistic **sector antennas**:
+A.T.O.M uses the configured azimuth and beam width as a hard geometric eligibility boundary:
 
 ```
 Azimuth = 45°, Beam Width = 65°
@@ -227,36 +228,21 @@ Coverage: 12.5° to 77.5°
              θ = 65°
 ```
 
-### Gain Function
-
-Power gain (or loss) as function of azimuth offset from main lobe:
-
-$$G(\theta) = -12 \left(\frac{\theta}{\text{Beam Width}}\right)^2 \quad \text{for } |\theta| < \text{BW}/2$$
-
-$$G(\theta) = -24 \quad \text{for } |\theta| \geq \text{BW}/2 \text{ (sidelobe)}$$
-
-### Impact on Coverage
+### Eligibility Function
 
 ```go
-func ApplyBeamforming(direction float64, antenna_azimuth float64, 
-                      beam_width float64) float64 {
-    offset := abs(normalize_angle(direction - antenna_azimuth))
-    
-    if offset < beam_width / 2 {
-        // Main lobe: parabolic gain
-        gain := -12 * (offset / (beam_width/2))^2
-    } else {
-        // Sidelobe: flat suppression
-        gain = -24
-    }
-    
-    return gain
+func IsInsideSector(direction float64, antennaAzimuth float64,
+                    beamWidth float64) bool {
+    offset := abs(normalize_angle(direction - antennaAzimuth))
+    return offset <= beamWidth / 2
 }
 ```
 
+Samples outside the configured sector or radius do not contribute. Version 1 does not model sidelobes or a continuous antenna gain pattern.
+
 ---
 
-## AI Optimization: Sweep & Score Algorithm
+## Deterministic Optimization: Sweep & Score Algorithm
 
 ### Problem Statement
 
@@ -386,16 +372,16 @@ for i := 1; i <= 72; i++ {
 
 ---
 
-## Accuracy & Limitations
+## Validation & Limitations
 
-### Accuracy Levels
+### Model Confidence
 
-| Aspect | Accuracy | Notes |
-|--------|----------|-------|
-| FSPL equation | ±0.1 dB | Theoretical perfect |
-| Material attenuation | ±3 dB | Depends on OSM data quality |
-| Wall intersection | ±100% | Binary: either blocks or doesn't |
-| Real-world validation | ±5 dB | Tested against field measurements |
+| Aspect | Status | Notes |
+|--------|--------|-------|
+| FSPL equation | Deterministic | Standard free-space equation |
+| Wall attenuation | Approximation | Fixed by selected frequency family |
+| Wall intersection | Deterministic | Binary geometric intersection against loaded footprints |
+| Field calibration | Not completed | Validate estimates before deployment decisions |
 
 ### Model Limitations
 

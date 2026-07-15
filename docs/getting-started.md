@@ -218,23 +218,20 @@ docker run -p 8080:8080 atom-simulator
 
 ## Verification
 
-### API Health Check
+### API Readiness Check
 
 ```bash
-curl http://localhost:8080/healthz
+curl http://localhost:8080/readyz
 ```
 
 **Expected response**:
 
 ```json
 {
-  "success": true,
-  "data": {
-    "status": "healthy",
-    "buildings_loaded": 12047,
-    "towers_loaded": 287,
-    "version": "1.0.0"
-  }
+  "status": "ready",
+  "buildings": true,
+  "towers": true,
+  "frontend": true
 }
 ```
 

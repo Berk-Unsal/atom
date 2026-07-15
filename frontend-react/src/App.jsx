@@ -1,19 +1,38 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Activity,
   AlertTriangle,
   BarChart3,
   Database,
   Download,
   FileText,
+  MapPin,
   PlayCircle,
   RadioTower,
   Server,
   SlidersHorizontal,
 } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
+import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
+import {
+  CommandBar,
+  InterferenceLegend,
+  MapToolbar,
+  ToolDrawer,
+  WorkflowRail,
+} from "./components/WorkspaceChrome.jsx";
+import { WORKSPACE_TOOLS } from "./components/workspaceTools.js";
+import useRequestCoordinator from "./hooks/useRequestCoordinator.js";
+import { getJSON, isAbortError, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
+import { runNetworkSimulationQueue } from "./utils/networkSimulationQueue.js";
 import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/polygonSelection.js";
+import {
+  buildInterferencePayload,
+  buildNetworkOptimizationPayload,
+  buildSimulationPayload,
+} from "./utils/requestPayloads.js";
 import {
   buildPlanningReport,
   buildComparisonBarChartSvg,
@@ -23,7 +42,6 @@ import {
   openPdfReport,
 } from "./utils/reportExport.js";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const APP_ICON_URL = "/icon/icon.svg";
 const CORE_LAB_START_COMMAND =
   "docker compose -f docker-compose.yml -f docker-compose.core-lab.yml --profile core-lab up";
@@ -45,14 +63,45 @@ const DEFAULT_SIMULATION = {
   radiusMeters: 400,
   azimuthDeg: 90,
   beamWidthDeg: 120,
+  interferenceBandwidthMHz: 100,
+  cellLoadPct: 70,
+  reuseFactor: 1,
+  noiseFigureDb: 7,
+  sampleSpacingMeters: 40,
+};
+
+const EMPTY_INTERFERENCE_ANALYSIS = {
+  geojson: { type: "FeatureCollection", features: [] },
+  demand_geojson: { type: "FeatureCollection", features: [] },
+  stats: null,
+  model: null,
+};
+
+const DEFAULT_LAYER_VISIBILITY = {
+  rays: true,
+  gaps: true,
+  selectedCells: true,
+  communicationPaths: true,
+  interference: true,
 };
 
 export default function App() {
-  const [activeInspectorTab, setActiveInspectorTab] = useState("plan");
+  const [activeTool, setActiveTool] = useState("setup");
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerMode, setDrawerMode] = useState("tool");
+  const [previousTool, setPreviousTool] = useState("setup");
+  const [activeResultsView, setActiveResultsView] = useState("rf");
+  const [lastAnalysisKind, setLastAnalysisKind] = useState("rf");
+  const [networkResultKind, setNetworkResultKind] = useState(null);
   const [planningMode, setPlanningMode] = useState("single");
   const [isDrawingSelection, setIsDrawingSelection] = useState(false);
   const [selectionPolygon, setSelectionPolygon] = useState([]);
   const [selectionNotice, setSelectionNotice] = useState("");
+  const [layerVisibility, setLayerVisibility] = useState(DEFAULT_LAYER_VISIBILITY);
+  const [layerMenuOpen, setLayerMenuOpen] = useState(false);
+  const [legendCollapsed, setLegendCollapsed] = useState(false);
+  const [selectedMapObject, setSelectedMapObject] = useState(null);
+  const [fitRequestVersion, setFitRequestVersion] = useState(0);
   const [settings, setSettings] = useState(DEFAULT_SIMULATION);
   const [towers, setTowers] = useState([]);
   const [selectedTower, setSelectedTower] = useState(null);
@@ -67,9 +116,11 @@ export default function App() {
     stats: null,
   });
   const [coverageGapRevision, setCoverageGapRevision] = useState(0);
+  const [interferenceAnalysis, setInterferenceAnalysis] = useState(EMPTY_INTERFERENCE_ANALYSIS);
+  const [interferenceRevision, setInterferenceRevision] = useState(0);
+  const [interferenceMetric, setInterferenceMetric] = useState("sinr");
   const [buildingSummary, setBuildingSummary] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [activeRFTask, setActiveRFTask] = useState(null);
   const [optimizationDiagnostics, setOptimizationDiagnostics] = useState(null);
   const [networkOptimization, setNetworkOptimization] = useState(null);
   const [comparison, setComparison] = useState({ before: null, after: null });
@@ -85,21 +136,21 @@ export default function App() {
   });
   const [error, setError] = useState("");
   const skipNextSimulationRun = useRef(false);
+  const requests = useRequestCoordinator();
+  const isLoading = activeRFTask === "simulation" || activeRFTask === "network_evaluation";
+  const isEvaluatingNetwork = activeRFTask === "network_evaluation";
+  const isOptimizing = activeRFTask === "optimization";
+  const isAnalyzingInterference = activeRFTask === "interference";
 
   useEffect(() => {
     let isMounted = true;
-    const loadJSON = async (path, label) => {
-      const response = await fetch(`${API_BASE_URL}${path}`);
-      if (!response.ok) {
-        throw new Error(`${label} could not be loaded`);
-      }
-      return response.json();
-    };
-
-    loadJSON("/api/towers", "Tower GeoJSON")
+    getJSON("/api/towers", "Tower GeoJSON could not be loaded")
       .then((geojson) => {
         if (!isMounted) {
           return;
+        }
+        if (!geojson || typeof geojson !== "object" || !Array.isArray(geojson.features)) {
+          throw new Error("Tower endpoint returned invalid GeoJSON");
         }
         const loadedTowers = (geojson.features ?? [])
           .filter((feature) => feature.geometry?.type === "Point")
@@ -125,13 +176,7 @@ export default function App() {
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`${API_BASE_URL}/api/buildings/summary`)
-      .then((response) => {
-        if (!response.ok) {
-          return null;
-        }
-        return response.json();
-      })
+    getJSON("/api/buildings/summary", "Building summary could not be loaded")
       .then((summary) => {
         if (isMounted && summary) {
           setBuildingSummary(summary);
@@ -147,20 +192,29 @@ export default function App() {
     };
   }, []);
 
-  const simulateForSettings = useCallback(async (tower, nextSettings) => {
+  const clearInterferenceAnalysis = useCallback(() => {
+    setInterferenceAnalysis(EMPTY_INTERFERENCE_ANALYSIS);
+    setInterferenceRevision((current) => current + 1);
+    setSelectedMapObject((current) =>
+      current?.type === "interference_sample" ? null : current,
+    );
+  }, []);
+
+  const simulateForSettings = useCallback(async (tower, nextSettings, signal) => {
     const requestPayload = buildSimulationPayload(tower, nextSettings);
     const [simulationPayload, gapPayload] = await Promise.all([
-      postJSON("/api/simulate", requestPayload, "Simulation request failed"),
-      postJSON("/api/coverage-gaps", requestPayload, "Coverage gap request failed"),
+      postJSON("/api/simulate", requestPayload, "Simulation request failed", signal),
+      postJSON("/api/coverage-gaps", requestPayload, "Coverage gap request failed", signal),
     ]);
     return { coverageGaps: gapPayload, simulation: simulationPayload };
   }, []);
 
-  const simulateRaysForSettings = useCallback(async (tower, nextSettings) => {
+  const simulateRaysForSettings = useCallback(async (tower, nextSettings, signal) => {
     return postJSON(
       "/api/simulate",
       buildSimulationPayload(tower, nextSettings),
       "Simulation request failed",
+      signal,
     );
   }, []);
 
@@ -170,24 +224,37 @@ export default function App() {
       return;
     }
 
-    setIsLoading(true);
+    const request = requests.begin("rf");
+    setActiveRFTask("simulation");
     setError("");
     try {
       const { simulation: simulationPayload, coverageGaps: gapPayload } = await simulateForSettings(
         selectedTower,
         settings,
+        request.signal,
       );
+      if (!request.isCurrent()) {
+        return;
+      }
       setSimulation(simulationPayload);
       setCoverageGaps(gapPayload);
       setNetworkOptimization(null);
+      setNetworkResultKind(null);
       setSimulationRevision((current) => current + 1);
       setCoverageGapRevision((current) => current + 1);
+      setLastAnalysisKind("rf");
+      setActiveResultsView("rf");
     } catch (requestError) {
-      setError(requestError.message);
+      if (!isAbortError(requestError) && request.isCurrent()) {
+        setError(requestError.message);
+      }
     } finally {
-      setIsLoading(false);
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
     }
-  }, [selectedTower, settings, simulateForSettings]);
+  }, [requests, selectedTower, settings, simulateForSettings]);
 
   const optimizeAzimuth = useCallback(async () => {
     if (!selectedTower) {
@@ -195,7 +262,8 @@ export default function App() {
       return;
     }
 
-    setIsOptimizing(true);
+    const request = requests.begin("rf");
+    setActiveRFTask("optimization");
     setError("");
     try {
       const beforeSnapshot = buildComparisonSnapshot({
@@ -206,21 +274,21 @@ export default function App() {
         simulation,
         tower: selectedTower,
       });
-      const response = await fetch(`${API_BASE_URL}/api/optimize-azimuth`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildSimulationPayload(selectedTower, settings)),
-      });
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload.error ?? "Optimization request failed");
-      }
+      const payload = await postJSON(
+        "/api/optimize-azimuth",
+        buildSimulationPayload(selectedTower, settings),
+        "Optimization request failed",
+        request.signal,
+      );
       const optimizedSettings = {
         ...settings,
         azimuthDeg: Number(payload.optimal_azimuth),
       };
       const { simulation: optimizedSimulation, coverageGaps: optimizedGaps } =
-        await simulateForSettings(selectedTower, optimizedSettings);
+        await simulateForSettings(selectedTower, optimizedSettings, request.signal);
+      if (!request.isCurrent()) {
+        return;
+      }
       const afterSnapshot = buildComparisonSnapshot({
         coverageGaps: optimizedGaps,
         diagnostics: payload,
@@ -238,15 +306,23 @@ export default function App() {
       setComparison({ before: beforeSnapshot, after: afterSnapshot });
       setSimulationRevision((current) => current + 1);
       setCoverageGapRevision((current) => current + 1);
+      setLastAnalysisKind("optimization");
+      setActiveResultsView("optimization");
     } catch (requestError) {
-      setError(requestError.message);
+      if (!isAbortError(requestError) && request.isCurrent()) {
+        setError(requestError.message);
+      }
     } finally {
-      setIsOptimizing(false);
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
     }
   }, [
     coverageGaps,
     optimizationDiagnostics,
     selectedTower,
+    requests,
     settings,
     simulateForSettings,
     simulation,
@@ -259,32 +335,44 @@ export default function App() {
       return;
     }
 
-    setIsOptimizing(true);
+    const request = requests.begin("rf");
+    setActiveRFTask("optimization");
     setError("");
+    clearInterferenceAnalysis();
     try {
       const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings);
       const baselinePayload = await postJSON(
         "/api/evaluate-network",
         networkRequest,
         "Network baseline request failed",
+        request.signal,
       );
       const payload = await postJSON(
         "/api/optimize-network",
         networkRequest,
         "Network optimization request failed",
+        request.signal,
       );
       const optimizedByID = new Map(
         (payload.optimized_towers ?? []).map((tower) => [String(tower.id), tower]),
       );
-      const simulations = await Promise.all(
-        selectedNetworkTowers.map((tower) => {
+      const simulations = await runNetworkSimulationQueue(
+        selectedNetworkTowers,
+        (tower) => {
           const optimizedTower = optimizedByID.get(String(tower.cellId ?? tower.id));
-          return simulateRaysForSettings(tower, {
-            ...settings,
-            azimuthDeg: Number(optimizedTower?.optimal_azimuth ?? settings.azimuthDeg),
-          });
-        }),
+          return simulateRaysForSettings(
+            tower,
+            {
+              ...settings,
+              azimuthDeg: Number(optimizedTower?.optimal_azimuth ?? settings.azimuthDeg),
+            },
+            request.signal,
+          );
+        },
       );
+      if (!request.isCurrent()) {
+        return;
+      }
       const beforeSnapshot = buildNetworkComparisonSnapshot({
         label: "Before",
         optimization: baselinePayload,
@@ -298,25 +386,127 @@ export default function App() {
         towers: selectedNetworkTowers,
       });
       setNetworkOptimization(payload);
+      setNetworkResultKind("optimization");
       setOptimizationDiagnostics(null);
       setComparison({ kind: "network", before: beforeSnapshot, after: afterSnapshot });
       setSimulation(combineNetworkSimulations(simulations));
       setCoverageGaps({ geojson: { type: "FeatureCollection", features: [] }, stats: null });
       setSimulationRevision((current) => current + 1);
       setCoverageGapRevision((current) => current + 1);
-      setActiveInspectorTab("results");
+      setLastAnalysisKind("network");
+      setActiveResultsView("optimization");
     } catch (requestError) {
-      setError(requestError.message);
+      if (!isAbortError(requestError) && request.isCurrent()) {
+        setError(requestError.message);
+      }
     } finally {
-      setIsOptimizing(false);
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
     }
-  }, [selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [clearInterferenceAnalysis, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+
+  const evaluateNetwork = useCallback(async () => {
+    const selected = selectedNetworkTowerIds
+      .map((towerID) => towers.find((tower) => tower.id === towerID))
+      .filter(Boolean);
+    if (selected.length < 2) {
+      setError("Select at least 2 towers to evaluate the network");
+      return;
+    }
+
+    const request = requests.begin("rf");
+    setActiveRFTask("network_evaluation");
+    setError("");
+    clearInterferenceAnalysis();
+    try {
+      const networkRequest = buildNetworkOptimizationPayload(selected, settings);
+      const payload = await postJSON(
+        "/api/evaluate-network",
+        networkRequest,
+        "Network evaluation request failed",
+        request.signal,
+      );
+      const simulations = await runNetworkSimulationQueue(selected, (tower) =>
+        simulateRaysForSettings(tower, settings, request.signal));
+      if (!request.isCurrent()) {
+        return;
+      }
+      setNetworkOptimization(payload);
+      setNetworkResultKind("evaluation");
+      setOptimizationDiagnostics(null);
+      setComparison({ before: null, after: null });
+      setSimulation(combineNetworkSimulations(simulations));
+      setCoverageGaps({ geojson: { type: "FeatureCollection", features: [] }, stats: null });
+      setSimulationRevision((current) => current + 1);
+      setCoverageGapRevision((current) => current + 1);
+      setLastAnalysisKind("network");
+      setActiveResultsView("optimization");
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) {
+        setError(requestError.message);
+      }
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [clearInterferenceAnalysis, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const selectedNetworkTowers = useMemo(
-    () => towers.filter((tower) => selectedNetworkTowerIds.includes(tower.id)),
+    () =>
+      selectedNetworkTowerIds
+        .map((towerID) => towers.find((tower) => tower.id === towerID))
+        .filter(Boolean),
     [selectedNetworkTowerIds, towers],
   );
+  const selectedTowerOrder = useMemo(() => {
+    return new Map(selectedNetworkTowerIds.map((towerID, index) => [towerID, index + 1]));
+  }, [selectedNetworkTowerIds]);
   const coreLabApplicable = is5GCoreFrequency(settings.frequencyGHz);
+  const interferenceApplicable = settings.frequencyGHz < 100;
+
+  const analyzeInterference = useCallback(async () => {
+    if (!interferenceApplicable) {
+      setError("Interference KPIs are not applicable to the 6G research mode");
+      return;
+    }
+    if (selectedNetworkTowers.length < 2) {
+      setError("Select at least 2 towers for interference analysis");
+      return;
+    }
+
+    const request = requests.begin("rf");
+    setActiveRFTask("interference");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/interference",
+        buildInterferencePayload(selectedNetworkTowers, settings, networkOptimization),
+        "Interference analysis failed",
+        request.signal,
+      );
+      if (!request.isCurrent()) {
+        return;
+      }
+      setInterferenceAnalysis(payload);
+      setInterferenceRevision((current) => current + 1);
+      setLayerVisibility((current) => ({ ...current, interference: true }));
+      setLastAnalysisKind("interference");
+      setActiveResultsView("interference");
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) {
+        setError(requestError.message);
+      }
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [interferenceApplicable, networkOptimization, requests, selectedNetworkTowers, settings]);
 
   const coreLabTowerIDs = useMemo(() => {
     if (planningMode === "network" && selectedNetworkTowers.length > 0) {
@@ -329,15 +519,19 @@ export default function App() {
     if (!coreLabEnabled || !coreLabApplicable) {
       return;
     }
+    const request = requests.begin("core-lab");
     setCoreLab((current) => ({ ...current, isLoading: true, lastError: "" }));
     try {
       const query = buildCoreLabQuery(coreLabTowerIDs, selectedNetworkTowers, selectedTower);
       const [status, topology, sessions, events] = await Promise.all([
-        getJSON("/api/core/status", "Core Lab status request failed"),
-        getJSON(`/api/core/topology${query}`, "Core Lab topology request failed"),
-        getJSON(`/api/core/sessions${query}`, "Core Lab sessions request failed"),
-        getJSON("/api/core/events", "Core Lab events request failed"),
+        getJSON("/api/core/status", "Core Lab status request failed", request.signal),
+        getJSON(`/api/core/topology${query}`, "Core Lab topology request failed", request.signal),
+        getJSON(`/api/core/sessions${query}`, "Core Lab sessions request failed", request.signal),
+        getJSON("/api/core/events", "Core Lab events request failed", request.signal),
       ]);
+      if (!request.isCurrent()) {
+        return;
+      }
       setCoreLab((current) => ({
         ...current,
         events,
@@ -349,20 +543,24 @@ export default function App() {
         topology,
       }));
     } catch (requestError) {
-      setCoreLab((current) => ({
-        ...current,
-        isLoading: false,
-        lastError: requestError.message,
-        status: {
-          mode: "open5gs",
-          state: "disconnected",
-          functions: [],
-          message: requestError.message,
-          updated_at: new Date().toISOString(),
-        },
-      }));
+      if (!isAbortError(requestError) && request.isCurrent()) {
+        setCoreLab((current) => ({
+          ...current,
+          isLoading: false,
+          lastError: requestError.message,
+          status: {
+            mode: "open5gs",
+            state: "disconnected",
+            functions: [],
+            message: requestError.message,
+            updated_at: new Date().toISOString(),
+          },
+        }));
+      }
+    } finally {
+      request.finish();
     }
-  }, [coreLabApplicable, coreLabEnabled, coreLabTowerIDs, selectedNetworkTowers, selectedTower]);
+  }, [coreLabApplicable, coreLabEnabled, coreLabTowerIDs, requests, selectedNetworkTowers, selectedTower]);
 
   const toggleCoreLab = useCallback((enabled) => {
     if (enabled && !coreLabApplicable) {
@@ -384,6 +582,7 @@ export default function App() {
     }
     setCoreLabEnabled(enabled);
     if (!enabled) {
+      requests.cancel("core-lab");
       setCoreLab((current) => ({
         ...current,
         events: null,
@@ -394,12 +593,13 @@ export default function App() {
         topology: null,
       }));
     }
-  }, [coreLabApplicable]);
+  }, [coreLabApplicable, requests]);
 
   const runCoreLabScenario = useCallback(async (scenario) => {
     if (!coreLabApplicable) {
       return;
     }
+    const request = requests.begin("core-lab");
     setCoreLab((current) => ({ ...current, isLoading: true, lastError: "" }));
     try {
       await postJSON(
@@ -410,30 +610,44 @@ export default function App() {
           network_tech: "5g",
         },
         "Core Lab scenario request failed",
+        request.signal,
       );
+      if (!request.isCurrent()) {
+        return;
+      }
       setCoreLab((current) => ({ ...current, scenario }));
+      request.finish();
       await refreshCoreLab();
     } catch (requestError) {
-      setCoreLab((current) => ({
-        ...current,
-        isLoading: false,
-        lastError: requestError.message,
-      }));
+      if (!isAbortError(requestError) && request.isCurrent()) {
+        setCoreLab((current) => ({
+          ...current,
+          isLoading: false,
+          lastError: requestError.message,
+        }));
+      }
+      request.finish();
     }
-  }, [coreLabApplicable, coreLabTowerIDs, refreshCoreLab]);
+  }, [coreLabApplicable, coreLabTowerIDs, refreshCoreLab, requests]);
 
   const resetNetworkArtifacts = useCallback(() => {
     setNetworkOptimization(null);
+    setNetworkResultKind(null);
     setComparison({ before: null, after: null });
-  }, []);
+    clearInterferenceAnalysis();
+  }, [clearInterferenceAnalysis]);
 
   const updateSettings = useCallback((nextSettings) => {
+    requests.cancel("rf");
+    setActiveRFTask(null);
     setOptimizationDiagnostics(null);
     resetNetworkArtifacts();
     setSettings(nextSettings);
-  }, [resetNetworkArtifacts]);
+  }, [requests, resetNetworkArtifacts]);
 
   const selectTower = useCallback((tower) => {
+    requests.cancel("rf");
+    setActiveRFTask(null);
     if (planningMode === "network") {
       resetNetworkArtifacts();
       setSelectionNotice("");
@@ -454,9 +668,11 @@ export default function App() {
     setOptimizationDiagnostics(null);
     resetNetworkArtifacts();
     setSelectedTower(tower);
-  }, [planningMode, resetNetworkArtifacts]);
+  }, [planningMode, requests, resetNetworkArtifacts]);
 
   const changePlanningMode = useCallback((mode) => {
+    requests.cancel("rf");
+    setActiveRFTask(null);
     setPlanningMode(mode);
     setOptimizationDiagnostics(null);
     resetNetworkArtifacts();
@@ -471,12 +687,13 @@ export default function App() {
         return selectedTower ? [selectedTower.id] : [];
       });
     }
-  }, [resetNetworkArtifacts, selectedTower]);
+  }, [requests, resetNetworkArtifacts, selectedTower]);
 
   const startAreaSelection = useCallback(() => {
     if (planningMode !== "network") {
       changePlanningMode("network");
     }
+    setSelectedMapObject(null);
     setIsDrawingSelection(true);
     setSelectionPolygon([]);
     setSelectionNotice("Click map vertices, then double-click or press Enter to finish.");
@@ -489,11 +706,14 @@ export default function App() {
   }, []);
 
   const clearNetworkSelection = useCallback(() => {
+    requests.cancel("rf");
+    setActiveRFTask(null);
     setSelectedNetworkTowerIds([]);
     setSelectionPolygon([]);
+    setSelectedMapObject(null);
     setSelectionNotice("");
     resetNetworkArtifacts();
-  }, [resetNetworkArtifacts]);
+  }, [requests, resetNetworkArtifacts]);
 
   const finishAreaSelection = useCallback((polygon) => {
     const finalPolygon = polygon ?? selectionPolygon;
@@ -515,6 +735,8 @@ export default function App() {
       .sort((left, right) => distanceToCentroid(left, centroid) - distanceToCentroid(right, centroid))
       .slice(0, 6);
     setSelectedNetworkTowerIds(selected.map((tower) => tower.id));
+    requests.cancel("rf");
+    setActiveRFTask(null);
     setSelectedTower((current) => selected[0] ?? current);
     resetNetworkArtifacts();
     setIsDrawingSelection(false);
@@ -524,11 +746,92 @@ export default function App() {
         ? `${inside.length} towers found, nearest 6 selected.`
         : `${selected.length} towers selected from drawn area.`,
     );
-  }, [resetNetworkArtifacts, selectionPolygon, towers]);
+  }, [requests, resetNetworkArtifacts, selectionPolygon, towers]);
 
   const addSelectionPolygonPoint = useCallback((coordinate) => {
     setSelectionPolygon((current) => [...current, coordinate]);
   }, []);
+
+  const toggleLayerVisibility = useCallback((layer) => {
+    setLayerVisibility((current) => ({
+      ...current,
+      [layer]: !current[layer],
+    }));
+  }, []);
+
+  const fitSelectedCells = useCallback(() => {
+    setFitRequestVersion((current) => current + 1);
+  }, []);
+
+  const closeDrawer = useCallback((focusTarget = "tool") => {
+    setDrawerOpen(false);
+    setDrawerMode("tool");
+    window.setTimeout(() => {
+      if (focusTarget === "map") {
+        document.querySelector(".leaflet-container")?.focus();
+        return;
+      }
+      document.getElementById(`workspace-tool-${activeTool}`)?.focus();
+    }, 0);
+  }, [activeTool]);
+
+  const selectWorkspaceTool = useCallback((tool) => {
+    if (drawerOpen && drawerMode === "tool" && activeTool === tool) {
+      closeDrawer();
+      return;
+    }
+    setPreviousTool(activeTool);
+    setActiveTool(tool);
+    setDrawerMode("tool");
+    setDrawerOpen(true);
+    setSelectedMapObject(null);
+  }, [activeTool, closeDrawer, drawerMode, drawerOpen]);
+
+  const openResults = useCallback((view = activeResultsView) => {
+    setActiveResultsView(view);
+    setPreviousTool(activeTool);
+    setActiveTool("results");
+    setDrawerMode("tool");
+    setDrawerOpen(true);
+    setSelectedMapObject(null);
+  }, [activeResultsView, activeTool]);
+
+  const selectMapObject = useCallback((mapObject) => {
+    if (!mapObject) {
+      return;
+    }
+    setPreviousTool(activeTool);
+    setSelectedMapObject(mapObject);
+    setDrawerMode("inspector");
+    setDrawerOpen(true);
+  }, [activeTool]);
+
+  const returnFromInspector = useCallback(() => {
+    setSelectedMapObject(null);
+    setActiveTool(previousTool);
+    setDrawerMode("tool");
+    setDrawerOpen(true);
+  }, [previousTool]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+      if (layerMenuOpen) {
+        setLayerMenuOpen(false);
+        return;
+      }
+      if (isDrawingSelection) {
+        return;
+      }
+      if (drawerOpen) {
+        closeDrawer(drawerMode === "inspector" ? "map" : "tool");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [closeDrawer, drawerMode, drawerOpen, isDrawingSelection, layerMenuOpen]);
 
   useEffect(() => {
     if (!coreLabEnabled || !coreLabApplicable) {
@@ -584,16 +887,76 @@ export default function App() {
   const gapStats = coverageGaps?.stats ?? null;
   const activeNetworkTech = networkTechLabelForFrequency(settings.frequencyGHz);
   const selectedTowerLabel = selectedTower?.cellId ?? "No tower";
-  const runState = isLoading ? "Simulating" : isOptimizing ? "Optimizing" : "Ready";
-  const hudDemandMetric = networkOptimization?.stats
-    ? {
-        label: "Overlap",
-        value: (networkOptimization.stats.overlap_buildings ?? 0).toLocaleString(),
-      }
-    : {
-        label: "Gaps",
-        value: gapStats?.gap_buildings?.toLocaleString() ?? "n/a",
+  const runState = isEvaluatingNetwork
+    ? "Evaluating"
+    : activeRFTask === "simulation"
+      ? "Simulating"
+    : isOptimizing
+      ? "Optimizing"
+      : isAnalyzingInterference
+        ? "Analyzing"
+        : "Ready";
+  const resultSummary = useMemo(() => {
+    if (lastAnalysisKind === "interference" && interferenceAnalysis.stats) {
+      return {
+        label: "Interference",
+        primary: formatMetric(interferenceAnalysis.stats.avg_sinr_db, "dB"),
+        secondary: `${formatNumber(interferenceAnalysis.stats.serviceable_pct, 0)}% serviceable`,
+        view: "interference",
       };
+    }
+    if ((lastAnalysisKind === "network" || lastAnalysisKind === "optimization") && networkOptimization?.stats) {
+      return {
+        label: networkResultKind === "evaluation" ? "Network plan" : "Optimization",
+        primary: formatCompactNumber(networkOptimization.stats.network_score),
+        secondary: `${(networkOptimization.stats.overlap_buildings ?? 0).toLocaleString()} overlap`,
+        view: "optimization",
+      };
+    }
+    if (simulation?.stats) {
+      return {
+        label: "Sector result",
+        primary: stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`,
+        secondary: `${gapStats?.gap_buildings?.toLocaleString() ?? "n/a"} gaps`,
+        view: "rf",
+      };
+    }
+    return null;
+  }, [gapStats, interferenceAnalysis.stats, lastAnalysisKind, networkOptimization, networkResultKind, simulation?.stats, stats.avgPower]);
+  const contextLabel = planningMode === "network"
+    ? `Network · ${selectedNetworkTowerIds.length} cells`
+    : `Single · Cell ${selectedTowerLabel}`;
+  const planSummary = `${formatNumber(settings.frequencyGHz, 1)} GHz · ${formatNumber(settings.txPowerDbm, 0)} dBm · ${formatNumber(settings.radiusMeters, 0)} m`;
+  const hasInterferenceData = (interferenceAnalysis.geojson?.features ?? []).length > 0;
+  const hasResults = Boolean(simulation?.stats || networkOptimization?.stats || interferenceAnalysis.stats);
+  const interferenceUnavailableReason = planningMode !== "network"
+    ? "Interference requires Network planning mode"
+    : !interferenceApplicable
+      ? "Interference is not applicable to 6G research mode"
+      : selectedNetworkTowerIds.length < 2
+        ? "Select at least two cells"
+        : null;
+  const coreUnavailableReason = coreLabApplicable ? null : "5G Core is available only in 5G mmWave mode";
+  const toolState = {
+    setup: { badge: planningMode === "network" ? String(selectedNetworkTowerIds.length) : null },
+    propagation: {},
+    interference: {
+      disabled: Boolean(interferenceUnavailableReason),
+      reason: interferenceUnavailableReason,
+      badge: hasInterferenceData ? "•" : null,
+      tone: "success",
+    },
+    core: {
+      disabled: Boolean(coreUnavailableReason),
+      reason: coreUnavailableReason,
+      badge: coreLabEnabled ? "•" : null,
+      tone: coreLab.status?.state === "connected" ? "success" : "warning",
+    },
+    results: { badge: hasResults ? "•" : null, tone: "success" },
+    data: {},
+    report: {},
+  };
+  const activeToolDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
   const createPlanningReport = useCallback(
     () =>
       buildPlanningReport({
@@ -604,6 +967,7 @@ export default function App() {
         coreLabEnabled,
         coverageGaps,
         diagnostics: optimizationDiagnostics,
+        interferenceAnalysis,
         comparison,
         networkOptimization,
         selectedTower,
@@ -618,6 +982,7 @@ export default function App() {
       coreLab,
       coreLabApplicable,
       coreLabEnabled,
+      interferenceAnalysis,
       networkOptimization,
       coverageGaps,
       optimizationDiagnostics,
@@ -644,223 +1009,256 @@ export default function App() {
     }
   }, [createPlanningReport]);
 
+  const drawerSubtitles = {
+    setup: "Mode, technology, power, and cell selection",
+    propagation: "Ray geometry, coverage radius, and optimization",
+    interference: "Co-channel load and radio-quality assumptions",
+    core: "Xn, N2, N3, sessions, and lab scenarios",
+    results: "Focused analysis from the latest RF operation",
+    data: "Dataset confidence and model assumptions",
+    report: "Export the current planning state",
+  };
+
   return (
-    <main className="app-shell">
-      <aside className="control-rail">
-        <RailHeader
-          activeNetworkTech={activeNetworkTech}
-          runState={runState}
-          selectedTowerLabel={selectedTowerLabel}
+    <main className="focused-app-shell">
+      <CommandBar
+        appIconUrl={APP_ICON_URL}
+        contextLabel={contextLabel}
+        error={drawerOpen ? "" : error}
+        isBusy={activeRFTask !== null}
+        networkTech={activeNetworkTech}
+        onDismissError={() => setError("")}
+        onOpenResults={() => openResults(resultSummary?.view)}
+        onRun={planningMode === "network" ? evaluateNetwork : runSimulation}
+        planSummary={planSummary}
+        primaryActionLabel={isEvaluatingNetwork ? "Evaluating..." : planningMode === "network" ? "Evaluate Network" : isLoading ? "Running..." : "Run Sector"}
+        primaryDisabled={activeRFTask !== null || (planningMode === "network" ? selectedNetworkTowerIds.length < 2 : !selectedTower)}
+        resultSummary={resultSummary}
+        runState={runState}
+      />
+
+      <section className={`workspace-frame ${drawerOpen ? "drawer-open" : ""}`}>
+        <WorkflowRail
+          activeTool={activeTool}
+          drawerMode={drawerMode}
+          drawerOpen={drawerOpen}
+          onSelectTool={selectWorkspaceTool}
+          toolState={toolState}
         />
 
-        <InspectorTabs activeTab={activeInspectorTab} onChange={setActiveInspectorTab} />
+        <section className="map-stage" aria-label="Ankara propagation map">
+          <MapToolbar
+            isDrawingSelection={isDrawingSelection}
+            layerMenuOpen={layerMenuOpen}
+            layerVisibility={layerVisibility}
+            onCancelAreaSelection={cancelAreaSelection}
+            onClearNetworkSelection={clearNetworkSelection}
+            onDrawArea={startAreaSelection}
+            onFinishAreaSelection={() => finishAreaSelection()}
+            onFitSelectedCells={fitSelectedCells}
+            onLayerMenuToggle={setLayerMenuOpen}
+            onToggleLayer={toggleLayerVisibility}
+            interferenceMetric={interferenceMetric}
+            onInterferenceMetricChange={setInterferenceMetric}
+            hasInterferenceData={hasInterferenceData}
+            planningMode={planningMode}
+            selectionCanFinish={selectionPolygon.length >= 3}
+            selectedCount={selectedNetworkTowerIds.length}
+          />
+          <MapCanvas
+            towers={towers}
+            selectedTower={selectedTower}
+            selectedNetworkTowerIds={selectedNetworkTowerIds}
+            selectedTowerOrder={selectedTowerOrder}
+            onSelectTower={selectTower}
+            simulation={simulation.geojson}
+            rayLayerKey={simulationRevision}
+            coverageGaps={coverageGaps.geojson}
+            coverageGapLayerKey={coverageGapRevision}
+            activeNetworkTech={activeNetworkTech}
+            isDrawingSelection={isDrawingSelection}
+            onAddSelectionPolygonPoint={addSelectionPolygonPoint}
+            onCancelAreaSelection={cancelAreaSelection}
+            onFinishAreaSelection={finishAreaSelection}
+            planningMode={planningMode}
+            selectionPolygon={selectionPolygon}
+            coreLabTopology={coreLabApplicable && coreLabEnabled ? coreLab.topology : null}
+            layerVisibility={layerVisibility}
+            selectedMapObject={selectedMapObject}
+            onSelectMapObject={selectMapObject}
+            fitRequestVersion={fitRequestVersion}
+            interference={interferenceAnalysis.geojson}
+            interferenceDemand={interferenceAnalysis.demand_geojson}
+            interferenceModel={interferenceAnalysis.model}
+            interferenceMetric={interferenceMetric}
+            interferenceLayerKey={interferenceRevision}
+          />
+          {layerVisibility.interference && hasInterferenceData ? (
+            <InterferenceLegend
+              collapsed={legendCollapsed}
+              metric={interferenceMetric}
+              onToggle={() => setLegendCollapsed((current) => !current)}
+            />
+          ) : null}
+        </section>
 
-        <div
-          className="inspector-body"
-          id={`inspector-panel-${activeInspectorTab}`}
-          role="tabpanel"
-          aria-labelledby={`inspector-tab-${activeInspectorTab}`}
+        <ToolDrawer
+          drawerMode={drawerMode}
+          error={error}
+          focusKey={`${drawerMode}-${activeTool}-${selectedMapObject?.type ?? "none"}`}
+          icon={drawerMode === "tool" ? activeToolDefinition.icon : MapPin}
+          onBack={returnFromInspector}
+          onClose={() => closeDrawer(drawerMode === "inspector" ? "map" : "tool")}
+          open={drawerOpen}
+          subtitle={drawerMode === "inspector" ? formatScenario(selectedMapObject?.type ?? "selection") : drawerSubtitles[activeTool]}
+          title={drawerMode === "inspector" ? "Map Inspector" : activeToolDefinition.label}
         >
-          {activeInspectorTab === "plan" ? (
+          {drawerMode === "inspector" ? <MapInspector selectedMapObject={selectedMapObject} /> : null}
+
+          {drawerMode === "tool" && ["setup", "propagation", "interference"].includes(activeTool) ? (
             <ControlPanel
+              activeTool={activeTool}
               settings={settings}
               onChange={updateSettings}
-              onRun={runSimulation}
               onOptimizeAzimuth={optimizeAzimuth}
               isLoading={isLoading}
               isOptimizing={isOptimizing}
               networkSelectionCount={selectedNetworkTowerIds.length}
-              onCancelAreaSelection={cancelAreaSelection}
-              onClearNetworkSelection={clearNetworkSelection}
-              onDrawArea={startAreaSelection}
-              onFinishAreaSelection={() => finishAreaSelection()}
               onOptimizeNetwork={optimizeNetwork}
+              onAnalyzeInterference={analyzeInterference}
               onPlanningModeChange={changePlanningMode}
-              selectionCanFinish={selectionPolygon.length >= 3}
               selectionNotice={selectionNotice}
               planningMode={planningMode}
-              isDrawingSelection={isDrawingSelection}
-              coreLabEnabled={coreLabEnabled}
-              coreLabApplicable={coreLabApplicable}
-              coreLabState={coreLab.status?.state ?? "off"}
-              coreLabSource={coreLab.status?.source}
-              coreLabStartCommand={CORE_LAB_START_COMMAND}
-              onToggleCoreLab={toggleCoreLab}
+              interferenceApplicable={interferenceApplicable}
+              isAnalyzingInterference={isAnalyzingInterference}
             />
           ) : null}
 
-          {activeInspectorTab === "results" ? (
+          {drawerMode === "tool" && activeTool === "core" ? (
+            <CoreLabTool
+              applicable={coreLabApplicable}
+              coreLab={coreLab}
+              enabled={coreLabEnabled}
+              onRunScenario={runCoreLabScenario}
+              onToggle={toggleCoreLab}
+              scenarios={CORE_LAB_SCENARIOS}
+              startCommand={CORE_LAB_START_COMMAND}
+              towerIDs={coreLabTowerIDs}
+            />
+          ) : null}
+
+          {drawerMode === "tool" && activeTool === "results" ? (
             <ResultsPanel
+              activeView={activeResultsView}
               comparison={comparison}
               diagnostics={optimizationDiagnostics}
               networkOptimization={networkOptimization}
-              onExportMarkdown={exportMarkdownReport}
-              onExportPdf={exportPdfReport}
+              networkResultKind={networkResultKind}
+              interferenceAnalysis={interferenceAnalysis}
               gapStats={gapStats}
+              onViewChange={setActiveResultsView}
               stats={stats}
-              coreLab={coreLab}
-              coreLabApplicable={coreLabApplicable}
-              coreLabEnabled={coreLabEnabled}
-              coreLabScenarios={CORE_LAB_SCENARIOS}
-              coreLabStartCommand={CORE_LAB_START_COMMAND}
-              coreLabTowerIDs={coreLabTowerIDs}
-              onRunCoreScenario={runCoreLabScenario}
             />
           ) : null}
 
-          {activeInspectorTab === "data" ? (
-            <DataPanel summary={buildingSummary} diagnostics={optimizationDiagnostics} />
+          {drawerMode === "tool" && activeTool === "data" ? (
+            <DataPanel
+              summary={buildingSummary}
+              diagnostics={optimizationDiagnostics}
+              interferenceModel={interferenceAnalysis.model}
+            />
           ) : null}
-        </div>
 
-        {error ? (
-          <div className="error-banner" role="alert">
-            {error}
-          </div>
-        ) : null}
-      </aside>
-
-      <section className="map-stage" aria-label="Ankara propagation map">
-        <div className="map-hud" aria-label="Map simulation status">
-          <div className="hud-cluster">
-            <RadioTower size={18} />
-            <div>
-              <span>Cell {selectedTowerLabel}</span>
-              <strong>{activeNetworkTech}</strong>
-            </div>
-          </div>
-          <div className="hud-metrics">
-            <HudMetric label="Rays" value={stats.rayCount.toLocaleString()} />
-            <HudMetric
-              label="Avg Rx"
-              value={stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`}
-            />
-            <HudMetric
-              label="Range"
-              value={stats.maxRange === null ? "n/a" : `${stats.maxRange.toFixed(1)} m`}
-            />
-            <HudMetric label={hudDemandMetric.label} value={hudDemandMetric.value} />
-          </div>
-        </div>
-        <MapCanvas
-          towers={towers}
-          selectedTower={selectedTower}
-          selectedNetworkTowerIds={selectedNetworkTowerIds}
-          onSelectTower={selectTower}
-          simulation={simulation.geojson}
-          rayLayerKey={simulationRevision}
-          coverageGaps={coverageGaps.geojson}
-          coverageGapLayerKey={coverageGapRevision}
-          activeNetworkTech={activeNetworkTech}
-          isDrawingSelection={isDrawingSelection}
-          onAddSelectionPolygonPoint={addSelectionPolygonPoint}
-          onCancelAreaSelection={cancelAreaSelection}
-          onFinishAreaSelection={finishAreaSelection}
-          planningMode={planningMode}
-          selectionPolygon={selectionPolygon}
-          coreLabTopology={coreLabApplicable && coreLabEnabled ? coreLab.topology : null}
-        />
+          {drawerMode === "tool" && activeTool === "report" ? (
+            <ReportExportPanel onExportMarkdown={exportMarkdownReport} onExportPdf={exportPdfReport} />
+          ) : null}
+        </ToolDrawer>
       </section>
     </main>
   );
 }
 
-function RailHeader({ activeNetworkTech, runState, selectedTowerLabel }) {
-  return (
-    <header className="rail-header">
-      <div className="brand-block">
-        <img src={APP_ICON_URL} alt="" aria-hidden="true" />
-        <div>
-          <h1>A.T.O.M</h1>
-          <p>Ankara Telecom Optimization Model</p>
-          <a
-            className="brand-signature"
-            href="https://berkunsal.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            by Berk Ünsal
-          </a>
-        </div>
-      </div>
+function MapInspector({ selectedMapObject }) {
+  if (!selectedMapObject) {
+    return null;
+  }
+  const { type, payload } = selectedMapObject;
 
-      <section className="active-context" aria-label="Active simulation context">
-        <div>
-          <span>Cell</span>
-          <strong>{selectedTowerLabel}</strong>
-        </div>
-        <div>
-          <span>Network</span>
-          <strong>{activeNetworkTech}</strong>
-        </div>
-        <div>
-          <span>Status</span>
-          <strong>{runState}</strong>
-        </div>
-      </section>
-    </header>
+  return (
+    <section className="map-inspector-card" aria-label="Map selection inspector">
+      {type === "tower" ? <TowerInspector payload={payload} /> : null}
+      {type === "coverage_gap" ? <GapInspector payload={payload} /> : null}
+      {type === "communication_path" ? <PathInspector payload={payload} /> : null}
+      {type === "interference_sample" ? <InterferenceInspector payload={payload} /> : null}
+    </section>
   );
 }
 
-function InspectorTabs({ activeTab, onChange }) {
-  const tabs = [
-    { id: "plan", label: "Plan", icon: SlidersHorizontal },
-    { id: "results", label: "Results", icon: BarChart3 },
-    { id: "data", label: "Data", icon: Database },
-  ];
-
+function TowerInspector({ payload }) {
+  const tower = payload?.tower ?? {};
+  const coordinates = tower.coordinates ?? [];
   return (
-    <nav className="inspector-tabs" aria-label="Control center sections" role="tablist">
-      {tabs.map((tab) => {
-        const Icon = tab.icon;
-        const isActive = activeTab === tab.id;
-        return (
-          <button
-            key={tab.id}
-            id={`inspector-tab-${tab.id}`}
-            type="button"
-            role="tab"
-            className={isActive ? "active" : ""}
-            aria-controls={`inspector-panel-${tab.id}`}
-            aria-selected={isActive}
-            onClick={() => onChange(tab.id)}
-          >
-            <Icon size={15} />
-            <span>{tab.label}</span>
-          </button>
-        );
-      })}
-    </nav>
+    <div className="inspector-grid">
+      <MiniDatum label="Cell" value={tower.cellId ?? "n/a"} />
+      <MiniDatum label="Network" value={payload?.activeNetworkTech ?? "n/a"} />
+      <MiniDatum label="Cluster" value={payload?.order ? `#${payload.order}` : payload?.isNetworkSelected ? "Selected" : "Not selected"} />
+      <MiniDatum label="Longitude" value={formatNumber(coordinates[0], 5)} />
+      <MiniDatum label="Latitude" value={formatNumber(coordinates[1], 5)} />
+    </div>
   );
 }
 
-function buildSimulationPayload(selectedTower, settings) {
-  return {
-    tower_lon: selectedTower.coordinates[0],
-    tower_lat: selectedTower.coordinates[1],
-    rays: settings.rayCount,
-    radius_m: settings.radiusMeters,
-    frequency_ghz: settings.frequencyGHz,
-    tx_power_dbm: settings.txPowerDbm,
-    azimuth: settings.azimuthDeg,
-    beam_width: settings.beamWidthDeg,
-  };
+function GapInspector({ payload }) {
+  const properties = payload?.properties ?? {};
+  const coordinates = payload?.coordinates ?? [];
+  return (
+    <div className="inspector-grid">
+      <MiniDatum label="Severity" value={properties.severity ?? "weak"} />
+      <MiniDatum label="Rx" value={`${formatNumber(properties.rx_dbm, 1)} dBm`} />
+      <MiniDatum label="Demand" value={formatNumber(properties.total_demand, 1)} />
+      <MiniDatum label="Reason" value={properties.reason ?? "demand"} />
+      <MiniDatum label="Coordinate" value={`${formatNumber(coordinates[0], 5)}, ${formatNumber(coordinates[1], 5)}`} />
+    </div>
+  );
 }
 
-function buildNetworkOptimizationPayload(selectedNetworkTowers, settings) {
-  return {
-    towers: selectedNetworkTowers.map((tower) => ({
-      id: String(tower.cellId ?? tower.id),
-      tower_lon: tower.coordinates[0],
-      tower_lat: tower.coordinates[1],
-      azimuth: settings.azimuthDeg,
-    })),
-    rays: settings.rayCount,
-    radius_m: settings.radiusMeters,
-    frequency_ghz: settings.frequencyGHz,
-    tx_power_dbm: settings.txPowerDbm,
-    beam_width: settings.beamWidthDeg,
-  };
+function PathInspector({ payload }) {
+  const route = payload?.route ?? {};
+  return (
+    <div className="inspector-grid">
+      <MiniDatum label="Route" value={formatScenario(route.route_type ?? "direct_xn")} />
+      <MiniDatum label="Status" value={route.status ?? "active"} />
+      <MiniDatum label="From" value={route.from ?? "n/a"} />
+      <MiniDatum label="To" value={route.to ?? "n/a"} />
+      <p className="data-note">{route.reason ?? "Selected 5G neighbor path."}</p>
+    </div>
+  );
+}
+
+function InterferenceInspector({ payload }) {
+  const properties = payload?.properties ?? {};
+  const model = payload?.model ?? {};
+  return (
+    <div className="inspector-grid">
+      <MiniDatum label="Serving cell" value={properties.serving_cell_id ?? "No signal"} />
+      <MiniDatum label="Channel" value={properties.channel_id ?? "n/a"} />
+      <MiniDatum label="RSRP" value={formatMetric(properties.rsrp_dbm, "dBm")} />
+      <MiniDatum label="SINR" value={formatMetric(properties.sinr_db, "dB")} />
+      <MiniDatum label="RSRQ" value={formatMetric(properties.rsrq_db, "dB")} />
+      <MiniDatum label="RSSI" value={formatMetric(properties.rssi_dbm, "dBm")} />
+      <MiniDatum label="Strongest interferer" value={properties.strongest_interferer_id ?? "Noise-limited"} />
+      <MiniDatum label="Interference" value={formatMetric(properties.interference_dbm, "dBm")} />
+      <MiniDatum label="Walls" value={(properties.wall_count ?? 0).toLocaleString()} />
+      <MiniDatum label="Quality" value={formatScenario(properties.quality_class ?? "no_signal")} />
+      {properties.building_id ? (
+        <MiniDatum label="Affected demand" value={formatNumber(properties.total_demand, 1)} />
+      ) : null}
+      <p className="data-note">
+        {model.measurement_family === "nr_ss" ? "Modeled SS-RSRP / SS-RSRQ" : "Modeled LTE CRS RSRP / RSRQ"}
+        {` · ${formatNumber(model.bandwidth_mhz, 0)} MHz · ${formatNumber(model.load_factor * 100, 0)}% load`}
+      </p>
+    </div>
+  );
 }
 
 function buildCoreLabQuery(towerIDs, selectedNetworkTowers, selectedTower) {
@@ -897,93 +1295,90 @@ function buildCoreLabQuery(towerIDs, selectedNetworkTowers, selectedTower) {
   return `?${params.toString()}`;
 }
 
-async function postJSON(path, payload, fallbackMessage) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  const responsePayload = await response.json();
-  if (!response.ok) {
-    throw new Error(responsePayload.error ?? fallbackMessage);
-  }
-  return responsePayload;
-}
-
-async function getJSON(path, fallbackMessage) {
-  const response = await fetch(`${API_BASE_URL}${path}`);
-  const responsePayload = await response.json();
-  if (!response.ok) {
-    throw new Error(responsePayload.error ?? fallbackMessage);
-  }
-  return responsePayload;
-}
-
 function ResultsPanel({
+  activeView,
   comparison,
-  coreLab,
-  coreLabApplicable,
-  coreLabEnabled,
-  coreLabScenarios,
-  coreLabStartCommand,
-  coreLabTowerIDs,
   diagnostics,
   gapStats,
+  interferenceAnalysis,
   networkOptimization,
-  onExportMarkdown,
-  onExportPdf,
-  onRunCoreScenario,
+  networkResultKind,
+  onViewChange,
   stats,
 }) {
+  const views = [
+    { id: "rf", label: "RF" },
+    { id: "optimization", label: "Optimization" },
+    { id: "interference", label: "Interference" },
+  ];
+
   return (
     <section className="results-panel" aria-label="Simulation results">
-      <div className="panel-title">
-        <BarChart3 size={16} />
-        <span>Simulation Results</span>
+      <div className="result-view-tabs" role="tablist" aria-label="Result views">
+        {views.map((view) => (
+          <button
+            key={view.id}
+            type="button"
+            role="tab"
+            aria-selected={activeView === view.id}
+            className={activeView === view.id ? "active" : ""}
+            onClick={() => onViewChange(view.id)}
+          >
+            {view.label}
+          </button>
+        ))}
       </div>
-      <div className="metric-list">
-        <MetricRow label="Blocked" value={`${stats.blockedRatio}%`} />
-        <MetricRow
-          label="Average Rx"
-          value={stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`}
-        />
-        <MetricRow
-          label="Max range"
-          value={stats.maxRange === null ? "n/a" : `${stats.maxRange.toFixed(1)} m`}
-        />
-        <MetricRow
-          label="Min range"
-          value={stats.minRange === null ? "n/a" : `${stats.minRange.toFixed(1)} m`}
-        />
-      </div>
-      {networkOptimization ? null : <CoverageGapPanel stats={gapStats} />}
-      {networkOptimization ? null : <OptimizerBreakdown diagnostics={diagnostics} />}
-      <NetworkOptimizationPanel optimization={networkOptimization} />
-      <ComparisonPanel comparison={comparison} />
-      <CoreLabPanel
-        coreLab={coreLab}
-        applicable={coreLabApplicable}
-        enabled={coreLabEnabled}
-        scenarios={coreLabScenarios}
-        startCommand={coreLabStartCommand}
-        towerIDs={coreLabTowerIDs}
-        onRunScenario={onRunCoreScenario}
-      />
-      <ReportExportPanel onExportMarkdown={onExportMarkdown} onExportPdf={onExportPdf} />
+
+      {activeView === "rf" ? (
+        <>
+          <div className="metric-list">
+            <MetricRow label="Blocked" value={`${stats.blockedRatio}%`} />
+            <MetricRow
+              label="Average Rx"
+              value={stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`}
+            />
+            <MetricRow
+              label="Max range"
+              value={stats.maxRange === null ? "n/a" : `${stats.maxRange.toFixed(1)} m`}
+            />
+            <MetricRow
+              label="Min range"
+              value={stats.minRange === null ? "n/a" : `${stats.minRange.toFixed(1)} m`}
+            />
+          </div>
+          <CoverageGapPanel stats={gapStats} />
+        </>
+      ) : null}
+
+      {activeView === "optimization" ? (
+        <>
+          <NetworkOptimizationPanel optimization={networkOptimization} kind={networkResultKind} />
+          {!networkOptimization ? <OptimizerBreakdown diagnostics={diagnostics} /> : null}
+          <ComparisonPanel comparison={comparison} />
+        </>
+      ) : null}
+
+      {activeView === "interference" ? (
+        interferenceAnalysis?.stats ? (
+          <InterferenceResultsPanel analysis={interferenceAnalysis} />
+        ) : (
+          <p className="empty-note">Run an interference analysis to compare SINR, RSRP, and RSRQ.</p>
+        )
+      ) : null}
     </section>
   );
 }
 
-function NetworkOptimizationPanel({ optimization }) {
+function NetworkOptimizationPanel({ optimization, kind }) {
   if (!optimization) {
     return null;
   }
   const stats = optimization.stats ?? {};
   return (
-    <section className="network-card" aria-label="Network optimization summary">
+    <section className="network-card" aria-label={`${kind === "evaluation" ? "Network evaluation" : "Network optimization"} summary`}>
       <div className="panel-title">
         <RadioTower size={16} />
-        <span>Network Optimization</span>
+        <span>{kind === "evaluation" ? "Network Evaluation" : "Network Optimization"}</span>
       </div>
       <div className="metric-list compact">
         <MetricRow label="Network score" value={formatCompactNumber(stats.network_score)} />
@@ -1002,6 +1397,43 @@ function NetworkOptimizationPanel({ optimization }) {
           </span>
         ))}
       </div>
+    </section>
+  );
+}
+
+function CoreLabTool({ applicable, coreLab, enabled, scenarios, startCommand, towerIDs, onRunScenario, onToggle }) {
+  return (
+    <section className="core-tool" aria-label="5G Core Lab controls">
+      <label className="core-toggle-row">
+        <span>
+          <strong>Core Lab overlay</strong>
+          <small>{enabled ? "Path monitoring enabled" : "Optional local Open5GS integration"}</small>
+        </span>
+        <input
+          type="checkbox"
+          checked={enabled}
+          disabled={!applicable}
+          onChange={(event) => onToggle(event.target.checked)}
+        />
+      </label>
+      {!applicable ? (
+        <p className="selection-note">5G Core controls apply only to the 28 GHz 5G planning mode.</p>
+      ) : null}
+      {applicable && !enabled ? (
+        <div className="command-note">
+          <span>Enable the overlay, then start the optional sidecar stack when live Core functions are needed.</span>
+          <code>{startCommand}</code>
+        </div>
+      ) : null}
+      <CoreLabPanel
+        applicable={applicable}
+        coreLab={coreLab}
+        enabled={enabled}
+        scenarios={scenarios}
+        startCommand={startCommand}
+        towerIDs={towerIDs}
+        onRunScenario={onRunScenario}
+      />
     </section>
   );
 }
@@ -1118,7 +1550,7 @@ function CommunicationPathSummary({ routeDecisions, n3Edges, scenario }) {
   );
 }
 
-function DataPanel({ summary, diagnostics }) {
+function DataPanel({ summary, diagnostics, interferenceModel }) {
   const dataQuality = diagnostics?.data_quality ?? summary?.data_quality ?? "unknown";
   const totalBuildings = summary?.total_buildings ?? null;
   const residential = summary?.residential_weighted_buildings ?? null;
@@ -1149,6 +1581,29 @@ function DataPanel({ summary, diagnostics }) {
         Static OSM/OpenCellID-derived files are loaded locally. Demand values combine explicit POI tags
         with residential-density heuristics, so confidence is useful context for optimization results.
       </p>
+      {interferenceModel ? (
+        <section className="model-assumptions" aria-label="Interference model assumptions">
+          <div className="panel-title">
+            <Activity size={16} />
+            <span>Radio Quality Model</span>
+          </div>
+          <div className="dataset-grid">
+            <MiniDatum label="Family" value={interferenceModel.measurement_family ?? "n/a"} />
+            <MiniDatum label="Bandwidth" value={`${formatNumber(interferenceModel.bandwidth_mhz, 0)} MHz`} />
+            <MiniDatum label="SCS" value={`${formatNumber(interferenceModel.subcarrier_spacing_khz, 0)} kHz`} />
+            <MiniDatum label="Resource blocks" value={formatNumber(interferenceModel.resource_blocks, 0)} />
+            <MiniDatum label="Noise figure" value={`${formatNumber(interferenceModel.noise_figure_db, 1)} dB`} />
+            <MiniDatum label="Cell load" value={`${formatNumber(interferenceModel.load_factor * 100, 0)}%`} />
+            <MiniDatum label="Reuse" value={`1 / ${interferenceModel.reuse_factor ?? 1}`} />
+            <MiniDatum label="Grid" value={`${formatNumber(interferenceModel.effective_sample_spacing_m, 1)} m`} />
+          </div>
+          <ul className="assumption-list">
+            {(interferenceModel.assumptions ?? []).map((assumption) => (
+              <li key={assumption}>{assumption}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </section>
   );
 }
@@ -1318,6 +1773,25 @@ function formatCompactNumber(value) {
   }).format(number);
 }
 
+function formatNumber(value, digits = 1) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    return "n/a";
+  }
+  return number.toLocaleString("en", {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits,
+  });
+}
+
+function formatMetric(value, unit) {
+  if (value === null || value === undefined) {
+    return "n/a";
+  }
+  const number = Number(value);
+  return Number.isFinite(number) ? `${number.toFixed(1)} ${unit}` : "n/a";
+}
+
 function formatCoreLabState(state) {
   if (state === "scenario_running") {
     return "Scenario running";
@@ -1342,15 +1816,6 @@ function formatScenario(value) {
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
-}
-
-function HudMetric({ label, value }) {
-  return (
-    <div className="hud-metric">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
 }
 
 function MiniDatum({ label, value }) {

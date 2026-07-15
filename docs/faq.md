@@ -34,12 +34,14 @@ See [Getting Started](getting-started.md) for data pipeline instructions.
 
 ### How accurate is A.T.O.M?
 
-Field tests show **±5 dB accuracy** in urban Ankara compared to measured data. Accuracy depends on:
+A.T.O.M has not been calibrated against operator drive tests or UE measurements. It produces deterministic planning estimates whose usefulness depends on:
 
 - ✅ OSM building data quality
-- ✅ Material attenuation database accuracy
+- The fixed frequency-dependent wall-loss assumptions
 - ✅ Tower coordinates
-- ✅ Terrain elevation (not currently modeled)
+- Terrain elevation, reflections, and fading are not currently modeled
+
+Use it to compare planning scenarios, then validate deployment decisions with calibrated tools and field measurements.
 
 ### Why doesn't A.T.O.M model multipath/reflections?
 
@@ -292,7 +294,7 @@ docker build -t atom-simulator .
 2. ❌ Frequency range too wide → Adjust grid spacing
 3. ❌ Beamforming gain off → Check beam width setting
 
-**Debug**: Call `/healthz` to verify data loaded correctly.
+**Debug**: Call `/readyz` to verify the building index, tower data, and frontend bundle are loaded. Use `/healthz` only to check process liveness.
 
 ### Why is my region's coverage very sparse?
 

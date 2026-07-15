@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
+	"hash/fnv"
 	"io"
 	"log"
 	"math"
-	"math/rand"
 	"net/http"
 	"os"
 	"sort"
@@ -18,6 +19,12 @@ import (
 const maxEvents = 80
 
 var functionNames = []string{"NRF", "AMF", "SMF", "UPF", "UDM", "UDR", "AUSF", "PCF", "NSSF"}
+
+var sourceProbeCache struct {
+	sync.Mutex
+	expiresAt time.Time
+	source    string
+}
 
 type adapterState struct {
 	mu        sync.RWMutex
@@ -73,7 +80,15 @@ func main() {
 
 	addr := ":" + getenv("PORT", "8090")
 	log.Printf("A.T.O.M Core Lab adapter listening on %s", addr)
-	if err := http.ListenAndServe(addr, withCORS(mux)); err != nil {
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           withCORS(mux),
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      15 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("run adapter: %v", err)
 	}
 }
@@ -317,8 +332,8 @@ func (state *adapterState) seedEventsLocked(scenario string, towers []string) {
 	default:
 		events = append(events, newEvent(now, "normal", "info", "Core Lab returned to normal scenario", "NRF"))
 	}
-	for _, tower := range towers {
-		events = append(events, newEvent(now.Add(time.Duration(rand.Intn(1200))*time.Millisecond), "gNB-map", "info", "Mapped virtual gNB-"+tower+" to selected A.T.O.M tower", "adapter"))
+	for index, tower := range towers {
+		events = append(events, newEvent(now.Add(deterministicEventOffset(scenario, tower, index)), "gNB-map", "info", "Mapped virtual gNB-"+tower+" to selected A.T.O.M tower", "adapter"))
 	}
 	sort.Slice(events, func(i, j int) bool {
 		return events[i].Timestamp > events[j].Timestamp
@@ -410,6 +425,18 @@ func applyScenario(fn *coreFunction, scenario string) {
 }
 
 func emulatorSource() string {
+	sourceProbeCache.Lock()
+	defer sourceProbeCache.Unlock()
+	if time.Now().Before(sourceProbeCache.expiresAt) && sourceProbeCache.source != "" {
+		return sourceProbeCache.source
+	}
+	source := probeEmulatorSource()
+	sourceProbeCache.source = source
+	sourceProbeCache.expiresAt = time.Now().Add(3 * time.Second)
+	return source
+}
+
+func probeEmulatorSource() string {
 	statusURL := strings.TrimSpace(os.Getenv("OPEN5GS_STATUS_URL"))
 	metricsURL := strings.TrimSpace(os.Getenv("OPEN5GS_METRICS_URL"))
 	if statusURL == "" && metricsURL == "" {
@@ -430,6 +457,12 @@ func emulatorSource() string {
 		}
 	}
 	return "disconnected"
+}
+
+func deterministicEventOffset(scenario string, towerID string, index int) time.Duration {
+	hash := fnv.New32a()
+	_, _ = hash.Write([]byte(scenario + "\x00" + towerID + "\x00" + strconv.Itoa(index)))
+	return time.Duration(hash.Sum32()%1200) * time.Millisecond
 }
 
 func statusMessage(scenario string, source string) string {

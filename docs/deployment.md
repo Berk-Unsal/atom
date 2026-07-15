@@ -1,6 +1,6 @@
 # Deployment
 
-Deploy A.T.O.M to production environments with confidence.
+Deploy A.T.O.M as a planning service with explicit resource limits. The API has no built-in authentication, so internet-facing deployments require a trusted reverse proxy or gateway.
 
 ## Deployment Options
 
@@ -34,6 +34,7 @@ services:
       - "8080:8080"
     environment:
       PORT: 8080
+      MAX_CONCURRENT_RF_REQUESTS: 2
     resources:
       limits:
         cpus: '2'
@@ -42,7 +43,7 @@ services:
         cpus: '1'
         memory: 512M
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/readyz"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -87,6 +88,8 @@ spec:
         env:
         - name: PORT
           value: "8080"
+        - name: MAX_CONCURRENT_RF_REQUESTS
+          value: "2"
         resources:
           requests:
             memory: "512Mi"
@@ -102,7 +105,7 @@ spec:
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /healthz
+            path: /readyz
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 5
@@ -245,6 +248,11 @@ server {
         access_log off;
         proxy_pass http://atom_backend;
     }
+
+    location /readyz {
+        access_log off;
+        proxy_pass http://atom_backend;
+    }
 }
 ```
 
@@ -284,20 +292,14 @@ Load Balancer: Yes (round-robin across instances)
 ### Health Checks
 
 ```bash
-# Check every 30 seconds
+# Liveness: process is accepting HTTP requests
 curl http://localhost:8080/healthz
 
-# Expected response
-{
-  "success": true,
-  "data": {
-    "status": "healthy",
-    "buildings_loaded": 12047,
-    "towers_loaded": 287,
-    "version": "1.0.0"
-  }
-}
+# Readiness: datasets and frontend bundle are available
+curl --fail http://localhost:8080/readyz
 ```
+
+`/healthz` is a liveness endpoint and always returns `200` while the process is running. `/readyz` returns `503` until buildings, towers, and the frontend bundle are available.
 
 ### Logs
 
@@ -382,16 +384,7 @@ load-balancer:
 
 ### Vertical Scaling (Larger Machines)
 
-Go automatically uses all available CPU cores:
-
-```bash
-# 2-core machine: 2x faster than 1-core
-# 8-core machine: ~8x faster than 1-core
-
-# Example: Optimize request on 8-core vs 2-core
-# 2-core: 250 ms
-# 8-core: 60 ms (4x faster)
-```
+Each RF request uses at most four workers, and the process accepts two concurrent RF jobs by default. Increase `MAX_CONCURRENT_RF_REQUESTS` only after measuring CPU and latency under representative requests; scaling is workload-dependent and is not expected to be linear.
 
 ### Caching
 

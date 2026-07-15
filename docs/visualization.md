@@ -1,6 +1,6 @@
 # Propagation Visualization
 
-A.T.O.M generates stunning visual representations of RF propagation across frequency bands. This section showcases real simulation outputs using Ankara's urban topology.
+A.T.O.M visualizes deterministic RF planning estimates across frequency bands using Ankara's urban topology. The images are model outputs, not measured coverage maps.
 
 ## 4G LTE Coverage (2.6 GHz)
 
@@ -21,7 +21,7 @@ The 4G simulation shows:
 - 🟡 **Yellow zones**: Moderate coverage (-70 to -90 dBm), usable for typical applications
 - 🔴 **Red zones**: Marginal coverage (-90 to -110 dBm), possible dead zones
 
-**Key Insight**: Despite tall buildings, 4G signals diffract and penetrate enough to reach most areas, making it reliable for urban deployments.
+**Key Insight**: Lower FSPL and the model's lower per-wall loss generally let 4G estimates extend farther than higher-frequency modes.
 
 ---
 
@@ -41,7 +41,7 @@ The 4G simulation shows:
 The 5G visualization reveals:
 
 - 🟢 **Green zones**: Excellent LOS coverage on main avenues
-- 🟡 **Yellow zones**: Partial coverage with sidelobe penetration
+- 🟡 **Yellow zones**: Partial coverage after distance and wall-loss attenuation
 - 🔴 **Red zones**: Deep urban canyons blocked by building walls
 
 **Key Insight**: 5G requires careful site placement to reach street-level users. Antenna orientation (azimuth) dramatically affects coverage.
@@ -71,7 +71,7 @@ The 6G heatmap demonstrates:
 
 ---
 
-## AI Auto-Optimized 5G Beamforming
+## Auto-Optimized 5G Sector
 
 ![5G Auto-Optimized](./assets/5g-auto-optimized.png)
 
@@ -88,11 +88,10 @@ This simulation shows the optimal antenna azimuth computed by A.T.O.M's sweep-an
 The auto-optimized placement achieves:
 
 - ✅ Stronger demand-serving direction within distance constraints
-- ✅ Reduced interference through directional beaming
-- ✅ Optimal use of transmit power
-- ✅ Better spectral efficiency
+- Stronger modeled coverage toward demand-weighted locations
+- A reproducible azimuth recommendation from the configured sweep
 
-**Key Insight**: Manual antenna placement often leaves 15-30% coverage on the table. AI optimization recovers this without guesswork.
+**Key Insight**: The optimizer consistently compares candidate azimuths using the same demand and coverage score. It does not predict live-network spectral efficiency.
 
 ---
 
@@ -116,7 +115,7 @@ All visualizations use the same **signal strength to color mapping**:
 | Technology | Typical Radius | Max Radius |
 |-----------|---------------|-----------|
 | **4G** | 2 km (urban) | 5 km (rural) |
-| **5G mmWave** | 300 m (LOS) | 1 km (non-LOS sidelobe) |
+| **5G mmWave** | 300 m planning preset | 1 km configurable limit |
 | **6G Sub-THz** | 50 m (LOS) | 200 m (exceptional) |
 
 ### Site Density Required
@@ -131,9 +130,9 @@ All visualizations use the same **signal strength to color mapping**:
 
 The visualizations clearly show how **building density** impacts each band:
 
-- **4G**: Covers 85-95% of urban area (diffraction around buildings)
-- **5G**: Covers 60-75% of urban area (sidelobe penetration, directional)
-- **6G**: Covers 30-50% of urban area (near-optical propagation)
+- **4G**: Usually produces the broadest modeled reach because FSPL and wall loss are lower.
+- **5G**: Produces more localized, directional modeled coverage at 28 GHz.
+- **6G**: Is a research overlay with the strongest configured wall attenuation and shortest practical range.
 
 ---
 
@@ -166,15 +165,9 @@ In the web interface, you can:
 
 ---
 
-## Real-World Validation
+## Validation Boundary
 
-A.T.O.M's Ankara simulations have been compared against:
-
-- ✅ Field measurements from 5G testing campaigns
-- ✅ Operator coverage prediction data
-- ✅ Independent RF engineering reports
-
-**Results**: Typical accuracy within ±5 dB in urban areas.
+A.T.O.M has not been calibrated against operator drive tests or UE measurements. Treat Rx, RSRP, SINR, and RSRQ values as planning estimates for scenario comparison, then validate deployment decisions with calibrated tools and field measurements.
 
 ---
 

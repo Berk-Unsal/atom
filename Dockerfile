@@ -32,8 +32,10 @@ ENV PORT=8080
 ENV FRONTEND_DIST_PATH=/app/dist
 ENV BUILDINGS_GEOJSON_PATH=/app/data-pipeline/ankara_buildings.geojson
 ENV TOWERS_GEOJSON_PATH=/app/data-pipeline/ankara_5g_nodes.geojson
+ENV MAX_CONCURRENT_RF_REQUESTS=2
 
 EXPOSE 8080
 
 USER atom
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 CMD wget -q --spider http://127.0.0.1:8080/readyz || exit 1
 CMD ["./server"]

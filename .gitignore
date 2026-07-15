@@ -7,6 +7,7 @@ data-pipeline/.venv/
 
 # Go
 backend-go/.gocache/
+core-lab-adapter/.gocache/
 
 # Node/Vite
 frontend-react/node_modules/
@@ -19,6 +20,8 @@ data-pipeline/ankara_5g_nodes.csv
 .env
 .env.local
 
-#agents
+# Agents
 .impeccable/
 .github/*
+!.github/workflows/
+!.github/workflows/**

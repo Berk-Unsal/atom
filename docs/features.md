@@ -101,7 +101,7 @@ Beamforming creates **directional sectors** instead of omnidirectional patterns:
 - Reduces interference between sectors
 - Improves spectral efficiency
 
-## AI Auto-Optimization
+## Deterministic Auto-Optimization
 
 ### Demand-Aware Sector Scoring
 

@@ -4,7 +4,7 @@
 
 # A.T.O.M
 
-**Ankara Telecom Optimization Model | Deterministic RF Planning Simulator**
+**Ankara Telecom Optimization Model | AI-Driven RF Propagation Predictor**
 
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go)](https://golang.org)
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)

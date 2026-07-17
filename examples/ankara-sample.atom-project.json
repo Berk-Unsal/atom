@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "project-ankara-sample",
+    "name": "Ankara First-Use Sample",
+    "datasetRef": null,
+    "createdAt": "2026-07-17T00:00:00.000Z",
+    "updatedAt": "2026-07-17T00:00:00.000Z",
+    "activeScenarioId": "scenario-network-baseline",
+    "draft": null,
+    "scenarios": [
+      {
+        "id": "scenario-network-baseline",
+        "name": "5G network baseline",
+        "createdAt": "2026-07-17T00:00:00.000Z",
+        "updatedAt": "2026-07-17T00:00:00.000Z",
+        "plan": {
+          "settings": {
+            "frequencyGHz": 28,
+            "txPowerDbm": 30,
+            "rayCount": 120,
+            "radiusMeters": 400,
+            "azimuthDeg": 90,
+            "beamWidthDeg": 120,
+            "interferenceBandwidthMHz": 100,
+            "cellLoadPct": 70,
+            "reuseFactor": 1,
+            "noiseFigureDb": 7,
+            "sampleSpacingMeters": 40,
+            "calibrationOffsetDb": 0
+          },
+          "planningMode": "network",
+          "selectedTowerId": null,
+          "selectedNetworkTowerIds": [],
+          "selectionPolygon": [],
+          "layerVisibility": {
+            "rays": true,
+            "gaps": true,
+            "selectedCells": true,
+            "communicationPaths": true,
+            "interference": true,
+            "measurements": true
+          }
+        },
+        "request": null,
+        "meta": null,
+        "calibrationProfile": null,
+        "summary": {
+          "kind": "rf",
+          "resultsView": "rf",
+          "avgRxDBm": null,
+          "gapPct": null,
+          "networkScore": null,
+          "overlapBuildings": null,
+          "avgSINRDB": null,
+          "serviceablePct": null,
+          "affectedDemand": null,
+          "calibrationOffsetDB": 0
+        },
+        "artifacts": null,
+        "requiresRerun": true
+      }
+    ]
+  }
+}

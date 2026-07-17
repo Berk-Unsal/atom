@@ -42,29 +42,18 @@ problems." />
 Questions page contents">
       <strong>On this page</strong>
       <ul>
-      <li><a href="#general-questions"
-      id="toc-general-questions">General Questions</a></li>
-      <li><a href="#technical-questions"
-      id="toc-technical-questions">Technical Questions</a></li>
-      <li><a href="#performance-questions"
-      id="toc-performance-questions">Performance Questions</a></li>
-      <li><a href="#deployment-questions"
-      id="toc-deployment-questions">Deployment Questions</a></li>
-      <li><a href="#data-questions" id="toc-data-questions">Data
-      Questions</a></li>
-      <li><a href="#api-questions" id="toc-api-questions">API
-      Questions</a></li>
-      <li><a href="#integration-questions"
-      id="toc-integration-questions">Integration Questions</a></li>
-      <li><a href="#troubleshooting-questions"
-      id="toc-troubleshooting-questions">Troubleshooting
-      Questions</a></li>
-      <li><a href="#contributing-questions"
-      id="toc-contributing-questions">Contributing Questions</a></li>
-      <li><a href="#licensing-questions"
-      id="toc-licensing-questions">Licensing Questions</a></li>
-      <li><a href="#still-have-questions"
-      id="toc-still-have-questions">Still have questions?</a></li>
+      <li><a href="#product-and-model"
+      id="toc-product-and-model">Product And Model</a></li>
+      <li><a href="#projects-and-results"
+      id="toc-projects-and-results">Projects And Results</a></li>
+      <li><a href="#data" id="toc-data">Data</a></li>
+      <li><a href="#runtime-and-api" id="toc-runtime-and-api">Runtime
+      And API</a></li>
+      <li><a href="#5g-core-lab" id="toc-5g-core-lab">5G Core
+      Lab</a></li>
+      <li><a href="#installation-and-troubleshooting"
+      id="toc-installation-and-troubleshooting">Installation And
+      Troubleshooting</a></li>
       </ul>
     </aside>
 
@@ -81,440 +70,164 @@ access, and common operating problems.</p>
       </header>
 
       <div class="prose">
-<h2 id="general-questions">General Questions</h2>
-<h3 id="what-is-atom-used-for">What is A.T.O.M used for?</h3>
-<p>A.T.O.M simulates cellular network coverage and optimizes antenna
-placement for RF engineers planning 4G/5G/6G networks in urban areas.
-It's used by network operators, equipment vendors, and telecom
-researchers.</p>
-<h3 id="is-atom-free">Is A.T.O.M free?</h3>
-<p>Yes! A.T.O.M is open-source under the MIT license. You can use,
-modify, and redistribute it freely.</p>
-<h3 id="what-frequency-bands-does-atom-support">What frequency bands
-does A.T.O.M support?</h3>
-<ul>
-<li><strong>4G LTE</strong>: 2.6 GHz</li>
-<li><strong>5G mmWave</strong>: 28 GHz</li>
-<li><strong>6G Sub-THz</strong>: 140 GHz</li>
-</ul>
-<p>You can add custom frequencies by modifying the backend code.</p>
-<h3 id="can-i-use-atom-for-my-city-instead-of-ankara">Can I use A.T.O.M
-for my city instead of Ankara?</h3>
-<p>Yes! A.T.O.M is designed to work with any city. You need:</p>
-<ol type="1">
-<li>Building geometries in GeoJSON format (from OpenStreetMap)</li>
-<li>Tower/node locations as GeoJSON points</li>
-<li>Replace data files in <code>data-pipeline/</code></li>
-</ol>
-<p>See <a href="download.html">Download and Use</a> for installation and
-runtime-data verification.</p>
-<hr />
-<h2 id="technical-questions">Technical Questions</h2>
-<h3 id="how-accurate-is-atom">How accurate is A.T.O.M?</h3>
-<p>A.T.O.M has not been calibrated against operator drive tests or UE
-measurements. It produces deterministic planning estimates whose
-usefulness depends on:</p>
-<ul>
-<li>✅ OSM building data quality</li>
-<li>The fixed frequency-dependent wall-loss assumptions</li>
-<li>✅ Tower coordinates</li>
-<li>Terrain elevation, reflections, and fading are not currently
-modeled</li>
-</ul>
-<p>Use it to compare planning scenarios, then validate deployment
-decisions with calibrated tools and field measurements.</p>
-<h3 id="why-doesnt-atom-model-multipathreflections">Why doesn't A.T.O.M
-model multipath/reflections?</h3>
-<p>Including full multipath (reflections, scattering) would:</p>
-<ol type="1">
-<li>Increase computation time by 100-1000×</li>
-<li>Require ray bounce limits to be practical</li>
-<li>Add uncertainty about reflection coefficients</li>
-</ol>
-<p>A.T.O.M focuses on <strong>deterministic propagation</strong>
-(line-of-sight + penetration losses) which is sufficient for coverage
-planning.</p>
-<h3 id="can-i-add-custom-propagation-models">Can I add custom
-propagation models?</h3>
-<p>Yes! Edit <code>backend-go/raytracer/geometry.go</code>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> CustomPathLoss<span class="op">(</span>distance <span class="dt">float64</span><span class="op">,</span> frequency <span class="dt">string</span><span class="op">)</span> <span class="dt">float64</span> <span class="op">{</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Your custom equation</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">20</span><span class="op">*</span>math<span class="op">.</span>Log10<span class="op">(</span>distance<span class="op">)</span> <span class="op">+</span> customFactor</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>Rebuild and redeploy:</p>
+<h2 id="product-and-model">Product And Model</h2>
+<h3 id="what-is-atom-for">What is A.T.O.M for?</h3>
+<p>A.T.O.M is a local-first workspace for deterministic urban RF
+planning. It supports sector propagation, demand gaps, multi-cell
+evaluation and optimization, 4G/5G interference analysis, candidate-site
+recommendations, measurement residual analysis, scenario comparison, and
+an optional 5G communication-path overlay.</p>
+<h3 id="are-the-results-field-measurements">Are the results field
+measurements?</h3>
+<p>No. RSRP, SINR, RSRQ, RSSI, coverage, and demand KPIs are planning
+estimates from the configured model and dataset. They are not UE,
+drive-test, channel-sounder, or PHY measurements.</p>
+<h3 id="which-propagation-model-is-used">Which propagation model is
+used?</h3>
+<p>The default model combines free-space path loss with antenna gain,
+beam/radius eligibility, exact building intersections, and cumulative
+frequency-dependent wall loss. It does not currently implement
+Okumura-Hata, diffraction, reflections, fading, terrain, sidelobes, MIMO
+scheduling, or uplink propagation.</p>
+<h3 id="why-can-sinr-be-close-to-0-db">Why can SINR be close to 0
+dB?</h3>
+<p>When the serving cell and strongest co-channel interferer arrive at
+nearly equal power, their linear power ratio approaches one, which is
+<code>0 dB</code>. This is expected even when RSRP is strong. Reuse
+factor, load, geometry, and directional sectors can change that
+relationship.</p>
+<h3 id="why-does-a-sample-say-no-signal">Why does a sample say no
+signal?</h3>
+<p>A cell contributes only when the point is inside its configured
+radius and beam. High path loss or cumulative wall attenuation can then
+push modeled power below the signal floor. The interference Inspector
+lists serving-cell, wall, radius, beam, and interferer context where
+available.</p>
+<h3 id="does-measurement-import-calibrate-the-complete-model">Does
+measurement import calibrate the complete model?</h3>
+<p>No. A.T.O.M compares measured and predicted RSRP and may suggest one
+robust global path-loss bias when at least 20 valid samples exist. A
+deterministic holdout reports whether that correction improves unseen
+samples. It does not fit separate wall, clutter, terrain, or fading
+parameters.</p>
+<h3 id="what-is-the-6g-mode">What is the 6G mode?</h3>
+<p>The 140 GHz mode is an exploratory Sub-THz propagation overlay.
+Interference analysis, measurement validation, recommendations, and 5G
+Core language are intentionally unavailable where their assumptions are
+unsupported.</p>
+<h2 id="projects-and-results">Projects And Results</h2>
+<h3 id="where-are-projects-stored">Where are projects stored?</h3>
+<p>Projects are stored in the current browser through IndexedDB, with a
+local-storage fallback. The server remains stateless. Export a versioned
+<code>.atom-project.json</code> file for backup or transfer to another
+browser.</p>
+<h3 id="why-is-a-saved-result-marked-stale">Why is a saved result marked
+stale?</h3>
+<p>The saved inputs, dataset, model, or calibration profile no longer
+match the active workspace. A.T.O.M preserves the scenario but requires
+a rerun before treating its result as current.</p>
+<h3 id="why-do-old-scenarios-not-contain-every-map-layer">Why do old
+scenarios not contain every map layer?</h3>
+<p>To bound browser storage, complete GeoJSON artifacts are retained for
+the five most recently used scenarios. Older scenarios retain settings,
+exact requests, metadata, and compact summaries.</p>
+<h3 id="what-does-candidate-recommendation-guarantee">What does
+candidate recommendation guarantee?</h3>
+<p>It ranks unselected records from the active tower dataset by bounded,
+deterministic RF and demand scoring inside the drawn area. It does not
+establish ownership, rooftop access, permitting, cost, power, fiber,
+backhaul, or construction feasibility. Analyze interference after
+applying a recommendation.</p>
+<h2 id="data">Data</h2>
+<h3 id="can-i-use-a-region-other-than-ankara">Can I use a region other
+than Ankara?</h3>
+<p>Yes, through a validated dataset pack. Set
+<code>ATOM_DATASET_DIR</code> to a directory containing the versioned
+manifest and referenced tower/building files, then restart the
+application. The validator checks schema, CRS, coordinates, geometry,
+duplicate IDs, and SHA-256 hashes.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run ./cmd/validate-dataset <span class="at">-dataset-dir</span> /path/to/dataset</span></code></pre></div>
+<p>The application does not yet download or build arbitrary cities from
+the browser.</p>
+<h3 id="why-does-readyz-return-503">Why does <code>/readyz</code> return
+503?</h3>
+<p>Read the JSON response and container logs. Readiness requires a valid
+dataset manifest and hashes, loaded towers/buildings, a built frontend
+bundle, and successful startup indexing. <code>/healthz</code> only
+confirms process liveness.</p>
+<h3 id="does-the-default-app-work-fully-offline">Does the default app
+work fully offline?</h3>
+<p>RF computation, project storage, and datasets are local. The default
+Leaflet basemap still requests OpenStreetMap tiles unless you configure
+or cache a local tile source.</p>
+<h3 id="why-is-git-lfs-required">Why is Git LFS required?</h3>
+<p>The default Ankara building GeoJSON is larger than a normal Git
+object. A Git LFS pointer is not valid GeoJSON, so source installations
+should run <code>git lfs pull</code> before building.</p>
+<h2 id="runtime-and-api">Runtime And API</h2>
+<h3 id="is-there-a-documented-rest-api">Is there a documented REST
+API?</h3>
+<p>Yes. The <a href="api.html">API Reference</a> and downloadable <a
+href="openapi.yaml">OpenAPI 3.1 specification</a> cover RF simulation,
+gaps, optimization, network evaluation, interference, recommendations,
+measurement evaluation, metadata, datasets, and Core Lab routes.</p>
+<h3 id="why-did-an-rf-request-return-429">Why did an RF request return
+429?</h3>
+<p>A.T.O.M admits two concurrent RF jobs by default and limits each
+expensive job to four workers. When capacity is occupied, it returns
+<code>429</code> with <code>Retry-After</code>. Let the active job
+finish or raise <code>MAX_CONCURRENT_RF_REQUESTS</code> cautiously for
+capable hardware.</p>
+<h3 id="what-request-limits-apply">What request limits apply?</h3>
+<p>POST bodies are limited to 1 MiB. The HTTP server uses bounded
+header, read, write, and idle timeouts. Frontend operations cancel
+superseded work and reject stale responses.</p>
+<h3 id="is-the-server-stateless">Is the server stateless?</h3>
+<p>Yes. RF results and projects are not stored by the Go service. This
+allows multiple API replicas, but browser projects are not automatically
+shared between them or between users.</p>
+<h3 id="does-the-api-require-authentication">Does the API require
+authentication?</h3>
+<p>No. Internet-facing deployments should add TLS, authentication, and
+external rate policy at a trusted reverse proxy or gateway.</p>
+<h2 id="5g-core-lab">5G Core Lab</h2>
+<h3 id="does-core-lab-deploy-open5gs">Does Core Lab deploy Open5GS?</h3>
+<p>No. The optional adapter provides deterministic 5G topology, health,
+session, event, and scenario state and can probe configured Open5GS
+endpoints. It does not bundle a complete mobile core.</p>
+<h3 id="why-is-core-lab-unavailable-in-4g-or-6g">Why is Core Lab
+unavailable in 4G or 6G?</h3>
+<p>Its terminology and paths model 5GS behavior: Xn-C/Xn-U, N2 via AMF,
+and N3 via UPF. A.T.O.M does not relabel those interfaces as LTE/EPC or
+speculative 6G Core behavior.</p>
+<h2 id="installation-and-troubleshooting">Installation And
+Troubleshooting</h2>
+<h3 id="what-is-the-recommended-installation-path">What is the
+recommended installation path?</h3>
+<p>Clone with Git LFS and use Docker Compose:</p>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> atom-simulator .</span></code></pre></div>
-<h3 id="how-does-the-r-tree-spatial-index-work">How does the R-Tree
-spatial index work?</h3>
-<p>See <a href="./algorithms.html#spatial-indexing-r-tree">Algorithms
-&amp; Physics</a> for detailed explanation.</p>
-<p><strong>TL;DR</strong>: It's a balanced tree structure that speeds up
-"which buildings does this ray intersect?" queries from O(n) → O(log
-n).</p>
-<h3 id="what-if-a-building-is-not-in-osm">What if a building is not in
-OSM?</h3>
-<p>Add it to OpenStreetMap! OSM is community-maintained, so:</p>
-<ol type="1">
-<li>Visit <a
-href="https://www.openstreetmap.org">openstreetmap.org</a></li>
-<li>Edit map to add missing building</li>
-<li>Re-export data using data pipeline</li>
-<li>Rebuild simulator</li>
-</ol>
-<h3 id="can-i-run-atom-offline">Can I run A.T.O.M offline?</h3>
-<p>Yes! Once the Docker image is built, it needs no external internet
-access. All data is baked into the image.</p>
-<hr />
-<h2 id="performance-questions">Performance Questions</h2>
-<h3 id="why-is-the-first-request-slow">Why is the first request
-slow?</h3>
-<p>The first request triggers:</p>
-<ol type="1">
-<li>Docker startup</li>
-<li>GeoJSON loading</li>
-<li>R-Tree construction</li>
-<li>Simulation execution</li>
-</ol>
-<p><strong>Typical</strong>: 5-10 seconds total (future requests: 1-3
-seconds)</p>
-<h3 id="how-many-concurrent-requests-can-atom-handle">How many
-concurrent requests can A.T.O.M handle?</h3>
-<p>Depends on your hardware:</p>
-<table>
-<thead>
-<tr>
-<th>CPU Cores</th>
-<th>Max Concurrent</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>2</td>
-<td>Development only</td>
-</tr>
-<tr>
-<td>2</td>
-<td>5</td>
-<td>Small deployments</td>
-</tr>
-<tr>
-<td>4</td>
-<td>15</td>
-<td>Recommended</td>
-</tr>
-<tr>
-<td>8</td>
-<td>30</td>
-<td>Enterprise</td>
-</tr>
-</tbody>
-</table>
-<h3 id="how-can-i-make-simulations-faster">How can I make simulations
-faster?</h3>
-<ol type="1">
-<li><strong>Reduce ray count</strong>: Fewer rays means fewer
-intersection checks</li>
-<li><strong>Reduce coverage radius</strong>: Shorter max distance means
-fewer segment steps</li>
-<li><strong>Deploy on faster CPU</strong>: More cores = faster
-execution</li>
-<li><strong>Parallelize</strong>: Use batch optimization</li>
-</ol>
-<h3 id="whats-the-memory-footprint">What's the memory footprint?</h3>
-<table>
-<thead>
-<tr>
-<th>Component</th>
-<th>Size</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Go runtime</td>
-<td>~10 MB</td>
-</tr>
-<tr>
-<td>Building GeoJSON</td>
-<td>40 MB (compressed in RAM)</td>
-</tr>
-<tr>
-<td>R-Tree</td>
-<td>150 MB</td>
-</tr>
-<tr>
-<td>Workspace per request</td>
-<td>5 MB</td>
-</tr>
-<tr>
-<td><strong>Total</strong></td>
-<td>~200 MB typical</td>
-</tr>
-</tbody>
-</table>
-<p>Docker container: <strong>~150 MB</strong></p>
-<hr />
-<h2 id="deployment-questions">Deployment Questions</h2>
-<h3 id="can-i-run-atom-on-arm64-apple-silicon">Can I run A.T.O.M on
-ARM64 (Apple Silicon)?</h3>
-<p>Yes! The Docker image builds for ARM64. Just build and run
-normally:</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> atom-simulator .</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-p</span> 8080:8080 atom-simulator</span></code></pre></div>
-<h3 id="how-do-i-update-atom">How do I update A.T.O.M?</h3>
-<ol type="1">
-<li>Pull latest code: <code>git pull</code></li>
-<li>Rebuild image: <code>docker build -t atom-simulator .</code></li>
-<li>Stop old container: <code>docker stop atom-api</code></li>
-<li>Run new container:
-<code>docker run -p 8080:8080 atom-simulator</code></li>
-</ol>
-<h3 id="can-i-deploy-multiple-replicas">Can I deploy multiple
-replicas?</h3>
-<p>Yes! A.T.O.M is <strong>stateless</strong>, so multiple instances can
-run behind a load balancer. See <a
-href="./deployment.html#horizontal-scaling-multiple-instances">Deployment</a>.</p>
-<h3 id="whats-the-difference-between-docker-and-native-go">What's the
-difference between Docker and native Go?</h3>
-<table>
-<thead>
-<tr>
-<th>Aspect</th>
-<th>Docker</th>
-<th>Native Go</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Isolation</td>
-<td>✅ Full OS isolation</td>
-<td>❌ None</td>
-</tr>
-<tr>
-<td>Setup</td>
-<td>1 command</td>
-<td>Requires Go, Node.js</td>
-</tr>
-<tr>
-<td>Performance</td>
-<td>~5% overhead</td>
-<td>Baseline</td>
-</tr>
-<tr>
-<td>Portability</td>
-<td>✅ Works anywhere</td>
-<td>❌ OS-specific</td>
-</tr>
-<tr>
-<td>Recommended</td>
-<td>✅ Yes (all environments)</td>
-<td>Development only</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="data-questions">Data Questions</h2>
-<h3 id="where-does-the-geojson-data-come-from">Where does the GeoJSON
-data come from?</h3>
-<ul>
-<li><strong>Buildings</strong>: <a
-href="https://www.openstreetmap.org">OpenStreetMap</a></li>
-<li><strong>Towers</strong>: <a
-href="https://opencellid.org">OpenCellID</a></li>
-<li><strong>Custom data</strong>: You can add your own</li>
-</ul>
-<h3 id="can-i-add-a-new-building-to-the-map">Can I add a new building to
-the map?</h3>
-<p>Yes. Update the source data, regenerate the GeoJSON, and rebuild the
-application. See <a href="download.html">Download and Use</a> for
-installation and runtime-data verification.</p>
-<h3 id="how-often-should-i-update-the-data">How often should I update
-the data?</h3>
-<ul>
-<li><strong>GeoJSON</strong>: Every quarter (as OSM updates)</li>
-<li><strong>Tower list</strong>: Monthly (new sites come online)</li>
-<li><strong>Material database</strong>: Annually (as building codes
-change)</li>
-</ul>
-<h3 id="can-i-use-proprietary-building-data">Can I use proprietary
-building data?</h3>
-<p>Yes, A.T.O.M accepts any GeoJSON-format geometry. Replace:</p>
-<ul>
-<li><code>data-pipeline/ankara_buildings.geojson</code></li>
-<li><code>data-pipeline/ankara_5g_nodes.geojson</code></li>
-</ul>
-<p>Then rebuild.</p>
-<hr />
-<h2 id="api-questions">API Questions</h2>
-<h3 id="whats-the-typical-api-response-time">What's the typical API
-response time?</h3>
-<table>
-<thead>
-<tr>
-<th>Request</th>
-<th>Time</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/healthz</code></td>
-<td>&lt; 10 ms</td>
-</tr>
-<tr>
-<td><code>/api/towers</code></td>
-<td>100 ms</td>
-</tr>
-<tr>
-<td><code>/api/buildings</code></td>
-<td>1-2 seconds</td>
-</tr>
-<tr>
-<td><code>/api/simulate</code></td>
-<td>1-3 seconds</td>
-</tr>
-<tr>
-<td><code>/api/coverage-gaps</code></td>
-<td>1-3 seconds</td>
-</tr>
-<tr>
-<td><code>/api/optimize-azimuth</code></td>
-<td>3-5 seconds</td>
-</tr>
-</tbody>
-</table>
-<h3 id="can-i-call-the-api-from-my-own-application">Can I call the API
-from my own application?</h3>
-<p>Yes! A.T.O.M exposes a REST API. Examples:</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.post(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;http://localhost:8080/api/simulate&#39;</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    json<span class="op">=</span>{</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tower_lon&#39;</span>: <span class="fl">32.8541</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tower_lat&#39;</span>: <span class="fl">39.9208</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;rays&#39;</span>: <span class="dv">120</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;radius_m&#39;</span>: <span class="dv">400</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;frequency_ghz&#39;</span>: <span class="dv">28</span>,</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tx_power_dbm&#39;</span>: <span class="dv">30</span>,</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;azimuth&#39;</span>: <span class="dv">45</span>,</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;beam_width&#39;</span>: <span class="dv">120</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>coverage <span class="op">=</span> response.json()[<span class="st">&#39;geojson&#39;</span>]</span></code></pre></div>
-<p>See <a href="./api.html">API Reference</a> for full
-documentation.</p>
-<h3 id="does-atom-support-webhooks">Does A.T.O.M support webhooks?</h3>
-<p>Not in v1.0. Planned for v1.1+. Currently, poll the API for
-results.</p>
-<hr />
-<h2 id="integration-questions">Integration Questions</h2>
-<h3 id="can-i-export-results-to-arcgisqgis">Can I export results to
-ArcGIS/QGIS?</h3>
-<p>Yes! All results are GeoJSON-formatted. Simply:</p>
-<ol type="1">
-<li>Export from A.T.O.M: Click "Download GeoJSON"</li>
-<li>Import into ArcGIS: File → Import → GeoJSON</li>
-<li>Use in QGIS: Layer → Add Layer → Vector → GeoJSON</li>
-</ol>
-<h3 id="can-i-integrate-atom-with-my-network-planning-tool">Can I
-integrate A.T.O.M with my network planning tool?</h3>
-<p>Yes! Call the REST API from your tool. See <a href="./api.html">API
-Reference</a> for endpoints and examples.</p>
-<h3 id="does-atom-work-with-optus-ericsson-or-nokia-planning-tools">Does
-A.T.O.M work with Optus, Ericsson, or Nokia planning tools?</h3>
-<p>Not directly, but you can:</p>
-<ol type="1">
-<li>Export GeoJSON from A.T.O.M</li>
-<li>Convert to your tool's format (usually via QGIS)</li>
-<li>Import for comparison/validation</li>
-</ol>
-<hr />
-<h2 id="troubleshooting-questions">Troubleshooting Questions</h2>
-<h3 id="docker-image-wont-build">Docker image won't build</h3>
-<p><strong>Error</strong>: <code>npm: not found</code></p>
-<p><strong>Solution</strong>: Ensure Dockerfile is complete. Download
-latest from GitHub:</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Berk-Unsal/urban-ray-tracer.git</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> urban-ray-tracer</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span></code></pre></div>
-<h3 id="api-returns-validation-error">API returns validation error</h3>
-<p><strong>Cause</strong>: One of the request fields is outside the
-allowed range or missing</p>
-<p><strong>Solution</strong>:</p>
-<ol type="1">
-<li>Check the current payload keys in <a href="./api.html">API
-Reference</a></li>
-<li>Verify <code>tower_lon</code>, <code>tower_lat</code>,
-<code>rays</code>, <code>radius_m</code>, and
-<code>frequency_ghz</code></li>
-</ol>
-<h3 id="coverage-heatmap-looks-wrong">Coverage heatmap looks wrong</h3>
-<p><strong>Possible causes</strong>:</p>
-<ol type="1">
-<li>❌ Building data corrupted → Check OSM data quality</li>
-<li>❌ Frequency range too wide → Adjust grid spacing</li>
-<li>❌ Beamforming gain off → Check beam width setting</li>
-</ol>
-<p><strong>Debug</strong>: Call <code>/readyz</code> to verify the
-building index, tower data, and frontend bundle are loaded. Use
-<code>/healthz</code> only to check process liveness.</p>
-<h3 id="why-is-my-regions-coverage-very-sparse">Why is my region's
-coverage very sparse?</h3>
-<p><strong>Possible causes</strong>:</p>
-<ol type="1">
-<li><strong>Data quality</strong>: Missing buildings in OSM</li>
-<li><strong>Frequency too high</strong>: 6G has very limited range</li>
-<li><strong>Line-of-sight</strong>: If urban canyon is dense, coverage
-naturally limited</li>
-</ol>
-<p><strong>Solution</strong>: Add missing buildings to OSM, or choose
-more favorable tower location.</p>
-<hr />
-<h2 id="contributing-questions">Contributing Questions</h2>
-<h3 id="how-can-i-contribute-to-atom">How can I contribute to
-A.T.O.M?</h3>
-<p>See <a href="./contributing.html">Contributing</a> for
-guidelines.</p>
-<h3 id="can-i-fork-atom-for-my-own-project">Can I fork A.T.O.M for my
-own project?</h3>
-<p>Yes! MIT license allows forking. You must:</p>
-<ul>
-<li>✅ Include original license</li>
-<li>✅ Attribute original authors</li>
-<li>✅ Document your modifications</li>
-</ul>
-<h3 id="who-maintains-atom">Who maintains A.T.O.M?</h3>
-<p>A.T.O.M is maintained by <a href="https://berkunsal.com">Berk
-Ünsal</a> with community contributions.</p>
-<hr />
-<h2 id="licensing-questions">Licensing Questions</h2>
-<h3 id="what-license-is-atom-under">What license is A.T.O.M under?</h3>
-<p>MIT License (open-source, permissive)</p>
-<h3 id="can-i-use-atom-commercially">Can I use A.T.O.M
-commercially?</h3>
-<p>Yes! MIT license allows commercial use. Just include the license in
-your distribution.</p>
-<h3 id="do-i-need-to-contribute-improvements-back">Do I need to
-contribute improvements back?</h3>
-<p>Not required, but encouraged! Community contributions improve the
-project for everyone.</p>
-<hr />
-<h2 id="still-have-questions">Still have questions?</h2>
-<ul>
-<li>📖 Check <a href="./index.html">Documentation</a></li>
-<li>💬 Open an issue on GitHub</li>
-<li>📧 Email <a
-href="mailto:berk@berkunsal.com"><span>berk@berkunsal.com</span></a></li>
-</ul>
-<hr />
-<p><strong>Next</strong>: See <a
-href="./contributing.html">Contributing</a> to help improve A.T.O.M.</p>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs install</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Berk-Unsal/urban-ray-tracer.git</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> urban-ray-tracer</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span></code></pre></div>
+<p>Open <code>http://localhost:8080</code> and verify
+<code>http://localhost:8080/readyz</code>.</p>
+<h3 id="can-i-run-on-apple-silicon">Can I run on Apple Silicon?</h3>
+<p>Yes. Local Docker builds support ARM64, and tagged releases are
+intended to publish multi-architecture images.</p>
+<h3 id="how-do-i-report-a-problem">How do I report a problem?</h3>
+<p>Include the application/model/dataset versions from Data or
+<code>/api/meta</code>, the exact request or exported project, the
+readiness response, and relevant logs in a <a
+href="https://github.com/Berk-Unsal/urban-ray-tracer/issues">GitHub
+issue</a>.</p>
+<p>See <a href="download.html">Download and Use</a>, <a
+href="architecture.html">System Architecture</a>, and <a
+href="modeling-limits.html">Model Limitations</a> for deeper
+guidance.</p>
       </div>
     </article>
   </main>

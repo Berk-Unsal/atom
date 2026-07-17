@@ -1,6 +1,9 @@
 package raytracer
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestBeamAngleForIndexWrapsAcrossNorth(t *testing.T) {
 	tests := []struct {
@@ -315,6 +318,14 @@ func TestCoverageGapFinderIgnoresDemandOutsideBeam(t *testing.T) {
 	}
 	if len(response.GeoJSON.Features) != 0 {
 		t.Fatalf("returned gap features = %d, want 0 outside beam", len(response.GeoJSON.Features))
+	}
+}
+
+func TestFreeSpacePathLossUsesMetersAndGHz(t *testing.T) {
+	// 100 m at 2.6 GHz is approximately 80.75 dB FSPL.
+	got := FreeSpacePathLossMetersGHz(100, 2.6)
+	if math.Abs(got-80.75) > 0.1 {
+		t.Fatalf("FSPL = %.2f dB, want approximately 80.75 dB", got)
 	}
 }
 

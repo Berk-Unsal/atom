@@ -246,6 +246,13 @@ npm run dev</code></pre>
             focused tool at a time. Start with Setup, then move only to the analysis needed for the current question.
           </p>
         </div>
+        <div class="info-band">
+          <span class="info-icon" aria-hidden="true">A/B</span>
+          <div>
+            <strong>Optional first-run project</strong>
+            <p>Import <a href="../examples/ankara-sample.atom-project.json"><code>examples/ankara-sample.atom-project.json</code></a> from the project menu for a settings-first baseline, then select local cells and rerun before interpreting results.</p>
+          </div>
+        </div>
 
         <section class="workflow" aria-labelledby="single-workflow">
           <div class="workflow-name"><span>Workflow 01</span><h3 id="single-workflow">Plan one sector</h3></div>
@@ -282,6 +289,24 @@ npm run dev</code></pre>
             <div class="workflow-step"><span>3</span><strong>Change the route</strong><p>Run Xn degraded or unavailable scenarios and observe the N2 fallback while N3 session state remains distinct.</p></div>
           </div>
         </section>
+
+        <section class="workflow" aria-labelledby="project-workflow">
+          <div class="workflow-name"><span>Workflow 05</span><h3 id="project-workflow">Save and compare scenarios</h3></div>
+          <div class="workflow-steps">
+            <div class="workflow-step"><span>1</span><strong>Name the project</strong><p>Use the project selector in the command bar and save a scenario after each meaningful run.</p></div>
+            <div class="workflow-step"><span>2</span><strong>Compare two plans</strong><p>Open Results and Compare, then switch the map between A and B while reviewing KPI deltas.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Make it portable</strong><p>Export the versioned <code>.atom-project.json</code> file to preserve exact inputs, metadata, summaries, and recent layers.</p></div>
+          </div>
+        </section>
+
+        <section class="workflow" aria-labelledby="evidence-workflow">
+          <div class="workflow-name"><span>Workflow 06</span><h3 id="evidence-workflow">Recommend and validate</h3></div>
+          <div class="workflow-steps">
+            <div class="workflow-step"><span>1</span><strong>Bound the search</strong><p>Draw an area for a 4G/5G network plan, then open Results and Candidates to rank known site records.</p></div>
+            <div class="workflow-step"><span>2</span><strong>Preserve the baseline</strong><p>Apply an option as a new scenario, evaluate it, and run interference before considering it preferred.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Check field evidence</strong><p>Import RSRP CSV data in Data, inspect residuals, and review holdout error before applying any global bias correction.</p></div>
+          </div>
+        </section>
       </section>
 
       <section class="content-section" id="workspace" aria-labelledby="workspace-heading">
@@ -300,8 +325,8 @@ npm run dev</code></pre>
               <tr><td><strong>Command bar</strong></td><td>Current mode, cell context, plan summary, run state, and the primary RF action.</td><td>The result summary opens the relevant Results view.</td></tr>
               <tr><td><strong>Tool rail</strong></td><td>Setup, Propagation, Interference, 5G Core, Results, Data, and Report.</td><td>Click the active icon, Close, or press Escape to collapse the drawer.</td></tr>
               <tr><td><strong>Map toolbar</strong></td><td>Draw, Clear, Fit, and layer visibility.</td><td>Metric controls appear only while an interference surface is active.</td></tr>
-              <tr><td><strong>Inspector</strong></td><td>Tower, coverage-gap, communication-path, and interference-sample details.</td><td>Back restores the previous tool; popups remain compact labels.</td></tr>
-              <tr><td><strong>Data and Report</strong></td><td>Review assumptions, limitations, dataset confidence, and export the active plan.</td><td>Reports are assembled from current client state.</td></tr>
+              <tr><td><strong>Inspector</strong></td><td>Tower, gap, path, radio sample, candidate, and measurement-residual details.</td><td>Back restores the previous tool; popups remain compact labels.</td></tr>
+              <tr><td><strong>Data and Report</strong></td><td>Review dataset provenance, runtime versions, validation evidence, assumptions, and exports.</td><td>Reports record active model, dataset, and calibration metadata.</td></tr>
             </tbody>
           </table>
         </div>
@@ -323,7 +348,7 @@ npm run dev</code></pre>
           </details>
           <details>
             <summary><code>/healthz</code> works but <code>/readyz</code> returns 503</summary>
-            <div class="faq-answer"><p>The process is alive but a required runtime dependency is missing. Review the readiness JSON and logs for building data, tower data, or the compiled frontend. Confirm Git LFS completed and rebuild after frontend changes.</p></div>
+            <div class="faq-answer"><p>The process is alive but a required runtime dependency is missing. Review the readiness JSON and logs for manifest/hash validation, building data, tower data, or the compiled frontend. Confirm Git LFS completed and rebuild after frontend changes.</p></div>
           </details>
           <details>
             <summary>Docker exits or becomes slow during RF analysis</summary>

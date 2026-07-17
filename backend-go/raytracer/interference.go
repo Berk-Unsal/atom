@@ -31,17 +31,18 @@ type InterferenceTowerRequest struct {
 }
 
 type InterferenceRequest struct {
-	NetworkTech    string                     `json:"network_tech"`
-	Towers         []InterferenceTowerRequest `json:"towers"`
-	RadiusMeters   float64                    `json:"radius_m"`
-	FrequencyGHz   float64                    `json:"frequency_ghz"`
-	TxPowerDBm     float64                    `json:"tx_power_dbm"`
-	BeamWidthDeg   float64                    `json:"beam_width"`
-	BandwidthMHz   float64                    `json:"bandwidth_mhz"`
-	LoadFactor     float64                    `json:"load_factor"`
-	ReuseFactor    int                        `json:"reuse_factor"`
-	NoiseFigureDB  float64                    `json:"noise_figure_db"`
-	SampleSpacingM float64                    `json:"sample_spacing_m"`
+	NetworkTech         string                     `json:"network_tech"`
+	Towers              []InterferenceTowerRequest `json:"towers"`
+	RadiusMeters        float64                    `json:"radius_m"`
+	FrequencyGHz        float64                    `json:"frequency_ghz"`
+	TxPowerDBm          float64                    `json:"tx_power_dbm"`
+	BeamWidthDeg        float64                    `json:"beam_width"`
+	BandwidthMHz        float64                    `json:"bandwidth_mhz"`
+	LoadFactor          float64                    `json:"load_factor"`
+	ReuseFactor         int                        `json:"reuse_factor"`
+	NoiseFigureDB       float64                    `json:"noise_figure_db"`
+	SampleSpacingM      float64                    `json:"sample_spacing_m"`
+	CalibrationOffsetDB float64                    `json:"calibration_offset_db,omitempty"`
 }
 
 type InterferenceResponse struct {
@@ -265,6 +266,9 @@ func ValidateInterferenceRequest(req InterferenceRequest) string {
 	if req.SampleSpacingM < 20 || req.SampleSpacingM > 200 {
 		return "sample_spacing_m must be between 20 and 200"
 	}
+	if req.CalibrationOffsetDB < -40 || req.CalibrationOffsetDB > 40 {
+		return "calibration_offset_db must be between -40 and 40"
+	}
 	return ""
 }
 
@@ -478,7 +482,7 @@ func evaluateInterferencePoint(req InterferenceRequest, preset interferencePrese
 		}
 		intersections, _ := wallIntersectionsForSegment(origin, origin, point, buildings)
 		wallCount := len(intersections)
-		carrierRxDBm := ReceivedPowerDBm(distance, req.FrequencyGHz, req.TxPowerDBm, float64(wallCount)*PenetrationLossForFrequencyGHz(req.FrequencyGHz))
+		carrierRxDBm := ReceivedPowerDBm(distance, req.FrequencyGHz, req.TxPowerDBm+req.CalibrationOffsetDB, float64(wallCount)*PenetrationLossForFrequencyGHz(req.FrequencyGHz))
 		if carrierRxDBm <= ReceiverSensitivity {
 			continue
 		}

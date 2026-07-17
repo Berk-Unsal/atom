@@ -92,6 +92,15 @@ The adapter provides deterministic Xn-C, Xn-U, N2, and N3 communication-path sta
 
 ## First Use
 
+### Create A Repeatable Project
+
+1. Use the project selector in the command bar to rename the default project or create a new one.
+2. Configure a plan and save a named scenario after each meaningful analysis.
+3. Reopen scenarios from the project menu; stale results are labeled when inputs or runtime metadata no longer match.
+4. Export a `.atom-project.json` file to move the full project to another browser or keep an external archive.
+
+The five most recently used scenarios retain complete map layers. Older scenarios keep settings and summaries and may require a rerun.
+
 ### Single-Cell Sector Planning
 
 1. Open **Setup**, select **Single** mode and a network technology, then choose a tower.
@@ -113,6 +122,32 @@ The adapter provides deterministic Xn-C, Xn-U, N2, and N3 communication-path sta
 3. Select **Analyze Interference**.
 4. Switch between SINR, RSRP, and RSRQ, then inspect samples for serving-cell and strongest-interferer details.
 
+### Compare Scenarios
+
+1. Save at least two scenarios in the current project.
+2. Open **Results**, then select **Compare**.
+3. Choose exactly two scenarios to review RF, optimization, interference, demand, and communication-path deltas where available.
+4. Use the A/B map switch to inspect one scenario surface at a time, or promote either side to the active plan.
+
+### Candidate Site Recommendations
+
+1. Use 4G or 5G Network mode and select two to five existing cells.
+2. Draw the planning area on the map.
+3. Open **Results**, select **Candidates**, and run the recommendation action.
+4. Review deterministic candidate reasons and marginal KPIs, then use **Apply as scenario** to preserve the baseline.
+5. Evaluate and analyze interference for the applied scenario before treating it as a preferred RF option.
+
+Candidate records come from the active tower dataset and do not imply site availability, approval, cost, or backhaul feasibility.
+
+### Validate Against Measurements
+
+1. Prepare a CSV with `id`, `longitude`, `latitude`, `technology`, `rsrp_dbm`, and optional `cell_id` columns. `lon`, `lat`, and `rsrp` aliases are also accepted.
+2. Open **Data**, import up to 5,000 4G or 5G rows, and evaluate them against the selected cells.
+3. Inspect residual points and review MAE, RMSE, median bias, and per-cell statistics.
+4. With at least 20 valid samples, review holdout error before explicitly applying the suggested global bias correction.
+
+Applied correction is stored in the project and recorded in reports. It is a global bias adjustment, not full propagation calibration.
+
 ### 5G Communication Paths
 
 1. Start the optional Core Lab profile.
@@ -123,8 +158,8 @@ The adapter provides deterministic Xn-C, Xn-U, N2, and N3 communication-path sta
 ### Results, Data, Layers, and Reports
 
 - Use **Layers** on the map to show or hide rays, gaps, selected cells, interference, and communication paths.
-- Select a tower, gap, path, or interference sample to open the persistent Inspector.
-- Use **Data** to review dataset confidence, RF assumptions, and exclusions.
+- Select a tower, gap, path, interference sample, candidate, or measurement residual to open the persistent Inspector.
+- Use **Data** to review dataset provenance, runtime/model versions, measurement evidence, RF assumptions, and exclusions.
 - Use **Report** to export Markdown or a printable PDF report from the current plan state.
 
 ## Troubleshooting
@@ -139,7 +174,14 @@ Stop the process using port 8080 or 5173. For Docker, change the host side of th
 
 ### Readiness Returns 503
 
-Inspect the readiness JSON and `docker compose logs -f atom`. The usual causes are a missing LFS object, missing tower data, or a frontend bundle that was not built.
+Inspect the readiness JSON and `docker compose logs -f atom`. The usual causes are a missing LFS object, invalid dataset manifest/hash, missing tower/building data, or a frontend bundle that was not built.
+
+Validate the active dataset directly with:
+
+```bash
+cd backend-go
+go run ./cmd/validate-dataset ../data-pipeline
+```
 
 ### RF Analysis Capacity Is Busy
 

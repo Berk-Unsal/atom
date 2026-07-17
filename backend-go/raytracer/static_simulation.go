@@ -20,14 +20,15 @@ const CoveredBuildingThresholdDBm = -100.0
 const MaxCoverageGapFeatures = 500
 
 type StaticSimulationRequest struct {
-	TowerLon     float64 `json:"tower_lon"`
-	TowerLat     float64 `json:"tower_lat"`
-	Rays         int     `json:"rays"`
-	RadiusMeters float64 `json:"radius_m"`
-	FrequencyGHz float64 `json:"frequency_ghz"`
-	TxPowerDBm   float64 `json:"tx_power_dbm"`
-	AzimuthDeg   float64 `json:"azimuth"`
-	BeamWidthDeg float64 `json:"beam_width"`
+	TowerLon            float64 `json:"tower_lon"`
+	TowerLat            float64 `json:"tower_lat"`
+	Rays                int     `json:"rays"`
+	RadiusMeters        float64 `json:"radius_m"`
+	FrequencyGHz        float64 `json:"frequency_ghz"`
+	TxPowerDBm          float64 `json:"tx_power_dbm"`
+	AzimuthDeg          float64 `json:"azimuth"`
+	BeamWidthDeg        float64 `json:"beam_width"`
+	CalibrationOffsetDB float64 `json:"calibration_offset_db,omitempty"`
 }
 
 type NetworkTowerRequest struct {
@@ -38,12 +39,13 @@ type NetworkTowerRequest struct {
 }
 
 type NetworkOptimizationRequest struct {
-	Towers       []NetworkTowerRequest `json:"towers"`
-	Rays         int                   `json:"rays"`
-	RadiusMeters float64               `json:"radius_m"`
-	FrequencyGHz float64               `json:"frequency_ghz"`
-	TxPowerDBm   float64               `json:"tx_power_dbm"`
-	BeamWidthDeg float64               `json:"beam_width"`
+	Towers              []NetworkTowerRequest `json:"towers"`
+	Rays                int                   `json:"rays"`
+	RadiusMeters        float64               `json:"radius_m"`
+	FrequencyGHz        float64               `json:"frequency_ghz"`
+	TxPowerDBm          float64               `json:"tx_power_dbm"`
+	BeamWidthDeg        float64               `json:"beam_width"`
+	CalibrationOffsetDB float64               `json:"calibration_offset_db,omitempty"`
 }
 
 type RayFeatureCollection struct {
@@ -564,14 +566,15 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 
 func networkTowerToStaticRequest(req NetworkOptimizationRequest, tower NetworkTowerRequest, azimuth float64) StaticSimulationRequest {
 	return StaticSimulationRequest{
-		TowerLon:     tower.TowerLon,
-		TowerLat:     tower.TowerLat,
-		Rays:         req.Rays,
-		RadiusMeters: req.RadiusMeters,
-		FrequencyGHz: req.FrequencyGHz,
-		TxPowerDBm:   req.TxPowerDBm,
-		AzimuthDeg:   normalizeDegrees(azimuth),
-		BeamWidthDeg: req.BeamWidthDeg,
+		TowerLon:            tower.TowerLon,
+		TowerLat:            tower.TowerLat,
+		Rays:                req.Rays,
+		RadiusMeters:        req.RadiusMeters,
+		FrequencyGHz:        req.FrequencyGHz,
+		TxPowerDBm:          req.TxPowerDBm,
+		AzimuthDeg:          normalizeDegrees(azimuth),
+		BeamWidthDeg:        req.BeamWidthDeg,
+		CalibrationOffsetDB: req.CalibrationOffsetDB,
 	}
 }
 
@@ -971,7 +974,8 @@ func simulateRayTerminal(origin Point, rayIndex int, angle float64, req StaticSi
 }
 
 func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex, collectFeatures bool) ([]RayFeature, rayTerminal) {
-	clearAirLimit := MaxTheoreticalDistanceMeters(req.TxPowerDBm, req.FrequencyGHz, 0)
+	effectiveTxPowerDBm := req.TxPowerDBm + req.CalibrationOffsetDB
+	clearAirLimit := MaxTheoreticalDistanceMeters(effectiveTxPowerDBm, req.FrequencyGHz, 0)
 	castDistance := math.Min(req.RadiusMeters, clearAirLimit)
 	wallLossPerIntersection := PenetrationLossForFrequencyGHz(req.FrequencyGHz)
 
@@ -991,7 +995,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 	terminal := rayTerminal{
 		blocked:        false,
 		distanceMeters: castDistance,
-		signalDBm:      ReceivedPowerDBm(castDistance, req.FrequencyGHz, req.TxPowerDBm, 0),
+		signalDBm:      ReceivedPowerDBm(castDistance, req.FrequencyGHz, effectiveTxPowerDBm, 0),
 	}
 
 	segmentIndex := 0
@@ -1004,7 +1008,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 		endDistance := math.Min(startDistance+SegmentStepMeters, castDistance)
 		start := currentPoint
 		nextPoint := DestinationPoint(origin, angle, endDistance)
-		startRx := ReceivedPowerDBm(math.Max(startDistance, 1), req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
+		startRx := ReceivedPowerDBm(math.Max(startDistance, 1), req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
 
 		if startDistance > 0 && startRx <= ReceiverSensitivity {
 			terminal = rayTerminal{
@@ -1029,7 +1033,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			recordHitBuildingDemandWeight(hitBuildingDemandWeights, intersection.building)
 			recordHitBuildingResidentialDemand(hitBuildingResidentialDemands, intersection.building)
 			cumulativeWallLoss += wallLossPerIntersection
-			wallRx := ReceivedPowerDBm(hitDistance, req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
+			wallRx := ReceivedPowerDBm(hitDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
 			recordBuildingCoverage(buildingCoverage, intersection.building, wallRx)
 			pathLoss := FreeSpacePathLossMetersGHz(hitDistance, req.FrequencyGHz) + cumulativeWallLoss
 			isTerminalBlock := wallRx <= ReceiverSensitivity
@@ -1076,14 +1080,14 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			break
 		}
 
-		endRx := ReceivedPowerDBm(endDistance, req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
+		endRx := ReceivedPowerDBm(endDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
 		if endRx <= ReceiverSensitivity {
-			stopDistance := MaxTheoreticalDistanceMeters(req.TxPowerDBm, req.FrequencyGHz, cumulativeWallLoss)
+			stopDistance := MaxTheoreticalDistanceMeters(effectiveTxPowerDBm, req.FrequencyGHz, cumulativeWallLoss)
 			if stopDistance < segmentStartDistance {
 				stopDistance = segmentStartDistance
 			}
 			stopPoint := DestinationPoint(origin, angle, stopDistance)
-			stopRx := ReceivedPowerDBm(stopDistance, req.FrequencyGHz, req.TxPowerDBm, cumulativeWallLoss)
+			stopRx := ReceivedPowerDBm(stopDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
 			pathLoss := FreeSpacePathLossMetersGHz(stopDistance, req.FrequencyGHz) + cumulativeWallLoss
 			recordBuildingsContainingSegmentCoverage(buildingCoverage, origin, segmentStartPoint, stopPoint, buildings, math.Max(segmentStartRx, stopRx))
 			if collectFeatures && ApproxDistanceMeters(segmentStartPoint, stopPoint) > 0.01 {
@@ -1312,7 +1316,7 @@ func makeRaySegmentFeature(
 
 func FreeSpacePathLossMetersGHz(distanceMeters float64, frequencyGHz float64) float64 {
 	distance := math.Max(distanceMeters, 1)
-	return 20*math.Log10(distance) + 20*math.Log10(frequencyGHz) + 92.45
+	return 20*math.Log10(distance) + 20*math.Log10(frequencyGHz) + 32.45
 }
 
 func PenetrationLossForFrequencyGHz(frequencyGHz float64) float64 {
@@ -1334,7 +1338,7 @@ func MaxTheoreticalDistanceMeters(txPowerDBm float64, frequencyGHz float64, atte
 	if frequencyGHz <= 0 {
 		return 0
 	}
-	exponent := (EffectiveIsotropicRadiatedPowerDBm(txPowerDBm) - ReceiverSensitivity - attenuationDB - 20*math.Log10(frequencyGHz) - 92.45) / 20
+	exponent := (EffectiveIsotropicRadiatedPowerDBm(txPowerDBm) - ReceiverSensitivity - attenuationDB - 20*math.Log10(frequencyGHz) - 32.45) / 20
 	return math.Pow(10, exponent)
 }
 

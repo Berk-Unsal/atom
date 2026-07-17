@@ -11,6 +11,7 @@ Planner / API consumer
         |
         v
 React workspace and Leaflet map
+        +--> IndexedDB projects and scenario layer cache
         |
         | REST JSON
         v
@@ -21,6 +22,8 @@ Go + Gin API
         |      +--> sector/network optimization
         |      +--> network evaluation
         |      +--> interference analysis
+        |      +--> candidate recommendation
+        |      +--> measurement residual evaluation
         |
         +--> in-memory building R-tree and tower store
         |
@@ -34,9 +37,10 @@ The production Docker image contains the built frontend, Go binary, and local An
 The React application is organized around a map-first focused workspace:
 
 - **Command bar**: active plan context, run state, RF action, and latest result summary.
+- **Project menu**: local projects, autosaved drafts, versioned import/export, and named scenario snapshots.
 - **Workflow rail**: Setup, Propagation, Interference, 5G Core, Results, Data, and Report.
 - **Overlay drawer**: opens one focused tool without resizing or recentering the map.
-- **MapCanvas**: renders towers, rays, coverage gaps, selection geometry, interference samples, and 5G communication paths.
+- **MapCanvas**: renders towers, rays, coverage gaps, selection geometry, interference samples, measurement residuals, candidate records, and 5G communication paths.
 - **Inspector**: persistent details for towers, gaps, communication paths, and interference samples.
 - **Report assembly**: creates Markdown and printable HTML from current client state.
 
@@ -51,6 +55,10 @@ RF operations share one coordinated request channel:
 5. Per-cell network ray rendering runs sequentially to stay inside backend RF capacity.
 
 This prevents slow responses from replacing results produced by newer settings.
+
+### Local Project Persistence
+
+The browser stores projects in IndexedDB without adding a server database. Each scenario records exact inputs, selected cells, area geometry, compact KPI summaries, application/model metadata, and active dataset identity. Full GeoJSON layers are retained for the five most recently used scenarios; older scenarios preserve reproducible requests and are marked for rerun. Exported `.atom-project.json` files use a versioned schema and warn when the active dataset hash differs.
 
 ## Go API Boundary
 
@@ -72,6 +80,7 @@ The Gin service provides:
 |---|---|---|
 | GET | `/healthz` | Process liveness and loaded-data counts |
 | GET | `/readyz` | Building, tower, and frontend readiness |
+| GET | `/api/meta` | Application, model, build, and active dataset identity |
 | GET | `/api/towers` | Tower GeoJSON |
 | GET | `/api/buildings` | Building GeoJSON |
 | GET | `/api/buildings/summary` | Demand and data-quality summary |
@@ -81,6 +90,8 @@ The Gin service provides:
 | POST | `/api/evaluate-network` | Score supplied selected-cell azimuths |
 | POST | `/api/optimize-network` | Optimize selected-cell azimuths with overlap penalty |
 | POST | `/api/interference` | RSRP, SINR, RSRQ, RSSI, and demand-quality analysis |
+| POST | `/api/recommend-sites` | Rank known candidate records inside a search polygon |
+| POST | `/api/measurements/evaluate` | RSRP residuals and holdout-checked global bias guidance |
 | GET/POST | `/api/core/*` | Optional Core Lab proxy |
 
 ## Runtime Data and Spatial Index
@@ -89,9 +100,10 @@ The offline data pipeline prepares the runtime files ahead of time:
 
 1. Extract building geometry and tower records from OSM/OpenCellID-derived sources.
 2. Normalize footprints and add POI, residential, and local-density demand signals.
-3. Write local GeoJSON/CSV artifacts.
-4. Store the large building GeoJSON through Git LFS.
-5. Parse buildings and populate an in-memory R-tree during backend startup.
+3. Write local GeoJSON/CSV artifacts and a versioned dataset manifest.
+4. Record EPSG:4326 bounds, provenance, licenses, filenames, and SHA-256 hashes.
+5. Store the large building GeoJSON through Git LFS.
+6. Validate the pack selected by `ATOM_DATASET_DIR`, then populate the in-memory R-tree during backend startup.
 
 Each RF engine first queries bounded candidates from the R-tree, then applies exact geometry, radius, sector, and intersection tests. This avoids scanning the complete building dataset for every ray or demand point.
 
@@ -102,7 +114,7 @@ For each sampled angle inside the active beam, the propagation engine:
 1. Converts the requested geographic radius into ray segments.
 2. Queries candidate building bounds from the R-tree.
 3. Performs exact segment/polygon intersection tests.
-4. Calculates free-space path loss and antenna gain.
+4. Calculates free-space path loss with meter/GHz units and antenna gain.
 5. Applies frequency-dependent cumulative wall loss.
 6. Emits signal-colored GeoJSON line segments and aggregate range/power statistics.
 
@@ -130,6 +142,10 @@ Network evaluation scores the supplied azimuth for each of two to six selected c
 
 The frontend renders selected-cell propagation with a sequential `/api/simulate` queue after the network score is returned.
 
+### Candidate Cell Recommendation
+
+Recommendation accepts two to five selected cells and a drawn search polygon. It considers unselected records from the active dataset, prefilters up to 50 by nearby demand, evaluates at most 12, optimizes only the candidate azimuth, and returns the five strongest marginal network-score gains. Existing selected-cell azimuths remain fixed. Interference, cost, backhaul, permitting, and site availability are intentionally excluded.
+
 ## Interference Engine
 
 Interference analysis supports selected 4G and 5G cells:
@@ -145,6 +161,10 @@ Interference analysis supports selected 4G and 5G cells:
 Returned averages and P10 values are nullable when no valid signal samples exist.
 
 These KPIs are deterministic planning estimates. They are not UE, drive-test, or PHY measurements.
+
+## Measurement Validation
+
+Measurement evaluation accepts up to 5,000 4G or 5G RSRP points. It applies the same radius, beam, FSPL, wall-intersection, resource-block, and serving-cell rules used by interference analysis, then returns per-point residuals plus MAE, RMSE, mean bias, median bias, and per-cell statistics. With at least 20 valid points, a deterministic 80/20 split estimates a robust median dB adjustment and reports holdout error before and after correction. The optional correction is a global path-loss offset, not full propagation calibration.
 
 ## Request Lifecycles
 
@@ -163,6 +183,14 @@ The backend first returns network scoring. The browser then simulates selected c
 ### Analyze Interference
 
 One `/api/interference` call returns the radio-quality surface, bounded demand points, aggregate statistics, per-cell summaries, and the exact assumptions needed by the Data and Report tools.
+
+### Recommend Candidate Cells
+
+One `/api/recommend-sites` job performs bounded prefiltering and candidate scoring. Applying a result creates a new local scenario and requires a normal network evaluation before interference conclusions are drawn.
+
+### Validate Measurements
+
+The browser parses and validates CSV structure before sending `/api/measurements/evaluate`. The returned residual layer remains separate from simulation and interference surfaces. Applying a suggested offset marks current results stale and records the profile with model and dataset identity.
 
 ## 5G Communication Path
 
@@ -198,7 +226,7 @@ The multi-stage Docker build:
 
 1. Builds the React application with Node.
 2. Compiles the Go service with CGO disabled.
-3. Copies the binary, frontend bundle, and runtime data into Alpine.
+3. Copies the binary, frontend bundle, dataset manifest, and runtime data into Alpine.
 4. Runs as a non-root `atom` user.
 5. Exposes port 8080 and checks `/readyz`.
 
@@ -211,11 +239,11 @@ The compose overlay sets `CORE_LAB_ENABLED=true`, points the backend at the adap
 A.T.O.M does not currently include:
 
 - Diffraction or reflection-heavy multipath.
-- Fast fading or calibrated channel models.
+- Fast fading or fully calibrated channel models.
 - Sidelobes or adjacent-channel leakage.
 - MIMO beamforming and scheduling gain.
 - Uplink interference.
-- A plan database or durable analysis history.
+- Server-side project storage or shared analysis history. Local IndexedDB projects are supported.
 - Authentication or multi-user collaboration.
 - A bundled offline basemap.
 

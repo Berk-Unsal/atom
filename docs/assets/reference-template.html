@@ -48,6 +48,9 @@
         <p>$summary$</p>
         <div class="hero-actions">
           <a class="button" href="./$source$">View Markdown source</a>
+$if(api_page)$
+          <a class="button" href="./openapi.yaml" download>Download OpenAPI 3.1</a>
+$endif$
           <a class="button" href="./architecture.html">System architecture</a>
         </div>
       </header>

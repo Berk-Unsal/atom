@@ -1,10 +1,17 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   ChevronDown,
   ChevronLeft,
   ChevronUp,
   Eraser,
+  Copy,
+  Download,
+  FilePlus2,
+  FolderOpen,
+  Save,
+  Trash2,
+  Upload,
   Layers3,
   LocateFixed,
   MousePointer2,
@@ -17,16 +24,17 @@ export function CommandBar({
   appIconUrl,
   contextLabel,
   error,
-  isBusy,
   networkTech,
   onDismissError,
   onOpenResults,
   onRun,
   planSummary,
+  projectControl,
   primaryActionLabel,
   primaryDisabled,
   resultSummary,
   runState,
+  statusTone = "ready",
 }) {
   return (
     <>
@@ -40,6 +48,7 @@ export function CommandBar({
         </div>
 
         <div className="command-context" aria-label="Active planning context">
+          {projectControl}
           <span className="context-primary">{contextLabel}</span>
           <span className="context-divider" aria-hidden="true" />
           <span>{networkTech}</span>
@@ -47,6 +56,15 @@ export function CommandBar({
         </div>
 
         <div className="command-actions">
+          <a
+            className="planning-estimate-link"
+            href="https://github.com/Berk-Unsal/urban-ray-tracer/blob/main/docs/modeling-limits.md"
+            target="_blank"
+            rel="noreferrer"
+            title="Open deterministic model limitations"
+          >
+            Planning estimate
+          </a>
           {resultSummary ? (
             <button
               type="button"
@@ -59,7 +77,7 @@ export function CommandBar({
               <small>{resultSummary.secondary}</small>
             </button>
           ) : null}
-          <span className={`run-state ${isBusy ? "busy" : "ready"}`}>
+          <span className={`run-state ${statusTone}`}>
             <i aria-hidden="true" />
             {runState}
           </span>
@@ -87,6 +105,125 @@ export function CommandBar({
   );
 }
 
+export function ProjectMenu({
+  activeProject,
+  compatible,
+  exportContent,
+  onAddProject,
+  onDeleteProject,
+  onDeleteScenario,
+  onDuplicateProject,
+  onImportProject,
+  onOpenScenario,
+  onRenameProject,
+  onSaveScenario,
+  onSelectProject,
+  projects,
+}) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState(activeProject?.name ?? "");
+  const [message, setMessage] = useState("");
+  const rootRef = useRef(null);
+  const fileRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const close = (event) => {
+      if (!rootRef.current?.contains(event.target)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, [open]);
+
+  const importFile = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    try {
+      onImportProject(await file.text());
+      setMessage("Project imported");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  const downloadProject = () => {
+    try {
+      const blob = new Blob([exportContent()], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `${slug(activeProject?.name ?? "atom-project")}.atom-project.json`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      setMessage("Project exported");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  return (
+    <div className="project-menu-wrap" ref={rootRef}>
+      <button
+        type="button"
+        className="project-menu-trigger"
+        onClick={() => setOpen((current) => !current)}
+        aria-expanded={open}
+        aria-label="Open project menu"
+      >
+        <FolderOpen size={15} />
+        <span>{activeProject?.name ?? "Project"}</span>
+        <ChevronDown size={13} />
+      </button>
+      {open ? (
+        <div className="project-menu" role="dialog" aria-label="Project and scenarios">
+          <label>
+            <span>Project</span>
+            <select value={activeProject?.id ?? ""} onChange={(event) => onSelectProject(event.target.value)}>
+              {projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}
+            </select>
+          </label>
+          <div className="project-rename-row">
+            <input value={name} onChange={(event) => setName(event.target.value)} aria-label="Project name" />
+            <button type="button" onClick={() => onRenameProject(name)} title="Rename project"><Save size={15} /></button>
+          </div>
+          {!compatible ? <p className="project-warning"><AlertTriangle size={14} /> Dataset differs from this project.</p> : null}
+          <div className="project-menu-actions">
+            <button type="button" onClick={onAddProject}><FilePlus2 size={14} /> New</button>
+            <button type="button" onClick={onDuplicateProject}><Copy size={14} /> Duplicate</button>
+            <button type="button" onClick={onDeleteProject} disabled={projects.length < 2}><Trash2 size={14} /> Delete</button>
+          </div>
+          <div className="project-menu-actions">
+            <button type="button" onClick={() => fileRef.current?.click()}><Upload size={14} /> Import</button>
+            <button type="button" onClick={downloadProject}><Download size={14} /> Export</button>
+            <input ref={fileRef} hidden type="file" accept=".json,.atom-project.json" onChange={importFile} />
+          </div>
+          <div className="scenario-menu-header">
+            <strong>Scenarios</strong>
+            <button type="button" onClick={onSaveScenario}><Save size={14} /> Save current</button>
+          </div>
+          <div className="scenario-menu-list">
+            {(activeProject?.scenarios ?? []).length ? activeProject.scenarios.map((scenario) => (
+              <div key={scenario.id}>
+                <button type="button" onClick={() => onOpenScenario(scenario)}>
+                  <span>{scenario.name}</span>
+                  <small>{new Date(scenario.updatedAt).toLocaleString()}</small>
+                </button>
+                <button type="button" onClick={() => onDeleteScenario(scenario.id)} aria-label={`Delete ${scenario.name}`}><Trash2 size={13} /></button>
+              </div>
+            )) : <p className="project-menu-empty">Save the current plan to create a comparison baseline.</p>}
+          </div>
+          {message ? <p className="project-menu-message" role="status">{message}</p> : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function slug(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "atom-project";
+}
+
 export function WorkflowRail({ activeTool, drawerMode, drawerOpen, onSelectTool, toolState }) {
   return (
     <nav className="workflow-rail" aria-label="Workspace tools">
@@ -94,23 +231,25 @@ export function WorkflowRail({ activeTool, drawerMode, drawerOpen, onSelectTool,
         const Icon = tool.icon;
         const state = toolState?.[tool.id] ?? {};
         const isActive = drawerMode === "tool" && drawerOpen && activeTool === tool.id;
+        const tooltipID = `workspace-tool-${tool.id}-tip`;
         const showDivider = index > 0 && WORKSPACE_TOOLS[index - 1].group !== tool.group;
         return (
           <div className={showDivider ? "rail-item rail-item-divider" : "rail-item"} key={tool.id}>
             <button
               id={`workspace-tool-${tool.id}`}
               type="button"
-              className={isActive ? "active" : ""}
-              disabled={state.disabled}
-              onClick={() => onSelectTool(tool.id)}
+              className={`${isActive ? "active" : ""} ${state.unavailable ? "unavailable" : ""}`.trim()}
+              onClick={() => { if (!state.unavailable) onSelectTool(tool.id); }}
               aria-label={tool.label}
+              aria-disabled={state.unavailable || undefined}
               aria-current={isActive ? "page" : undefined}
+              aria-describedby={tooltipID}
               aria-expanded={isActive}
               title={state.reason ?? tool.label}
             >
               <Icon size={19} />
               {state.badge ? <span className={`rail-badge ${state.tone ?? "neutral"}`}>{state.badge}</span> : null}
-              <span className="rail-tooltip" role="tooltip">{state.reason ?? tool.label}</span>
+              <span id={tooltipID} className="rail-tooltip" role="tooltip">{state.reason ?? tool.label}</span>
             </button>
           </div>
         );
@@ -177,6 +316,7 @@ export function ToolDrawer({
 }
 
 export function MapToolbar({
+  availableLayers,
   hasInterferenceData,
   interferenceMetric,
   isDrawingSelection,
@@ -195,13 +335,15 @@ export function MapToolbar({
   selectedCount,
 }) {
   const layerMenuRef = useRef(null);
+  const layerTriggerRef = useRef(null);
   const layers = [
     { id: "rays", label: "Propagation rays" },
     { id: "gaps", label: "Coverage gaps" },
     { id: "selectedCells", label: "Selected cells" },
     { id: "communicationPaths", label: "Communication paths" },
     { id: "interference", label: "Interference surface" },
-  ];
+    { id: "measurements", label: "Measurement residuals" },
+  ].filter((layer) => availableLayers?.[layer.id] !== false);
 
   useEffect(() => {
     if (!layerMenuOpen) {
@@ -215,6 +357,16 @@ export function MapToolbar({
     document.addEventListener("pointerdown", handlePointerDown);
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [layerMenuOpen, onLayerMenuToggle]);
+
+  const handleLayerMenuKeyDown = (event) => {
+    if (event.key !== "Escape" || !layerMenuOpen) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    onLayerMenuToggle(false);
+    layerTriggerRef.current?.focus();
+  };
 
   return (
     <div className="focused-map-toolbar" aria-label="Map tools">
@@ -271,12 +423,14 @@ export function MapToolbar({
             ))}
           </div>
         ) : null}
-        <div className="layer-menu-wrap" ref={layerMenuRef}>
+        <div className="layer-menu-wrap" ref={layerMenuRef} onKeyDown={handleLayerMenuKeyDown}>
           <button
+            ref={layerTriggerRef}
             type="button"
             className={layerMenuOpen ? "active layers-trigger" : "layers-trigger"}
+            aria-label="Map layers"
             aria-expanded={layerMenuOpen}
-            aria-haspopup="menu"
+            aria-controls="map-layer-menu"
             onClick={() => onLayerMenuToggle(!layerMenuOpen)}
           >
             <Layers3 size={17} />
@@ -284,7 +438,7 @@ export function MapToolbar({
             <ChevronDown size={14} />
           </button>
           {layerMenuOpen ? (
-            <div className="layer-menu" role="menu" aria-label="Map layer visibility">
+            <div id="map-layer-menu" className="layer-menu" role="group" aria-label="Map layer visibility">
               {layers.map((layer) => (
                 <label key={layer.id}>
                   <input

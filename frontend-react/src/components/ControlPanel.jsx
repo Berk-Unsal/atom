@@ -1,4 +1,4 @@
-import { Activity, Compass, Gauge, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
+import { Activity, Compass, Gauge, MapPin, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
 import { NETWORK_TECH_OPTIONS } from "../utils/networkTech.js";
 
 export default function ControlPanel({
@@ -8,6 +8,7 @@ export default function ControlPanel({
   onOptimizeAzimuth,
   onOptimizeNetwork,
   onAnalyzeInterference,
+  onFocusMap,
   onPlanningModeChange,
   isLoading,
   isOptimizing,
@@ -41,6 +42,8 @@ export default function ControlPanel({
             <button
               type="button"
               className={planningMode === "single" ? "active" : ""}
+              aria-label="Single sector mode"
+              aria-pressed={planningMode === "single"}
               onClick={() => onPlanningModeChange("single")}
             >
               <span>Single</span>
@@ -49,6 +52,8 @@ export default function ControlPanel({
             <button
               type="button"
               className={planningMode === "network" ? "active" : ""}
+              aria-label={`Network mode, ${networkSelectionCount} selected`}
+              aria-pressed={planningMode === "network"}
               onClick={() => onPlanningModeChange("network")}
             >
               <span>Network</span>
@@ -65,6 +70,8 @@ export default function ControlPanel({
                 key={option.label}
                 type="button"
                 className={settings.frequencyGHz === option.frequencyGHz ? "active" : ""}
+                aria-label={`${option.label}, ${option.frequencyGHz} GHz`}
+                aria-pressed={settings.frequencyGHz === option.frequencyGHz}
                 onClick={() => updateNetworkTech(option)}
               >
                 <span>{option.label}</span>
@@ -93,6 +100,10 @@ export default function ControlPanel({
             </div>
             {selectionNotice ? <p className="selection-note">{selectionNotice}</p> : null}
             <p className="selection-note">Select cells directly on the map or use the area tool.</p>
+            <button type="button" className="selection-map-action" onClick={onFocusMap}>
+              <MapPin size={15} />
+              <span>Select cells on map</span>
+            </button>
           </div>
         ) : null}
       </section>
@@ -166,7 +177,13 @@ export default function ControlPanel({
             </button>
           )}
           {planningMode === "network" && networkSelectionCount < 2 ? (
-            <p className="selection-note">Select at least two cells before optimization.</p>
+            <>
+              <p className="selection-note">Select at least two cells before optimization.</p>
+              <button type="button" className="selection-map-action" onClick={onFocusMap}>
+                <MapPin size={15} />
+                <span>Select cells on map</span>
+              </button>
+            </>
           ) : null}
         </div>
       </section>
@@ -174,10 +191,31 @@ export default function ControlPanel({
   }
 
   if (activeTool === "interference") {
+    if (planningMode !== "network") {
+      return (
+        <ToolReadinessState
+          actionLabel="Switch to Network mode"
+          description="Interference compares serving and co-channel cells, so it needs a network cluster of two to six cells."
+          onAction={() => onPlanningModeChange("network")}
+          title="Network mode required"
+        />
+      );
+    }
+
+    if (!interferenceApplicable) {
+      const nrOption = NETWORK_TECH_OPTIONS.find((option) => option.frequencyGHz === 28);
+      return (
+        <ToolReadinessState
+          actionLabel="Use 5G mmWave"
+          description="The current 6G mode is a propagation research overlay and does not expose SINR, RSRP, or RSRQ analysis."
+          onAction={() => updateNetworkTech(nrOption)}
+          title="Not available in 6G mode"
+        />
+      );
+    }
+
     return (
-      <section className={`control-panel focused-control-panel interference-control ${interferenceApplicable ? "" : "not-applicable"}`} aria-label="Interference controls">
-        {interferenceApplicable ? (
-          <>
+      <section className="control-panel focused-control-panel interference-control" aria-label="Interference controls">
             <label className="input-row select-row">
               <span className="input-label">Bandwidth</span>
               <span className="number-wrap">
@@ -209,6 +247,7 @@ export default function ControlPanel({
                     key={reuseFactor}
                     type="button"
                     className={settings.reuseFactor === reuseFactor ? "active" : ""}
+                    aria-pressed={settings.reuseFactor === reuseFactor}
                     onClick={() => update("reuseFactor", reuseFactor)}
                   >
                     <span>Reuse {reuseFactor}</span>
@@ -250,17 +289,34 @@ export default function ControlPanel({
                 <Activity size={16} className={isAnalyzingInterference ? "spin" : ""} />
                 <span>{isAnalyzingInterference ? "Analyzing..." : "Analyze Interference"}</span>
               </button>
-              {networkSelectionCount < 2 ? <p className="selection-note">Requires at least two selected cells.</p> : null}
+              {networkSelectionCount < 2 ? (
+                <>
+                  <p className="selection-note">Requires at least two selected cells.</p>
+                  <button type="button" className="selection-map-action" onClick={onFocusMap}>
+                    <MapPin size={15} />
+                    <span>Select cells on map</span>
+                  </button>
+                </>
+              ) : null}
             </div>
-          </>
-        ) : (
-          <p className="selection-note">Interference analysis is not applicable to the 6G research mode.</p>
-        )}
       </section>
     );
   }
 
   return null;
+}
+
+function ToolReadinessState({ actionLabel, description, onAction, title }) {
+  return (
+    <section className="tool-readiness-state" aria-label={title}>
+      <Activity size={20} aria-hidden="true" />
+      <div>
+        <strong>{title}</strong>
+        <p>{description}</p>
+      </div>
+      <button type="button" onClick={onAction}>{actionLabel}</button>
+    </section>
+  );
 }
 
 function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {
@@ -274,6 +330,7 @@ function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {
           max={max}
           step={step}
           value={value}
+          aria-label={suffix ? `${label} (${suffix})` : label}
           onChange={(event) => onChange(Number(event.target.value))}
         />
         <small>{suffix}</small>
@@ -292,7 +349,7 @@ function RangeField({ icon, label, suffix, min, max, step, value, onChange }) {
         max={max}
         step={step}
         value={value}
-        aria-label={`${label} ${value}${suffix ? ` ${suffix}` : ""}`}
+        aria-label={suffix ? `${label} (${suffix})` : label}
         onChange={(event) => onChange(Number(event.target.value))}
       />
     </label>

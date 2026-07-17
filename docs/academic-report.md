@@ -10,7 +10,7 @@ Study Area: Ankara core bounding box, Turkey
 
 ## Abstract
 
-A.T.O.M is a full-stack geospatial simulation system for modeling cellular signal propagation across Ankara, Turkey. The project combines OpenStreetMap building footprints, OpenCellID-derived cellular tower data, frequency-dependent radio propagation physics, and a demand-aware beamforming optimizer. The system evolved from a coverage-only model into a residential-density-aware planning tool that reduces the tendency to optimize toward long empty corridors. This report documents the datasets, implementation, mathematical model, optimization process, and measured improvements produced by the final demand surface.
+A.T.O.M is a full-stack geospatial planning system for modeling cellular signal propagation across Ankara, Turkey. The project combines OpenStreetMap building footprints, OpenCellID-derived planning records, deterministic radio propagation, demand-aware optimization, multi-cell interference analysis, scenario comparison, and field-measurement residual evaluation. The system evolved from a coverage-only model into a residential-density-aware planning product that reduces the tendency to optimize toward long empty corridors. This report documents the datasets, implementation, mathematical model, optimization process, and measured improvements produced by the demand surface.
 
 ---
 
@@ -59,12 +59,13 @@ A.T.O.M is implemented as a local-first, full-stack geospatial application.
 
 | Layer | Technology | Responsibility |
 |---|---|---|
-| Data pipeline | Python, GeoPandas, Shapely, OSMnx | Extract towers, export OSM buildings, compute demand fields |
-| Simulation backend | Go, Gin, Tidwall R-tree | Load GeoJSON into memory, spatially index buildings, run concurrent ray tracing |
-| Frontend | React, Vite, Leaflet | Map rendering, tower selection, beamforming controls, ray heatmap display |
-| Deployment | Docker multi-stage build | Build React and Go into a single production container |
+| Data pipeline | Python, GeoPandas, Shapely, OSMnx | Extract source geometry and compute demand fields |
+| Dataset pack | Manifest, GeoJSON, SHA-256 | Record provenance, bounds, CRS, identity, and validated runtime files |
+| Simulation backend | Go, Gin, Tidwall R-tree | Bound requests, index geometry, run propagation, optimization, interference, recommendation, and measurement engines |
+| Frontend | React, Vite, Leaflet, IndexedDB | Focused map workspace, local projects/scenarios, comparison, evidence inspection, and reports |
+| Deployment | Docker multi-stage build | Build React and Go into one versioned production container |
 
-The backend loads all tower and building data at startup. Building bounding boxes are inserted into an in-memory R-tree, so each short ray segment only checks nearby candidate polygons instead of scanning the entire city.
+The backend validates the active dataset manifest and hashes, then loads tower and building data at startup. Building bounding boxes are inserted into an in-memory R-tree, so each short ray segment only checks nearby candidate polygons instead of scanning the entire city. Browser projects retain exact requests, model metadata, summaries, and recent map layers without adding a server-side database.
 
 ---
 
@@ -77,7 +78,7 @@ The core propagation model uses Free-Space Path Loss, antenna gain, receiver sen
 For distance in meters and frequency in GHz:
 
 ```text
-FSPL(dB) = 20 log10(distance_m) + 20 log10(frequency_GHz) + 92.45
+FSPL(dB) = 20 log10(distance_m) + 20 log10(frequency_GHz) + 32.45
 ```
 
 Received power is computed from EIRP:
@@ -240,12 +241,11 @@ The optimizer returns:
 
 The frontend provides:
 
-- Tower markers and interactive tower selection.
-- Network generation switching for 4G, 5G, and 6G.
-- Azimuth and beam-width controls.
-- Auto-Optimize action.
-- Heatmap-like ray visualization using GeoJSON segments.
-- Optimizer diagnostics for demand, residential, and coverage contributions.
+- A map-first command bar, workflow rail, focused tool drawer, and persistent Inspector.
+- Single-cell and two-to-six-cell planning with explicit Run, Evaluate, Optimize, and Analyze actions.
+- Independent GeoJSON layers for rays, gaps, interference, communication paths, candidates, and measurement residuals.
+- Versioned local projects, named scenario snapshots, stale-result detection, import/export, and two-scenario comparison.
+- Dataset/model provenance, measurement holdout evidence, calibration state, and report export.
 
 ---
 
@@ -258,8 +258,9 @@ The final model is stronger than the initial geometry-only optimizer, but it rem
 | Sparse OSM metadata | Some shops/offices are missing from the current local export | Preserve richer OSM tags during fresh export |
 | Synthetic residential demand | Density is an inferred proxy for population | Add GHSL, WorldPop, or municipality population grids |
 | Simplified RF physics | No full diffraction, reflection, or multipath model | Add calibrated propagation models and field measurements |
-| Static environment | No traffic, mobility, or temporal demand | Add time-dependent demand layers |
-| Single-sector optimization | Optimizes one active tower sector at a time | Add multi-sector and multi-tower optimization |
+| Static environment | No traffic, mobility, or temporal demand | Add authoritative time-dependent demand only when available |
+| Global bias correction | One robust dB offset cannot identify separate wall, clutter, or terrain errors | Expand calibration only with sufficient field evidence |
+| Candidate-site evidence | RF ranking does not establish ownership, permitting, cost, power, or backhaul | Add criteria only from authoritative dataset-pack inputs |
 
 The density surface is intentionally transparent: every weighted building records why it was assigned demand. This makes the model inspectable even when external population data is unavailable.
 
@@ -269,7 +270,7 @@ The density surface is intentionally transparent: every weighted building record
 
 A.T.O.M demonstrates how a local geospatial simulation engine can combine RF propagation physics with demand-aware optimization. The project moved from pure ray coverage to a richer planning model that accounts for critical POIs, commercial sites, residential buildings, and local settlement density. The final model recognizes 75,295 residential-demand buildings and 5,950 POI/commercial-demand buildings, substantially improving the optimizer’s ability to point sectors toward places where service is valuable rather than merely where rays travel farthest.
 
-Future development should validate the model against measured RF data and replace synthetic residential proxies with authoritative population rasters. Even in its current local-first form, A.T.O.M provides a strong foundation for explainable cellular network planning in dense urban environments.
+The current product can compare predictions with uploaded 4G/5G RSRP samples and hold out evidence before applying a global bias correction. Future development should deepen that validation with redistributable measurement sets and replace synthetic residential proxies with authoritative population data. Even in its local-first form, A.T.O.M provides a strong foundation for explainable cellular network planning in dense urban environments.
 
 ---
 

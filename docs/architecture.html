@@ -71,7 +71,7 @@
           <div class="hero-fact"><span>Primary runtime</span><strong>Single container</strong></div>
           <div class="hero-fact"><span>Backend</span><strong>Go 1.22 + Gin</strong></div>
           <div class="hero-fact"><span>Frontend</span><strong>React + Leaflet</strong></div>
-          <div class="hero-fact"><span>Persistent database</span><strong>None</strong></div>
+          <div class="hero-fact"><span>Project persistence</span><strong>Browser IndexedDB</strong></div>
           <div class="hero-fact"><span>Default RF capacity</span><strong>2 concurrent jobs</strong></div>
         </div>
       </header>
@@ -80,7 +80,7 @@
         <div class="section-heading">
           <h2 id="mental-model-heading">The shortest useful mental model</h2>
           <p>
-            A planning action becomes a validated JSON request. The backend narrows the Ankara dataset through an
+            A planning action becomes a validated JSON request. The backend narrows the active validated dataset pack through an
             in-memory spatial index, executes the selected deterministic engine, and returns GeoJSON plus statistics.
             The browser then renders only the layers and result view relevant to that operation.
           </p>
@@ -98,7 +98,7 @@
         <div class="section-heading">
           <h2 id="context-heading">System context</h2>
           <p>
-            The production image contains the built frontend, Go API, and Ankara data. Basemap tiles remain an external
+            The production image contains the built frontend, Go API, and default Ankara dataset pack. Basemap tiles remain an external
             dependency unless replaced or cached. Core Lab is opt-in and communicates through a separate adapter.
           </p>
         </div>
@@ -125,8 +125,8 @@
                 <span>Static frontend host, REST API, validation, resource controls, spatial index, and RF engines.</span>
               </div>
               <div class="diagram-node data">
-                <strong>Ankara runtime data</strong>
-                <span>Tower points, 161k+ building footprints, and demand metadata loaded from local files.</span>
+                <strong>Validated dataset pack</strong>
+                <span>Manifest, provenance, hashes, tower points, building footprints, and demand metadata loaded from local files.</span>
               </div>
             </div>
             <div class="diagram-column">
@@ -170,7 +170,8 @@
               <div class="stack-unit"><strong>Command bar and workflow rail</strong><span>Active plan context, RF run command, focused tool navigation, and availability states.</span></div>
               <div class="stack-unit"><strong>Tool drawer and Inspector</strong><span>Setup, propagation, interference, 5G Core, results, data, reports, and selected map-object details.</span></div>
               <div class="stack-unit"><strong>Request coordinator</strong><span>AbortController channels, monotonic request IDs, latest-response checks, and settings invalidation.</span></div>
-              <div class="stack-unit"><strong>Leaflet map layers</strong><span>Canvas-backed towers, rays, gaps, interference samples, Xn/N2/N3 routes, and selection geometry.</span></div>
+              <div class="stack-unit"><strong>Project workspace</strong><span>Versioned IndexedDB projects, scenario snapshots, stale-result detection, import/export, and five-scenario result cache.</span></div>
+              <div class="stack-unit"><strong>Leaflet map layers</strong><span>Canvas-backed towers, rays, gaps, interference samples, measurement residuals, candidate sites, Xn/N2/N3 routes, and selection geometry.</span></div>
               <div class="stack-unit"><strong>Report assembler</strong><span>Builds Markdown and printable HTML from current client state without a report API.</span></div>
             </section>
             <section class="stack-column" aria-label="Backend components">
@@ -178,15 +179,17 @@
               <div class="stack-unit"><strong>HTTP boundary</strong><span>CORS, 1 MiB body limit, readiness/liveness, JSON binding, pointer-aware defaults, and validation.</span></div>
               <div class="stack-unit"><strong>RF capacity limiter</strong><span>Two concurrent RF requests by default; saturated requests return 429 with Retry-After.</span></div>
               <div class="stack-unit"><strong>Propagation engine</strong><span>Sector ray sampling, FSPL, antenna gain, polygon intersections, wall loss, and segment GeoJSON.</span></div>
-              <div class="stack-unit"><strong>Planning engines</strong><span>Coverage gaps, azimuth sweep, network evaluation, network optimization, and overlap scoring.</span></div>
+              <div class="stack-unit"><strong>Planning engines</strong><span>Coverage gaps, azimuth sweep, network evaluation, network optimization, candidate recommendation, and overlap scoring.</span></div>
               <div class="stack-unit"><strong>Interference engine</strong><span>Adaptive grid, serving-cell choice, linear power sums, RSRP, SINR, RSRQ, RSSI, and demand impact.</span></div>
+              <div class="stack-unit"><strong>Measurement evaluator</strong><span>Predicts 4G/5G RSRP at uploaded points, reports residual error, and offers holdout-tested global bias correction.</span></div>
               <div class="stack-unit"><strong>Core Lab proxy</strong><span>5G-only status, topology, sessions, events, and scenario requests with a 1.5 second adapter timeout.</span></div>
             </section>
             <section class="stack-column" aria-label="Data and integration components">
               <h3>Data and integrations</h3>
               <div class="stack-unit"><strong>Building R-tree</strong><span>161k+ footprint bounds and exact polygon geometry held in memory for fast candidate queries.</span></div>
               <div class="stack-unit"><strong>Demand surface</strong><span>POI tags, residential weighting, density signals, confidence summary, and building centroids.</span></div>
-              <div class="stack-unit"><strong>Tower store</strong><span>451 local cell records loaded from GeoJSON and exposed to the browser.</span></div>
+              <div class="stack-unit"><strong>Tower store</strong><span>Local candidate records loaded from the active pack and exposed to planning and recommendation workflows.</span></div>
+              <div class="stack-unit"><strong>Dataset manifest</strong><span>Version, bounds, CRS, sources, licenses, filenames, and SHA-256 hashes validated before readiness succeeds.</span></div>
               <div class="stack-unit"><strong>Static frontend bundle</strong><span>Vite build served by the same Go process in the production image.</span></div>
               <div class="stack-unit"><strong>Optional adapter</strong><span>Core functions, deterministic scenarios, Xn eligibility, N2 fallback, N3 state, and Open5GS probing.</span></div>
             </section>
@@ -205,7 +208,7 @@
         <div class="flow-strip" aria-label="A.T.O.M data flow">
           <div class="flow-step"><span>01</span><strong>Source</strong><small>OSM building geometry and OpenCellID-derived tower records.</small></div>
           <div class="flow-step"><span>02</span><strong>Enrich</strong><small>Normalize footprints and add POI, residential, and density demand signals.</small></div>
-          <div class="flow-step"><span>03</span><strong>Persist</strong><small>Write local GeoJSON and CSV artifacts; large buildings file uses Git LFS.</small></div>
+          <div class="flow-step"><span>03</span><strong>Package</strong><small>Write GeoJSON/CSV artifacts and a versioned manifest with provenance, bounds, CRS, and file hashes.</small></div>
           <div class="flow-step"><span>04</span><strong>Index</strong><small>Parse polygons, compute bounds, and populate an in-memory R-tree at startup.</small></div>
           <div class="flow-step"><span>05</span><strong>Query</strong><small>Search beam or cell bounds, then perform exact radius, sector, and intersection tests.</small></div>
         </div>
@@ -215,9 +218,11 @@
             <tbody>
               <tr><td><strong>ankara_buildings.geojson</strong></td><td>Footprints and demand properties</td><td>Loaded once into memory</td><td>Fast requests, higher startup memory</td></tr>
               <tr><td><strong>ankara_5g_nodes.geojson</strong></td><td>Tower coordinates and cell identifiers</td><td>Loaded once; also served to frontend</td><td>No live tower API dependency</td></tr>
+              <tr><td><strong>manifest.json</strong></td><td>Pack identity, provenance, schema, bounds, and hashes</td><td>Validated before runtime readiness</td><td>Invalid or incompatible packs fail <code>/readyz</code></td></tr>
               <tr><td><strong>Building R-tree</strong></td><td>Bounding-box candidate search</td><td>Built during startup</td><td>Avoids scanning every polygon per ray</td></tr>
               <tr><td><strong>Demand summary</strong></td><td>Dataset confidence and counts</td><td>Computed from loaded footprints</td><td>Visible in Data and reports</td></tr>
               <tr><td><strong>Analysis GeoJSON</strong></td><td>Rays, gaps, and radio-quality samples</td><td>Generated per request</td><td>Not stored server-side</td></tr>
+              <tr><td><strong>Project scenarios</strong></td><td>Exact inputs, model metadata, summaries, and recent layers</td><td>Stored in browser IndexedDB</td><td>Portable without adding a server database</td></tr>
             </tbody>
           </table>
         </div>
@@ -263,12 +268,32 @@
           </article>
 
           <article class="sequence">
+            <header><h3>Recommend Candidate Sites</h3><span>4G or 5G network plan with a drawn area</span></header>
+            <div class="sequence-steps">
+              <div class="sequence-step"><strong>Bound candidates</strong><span>Exclude selected cells, keep records inside the user polygon, and prefilter at most 50 by proximity to unmet demand.</span></div>
+              <div class="sequence-step"><strong>Sweep deterministically</strong><span>Evaluate a bounded candidate set while keeping current-cell azimuths fixed and optimizing only the new candidate.</span></div>
+              <div class="sequence-step"><strong>Explain ranking</strong><span>Return the five strongest options with marginal coverage, demand, overlap, azimuth, score components, and explicit reasons.</span></div>
+              <div class="sequence-step"><strong>Apply safely</strong><span>Applying a recommendation creates a new stale scenario that requires analysis; the baseline snapshot remains unchanged.</span></div>
+            </div>
+          </article>
+
+          <article class="sequence">
+            <header><h3>Validate Measurements</h3><span>CSV evidence for 4G or 5G</span></header>
+            <div class="sequence-steps">
+              <div class="sequence-step"><strong>Parse locally</strong><span>The browser validates up to 5,000 ID, coordinate, technology, RSRP, and optional cell-ID rows.</span></div>
+              <div class="sequence-step"><strong>Predict</strong><span>The backend evaluates modeled RSRP at each point and returns residual GeoJSON, MAE, RMSE, median bias, and per-cell statistics.</span></div>
+              <div class="sequence-step"><strong>Hold out evidence</strong><span>With at least 20 valid points, a deterministic split compares uncorrected and corrected error on data excluded from fitting.</span></div>
+              <div class="sequence-step"><strong>Apply explicitly</strong><span>An accepted global path-loss bias becomes a project calibration profile and invalidates incompatible or older results.</span></div>
+            </div>
+          </article>
+
+          <article class="sequence">
             <header><h3>Inspect and report</h3><span>Client-side detail flow</span></header>
             <div class="sequence-steps">
-              <div class="sequence-step"><strong>Select object</strong><span>A tower, gap, path, or interference point becomes the current map object.</span></div>
+              <div class="sequence-step"><strong>Select object</strong><span>A tower, gap, path, interference point, candidate, or measurement residual becomes the current map object.</span></div>
               <div class="sequence-step"><strong>Inspector takeover</strong><span>The drawer remembers its prior tool and shows complete persistent details while popups stay lightweight.</span></div>
               <div class="sequence-step"><strong>Restore context</strong><span>Back returns to the previous tool; close returns keyboard focus to the map or originating control.</span></div>
-              <div class="sequence-step"><strong>Export</strong><span>Current client state becomes Markdown or printable HTML without storing the plan on the server.</span></div>
+              <div class="sequence-step"><strong>Export</strong><span>Current evidence becomes Markdown or printable HTML; complete projects move between browsers as versioned <code>.atom-project.json</code> files.</span></div>
             </div>
           </article>
         </div>
@@ -385,11 +410,11 @@
           </div>
           <div class="info-band warning">
             <span class="info-icon" aria-hidden="true">KPI</span>
-            <div><strong>Measurement limits</strong><p>RSRP, SINR, RSRQ, RSSI, and coverage values are deterministic planning estimates, not UE, drive-test, or PHY measurements.</p></div>
+            <div><strong>Measurement limits</strong><p>RSRP, SINR, RSRQ, RSSI, and coverage values remain deterministic planning estimates. Uploaded field data validates residuals; its optional global bias correction is not full propagation calibration.</p></div>
           </div>
           <div class="info-band warning">
             <span class="info-icon" aria-hidden="true">OPS</span>
-            <div><strong>Operational limits</strong><p>No authentication, plan database, multi-user collaboration, job queue, or durable analysis history is included in the current runtime.</p></div>
+            <div><strong>Operational limits</strong><p>No authentication, server-side project database, multi-user collaboration, or job queue is included. Project history is durable only in the current browser or an exported project file.</p></div>
           </div>
         </div>
         <div class="hero-actions">

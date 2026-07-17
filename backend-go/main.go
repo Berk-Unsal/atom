@@ -19,10 +19,25 @@ import (
 
 const maxRequestBodyBytes int64 = 1 << 20
 
+var (
+	appVersion   = "dev"
+	buildCommit  = "unknown"
+	modelVersion = "fspl-walls-v1"
+)
+
 func main() {
-	buildingIndex, buildingStats, err := loadBuildingIndex()
-	if err != nil {
-		log.Printf("building index unavailable: %v", err)
+	datasetPack, datasetErr := loadRuntimeDataset()
+	buildingIndex := raytracer.EmptyBuildingIndex()
+	buildingStats := raytracer.BuildingIndexStats{SourcePath: "not found"}
+	var towers []raytracer.TowerStation
+	towerGeoJSONPath := "not found"
+	if datasetErr != nil {
+		log.Printf("dataset pack unavailable: %v", datasetErr)
+	} else {
+		buildingIndex = datasetPack.BuildingIndex
+		buildingStats = datasetPack.BuildingStats
+		towers = datasetPack.Towers
+		towerGeoJSONPath = datasetPack.TowerPath
 	}
 	buildingDemandSummary := buildingIndex.DemandSummary(buildingStats.SourcePath)
 	log.Printf(
@@ -39,10 +54,6 @@ func main() {
 		buildingDemandSummary.MaxDemandWeight,
 	)
 
-	towers, towerGeoJSONPath, err := loadTowers()
-	if err != nil {
-		log.Printf("tower data unavailable: %v", err)
-	}
 	log.Printf("tower store ready: %d cells loaded from %s", len(towers), towerGeoJSONPath)
 	distPath := getenv("FRONTEND_DIST_PATH", filepath.Clean("../frontend-react/dist"))
 	indexPath := filepath.Join(distPath, "index.html")
@@ -69,8 +80,24 @@ func main() {
 			"towerCount":      len(towers),
 		})
 	})
-	router.GET("/readyz", readinessHandler(buildingIndex.Len() > 0, len(towers) > 0, frontendReady))
+	datasetError := ""
+	if datasetErr != nil {
+		datasetError = datasetErr.Error()
+	}
+	router.GET("/readyz", readinessHandler(buildingIndex.Len() > 0, len(towers) > 0, frontendReady, datasetError))
 	rfLimiter := newRFRequestLimiter(envInt("MAX_CONCURRENT_RF_REQUESTS", 2))
+	router.GET("/api/meta", func(c *gin.Context) {
+		response := gin.H{
+			"application_version":    appVersion,
+			"build_commit":           buildCommit,
+			"model_version":          modelVersion,
+			"supported_technologies": []string{"4g", "5g", "6g-research"},
+		}
+		if datasetPack != nil {
+			response["dataset"] = datasetPack.Manifest
+		}
+		c.JSON(http.StatusOK, response)
+	})
 	router.GET("/api/towers", serveGeoJSONFile(towerGeoJSONPath, "ankara_5g_nodes.geojson is not configured"))
 	router.GET("/api/buildings", serveBuildingGeoJSON(buildingStats.SourcePath))
 	router.GET("/api/buildings/summary", func(c *gin.Context) {
@@ -162,6 +189,8 @@ func main() {
 		writeRFResponse(c, payload, runErr)
 	})
 	registerInterferenceRoute(router, buildingIndex, rfLimiter.middleware())
+	registerRecommendationRoute(router, buildingIndex, towers, rfLimiter.middleware())
+	registerMeasurementRoute(router, buildingIndex, rfLimiter.middleware())
 	registerCoreLabRoutes(router)
 	registerFrontendRoutes(router, distPath, indexPath, frontendReady)
 
@@ -178,6 +207,44 @@ func main() {
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("run server: %v", err)
 	}
+}
+
+func registerRecommendationRoute(router *gin.Engine, buildingIndex *raytracer.BuildingIndex, towers []raytracer.TowerStation, middleware ...gin.HandlerFunc) {
+	handler := func(c *gin.Context) {
+		var input raytracer.SiteRecommendationRequestInput
+		if !bindJSON(c, &input, "site recommendation") {
+			return
+		}
+		if input.MissingRequiredTowerFields() {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "each tower must include id, tower_lon, and tower_lat"})
+			return
+		}
+		req := input.ToRequest()
+		if validationError := raytracer.ValidateSiteRecommendationRequest(req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		payload, runErr := raytracer.RecommendSitesContext(c.Request.Context(), req, towers, buildingIndex)
+		writeRFResponse(c, payload, runErr)
+	}
+	router.POST("/api/recommend-sites", append(middleware, handler)...)
+}
+
+func registerMeasurementRoute(router *gin.Engine, buildingIndex *raytracer.BuildingIndex, middleware ...gin.HandlerFunc) {
+	handler := func(c *gin.Context) {
+		var input raytracer.MeasurementEvaluationRequestInput
+		if !bindJSON(c, &input, "measurement evaluation") {
+			return
+		}
+		req := input.ToRequest()
+		if validationError := raytracer.ValidateMeasurementEvaluationRequest(input, req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		payload, runErr := raytracer.EvaluateMeasurementsContext(c.Request.Context(), req, buildingIndex)
+		writeRFResponse(c, payload, runErr)
+	}
+	router.POST("/api/measurements/evaluate", append(middleware, handler)...)
 }
 
 func registerInterferenceRoute(router *gin.Engine, buildingIndex *raytracer.BuildingIndex, middleware ...gin.HandlerFunc) {
@@ -220,6 +287,9 @@ func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
 	if req.BeamWidthDeg < 10 || req.BeamWidthDeg > 360 {
 		return "beam_width must be between 10 and 360"
 	}
+	if req.CalibrationOffsetDB < -40 || req.CalibrationOffsetDB > 40 {
+		return "calibration_offset_db must be between -40 and 40"
+	}
 	return ""
 }
 
@@ -241,6 +311,9 @@ func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest
 	}
 	if req.BeamWidthDeg < 10 || req.BeamWidthDeg > 360 {
 		return "beam_width must be between 10 and 360"
+	}
+	if req.CalibrationOffsetDB < -40 || req.CalibrationOffsetDB > 40 {
+		return "calibration_offset_db must be between -40 and 40"
 	}
 	seenTowerIDs := make(map[string]struct{}, len(req.Towers))
 	for _, tower := range req.Towers {
@@ -285,7 +358,12 @@ func registerFrontendRoutes(router *gin.Engine, distPath string, indexPath strin
 		router.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"service": "A.T.O.M API",
-				"routes":  []string{"/healthz", "/readyz", "/api/towers", "/api/simulate", "/api/optimize-azimuth", "/api/optimize-network", "/api/evaluate-network", "/api/coverage-gaps", "/api/interference", "/api/core/status"},
+				"routes": []string{
+					"/healthz", "/readyz", "/api/meta", "/api/towers", "/api/buildings", "/api/buildings/summary",
+					"/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network",
+					"/api/optimize-network", "/api/interference", "/api/recommend-sites", "/api/measurements/evaluate",
+					"/api/core/status", "/api/core/topology", "/api/core/sessions", "/api/core/events", "/api/core/scenario",
+				},
 			})
 		})
 		return
@@ -297,7 +375,11 @@ func registerFrontendRoutes(router *gin.Engine, distPath string, indexPath strin
 	router.NoRoute(serveSPAFallback(distPath, indexPath))
 }
 
-func readinessHandler(buildingsReady bool, towersReady bool, frontendReady bool) gin.HandlerFunc {
+func readinessHandler(buildingsReady bool, towersReady bool, frontendReady bool, datasetErrors ...string) gin.HandlerFunc {
+	datasetError := ""
+	if len(datasetErrors) > 0 {
+		datasetError = datasetErrors[0]
+	}
 	return func(c *gin.Context) {
 		ready := buildingsReady && towersReady && frontendReady
 		statusCode := http.StatusOK
@@ -307,10 +389,11 @@ func readinessHandler(buildingsReady bool, towersReady bool, frontendReady bool)
 			status = "not_ready"
 		}
 		c.JSON(statusCode, gin.H{
-			"status":    status,
-			"buildings": buildingsReady,
-			"towers":    towersReady,
-			"frontend":  frontendReady,
+			"status":        status,
+			"buildings":     buildingsReady,
+			"towers":        towersReady,
+			"frontend":      frontendReady,
+			"dataset_error": datasetError,
 		})
 	}
 }
@@ -402,58 +485,6 @@ func serveSPAFallback(distPath string, indexPath string) gin.HandlerFunc {
 		}
 		c.File(indexPath)
 	}
-}
-
-func loadBuildingIndex() (*raytracer.BuildingIndex, raytracer.BuildingIndexStats, error) {
-	path := os.Getenv("BUILDINGS_GEOJSON_PATH")
-	if path == "" {
-		path = firstExistingPath([]string{
-			filepath.Clean("../ankara_buildings.geojson"),
-			filepath.Clean("../data/ankara_buildings.geojson"),
-			filepath.Clean("../data-pipeline/ankara_buildings.geojson"),
-			filepath.Clean("ankara_buildings.geojson"),
-		})
-	}
-
-	if path == "" {
-		return raytracer.EmptyBuildingIndex(), raytracer.BuildingIndexStats{
-			SourcePath: "not found",
-		}, nil
-	}
-
-	index, stats, err := raytracer.LoadBuildingIndexFromGeoJSON(path)
-	if err != nil {
-		return raytracer.EmptyBuildingIndex(), stats, err
-	}
-	return index, stats, nil
-}
-
-func loadTowers() ([]raytracer.TowerStation, string, error) {
-	path := os.Getenv("TOWERS_GEOJSON_PATH")
-	if path == "" {
-		path = firstExistingPath([]string{
-			filepath.Clean("../ankara_5g_nodes.geojson"),
-			filepath.Clean("../data/ankara_5g_nodes.geojson"),
-			filepath.Clean("../data-pipeline/ankara_5g_nodes.geojson"),
-			filepath.Clean("ankara_5g_nodes.geojson"),
-		})
-	}
-
-	if path == "" {
-		return nil, "not found", nil
-	}
-
-	towers, err := raytracer.LoadTowersFromGeoJSON(path)
-	return towers, path, err
-}
-
-func firstExistingPath(candidates []string) string {
-	for _, candidate := range candidates {
-		if _, err := os.Stat(candidate); err == nil {
-			return candidate
-		}
-	}
-	return ""
 }
 
 func serveBuildingGeoJSON(path string) gin.HandlerFunc {

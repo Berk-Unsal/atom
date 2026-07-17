@@ -32,6 +32,8 @@ export default function MapCanvas({
   interferenceLayerKey,
   interferenceMetric,
   interferenceModel,
+  measurements,
+  recommendations,
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map" preferCanvas>
@@ -64,6 +66,20 @@ export default function MapCanvas({
           surface={interference}
         />
       )}
+
+      {layerVisibility?.measurements === false ? null : (
+        <MeasurementLayer
+          measurements={measurements}
+          onSelectMapObject={onSelectMapObject}
+          selectedMapObject={selectedMapObject}
+        />
+      )}
+
+      <RecommendationLayer
+        onSelectMapObject={onSelectMapObject}
+        recommendations={recommendations}
+        selectedMapObject={selectedMapObject}
+      />
 
       {towers.map((tower) => {
         const [lon, lat] = tower.coordinates;
@@ -160,6 +176,66 @@ export default function MapCanvas({
       )}
     </MapContainer>
   );
+}
+
+function RecommendationLayer({ onSelectMapObject, recommendations, selectedMapObject }) {
+  const features = recommendations?.features ?? [];
+  return features.map((feature, index) => {
+    const [lon, lat] = feature.geometry?.coordinates ?? [];
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
+    const properties = feature.properties ?? {};
+    const selected = selectedMapObject?.type === "site_recommendation"
+      && selectedMapObject?.payload?.properties?.id === properties.id;
+    return (
+      <CircleMarker
+        key={`recommendation-${properties.id ?? index}`}
+        center={[lat, lon]}
+        radius={10}
+        pathOptions={{
+          color: selected ? "#0f172a" : "#6d28d9",
+          fillColor: "#c4b5fd",
+          fillOpacity: 0.9,
+          weight: selected ? 4 : 3,
+          dashArray: "4 3",
+        }}
+        eventHandlers={{
+          click: (event) => {
+            event.originalEvent?.stopPropagation();
+            onSelectMapObject?.({ type: "site_recommendation", payload: { properties, coordinates: [lon, lat] } });
+          },
+        }}
+      >
+        <Popup>Candidate {properties.cell_id ?? properties.id}: {formatNumber(properties.marginal_network_score)} score gain</Popup>
+      </CircleMarker>
+    );
+  });
+}
+
+function MeasurementLayer({ measurements, onSelectMapObject, selectedMapObject }) {
+  const features = measurements?.features ?? [];
+  return features.map((feature, index) => {
+    const [lon, lat] = feature.geometry?.coordinates ?? [];
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
+    const properties = feature.properties ?? {};
+    const residual = Math.abs(Number(properties.residual_db));
+    const color = properties.status !== "valid" ? "#64748b" : residual > 10 ? "#be123c" : residual > 5 ? "#d97706" : "#0f766e";
+    const selected = selectedMapObject?.type === "measurement_sample"
+      && selectedMapObject?.payload?.properties?.id === properties.id;
+    return (
+      <CircleMarker
+        key={`measurement-${properties.id ?? index}`}
+        center={[lat, lon]}
+        radius={selected ? 9 : 6}
+        pathOptions={{ color: selected ? "#0f172a" : color, fillColor: color, fillOpacity: 0.82, weight: selected ? 4 : 2 }}
+        eventHandlers={{
+          click: (event) => {
+            event.originalEvent?.stopPropagation();
+            onSelectMapObject?.({ type: "measurement_sample", payload: { properties, coordinates: [lon, lat] } });
+          },
+        }}
+      />
+    );
+  });
 }
 
 function FitSelectionLayer({ fitRequestVersion, selectedNetworkTowerIds, selectedTower, towers }) {

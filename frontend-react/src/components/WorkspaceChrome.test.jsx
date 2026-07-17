@@ -42,14 +42,17 @@ describe("focused workspace chrome", () => {
         drawerMode="tool"
         drawerOpen
         onSelectTool={onSelectTool}
-        toolState={{ interference: { disabled: true, reason: "Select at least two cells" } }}
+        toolState={{ interference: { unavailable: true, reason: "Select at least two cells" } }}
       />,
     );
 
     expect(screen.getByRole("button", { name: "Setup" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("button", { name: "Interference" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Interference" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("button", { name: "Interference" })).toHaveClass("unavailable");
     expect(screen.getByRole("button", { name: "Interference" })).toHaveAttribute("title", "Select at least two cells");
+    fireEvent.click(screen.getByRole("button", { name: "Interference" }));
     fireEvent.click(screen.getByRole("button", { name: "Results" }));
+    expect(onSelectTool).not.toHaveBeenCalledWith("interference");
     expect(onSelectTool).toHaveBeenCalledWith("results");
   });
 
@@ -106,9 +109,12 @@ describe("focused workspace chrome", () => {
     };
     render(<MapToolbar {...props} />);
 
-    expect(screen.getByRole("menu", { name: "Map layer visibility" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Map layer visibility" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "SINR" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(screen.getByRole("button", { name: /Layers/i }));
+    const layersButton = screen.getByRole("button", { name: "Map layers" });
+    fireEvent.keyDown(screen.getByRole("group", { name: "Map layer visibility" }), { key: "Escape" });
+    expect(layersButton).toHaveFocus();
+    fireEvent.click(layersButton);
     expect(onLayerMenuToggle).toHaveBeenCalledWith(false);
   });
 });

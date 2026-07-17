@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "ankara-open-planning",
+  "name": "Ankara Open Planning Dataset",
+  "version": "2026.07",
+  "crs": "EPSG:4326",
+  "bounds": [32.45, 39.55, 33.25, 40.25],
+  "generated_at": "2026-07-17",
+  "sources": ["OpenStreetMap", "OpenCellID-derived planning records"],
+  "licenses": ["ODbL 1.0 for OpenStreetMap-derived data", "Review upstream OpenCellID terms before redistribution"],
+  "confidence": "Static planning dataset with synthetic demand enrichment; not an operator inventory.",
+  "files": {
+    "towers": "ankara_5g_nodes.geojson",
+    "buildings": "ankara_buildings.geojson"
+  },
+  "sha256": {
+    "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+    "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+  }
+}

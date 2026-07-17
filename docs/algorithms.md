@@ -8,11 +8,11 @@ A.T.O.M combines deterministic planning equations with computational geometry to
 
 The fundamental equation for all propagation calculations:
 
-$$L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 92.45$$
+$$L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45$$
 
 **Simplification** (practical form):
 
-$$L[dB] = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 92.45$$
+$$L[dB] = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45$$
 
 ### Received Power Calculation
 
@@ -99,7 +99,7 @@ func TraceSector(tx Location, req SimulationRequest) GeoJSON {
             }
 
             distance := haversine_distance(tx, segmentEnd)
-            fspl := 20*log10(distance) + 20*log10(req.frequency_ghz) + 92.45
+            fspl := 20*log10(distance) + 20*log10(req.frequency_ghz) + 32.45
             rxPower := EIRP_DBM - fspl - wallLoss
 
             if rxPower < ReceiverSensitivityDBm {

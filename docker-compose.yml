@@ -12,6 +12,7 @@ services:
       GIN_MODE: release
       PORT: "8080"
       MAX_CONCURRENT_RF_REQUESTS: "2"
+      ATOM_DATASET_DIR: /app/data-pipeline
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/readyz"]
       interval: 30s

@@ -24,11 +24,14 @@ All responses are **JSON**, but the exact shape depends on the route:
 
 - `GET /healthz` returns a liveness status object
 - `GET /readyz` returns dependency readiness
+- `GET /api/meta` returns application, model, and active dataset identity
 - `GET /api/buildings` and `GET /api/towers` return raw GeoJSON
 - `POST /api/simulate` returns `{ geojson, stats }`
 - `POST /api/coverage-gaps` returns `{ geojson, stats }`
 - `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`
 - `POST /api/optimize-azimuth` returns `{ optimal_azimuth, coverage_score, demand_score, residential_score }`
+- `POST /api/recommend-sites` returns a baseline plus ranked candidate records and GeoJSON
+- `POST /api/measurements/evaluate` returns residual GeoJSON, error statistics, and bias guidance
 
 Error responses use a simple object with an `error` message.
 
@@ -77,6 +80,26 @@ Check whether the building index, tower dataset, and frontend bundle are availab
 **Status Codes**:
 - `200 OK` - Instance is ready to receive traffic
 - `503 Service Unavailable` - At least one required dependency is unavailable
+
+### Reproducibility Metadata
+
+**Endpoint**: `GET /api/meta`
+
+Returns the running application and model versions, build commit, supported technology modes, and the validated dataset manifest. Store this response with planning scenarios and reports when exact reproduction matters.
+
+```json
+{
+  "application_version": "1.0.0",
+  "build_commit": "abc1234",
+  "model_version": "fspl-walls-v1",
+  "supported_technologies": ["4g", "5g", "6g-research"],
+  "dataset": {
+    "id": "ankara-open-planning",
+    "version": "2026.07",
+    "crs": "EPSG:4326"
+  }
+}
+```
 
 ---
 
@@ -406,6 +429,70 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 - Server write timeout: 120 seconds
 
 ---
+
+## Planning Product Endpoints
+
+### Recommend Candidate Cells
+
+**Endpoint**: `POST /api/recommend-sites`
+
+Ranks known, unselected tower records inside a search polygon for a 4G or 5G network containing two to five selected cells. The backend prefilters candidates by nearby unmet demand, optimizes only the candidate azimuth, and returns at most the requested number of deterministic recommendations.
+
+```json
+{
+  "network_tech": "5g",
+  "towers": [
+    { "id": "101", "tower_lon": 32.85, "tower_lat": 39.92, "azimuth": 90 },
+    { "id": "102", "tower_lon": 32.852, "tower_lat": 39.921, "azimuth": 180 }
+  ],
+  "rays": 120,
+  "radius_m": 400,
+  "frequency_ghz": 28,
+  "tx_power_dbm": 30,
+  "beam_width": 120,
+  "search_polygon": [[32.84, 39.91], [32.87, 39.91], [32.87, 39.94], [32.84, 39.94]],
+  "max_results": 5
+}
+```
+
+Candidate records are not approved deployment sites. Cost, backhaul, permitting, and interference are not included in candidate scoring; run `/api/interference` after applying a candidate.
+
+### Evaluate Field Measurements
+
+**Endpoint**: `POST /api/measurements/evaluate`
+
+Compares one to 5,000 measured 4G or 5G RSRP points with the deterministic model. At least one selected cell is required. With 20 or more valid predictions, the response includes a robust global bias suggestion evaluated against a deterministic 20% holdout.
+
+```json
+{
+  "network_tech": "5g",
+  "towers": [{ "id": "101", "tower_lon": 32.85, "tower_lat": 39.92, "azimuth": 90 }],
+  "radius_m": 400,
+  "frequency_ghz": 28,
+  "tx_power_dbm": 30,
+  "beam_width": 120,
+  "bandwidth_mhz": 100,
+  "noise_figure_db": 7,
+  "samples": [
+    { "id": "drive-001", "lon": 32.851, "lat": 39.921, "technology": "5g", "rsrp_dbm": -91, "cell_id": "101" }
+  ]
+}
+```
+
+The response separates valid predictions, no-signal samples, and requested-cell mismatches before reporting residual MAE, RMSE, mean/median bias, and per-cell statistics. The correction is a single dB path-loss offset, not full propagation calibration. When applied, send `calibration_offset_db` with compatible simulation, network, interference, recommendation, and measurement requests. Accepted range is `-40` to `40` dB.
+
+### Dataset Packs
+
+The backend loads one validated pack from `ATOM_DATASET_DIR` at startup. A pack contains `manifest.json`, tower GeoJSON, and building GeoJSON. The manifest fixes the dataset identity, EPSG:4326 bounds, provenance, licenses, filenames, and SHA-256 hashes. Invalid packs keep `/readyz` at `503`.
+
+Validate a pack before starting the server:
+
+```bash
+cd backend-go
+go run ./cmd/validate-dataset ../data-pipeline
+```
+
+The complete machine-readable contract is available as [`openapi.yaml`](openapi.yaml).
 
 ## Usage Examples
 

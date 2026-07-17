@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import ControlPanel from "./ControlPanel.jsx";
 
@@ -24,6 +24,7 @@ function renderPanel(overrides = {}) {
     onOptimizeAzimuth: vi.fn(),
     onOptimizeNetwork: vi.fn(),
     onAnalyzeInterference: vi.fn(),
+    onFocusMap: vi.fn(),
     onPlanningModeChange: vi.fn(),
     isLoading: false,
     isOptimizing: false,
@@ -49,8 +50,25 @@ describe("ControlPanel interference controls", () => {
       interferenceApplicable: false,
       networkSelectionCount: 2,
     });
-    expect(screen.getByText(/not applicable to the 6G research mode/i)).toBeInTheDocument();
+    expect(screen.getByText(/not available in 6G mode/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Use 5G mmWave" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Analyze Interference/i })).not.toBeInTheDocument();
+  });
+
+  it("keeps unavailable interference guidance reachable", () => {
+    const onPlanningModeChange = vi.fn();
+    renderPanel({ planningMode: "single", onPlanningModeChange });
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch to Network mode" }));
+    expect(onPlanningModeChange).toHaveBeenCalledWith("network");
+  });
+
+  it("offers a direct return to the map while the cluster is incomplete", () => {
+    const onFocusMap = vi.fn();
+    renderPanel({ onFocusMap });
+
+    fireEvent.click(screen.getByRole("button", { name: "Select cells on map" }));
+    expect(onFocusMap).toHaveBeenCalledOnce();
   });
 
   it("shows only the controls for the active workflow tool", () => {

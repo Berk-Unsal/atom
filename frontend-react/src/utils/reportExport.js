@@ -10,7 +10,9 @@ const SVG_PADDING = 34;
 
 export function buildPlanningReport({
   activeNetworkTech,
+  appMeta,
   buildingSummary,
+  calibrationProfile,
   comparison,
   coreLab,
   coreLabApplicable,
@@ -18,7 +20,10 @@ export function buildPlanningReport({
   coverageGaps,
   diagnostics,
   interferenceAnalysis,
+  measurementAnalysis,
   networkOptimization,
+  project,
+  recommendations,
   selectedTower,
   settings,
   simulation,
@@ -42,7 +47,9 @@ export function buildPlanningReport({
 
   return {
     activeNetworkTech,
+    appMeta,
     buildingSummary,
+    calibrationProfile,
     comparison,
     comparisonBarChartSvg,
     comparisonMetrics,
@@ -53,9 +60,12 @@ export function buildPlanningReport({
     diagnostics,
     gapStats,
     interferenceAnalysis,
+    measurementAnalysis,
     generatedAt,
     mapSvg,
     networkOptimization,
+    project,
+    recommendations,
     reportId,
     selectedTower,
     settings,
@@ -105,6 +115,7 @@ Generated: ${generatedAt}
 | Ray count | ${formatNumber(report.settings.rayCount, 0)} |
 | Tx power | ${formatNumber(report.settings.txPowerDbm, 1)} dBm |
 | Frequency | ${formatNumber(report.settings.frequencyGHz, 1)} GHz |
+| Calibration offset | ${formatNumber(report.settings.calibrationOffsetDb ?? 0, 1)} dB |
 
 ## Simulation KPIs
 
@@ -139,6 +150,12 @@ ${renderMarkdownInterferenceSection(report)}
 
 ${renderMarkdownCoreLabSection(report)}
 
+${renderMarkdownMeasurementSection(report)}
+
+${renderMarkdownRecommendationSection(report)}
+
+${renderMarkdownSavedScenarioSection(report)}
+
 ## Dataset Context
 
 | Field | Value |
@@ -146,6 +163,10 @@ ${renderMarkdownCoreLabSection(report)}
 | Total buildings | ${formatNumber(report.buildingSummary?.total_buildings, 0)} |
 | POI demand buildings | ${formatNumber(report.buildingSummary?.demand_weighted_buildings, 0)} |
 | Residential demand buildings | ${formatNumber(report.buildingSummary?.residential_weighted_buildings, 0)} |
+| Dataset | ${markdownValue(report.appMeta?.dataset?.name)} |
+| Dataset version | ${markdownValue(report.appMeta?.dataset?.version)} |
+| Model version | ${markdownValue(report.appMeta?.model_version)} |
+| Application version | ${markdownValue(report.appMeta?.application_version)} |
 
 ## Planning Map
 
@@ -157,7 +178,7 @@ ${renderMarkdownGapTable(report.topGaps)}
 
 ## Planning Note
 
-This report is generated from local A.T.O.M simulation state. The RF geometry uses the current selected tower, beamforming parameters, frequency-dependent propagation model, and the demand surface loaded from the local Ankara dataset.
+This report is generated from local A.T.O.M simulation state. Results are deterministic planning estimates, not UE, drive-test, or PHY measurements. Any applied correction is a global path-loss bias and not full propagation calibration.
 `;
 }
 
@@ -360,6 +381,9 @@ function renderPrintableReport(report) {
     ${printNetworkSection(report)}
     ${renderPrintableInterferenceSection(report)}
     ${printCoreLabSection(report)}
+    ${printMeasurementSection(report)}
+    ${printRecommendationSection(report)}
+    ${printSavedScenarioSection(report)}
     <section class="grid">
       ${printTable("Decision Context", [
         ["Longitude", formatNumber(towerCoordinates[0], 6)],
@@ -369,6 +393,7 @@ function renderPrintableReport(report) {
         ["Radius", `${formatNumber(report.settings.radiusMeters, 0)} m`],
         ["Beam width", `${formatNumber(report.settings.beamWidthDeg, 0)} deg`],
         ["Ray count", formatNumber(report.settings.rayCount, 0)],
+        ["Calibration offset", `${formatNumber(report.settings.calibrationOffsetDb ?? 0, 1)} dB`],
       ])}
       ${printTable("Simulation KPIs", [
         ["Average Rx", `${formatNumber(report.stats.avgPower, 1)} dBm`],
@@ -394,6 +419,9 @@ function renderPrintableReport(report) {
         ["Residential demand buildings", formatNumber(report.buildingSummary?.residential_weighted_buildings, 0)],
         ["Worst Rx", `${formatNumber(report.gapStats?.worst_rx_dbm, 1)} dBm`],
         ["Unmet demand score", formatCompactNumber(report.gapStats?.total_gap_demand)],
+        ["Dataset", report.appMeta?.dataset?.name ?? "n/a"],
+        ["Dataset version", report.appMeta?.dataset?.version ?? "n/a"],
+        ["Model version", report.appMeta?.model_version ?? "n/a"],
       ])}
     </section>
     <section>
@@ -1042,6 +1070,107 @@ function formatMetricDelta({ compact, delta, digits, unit }) {
     return `${prefix}${formatted}%`;
   }
   return unit ? `${prefix}${formatted} ${unit}` : `${prefix}${formatted}`;
+}
+
+function renderMarkdownMeasurementSection(report) {
+  const stats = report.measurementAnalysis?.stats;
+  if (!stats) return "";
+  const calibration = report.measurementAnalysis?.calibration ?? {};
+  return `## Measurement Validation
+
+| Metric | Value |
+|---|---:|
+| Imported samples | ${formatNumber(stats.sample_count, 0)} |
+| Valid samples | ${formatNumber(stats.valid_sample_count, 0)} |
+| No signal | ${formatNumber(stats.no_signal_count, 0)} |
+| Cell mismatch | ${formatNumber(stats.cell_mismatch_count, 0)} |
+| MAE | ${formatNumber(stats.mae_db, 1)} dB |
+| RMSE | ${formatNumber(stats.rmse_db, 1)} dB |
+| Median bias | ${formatNumber(stats.median_bias_db, 1)} dB |
+| Suggested total offset | ${formatNumber(calibration.recommended_total_offset_db, 1)} dB |
+| Holdout MAE before | ${formatNumber(calibration.holdout_mae_before_db, 1)} dB |
+| Holdout MAE after | ${formatNumber(calibration.holdout_mae_after_db, 1)} dB |
+
+The correction is a robust global path-loss bias, not full propagation calibration.`;
+}
+
+function renderMarkdownRecommendationSection(report) {
+  const recommendations = report.recommendations?.recommendations ?? [];
+  if (recommendations.length === 0) return "";
+  const rows = recommendations.map((candidate, index) =>
+    `| ${index + 1} | ${markdownValue(candidate.cell_id)} | ${formatNumber(candidate.optimal_azimuth, 0)} deg | ${formatCompactNumber(candidate.marginal_network_score)} | ${markdownValue(candidate.reason)} |`,
+  ).join("\n");
+  return `## Candidate Cell Recommendations
+
+| Rank | Cell | Azimuth | Marginal score | Reason |
+|---:|---:|---:|---:|---|
+${rows}
+
+Candidates are known planning records, not approved deployment sites. Interference is excluded from candidate scoring.`;
+}
+
+function renderMarkdownSavedScenarioSection(report) {
+  const scenarios = report.project?.scenarios ?? [];
+  if (scenarios.length < 2) return "";
+  const [first, second] = scenarios.slice(-2);
+  return `## Saved Scenario Comparison
+
+| Metric | ${markdownValue(first.name)} | ${markdownValue(second.name)} |
+|---|---:|---:|
+| Average Rx | ${formatNumber(first.summary?.avgRxDBm, 1)} dBm | ${formatNumber(second.summary?.avgRxDBm, 1)} dBm |
+| Gap ratio | ${formatNumber(first.summary?.gapPct, 1)}% | ${formatNumber(second.summary?.gapPct, 1)}% |
+| Network score | ${formatCompactNumber(first.summary?.networkScore)} | ${formatCompactNumber(second.summary?.networkScore)} |
+| Average SINR | ${formatNumber(first.summary?.avgSINRDB, 1)} dB | ${formatNumber(second.summary?.avgSINRDB, 1)} dB |
+| Serviceable | ${formatNumber(first.summary?.serviceablePct, 1)}% | ${formatNumber(second.summary?.serviceablePct, 1)}% |`;
+}
+
+function printMeasurementSection(report) {
+  const stats = report.measurementAnalysis?.stats;
+  if (!stats) return "";
+  const calibration = report.measurementAnalysis?.calibration ?? {};
+  return `<section class="grid">
+    ${printTable("Measurement Validation", [
+      ["Imported samples", formatNumber(stats.sample_count, 0)],
+      ["Valid samples", formatNumber(stats.valid_sample_count, 0)],
+      ["No signal", formatNumber(stats.no_signal_count, 0)],
+      ["Cell mismatch", formatNumber(stats.cell_mismatch_count, 0)],
+      ["MAE", `${formatNumber(stats.mae_db, 1)} dB`],
+      ["RMSE", `${formatNumber(stats.rmse_db, 1)} dB`],
+      ["Median bias", `${formatNumber(stats.median_bias_db, 1)} dB`],
+    ])}
+    ${printTable("Bias Correction", [
+      ["Eligible", calibration.eligible ? "Yes" : "No"],
+      ["Suggested total offset", `${formatNumber(calibration.recommended_total_offset_db, 1)} dB`],
+      ["Holdout MAE before", `${formatNumber(calibration.holdout_mae_before_db, 1)} dB`],
+      ["Holdout MAE after", `${formatNumber(calibration.holdout_mae_after_db, 1)} dB`],
+      ["Applied offset", `${formatNumber(report.calibrationProfile?.offsetDb ?? 0, 1)} dB`],
+    ])}
+    <p>Global path-loss bias only; this is not full propagation calibration.</p>
+  </section>`;
+}
+
+function printRecommendationSection(report) {
+  const recommendations = report.recommendations?.recommendations ?? [];
+  if (recommendations.length === 0) return "";
+  const rows = recommendations.map((candidate, index) => `<tr><td>${index + 1}</td><td>${escapeHtml(candidate.cell_id)}</td><td>${formatNumber(candidate.optimal_azimuth, 0)} deg</td><td>${formatCompactNumber(candidate.marginal_network_score)}</td><td>${escapeHtml(candidate.reason)}</td></tr>`).join("");
+  return `<section><h2>Candidate Cell Recommendations</h2><table><thead><tr><th>Rank</th><th>Cell</th><th>Azimuth</th><th>Gain</th><th>Reason</th></tr></thead><tbody>${rows}</tbody></table><p>Candidates are known planning records, not approved deployment sites.</p></section>`;
+}
+
+function printSavedScenarioSection(report) {
+  const scenarios = report.project?.scenarios ?? [];
+  if (scenarios.length < 2) return "";
+  const [first, second] = scenarios.slice(-2);
+  return `<section class="grid">${printTable(first.name, [
+    ["Average Rx", `${formatNumber(first.summary?.avgRxDBm, 1)} dBm`],
+    ["Gap ratio", `${formatNumber(first.summary?.gapPct, 1)}%`],
+    ["Network score", formatCompactNumber(first.summary?.networkScore)],
+    ["Average SINR", `${formatNumber(first.summary?.avgSINRDB, 1)} dB`],
+  ])}${printTable(second.name, [
+    ["Average Rx", `${formatNumber(second.summary?.avgRxDBm, 1)} dBm`],
+    ["Gap ratio", `${formatNumber(second.summary?.gapPct, 1)}%`],
+    ["Network score", formatCompactNumber(second.summary?.networkScore)],
+    ["Average SINR", `${formatNumber(second.summary?.avgSINRDB, 1)} dB`],
+  ])}</section>`;
 }
 
 function printMetric(label, value) {

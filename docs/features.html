@@ -41,32 +41,34 @@ technologies." />
     <aside class="page-toc reference-toc" aria-label="Capabilities page contents">
       <strong>On this page</strong>
       <ul>
-      <li><a href="#multi-generation-physics"
-      id="toc-multi-generation-physics">Multi-Generation
-      Physics</a></li>
-      <li><a href="#segmented-heatmap-raytracing"
-      id="toc-segmented-heatmap-raytracing">Segmented Heatmap
-      Raytracing</a></li>
-      <li><a href="#frequency-dependent-penetration"
-      id="toc-frequency-dependent-penetration">Frequency-Dependent
-      Penetration</a></li>
-      <li><a href="#smart-beamforming" id="toc-smart-beamforming">Smart
-      Beamforming</a></li>
-      <li><a href="#deterministic-auto-optimization"
-      id="toc-deterministic-auto-optimization">Deterministic
-      Auto-Optimization</a></li>
-      <li><a href="#coverage-gap-finder"
-      id="toc-coverage-gap-finder">Coverage Gap Finder</a></li>
-      <li><a href="#interactive-visualization"
-      id="toc-interactive-visualization">Interactive
-      Visualization</a></li>
-      <li><a href="#geojson-export" id="toc-geojson-export">GeoJSON
-      Export</a></li>
-      <li><a href="#performance-characteristics"
-      id="toc-performance-characteristics">Performance
-      Characteristics</a></li>
-      <li><a href="#data-sources" id="toc-data-sources">Data
-      Sources</a></li>
+      <li><a href="#focused-planning-workspace"
+      id="toc-focused-planning-workspace">Focused Planning
+      Workspace</a></li>
+      <li><a href="#projects-and-scenarios"
+      id="toc-projects-and-scenarios">Projects And Scenarios</a></li>
+      <li><a href="#propagation-and-coverage"
+      id="toc-propagation-and-coverage">Propagation And
+      Coverage</a></li>
+      <li><a href="#demand-aware-planning"
+      id="toc-demand-aware-planning">Demand-Aware Planning</a></li>
+      <li><a href="#interference-and-radio-quality"
+      id="toc-interference-and-radio-quality">Interference And Radio
+      Quality</a></li>
+      <li><a href="#candidate-site-recommendations"
+      id="toc-candidate-site-recommendations">Candidate Site
+      Recommendations</a></li>
+      <li><a href="#measurement-validation"
+      id="toc-measurement-validation">Measurement Validation</a></li>
+      <li><a href="#validated-dataset-packs"
+      id="toc-validated-dataset-packs">Validated Dataset Packs</a></li>
+      <li><a href="#5g-communication-paths"
+      id="toc-5g-communication-paths">5G Communication Paths</a></li>
+      <li><a href="#reproducibility-and-reports"
+      id="toc-reproducibility-and-reports">Reproducibility And
+      Reports</a></li>
+      <li><a href="#deliberately-out-of-scope"
+      id="toc-deliberately-out-of-scope">Deliberately Out Of
+      Scope</a></li>
       </ul>
     </aside>
 
@@ -83,342 +85,203 @@ evidence, reports, and supported radio technologies.</p>
       </header>
 
       <div class="prose">
-<p>A.T.O.M provides a comprehensive suite of RF simulation and
-optimization capabilities.</p>
-<h2 id="multi-generation-physics">Multi-Generation Physics</h2>
-<h3 id="supported-frequency-bands">Supported Frequency Bands</h3>
+<p>A.T.O.M is a local-first, deterministic RF planning workspace for
+comparing urban 4G, 5G, and exploratory 6G sector plans. Its outputs are
+planning estimates, not UE or PHY measurements.</p>
+<h2 id="focused-planning-workspace">Focused Planning Workspace</h2>
+<ul>
+<li>Seven workflow tools in one rail: Setup, Propagation, Interference,
+5G Core, Results, Data, and Report.</li>
+<li>A compact command bar keeps the current project, cell context,
+technology, RF summary, and primary run action visible.</li>
+<li>The map remains full size while tool and Inspector drawers overlay
+it.</li>
+<li>Contextual layers appear only when their results exist.</li>
+<li>Towers, gaps, communication paths, interference samples, candidate
+sites, and measurement residuals open persistent Inspector details.</li>
+</ul>
+<h2 id="projects-and-scenarios">Projects And Scenarios</h2>
+<ul>
+<li>Native browser IndexedDB persistence with automatic last-workspace
+restoration.</li>
+<li>Named scenarios preserve exact inputs, selected cells, RF settings,
+result summaries, model metadata, and recent GeoJSON layers.</li>
+<li>Rename, duplicate, delete, import, and export complete projects as
+versioned <code>.atom-project.json</code> files.</li>
+<li>Input changes mark saved results stale instead of presenting them as
+current.</li>
+<li>Compare exactly two scenarios using KPI deltas and an A/B map
+switch.</li>
+<li>Promote either comparison side to the active plan without modifying
+the source snapshot.</li>
+</ul>
+<p>Project history is local to the browser. A.T.O.M does not provide
+accounts, shared editing, or server-side project storage.</p>
+<h2 id="propagation-and-coverage">Propagation And Coverage</h2>
+<h3 id="supported-modes">Supported Modes</h3>
 <table>
 <thead>
 <tr>
-<th>Band</th>
-<th>Frequency</th>
-<th>Wavelength</th>
-<th>Primary Use Case</th>
+<th>Mode</th>
+<th style="text-align: right;">Default frequency</th>
+<th>Intended use</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>4G LTE</strong></td>
-<td>2.6 GHz</td>
-<td>11.5 cm</td>
-<td>Wide-area coverage</td>
+<td>4G LTE</td>
+<td style="text-align: right;">2.6 GHz</td>
+<td>Wider urban coverage planning</td>
 </tr>
 <tr>
-<td><strong>5G mmWave</strong></td>
-<td>28 GHz</td>
-<td>1.07 cm</td>
-<td>High-capacity urban</td>
+<td>5G NR mmWave</td>
+<td style="text-align: right;">28 GHz</td>
+<td>Directional high-capacity planning</td>
 </tr>
 <tr>
-<td><strong>6G Sub-THz</strong></td>
-<td>140 GHz</td>
-<td>2.14 mm</td>
-<td>Ultra-high-capacity</td>
+<td>6G Sub-THz research overlay</td>
+<td style="text-align: right;">140 GHz</td>
+<td>Exploratory propagation comparison</td>
 </tr>
 </tbody>
 </table>
-<h3 id="free-space-path-loss-fspl">Free-Space Path Loss (FSPL)</h3>
-<p>All bands use the standard FSPL equation:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="prefix">[</mo><mi>m</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">[</mo><mi>G</mi><mi>H</mi><mi>z</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>92.45</mn></mrow><annotation encoding="application/x-tex">L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 92.45</annotation></semantics></math></p>
-<p>Where:</p>
+<p>The backend uses free-space path loss with meter/GHz units:</p>
+<pre class="text"><code>FSPL(dB) = 32.45 + 20log10(distance_m) + 20log10(frequency_GHz)</code></pre>
+<p>It then applies configured transmit power, antenna gain, beam/radius
+eligibility, and cumulative frequency-dependent wall loss. Rays are
+segmented and returned as GeoJSON with modeled received power.</p>
+<p>The current model does not simulate diffraction, reflections, fast
+fading, terrain, material-specific penetration, sidelobes, MIMO
+scheduling, or uplink behavior.</p>
+<h2 id="demand-aware-planning">Demand-Aware Planning</h2>
 <ul>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
-= distance in meters</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
-= frequency in GHz</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>L</mi><annotation encoding="application/x-tex">L</annotation></semantics></math>
-= path loss in dB</li>
+<li>Coverage gaps identify demand-building centroids that are inside a
+sector but below the service threshold.</li>
+<li>Demand scoring distinguishes POI and residential signals from empty
+geometry.</li>
+<li>Single-sector optimization performs a deterministic azimuth
+sweep.</li>
+<li>Network evaluation scores two to six selected cells using coverage,
+unique demand, and overlap.</li>
+<li>Network optimization coordinates selected-cell azimuths and renders
+each cell through a bounded sequential queue.</li>
 </ul>
-<h3 id="wall-attenuation">Wall Attenuation</h3>
-<p>The current backend applies generation-specific penetration losses
-when a ray crosses a building boundary:</p>
-<table>
-<thead>
-<tr>
-<th>Scenario</th>
-<th>4G LTE</th>
-<th>5G mmWave</th>
-<th>6G Sub-THz</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Solid wall crossing</td>
-<td>+8 dB</td>
-<td>+30 dB</td>
-<td>+80 dB</td>
-</tr>
-<tr>
-<td>Dense facade / repeated crossings</td>
-<td>cumulative</td>
-<td>cumulative</td>
-<td>cumulative</td>
-</tr>
-</tbody>
-</table>
-<p>The current runtime intentionally uses frequency-dependent wall loss
-rather than per-material wall loss. OSM tags are used for demand scoring
-and diagnostics, while RF penetration is determined by the selected
-network generation.</p>
-<h2 id="segmented-heatmap-raytracing">Segmented Heatmap Raytracing</h2>
-<h3 id="color-coded-signal-strength">Color-Coded Signal Strength</h3>
-<p>Rays are visualized with <strong>dynamic color gradients</strong>
-based on received signal strength (Rx dBm):</p>
+<h2 id="interference-and-radio-quality">Interference And Radio
+Quality</h2>
+<p>Planning-grade 4G and 5G interference analysis calculates:</p>
 <ul>
-<li>🟢 <strong>Green</strong> (-50 to -70 dBm): Strong signal, excellent
-coverage</li>
-<li>🟡 <strong>Yellow</strong> (-70 to -90 dBm): Moderate signal, usable
-coverage</li>
-<li>🔴 <strong>Red</strong> (-90 to -110 dBm): Weak signal, marginal
-coverage</li>
+<li>Serving-cell selection by strongest modeled RSRP.</li>
+<li>RSRP, SINR, RSRQ, RSSI, noise, strongest interferer, and
+contributing-cell count.</li>
+<li>Co-channel loading and reuse-factor behavior using linear power
+addition.</li>
+<li>Adaptive spatial sampling capped to keep requests bounded.</li>
+<li>Serviceable, interference-limited, and affected-demand
+statistics.</li>
+<li>SINR, RSRP, and RSRQ map surfaces with threshold-specific
+legends.</li>
 </ul>
-<h3 id="ray-segmentation-algorithm">Ray Segmentation Algorithm</h3>
-<p>Instead of single rays from TX to each point, A.T.O.M generates
-<strong>discrete segments</strong>:</p>
-<ol type="1">
-<li>Start at transmitter antenna</li>
-<li>Cast ray toward target location</li>
-<li>Check polygon (building) intersections</li>
-<li>Apply cumulative wall loss</li>
-<li>Color segment based on final Rx dBm</li>
-<li>Export as GeoJSON linestring</li>
-</ol>
-<p>This enables:</p>
+<p>Near-equal co-channel powers can correctly produce SINR near
+<code>0 dB</code>; the Inspector explains this and other no-signal or
+poor-quality states.</p>
+<h2 id="candidate-site-recommendations">Candidate Site
+Recommendations</h2>
 <ul>
-<li>Precise visualization of signal degradation</li>
-<li>Identification of urban canyons and shadow areas</li>
-<li>Intuitive understanding of frequency-band differences</li>
+<li>Uses unselected towers from the active dataset as candidate
+records.</li>
+<li>Restricts candidates to the user-drawn planning area.</li>
+<li>Prefilters at most 50 records by proximity to unmet demand and
+evaluates a bounded subset.</li>
+<li>Keeps existing selected-cell azimuths fixed and optimizes only the
+candidate in v1.</li>
+<li>Returns up to five deterministic options with recommended azimuth,
+marginal KPIs, score components, and reasons.</li>
+<li>Applies a recommendation as a new scenario without overwriting the
+baseline.</li>
 </ul>
-<h2 id="frequency-dependent-penetration">Frequency-Dependent
-Penetration</h2>
-<h3 id="4g-propagation">4G Propagation</h3>
+<p>Recommendations are RF planning options, not claims of rooftop
+availability, ownership, permitting, cost, or deployment approval.
+Candidate scoring intentionally excludes interference; analyze it after
+applying an option.</p>
+<h2 id="measurement-validation">Measurement Validation</h2>
 <ul>
-<li><strong>Penetrates</strong> concrete buildings with cumulative
-losses</li>
-<li><strong>Diffracts</strong> over rooftops</li>
-<li><strong>Reaches</strong> interior locations with degradation</li>
-<li><strong>Result</strong>: Wide coverage area despite obstacles</li>
+<li>Imports up to 5,000 CSV records with ID, longitude, latitude,
+technology, measured RSRP, and optional cell ID.</li>
+<li>Predicts RSRP at each measurement location using the active selected
+cells and RF assumptions.</li>
+<li>Reports residual GeoJSON, MAE, RMSE, mean/median bias, no-signal
+count, and per-cell statistics.</li>
+<li>With at least 20 valid points, uses a deterministic training/holdout
+split to evaluate a robust global bias correction.</li>
+<li>Applies correction only after explicit user confirmation and stores
+the profile with the project.</li>
+<li>Invalidates calibration when technology, frequency, model version,
+or dataset changes.</li>
 </ul>
-<h3 id="5g-mmwave-propagation">5G mmWave Propagation</h3>
+<p>This is global path-loss bias correction, not full propagation
+calibration.</p>
+<h2 id="validated-dataset-packs">Validated Dataset Packs</h2>
 <ul>
-<li><strong>Heavily attenuates</strong> through walls</li>
-<li><strong>Requires</strong> line-of-sight in many cases</li>
-<li><strong>Blocks</strong> at forest edges</li>
-<li><strong>Result</strong>: Tight, directional coverage in dense
-areas</li>
+<li><code>ATOM_DATASET_DIR</code> selects a dataset directory at
+application startup; Ankara remains the default.</li>
+<li>A versioned manifest records dataset ID/version, EPSG:4326 bounds,
+sources, licenses, generation date, filenames, and SHA-256 hashes.</li>
+<li>The validator checks hashes, required properties, geometry,
+coordinate bounds, duplicate IDs, and building-index viability.</li>
+<li>Invalid packs keep <code>/readyz</code> unavailable with an
+explanatory error.</li>
+<li>Active dataset identity and provenance appear in Data, scenarios,
+reports, and <code>/api/meta</code>.</li>
 </ul>
-<h3 id="6g-sub-thz-propagation">6G Sub-THz Propagation</h3>
+<p>Changing datasets requires an application restart. The application
+does not perform arbitrary-city live ingestion or large browser
+uploads.</p>
+<h2 id="5g-communication-paths">5G Communication Paths</h2>
+<p>The optional 5G Core Lab applies only to 5G mmWave and remains
+independent from RF interference:</p>
 <ul>
-<li><strong>Nearly blocked</strong> by most building materials</li>
-<li><strong>Ultra-tight</strong> spatial requirements</li>
-<li><strong>Requires</strong> optimal beamforming angles</li>
-<li><strong>Result</strong>: Localized coverage with high spectral
-efficiency</li>
+<li>Xn-C and Xn-U for eligible neighboring gNB coordination and
+forwarding.</li>
+<li>N2 fallback through AMF when Xn is degraded or unavailable.</li>
+<li>N3 session traffic through UPF.</li>
+<li>AMF, SMF, UPF, NRF, UDM/UDR, AUSF, PCF, and NSSF status.</li>
+<li>Deterministic health and Xn scenarios, sessions, and events.</li>
+<li>Optional probing of configured Open5GS status/metrics
+endpoints.</li>
 </ul>
-<h2 id="smart-beamforming">Smart Beamforming</h2>
-<h3 id="antenna-parameters">Antenna Parameters</h3>
-<p>Each transmitter can be configured with:</p>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Range</th>
-<th>Effect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Azimuth</strong></td>
-<td>0° - 360°</td>
-<td>Horizontal direction of main lobe</td>
-</tr>
-<tr>
-<td><strong>Beam Width</strong></td>
-<td>10° - 360°</td>
-<td>Angular width of coverage sector</td>
-</tr>
-<tr>
-<td><strong>Power</strong></td>
-<td>0 - 60 dBm</td>
-<td>Transmit power level</td>
-</tr>
-</tbody>
-</table>
-<h3 id="sector-coverage">Sector Coverage</h3>
-<p>Beamforming creates <strong>directional sectors</strong> instead of
-omnidirectional patterns:</p>
+<p>It is a planning overlay, not an LTE/EPC model or a complete bundled
+Open5GS deployment.</p>
+<h2 id="reproducibility-and-reports">Reproducibility And Reports</h2>
 <ul>
-<li>Typical 3-sector setup: 120° coverage each</li>
-<li>Each sector independently optimizable</li>
-<li>Reduces interference between sectors</li>
-<li>Improves spectral efficiency</li>
+<li><code>/api/meta</code> exposes application version, build commit,
+model version, supported technologies, and active dataset identity.</li>
+<li>Scenarios and reports retain exact request inputs and runtime
+metadata.</li>
+<li>Markdown and printable PDF reports include RF assumptions, radio
+quality, communication paths, calibration evidence, recommendations, and
+scenario comparison where available.</li>
+<li>The downloadable OpenAPI 3.1 specification documents current REST
+routes and error envelopes.</li>
+<li>RF requests support cancellation, latest-response protection, a 1
+MiB body limit, bounded workers, and <code>429</code> overload
+behavior.</li>
 </ul>
-<h2 id="deterministic-auto-optimization">Deterministic
-Auto-Optimization</h2>
-<h3 id="demand-aware-sector-scoring">Demand-Aware Sector Scoring</h3>
-<p>A.T.O.M uses a <strong>sweep-and-score</strong> optimizer to find the
-best azimuth for the selected tower:</p>
-<p><strong>Algorithm</strong>:</p>
-<ol type="1">
-<li>Define candidate azimuth angles (10° intervals)</li>
-<li>For each azimuth:
+<h2 id="deliberately-out-of-scope">Deliberately Out Of Scope</h2>
 <ul>
-<li>Cast rays through the selected beam width</li>
-<li>Apply frequency-specific attenuation</li>
-<li>Score unique POI and residential-demand buildings hit by the
-sector</li>
-<li>Add capped coverage as a tie-breaker</li>
-</ul></li>
-<li>Select azimuth with the highest demand-aware sector score</li>
-<li>Automatically snap antenna to optimal angle</li>
-</ol>
-<p><strong>Result</strong>: Engineers don't manually guess antenna
-directions; A.T.O.M prioritizes meaningful coverage over long empty
-corridors.</p>
-<h3 id="performance">Performance</h3>
-<ul>
-<li>Typical optimization runtime: &lt; 500 ms for 360° sweep</li>
-<li>Tested on 160,000+ Ankara building footprints</li>
-<li>Optimizes the currently selected tower; coordinated multi-site
-optimization is future work</li>
+<li>Full 3D ray tracing, multipath, diffraction, fading, and MIMO
+scheduling.</li>
+<li>Live network control, LTE/EPC integration, and 6G Core
+integration.</li>
+<li>Cloud accounts, multi-user collaboration, and hosted project
+storage.</li>
+<li>Guessed cost, fiber, equity, or emergency-priority scoring without
+authoritative data.</li>
+<li>Live OSM/OpenCellID ingestion from the browser.</li>
 </ul>
-<h2 id="coverage-gap-finder">Coverage Gap Finder</h2>
-<h3 id="demand-weighted-underservice-detection">Demand-Weighted
-Underservice Detection</h3>
-<p>A.T.O.M can identify buildings that sit inside the selected beam but
-still fall below usable received power. This closes the gap between "the
-ray reached somewhere" and "the intended users are actually served."</p>
-<p>The backend evaluates candidate buildings with nonzero
-<code>demand_weight</code> or <code>residential_demand</code>, estimates
-Rx at each centroid using EIRP, FSPL, beam geometry, and cumulative wall
-loss, then returns underserved targets as GeoJSON point markers.</p>
-<h3 id="planning-value">Planning Value</h3>
-<ul>
-<li>Prioritizes homes, apartments, schools, hospitals, malls, and
-commercial buildings</li>
-<li>Avoids treating empty farmland or wide roads as equivalent to
-settled demand</li>
-<li>Shows whether a chosen sector is demand-serving or merely
-distance-serving</li>
-<li>Produces compact stats: candidate buildings, served buildings, gap
-ratio, worst Rx, and total unmet demand</li>
-</ul>
-<h2 id="interactive-visualization">Interactive Visualization</h2>
-<h3 id="web-based-ui">Web-Based UI</h3>
-<ul>
-<li><strong>Leaflet Maps</strong>: Standard web mapping library</li>
-<li><strong>GeoJSON Layers</strong>: Dynamic overlay of coverage
-heatmaps</li>
-<li><strong>Real-time Updates</strong>: Instant response to parameter
-changes</li>
-<li><strong>Responsive Design</strong>: Works on desktop and tablet</li>
-</ul>
-<h3 id="control-panel-features">Control Panel Features</h3>
-<ul>
-<li>Frequency band selector (4G/5G/6G)</li>
-<li>Azimuth angle adjustment (slider or numeric input)</li>
-<li>Beam width configuration</li>
-<li>Transmit power control</li>
-<li>Coverage area display</li>
-<li>Signal strength colorbar</li>
-</ul>
-<h2 id="geojson-export">GeoJSON Export</h2>
-<p>All visualization data is stored in <strong>GeoJSON
-format</strong>:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;FeatureCollection&quot;</span><span class="fu">,</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;features&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;Feature&quot;</span><span class="fu">,</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;properties&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;frequency&quot;</span><span class="fu">:</span> <span class="st">&quot;5G&quot;</span><span class="fu">,</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;azimuth&quot;</span><span class="fu">:</span> <span class="dv">45</span><span class="fu">,</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;rx_dbm&quot;</span><span class="fu">:</span> <span class="dv">-75</span><span class="fu">,</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;signal_quality&quot;</span><span class="fu">:</span> <span class="st">&quot;good&quot;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">},</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;geometry&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;LineString&quot;</span><span class="fu">,</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;coordinates&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="er">...</span><span class="ot">]</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<h3 id="benefits">Benefits</h3>
-<ul>
-<li>📁 <strong>Portable</strong>: Import into ArcGIS, QGIS, Google Earth
-Pro</li>
-<li>🔄 <strong>Interoperable</strong>: Standard format supported by all
-GIS tools</li>
-<li>📊 <strong>Archivable</strong>: Version control your simulation
-outputs</li>
-<li>🔗 <strong>Shareable</strong>: Send results to team members
-instantly</li>
-</ul>
-<h2 id="performance-characteristics">Performance Characteristics</h2>
-<h3 id="scalability">Scalability</h3>
-<table>
-<thead>
-<tr>
-<th>Metric</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Building geometries</td>
-<td>Up to 50,000 per simulation</td>
-</tr>
-<tr>
-<td>Ray-polygon intersections</td>
-<td>Sub-millisecond per query (R-Tree)</td>
-</tr>
-<tr>
-<td>Heatmap generation</td>
-<td>&lt; 2 seconds for 10,000-point grid</td>
-</tr>
-<tr>
-<td>API response time</td>
-<td>&lt; 100 ms (p99)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="concurrency">Concurrency</h3>
-<ul>
-<li><strong>Go Goroutines</strong>: Each ray batch processes in
-parallel</li>
-<li><strong>Multi-core utilization</strong>: Automatic load
-balancing</li>
-<li><strong>Memory efficiency</strong>: In-memory R-Tree (typically &lt;
-500 MB for Ankara)</li>
-<li><strong>No external processes</strong>: Self-contained in single
-container</li>
-</ul>
-<h2 id="data-sources">Data Sources</h2>
-<h3 id="openstreetmap-osm">OpenStreetMap (OSM)</h3>
-<ul>
-<li>Building footprints with material tags</li>
-<li>Street geometry and terrain features</li>
-<li>Vegetation layer for obstruction modeling</li>
-</ul>
-<h3 id="opencellid">OpenCellID</h3>
-<ul>
-<li>Real 5G tower locations</li>
-<li>Equipment specifications</li>
-<li>Historical coverage data</li>
-</ul>
-<h3 id="custom-data">Custom Data</h3>
-<p>Users can import:</p>
-<ul>
-<li>Custom building geometries (Shapefile, GeoJSON)</li>
-<li>Terrain elevation models (GeoTIFF)</li>
-<li>Custom antenna specifications</li>
-<li>Proprietary building material database</li>
-</ul>
-<hr />
-<p><strong>Next</strong>: Dive into <a
-href="./architecture.html">Architecture</a> or see visual examples in <a
-href="./visualization.html">Visualization</a>.</p>
+<p>See <a href="architecture.html">System Architecture</a>, <a
+href="api.html">REST API</a>, <a href="algorithms.html">RF
+Algorithms</a>, and <a href="modeling-limits.html">Model
+Limitations</a>.</p>
       </div>
     </article>
   </main>

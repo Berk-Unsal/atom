@@ -1,354 +1,132 @@
-# FAQ (Frequently Asked Questions)
+# Frequently Asked Questions
 
-## General Questions
+## Product And Model
 
-### What is A.T.O.M used for?
+### What is A.T.O.M for?
 
-A.T.O.M simulates cellular network coverage and optimizes antenna placement for RF engineers planning 4G/5G/6G networks in urban areas. It's used by network operators, equipment vendors, and telecom researchers.
+A.T.O.M is a local-first workspace for deterministic urban RF planning. It supports sector propagation, demand gaps, multi-cell evaluation and optimization, 4G/5G interference analysis, candidate-site recommendations, measurement residual analysis, scenario comparison, and an optional 5G communication-path overlay.
 
-### Is A.T.O.M free?
+### Are the results field measurements?
 
-Yes! A.T.O.M is open-source under the MIT license. You can use, modify, and redistribute it freely.
+No. RSRP, SINR, RSRQ, RSSI, coverage, and demand KPIs are planning estimates from the configured model and dataset. They are not UE, drive-test, channel-sounder, or PHY measurements.
 
-### What frequency bands does A.T.O.M support?
+### Which propagation model is used?
 
-- **4G LTE**: 2.6 GHz
-- **5G mmWave**: 28 GHz
-- **6G Sub-THz**: 140 GHz
+The default model combines free-space path loss with antenna gain, beam/radius eligibility, exact building intersections, and cumulative frequency-dependent wall loss. It does not currently implement Okumura-Hata, diffraction, reflections, fading, terrain, sidelobes, MIMO scheduling, or uplink propagation.
 
-You can add custom frequencies by modifying the backend code.
+### Why can SINR be close to 0 dB?
 
-### Can I use A.T.O.M for my city instead of Ankara?
+When the serving cell and strongest co-channel interferer arrive at nearly equal power, their linear power ratio approaches one, which is `0 dB`. This is expected even when RSRP is strong. Reuse factor, load, geometry, and directional sectors can change that relationship.
 
-Yes! A.T.O.M is designed to work with any city. You need:
+### Why does a sample say no signal?
 
-1. Building geometries in GeoJSON format (from OpenStreetMap)
-2. Tower/node locations as GeoJSON points
-3. Replace data files in `data-pipeline/`
+A cell contributes only when the point is inside its configured radius and beam. High path loss or cumulative wall attenuation can then push modeled power below the signal floor. The interference Inspector lists serving-cell, wall, radius, beam, and interferer context where available.
 
-See [Download and Use](download.html) for installation and runtime-data verification.
+### Does measurement import calibrate the complete model?
 
----
+No. A.T.O.M compares measured and predicted RSRP and may suggest one robust global path-loss bias when at least 20 valid samples exist. A deterministic holdout reports whether that correction improves unseen samples. It does not fit separate wall, clutter, terrain, or fading parameters.
 
-## Technical Questions
+### What is the 6G mode?
 
-### How accurate is A.T.O.M?
+The 140 GHz mode is an exploratory Sub-THz propagation overlay. Interference analysis, measurement validation, recommendations, and 5G Core language are intentionally unavailable where their assumptions are unsupported.
 
-A.T.O.M has not been calibrated against operator drive tests or UE measurements. It produces deterministic planning estimates whose usefulness depends on:
+## Projects And Results
 
-- ✅ OSM building data quality
-- The fixed frequency-dependent wall-loss assumptions
-- ✅ Tower coordinates
-- Terrain elevation, reflections, and fading are not currently modeled
+### Where are projects stored?
 
-Use it to compare planning scenarios, then validate deployment decisions with calibrated tools and field measurements.
+Projects are stored in the current browser through IndexedDB, with a local-storage fallback. The server remains stateless. Export a versioned `.atom-project.json` file for backup or transfer to another browser.
 
-### Why doesn't A.T.O.M model multipath/reflections?
+### Why is a saved result marked stale?
 
-Including full multipath (reflections, scattering) would:
+The saved inputs, dataset, model, or calibration profile no longer match the active workspace. A.T.O.M preserves the scenario but requires a rerun before treating its result as current.
 
-1. Increase computation time by 100-1000×
-2. Require ray bounce limits to be practical
-3. Add uncertainty about reflection coefficients
+### Why do old scenarios not contain every map layer?
 
-A.T.O.M focuses on **deterministic propagation** (line-of-sight + penetration losses) which is sufficient for coverage planning.
+To bound browser storage, complete GeoJSON artifacts are retained for the five most recently used scenarios. Older scenarios retain settings, exact requests, metadata, and compact summaries.
 
-### Can I add custom propagation models?
+### What does candidate recommendation guarantee?
 
-Yes! Edit `backend-go/raytracer/geometry.go`:
+It ranks unselected records from the active tower dataset by bounded, deterministic RF and demand scoring inside the drawn area. It does not establish ownership, rooftop access, permitting, cost, power, fiber, backhaul, or construction feasibility. Analyze interference after applying a recommendation.
 
-```go
-func CustomPathLoss(distance float64, frequency string) float64 {
-    // Your custom equation
-    return 20*math.Log10(distance) + customFactor
-}
-```
+## Data
 
-Rebuild and redeploy:
+### Can I use a region other than Ankara?
+
+Yes, through a validated dataset pack. Set `ATOM_DATASET_DIR` to a directory containing the versioned manifest and referenced tower/building files, then restart the application. The validator checks schema, CRS, coordinates, geometry, duplicate IDs, and SHA-256 hashes.
 
 ```bash
-docker build -t atom-simulator .
+cd backend-go
+go run ./cmd/validate-dataset -dataset-dir /path/to/dataset
 ```
 
-### How does the R-Tree spatial index work?
+The application does not yet download or build arbitrary cities from the browser.
 
-See [Algorithms & Physics](algorithms.md#spatial-indexing-r-tree) for detailed explanation.
+### Why does `/readyz` return 503?
 
-**TL;DR**: It's a balanced tree structure that speeds up "which buildings does this ray intersect?" queries from O(n) → O(log n).
+Read the JSON response and container logs. Readiness requires a valid dataset manifest and hashes, loaded towers/buildings, a built frontend bundle, and successful startup indexing. `/healthz` only confirms process liveness.
 
-### What if a building is not in OSM?
+### Does the default app work fully offline?
 
-Add it to OpenStreetMap! OSM is community-maintained, so:
+RF computation, project storage, and datasets are local. The default Leaflet basemap still requests OpenStreetMap tiles unless you configure or cache a local tile source.
 
-1. Visit [openstreetmap.org](https://www.openstreetmap.org)
-2. Edit map to add missing building
-3. Re-export data using data pipeline
-4. Rebuild simulator
+### Why is Git LFS required?
 
-### Can I run A.T.O.M offline?
+The default Ankara building GeoJSON is larger than a normal Git object. A Git LFS pointer is not valid GeoJSON, so source installations should run `git lfs pull` before building.
 
-Yes! Once the Docker image is built, it needs no external internet access. All data is baked into the image.
+## Runtime And API
 
----
+### Is there a documented REST API?
 
-## Performance Questions
+Yes. The [API Reference](api.html) and downloadable [OpenAPI 3.1 specification](openapi.yaml) cover RF simulation, gaps, optimization, network evaluation, interference, recommendations, measurement evaluation, metadata, datasets, and Core Lab routes.
 
-### Why is the first request slow?
+### Why did an RF request return 429?
 
-The first request triggers:
-1. Docker startup
-2. GeoJSON loading
-3. R-Tree construction
-4. Simulation execution
+A.T.O.M admits two concurrent RF jobs by default and limits each expensive job to four workers. When capacity is occupied, it returns `429` with `Retry-After`. Let the active job finish or raise `MAX_CONCURRENT_RF_REQUESTS` cautiously for capable hardware.
 
-**Typical**: 5-10 seconds total (future requests: 1-3 seconds)
+### What request limits apply?
 
-### How many concurrent requests can A.T.O.M handle?
+POST bodies are limited to 1 MiB. The HTTP server uses bounded header, read, write, and idle timeouts. Frontend operations cancel superseded work and reject stale responses.
 
-Depends on your hardware:
+### Is the server stateless?
 
-| CPU Cores | Max Concurrent | Notes |
-|-----------|----------------|-------|
-| 1 | 2 | Development only |
-| 2 | 5 | Small deployments |
-| 4 | 15 | Recommended |
-| 8 | 30 | Enterprise |
+Yes. RF results and projects are not stored by the Go service. This allows multiple API replicas, but browser projects are not automatically shared between them or between users.
 
-### How can I make simulations faster?
+### Does the API require authentication?
 
-1. **Reduce ray count**: Fewer rays means fewer intersection checks
-2. **Reduce coverage radius**: Shorter max distance means fewer segment steps
-3. **Deploy on faster CPU**: More cores = faster execution
-4. **Parallelize**: Use batch optimization
+No. Internet-facing deployments should add TLS, authentication, and external rate policy at a trusted reverse proxy or gateway.
 
-### What's the memory footprint?
+## 5G Core Lab
 
-| Component | Size |
-|-----------|------|
-| Go runtime | ~10 MB |
-| Building GeoJSON | 40 MB (compressed in RAM) |
-| R-Tree | 150 MB |
-| Workspace per request | 5 MB |
-| **Total** | ~200 MB typical |
+### Does Core Lab deploy Open5GS?
 
-Docker container: **~150 MB**
+No. The optional adapter provides deterministic 5G topology, health, session, event, and scenario state and can probe configured Open5GS endpoints. It does not bundle a complete mobile core.
 
----
+### Why is Core Lab unavailable in 4G or 6G?
 
-## Deployment Questions
+Its terminology and paths model 5GS behavior: Xn-C/Xn-U, N2 via AMF, and N3 via UPF. A.T.O.M does not relabel those interfaces as LTE/EPC or speculative 6G Core behavior.
 
-### Can I run A.T.O.M on ARM64 (Apple Silicon)?
+## Installation And Troubleshooting
 
-Yes! The Docker image builds for ARM64. Just build and run normally:
+### What is the recommended installation path?
+
+Clone with Git LFS and use Docker Compose:
 
 ```bash
-docker build -t atom-simulator .
-docker run -p 8080:8080 atom-simulator
-```
-
-### How do I update A.T.O.M?
-
-1. Pull latest code: `git pull`
-2. Rebuild image: `docker build -t atom-simulator .`
-3. Stop old container: `docker stop atom-api`
-4. Run new container: `docker run -p 8080:8080 atom-simulator`
-
-### Can I deploy multiple replicas?
-
-Yes! A.T.O.M is **stateless**, so multiple instances can run behind a load balancer. See [Deployment](deployment.md#horizontal-scaling-multiple-instances).
-
-### What's the difference between Docker and native Go?
-
-| Aspect | Docker | Native Go |
-|--------|--------|-----------|
-| Isolation | ✅ Full OS isolation | ❌ None |
-| Setup | 1 command | Requires Go, Node.js |
-| Performance | ~5% overhead | Baseline |
-| Portability | ✅ Works anywhere | ❌ OS-specific |
-| Recommended | ✅ Yes (all environments) | Development only |
-
----
-
-## Data Questions
-
-### Where does the GeoJSON data come from?
-
-- **Buildings**: [OpenStreetMap](https://www.openstreetmap.org)
-- **Towers**: [OpenCellID](https://opencellid.org)
-- **Custom data**: You can add your own
-
-### Can I add a new building to the map?
-
-Yes. Update the source data, regenerate the GeoJSON, and rebuild the application. See [Download and Use](download.html) for installation and runtime-data verification.
-
-### How often should I update the data?
-
-- **GeoJSON**: Every quarter (as OSM updates)
-- **Tower list**: Monthly (new sites come online)
-- **Material database**: Annually (as building codes change)
-
-### Can I use proprietary building data?
-
-Yes, A.T.O.M accepts any GeoJSON-format geometry. Replace:
-- `data-pipeline/ankara_buildings.geojson`
-- `data-pipeline/ankara_5g_nodes.geojson`
-
-Then rebuild.
-
----
-
-## API Questions
-
-### What's the typical API response time?
-
-| Request | Time |
-|---------|------|
-| `/healthz` | < 10 ms |
-| `/api/towers` | 100 ms |
-| `/api/buildings` | 1-2 seconds |
-| `/api/simulate` | 1-3 seconds |
-| `/api/coverage-gaps` | 1-3 seconds |
-| `/api/optimize-azimuth` | 3-5 seconds |
-
-### Can I call the API from my own application?
-
-Yes! A.T.O.M exposes a REST API. Examples:
-
-```python
-import requests
-
-response = requests.post(
-    'http://localhost:8080/api/simulate',
-    json={
-        'tower_lon': 32.8541,
-        'tower_lat': 39.9208,
-        'rays': 120,
-        'radius_m': 400,
-        'frequency_ghz': 28,
-        'tx_power_dbm': 30,
-        'azimuth': 45,
-        'beam_width': 120
-    }
-)
-
-coverage = response.json()['geojson']
-```
-
-See [API Reference](api.md) for full documentation.
-
-### Does A.T.O.M support webhooks?
-
-Not in v1.0. Planned for v1.1+. Currently, poll the API for results.
-
----
-
-## Integration Questions
-
-### Can I export results to ArcGIS/QGIS?
-
-Yes! All results are GeoJSON-formatted. Simply:
-
-1. Export from A.T.O.M: Click "Download GeoJSON"
-2. Import into ArcGIS: File → Import → GeoJSON
-3. Use in QGIS: Layer → Add Layer → Vector → GeoJSON
-
-### Can I integrate A.T.O.M with my network planning tool?
-
-Yes! Call the REST API from your tool. See [API Reference](api.md) for endpoints and examples.
-
-### Does A.T.O.M work with Optus, Ericsson, or Nokia planning tools?
-
-Not directly, but you can:
-1. Export GeoJSON from A.T.O.M
-2. Convert to your tool's format (usually via QGIS)
-3. Import for comparison/validation
-
----
-
-## Troubleshooting Questions
-
-### Docker image won't build
-
-**Error**: `npm: not found`
-
-**Solution**: Ensure Dockerfile is complete. Download latest from GitHub:
-
-```bash
+git lfs install
 git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
 cd urban-ray-tracer
 git lfs pull
 docker compose up --build -d atom
 ```
 
-### API returns validation error
+Open `http://localhost:8080` and verify `http://localhost:8080/readyz`.
 
-**Cause**: One of the request fields is outside the allowed range or missing
+### Can I run on Apple Silicon?
 
-**Solution**: 
-1. Check the current payload keys in [API Reference](api.md)
-2. Verify `tower_lon`, `tower_lat`, `rays`, `radius_m`, and `frequency_ghz`
+Yes. Local Docker builds support ARM64, and tagged releases are intended to publish multi-architecture images.
 
-### Coverage heatmap looks wrong
+### How do I report a problem?
 
-**Possible causes**:
-1. ❌ Building data corrupted → Check OSM data quality
-2. ❌ Frequency range too wide → Adjust grid spacing
-3. ❌ Beamforming gain off → Check beam width setting
+Include the application/model/dataset versions from Data or `/api/meta`, the exact request or exported project, the readiness response, and relevant logs in a [GitHub issue](https://github.com/Berk-Unsal/urban-ray-tracer/issues).
 
-**Debug**: Call `/readyz` to verify the building index, tower data, and frontend bundle are loaded. Use `/healthz` only to check process liveness.
-
-### Why is my region's coverage very sparse?
-
-**Possible causes**:
-1. **Data quality**: Missing buildings in OSM
-2. **Frequency too high**: 6G has very limited range
-3. **Line-of-sight**: If urban canyon is dense, coverage naturally limited
-
-**Solution**: Add missing buildings to OSM, or choose more favorable tower location.
-
----
-
-## Contributing Questions
-
-### How can I contribute to A.T.O.M?
-
-See [Contributing](contributing.md) for guidelines.
-
-### Can I fork A.T.O.M for my own project?
-
-Yes! MIT license allows forking. You must:
-- ✅ Include original license
-- ✅ Attribute original authors
-- ✅ Document your modifications
-
-### Who maintains A.T.O.M?
-
-A.T.O.M is maintained by [Berk Ünsal](https://berkunsal.com) with community contributions.
-
----
-
-## Licensing Questions
-
-### What license is A.T.O.M under?
-
-MIT License (open-source, permissive)
-
-### Can I use A.T.O.M commercially?
-
-Yes! MIT license allows commercial use. Just include the license in your distribution.
-
-### Do I need to contribute improvements back?
-
-Not required, but encouraged! Community contributions improve the project for everyone.
-
----
-
-## Still have questions?
-
-- 📖 Check [Documentation](index.md) 
-- 💬 Open an issue on GitHub
-- 📧 Email [berk@berkunsal.com](mailto:berk@berkunsal.com)
-
----
-
-**Next**: See [Contributing](contributing.md) to help improve A.T.O.M.
+See [Download and Use](download.html), [System Architecture](architecture.html), and [Model Limitations](modeling-limits.html) for deeper guidance.

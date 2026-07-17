@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "sample-portability-pack",
+  "name": "A.T.O.M Portability Test Pack",
+  "version": "1.0.0",
+  "crs": "EPSG:4326",
+  "bounds": [32.84, 39.91, 32.86, 39.93],
+  "generated_at": "2026-07-17",
+  "sources": ["Synthetic test fixture"],
+  "licenses": ["MIT test fixture"],
+  "confidence": "Synthetic geometry for automated portability validation only.",
+  "files": {
+    "towers": "towers.geojson",
+    "buildings": "buildings.geojson"
+  },
+  "sha256": {
+    "towers.geojson": "084621f1920082656bac92db0e184f62531d9c55c83d2722d79c797b97963f28",
+    "buildings.geojson": "82f385667e13f2a73e5652ff5dede2c26ac937db4a004d4197f9b0cb254b355c"
+  }
+}

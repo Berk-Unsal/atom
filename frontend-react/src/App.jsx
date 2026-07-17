@@ -11,6 +11,7 @@ import {
   RadioTower,
   Server,
   SlidersHorizontal,
+  Upload,
 } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
 import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
@@ -19,18 +20,24 @@ import {
   CommandBar,
   InterferenceLegend,
   MapToolbar,
+  ProjectMenu,
   ToolDrawer,
   WorkflowRail,
 } from "./components/WorkspaceChrome.jsx";
 import { WORKSPACE_TOOLS } from "./components/workspaceTools.js";
 import useRequestCoordinator from "./hooks/useRequestCoordinator.js";
+import useProjectWorkspace from "./hooks/useProjectWorkspace.js";
 import { getJSON, isAbortError, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
 import { runNetworkSimulationQueue } from "./utils/networkSimulationQueue.js";
 import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/polygonSelection.js";
+import { parseMeasurementCsv } from "./utils/measurementCsv.js";
+import { isDatasetCompatible } from "./utils/projectStore.js";
 import {
   buildInterferencePayload,
+  buildMeasurementPayload,
   buildNetworkOptimizationPayload,
+  buildRecommendationPayload,
   buildSimulationPayload,
 } from "./utils/requestPayloads.js";
 import {
@@ -68,6 +75,7 @@ const DEFAULT_SIMULATION = {
   reuseFactor: 1,
   noiseFigureDb: 7,
   sampleSpacingMeters: 40,
+  calibrationOffsetDb: 0,
 };
 
 const EMPTY_INTERFERENCE_ANALYSIS = {
@@ -77,12 +85,23 @@ const EMPTY_INTERFERENCE_ANALYSIS = {
   model: null,
 };
 
+const EMPTY_SIMULATION = {
+  geojson: { type: "FeatureCollection", features: [] },
+  stats: null,
+};
+
+const EMPTY_COVERAGE_GAPS = {
+  geojson: { type: "FeatureCollection", features: [] },
+  stats: null,
+};
+
 const DEFAULT_LAYER_VISIBILITY = {
   rays: true,
   gaps: true,
   selectedCells: true,
   communicationPaths: true,
   interference: true,
+  measurements: true,
 };
 
 export default function App() {
@@ -103,23 +122,23 @@ export default function App() {
   const [selectedMapObject, setSelectedMapObject] = useState(null);
   const [fitRequestVersion, setFitRequestVersion] = useState(0);
   const [settings, setSettings] = useState(DEFAULT_SIMULATION);
+  const [planDirty, setPlanDirty] = useState(false);
   const [towers, setTowers] = useState([]);
   const [selectedTower, setSelectedTower] = useState(null);
   const [selectedNetworkTowerIds, setSelectedNetworkTowerIds] = useState([]);
-  const [simulation, setSimulation] = useState({
-    geojson: { type: "FeatureCollection", features: [] },
-    stats: null,
-  });
+  const [simulation, setSimulation] = useState(EMPTY_SIMULATION);
   const [simulationRevision, setSimulationRevision] = useState(0);
-  const [coverageGaps, setCoverageGaps] = useState({
-    geojson: { type: "FeatureCollection", features: [] },
-    stats: null,
-  });
+  const [coverageGaps, setCoverageGaps] = useState(EMPTY_COVERAGE_GAPS);
   const [coverageGapRevision, setCoverageGapRevision] = useState(0);
   const [interferenceAnalysis, setInterferenceAnalysis] = useState(EMPTY_INTERFERENCE_ANALYSIS);
   const [interferenceRevision, setInterferenceRevision] = useState(0);
   const [interferenceMetric, setInterferenceMetric] = useState("sinr");
   const [buildingSummary, setBuildingSummary] = useState(null);
+  const [appMeta, setAppMeta] = useState(null);
+  const [siteRecommendations, setSiteRecommendations] = useState(null);
+  const [measurementSamples, setMeasurementSamples] = useState([]);
+  const [measurementAnalysis, setMeasurementAnalysis] = useState(null);
+  const [calibrationProfile, setCalibrationProfile] = useState(null);
   const [activeRFTask, setActiveRFTask] = useState(null);
   const [optimizationDiagnostics, setOptimizationDiagnostics] = useState(null);
   const [networkOptimization, setNetworkOptimization] = useState(null);
@@ -135,12 +154,27 @@ export default function App() {
     topology: null,
   });
   const [error, setError] = useState("");
-  const skipNextSimulationRun = useRef(false);
+  const restoredProjectRef = useRef(null);
   const requests = useRequestCoordinator();
+  const projectWorkspace = useProjectWorkspace(appMeta);
+  const activeProject = projectWorkspace.activeProject;
+  const workspaceLoaded = projectWorkspace.loaded;
+  const saveProjectDraft = projectWorkspace.saveDraft;
+  const saveProjectScenario = projectWorkspace.saveScenario;
   const isLoading = activeRFTask === "simulation" || activeRFTask === "network_evaluation";
   const isEvaluatingNetwork = activeRFTask === "network_evaluation";
   const isOptimizing = activeRFTask === "optimization";
   const isAnalyzingInterference = activeRFTask === "interference";
+  const isRecommendingSites = activeRFTask === "recommendation";
+  const isEvaluatingMeasurements = activeRFTask === "measurements";
+
+  useEffect(() => {
+    let isMounted = true;
+    getJSON("/api/meta", "Application metadata could not be loaded")
+      .then((meta) => { if (isMounted) setAppMeta(meta); })
+      .catch(() => { if (isMounted) setAppMeta(null); });
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -200,6 +234,93 @@ export default function App() {
     );
   }, []);
 
+  const restorePlanningSnapshot = useCallback((snapshot) => {
+    const plan = snapshot?.plan ?? snapshot;
+    if (!plan) return;
+    const restoredSettings = { ...DEFAULT_SIMULATION, ...plan.settings };
+    const calibrationCompatible = isCalibrationProfileCompatible(snapshot?.calibrationProfile, restoredSettings, appMeta);
+    if (!calibrationCompatible) restoredSettings.calibrationOffsetDb = 0;
+    setSettings(restoredSettings);
+    if (plan.planningMode) setPlanningMode(plan.planningMode);
+    if (Array.isArray(plan.selectionPolygon)) setSelectionPolygon(plan.selectionPolygon);
+    if (Array.isArray(plan.selectedNetworkTowerIds)) {
+      setSelectedNetworkTowerIds(plan.selectedNetworkTowerIds.filter((id) => towers.some((tower) => tower.id === id)));
+    }
+    if (plan.selectedTowerId) {
+      setSelectedTower(towers.find((tower) => tower.id === plan.selectedTowerId) ?? towers[0] ?? null);
+    }
+    if (plan.layerVisibility) setLayerVisibility((current) => ({ ...current, ...plan.layerVisibility }));
+    const artifacts = snapshot?.artifacts;
+    setSimulation(artifacts?.simulation ?? EMPTY_SIMULATION);
+    setCoverageGaps(artifacts?.coverageGaps ?? EMPTY_COVERAGE_GAPS);
+    setInterferenceAnalysis(artifacts?.interferenceAnalysis ?? EMPTY_INTERFERENCE_ANALYSIS);
+    setNetworkOptimization(artifacts?.networkOptimization ?? null);
+    setOptimizationDiagnostics(artifacts?.optimizationDiagnostics ?? null);
+    setSiteRecommendations(artifacts?.siteRecommendations ?? null);
+    setMeasurementAnalysis(artifacts?.measurementAnalysis ?? null);
+    setCalibrationProfile(calibrationCompatible ? snapshot?.calibrationProfile ?? null : null);
+    setLastAnalysisKind(snapshot?.summary?.kind ?? "rf");
+    setActiveResultsView(snapshot?.summary?.resultsView ?? "rf");
+    const datasetStale = Boolean(appMeta && snapshot?.datasetRef && !isDatasetCompatible({ datasetRef: snapshot.datasetRef }, appMeta));
+    const modelStale = Boolean(appMeta?.model_version && snapshot?.meta?.model_version && appMeta.model_version !== snapshot.meta.model_version);
+    setPlanDirty(Boolean(snapshot?.requiresRerun || datasetStale || modelStale || !calibrationCompatible));
+    setSimulationRevision((current) => current + 1);
+    setCoverageGapRevision((current) => current + 1);
+    setInterferenceRevision((current) => current + 1);
+  }, [appMeta, towers]);
+
+  useEffect(() => {
+    if (!appMeta) return;
+    const activeSnapshot = activeProject?.scenarios?.find((scenario) => scenario.id === activeProject.activeScenarioId) ?? activeProject?.draft;
+    const datasetStale = activeProject && !isDatasetCompatible(activeProject, appMeta);
+    const modelStale = Boolean(activeSnapshot?.meta?.model_version && activeSnapshot.meta.model_version !== appMeta.model_version);
+    if (datasetStale || modelStale) setPlanDirty(true);
+    if (calibrationProfile && !isCalibrationProfileCompatible(calibrationProfile, settings, appMeta)) {
+      setCalibrationProfile(null);
+      setSettings((current) => ({ ...current, calibrationOffsetDb: 0 }));
+      setPlanDirty(true);
+    }
+  }, [activeProject, appMeta, calibrationProfile, settings]);
+
+  useEffect(() => {
+    const project = activeProject;
+    if (!workspaceLoaded || !project || towers.length === 0 || restoredProjectRef.current === project.id) {
+      return;
+    }
+    const activeScenario = project.scenarios.find((scenario) => scenario.id === project.activeScenarioId);
+    restorePlanningSnapshot(activeScenario ?? project.draft);
+    restoredProjectRef.current = project.id;
+  }, [activeProject, restorePlanningSnapshot, towers.length, workspaceLoaded]);
+
+  useEffect(() => {
+    if (!workspaceLoaded || restoredProjectRef.current !== activeProject?.id) {
+      return undefined;
+    }
+    const timeout = window.setTimeout(() => {
+      saveProjectDraft({
+        plan: {
+          layerVisibility,
+          planningMode,
+          selectedNetworkTowerIds,
+          selectedTowerId: selectedTower?.id ?? null,
+          selectionPolygon,
+          settings,
+        },
+      });
+    }, 500);
+    return () => window.clearTimeout(timeout);
+  }, [
+    layerVisibility,
+    planningMode,
+    activeProject?.id,
+    saveProjectDraft,
+    selectedNetworkTowerIds,
+    selectedTower?.id,
+    selectionPolygon,
+    settings,
+    workspaceLoaded,
+  ]);
+
   const simulateForSettings = useCallback(async (tower, nextSettings, signal) => {
     const requestPayload = buildSimulationPayload(tower, nextSettings);
     const [simulationPayload, gapPayload] = await Promise.all([
@@ -244,6 +365,7 @@ export default function App() {
       setCoverageGapRevision((current) => current + 1);
       setLastAnalysisKind("rf");
       setActiveResultsView("rf");
+      setPlanDirty(false);
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
@@ -299,7 +421,6 @@ export default function App() {
       });
 
       setOptimizationDiagnostics(payload);
-      skipNextSimulationRun.current = true;
       setSettings(optimizedSettings);
       setSimulation(optimizedSimulation);
       setCoverageGaps(optimizedGaps);
@@ -308,6 +429,7 @@ export default function App() {
       setCoverageGapRevision((current) => current + 1);
       setLastAnalysisKind("optimization");
       setActiveResultsView("optimization");
+      setPlanDirty(false);
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
@@ -395,6 +517,7 @@ export default function App() {
       setCoverageGapRevision((current) => current + 1);
       setLastAnalysisKind("network");
       setActiveResultsView("optimization");
+      setPlanDirty(false);
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
@@ -443,6 +566,7 @@ export default function App() {
       setCoverageGapRevision((current) => current + 1);
       setLastAnalysisKind("network");
       setActiveResultsView("optimization");
+      setPlanDirty(false);
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
@@ -496,6 +620,7 @@ export default function App() {
       setLayerVisibility((current) => ({ ...current, interference: true }));
       setLastAnalysisKind("interference");
       setActiveResultsView("interference");
+      setPlanDirty(false);
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
@@ -635,29 +760,51 @@ export default function App() {
     setNetworkResultKind(null);
     setComparison({ before: null, after: null });
     clearInterferenceAnalysis();
+    setSiteRecommendations(null);
+    setMeasurementAnalysis(null);
   }, [clearInterferenceAnalysis]);
 
-  const updateSettings = useCallback((nextSettings) => {
+  const clearRenderedAnalysis = useCallback(() => {
+    setSimulation(EMPTY_SIMULATION);
+    setCoverageGaps(EMPTY_COVERAGE_GAPS);
+    setSimulationRevision((current) => current + 1);
+    setCoverageGapRevision((current) => current + 1);
+    setSelectedMapObject((current) => current?.type === "tower" ? current : null);
+  }, []);
+
+  const invalidatePlanResults = useCallback(() => {
     requests.cancel("rf");
     setActiveRFTask(null);
     setOptimizationDiagnostics(null);
     resetNetworkArtifacts();
-    setSettings(nextSettings);
-  }, [requests, resetNetworkArtifacts]);
+    clearRenderedAnalysis();
+    setPlanDirty(true);
+  }, [clearRenderedAnalysis, requests, resetNetworkArtifacts]);
+
+  const updateSettings = useCallback((nextSettings) => {
+    invalidatePlanResults();
+    setSettings((current) => {
+      const resolved = typeof nextSettings === "function" ? nextSettings(current) : nextSettings;
+      if (resolved.frequencyGHz !== current.frequencyGHz) {
+        setCalibrationProfile(null);
+        return { ...resolved, calibrationOffsetDb: 0 };
+      }
+      return resolved;
+    });
+  }, [invalidatePlanResults]);
 
   const selectTower = useCallback((tower) => {
-    requests.cancel("rf");
-    setActiveRFTask(null);
     if (planningMode === "network") {
-      resetNetworkArtifacts();
+      const isSelected = selectedNetworkTowerIds.includes(tower.id);
+      if (!isSelected && selectedNetworkTowerIds.length >= 6) {
+        setError("Network planning supports up to 6 selected cells");
+        return;
+      }
+      invalidatePlanResults();
       setSelectionNotice("");
       setSelectedNetworkTowerIds((current) => {
         if (current.includes(tower.id)) {
           return current.filter((id) => id !== tower.id);
-        }
-        if (current.length >= 6) {
-          setError("Network optimization supports up to 6 selected towers");
-          return current;
         }
         setError("");
         return [...current, tower.id];
@@ -665,17 +812,16 @@ export default function App() {
       setSelectedTower(tower);
       return;
     }
-    setOptimizationDiagnostics(null);
-    resetNetworkArtifacts();
+    invalidatePlanResults();
     setSelectedTower(tower);
-  }, [planningMode, requests, resetNetworkArtifacts]);
+  }, [invalidatePlanResults, planningMode, selectedNetworkTowerIds]);
 
   const changePlanningMode = useCallback((mode) => {
-    requests.cancel("rf");
-    setActiveRFTask(null);
+    if (mode === planningMode) {
+      return;
+    }
+    invalidatePlanResults();
     setPlanningMode(mode);
-    setOptimizationDiagnostics(null);
-    resetNetworkArtifacts();
     setIsDrawingSelection(false);
     setSelectionPolygon([]);
     setSelectionNotice("");
@@ -687,7 +833,7 @@ export default function App() {
         return selectedTower ? [selectedTower.id] : [];
       });
     }
-  }, [requests, resetNetworkArtifacts, selectedTower]);
+  }, [invalidatePlanResults, planningMode, selectedTower]);
 
   const startAreaSelection = useCallback(() => {
     if (planningMode !== "network") {
@@ -706,14 +852,12 @@ export default function App() {
   }, []);
 
   const clearNetworkSelection = useCallback(() => {
-    requests.cancel("rf");
-    setActiveRFTask(null);
+    invalidatePlanResults();
     setSelectedNetworkTowerIds([]);
     setSelectionPolygon([]);
     setSelectedMapObject(null);
     setSelectionNotice("");
-    resetNetworkArtifacts();
-  }, [requests, resetNetworkArtifacts]);
+  }, [invalidatePlanResults]);
 
   const finishAreaSelection = useCallback((polygon) => {
     const finalPolygon = polygon ?? selectionPolygon;
@@ -734,11 +878,9 @@ export default function App() {
     const selected = [...inside]
       .sort((left, right) => distanceToCentroid(left, centroid) - distanceToCentroid(right, centroid))
       .slice(0, 6);
+    invalidatePlanResults();
     setSelectedNetworkTowerIds(selected.map((tower) => tower.id));
-    requests.cancel("rf");
-    setActiveRFTask(null);
     setSelectedTower((current) => selected[0] ?? current);
-    resetNetworkArtifacts();
     setIsDrawingSelection(false);
     setSelectionPolygon(finalPolygon);
     setSelectionNotice(
@@ -746,11 +888,120 @@ export default function App() {
         ? `${inside.length} towers found, nearest 6 selected.`
         : `${selected.length} towers selected from drawn area.`,
     );
-  }, [requests, resetNetworkArtifacts, selectionPolygon, towers]);
+  }, [invalidatePlanResults, selectionPolygon, towers]);
 
   const addSelectionPolygonPoint = useCallback((coordinate) => {
     setSelectionPolygon((current) => [...current, coordinate]);
   }, []);
+
+  const recommendSites = useCallback(async () => {
+    if (!interferenceApplicable) {
+      setError("Candidate recommendations are available for 4G and 5G plans");
+      return;
+    }
+    if (selectedNetworkTowers.length < 2 || selectedNetworkTowers.length > 5) {
+      setError("Select between 2 and 5 cells before adding one candidate");
+      return;
+    }
+    if (selectionPolygon.length < 3) {
+      setError("Draw a search area before requesting candidate cells");
+      return;
+    }
+    const request = requests.begin("rf");
+    setActiveRFTask("recommendation");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/recommend-sites",
+        buildRecommendationPayload(selectedNetworkTowers, settings, selectionPolygon),
+        "Candidate recommendation failed",
+        request.signal,
+      );
+      if (!request.isCurrent()) return;
+      setSiteRecommendations(payload);
+      setActiveResultsView("recommendations");
+      setLastAnalysisKind("recommendation");
+      setPlanDirty(false);
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [interferenceApplicable, requests, selectedNetworkTowers, selectionPolygon, settings]);
+
+  const loadMeasurementFile = useCallback(async (file) => {
+    if (!file) return;
+    try {
+      const samples = parseMeasurementCsv(await file.text());
+      const expectedTechnology = settings.frequencyGHz < 10 ? "4g" : settings.frequencyGHz < 100 ? "5g" : "6g";
+      if (expectedTechnology === "6g" || samples.some((sample) => sample.technology !== expectedTechnology)) {
+        throw new Error(`Measurement technology must match the active ${expectedTechnology.toUpperCase()} plan`);
+      }
+      setMeasurementSamples(samples);
+      setMeasurementAnalysis(null);
+      setError("");
+    } catch (fileError) {
+      setMeasurementSamples([]);
+      setMeasurementAnalysis(null);
+      setError(fileError.message);
+    }
+  }, [settings.frequencyGHz]);
+
+  const evaluateMeasurements = useCallback(async () => {
+    const measurementTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
+    if (measurementSamples.length === 0) {
+      setError("Import a measurement CSV before evaluating residuals");
+      return;
+    }
+    if (measurementTowers.length === 0 || !interferenceApplicable) {
+      setError("Measurement validation requires at least one selected 4G or 5G cell");
+      return;
+    }
+    const request = requests.begin("rf");
+    setActiveRFTask("measurements");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/measurements/evaluate",
+        buildMeasurementPayload(measurementTowers, settings, measurementSamples, networkOptimization),
+        "Measurement evaluation failed",
+        request.signal,
+      );
+      if (!request.isCurrent()) return;
+      setMeasurementAnalysis(payload);
+      setLayerVisibility((current) => ({ ...current, measurements: true }));
+      setPlanDirty(false);
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [interferenceApplicable, measurementSamples, networkOptimization, planningMode, requests, selectedNetworkTowers, selectedTower, settings]);
+
+  const applyCalibration = useCallback(() => {
+    const offset = measurementAnalysis?.calibration?.recommended_total_offset_db;
+    if (!Number.isFinite(Number(offset))) {
+      setError("No eligible calibration correction is available");
+      return;
+    }
+    setSettings((current) => ({ ...current, calibrationOffsetDb: Number(offset) }));
+    setCalibrationProfile({
+      kind: "robust_global_path_loss_bias",
+      offsetDb: Number(offset),
+      technology: settings.frequencyGHz < 10 ? "4g" : "5g",
+      frequencyGHz: settings.frequencyGHz,
+      modelVersion: appMeta?.model_version ?? "unknown",
+      dataset: appMeta?.dataset ? { id: appMeta.dataset.id, version: appMeta.dataset.version } : null,
+      validation: measurementAnalysis.calibration,
+    });
+    setPlanDirty(true);
+  }, [appMeta, measurementAnalysis, settings.frequencyGHz]);
 
   const toggleLayerVisibility = useCallback((layer) => {
     setLayerVisibility((current) => ({
@@ -823,6 +1074,7 @@ export default function App() {
         return;
       }
       if (isDrawingSelection) {
+        cancelAreaSelection();
         return;
       }
       if (drawerOpen) {
@@ -831,7 +1083,7 @@ export default function App() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [closeDrawer, drawerMode, drawerOpen, isDrawingSelection, layerMenuOpen]);
+  }, [cancelAreaSelection, closeDrawer, drawerMode, drawerOpen, isDrawingSelection, layerMenuOpen]);
 
   useEffect(() => {
     if (!coreLabEnabled || !coreLabApplicable) {
@@ -864,16 +1116,6 @@ export default function App() {
     }));
   }, [coreLabApplicable, coreLabEnabled]);
 
-  useEffect(() => {
-    if (selectedTower) {
-      if (skipNextSimulationRun.current) {
-        skipNextSimulationRun.current = false;
-        return;
-      }
-      runSimulation();
-    }
-  }, [selectedTower, runSimulation]);
-
   const stats = useMemo(() => {
     return {
       towerCount: towers.length,
@@ -887,15 +1129,23 @@ export default function App() {
   const gapStats = coverageGaps?.stats ?? null;
   const activeNetworkTech = networkTechLabelForFrequency(settings.frequencyGHz);
   const selectedTowerLabel = selectedTower?.cellId ?? "No tower";
-  const runState = isEvaluatingNetwork
-    ? "Evaluating"
-    : activeRFTask === "simulation"
-      ? "Simulating"
-    : isOptimizing
-      ? "Optimizing"
-      : isAnalyzingInterference
-        ? "Analyzing"
-        : "Ready";
+  const runState = error
+    ? "Action needed"
+    : isEvaluatingNetwork
+      ? "Evaluating"
+      : activeRFTask === "simulation"
+        ? "Simulating"
+        : isOptimizing
+          ? "Optimizing"
+          : isAnalyzingInterference
+            ? "Analyzing"
+            : isRecommendingSites
+              ? "Recommending"
+              : isEvaluatingMeasurements
+                ? "Validating"
+            : planDirty
+              ? "Plan changed"
+              : "Ready";
   const resultSummary = useMemo(() => {
     if (lastAnalysisKind === "interference" && interferenceAnalysis.stats) {
       return {
@@ -903,6 +1153,14 @@ export default function App() {
         primary: formatMetric(interferenceAnalysis.stats.avg_sinr_db, "dB"),
         secondary: `${formatNumber(interferenceAnalysis.stats.serviceable_pct, 0)}% serviceable`,
         view: "interference",
+      };
+    }
+    if (lastAnalysisKind === "recommendation" && siteRecommendations?.recommendations?.length) {
+      return {
+        label: "Candidates",
+        primary: String(siteRecommendations.recommendations.length),
+        secondary: "ranked sites",
+        view: "recommendations",
       };
     }
     if ((lastAnalysisKind === "network" || lastAnalysisKind === "optimization") && networkOptimization?.stats) {
@@ -913,7 +1171,7 @@ export default function App() {
         view: "optimization",
       };
     }
-    if (simulation?.stats) {
+    if (lastAnalysisKind === "rf" && simulation?.stats) {
       return {
         label: "Sector result",
         primary: stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`,
@@ -922,18 +1180,19 @@ export default function App() {
       };
     }
     return null;
-  }, [gapStats, interferenceAnalysis.stats, lastAnalysisKind, networkOptimization, networkResultKind, simulation?.stats, stats.avgPower]);
+  }, [gapStats, interferenceAnalysis.stats, lastAnalysisKind, networkOptimization, networkResultKind, simulation?.stats, siteRecommendations, stats.avgPower]);
+  const selectedCellCount = selectedNetworkTowerIds.length;
   const contextLabel = planningMode === "network"
-    ? `Network · ${selectedNetworkTowerIds.length} cells`
+    ? `Network · ${selectedCellCount} ${selectedCellCount === 1 ? "cell" : "cells"}`
     : `Single · Cell ${selectedTowerLabel}`;
   const planSummary = `${formatNumber(settings.frequencyGHz, 1)} GHz · ${formatNumber(settings.txPowerDbm, 0)} dBm · ${formatNumber(settings.radiusMeters, 0)} m`;
   const hasInterferenceData = (interferenceAnalysis.geojson?.features ?? []).length > 0;
-  const hasResults = Boolean(simulation?.stats || networkOptimization?.stats || interferenceAnalysis.stats);
+  const hasResults = Boolean(simulation?.stats || networkOptimization?.stats || interferenceAnalysis.stats || siteRecommendations || measurementAnalysis);
   const interferenceUnavailableReason = planningMode !== "network"
     ? "Interference requires Network planning mode"
     : !interferenceApplicable
       ? "Interference is not applicable to 6G research mode"
-      : selectedNetworkTowerIds.length < 2
+      : selectedCellCount < 2
         ? "Select at least two cells"
         : null;
   const coreUnavailableReason = coreLabApplicable ? null : "5G Core is available only in 5G mmWave mode";
@@ -941,15 +1200,15 @@ export default function App() {
     setup: { badge: planningMode === "network" ? String(selectedNetworkTowerIds.length) : null },
     propagation: {},
     interference: {
-      disabled: Boolean(interferenceUnavailableReason),
+      unavailable: Boolean(interferenceUnavailableReason),
       reason: interferenceUnavailableReason,
-      badge: hasInterferenceData ? "•" : null,
-      tone: "success",
+      badge: hasInterferenceData ? "•" : interferenceUnavailableReason ? "!" : null,
+      tone: hasInterferenceData ? "success" : "warning",
     },
     core: {
-      disabled: Boolean(coreUnavailableReason),
+      unavailable: Boolean(coreUnavailableReason),
       reason: coreUnavailableReason,
-      badge: coreLabEnabled ? "•" : null,
+      badge: coreLabEnabled ? "•" : coreUnavailableReason ? "!" : null,
       tone: coreLab.status?.state === "connected" ? "success" : "warning",
     },
     results: { badge: hasResults ? "•" : null, tone: "success" },
@@ -957,19 +1216,147 @@ export default function App() {
     report: {},
   };
   const activeToolDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
+  const cellsNeeded = Math.max(0, 2 - selectedCellCount);
+  const primaryActionLabel = isEvaluatingNetwork
+    ? "Evaluating..."
+    : planningMode === "network"
+      ? cellsNeeded > 0
+        ? `Add ${cellsNeeded} ${cellsNeeded === 1 ? "cell" : "cells"}`
+        : "Evaluate Network"
+      : isLoading
+        ? "Running..."
+        : "Run Sector";
+  const mapPlanPrompt = planDirty
+    ? planningMode === "network" && cellsNeeded > 0
+      ? {
+          title: `Add ${cellsNeeded} more ${cellsNeeded === 1 ? "cell" : "cells"}`,
+          detail: "Select towers on the map or draw an area to build the cluster.",
+        }
+      : {
+          title: "Plan changed",
+          detail: planningMode === "network"
+            ? "Evaluate the network to refresh the map and KPIs."
+            : "Run the sector to refresh the map and KPIs.",
+        }
+    : null;
+
+  const buildCurrentScenarioSnapshot = useCallback((overrides = {}) => ({
+    datasetRef: appMeta?.dataset ? {
+      id: appMeta.dataset.id,
+      version: appMeta.dataset.version,
+      hashes: appMeta.dataset.sha256 ?? {},
+    } : null,
+    meta: appMeta,
+    calibrationProfile,
+    plan: {
+      settings,
+      planningMode,
+      selectedTowerId: selectedTower?.id ?? null,
+      selectedNetworkTowerIds,
+      selectionPolygon,
+      layerVisibility,
+      ...overrides.plan,
+    },
+    request: planningMode === "network"
+      ? buildNetworkOptimizationPayload(selectedNetworkTowers, settings)
+      : selectedTower ? buildSimulationPayload(selectedTower, settings) : null,
+    summary: {
+      kind: lastAnalysisKind,
+      resultsView: activeResultsView,
+      avgRxDBm: simulation?.stats?.avg_rx_dbm ?? null,
+      gapPct: coverageGaps?.stats?.gap_pct ?? null,
+      networkScore: networkOptimization?.stats?.network_score ?? null,
+      overlapBuildings: networkOptimization?.stats?.overlap_buildings ?? null,
+      avgSINRDB: interferenceAnalysis?.stats?.avg_sinr_db ?? null,
+      serviceablePct: interferenceAnalysis?.stats?.serviceable_pct ?? null,
+      affectedDemand: interferenceAnalysis?.stats?.affected_demand ?? null,
+      calibrationOffsetDB: settings.calibrationOffsetDb ?? 0,
+      ...overrides.summary,
+    },
+    artifacts: overrides.artifacts ?? {
+      simulation,
+      coverageGaps,
+      interferenceAnalysis,
+      networkOptimization,
+      optimizationDiagnostics,
+      siteRecommendations,
+      measurementAnalysis,
+    },
+    requiresRerun: Boolean(planDirty),
+  }), [
+    activeResultsView,
+    appMeta,
+    calibrationProfile,
+    coverageGaps,
+    interferenceAnalysis,
+    lastAnalysisKind,
+    layerVisibility,
+    measurementAnalysis,
+    networkOptimization,
+    optimizationDiagnostics,
+    planDirty,
+    planningMode,
+    selectedNetworkTowerIds,
+    selectedNetworkTowers,
+    selectedTower,
+    selectionPolygon,
+    settings,
+    simulation,
+    siteRecommendations,
+  ]);
+
+  const saveCurrentScenario = useCallback(() => {
+    const count = activeProject?.scenarios?.length ?? 0;
+    const label = lastAnalysisKind === "recommendation" ? "Candidate search" : lastAnalysisKind === "interference" ? "Interference" : planningMode === "network" ? "Network plan" : "Sector plan";
+    saveProjectScenario(`${label} ${count + 1}`, buildCurrentScenarioSnapshot());
+  }, [activeProject?.scenarios?.length, buildCurrentScenarioSnapshot, lastAnalysisKind, planningMode, saveProjectScenario]);
+
+  const openSavedScenario = useCallback((scenario) => {
+    restorePlanningSnapshot(scenario);
+    if (scenario.requiresRerun) setError("This scenario retains its inputs and summary; rerun it to restore uncached map layers.");
+  }, [restorePlanningSnapshot]);
+
+  const applyRecommendation = useCallback((recommendation) => {
+    const candidate = towers.find((tower) => String(tower.cellId) === String(recommendation.cell_id) || tower.id === recommendation.id);
+    if (!candidate) {
+      setError("The recommended candidate is not present in the active dataset");
+      return;
+    }
+    const nextIDs = [...new Set([...selectedNetworkTowerIds, candidate.id])];
+    const snapshot = buildCurrentScenarioSnapshot({
+      plan: {
+        planningMode: "network",
+        selectedTowerId: candidate.id,
+        selectedNetworkTowerIds: nextIDs,
+        settings: { ...settings, azimuthDeg: Number(recommendation.optimal_azimuth) },
+      },
+      summary: { kind: "recommendation", resultsView: "recommendations", networkScore: recommendation.stats?.network_score ?? null },
+      artifacts: null,
+    });
+    snapshot.requiresRerun = true;
+    saveProjectScenario(`Candidate ${recommendation.cell_id}`, snapshot);
+    restorePlanningSnapshot(snapshot);
+    setSelectedTower(candidate);
+    setError("");
+  }, [buildCurrentScenarioSnapshot, restorePlanningSnapshot, saveProjectScenario, selectedNetworkTowerIds, settings, towers]);
   const createPlanningReport = useCallback(
     () =>
       buildPlanningReport({
         activeNetworkTech,
+        appMeta,
         buildingSummary,
+        calibrationProfile,
         coreLab,
         coreLabApplicable,
         coreLabEnabled,
         coverageGaps,
         diagnostics: optimizationDiagnostics,
         interferenceAnalysis,
+        measurementAnalysis,
         comparison,
         networkOptimization,
+        project: activeProject,
+        recommendations: siteRecommendations,
         selectedTower,
         settings,
         simulation,
@@ -977,18 +1364,23 @@ export default function App() {
       }),
     [
       activeNetworkTech,
+      activeProject,
+      appMeta,
       buildingSummary,
+      calibrationProfile,
       comparison,
       coreLab,
       coreLabApplicable,
       coreLabEnabled,
       interferenceAnalysis,
+      measurementAnalysis,
       networkOptimization,
       coverageGaps,
       optimizationDiagnostics,
       selectedTower,
       settings,
       simulation,
+      siteRecommendations,
       stats,
     ],
   );
@@ -1025,16 +1417,34 @@ export default function App() {
         appIconUrl={APP_ICON_URL}
         contextLabel={contextLabel}
         error={drawerOpen ? "" : error}
-        isBusy={activeRFTask !== null}
         networkTech={activeNetworkTech}
         onDismissError={() => setError("")}
         onOpenResults={() => openResults(resultSummary?.view)}
         onRun={planningMode === "network" ? evaluateNetwork : runSimulation}
         planSummary={planSummary}
-        primaryActionLabel={isEvaluatingNetwork ? "Evaluating..." : planningMode === "network" ? "Evaluate Network" : isLoading ? "Running..." : "Run Sector"}
-        primaryDisabled={activeRFTask !== null || (planningMode === "network" ? selectedNetworkTowerIds.length < 2 : !selectedTower)}
+        projectControl={(
+          <ProjectMenu
+            key={projectWorkspace.activeProject?.id}
+            activeProject={projectWorkspace.activeProject}
+            compatible={isDatasetCompatible(projectWorkspace.activeProject, appMeta)}
+            exportContent={projectWorkspace.exportActiveProject}
+            onAddProject={() => { restoredProjectRef.current = null; projectWorkspace.addProject(); }}
+            onDeleteProject={() => { restoredProjectRef.current = null; projectWorkspace.deleteProject(); }}
+            onDeleteScenario={projectWorkspace.deleteScenario}
+            onDuplicateProject={() => { restoredProjectRef.current = null; projectWorkspace.duplicateProject(); }}
+            onImportProject={(text) => { restoredProjectRef.current = null; return projectWorkspace.importProject(text); }}
+            onOpenScenario={openSavedScenario}
+            onRenameProject={projectWorkspace.renameProject}
+            onSaveScenario={saveCurrentScenario}
+            onSelectProject={(id) => { restoredProjectRef.current = null; projectWorkspace.selectProject(id); }}
+            projects={projectWorkspace.workspace.projects}
+          />
+        )}
+        primaryActionLabel={primaryActionLabel}
+        primaryDisabled={activeRFTask !== null || (planningMode === "network" ? selectedCellCount < 2 : !selectedTower)}
         resultSummary={resultSummary}
         runState={runState}
+        statusTone={error ? "error" : activeRFTask !== null ? "busy" : planDirty ? "pending" : "ready"}
       />
 
       <section className={`workspace-frame ${drawerOpen ? "drawer-open" : ""}`}>
@@ -1048,6 +1458,14 @@ export default function App() {
 
         <section className="map-stage" aria-label="Ankara propagation map">
           <MapToolbar
+            availableLayers={{
+              communicationPaths: Boolean(coreLabApplicable && coreLabEnabled && coreLab.topology),
+              gaps: Boolean(coverageGaps?.geojson?.features?.length),
+              interference: hasInterferenceData,
+              measurements: Boolean(measurementAnalysis?.geojson?.features?.length),
+              rays: Boolean(simulation?.geojson?.features?.length),
+              selectedCells: selectedNetworkTowerIds.length > 0,
+            }}
             isDrawingSelection={isDrawingSelection}
             layerMenuOpen={layerMenuOpen}
             layerVisibility={layerVisibility}
@@ -1092,7 +1510,15 @@ export default function App() {
             interferenceModel={interferenceAnalysis.model}
             interferenceMetric={interferenceMetric}
             interferenceLayerKey={interferenceRevision}
+            measurements={measurementAnalysis?.geojson}
+            recommendations={siteRecommendations?.geojson}
           />
+          {mapPlanPrompt && activeRFTask === null ? (
+            <div className="map-plan-prompt" role="status">
+              <strong>{mapPlanPrompt.title}</strong>
+              <span>{mapPlanPrompt.detail}</span>
+            </div>
+          ) : null}
           {layerVisibility.interference && hasInterferenceData ? (
             <InterferenceLegend
               collapsed={legendCollapsed}
@@ -1126,6 +1552,7 @@ export default function App() {
               networkSelectionCount={selectedNetworkTowerIds.length}
               onOptimizeNetwork={optimizeNetwork}
               onAnalyzeInterference={analyzeInterference}
+              onFocusMap={() => closeDrawer("map")}
               onPlanningModeChange={changePlanningMode}
               selectionNotice={selectionNotice}
               planningMode={planningMode}
@@ -1140,6 +1567,11 @@ export default function App() {
               coreLab={coreLab}
               enabled={coreLabEnabled}
               onRunScenario={runCoreLabScenario}
+              onUse5G={() => updateSettings((current) => ({
+                ...current,
+                frequencyGHz: 28,
+                interferenceBandwidthMHz: 100,
+              }))}
               onToggle={toggleCoreLab}
               scenarios={CORE_LAB_SCENARIOS}
               startCommand={CORE_LAB_START_COMMAND}
@@ -1156,7 +1588,15 @@ export default function App() {
               networkResultKind={networkResultKind}
               interferenceAnalysis={interferenceAnalysis}
               gapStats={gapStats}
+              hasRFResults={Boolean(simulation?.stats)}
               onViewChange={setActiveResultsView}
+              onApplyRecommendation={applyRecommendation}
+              onOpenScenario={openSavedScenario}
+              onRecommendSites={recommendSites}
+              recommendations={siteRecommendations}
+              recommending={isRecommendingSites}
+              savedScenarios={projectWorkspace.activeProject?.scenarios ?? []}
+              recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length > 5 || selectionPolygon.length < 3 || !interferenceApplicable}
               stats={stats}
             />
           ) : null}
@@ -1166,6 +1606,16 @@ export default function App() {
               summary={buildingSummary}
               diagnostics={optimizationDiagnostics}
               interferenceModel={interferenceAnalysis.model}
+              networkTech={activeNetworkTech}
+              settings={settings}
+              appMeta={appMeta}
+              calibrationProfile={calibrationProfile}
+              measurementAnalysis={measurementAnalysis}
+              measurementCount={measurementSamples.length}
+              onApplyCalibration={applyCalibration}
+              onEvaluateMeasurements={evaluateMeasurements}
+              onMeasurementFile={loadMeasurementFile}
+              evaluatingMeasurements={isEvaluatingMeasurements}
             />
           ) : null}
 
@@ -1190,6 +1640,8 @@ function MapInspector({ selectedMapObject }) {
       {type === "coverage_gap" ? <GapInspector payload={payload} /> : null}
       {type === "communication_path" ? <PathInspector payload={payload} /> : null}
       {type === "interference_sample" ? <InterferenceInspector payload={payload} /> : null}
+      {type === "measurement_sample" ? <MeasurementInspector payload={payload} /> : null}
+      {type === "site_recommendation" ? <RecommendationInspector payload={payload} /> : null}
     </section>
   );
 }
@@ -1257,8 +1709,56 @@ function InterferenceInspector({ payload }) {
         {model.measurement_family === "nr_ss" ? "Modeled SS-RSRP / SS-RSRQ" : "Modeled LTE CRS RSRP / RSRQ"}
         {` · ${formatNumber(model.bandwidth_mhz, 0)} MHz · ${formatNumber(model.load_factor * 100, 0)}% load`}
       </p>
+      <p className="result-explanation">{explainInterferenceSample(properties)}</p>
     </div>
   );
+}
+
+function MeasurementInspector({ payload }) {
+  const properties = payload?.properties ?? {};
+  return (
+    <div className="inspector-grid">
+      <MiniDatum label="Sample" value={properties.id ?? "n/a"} />
+      <MiniDatum label="Serving cell" value={properties.serving_cell_id ?? "No signal"} />
+      <MiniDatum label="Measured RSRP" value={formatMetric(properties.measured_rsrp_dbm, "dBm")} />
+      <MiniDatum label="Predicted RSRP" value={formatMetric(properties.predicted_rsrp_dbm, "dBm")} />
+      <MiniDatum label="Residual" value={formatMetric(properties.residual_db, "dB")} />
+      <MiniDatum label="Corrected residual" value={formatMetric(properties.corrected_residual_db, "dB")} />
+      <p className="result-explanation">Residual is measured minus modeled RSRP. Positive values mean the model under-predicted this sample.</p>
+    </div>
+  );
+}
+
+function RecommendationInspector({ payload }) {
+  const properties = payload?.properties ?? {};
+  return (
+    <div className="inspector-grid">
+      <MiniDatum label="Candidate cell" value={properties.cell_id ?? properties.id ?? "n/a"} />
+      <MiniDatum label="Score gain" value={formatCompactNumber(properties.marginal_network_score)} />
+      <MiniDatum label="Azimuth" value={`${formatNumber(properties.optimal_azimuth, 0)} deg`} />
+      <MiniDatum label="Overlap" value={(properties.stats?.overlap_buildings ?? 0).toLocaleString()} />
+      <p className="result-explanation">{properties.reason ?? "Candidate scored from known planning records."}</p>
+    </div>
+  );
+}
+
+function explainInterferenceSample(properties) {
+  if (properties.rsrp_dbm === null || properties.rsrp_dbm === undefined) {
+    return "No modeled carrier passed the active radius, beam-sector, wall-loss, and receiver-sensitivity checks at this point.";
+  }
+  const sinr = Number(properties.sinr_db);
+  if (Number.isFinite(sinr) && Math.abs(sinr) <= 1 && properties.strongest_interferer_id) {
+    return "SINR is near 0 dB because the serving carrier and strongest co-channel interferer have approximately equal received power.";
+  }
+  if (Number.isFinite(sinr) && sinr < 0) {
+    return "Co-channel interference is stronger than the serving signal at this sample. Review cell azimuths, load, or frequency reuse.";
+  }
+  if (Number(properties.wall_count) > 0) {
+    return `The serving path crosses ${properties.wall_count} modeled wall${properties.wall_count === 1 ? "" : "s"}; frequency-dependent penetration loss is included.`;
+  }
+  return properties.strongest_interferer_id
+    ? "The sample is interference-limited by another cell on the serving channel."
+    : "The sample is primarily noise-limited under the current deterministic assumptions.";
 }
 
 function buildCoreLabQuery(towerIDs, selectedNetworkTowers, selectedTower) {
@@ -1300,17 +1800,30 @@ function ResultsPanel({
   comparison,
   diagnostics,
   gapStats,
+  hasRFResults,
   interferenceAnalysis,
   networkOptimization,
   networkResultKind,
+  onApplyRecommendation,
+  onOpenScenario,
+  onRecommendSites,
   onViewChange,
+  recommendationDisabled,
+  recommendations,
+  recommending,
+  savedScenarios,
   stats,
 }) {
   const views = [
     { id: "rf", label: "RF" },
     { id: "optimization", label: "Optimization" },
     { id: "interference", label: "Interference" },
+    { id: "compare", label: "Compare" },
+    { id: "recommendations", label: "Candidates" },
   ];
+  const hasOptimizationResults = Boolean(
+    networkOptimization || diagnostics || getComparisonMetrics(comparison).length > 0,
+  );
 
   return (
     <section className="results-panel" aria-label="Simulation results">
@@ -1330,42 +1843,149 @@ function ResultsPanel({
       </div>
 
       {activeView === "rf" ? (
-        <>
-          <div className="metric-list">
-            <MetricRow label="Blocked" value={`${stats.blockedRatio}%`} />
-            <MetricRow
-              label="Average Rx"
-              value={stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`}
-            />
-            <MetricRow
-              label="Max range"
-              value={stats.maxRange === null ? "n/a" : `${stats.maxRange.toFixed(1)} m`}
-            />
-            <MetricRow
-              label="Min range"
-              value={stats.minRange === null ? "n/a" : `${stats.minRange.toFixed(1)} m`}
-            />
-          </div>
-          <CoverageGapPanel stats={gapStats} />
-        </>
+        hasRFResults ? (
+          <>
+            <div className="metric-list">
+              <MetricRow label="Blocked" value={`${stats.blockedRatio}%`} />
+              <MetricRow
+                label="Average Rx"
+                value={stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`}
+              />
+              <MetricRow
+                label="Max range"
+                value={stats.maxRange === null ? "n/a" : `${stats.maxRange.toFixed(1)} m`}
+              />
+              <MetricRow
+                label="Min range"
+                value={stats.minRange === null ? "n/a" : `${stats.minRange.toFixed(1)} m`}
+              />
+            </div>
+            <CoverageGapPanel stats={gapStats} />
+          </>
+        ) : (
+          <AnalysisEmptyState
+            icon={RadioTower}
+            title="No current RF result"
+            description="Run the selected sector or evaluate a network cluster to populate map rays and RF metrics."
+          />
+        )
       ) : null}
 
       {activeView === "optimization" ? (
-        <>
-          <NetworkOptimizationPanel optimization={networkOptimization} kind={networkResultKind} />
-          {!networkOptimization ? <OptimizerBreakdown diagnostics={diagnostics} /> : null}
-          <ComparisonPanel comparison={comparison} />
-        </>
+        hasOptimizationResults ? (
+          <>
+            <NetworkOptimizationPanel optimization={networkOptimization} kind={networkResultKind} />
+            {!networkOptimization ? <OptimizerBreakdown diagnostics={diagnostics} /> : null}
+            <ComparisonPanel comparison={comparison} />
+          </>
+        ) : (
+          <AnalysisEmptyState
+            icon={BarChart3}
+            title="No optimization result"
+            description="Open Propagation and optimize the current sector or network to capture a before-and-after comparison."
+          />
+        )
       ) : null}
 
       {activeView === "interference" ? (
         interferenceAnalysis?.stats ? (
           <InterferenceResultsPanel analysis={interferenceAnalysis} />
         ) : (
-          <p className="empty-note">Run an interference analysis to compare SINR, RSRP, and RSRQ.</p>
+          <AnalysisEmptyState
+            icon={Activity}
+            title="No interference result"
+            description="Select two or more 4G or 5G cells, then analyze interference to compare SINR, RSRP, and RSRQ."
+          />
         )
       ) : null}
+
+      {activeView === "compare" ? (
+        <ScenarioComparisonPanel onOpenScenario={onOpenScenario} scenarios={savedScenarios} />
+      ) : null}
+
+      {activeView === "recommendations" ? (
+        <RecommendationPanel
+          disabled={recommendationDisabled}
+          loading={recommending}
+          onApply={onApplyRecommendation}
+          onRun={onRecommendSites}
+          response={recommendations}
+        />
+      ) : null}
     </section>
+  );
+}
+
+function ScenarioComparisonPanel({ onOpenScenario, scenarios }) {
+  const [firstID, setFirstID] = useState("");
+  const [secondID, setSecondID] = useState("");
+  if (scenarios.length < 2) {
+    return <AnalysisEmptyState icon={BarChart3} title="Two scenarios needed" description="Save two planning states from the project menu to compare reproducible KPI deltas." />;
+  }
+  const first = scenarios.find((scenario) => scenario.id === firstID) ?? scenarios[scenarios.length - 2];
+  const second = scenarios.find((scenario) => scenario.id === secondID) ?? scenarios[scenarios.length - 1];
+  const metrics = [
+    ["Average Rx", "avgRxDBm", "dBm"],
+    ["Gap area", "gapPct", "%"],
+    ["Network score", "networkScore", ""],
+    ["Overlap", "overlapBuildings", "buildings"],
+    ["Average SINR", "avgSINRDB", "dB"],
+    ["Serviceable", "serviceablePct", "%"],
+    ["Affected demand", "affectedDemand", ""],
+  ];
+  return (
+    <section className="scenario-comparison" aria-label="Saved scenario comparison">
+      <div className="scenario-selectors">
+        <label><span>Scenario A</span><select value={first.id} onChange={(event) => setFirstID(event.target.value)}>{scenarios.map((scenario) => <option key={scenario.id} value={scenario.id}>{scenario.name}</option>)}</select></label>
+        <label><span>Scenario B</span><select value={second.id} onChange={(event) => setSecondID(event.target.value)}>{scenarios.map((scenario) => <option key={scenario.id} value={scenario.id}>{scenario.name}</option>)}</select></label>
+      </div>
+      <div className="scenario-delta-table">
+        {metrics.map(([label, key, unit]) => {
+          const before = Number(first.summary?.[key]);
+          const after = Number(second.summary?.[key]);
+          if (!Number.isFinite(before) && !Number.isFinite(after)) return null;
+          const delta = Number.isFinite(before) && Number.isFinite(after) ? after - before : null;
+          return <div key={key}><span>{label}</span><strong>{formatScenarioMetric(before, unit)}</strong><strong>{formatScenarioMetric(after, unit)}</strong><em>{delta === null ? "n/a" : `${delta >= 0 ? "+" : ""}${formatNumber(delta, 1)} ${unit}`}</em></div>;
+        })}
+      </div>
+      <div className="scenario-map-switch"><button type="button" onClick={() => onOpenScenario(first)}>Show A</button><button type="button" onClick={() => onOpenScenario(second)}>Show B</button></div>
+      <p className="data-note">Map switching restores cached layers when available. Compact older scenarios retain exact requests and require a rerun.</p>
+    </section>
+  );
+}
+
+function RecommendationPanel({ disabled, loading, onApply, onRun, response }) {
+  const recommendations = response?.recommendations ?? [];
+  return (
+    <section className="recommendation-panel" aria-label="Candidate cell recommendations">
+      <button type="button" className="panel-primary-action" onClick={onRun} disabled={disabled || loading}>
+        <MapPin size={15} /> {loading ? "Scoring candidates..." : "Recommend candidate cells"}
+      </button>
+      {disabled ? <p className="data-note">Select 2–5 cells and draw a search area in a 4G or 5G plan.</p> : null}
+      {recommendations.map((recommendation, index) => (
+        <article key={recommendation.id} className="recommendation-row">
+          <div><span>#{index + 1} · Cell {recommendation.cell_id}</span><strong>+{formatCompactNumber(recommendation.marginal_network_score)}</strong></div>
+          <p>{recommendation.reason}</p>
+          <dl><div><dt>Azimuth</dt><dd>{formatNumber(recommendation.optimal_azimuth, 0)} deg</dd></div><div><dt>Overlap</dt><dd>{recommendation.stats?.overlap_buildings ?? 0}</dd></div></dl>
+          <button type="button" onClick={() => onApply(recommendation)}>Apply as scenario</button>
+        </article>
+      ))}
+      {response?.notes?.map((note) => <p className="data-note" key={note}>{note}</p>)}
+    </section>
+  );
+}
+
+function formatScenarioMetric(value, unit) {
+  return Number.isFinite(value) ? `${formatNumber(value, 1)}${unit ? ` ${unit}` : ""}` : "n/a";
+}
+
+function AnalysisEmptyState({ description, icon: Icon, title }) {
+  return (
+    <div className="analysis-empty-state" role="status">
+      <Icon size={20} aria-hidden="true" />
+      <strong>{title}</strong>
+      <p>{description}</p>
+    </div>
   );
 }
 
@@ -1401,7 +2021,7 @@ function NetworkOptimizationPanel({ optimization, kind }) {
   );
 }
 
-function CoreLabTool({ applicable, coreLab, enabled, scenarios, startCommand, towerIDs, onRunScenario, onToggle }) {
+function CoreLabTool({ applicable, coreLab, enabled, scenarios, startCommand, towerIDs, onRunScenario, onToggle, onUse5G }) {
   return (
     <section className="core-tool" aria-label="5G Core Lab controls">
       <label className="core-toggle-row">
@@ -1417,7 +2037,14 @@ function CoreLabTool({ applicable, coreLab, enabled, scenarios, startCommand, to
         />
       </label>
       {!applicable ? (
-        <p className="selection-note">5G Core controls apply only to the 28 GHz 5G planning mode.</p>
+        <div className="tool-readiness-state compact" role="note">
+          <Server size={20} aria-hidden="true" />
+          <div>
+            <strong>5G mode required</strong>
+            <p>Xn, N2, and N3 communication paths apply only to the 28 GHz 5G planning mode.</p>
+          </div>
+          <button type="button" onClick={onUse5G}>Use 5G mmWave</button>
+        </div>
       ) : null}
       {applicable && !enabled ? (
         <div className="command-note">
@@ -1550,7 +2177,21 @@ function CommunicationPathSummary({ routeDecisions, n3Edges, scenario }) {
   );
 }
 
-function DataPanel({ summary, diagnostics, interferenceModel }) {
+function DataPanel({
+  appMeta,
+  calibrationProfile,
+  diagnostics,
+  evaluatingMeasurements,
+  interferenceModel,
+  measurementAnalysis,
+  measurementCount,
+  networkTech,
+  onApplyCalibration,
+  onEvaluateMeasurements,
+  onMeasurementFile,
+  settings,
+  summary,
+}) {
   const dataQuality = diagnostics?.data_quality ?? summary?.data_quality ?? "unknown";
   const totalBuildings = summary?.total_buildings ?? null;
   const residential = summary?.residential_weighted_buildings ?? null;
@@ -1576,11 +2217,32 @@ function DataPanel({ summary, diagnostics, interferenceModel }) {
           label="Residential"
           value={residential === null ? "n/a" : residential.toLocaleString()}
         />
+        <MiniDatum label="Dataset" value={appMeta?.dataset?.name ?? "Unavailable"} />
+        <MiniDatum label="Dataset version" value={appMeta?.dataset?.version ?? "n/a"} />
+        <MiniDatum label="Model version" value={appMeta?.model_version ?? "n/a"} />
+        <MiniDatum label="Application" value={appMeta?.application_version ?? "dev"} />
       </div>
       <p className="data-note">
         Static OSM/OpenCellID-derived files are loaded locally. Demand values combine explicit POI tags
         with residential-density heuristics, so confidence is useful context for optimization results.
       </p>
+      <section className="model-assumptions" aria-label="Propagation model assumptions">
+        <div className="panel-title">
+          <RadioTower size={16} />
+          <span>Propagation Model</span>
+        </div>
+        <div className="dataset-grid">
+          <MiniDatum label="Estimator" value="FSPL + wall loss" />
+          <MiniDatum label="Technology" value={networkTech} />
+          <MiniDatum label="Frequency" value={`${formatNumber(settings?.frequencyGHz, 1)} GHz`} />
+          <MiniDatum label="Ray scope" value={`${formatNumber(settings?.rayCount, 0)} rays`} />
+          <MiniDatum label="Calibration" value={settings?.calibrationOffsetDb ? `${formatNumber(settings.calibrationOffsetDb, 1)} dB` : "None"} />
+        </div>
+        <ul className="assumption-list">
+          <li>Deterministic planning estimate using beam eligibility, building intersections, and frequency-dependent wall attenuation.</li>
+          <li>Fast fading, diffraction, sidelobes, MIMO scheduling, and UE measurement effects are outside the current model.</li>
+        </ul>
+      </section>
       {interferenceModel ? (
         <section className="model-assumptions" aria-label="Interference model assumptions">
           <div className="panel-title">
@@ -1604,6 +2266,48 @@ function DataPanel({ summary, diagnostics, interferenceModel }) {
           </ul>
         </section>
       ) : null}
+      <section className="model-assumptions measurement-panel" aria-label="Field measurement validation">
+        <div className="panel-title">
+          <Activity size={16} />
+          <span>Measurement Validation</span>
+        </div>
+        <p className="data-note">Import up to 5,000 RSRP samples with columns <code>id, longitude, latitude, technology, rsrp_dbm, cell_id</code>. Short <code>lon</code>/<code>lat</code> headers are also accepted.</p>
+        <label className="measurement-file-button">
+          <Upload size={15} />
+          <span>{measurementCount ? `${measurementCount} samples loaded` : "Import measurement CSV"}</span>
+          <input type="file" accept=".csv,text/csv" onChange={(event) => onMeasurementFile(event.target.files?.[0])} />
+        </label>
+        <button type="button" className="panel-primary-action" onClick={onEvaluateMeasurements} disabled={!measurementCount || evaluatingMeasurements}>
+          {evaluatingMeasurements ? "Evaluating measurements..." : "Evaluate residuals"}
+        </button>
+        {measurementAnalysis?.stats ? (
+          <>
+            <div className="dataset-grid">
+              <MiniDatum label="Valid samples" value={`${measurementAnalysis.stats.valid_sample_count ?? 0} / ${measurementAnalysis.stats.sample_count ?? 0}`} />
+              <MiniDatum label="No signal" value={(measurementAnalysis.stats.no_signal_count ?? 0).toLocaleString()} />
+              <MiniDatum label="Cell mismatch" value={(measurementAnalysis.stats.cell_mismatch_count ?? 0).toLocaleString()} />
+              <MiniDatum label="MAE" value={formatMetric(measurementAnalysis.stats.mae_db, "dB")} />
+              <MiniDatum label="RMSE" value={formatMetric(measurementAnalysis.stats.rmse_db, "dB")} />
+              <MiniDatum label="Median bias" value={formatMetric(measurementAnalysis.stats.median_bias_db, "dB")} />
+            </div>
+            <div className="calibration-review">
+              <strong>Global bias correction</strong>
+              <p>{measurementAnalysis.calibration?.reason}</p>
+              {measurementAnalysis.calibration?.eligible ? (
+                <>
+                  <div className="dataset-grid">
+                    <MiniDatum label="Suggested offset" value={formatMetric(measurementAnalysis.calibration.recommended_total_offset_db, "dB")} />
+                    <MiniDatum label="Holdout before" value={formatMetric(measurementAnalysis.calibration.holdout_mae_before_db, "dB MAE")} />
+                    <MiniDatum label="Holdout after" value={formatMetric(measurementAnalysis.calibration.holdout_mae_after_db, "dB MAE")} />
+                  </div>
+                  <button type="button" onClick={onApplyCalibration}>Apply correction to plan</button>
+                </>
+              ) : null}
+            </div>
+          </>
+        ) : null}
+        {calibrationProfile ? <p className="calibration-active">Active correction: {formatNumber(calibrationProfile.offsetDb, 1)} dB. This is a global bias adjustment, not full calibration.</p> : null}
+      </section>
     </section>
   );
 }
@@ -1816,6 +2520,19 @@ function formatScenario(value) {
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function isCalibrationProfileCompatible(profile, settings, meta) {
+  if (!profile) return true;
+  if (!meta) return true;
+  const technology = settings.frequencyGHz < 10 ? "4g" : settings.frequencyGHz < 100 ? "5g" : "6g";
+  const dataset = meta.dataset;
+  return profile.kind === "robust_global_path_loss_bias"
+    && profile.technology === technology
+    && Number(profile.frequencyGHz) === Number(settings.frequencyGHz)
+    && profile.modelVersion === meta.model_version
+    && profile.dataset?.id === dataset?.id
+    && profile.dataset?.version === dataset?.version;
 }
 
 function MiniDatum({ label, value }) {

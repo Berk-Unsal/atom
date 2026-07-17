@@ -40,25 +40,28 @@ capacity, scaling, and production-hardening guidance for A.T.O.M." />
     <aside class="page-toc reference-toc" aria-label="Deployment page contents">
       <strong>On this page</strong>
       <ul>
-      <li><a href="#deployment-options"
-      id="toc-deployment-options">Deployment Options</a></li>
-      <li><a href="#production-configuration"
-      id="toc-production-configuration">Production
-      Configuration</a></li>
-      <li><a href="#monitoring--observability"
-      id="toc-monitoring--observability">Monitoring &amp;
-      Observability</a></li>
-      <li><a href="#scaling" id="toc-scaling">Scaling</a></li>
-      <li><a href="#disaster-recovery"
-      id="toc-disaster-recovery">Disaster Recovery</a></li>
-      <li><a href="#security" id="toc-security">Security</a></li>
-      <li><a href="#performance-tuning"
-      id="toc-performance-tuning">Performance Tuning</a></li>
-      <li><a href="#cost-optimization" id="toc-cost-optimization">Cost
-      Optimization</a></li>
-      <li><a href="#documentation-github-pages"
-      id="toc-documentation-github-pages">Documentation: GitHub
-      Pages</a></li>
+      <li><a href="#recommended-local-deployment"
+      id="toc-recommended-local-deployment">Recommended Local
+      Deployment</a></li>
+      <li><a href="#runtime-topology" id="toc-runtime-topology">Runtime
+      Topology</a></li>
+      <li><a href="#configuration"
+      id="toc-configuration">Configuration</a></li>
+      <li><a href="#dataset-mounts" id="toc-dataset-mounts">Dataset
+      Mounts</a></li>
+      <li><a href="#health-and-capacity"
+      id="toc-health-and-capacity">Health And Capacity</a></li>
+      <li><a href="#reverse-proxy-boundary"
+      id="toc-reverse-proxy-boundary">Reverse Proxy Boundary</a></li>
+      <li><a href="#optional-5g-core-lab"
+      id="toc-optional-5g-core-lab">Optional 5G Core Lab</a></li>
+      <li><a href="#tagged-multi-architecture-images"
+      id="toc-tagged-multi-architecture-images">Tagged
+      Multi-Architecture Images</a></li>
+      <li><a href="#upgrade-and-rollback"
+      id="toc-upgrade-and-rollback">Upgrade And Rollback</a></li>
+      <li><a href="#verification-checklist"
+      id="toc-verification-checklist">Verification Checklist</a></li>
       </ul>
     </aside>
 
@@ -75,503 +78,205 @@ production-hardening guidance for A.T.O.M.</p>
       </header>
 
       <div class="prose">
-<p>Deploy A.T.O.M as a planning service with explicit resource limits.
-The API has no built-in authentication, so internet-facing deployments
-require a trusted reverse proxy or gateway.</p>
-<h2 id="deployment-options">Deployment Options</h2>
-<h3 id="option-1-docker-container-recommended">Option 1: Docker
-Container (Recommended)</h3>
-<p><strong>Best for</strong>: Most deployments, cloud platforms,
-Kubernetes</p>
-<h4 id="single-container">Single Container</h4>
+<p>A.T.O.M is local-first and stateless on the server. The production
+image serves the compiled React workspace, Go API, and one validated
+dataset pack from a single non-root container.</p>
+<h2 id="recommended-local-deployment">Recommended Local Deployment</h2>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="dt">\</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="dt">\</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> atom-api <span class="dt">\</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 8080:8080 <span class="dt">\</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> PORT=8080 <span class="dt">\</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--memory</span><span class="op">=</span>1g <span class="dt">\</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cpus</span><span class="op">=</span>2 <span class="dt">\</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  atom-simulator</span></code></pre></div>
-<h4 id="docker-compose">Docker Compose</h4>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;3.8&#39;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">atom-api</span><span class="kw">:</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> atom-simulator:latest</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> atom-api</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;8080:8080&quot;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">PORT</span><span class="kw">:</span><span class="at"> </span><span class="dv">8080</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">MAX_CONCURRENT_RF_REQUESTS</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">resources</span><span class="kw">:</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">limits</span><span class="kw">:</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">cpus</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;2&#39;</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">memory</span><span class="kw">:</span><span class="at"> 1G</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">reservations</span><span class="kw">:</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">cpus</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;1&#39;</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">memory</span><span class="kw">:</span><span class="at"> 512M</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">healthcheck</span><span class="kw">:</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">test</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&quot;CMD&quot;</span><span class="kw">,</span><span class="at"> </span><span class="st">&quot;wget&quot;</span><span class="kw">,</span><span class="at"> </span><span class="st">&quot;-q&quot;</span><span class="kw">,</span><span class="at"> </span><span class="st">&quot;--spider&quot;</span><span class="kw">,</span><span class="at"> </span><span class="st">&quot;http://127.0.0.1:8080/readyz&quot;</span><span class="kw">]</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">interval</span><span class="kw">:</span><span class="at"> 30s</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> 10s</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">retries</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">start_period</span><span class="kw">:</span><span class="at"> 40s</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span></code></pre></div>
-<p><strong>Run</strong>:</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> up <span class="at">-d</span></span></code></pre></div>
-<hr />
-<h3 id="option-2-kubernetes-enterprise">Option 2: Kubernetes
-(Enterprise)</h3>
-<h4 id="deployment-manifest">Deployment Manifest</h4>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> atom-api</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> atom</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> atom</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> atom</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> atom</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">image</span><span class="kw">:</span><span class="at"> atom-simulator:1.0.0</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">ports</span><span class="kw">:</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">containerPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">8080</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">env</span><span class="kw">:</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> PORT</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">value</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;8080&quot;</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> MAX_CONCURRENT_RF_REQUESTS</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">value</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;2&quot;</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">resources</span><span class="kw">:</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">requests</span><span class="kw">:</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">memory</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;512Mi&quot;</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">cpu</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;500m&quot;</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">limits</span><span class="kw">:</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">memory</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;1Gi&quot;</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">cpu</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;1000m&quot;</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">livenessProbe</span><span class="kw">:</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">httpGet</span><span class="kw">:</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /healthz</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8080</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">initialDelaySeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">30</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">readinessProbe</span><span class="kw">:</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">httpGet</span><span class="kw">:</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /readyz</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8080</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">initialDelaySeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> atom-service</span></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> atom</span></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span></span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">protocol</span><span class="kw">:</span><span class="at"> TCP</span></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">targetPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">8080</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">type</span><span class="kw">:</span><span class="at"> LoadBalancer</span></span></code></pre></div>
-<p><strong>Deploy</strong>:</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> apply <span class="at">-f</span> deployment.yaml</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get pods <span class="at">-l</span> app=atom</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get service atom-service</span></code></pre></div>
-<hr />
-<h3 id="option-3-cloud-platforms">Option 3: Cloud Platforms</h3>
-<h4 id="aws-ecs">AWS ECS</h4>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create ECR repository</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> ecr create-repository <span class="at">--repository-name</span> atom-simulator</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Push image</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> tag atom-simulator:latest <span class="pp">[</span><span class="ss">AWS_ACCOUNT</span><span class="pp">]</span>.dkr.ecr.<span class="pp">[</span><span class="ss">REGION</span><span class="pp">]</span>.amazonaws.com/atom-simulator:latest</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> push <span class="pp">[</span><span class="ss">AWS_ACCOUNT</span><span class="pp">]</span>.dkr.ecr.<span class="pp">[</span><span class="ss">REGION</span><span class="pp">]</span>.amazonaws.com/atom-simulator:latest</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create ECS task definition (JSON)</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Then deploy via AWS Console or CLI</span></span></code></pre></div>
-<h4 id="google-cloud-run">Google Cloud Run</h4>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build and push to Google Container Registry</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">gcloud</span> builds submit <span class="at">--tag</span> gcr.io/<span class="pp">[</span><span class="ss">PROJECT</span><span class="pp">]</span>/atom-simulator</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Deploy</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">gcloud</span> run deploy atom-api <span class="dt">\</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--image</span> gcr.io/<span class="pp">[</span><span class="ss">PROJECT</span><span class="pp">]</span>/atom-simulator <span class="dt">\</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--platform</span> managed <span class="dt">\</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-central1 <span class="dt">\</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--memory</span> 1Gi <span class="dt">\</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cpu</span> 2</span></code></pre></div>
-<h4 id="azure-container-instances">Azure Container Instances</h4>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Push to Azure Container Registry</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">az</span> acr build <span class="at">--registry</span> myregistry <span class="at">--image</span> atom-simulator:1.0 .</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Deploy</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">az</span> container create <span class="dt">\</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--resource-group</span> mygroup <span class="dt">\</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> atom-api <span class="dt">\</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--image</span> myregistry.azurecr.io/atom-simulator:1.0 <span class="dt">\</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cpu</span> 2 <span class="dt">\</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--memory</span> 1</span></code></pre></div>
-<hr />
-<h2 id="production-configuration">Production Configuration</h2>
-<h3 id="reverse-proxy-nginx">Reverse Proxy (nginx)</h3>
-<pre class="nginx"><code>upstream atom_backend {
-    server atom-api:8080;
-}
-
-server {
-    listen 80;
-    server_name _;
-
-    # Redirect HTTP to HTTPS
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    server_name _;
-
-    ssl_certificate /etc/ssl/certs/cert.pem;
-    ssl_certificate_key /etc/ssl/private/key.pem;
-
-    # Security headers
-    add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains&quot; always;
-    add_header X-Content-Type-Options &quot;nosniff&quot; always;
-    add_header X-Frame-Options &quot;DENY&quot; always;
-
-    # Rate limiting
-    limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
-    limit_req zone=api_limit burst=20 nodelay;
-
-    # CORS headers
-    add_header Access-Control-Allow-Origin &quot;*&quot; always;
-    add_header Access-Control-Allow-Methods &quot;GET, POST, OPTIONS&quot; always;
-
-    # Proxy to backend
-    location /api/ {
-        proxy_pass http://atom_backend;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection &#39;upgrade&#39;;
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-    }
-
-    # Static frontend
-    location / {
-        proxy_pass http://atom_backend;
-        proxy_set_header Host $host;
-    }
-
-    # Health check endpoint (doesn&#39;t count toward rate limit)
-    location /healthz {
-        access_log off;
-        proxy_pass http://atom_backend;
-    }
-
-    location /readyz {
-        access_log off;
-        proxy_pass http://atom_backend;
-    }
-}</code></pre>
-<h3 id="resource-allocation">Resource Allocation</h3>
-<h4 id="minimum-development">Minimum (Development)</h4>
-<pre><code>CPU: 1 core
-Memory: 512 MB
-Storage: 2 GB (container image + cache)</code></pre>
-<h4 id="recommended-production">Recommended (Production)</h4>
-<pre><code>CPU: 2-4 cores (depends on request volume)
-Memory: 1-2 GB
-Storage: 10 GB (includes backups)
-Bandwidth: 10 Mbps egress</code></pre>
-<h4 id="high-traffic-enterprise">High Traffic (Enterprise)</h4>
-<pre><code>CPU: 4-8 cores per instance (multiple replicas)
-Memory: 2-4 GB per instance
-Storage: 50+ GB (includes logs, monitoring)
-Bandwidth: 100+ Mbps egress
-Load Balancer: Yes (round-robin across instances)</code></pre>
-<hr />
-<h2 id="monitoring--observability">Monitoring &amp; Observability</h2>
-<h3 id="health-checks">Health Checks</h3>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Liveness: process is accepting HTTP requests</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:8080/healthz</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Readiness: datasets and frontend bundle are available</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://localhost:8080/readyz</span></code></pre></div>
-<p><code>/healthz</code> is a liveness endpoint and always returns
-<code>200</code> while the process is running. <code>/readyz</code>
-returns <code>503</code> until buildings, towers, and the frontend
-bundle are available.</p>
-<h3 id="logs">Logs</h3>
-<p><strong>Docker</strong>:</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> logs <span class="at">-f</span> atom-api</span></code></pre></div>
-<p><strong>Kubernetes</strong>:</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> logs <span class="at">-f</span> deployment/atom-api</span></code></pre></div>
-<p><strong>Application Logs</strong>:</p>
-<ul>
-<li>All requests logged with timestamp, method, path, status,
-latency</li>
-<li>Errors logged with full stack trace</li>
-<li>Startup events (data loading, server start)</li>
-</ul>
-<h3 id="metrics">Metrics</h3>
-<p>Recommended Prometheus metrics to expose:</p>
-<pre><code>atom_simulate_duration_seconds    # Request latency
-atom_optimize_duration_seconds    # Optimization latency
-atom_buildings_loaded              # Count of loaded buildings
-atom_towers_loaded                 # Count of loaded towers
-atom_rtree_query_time_seconds      # R-Tree lookup time
-http_requests_total                # Total HTTP requests
-http_request_duration_seconds      # HTTP latency histogram</code></pre>
-<h3 id="alerting">Alerting</h3>
-<p>Set alerts for:</p>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">alerts</span><span class="kw">:</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> APIDown</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> health_check_failed for 5 minutes</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">action</span><span class="kw">:</span><span class="at"> Page on-call engineer</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> HighLatency</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> p99_latency &gt; 5 seconds for 10 minutes</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">action</span><span class="kw">:</span><span class="at"> Alert Slack channel</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> HighErrorRate</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> error_rate &gt; 1% for 5 minutes</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">action</span><span class="kw">:</span><span class="at"> Alert team</span></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> HighMemory</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> memory_usage &gt; 90% for 5 minutes</span></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">action</span><span class="kw">:</span><span class="at"> Auto-scale up</span></span></code></pre></div>
-<hr />
-<h2 id="scaling">Scaling</h2>
-<h3 id="horizontal-scaling-multiple-instances">Horizontal Scaling
-(Multiple Instances)</h3>
-<p>A.T.O.M is <strong>stateless</strong> and scales horizontally:</p>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kubernetes: Scale to 5 replicas</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="at">kubectl scale deployment atom-api --replicas=5</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Docker Compose: Use multiple services</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">atom-api-1</span><span class="kw">:</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">image</span><span class="kw">:</span><span class="at"> atom-simulator</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&quot;8081:8080&quot;</span><span class="kw">]</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">atom-api-2</span><span class="kw">:</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">image</span><span class="kw">:</span><span class="at"> atom-simulator</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&quot;8082:8080&quot;</span><span class="kw">]</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span></span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="fu">load-balancer</span><span class="kw">:</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:latest</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&quot;80:80&quot;</span><span class="kw">]</span></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">depends_on</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">atom-api</span><span class="dv">-1</span><span class="kw">,</span><span class="at"> atom-api</span><span class="dv">-2</span><span class="kw">]</span></span></code></pre></div>
-<h3 id="vertical-scaling-larger-machines">Vertical Scaling (Larger
-Machines)</h3>
-<p>Each RF request uses at most four workers, and the process accepts
-two concurrent RF jobs by default. Increase
-<code>MAX_CONCURRENT_RF_REQUESTS</code> only after measuring CPU and
-latency under representative requests; scaling is workload-dependent and
-is not expected to be linear.</p>
-<h3 id="caching">Caching</h3>
-<p>Consider caching simulation results:</p>
-<pre class="nginx"><code># Cache GET /api/towers (changes infrequently)
-location /api/towers {
-    proxy_cache_valid 200 1d;
-    proxy_pass http://atom_backend;
-}
-
-# Don&#39;t cache POST /api/simulate or /api/coverage-gaps (results vary)
-location /api/simulate {
-    proxy_cache_bypass $request_method;
-    proxy_pass http://atom_backend;
-}
-
-location /api/coverage-gaps {
-    proxy_cache_bypass $request_method;
-    proxy_pass http://atom_backend;
-}</code></pre>
-<hr />
-<h2 id="disaster-recovery">Disaster Recovery</h2>
-<h3 id="backup-strategy">Backup Strategy</h3>
-<ol type="1">
-<li><strong>Data Files</strong>: Version control GeoJSON in Git</li>
-<li><strong>Configuration</strong>: Store environment variables in
-secrets manager</li>
-<li><strong>Container Images</strong>: Tag and push to registry with
-version</li>
-</ol>
-<h3 id="high-availability">High Availability</h3>
-<ol type="1">
-<li><strong>Multiple Replicas</strong>: Always run ≥3 instances</li>
-<li><strong>Load Balancer</strong>: Distribute requests across
-replicas</li>
-<li><strong>Health Checks</strong>: Automatic restart of failed
-instances</li>
-<li><strong>Data Redundancy</strong>: GeoJSON baked into image (no
-external DB)</li>
-</ol>
-<h3 id="rollback-procedure">Rollback Procedure</h3>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If new version has issues, rollback:</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> set image deployment/atom-api <span class="dt">\</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  atom-api=atom-simulator:previous-version</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Or with Docker Compose:</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> pull <span class="kw">&amp;&amp;</span> <span class="ex">docker-compose</span> up <span class="at">-d</span></span></code></pre></div>
-<hr />
-<h2 id="security">Security</h2>
-<h3 id="network-security">Network Security</h3>
-<ul>
-<li>✅ Use HTTPS only (TLS 1.2+)</li>
-<li>✅ Enable CORS restrictions</li>
-<li>✅ Implement rate limiting</li>
-<li>✅ Run behind reverse proxy (nginx/HAProxy)</li>
-<li>✅ Use private subnets for backend</li>
-<li>✅ Firewall rules: limit ingress to necessary ports</li>
-</ul>
-<h3 id="application-security">Application Security</h3>
-<ul>
-<li>✅ Validate all inputs</li>
-<li>✅ No hardcoded secrets</li>
-<li>✅ Use environment variables for sensitive config</li>
-<li>✅ Regular dependency updates</li>
-<li>✅ Security scanning in CI/CD</li>
-</ul>
-<h3 id="container-security">Container Security</h3>
-<ul>
-<li>✅ Run as non-root user</li>
-<li>✅ Use read-only filesystem where possible</li>
-<li>✅ Regular base image updates (Alpine)</li>
-<li>✅ No privileged containers</li>
-</ul>
-<hr />
-<h2 id="performance-tuning">Performance Tuning</h2>
-<h3 id="go-runtime-tuning">Go Runtime Tuning</h3>
-<div class="sourceCode" id="cb21"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set max goroutines per request</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">GOMAXPROCS</span><span class="op">=</span>4</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Enable memory profiling</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">GODEBUG</span><span class="op">=</span>gctrace=1</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Start with profiling</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run . <span class="at">-cpuprofile</span><span class="op">=</span>cpu.prof</span></code></pre></div>
-<h3 id="os-tuning">OS Tuning</h3>
-<div class="sourceCode" id="cb22"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Increase file descriptor limit</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="bu">ulimit</span> <span class="at">-n</span> 65536</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Tune network buffer</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="ex">sysctl</span> <span class="at">-w</span> net.core.rmem_max=134217728</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="ex">sysctl</span> <span class="at">-w</span> net.core.wmem_max=134217728</span></code></pre></div>
-<hr />
-<h2 id="cost-optimization">Cost Optimization</h2>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs install</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Berk-Unsal/urban-ray-tracer.git</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> urban-ray-tracer</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://localhost:8080/readyz</span></code></pre></div>
+<p>Open <code>http://localhost:8080</code>. Stop the service with
+<code>docker compose down</code>.</p>
+<h2 id="runtime-topology">Runtime Topology</h2>
 <table>
 <thead>
 <tr>
-<th>Platform</th>
-<th>Instance Type</th>
-<th>Monthly Cost</th>
+<th>Component</th>
+<th>Default</th>
+<th>Responsibility</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>AWS</strong></td>
-<td>t3.large</td>
-<td>~$60</td>
+<td><code>atom</code> container</td>
+<td>Required</td>
+<td>Static frontend, REST API, RF engines, spatial index, active dataset
+pack</td>
 </tr>
 <tr>
-<td><strong>Google Cloud</strong></td>
-<td>n1-standard-2</td>
-<td>~$50</td>
+<td>Browser IndexedDB</td>
+<td>Required for projects</td>
+<td>Local project/scenario history; not shared across users</td>
 </tr>
 <tr>
-<td><strong>Azure</strong></td>
-<td>Standard_B2s</td>
-<td>~$40</td>
+<td>OpenStreetMap tiles</td>
+<td>External by default</td>
+<td>Visual basemap only; RF computation remains local</td>
 </tr>
 <tr>
-<td><strong>Bare Metal</strong></td>
-<td>2-core 4GB RAM</td>
-<td>~$20</td>
+<td><code>core-lab-adapter</code></td>
+<td>Optional profile</td>
+<td>Deterministic 5G path state and optional Open5GS probes</td>
 </tr>
 </tbody>
 </table>
-<hr />
-<h2 id="documentation-github-pages">Documentation: GitHub Pages</h2>
-<p>Host A.T.O.M's static documentation for free on GitHub Pages.</p>
-<h3 id="setup-steps">Setup Steps</h3>
-<h4 id="1-enable-github-pages">1. Enable GitHub Pages</h4>
-<ol type="1">
-<li>Go to your repository settings</li>
-<li>Navigate to <strong>Settings → Pages</strong></li>
-<li><strong>Source</strong>: Select "Deploy from branch"</li>
-<li><strong>Branch</strong>: Select your publishing branch and the
-<code>/docs</code> folder</li>
-</ol>
-<h4 id="2-static-files">2. Static Files</h4>
-<p>The docs site is checked in as <code>docs/index.html</code>.
-Supporting markdown, screenshots, report charts, icons, and the academic
-report PDF live under <code>docs/</code>, so GitHub Pages can serve them
-without a static-site generator or custom build step.</p>
-<h4 id="3-optional-custom-domain">3. Optional Custom Domain</h4>
-<p>If you later add a custom domain, configure it in GitHub repository
-settings and add a matching <code>docs/CNAME</code> file. Leave
-<code>docs/CNAME</code> absent when publishing under the normal GitHub
-Pages project URL.</p>
-<h3 id="manual-build--deploy">Manual Build &amp; Deploy</h3>
-<p>If you prefer manual verification:</p>
-<div class="sourceCode" id="cb23"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> http.server 9000 <span class="at">--directory</span> docs</span></code></pre></div>
-<h3 id="view-live-documentation">View Live Documentation</h3>
+<p>The Go server does not persist projects, jobs, reports, or
+measurements. Multiple API replicas can serve independent requests, but
+browser projects do not become collaborative storage.</p>
+<h2 id="configuration">Configuration</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PORT</code></td>
+<td><code>8080</code></td>
+<td>Public HTTP listener inside the container</td>
+</tr>
+<tr>
+<td><code>FRONTEND_DIST_PATH</code></td>
+<td><code>/app/dist</code></td>
+<td>Compiled frontend bundle</td>
+</tr>
+<tr>
+<td><code>ATOM_DATASET_DIR</code></td>
+<td><code>/app/data-pipeline</code></td>
+<td>Directory containing <code>manifest.json</code> and referenced data
+files</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_RF_REQUESTS</code></td>
+<td><code>2</code></td>
+<td>Process-wide expensive RF admission limit</td>
+</tr>
+<tr>
+<td><code>CORE_LAB_ENABLED</code></td>
+<td><code>false</code></td>
+<td>Enables backend proxy routes for the optional adapter</td>
+</tr>
+<tr>
+<td><code>CORE_LAB_BASE_URL</code></td>
+<td>unset</td>
+<td>Internal adapter URL when Core Lab is enabled</td>
+</tr>
+</tbody>
+</table>
+<p>The manifest-driven dataset directory is the authoritative data
+boundary; individual building and tower paths are not configured
+independently.</p>
+<h2 id="dataset-mounts">Dataset Mounts</h2>
+<p>Validate a pack before deployment:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run ./cmd/validate-dataset /absolute/path/to/dataset</span></code></pre></div>
+<p>Mount it read-only and set <code>ATOM_DATASET_DIR</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">atom</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">build</span><span class="kw">:</span><span class="at"> .</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;8080:8080&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ATOM_DATASET_DIR</span><span class="kw">:</span><span class="at"> /datasets/region</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> /absolute/path/to/dataset:/datasets/region:ro</span></span></code></pre></div>
+<p>A dataset change requires restart. Missing files, hash mismatches,
+invalid EPSG:4326 bounds, duplicate tower IDs, or unusable geometry keep
+readiness at <code>503</code> with an explanatory dataset error.</p>
+<h2 id="health-and-capacity">Health And Capacity</h2>
 <ul>
-<li><strong>Default</strong>:
-<code>https://&lt;github-user&gt;.github.io/&lt;repository&gt;/</code></li>
+<li><code>GET /healthz</code> is process liveness and can succeed before
+the application is ready.</li>
+<li><code>GET /readyz</code> requires valid data, loaded tower/building
+indexes, and the frontend bundle.</li>
+<li>Request bodies are limited to 1 MiB; oversized requests return
+<code>413</code>.</li>
+<li>Two RF jobs are admitted by default; saturation returns
+<code>429</code> and <code>Retry-After</code>.</li>
+<li>Expensive jobs use no more than four workers each and observe client
+cancellation where supported.</li>
+<li>HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120
+seconds for writes, and 60 seconds idle.</li>
 </ul>
-<h3 id="troubleshooting">Troubleshooting</h3>
-<p><strong>Docs not showing up?</strong></p>
+<p>Raise <code>MAX_CONCURRENT_RF_REQUESTS</code> only after measuring
+CPU, memory, and tail latency with representative two-to-six-cell
+requests. A load balancer cannot share the in-process admission counter
+between replicas.</p>
+<h2 id="reverse-proxy-boundary">Reverse Proxy Boundary</h2>
+<p>The application has no built-in authentication. An internet-facing
+deployment should place a trusted proxy or gateway in front of port 8080
+for:</p>
+<ul>
+<li>TLS termination and authentication.</li>
+<li>Request-rate and source policy.</li>
+<li>Access logging and security headers.</li>
+<li>A response timeout longer than the backend's 120-second RF write
+window.</li>
+</ul>
+<p>Keep the Core Lab adapter private to the service network unless
+direct access is explicitly required.</p>
+<h2 id="optional-5g-core-lab">Optional 5G Core Lab</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.yml <span class="at">-f</span> docker-compose.core-lab.yml <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--profile</span> core-lab up <span class="at">--build</span></span></code></pre></div>
+<p>The adapter does not deploy a complete Open5GS core. Without
+configured Open5GS endpoints it returns a deterministic
+<code>simulated_overlay</code>; with endpoints it briefly probes
+external health/metrics while preserving the same
+<code>/api/core/*</code> contracts.</p>
+<h2 id="tagged-multi-architecture-images">Tagged Multi-Architecture
+Images</h2>
+<p>Pushing a <code>v*</code> Git tag triggers
+<code>.github/workflows/release.yml</code>. The workflow:</p>
 <ol type="1">
-<li>Check the configured branch and <code>/docs</code> folder in
-Settings → Pages</li>
-<li>Wait 1-2 minutes for deployment</li>
-<li>Confirm <code>docs/index.html</code> exists in the published
-branch</li>
+<li>Pulls Git LFS data.</li>
+<li>Builds Linux AMD64 and ARM64 images.</li>
+<li>Embeds the tag and commit into <code>/api/meta</code> using Go
+linker values.</li>
+<li>Publishes semantic-version tags to
+<code>ghcr.io/&lt;repository-owner&gt;/atom</code>.</li>
 </ol>
-<p><strong>Custom domain not working?</strong></p>
-<ol type="1">
-<li>Verify CNAME file in docs/</li>
-<li>Check DNS records for your configured hostname</li>
-<li>Wait 24 hours for DNS propagation</li>
-</ol>
-<hr />
-<p><strong>Next</strong>: See <a href="./faq.html">FAQ</a> for common
-questions or <a href="./api.html">API Reference</a> for integration.</p>
+<p>Use immutable version tags in deployments. The running application
+exposes its version, commit, model version, and dataset identity in Data
+and <code>/api/meta</code>.</p>
+<h2 id="upgrade-and-rollback">Upgrade And Rollback</h2>
+<p>Before an upgrade, export important <code>.atom-project.json</code>
+files. Then:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://localhost:8080/readyz</span></code></pre></div>
+<p>Imported projects include a schema version and dataset reference. A
+mismatch is surfaced rather than silently treating previous results as
+current. Roll back by deploying the previous immutable image/source tag
+and its matching dataset pack.</p>
+<h2 id="verification-checklist">Verification Checklist</h2>
+<ul>
+<li><code>/healthz</code>, <code>/readyz</code>, and
+<code>/api/meta</code> return expected process, version, model, and
+dataset details.</li>
+<li>The Data tool shows the intended pack provenance and hashes.</li>
+<li>A single sector run completes and report metadata matches
+<code>/api/meta</code>.</li>
+<li>A concurrent-capacity test returns bounded <code>429</code> behavior
+instead of unbounded CPU growth.</li>
+<li>Project export/import works in a clean browser profile.</li>
+<li>Public deployments enforce TLS and authentication outside the
+app.</li>
+</ul>
+<p>See <a href="download.html">Download and Use</a>, <a
+href="architecture.html">System Architecture</a>, and the <a
+href="openapi.yaml">OpenAPI contract</a>.</p>
       </div>
     </article>
   </main>

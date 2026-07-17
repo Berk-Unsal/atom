@@ -131,4 +131,50 @@ describe("App planning workflow", () => {
     expect(screen.getByText("Action needed", { selector: ".run-state" })).toBeInTheDocument();
     expect(screen.getByText("Action needed", { selector: ".run-state" })).toHaveClass("error");
   });
+
+  it("clears prior RF evidence when a measurement calibration changes the plan", async () => {
+    api.postJSON.mockImplementation((path) => {
+      if (path === "/api/coverage-gaps") return Promise.resolve(gapPayload);
+      if (path === "/api/measurements/evaluate") {
+        return Promise.resolve({
+          geojson: {
+            type: "FeatureCollection",
+            features: [{
+              type: "Feature",
+              geometry: { type: "Point", coordinates: [32.85, 39.92] },
+              properties: { id: "m-1", status: "valid", residual_db: 6 },
+            }],
+          },
+          stats: { sample_count: 20, valid_sample_count: 20, mae_db: 6, rmse_db: 6, median_bias_db: 6 },
+          calibration: {
+            eligible: true,
+            reason: "Review holdout error before applying this global correction.",
+            recommended_total_offset_db: 6,
+            holdout_mae_before_db: 6,
+            holdout_mae_after_db: 0,
+          },
+        });
+      }
+      return Promise.resolve(simulationPayload);
+    });
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /Open Sector result results/i })).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    const fileInput = screen.getByLabelText(/Import measurement CSV/i);
+    const measurementFile = {
+      text: () => Promise.resolve("id,longitude,latitude,technology,rsrp_dbm\nm-1,32.85,39.92,5g,-80"),
+    };
+    fireEvent.change(fileInput, { target: { files: [measurementFile] } });
+    await waitFor(() => expect(screen.getByRole("button", { name: "Evaluate residuals" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Evaluate residuals" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Apply correction to plan" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Apply correction to plan" }));
+
+    expect(screen.queryByRole("button", { name: /Open Sector result results/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("Apply correction to plan")).not.toBeInTheDocument();
+    expect(screen.getByText("Plan changed", { selector: ".run-state" })).toBeInTheDocument();
+  });
 });

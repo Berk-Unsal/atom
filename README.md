@@ -10,6 +10,7 @@
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-0f766e?style=for-the-badge)](VERSION)
 
 </div>
 
@@ -169,6 +170,18 @@ Start with the static [documentation hub](docs/index.html), then use:
 - [Getting started](docs/getting-started.md) for the Markdown onboarding reference.
 - [REST API](docs/api.html), downloadable [OpenAPI 3.1 contract](docs/openapi.yaml), [RF algorithms](docs/algorithms.html), and [model limitations](docs/modeling-limits.html) for implementation details.
 - [Academic report](docs/academic-report.pdf) and [map interpretation guide](docs/visualization.html) for deeper analysis.
+
+## Versions and Release Notes
+
+A.T.O.M uses Semantic Versioning. [`VERSION`](VERSION) is the canonical application version and [`CHANGELOG.md`](CHANGELOG.md) records user-visible additions, changes, and bug fixes under **Unreleased** until a release is prepared.
+
+Creating a matching `vX.Y.Z` tag runs consistency checks, publishes multi-architecture GHCR images, and creates a GitHub Release announcement from that version's changelog section. Contributors can verify the release metadata locally with:
+
+```bash
+python3 scripts/versioning.py check
+```
+
+Resolved defects and their regression coverage are tracked in the [bug-fix register](docs/bug-fixes.html).
 
 ---
 

@@ -27,12 +27,13 @@ import {
 import { WORKSPACE_TOOLS } from "./components/workspaceTools.js";
 import useRequestCoordinator from "./hooks/useRequestCoordinator.js";
 import useProjectWorkspace from "./hooks/useProjectWorkspace.js";
+import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { getJSON, isAbortError, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
 import { runNetworkSimulationQueue } from "./utils/networkSimulationQueue.js";
 import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/polygonSelection.js";
 import { parseMeasurementCsv } from "./utils/measurementCsv.js";
-import { isDatasetCompatible } from "./utils/projectStore.js";
+import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
 import {
   buildInterferencePayload,
   buildMeasurementPayload,
@@ -126,6 +127,7 @@ export default function App() {
   const [towers, setTowers] = useState([]);
   const [selectedTower, setSelectedTower] = useState(null);
   const [selectedNetworkTowerIds, setSelectedNetworkTowerIds] = useState([]);
+  const [networkAzimuths, setNetworkAzimuths] = useState({});
   const [simulation, setSimulation] = useState(EMPTY_SIMULATION);
   const [simulationRevision, setSimulationRevision] = useState(0);
   const [coverageGaps, setCoverageGaps] = useState(EMPTY_COVERAGE_GAPS);
@@ -246,6 +248,7 @@ export default function App() {
     if (Array.isArray(plan.selectedNetworkTowerIds)) {
       setSelectedNetworkTowerIds(plan.selectedNetworkTowerIds.filter((id) => towers.some((tower) => tower.id === id)));
     }
+    setNetworkAzimuths(plan.networkAzimuths ?? {});
     if (plan.selectedTowerId) {
       setSelectedTower(towers.find((tower) => tower.id === plan.selectedTowerId) ?? towers[0] ?? null);
     }
@@ -302,6 +305,7 @@ export default function App() {
           layerVisibility,
           planningMode,
           selectedNetworkTowerIds,
+          networkAzimuths,
           selectedTowerId: selectedTower?.id ?? null,
           selectionPolygon,
           settings,
@@ -315,6 +319,7 @@ export default function App() {
     activeProject?.id,
     saveProjectDraft,
     selectedNetworkTowerIds,
+    networkAzimuths,
     selectedTower?.id,
     selectionPolygon,
     settings,
@@ -462,7 +467,7 @@ export default function App() {
     setError("");
     clearInterferenceAnalysis();
     try {
-      const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings);
+      const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths);
       const baselinePayload = await postJSON(
         "/api/evaluate-network",
         networkRequest,
@@ -508,6 +513,7 @@ export default function App() {
         towers: selectedNetworkTowers,
       });
       setNetworkOptimization(payload);
+      setNetworkAzimuths(networkAzimuthMap(selectedNetworkTowers, payload, networkAzimuths));
       setNetworkResultKind("optimization");
       setOptimizationDiagnostics(null);
       setComparison({ kind: "network", before: beforeSnapshot, after: afterSnapshot });
@@ -528,7 +534,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [clearInterferenceAnalysis, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [clearInterferenceAnalysis, networkAzimuths, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const evaluateNetwork = useCallback(async () => {
     const selected = selectedNetworkTowerIds
@@ -544,7 +550,7 @@ export default function App() {
     setError("");
     clearInterferenceAnalysis();
     try {
-      const networkRequest = buildNetworkOptimizationPayload(selected, settings);
+      const networkRequest = buildNetworkOptimizationPayload(selected, settings, networkAzimuths);
       const payload = await postJSON(
         "/api/evaluate-network",
         networkRequest,
@@ -552,7 +558,10 @@ export default function App() {
         request.signal,
       );
       const simulations = await runNetworkSimulationQueue(selected, (tower) =>
-        simulateRaysForSettings(tower, settings, request.signal));
+        simulateRaysForSettings(tower, {
+          ...settings,
+          azimuthDeg: networkAzimuthFor(tower, networkAzimuths, settings.azimuthDeg),
+        }, request.signal));
       if (!request.isCurrent()) {
         return;
       }
@@ -577,7 +586,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [clearInterferenceAnalysis, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [clearInterferenceAnalysis, networkAzimuths, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const selectedNetworkTowers = useMemo(
     () =>
@@ -608,7 +617,7 @@ export default function App() {
     try {
       const payload = await postJSON(
         "/api/interference",
-        buildInterferencePayload(selectedNetworkTowers, settings, networkOptimization),
+        buildInterferencePayload(selectedNetworkTowers, settings, networkOptimization, networkAzimuths),
         "Interference analysis failed",
         request.signal,
       );
@@ -631,7 +640,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [interferenceApplicable, networkOptimization, requests, selectedNetworkTowers, settings]);
+  }, [interferenceApplicable, networkAzimuths, networkOptimization, requests, selectedNetworkTowers, settings]);
 
   const coreLabTowerIDs = useMemo(() => {
     if (planningMode === "network" && selectedNetworkTowers.length > 0) {
@@ -785,6 +794,9 @@ export default function App() {
     invalidatePlanResults();
     setSettings((current) => {
       const resolved = typeof nextSettings === "function" ? nextSettings(current) : nextSettings;
+      if (Number(resolved.azimuthDeg) !== Number(current.azimuthDeg)) {
+        setNetworkAzimuths({});
+      }
       if (resolved.frequencyGHz !== current.frequencyGHz) {
         setCalibrationProfile(null);
         return { ...resolved, calibrationOffsetDb: 0 };
@@ -854,6 +866,7 @@ export default function App() {
   const clearNetworkSelection = useCallback(() => {
     invalidatePlanResults();
     setSelectedNetworkTowerIds([]);
+    setNetworkAzimuths({});
     setSelectionPolygon([]);
     setSelectedMapObject(null);
     setSelectionNotice("");
@@ -913,7 +926,7 @@ export default function App() {
     try {
       const payload = await postJSON(
         "/api/recommend-sites",
-        buildRecommendationPayload(selectedNetworkTowers, settings, selectionPolygon),
+        buildRecommendationPayload(selectedNetworkTowers, settings, selectionPolygon, networkOptimization, networkAzimuths),
         "Candidate recommendation failed",
         request.signal,
       );
@@ -930,7 +943,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [interferenceApplicable, requests, selectedNetworkTowers, selectionPolygon, settings]);
+  }, [interferenceApplicable, networkAzimuths, networkOptimization, requests, selectedNetworkTowers, selectionPolygon, settings]);
 
   const loadMeasurementFile = useCallback(async (file) => {
     if (!file) return;
@@ -966,7 +979,7 @@ export default function App() {
     try {
       const payload = await postJSON(
         "/api/measurements/evaluate",
-        buildMeasurementPayload(measurementTowers, settings, measurementSamples, networkOptimization),
+        buildMeasurementPayload(measurementTowers, settings, measurementSamples, networkOptimization, networkAzimuths),
         "Measurement evaluation failed",
         request.signal,
       );
@@ -982,7 +995,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [interferenceApplicable, measurementSamples, networkOptimization, planningMode, requests, selectedNetworkTowers, selectedTower, settings]);
+  }, [interferenceApplicable, measurementSamples, networkAzimuths, networkOptimization, planningMode, requests, selectedNetworkTowers, selectedTower, settings]);
 
   const applyCalibration = useCallback(() => {
     const offset = measurementAnalysis?.calibration?.recommended_total_offset_db;
@@ -990,6 +1003,7 @@ export default function App() {
       setError("No eligible calibration correction is available");
       return;
     }
+    invalidatePlanResults();
     setSettings((current) => ({ ...current, calibrationOffsetDb: Number(offset) }));
     setCalibrationProfile({
       kind: "robust_global_path_loss_bias",
@@ -997,11 +1011,10 @@ export default function App() {
       technology: settings.frequencyGHz < 10 ? "4g" : "5g",
       frequencyGHz: settings.frequencyGHz,
       modelVersion: appMeta?.model_version ?? "unknown",
-      dataset: appMeta?.dataset ? { id: appMeta.dataset.id, version: appMeta.dataset.version } : null,
+      dataset: datasetReference(appMeta),
       validation: measurementAnalysis.calibration,
     });
-    setPlanDirty(true);
-  }, [appMeta, measurementAnalysis, settings.frequencyGHz]);
+  }, [appMeta, invalidatePlanResults, measurementAnalysis, settings.frequencyGHz]);
 
   const toggleLayerVisibility = useCallback((layer) => {
     setLayerVisibility((current) => ({
@@ -1252,13 +1265,14 @@ export default function App() {
       settings,
       planningMode,
       selectedTowerId: selectedTower?.id ?? null,
-      selectedNetworkTowerIds,
+        selectedNetworkTowerIds,
+        networkAzimuths,
       selectionPolygon,
       layerVisibility,
       ...overrides.plan,
     },
     request: planningMode === "network"
-      ? buildNetworkOptimizationPayload(selectedNetworkTowers, settings)
+      ? buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths)
       : selectedTower ? buildSimulationPayload(selectedTower, settings) : null,
     summary: {
       kind: lastAnalysisKind,
@@ -1273,7 +1287,7 @@ export default function App() {
       calibrationOffsetDB: settings.calibrationOffsetDb ?? 0,
       ...overrides.summary,
     },
-    artifacts: overrides.artifacts ?? {
+    artifacts: selectScenarioArtifacts(planDirty, overrides, {
       simulation,
       coverageGaps,
       interferenceAnalysis,
@@ -1281,7 +1295,7 @@ export default function App() {
       optimizationDiagnostics,
       siteRecommendations,
       measurementAnalysis,
-    },
+    }),
     requiresRerun: Boolean(planDirty),
   }), [
     activeResultsView,
@@ -1291,6 +1305,7 @@ export default function App() {
     interferenceAnalysis,
     lastAnalysisKind,
     layerVisibility,
+    networkAzimuths,
     measurementAnalysis,
     networkOptimization,
     optimizationDiagnostics,
@@ -1312,9 +1327,10 @@ export default function App() {
   }, [activeProject?.scenarios?.length, buildCurrentScenarioSnapshot, lastAnalysisKind, planningMode, saveProjectScenario]);
 
   const openSavedScenario = useCallback((scenario) => {
+    projectWorkspace.activateScenario(scenario.id);
     restorePlanningSnapshot(scenario);
     if (scenario.requiresRerun) setError("This scenario retains its inputs and summary; rerun it to restore uncached map layers.");
-  }, [restorePlanningSnapshot]);
+  }, [projectWorkspace, restorePlanningSnapshot]);
 
   const applyRecommendation = useCallback((recommendation) => {
     const candidate = towers.find((tower) => String(tower.cellId) === String(recommendation.cell_id) || tower.id === recommendation.id);
@@ -1323,12 +1339,18 @@ export default function App() {
       return;
     }
     const nextIDs = [...new Set([...selectedNetworkTowerIds, candidate.id])];
+    const nextAzimuths = {
+      ...networkAzimuths,
+      ...networkAzimuthMap(selectedNetworkTowers, networkOptimization, networkAzimuths),
+      [candidate.id]: Number(recommendation.optimal_azimuth),
+    };
     const snapshot = buildCurrentScenarioSnapshot({
       plan: {
         planningMode: "network",
         selectedTowerId: candidate.id,
         selectedNetworkTowerIds: nextIDs,
-        settings: { ...settings, azimuthDeg: Number(recommendation.optimal_azimuth) },
+        networkAzimuths: nextAzimuths,
+        settings,
       },
       summary: { kind: "recommendation", resultsView: "recommendations", networkScore: recommendation.stats?.network_score ?? null },
       artifacts: null,
@@ -1338,7 +1360,17 @@ export default function App() {
     restorePlanningSnapshot(snapshot);
     setSelectedTower(candidate);
     setError("");
-  }, [buildCurrentScenarioSnapshot, restorePlanningSnapshot, saveProjectScenario, selectedNetworkTowerIds, settings, towers]);
+  }, [
+    buildCurrentScenarioSnapshot,
+    networkAzimuths,
+    networkOptimization,
+    restorePlanningSnapshot,
+    saveProjectScenario,
+    selectedNetworkTowerIds,
+    selectedNetworkTowers,
+    settings,
+    towers,
+  ]);
   const createPlanningReport = useCallback(
     () =>
       buildPlanningReport({
@@ -2526,13 +2558,29 @@ function isCalibrationProfileCompatible(profile, settings, meta) {
   if (!profile) return true;
   if (!meta) return true;
   const technology = settings.frequencyGHz < 10 ? "4g" : settings.frequencyGHz < 100 ? "5g" : "6g";
-  const dataset = meta.dataset;
   return profile.kind === "robust_global_path_loss_bias"
     && profile.technology === technology
     && Number(profile.frequencyGHz) === Number(settings.frequencyGHz)
     && profile.modelVersion === meta.model_version
-    && profile.dataset?.id === dataset?.id
-    && profile.dataset?.version === dataset?.version;
+    && isDatasetCompatible({ datasetRef: profile.dataset }, meta);
+}
+
+function networkAzimuthFor(tower, azimuths, fallback) {
+  const value = azimuths[tower.id] ?? azimuths[String(tower.id)] ?? azimuths[String(tower.cellId ?? "")];
+  return Number.isFinite(Number(value)) ? Number(value) : fallback;
+}
+
+function networkAzimuthMap(towers, optimization, existing = {}) {
+  const optimizedByID = new Map(
+    (optimization?.optimized_towers ?? []).map((tower) => [String(tower.id), tower.optimal_azimuth]),
+  );
+  return towers.reduce((azimuths, tower) => {
+    const optimized = optimizedByID.get(String(tower.cellId ?? tower.id));
+    if (Number.isFinite(Number(optimized))) {
+      azimuths[tower.id] = Number(optimized);
+    }
+    return azimuths;
+  }, { ...existing });
 }
 
 function MiniDatum({ label, value }) {

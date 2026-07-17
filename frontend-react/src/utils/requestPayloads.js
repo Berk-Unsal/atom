@@ -12,13 +12,13 @@ export function buildSimulationPayload(selectedTower, settings) {
   };
 }
 
-export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings) {
+export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths = {}) {
   return {
     towers: selectedNetworkTowers.map((tower) => ({
       id: String(tower.cellId ?? tower.id),
       tower_lon: tower.coordinates[0],
       tower_lat: tower.coordinates[1],
-      azimuth: settings.azimuthDeg,
+      azimuth: azimuthForTower(tower, settings, networkAzimuths),
     })),
     rays: settings.rayCount,
     radius_m: settings.radiusMeters,
@@ -29,7 +29,7 @@ export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings)
   };
 }
 
-export function buildInterferencePayload(selectedNetworkTowers, settings, networkOptimization) {
+export function buildInterferencePayload(selectedNetworkTowers, settings, networkOptimization, networkAzimuths = {}) {
   const optimizedByID = new Map(
     (networkOptimization?.optimized_towers ?? []).map((tower) => [String(tower.id), tower]),
   );
@@ -41,7 +41,7 @@ export function buildInterferencePayload(selectedNetworkTowers, settings, networ
         id,
         tower_lon: tower.coordinates[0],
         tower_lat: tower.coordinates[1],
-        azimuth: Number(optimizedByID.get(id)?.optimal_azimuth ?? settings.azimuthDeg),
+        azimuth: Number(optimizedByID.get(id)?.optimal_azimuth ?? azimuthForTower(tower, settings, networkAzimuths)),
       };
     }),
     radius_m: settings.radiusMeters,
@@ -57,9 +57,17 @@ export function buildInterferencePayload(selectedNetworkTowers, settings, networ
   };
 }
 
-export function buildRecommendationPayload(selectedNetworkTowers, settings, selectionPolygon) {
+export function buildRecommendationPayload(selectedNetworkTowers, settings, selectionPolygon, networkOptimization, networkAzimuths = {}) {
+  const optimizedByID = new Map(
+    (networkOptimization?.optimized_towers ?? []).map((tower) => [String(tower.id), tower]),
+  );
+  const network = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths);
   return {
-    ...buildNetworkOptimizationPayload(selectedNetworkTowers, settings),
+    ...network,
+    towers: network.towers.map((tower) => ({
+      ...tower,
+      azimuth: Number(optimizedByID.get(tower.id)?.optimal_azimuth ?? tower.azimuth),
+    })),
     network_tech: settings.frequencyGHz < 10 ? "4g" : "5g",
     search_polygon: selectionPolygon.map((point) => Array.isArray(point)
       ? [point[0], point[1]]
@@ -68,8 +76,8 @@ export function buildRecommendationPayload(selectedNetworkTowers, settings, sele
   };
 }
 
-export function buildMeasurementPayload(towers, settings, samples, networkOptimization) {
-  const interference = buildInterferencePayload(towers, settings, networkOptimization);
+export function buildMeasurementPayload(towers, settings, samples, networkOptimization, networkAzimuths = {}) {
+  const interference = buildInterferencePayload(towers, settings, networkOptimization, networkAzimuths);
   return {
     network_tech: interference.network_tech,
     towers: interference.towers,
@@ -82,4 +90,10 @@ export function buildMeasurementPayload(towers, settings, samples, networkOptimi
     calibration_offset_db: interference.calibration_offset_db,
     samples,
   };
+}
+
+export function azimuthForTower(tower, settings, networkAzimuths = {}) {
+  const explicit = networkAzimuths[tower.id] ?? networkAzimuths[String(tower.id)]
+    ?? networkAzimuths[String(tower.cellId ?? "")];
+  return Number.isFinite(Number(explicit)) ? Number(explicit) : settings.azimuthDeg;
 }

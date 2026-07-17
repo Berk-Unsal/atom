@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildInterferencePayload } from "./requestPayloads.js";
+import {
+  buildInterferencePayload,
+  buildNetworkOptimizationPayload,
+  buildRecommendationPayload,
+} from "./requestPayloads.js";
 
 const towers = [
   { id: "lte-1", cellId: 1, coordinates: [32.85, 39.92] },
@@ -29,5 +33,22 @@ describe("interference request payload", () => {
     expect(payload.noise_figure_db).toBe(0);
     expect(payload.towers.map((tower) => tower.id)).toEqual(["1", "2"]);
     expect(payload.towers.map((tower) => tower.azimuth)).toEqual([90, 180]);
+  });
+
+  it("scores recommendations from the currently optimized cell azimuths", () => {
+    const payload = buildRecommendationPayload(
+      towers,
+      { ...settings, rayCount: 60 },
+      [[32.84, 39.91], [32.87, 39.91], [32.87, 39.94]],
+      { optimized_towers: [{ id: "1", optimal_azimuth: 45 }, { id: "2", optimal_azimuth: 180 }] },
+    );
+
+    expect(payload.towers.map((tower) => tower.azimuth)).toEqual([45, 180]);
+  });
+
+  it("preserves explicit per-cell azimuths for later network evaluations", () => {
+    const payload = buildNetworkOptimizationPayload(towers, settings, { "lte-1": 45, "lte-2": 180 });
+
+    expect(payload.towers.map((tower) => tower.azimuth)).toEqual([45, 180]);
   });
 });

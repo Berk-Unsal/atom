@@ -4,10 +4,12 @@ import {
   createProjectWorkspace,
   createScenario,
   datasetReference,
+  duplicateProjectData,
   exportProjectFile,
   importProjectFile,
   loadProjectWorkspace,
   saveProjectWorkspace,
+  updateProjectDraft,
 } from "../utils/projectStore.js";
 
 export default function useProjectWorkspace(meta) {
@@ -73,13 +75,7 @@ export default function useProjectWorkspace(meta) {
 
   const duplicateProject = useCallback(() => {
     if (!activeProject) return;
-    const duplicate = {
-      ...structuredClone(activeProject),
-      id: createProject().id,
-      name: `${activeProject.name} Copy`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const duplicate = duplicateProjectData(activeProject);
     commit((current) => ({ ...current, activeProjectId: duplicate.id, projects: [...current.projects, duplicate] }));
   }, [activeProject, commit]);
 
@@ -93,12 +89,16 @@ export default function useProjectWorkspace(meta) {
 
   const saveDraft = useCallback((draft) => {
     if (!activeProjectID) return;
-    updateProject(activeProjectID, (project) => ({
+    updateProject(activeProjectID, (project) => updateProjectDraft({
       ...project,
       datasetRef: project.datasetRef ?? datasetReference(meta),
-      draft,
-    }));
+    }, draft));
   }, [activeProjectID, meta, updateProject]);
+
+  const activateScenario = useCallback((scenarioID) => {
+    if (!activeProject || !activeProject.scenarios.some((scenario) => scenario.id === scenarioID)) return;
+    updateProject(activeProject.id, (project) => ({ ...project, activeScenarioId: scenarioID }));
+  }, [activeProject, updateProject]);
 
   const saveScenario = useCallback((name, snapshot) => {
     if (!activeProjectID) return null;
@@ -129,6 +129,7 @@ export default function useProjectWorkspace(meta) {
 
   return {
     activeProject,
+    activateScenario,
     addProject,
     clearError: () => setError(""),
     deleteProject,

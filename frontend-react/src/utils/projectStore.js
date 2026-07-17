@@ -1,7 +1,7 @@
 export const PROJECT_SCHEMA_VERSION = 1;
 
 /** @typedef {{ kind: string, resultsView: string, avgRxDBm: number|null, gapPct: number|null, networkScore: number|null, overlapBuildings: number|null, avgSINRDB: number|null, serviceablePct: number|null, affectedDemand: number|null, calibrationOffsetDB: number }} ScenarioSummary */
-/** @typedef {{ kind: "robust_global_path_loss_bias", offsetDb: number, technology: "4g"|"5g", frequencyGHz: number, modelVersion: string, dataset: {id: string, version: string}, validation: object }} CalibrationProfile */
+/** @typedef {{ kind: "robust_global_path_loss_bias", offsetDb: number, technology: "4g"|"5g", frequencyGHz: number, modelVersion: string, dataset: {id: string, version: string, hashes: object}, validation: object }} CalibrationProfile */
 /** @typedef {{ id: string, name: string, createdAt: string, updatedAt: string, plan: object, request: object|null, meta: object|null, summary: ScenarioSummary, artifacts: object|null, calibrationProfile: CalibrationProfile|null, requiresRerun: boolean }} ScenarioSnapshot */
 /** @typedef {{ id: string, name: string, datasetRef: object|null, createdAt: string, updatedAt: string, activeScenarioId: string|null, draft: object|null, scenarios: ScenarioSnapshot[] }} ProjectV1 */
 const DATABASE_NAME = "atom-planning-workspace";
@@ -63,7 +63,23 @@ export function isDatasetCompatible(project, meta) {
     return true;
   }
   return expected.id === active.id && expected.version === active.version
-    && JSON.stringify(expected.hashes ?? {}) === JSON.stringify(active.hashes ?? {});
+    && equalStringMaps(expected.hashes, active.hashes);
+}
+
+export function updateProjectDraft(project, draft) {
+  const activeScenario = project.scenarios.find((scenario) => scenario.id === project.activeScenarioId);
+  const stillMatchesActiveScenario = Boolean(
+    activeScenario && equalSerializableValues(activeScenario.plan, draft?.plan),
+  );
+  return {
+    ...project,
+    activeScenarioId: stillMatchesActiveScenario ? project.activeScenarioId : null,
+    draft: {
+      ...draft,
+      requiresRerun: true,
+      updatedAt: new Date().toISOString(),
+    },
+  };
 }
 
 export function normalizeWorkspace(candidate, datasetRef = null) {
@@ -100,27 +116,51 @@ export function migrateWorkspace(candidate) {
 }
 
 export async function loadProjectWorkspace(datasetRef = null) {
+  let stored = null;
+  let indexedDBError = null;
   try {
-    const stored = await readIndexedDB();
-    return normalizeWorkspace(stored, datasetRef);
+    stored = await readIndexedDB();
   } catch (error) {
-    const fallback = globalThis.localStorage?.getItem(FALLBACK_KEY);
-    if (!fallback) {
-      if (error?.name === "DataError") {
-        throw error;
-      }
-      return createProjectWorkspace(datasetRef);
-    }
-    return normalizeWorkspace(JSON.parse(fallback), datasetRef);
+    indexedDBError = error;
   }
+  const fallback = readFallbackWorkspace();
+  if (stored !== null && stored !== undefined || fallback) {
+    return resolveWorkspaceData(stored, fallback, datasetRef);
+  }
+  if (indexedDBError?.name === "DataError") {
+    throw indexedDBError;
+  }
+  return createProjectWorkspace(datasetRef);
+}
+
+export function resolveWorkspaceData(indexedWorkspace, fallbackJSON, datasetRef = null) {
+  if (indexedWorkspace !== null && indexedWorkspace !== undefined) {
+    return normalizeWorkspace(indexedWorkspace, datasetRef);
+  }
+  if (fallbackJSON) {
+    return normalizeWorkspace(JSON.parse(fallbackJSON), datasetRef);
+  }
+  return createProjectWorkspace(datasetRef);
 }
 
 export async function saveProjectWorkspace(workspace) {
   const normalized = compactWorkspace(normalizeWorkspace(workspace));
+  let indexedDBError = null;
   try {
     await writeIndexedDB(normalized);
-  } catch {
+  } catch (error) {
+    indexedDBError = error;
+  }
+  try {
     globalThis.localStorage?.setItem(FALLBACK_KEY, JSON.stringify(normalized));
+  } catch (fallbackError) {
+    if (indexedDBError) {
+      throw new AggregateError(
+        [indexedDBError, fallbackError],
+        "Project workspace could not be saved",
+        { cause: fallbackError },
+      );
+    }
   }
   return normalized;
 }
@@ -142,12 +182,14 @@ export function importProjectFile(text) {
   if (parsed?.schemaVersion !== PROJECT_SCHEMA_VERSION || !isValidProject(parsed.project)) {
     throw new Error("Project file does not use the supported A.T.O.M schema");
   }
-  return {
-    ...parsed.project,
-    id: createID("project"),
-    name: `${parsed.project.name} (Imported)`,
-    updatedAt: new Date().toISOString(),
-  };
+  return copyProjectWithNewIDs(parsed.project, `${parsed.project.name} (Imported)`);
+}
+
+export function duplicateProjectData(project) {
+  if (!isValidProject(project)) {
+    throw new Error("No valid project is available to duplicate");
+  }
+  return copyProjectWithNewIDs(project, `${project.name} Copy`);
 }
 
 function compactWorkspace(workspace) {
@@ -155,16 +197,54 @@ function compactWorkspace(workspace) {
     .flatMap((project) => project.scenarios.map((scenario) => ({ projectID: project.id, scenario })))
     .filter(({ scenario }) => scenario.artifacts)
     .sort((left, right) => String(right.scenario.updatedAt).localeCompare(String(left.scenario.updatedAt)));
-  const retained = new Set(cached.slice(0, MAX_CACHED_SCENARIOS).map(({ scenario }) => scenario.id));
+  const retained = new Set(cached.slice(0, MAX_CACHED_SCENARIOS)
+    .map(({ projectID, scenario }) => `${projectID}:${scenario.id}`));
   return {
     ...workspace,
     projects: workspace.projects.map((project) => ({
       ...project,
-      scenarios: project.scenarios.map((scenario) => retained.has(scenario.id)
+      scenarios: project.scenarios.map((scenario) => retained.has(`${project.id}:${scenario.id}`)
         ? scenario
         : { ...scenario, artifacts: null, requiresRerun: Boolean(scenario.artifacts) }),
     })),
   };
+}
+
+function copyProjectWithNewIDs(project, name) {
+  const timestamp = new Date().toISOString();
+  const scenarioIDs = new Map();
+  const scenarios = (project.scenarios ?? []).map((scenario) => {
+    const id = createID("scenario");
+    scenarioIDs.set(scenario.id, id);
+    return { ...structuredClone(scenario), id, createdAt: timestamp, updatedAt: timestamp };
+  });
+  return {
+    ...structuredClone(project),
+    id: createID("project"),
+    name,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    activeScenarioId: scenarioIDs.get(project.activeScenarioId) ?? null,
+    scenarios,
+  };
+}
+
+function equalSerializableValues(left, right) {
+  return JSON.stringify(left ?? null) === JSON.stringify(right ?? null);
+}
+
+function equalStringMaps(left = {}, right = {}) {
+  const leftEntries = Object.entries(left ?? {}).sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey));
+  const rightEntries = Object.entries(right ?? {}).sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey));
+  return equalSerializableValues(leftEntries, rightEntries);
+}
+
+function readFallbackWorkspace() {
+  try {
+    return globalThis.localStorage?.getItem(FALLBACK_KEY) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function isValidProject(project) {

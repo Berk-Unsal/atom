@@ -10,15 +10,16 @@ RUN npm run build
 FROM golang:1.22-alpine AS backend-build
 WORKDIR /src/backend-go
 
-ARG VERSION=dev
+ARG VERSION
 ARG COMMIT=unknown
 
 COPY backend-go/go.mod backend-go/go.sum ./
 RUN go mod download
 
 COPY backend-go/ ./
+COPY VERSION /src/VERSION
 RUN CGO_ENABLED=0 GOOS=linux go build \
-    -ldflags "-s -w -X main.appVersion=${VERSION} -X main.buildCommit=${COMMIT}" \
+    -ldflags "-s -w -X main.appVersion=${VERSION:-$(cat /src/VERSION)} -X main.buildCommit=${COMMIT}" \
     -o /server .
 
 FROM alpine:latest AS production

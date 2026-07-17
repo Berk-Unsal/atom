@@ -1,65 +1,22 @@
-# Welcome to A.T.O.M
+# A.T.O.M Documentation
 
-**Ankara Telecom Optimization Model** is a deterministic, planning-grade RF propagation and network analysis platform.
+A.T.O.M, the Ankara Telecom Optimization Model, is a deterministic, planning-grade RF analysis application for 4G LTE, 5G mmWave, and an explicitly experimental 6G Sub-THz research overlay.
 
-Built with cutting-edge technologies in spatial algorithms, high-performance concurrency, and telecommunications physics, A.T.O.M enables telecommunications engineers to visualize, simulate, and optimize cellular networks across 4G LTE, 5G mmWave, and 6G Sub-THz frequency bands in complex urban environments.
+Use the [documentation hub](index.html) for the maintained browser experience. It links to the current workspace, installation steps, model limits, and printable technical references.
 
-## What is A.T.O.M?
+## Start Here
 
-A.T.O.M is a full-stack spatial simulation engine that:
+- [Architecture](architecture.html): browser-to-backend request paths, spatial indexing, RF engines, reliability controls, and 5G communication paths.
+- [Download and use](download.html): Git LFS cloning, Docker Compose, local development, readiness checks, and first workflows.
+- [Capabilities](features.html): current supported planning workflows and technology boundaries.
+- [Modeling limits](modeling-limits.html): what the deterministic model includes and excludes.
+- [API reference](api.html) and [OpenAPI contract](openapi.yaml): documented REST interfaces and response behavior.
+- [Bug-fix register](bug-fixes.html): confirmed defects, priority, correction, and regression evidence.
 
-- **Predicts signal coverage** using physics-based RF propagation models
-- **Optimizes antenna azimuth** with deterministic demand-aware search
-- **Visualizes networks** with interactive GeoJSON heatmaps and Leaflet mapping
-- **Scales efficiently** through Go's Goroutine concurrency and in-memory spatial indexing
-- **Leverages real-world data** from OpenStreetMap (OSM) and OpenCellID networks
+## Release Status
 
-## Core Capabilities
+The current source version is [`0.1.0`](../VERSION). User-visible changes are tracked in the root [changelog](../CHANGELOG.md). A matching `vX.Y.Z` tag validates metadata, publishes the container images, and creates the GitHub Release announcement from that changelog section.
 
-| Capability | Description |
-|-----------|-------------|
-| **Multi-Generation Physics** | Accurate FSPL models for 4G (2.6 GHz), 5G (28 GHz), and 6G (140 GHz) |
-| **Raytracing Engine** | Fast polygon intersection testing with real-time heatmap rendering |
-| **Building Penetration** | Frequency-dependent material attenuation for concrete, office, and forest |
-| **Beamforming** | Sector antenna simulation with adjustable azimuth and beam width |
-| **Deterministic Optimization** | Demand-aware azimuth scoring for the active tower |
-| **GeoJSON Export** | Native support for web-based visualization and GIS integration |
+## Model Boundary
 
-## Quick Links
-
-- [📖 Overview](overview.md) - Project background and use cases
-- [⚡ Features](features.md) - Detailed feature breakdown
-- [🏗️ Architecture](architecture.md) - System design and tech stack
-- [🎨 Visualization](visualization.md) - RF propagation examples
-- [📐 Algorithms](algorithms.md) - Physics models and optimization methods
-- [🚀 Getting Started](getting-started.md) - Installation and first run
-- [🔌 API Reference](api.md) - REST API endpoints and parameters
-- [🐳 Deployment](deployment.md) - Docker and production setup
-
----
-
-## Project Status
-
-**Current Release**: v1.0  
-**Status**: Planning-grade simulator
-**License**: MIT
-
-## Get Started in 2 Minutes
-
-```bash
-# Build the Docker image
-docker build -t atom-simulator .
-
-# Run the container
-docker run -p 8080:8080 atom-simulator
-
-# Open http://localhost:8080 in your browser
-```
-
-For detailed setup instructions, see the [Getting Started](getting-started.md) guide.
-
----
-
-**Deterministic, inspectable, and explicit about model limits.**
-
-Architected and developed by [Berk Ünsal](https://berkunsal.com)
+Results are deterministic planning estimates based on static OSM/OpenCellID-derived dataset packs, FSPL, configured antenna gain, beam eligibility, and frequency-dependent wall loss. They are not drive-test, UE, PHY, or live-network measurements. See [modeling limits](modeling-limits.html) before using outputs for engineering decisions.

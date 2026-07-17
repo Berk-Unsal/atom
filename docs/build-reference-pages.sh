@@ -45,3 +45,5 @@ build_page contributing.md contributing.html "Contributing" "Contributor guide" 
   "Repository structure, development setup, testing expectations, and contribution workflow for A.T.O.M."
 build_page modeling-limits.md modeling-limits.html "Modeling Limits" "Confidence boundary" \
   "What the deterministic planning model includes, what it excludes, and how to interpret its outputs responsibly."
+build_page bug-fixes.md bug-fixes.html "Bug-Fix Register" "Quality history" \
+  "Prioritized confirmed defects, user impact, root causes, corrections, and regression evidence for A.T.O.M releases."

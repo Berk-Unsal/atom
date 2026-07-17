@@ -1,371 +1,231 @@
-# Architecture
+# A.T.O.M System Architecture
 
-A.T.O.M is designed as a modern, cloud-native full-stack application with clear separation of concerns.
+The interactive architecture guide is available at [architecture.html](./architecture.html).
 
-## System Architecture
+A.T.O.M is a local-first React and Go application. The browser owns planning state, request orchestration, map presentation, inspection, and report assembly. The Go service owns request validation, bounded RF computation, spatial querying, and the optional Core Lab proxy.
 
-```
-┌─────────────────────────────────────────────────────┐
-│                  Frontend (React + Leaflet)          │
-│  ┌─────────────────────────────────────────────┐    │
-│  │  - Interactive Map Canvas                    │    │
-│  │  - Control Panel (Azimuth, Beam Width, etc)  │    │
-│  │  - Real-time Heatmap Rendering              │    │
-│  │  - GeoJSON Layer Management                  │    │
-│  └─────────────────────────────────────────────┘    │
-└────────────────────┬────────────────────────────────┘
-                     │ REST API (JSON)
-┌────────────────────┴────────────────────────────────┐
-│              Backend API (Go)                        │
-│  ┌─────────────────────────────────────────────┐    │
-│  │  HTTP Handlers & Request Validation         │    │
-│  │  ┌──────────────────────────────────────┐   │    │
-│  │  │ Ray Tracing Engine (Goroutines)      │   │    │
-│  │  │  - FSPL Calculation                  │   │    │
-│  │  │  - Polygon Intersection Testing      │   │    │
-│  │  │  - Frequency Wall-Loss Lookup        │   │    │
-│  │  └──────────────────────────────────────┘   │    │
-│  │  ┌──────────────────────────────────────┐   │    │
-│  │  │ Spatial Index (In-Memory R-Tree)     │   │    │
-│  │  │  - Building Geometries               │   │    │
-│  │  │  - Fast Intersection Queries         │   │    │
-│  │  └──────────────────────────────────────┘   │    │
-│  │  ┌──────────────────────────────────────┐   │    │
-│  │  │ Optimization Engine (Sweep & Score)  │   │    │
-│  │  │  - Demand/Residential Scoring        │   │    │
-│  │  │  - Azimuth + Gap Optimization        │   │    │
-│  │  └──────────────────────────────────────┘   │    │
-│  └─────────────────────────────────────────────┘    │
-└────────────────────┬────────────────────────────────┘
-                     │ Load at Startup
-┌────────────────────┴────────────────────────────────┐
-│            Static Data Files (GeoJSON)              │
-│  - ankara_5g_nodes.geojson (tower locations)       │
-│  - ankara_buildings.geojson (building footprints)  │
-└─────────────────────────────────────────────────────┘
+## System at a Glance
+
+```text
+Planner / API consumer
+        |
+        v
+React workspace and Leaflet map
+        |
+        | REST JSON
+        v
+Go + Gin API
+        |
+        +--> RF capacity limiter
+        |      +--> propagation and coverage gaps
+        |      +--> sector/network optimization
+        |      +--> network evaluation
+        |      +--> interference analysis
+        |
+        +--> in-memory building R-tree and tower store
+        |
+        +--> optional 5G Core proxy --> Core Lab adapter --> optional Open5GS
 ```
 
-## Technology Stack
-
-### Backend: Go (Golang)
-
-**Why Go?**
-
-- ⚡ **Speed**: Compiled to native binary; minimal overhead
-- 🔄 **Concurrency**: Goroutines enable 1000s of concurrent operations
-- 💾 **Memory Efficiency**: Garbage collection optimized for server workloads
-- 🎯 **Simplicity**: Clear, readable syntax for high-performance code
-- 🐳 **Deployment**: Single binary fits in tiny container
-
-**Key Packages**:
-
-| Package | Purpose |
-|---------|---------|
-| `github.com/gin-gonic/gin` | HTTP router and middleware |
-| `encoding/json` | GeoJSON serialization |
-| Custom R-Tree | Spatial indexing for buildings |
-| `math` | FSPL calculations and geometry |
-
-### Frontend: React + Leaflet
-
-**Why React?**
-
-- ⚛️ **Component Model**: Reusable UI components for control panel
-- 🎨 **Reactivity**: Instant response to parameter changes
-- 📦 **Ecosystem**: Rich library support for visualization
-
-**Why Leaflet?**
-
-- 🗺️ **Proven Standard**: Industry-standard web mapping library
-- ⚖️ **Lightweight**: Only ~40 KB minified (vs ~250 KB for Mapbox)
-- 🎯 **GeoJSON Native**: First-class support for feature layers
-- 📱 **Mobile-Friendly**: Touch controls and responsive design
-
-**Key Libraries**:
-
-| Library | Purpose |
-|---------|---------|
-| `react` | UI framework |
-| `leaflet` | Map rendering |
-| `vite` | Build tool (fast bundling) |
-| `fetch` | HTTP client for API calls |
-
-### Deployment: Docker
-
-**Multi-Stage Build**:
-
-```dockerfile
-# Stage 1: Build React
-FROM node:18-alpine AS frontend-builder
-WORKDIR /app/frontend-react
-COPY frontend-react/package*.json ./
-RUN npm install
-COPY frontend-react/ ./
-RUN npm run build
-
-# Stage 2: Build Go
-FROM golang:1.22-alpine AS backend-builder
-WORKDIR /app/backend-go
-COPY backend-go/go.mod backend-go/go.sum ./
-RUN go mod download
-COPY backend-go/ ./
-RUN go build -o server .
-
-# Stage 3: Runtime
-FROM alpine:latest
-WORKDIR /app
-COPY --from=backend-builder /app/backend-go/server ./server
-COPY --from=frontend-builder /app/frontend-react/dist ./dist
-COPY data-pipeline/ankara_buildings.geojson ./data-pipeline/ankara_buildings.geojson
-COPY data-pipeline/ankara_5g_nodes.geojson ./data-pipeline/ankara_5g_nodes.geojson
-EXPOSE 8080
-CMD ["./server"]
-```
-
-**Result**: Single image (~150 MB) containing both frontend and backend.
-
-## Component Deep Dive
-
-### 1. Frontend (React + Leaflet)
-
-**File Structure**:
-
-```
-frontend-react/
-├── src/
-│   ├── App.jsx              # Root component
-│   ├── main.jsx             # Entry point
-│   ├── components/
-│   │   ├── MapCanvas.jsx    # Leaflet map renderer
-│   │   └── ControlPanel.jsx # Parameter controls
-│   └── utils/
-│       ├── geojson.js       # GeoJSON helpers
-│       └── networkTech.js   # Tech-specific constants
-└── vite.config.js
-```
-
-**Data Flow**:
-
-1. User adjusts azimuth slider → React state update
-2. Component calls `/api/simulate` with new parameters
-3. Backend returns GeoJSON heatmap
-4. Leaflet layer updates with new colors
-5. User sees real-time visualization
-
-### 2. Backend API (Go)
-
-**Endpoints**:
-
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| `GET` | `/healthz` | Liveness check |
-| `GET` | `/readyz` | Dataset and frontend readiness check |
-| `GET` | `/api/buildings` | Fetch building GeoJSON |
-| `GET` | `/api/towers` | Fetch tower locations |
-| `POST` | `/api/simulate` | Run propagation simulation |
-| `POST` | `/api/coverage-gaps` | Find demand-weighted buildings below usable Rx |
-| `POST` | `/api/optimize-azimuth` | Auto-optimize antenna azimuth |
-
-**Request/Response Example**:
-
-```json
-POST /api/simulate
-{
-  "tower_lon": 32.8541,
-  "tower_lat": 39.9208,
-  "rays": 120,
-  "radius_m": 400,
-  "frequency_ghz": 28,
-  "tx_power_dbm": 30,
-  "azimuth": 45,
-  "beam_width": 120
-}
-
-Response:
-{
-  "geojson": {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": {"signal_dbm": -78.4, "is_blocked": false},
-        "geometry": {"type": "LineString", "coordinates": [...]}
-      }
-    ]
-  },
-  "stats": {
-    "blocked_pct": 42.5,
-    "avg_rx_dbm": -88.2,
-    "min_range_m": 24.7,
-    "max_range_m": 398.1
-  }
-}
-```
-
-### 3. Ray Tracing Engine
-
-**Algorithm Overview**:
-
-```go
-for each segment in active_beam {
-    // 1. Calculate FSPL
-    distance = euclidean_distance(tx, segment.end)
-    fspl_db = calculate_fspl(distance, frequency_ghz)
-    
-    // 2. Query building intersections
-    intersected_buildings = rtree.query(segment.bounds)
-    
-    // 3. Apply cumulative wall loss
-    total_loss = fspl_db
-    for building in intersected_buildings {
-        wall_loss = penetration_loss_for_frequency(frequency_ghz)
-        total_loss += wall_loss
-    }
-    
-    // 4. Calculate received power
-    rx_dbm = eirp_dbm - total_loss
-    
-    // 5. Color ray
-    color = signal_strength_to_color(rx_dbm)
-    
-    // 6. Append to GeoJSON
-    output.append(linestring(segment.start, segment.end, color, rx_dbm))
-}
-```
-
-**Performance**:
-
-- **Grid size**: 10×10 meter resolution
-- **Coverage radius**: 3-5 km typical
-- **Total rays**: ~90,000 per simulation
-- **Runtime**: ~2 seconds (parallelized across cores)
-
-### 4. Spatial Index (R-Tree)
-
-**Why R-Tree?**
-
-- 🚀 **Fast Range Queries**: O(log n) lookup for intersecting buildings
-- 🎯 **Optimal for 2D**: Minimizes tree depth for geographic data
-- 💾 **Memory Efficient**: Packed node structure
-
-**Usage**:
-
-```
-Load Phase:
-  - Parse ankara_buildings.geojson
-  - Insert each polygon into R-Tree
-  - Result: ~12,000 nodes indexed
-
-Query Phase (per ray):
-  - Call rtree.query(ray_segment)
-  - Returns list of building geometries that intersect ray
-  - Apply material attenuation for each
-  - O(log n) complexity
-```
-
-### 5. Optimization And Gap Engine
-
-**Demand-Aware Sweep & Score Algorithm**:
-
-```go
-best_azimuth = 0
-best_score = 0
-
-for azimuth := 0; azimuth < 360; azimuth += 5 {
-    rays = simulate(tx_location, azimuth, frequency)
-
-    poi_score = sum_unique_hit_poi_demand(rays)
-    residential_score = sum_unique_hit_residential_demand(rays)
-    coverage_tiebreaker = capped_sum_ray_distance(rays)
-    sector_score = poi_score + residential_score + coverage_tiebreaker
-
-    if sector_score > best_score {
-        best_score = sector_score
-        best_azimuth = azimuth
-    }
-}
-
-return best_azimuth
-```
-
-The same spatial and RF primitives power `/api/coverage-gaps`, which evaluates demand-weighted building centroids inside the active sector and returns markers for buildings below the usable service threshold.
-
-## Data Flow
-
-### Startup Sequence
-
-1. **Container Launch**
-   - Alpine Linux kernel boot
-   - Golang runtime initialization
-
-2. **GeoJSON Loading** (~500 ms)
-   - Read `ankara_5g_nodes.geojson` (tower list)
-   - Read `ankara_buildings.geojson` (building footprints)
-   - Parse JSON into memory
-
-3. **R-Tree Construction** (~1 second)
-   - Insert 12,000+ building polygons
-   - Build spatial index structure
-   - Verify no parse errors
-
-4. **HTTP Server Start** (< 100 ms)
-   - Listen on port 8080
-   - Register endpoints
-   - Ready for requests
-
-5. **Frontend Load** (browser)
-   - Fetch React app from `/` route
-   - Vite hydrates components
-   - Map canvas initializes
-   - Ready for user interaction
-
-### Simulation Request Flow
-
-```
-User Action: Adjust azimuth slider to 90°
-    ↓
-React Component: State update
-    ↓
-Frontend: POST /simulate {azimuth: 90, ...}
-    ↓
-Go Handler: Validate request parameters
-    ↓
-Ray Engine: Cast 90,000 rays at azimuth 90°
-    ↓
-R-Tree: Query building intersections (parallelized)
-    ↓
-Attenuation: Apply frequency-dependent losses
-    ↓
-GeoJSON: Serialize heatmap to JSON
-    ↓
-Response: Send heatmap back to frontend (< 100 ms)
-    ↓
-Leaflet: Update layer with new colors
-    ↓
-Screen: User sees updated coverage
-```
-
-## Scalability Considerations
-
-### Horizontal Scaling
-
-- **Stateless API**: Each request is independent
-- **Stateless Frontend**: No user sessions required
-- **No Shared Database**: All data in-memory at startup
-- **Result**: Deploy multiple instances behind load balancer
-
-### Vertical Scaling
-
-- **Goroutine Concurrency**: Linear improvement per CPU core
-- **Memory Usage**: ~500 MB for Ankara; scales with building count
-- **Ray Budget**: Can increase grid density on larger machines
-
-### Regional Expansion
-
-- Replace GeoJSON files with new city
-- Rebuild Docker image
-- Deploy same container
-
----
-
-**Next**: Explore [Algorithms & Physics](algorithms.md) or see visual examples in [Visualization](visualization.md).
+The production Docker image contains the built frontend, Go binary, and local Ankara data. There is no runtime database. Leaflet currently requests OpenStreetMap basemap tiles over the network unless a separate local tile source is configured.
+
+## Frontend Workspace
+
+The React application is organized around a map-first focused workspace:
+
+- **Command bar**: active plan context, run state, RF action, and latest result summary.
+- **Workflow rail**: Setup, Propagation, Interference, 5G Core, Results, Data, and Report.
+- **Overlay drawer**: opens one focused tool without resizing or recentering the map.
+- **MapCanvas**: renders towers, rays, coverage gaps, selection geometry, interference samples, and 5G communication paths.
+- **Inspector**: persistent details for towers, gaps, communication paths, and interference samples.
+- **Report assembly**: creates Markdown and printable HTML from current client state.
+
+### Request Coordination
+
+RF operations share one coordinated request channel:
+
+1. Starting an operation aborts the superseded request.
+2. Every operation receives a monotonically increasing request ID.
+3. Results are committed only if the request remains current.
+4. RF-setting changes clear incompatible interference and optimization state.
+5. Per-cell network ray rendering runs sequentially to stay inside backend RF capacity.
+
+This prevents slow responses from replacing results produced by newer settings.
+
+## Go API Boundary
+
+The Gin service provides:
+
+- CORS for local Vite development.
+- A 1 MiB request-body limit.
+- Pointer-aware request DTOs so omitted values can receive defaults without replacing valid explicit zero values.
+- Route-specific validation before engine execution.
+- Client-context propagation into RF engines.
+- Two concurrent RF jobs by default through `MAX_CONCURRENT_RF_REQUESTS`.
+- Up to four Go workers inside each expensive RF job.
+- `429 Too Many Requests` plus `Retry-After` when RF capacity is saturated.
+- Five-second header, 15-second read, 120-second write, and 60-second idle timeouts.
+
+### Principal Routes
+
+| Method | Route | Responsibility |
+|---|---|---|
+| GET | `/healthz` | Process liveness and loaded-data counts |
+| GET | `/readyz` | Building, tower, and frontend readiness |
+| GET | `/api/towers` | Tower GeoJSON |
+| GET | `/api/buildings` | Building GeoJSON |
+| GET | `/api/buildings/summary` | Demand and data-quality summary |
+| POST | `/api/simulate` | Segmented directional propagation |
+| POST | `/api/coverage-gaps` | Demand-weighted underserved buildings |
+| POST | `/api/optimize-azimuth` | Single-sector demand-aware azimuth sweep |
+| POST | `/api/evaluate-network` | Score supplied selected-cell azimuths |
+| POST | `/api/optimize-network` | Optimize selected-cell azimuths with overlap penalty |
+| POST | `/api/interference` | RSRP, SINR, RSRQ, RSSI, and demand-quality analysis |
+| GET/POST | `/api/core/*` | Optional Core Lab proxy |
+
+## Runtime Data and Spatial Index
+
+The offline data pipeline prepares the runtime files ahead of time:
+
+1. Extract building geometry and tower records from OSM/OpenCellID-derived sources.
+2. Normalize footprints and add POI, residential, and local-density demand signals.
+3. Write local GeoJSON/CSV artifacts.
+4. Store the large building GeoJSON through Git LFS.
+5. Parse buildings and populate an in-memory R-tree during backend startup.
+
+Each RF engine first queries bounded candidates from the R-tree, then applies exact geometry, radius, sector, and intersection tests. This avoids scanning the complete building dataset for every ray or demand point.
+
+## Propagation Engine
+
+For each sampled angle inside the active beam, the propagation engine:
+
+1. Converts the requested geographic radius into ray segments.
+2. Queries candidate building bounds from the R-tree.
+3. Performs exact segment/polygon intersection tests.
+4. Calculates free-space path loss and antenna gain.
+5. Applies frequency-dependent cumulative wall loss.
+6. Emits signal-colored GeoJSON line segments and aggregate range/power statistics.
+
+Cells outside the configured radius or hard beam sector do not contribute. The current engine does not model sidelobes.
+
+## Planning Engines
+
+### Coverage Gaps
+
+Coverage-gap analysis filters demand-weighted building centroids by radius and sector, estimates received power, and returns buildings below the service threshold ordered by demand and signal severity.
+
+### Single-Sector Optimization
+
+The optimizer sweeps candidate azimuths and scores each sector using:
+
+- Explicit POI demand.
+- Residential-density demand.
+- A capped geometry/coverage tie-breaker.
+
+The selected direction is deterministic for the same request and dataset.
+
+### Network Evaluation and Optimization
+
+Network evaluation scores the supplied azimuth for each of two to six selected cells. Network optimization searches candidate azimuths and includes an overlap penalty. Both return network score, unique demand coverage, overlap, and per-cell azimuth records.
+
+The frontend renders selected-cell propagation with a sequential `/api/simulate` queue after the network score is returned.
+
+## Interference Engine
+
+Interference analysis supports selected 4G and 5G cells:
+
+1. Build the union of selected-cell coverage bounds.
+2. Start with the requested grid spacing and increase it when needed to keep the surface bounded.
+3. Evaluate eligible cells using FSPL, gain, beam/radius eligibility, and wall loss.
+4. Choose the strongest modeled RSRP as the serving cell.
+5. Add receiver noise and load-scaled co-channel interference in linear power.
+6. Derive modeled RSRP, SINR, RSRQ, RSSI, quality class, and serviceability.
+7. Evaluate bounded demand-building centroids using the same radio assumptions.
+
+Returned averages and P10 values are nullable when no valid signal samples exist.
+
+These KPIs are deterministic planning estimates. They are not UE, drive-test, or PHY measurements.
+
+## Request Lifecycles
+
+### Run Sector
+
+The browser submits `/api/simulate` and `/api/coverage-gaps` in parallel with one cancellation signal. Both results must remain current before the map and RF result view are updated.
+
+### Optimize Sector
+
+The browser captures a Before snapshot, requests `/api/optimize-azimuth`, reruns propagation and gap analysis with the returned azimuth, and commits the After comparison.
+
+### Evaluate or Optimize Network
+
+The backend first returns network scoring. The browser then simulates selected cells sequentially and merges their ray collections for map rendering.
+
+### Analyze Interference
+
+One `/api/interference` call returns the radio-quality surface, bounded demand points, aggregate statistics, per-cell summaries, and the exact assumptions needed by the Data and Report tools.
+
+## 5G Communication Path
+
+Core Lab applies only to the 28 GHz 5G mode and remains independent of RF interference.
+
+The default application keeps Core Lab disabled. The optional compose profile starts a Core Lab adapter and enables the Go proxy.
+
+For selected towers, the adapter produces:
+
+- Stable tower-to-gNB mappings.
+- `Xn-C` control coordination and `Xn-U` forwarding for eligible direct neighbors.
+- `N2` fallback through AMF when direct Xn is degraded or unavailable.
+- `N3` user-plane session traffic through UPF.
+- Per-neighbor `direct_xn`, `ng_fallback`, or `unreachable` decisions with reasons.
+- AMF, SMF, UPF, NRF, UDM/UDR, AUSF, PCF, and NSSF health.
+- Sessions, events, and deterministic failure/degradation scenarios.
+
+Without configured Open5GS status or metrics URLs, the adapter identifies its source as `simulated_overlay`. With configured endpoints, it briefly probes external lab state while preserving the same frontend-facing JSON contracts.
+
+## Deployment Modes
+
+### Local Development
+
+- Vite frontend: `http://localhost:5173`
+- Go backend: `http://localhost:8080`
+- Optional Core Lab adapter: `http://localhost:8090`
+
+Vite proxies `/api`, `/healthz`, and `/readyz` to the Go service.
+
+### Production Container
+
+The multi-stage Docker build:
+
+1. Builds the React application with Node.
+2. Compiles the Go service with CGO disabled.
+3. Copies the binary, frontend bundle, and runtime data into Alpine.
+4. Runs as a non-root `atom` user.
+5. Exposes port 8080 and checks `/readyz`.
+
+### Optional Core Lab Profile
+
+The compose overlay sets `CORE_LAB_ENABLED=true`, points the backend at the adapter, and starts the adapter as a separate service. It does not start a full Open5GS deployment by itself.
+
+## Trust and Model Boundaries
+
+A.T.O.M does not currently include:
+
+- Diffraction or reflection-heavy multipath.
+- Fast fading or calibrated channel models.
+- Sidelobes or adjacent-channel leakage.
+- MIMO beamforming and scheduling gain.
+- Uplink interference.
+- A plan database or durable analysis history.
+- Authentication or multi-user collaboration.
+- A bundled offline basemap.
+
+Static OSM/OpenCellID-derived data and synthetic demand can be incomplete or stale. Internet-facing deployments require a trusted reverse proxy or gateway because the API does not provide built-in authentication.
+
+## Further Reading
+
+- [Interactive architecture guide](./architecture.html)
+- [API reference](./api.md)
+- [Algorithms and physics](./algorithms.md)
+- [Download and use](./download.html)
+- [Deployment](./deployment.md)
+- [Academic report](./academic-report.pdf)

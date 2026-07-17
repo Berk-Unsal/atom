@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Request contracts, response shapes,
+validation behavior, overload handling, and examples for integrating
+with A.T.O.M." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>API Reference | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html" aria-current="page">API</a>
+        <a href="./academic-report.pdf">Report</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="API
+Reference page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#base-url" id="toc-base-url">Base URL</a></li>
+      <li><a href="#authentication"
+      id="toc-authentication">Authentication</a></li>
+      <li><a href="#response-format" id="toc-response-format">Response
+      Format</a></li>
+      <li><a href="#endpoints" id="toc-endpoints">Endpoints</a></li>
+      <li><a href="#usage-examples" id="toc-usage-examples">Usage
+      Examples</a></li>
+      <li><a href="#client-examples" id="toc-client-examples">Client
+      Examples</a></li>
+      <li><a href="#capacity-and-rate-limiting"
+      id="toc-capacity-and-rate-limiting">Capacity and Rate
+      Limiting</a></li>
+      <li><a href="#versioning" id="toc-versioning">Versioning</a></li>
+      <li><a href="#troubleshooting"
+      id="toc-troubleshooting">Troubleshooting</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Public interfaces</span>
+        <h1>API Reference</h1>
+        <p>Request contracts, response shapes, validation behavior,
+overload handling, and examples for integrating with A.T.O.M.</p>
+        <div class="hero-actions">
+          <a class="button" href="./api.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>A.T.O.M exposes a comprehensive REST API for programmatic access to
+all simulation and optimization features.</p>
+<h2 id="base-url">Base URL</h2>
+<pre><code>http://localhost:8080/api</code></pre>
+<p>Or in production:</p>
+<pre><code>https://your-domain.com/api</code></pre>
+<h2 id="authentication">Authentication</h2>
+<p>A.T.O.M v1.0 has <strong>no authentication</strong> (suitable for
+internal/private networks). For production deployments, add
+authentication via reverse proxy (e.g., nginx with OAuth2).</p>
+<h2 id="response-format">Response Format</h2>
+<p>All responses are <strong>JSON</strong>, but the exact shape depends
+on the route:</p>
+<ul>
+<li><code>GET /healthz</code> returns a liveness status object</li>
+<li><code>GET /readyz</code> returns dependency readiness</li>
+<li><code>GET /api/buildings</code> and <code>GET /api/towers</code>
+return raw GeoJSON</li>
+<li><code>POST /api/simulate</code> returns
+<code>{ geojson, stats }</code></li>
+<li><code>POST /api/coverage-gaps</code> returns
+<code>{ geojson, stats }</code></li>
+<li><code>POST /api/interference</code> returns
+<code>{ geojson, demand_geojson, stats, model }</code></li>
+<li><code>POST /api/optimize-azimuth</code> returns
+<code>{ optimal_azimuth, coverage_score, demand_score, residential_score }</code></li>
+</ul>
+<p>Error responses use a simple object with an <code>error</code>
+message.</p>
+<hr />
+<h2 id="endpoints">Endpoints</h2>
+<h3 id="health-check">Health Check</h3>
+<p><strong>Endpoint</strong>: <code>GET /healthz</code></p>
+<p>Check whether the HTTP process is alive. This endpoint remains
+<code>200</code> even while required datasets or the frontend bundle are
+unavailable.</p>
+<p><strong>Response</strong>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;ok&quot;</span><span class="fu">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;backend&quot;</span><span class="fu">:</span> <span class="st">&quot;static-in-memory&quot;</span><span class="fu">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;buildingIndex&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;sourcePath&quot;</span><span class="fu">:</span> <span class="st">&quot;data-pipeline/ankara_buildings.geojson&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rtreeFootprints&quot;</span><span class="fu">:</span> <span class="dv">161784</span><span class="fu">,</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;towerCount&quot;</span><span class="fu">:</span> <span class="dv">451</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Status Codes</strong>:</p>
+<ul>
+<li><code>200 OK</code> - Process is alive</li>
+</ul>
+<h3 id="readiness-check">Readiness Check</h3>
+<p><strong>Endpoint</strong>: <code>GET /readyz</code></p>
+<p>Check whether the building index, tower dataset, and frontend bundle
+are available. Use this route for deployment readiness probes.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;ready&quot;</span><span class="fu">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;buildings&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;towers&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;frontend&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Status Codes</strong>:</p>
+<ul>
+<li><code>200 OK</code> - Instance is ready to receive traffic</li>
+<li><code>503 Service Unavailable</code> - At least one required
+dependency is unavailable</li>
+</ul>
+<hr />
+<h3 id="get-buildings">Get Buildings</h3>
+<p><strong>Endpoint</strong>: <code>GET /api/buildings</code></p>
+<p>Retrieve all building geometries as GeoJSON.</p>
+<p><strong>Query Parameters</strong>: None</p>
+<p><strong>Response</strong>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;FeatureCollection&quot;</span><span class="fu">,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;features&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;Feature&quot;</span><span class="fu">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;properties&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;building&quot;</span><span class="fu">:</span> <span class="st">&quot;concrete&quot;</span><span class="fu">,</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Ankara Central Tower&quot;</span><span class="fu">,</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;height&quot;</span><span class="fu">:</span> <span class="dv">45</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">},</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;geometry&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;Polygon&quot;</span><span class="fu">,</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;coordinates&quot;</span><span class="fu">:</span> <span class="ot">[[[</span><span class="fl">33.8</span><span class="ot">,</span> <span class="fl">39.9</span><span class="ot">],</span> <span class="ot">[</span><span class="fl">33.801</span><span class="ot">,</span> <span class="fl">39.9</span><span class="ot">],</span> <span class="ot">[</span><span class="fl">33.8</span><span class="ot">,</span> <span class="fl">39.9</span><span class="ot">]]]</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Performance</strong>: ~100 MB response, consider client-side
+filtering.</p>
+<hr />
+<h3 id="get-towers">Get Towers</h3>
+<p><strong>Endpoint</strong>: <code>GET /api/towers</code></p>
+<p>Retrieve all 5G/4G tower locations.</p>
+<p><strong>Query Parameters</strong>: None</p>
+<p><strong>Response</strong>:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;FeatureCollection&quot;</span><span class="fu">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;features&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;Feature&quot;</span><span class="fu">,</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;properties&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;cell_id&quot;</span><span class="fu">:</span> <span class="dv">20560152</span><span class="fu">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;radio_type&quot;</span><span class="fu">:</span> <span class="st">&quot;NR&quot;</span><span class="fu">,</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;is_simulated&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">},</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;geometry&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;Point&quot;</span><span class="fu">,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;coordinates&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="fl">32.8541</span><span class="ot">,</span> <span class="fl">39.9208</span><span class="ot">]</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<hr />
+<h3 id="simulate-propagation">Simulate Propagation</h3>
+<p><strong>Endpoint</strong>: <code>POST /api/simulate</code></p>
+<p>Run RF propagation simulation with given parameters.</p>
+<p><strong>Request Body</strong>:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tower_lon&quot;</span><span class="fu">:</span> <span class="fl">32.8541</span><span class="fu">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tower_lat&quot;</span><span class="fu">:</span> <span class="fl">39.9208</span><span class="fu">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rays&quot;</span><span class="fu">:</span> <span class="dv">120</span><span class="fu">,</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">400</span><span class="fu">,</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="dv">28</span><span class="fu">,</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tx_power_dbm&quot;</span><span class="fu">:</span> <span class="dv">30</span><span class="fu">,</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;azimuth&quot;</span><span class="fu">:</span> <span class="dv">45</span><span class="fu">,</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">120</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Parameters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Range</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tower_lon</code></td>
+<td>number</td>
+<td>-180 - 180</td>
+<td>Yes</td>
+<td>Tower longitude</td>
+</tr>
+<tr>
+<td><code>tower_lat</code></td>
+<td>number</td>
+<td>-90 - 90</td>
+<td>Yes</td>
+<td>Tower latitude</td>
+</tr>
+<tr>
+<td><code>rays</code></td>
+<td>number</td>
+<td>8 - 720</td>
+<td>No</td>
+<td>Ray count used to sample the sector; defaults to 60</td>
+</tr>
+<tr>
+<td><code>radius_m</code></td>
+<td>number</td>
+<td>25 - 5000</td>
+<td>No</td>
+<td>Maximum requested simulation radius; defaults to 400</td>
+</tr>
+<tr>
+<td><code>frequency_ghz</code></td>
+<td>number</td>
+<td>&gt; 0 - 300</td>
+<td>No</td>
+<td>Network frequency in GHz; defaults to 28</td>
+</tr>
+<tr>
+<td><code>tx_power_dbm</code></td>
+<td>number</td>
+<td>0 - 60</td>
+<td>No</td>
+<td>Transmit power before antenna gain; defaults to 30</td>
+</tr>
+<tr>
+<td><code>azimuth</code></td>
+<td>number</td>
+<td>Any finite angle</td>
+<td>No</td>
+<td>Antenna direction, normalized to 0-360; defaults to 0</td>
+</tr>
+<tr>
+<td><code>beam_width</code></td>
+<td>number</td>
+<td>10 - 360</td>
+<td>No</td>
+<td>Sector width in degrees; defaults to 120</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response</strong>:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;geojson&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;FeatureCollection&quot;</span><span class="fu">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;features&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;Feature&quot;</span><span class="fu">,</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;properties&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;ray_index&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;segment_index&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;signal_dbm&quot;</span><span class="fu">:</span> <span class="fl">-78.4</span><span class="fu">,</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;is_blocked&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">},</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;geometry&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;LineString&quot;</span><span class="fu">,</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;coordinates&quot;</span><span class="fu">:</span> <span class="ot">[[</span><span class="fl">32.8541</span><span class="ot">,</span> <span class="fl">39.9208</span><span class="ot">],</span> <span class="ot">[</span><span class="fl">32.856</span><span class="ot">,</span> <span class="fl">39.922</span><span class="ot">]]</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;stats&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;blocked_pct&quot;</span><span class="fu">:</span> <span class="fl">42.5</span><span class="fu">,</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;avg_rx_dbm&quot;</span><span class="fu">:</span> <span class="fl">-88.2</span><span class="fu">,</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;min_range_m&quot;</span><span class="fu">:</span> <span class="fl">24.7</span><span class="fu">,</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;max_range_m&quot;</span><span class="fu">:</span> <span class="fl">398.1</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Status Codes</strong>:</p>
+<ul>
+<li><code>200 OK</code> - Simulation completed successfully</li>
+<li><code>400 Bad Request</code> - Invalid parameters</li>
+<li><code>413 Content Too Large</code> - Request body exceeds 1 MiB</li>
+<li><code>429 Too Many Requests</code> - RF worker capacity is busy;
+inspect <code>Retry-After</code></li>
+<li><code>500 Internal Server Error</code> - Simulation error</li>
+</ul>
+<p><strong>Performance</strong>:</p>
+<ul>
+<li>Runtime depends on ray count, radius, and local building
+density.</li>
+<li>Maximum rays: 720 per request.</li>
+<li>The server uses a 120-second write timeout and caps each RF job at
+four workers.</li>
+</ul>
+<hr />
+<h3 id="find-coverage-gaps">Find Coverage Gaps</h3>
+<p><strong>Endpoint</strong>: <code>POST /api/coverage-gaps</code></p>
+<p>Find demand-weighted buildings inside the selected sector whose
+estimated received power is below the usable service threshold.</p>
+<p><strong>Request Body</strong>:</p>
+<p>Uses the same payload as <code>POST /api/simulate</code>.</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tower_lon&quot;</span><span class="fu">:</span> <span class="fl">32.8541</span><span class="fu">,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tower_lat&quot;</span><span class="fu">:</span> <span class="fl">39.9208</span><span class="fu">,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rays&quot;</span><span class="fu">:</span> <span class="dv">120</span><span class="fu">,</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">400</span><span class="fu">,</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="dv">28</span><span class="fu">,</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tx_power_dbm&quot;</span><span class="fu">:</span> <span class="dv">30</span><span class="fu">,</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;azimuth&quot;</span><span class="fu">:</span> <span class="dv">45</span><span class="fu">,</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">120</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Response</strong>:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;geojson&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;FeatureCollection&quot;</span><span class="fu">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;features&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;Feature&quot;</span><span class="fu">,</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;properties&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;building_id&quot;</span><span class="fu">:</span> <span class="st">&quot;building-2841&quot;</span><span class="fu">,</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;rx_dbm&quot;</span><span class="fu">:</span> <span class="fl">-117.6</span><span class="fu">,</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;total_demand&quot;</span><span class="fu">:</span> <span class="fl">42.5</span><span class="fu">,</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;demand_weight&quot;</span><span class="fu">:</span> <span class="dv">20</span><span class="fu">,</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;residential_demand&quot;</span><span class="fu">:</span> <span class="fl">22.5</span><span class="fu">,</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;severity&quot;</span><span class="fu">:</span> <span class="st">&quot;outage&quot;</span><span class="fu">,</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;reason&quot;</span><span class="fu">:</span> <span class="st">&quot;commercial + residential demand&quot;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">},</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;geometry&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;Point&quot;</span><span class="fu">,</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;coordinates&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="fl">32.8562</span><span class="ot">,</span> <span class="fl">39.9211</span><span class="ot">]</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;stats&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;candidate_buildings&quot;</span><span class="fu">:</span> <span class="dv">128</span><span class="fu">,</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;served_buildings&quot;</span><span class="fu">:</span> <span class="dv">97</span><span class="fu">,</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;gap_buildings&quot;</span><span class="fu">:</span> <span class="dv">31</span><span class="fu">,</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;returned_gaps&quot;</span><span class="fu">:</span> <span class="dv">31</span><span class="fu">,</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;gap_pct&quot;</span><span class="fu">:</span> <span class="fl">24.2</span><span class="fu">,</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;total_gap_demand&quot;</span><span class="fu">:</span> <span class="fl">618.5</span><span class="fu">,</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;worst_rx_dbm&quot;</span><span class="fu">:</span> <span class="fl">-126.4</span><span class="fu">,</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;threshold_dbm&quot;</span><span class="fu">:</span> <span class="dv">-105</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>How it works</strong>:</p>
+<ul>
+<li>Candidate buildings must have
+<code>demand_weight + residential_demand &gt; 0</code></li>
+<li>The building centroid must be inside the requested radius and beam
+sector</li>
+<li>Received power is estimated with EIRP, FSPL, and cumulative wall
+penetration loss</li>
+<li>Returned point features are sorted by demand, then by weakest
+estimated signal</li>
+</ul>
+<hr />
+<h3 id="analyze-interference-and-radio-quality">Analyze Interference and
+Radio Quality</h3>
+<p><strong>Endpoint</strong>: <code>POST /api/interference</code></p>
+<p>Calculate planning-grade LTE or NR RSRP, SINR, RSRQ, RSSI,
+serving-cell, and strongest-interferer estimates over a bounded spatial
+grid and demand-building centroids.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;network_tech&quot;</span><span class="fu">:</span> <span class="st">&quot;5g&quot;</span><span class="fu">,</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;towers&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;cell-1&quot;</span><span class="fu">,</span> <span class="dt">&quot;tower_lon&quot;</span><span class="fu">:</span> <span class="fl">32.8541</span><span class="fu">,</span> <span class="dt">&quot;tower_lat&quot;</span><span class="fu">:</span> <span class="fl">39.9208</span><span class="fu">,</span> <span class="dt">&quot;azimuth&quot;</span><span class="fu">:</span> <span class="dv">45</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;cell-2&quot;</span><span class="fu">,</span> <span class="dt">&quot;tower_lon&quot;</span><span class="fu">:</span> <span class="fl">32.8581</span><span class="fu">,</span> <span class="dt">&quot;tower_lat&quot;</span><span class="fu">:</span> <span class="fl">39.9218</span><span class="fu">,</span> <span class="dt">&quot;azimuth&quot;</span><span class="fu">:</span> <span class="dv">225</span> <span class="fu">}</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">400</span><span class="fu">,</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="dv">28</span><span class="fu">,</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tx_power_dbm&quot;</span><span class="fu">:</span> <span class="dv">30</span><span class="fu">,</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">120</span><span class="fu">,</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bandwidth_mhz&quot;</span><span class="fu">:</span> <span class="dv">100</span><span class="fu">,</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;load_factor&quot;</span><span class="fu">:</span> <span class="fl">0.7</span><span class="fu">,</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;reuse_factor&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;noise_figure_db&quot;</span><span class="fu">:</span> <span class="dv">7</span><span class="fu">,</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sample_spacing_m&quot;</span><span class="fu">:</span> <span class="dv">40</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>The request accepts 2–6 unique cells. LTE bandwidths are
+<code>1.4</code>, <code>3</code>, <code>5</code>, <code>10</code>,
+<code>15</code>, or <code>20</code> MHz; 5G NR bandwidths are
+<code>50</code>, <code>100</code>, <code>200</code>, or <code>400</code>
+MHz. Reuse must be <code>1</code> or <code>3</code>. 6G is rejected
+because standardized project-level RSRP/RSRQ assumptions are not defined
+for the research overlay.</p>
+<p>The response contains:</p>
+<ul>
+<li><code>geojson</code>: up to 3,000 grid samples with radio KPIs and
+serving/interferer context.</li>
+<li><code>demand_geojson</code>: up to 500 affected demand-building
+centroids.</li>
+<li><code>stats</code>: average and P10 radio quality, serviceable area,
+interference-limited area, affected demand, and per-cell summaries.
+<code>valid_sample_count</code> reports the number of samples with
+usable measurements; average and P10 fields are <code>null</code> when
+that count is zero.</li>
+<li><code>model</code>: bandwidth, SCS, resource blocks, load, reuse,
+effective spacing, and explicit modeling assumptions.</li>
+</ul>
+<p>Results are deterministic planning estimates, not measurements
+reported by a UE or live radio network.</p>
+<p>Optional numeric fields receive defaults only when omitted. Explicit
+zero values remain explicit: for example,
+<code>noise_figure_db: 0</code> is valid, while
+<code>load_factor: 0</code> is rejected by range validation.</p>
+<hr />
+<h3 id="optimize-antenna-placement">Optimize Antenna Placement</h3>
+<p><strong>Endpoint</strong>:
+<code>POST /api/optimize-azimuth</code></p>
+<p>Automatically find the optimal antenna azimuth for maximum
+coverage.</p>
+<p><strong>Request Body</strong>:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tower_lon&quot;</span><span class="fu">:</span> <span class="fl">32.8541</span><span class="fu">,</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tower_lat&quot;</span><span class="fu">:</span> <span class="fl">39.9208</span><span class="fu">,</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rays&quot;</span><span class="fu">:</span> <span class="dv">120</span><span class="fu">,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">400</span><span class="fu">,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="dv">28</span><span class="fu">,</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tx_power_dbm&quot;</span><span class="fu">:</span> <span class="dv">30</span><span class="fu">,</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;azimuth&quot;</span><span class="fu">:</span> <span class="dv">45</span><span class="fu">,</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">120</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Parameters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tower_lon</code></td>
+<td>number</td>
+<td>Yes</td>
+<td>Tower longitude</td>
+</tr>
+<tr>
+<td><code>tower_lat</code></td>
+<td>number</td>
+<td>Yes</td>
+<td>Tower latitude</td>
+</tr>
+<tr>
+<td><code>rays</code></td>
+<td>number</td>
+<td>Yes</td>
+<td>Ray count used to sample the sector</td>
+</tr>
+<tr>
+<td><code>radius_m</code></td>
+<td>number</td>
+<td>Yes</td>
+<td>Maximum requested simulation radius</td>
+</tr>
+<tr>
+<td><code>frequency_ghz</code></td>
+<td>number</td>
+<td>Yes</td>
+<td>Network frequency in GHz</td>
+</tr>
+<tr>
+<td><code>tx_power_dbm</code></td>
+<td>number</td>
+<td>Yes</td>
+<td>Transmit power before antenna gain</td>
+</tr>
+<tr>
+<td><code>azimuth</code></td>
+<td>number</td>
+<td>Yes</td>
+<td>Current azimuth seed value</td>
+</tr>
+<tr>
+<td><code>beam_width</code></td>
+<td>number</td>
+<td>Yes</td>
+<td>Sector width in degrees</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response</strong>:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;optimal_azimuth&quot;</span><span class="fu">:</span> <span class="dv">42</span><span class="fu">,</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;coverage_score&quot;</span><span class="fu">:</span> <span class="fl">18320.5</span><span class="fu">,</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;demand_score&quot;</span><span class="fu">:</span> <span class="dv">140000</span><span class="fu">,</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;residential_score&quot;</span><span class="fu">:</span> <span class="dv">86000</span><span class="fu">,</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;hit_demand_buildings&quot;</span><span class="fu">:</span> <span class="dv">18</span><span class="fu">,</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;data_quality&quot;</span><span class="fu">:</span> <span class="st">&quot;good&quot;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Response Fields</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>optimal_azimuth</code></td>
+<td>Recommended antenna direction (0-360°)</td>
+</tr>
+<tr>
+<td><code>coverage_score</code></td>
+<td>Capped distance-based tie-breaker score</td>
+</tr>
+<tr>
+<td><code>demand_score</code></td>
+<td>POI/commercial/critical-building score</td>
+</tr>
+<tr>
+<td><code>residential_score</code></td>
+<td>Residential-density demand score</td>
+</tr>
+<tr>
+<td><code>hit_demand_buildings</code></td>
+<td>Unique demand-weighted buildings reached by the winning sector</td>
+</tr>
+<tr>
+<td><code>data_quality</code></td>
+<td>Summary of local demand metadata quality</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Status Codes</strong>:</p>
+<ul>
+<li><code>200 OK</code> - Optimization succeeded</li>
+<li><code>400 Bad Request</code> - Invalid parameters</li>
+<li><code>413 Content Too Large</code> - Request body exceeds 1 MiB</li>
+<li><code>429 Too Many Requests</code> - RF worker capacity is busy</li>
+<li><code>500 Internal Server Error</code> - Optimization error</li>
+</ul>
+<p><strong>Performance</strong>:</p>
+<ul>
+<li>Typical response time: 3-5 seconds</li>
+<li>Parallelization: Up to four workers per RF request</li>
+<li>Server write timeout: 120 seconds</li>
+</ul>
+<hr />
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-get-health-status">Example 1: Get Health Status</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> GET http://localhost:8080/healthz</span></code></pre></div>
+<h3 id="example-2-simulate-5g-coverage">Example 2: Simulate 5G
+Coverage</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/api/simulate <span class="dt">\</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lon&quot;: 32.8541,</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lat&quot;: 39.9208,</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;rays&quot;: 120,</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;radius_m&quot;: 400,</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;frequency_ghz&quot;: 28,</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tx_power_dbm&quot;: 30,</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;azimuth&quot;: 90,</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;beam_width&quot;: 120</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="st">  }&#39;</span></span></code></pre></div>
+<h3 id="example-3-auto-optimize-antenna">Example 3: Auto-Optimize
+Antenna</h3>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/api/optimize-azimuth <span class="dt">\</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lon&quot;: 32.8541,</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lat&quot;: 39.9208,</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;rays&quot;: 120,</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;radius_m&quot;: 400,</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;frequency_ghz&quot;: 28,</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tx_power_dbm&quot;: 30,</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;azimuth&quot;: 90,</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;beam_width&quot;: 120</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="st">  }&#39;</span></span></code></pre></div>
+<h3 id="example-4-find-coverage-gaps">Example 4: Find Coverage Gaps</h3>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/api/coverage-gaps <span class="dt">\</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lon&quot;: 32.8541,</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lat&quot;: 39.9208,</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;rays&quot;: 120,</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;radius_m&quot;: 400,</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;frequency_ghz&quot;: 28,</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tx_power_dbm&quot;: 30,</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;azimuth&quot;: 90,</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;beam_width&quot;: 120</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="st">  }&#39;</span></span></code></pre></div>
+<h3 id="example-5-fetch-all-towers">Example 5: Fetch All Towers</h3>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> GET <span class="st">&quot;http://localhost:8080/api/towers&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="client-examples">Client Examples</h2>
+<h3 id="go-standard-library">Go Standard Library</h3>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode go"><code class="sourceCode go"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span> main</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="op">(</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;bytes&quot;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;net/http&quot;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    payload <span class="op">:=</span> <span class="op">[]</span><span class="dt">byte</span><span class="op">(</span><span class="st">`{</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;tower_lon&quot;: 32.8541,</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;tower_lat&quot;: 39.9208,</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;frequency_ghz&quot;: 28,</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;tx_power_dbm&quot;: 30,</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;rays&quot;: 120,</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;radius_m&quot;: 400,</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;azimuth&quot;: 90,</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;beam_width&quot;: 120</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="st">    }`</span><span class="op">)</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    request<span class="op">,</span> _ <span class="op">:=</span> http<span class="op">.</span>NewRequest<span class="op">(</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>        http<span class="op">.</span>MethodPost<span class="op">,</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;http://localhost:8080/api/simulate&quot;</span><span class="op">,</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>        bytes<span class="op">.</span>NewReader<span class="op">(</span>payload<span class="op">),</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">)</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    request<span class="op">.</span>Header<span class="op">.</span>Set<span class="op">(</span><span class="st">&quot;Content-Type&quot;</span><span class="op">,</span> <span class="st">&quot;application/json&quot;</span><span class="op">)</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    response<span class="op">,</span> err <span class="op">:=</span> http<span class="op">.</span>DefaultClient<span class="op">.</span>Do<span class="op">(</span>request<span class="op">)</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> err <span class="op">!=</span> <span class="ot">nil</span> <span class="op">{</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>        <span class="bu">panic</span><span class="op">(</span>err<span class="op">)</span></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">defer</span> response<span class="op">.</span>Body<span class="op">.</span>Close<span class="op">()</span></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="python-client">Python Client</h3>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> requests.Session()</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> client.post(</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;http://localhost:8080/api/simulate&#39;</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    json<span class="op">=</span>{</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tower_lon&#39;</span>: <span class="fl">32.8541</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tower_lat&#39;</span>: <span class="fl">39.9208</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;rays&#39;</span>: <span class="dv">120</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;radius_m&#39;</span>: <span class="dv">400</span>,</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;frequency_ghz&#39;</span>: <span class="dv">28</span>,</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tx_power_dbm&#39;</span>: <span class="dv">30</span>,</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;azimuth&#39;</span>: <span class="dv">45</span>,</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;beam_width&#39;</span>: <span class="dv">120</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> response.json()</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data[<span class="st">&#39;geojson&#39;</span>])</span></code></pre></div>
+<h3 id="javascript-client">JavaScript Client</h3>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">function</span> <span class="fu">simulateRF</span>(params) {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> response <span class="op">=</span> <span class="cf">await</span> <span class="fu">fetch</span>(<span class="st">&#39;http://localhost:8080/api/simulate&#39;</span><span class="op">,</span> {</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">method</span><span class="op">:</span> <span class="st">&#39;POST&#39;</span><span class="op">,</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">headers</span><span class="op">:</span> { <span class="st">&#39;Content-Type&#39;</span><span class="op">:</span> <span class="st">&#39;application/json&#39;</span> }<span class="op">,</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">body</span><span class="op">:</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(params)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> data <span class="op">=</span> <span class="cf">await</span> response<span class="op">.</span><span class="fu">json</span>()<span class="op">;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> data<span class="op">.</span><span class="at">geojson</span><span class="op">;</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> coverage <span class="op">=</span> <span class="cf">await</span> <span class="fu">simulateRF</span>({</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tower_lon</span><span class="op">:</span> <span class="fl">32.8541</span><span class="op">,</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tower_lat</span><span class="op">:</span> <span class="fl">39.9208</span><span class="op">,</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">rays</span><span class="op">:</span> <span class="dv">120</span><span class="op">,</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">radius_m</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">frequency_ghz</span><span class="op">:</span> <span class="dv">28</span><span class="op">,</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tx_power_dbm</span><span class="op">:</span> <span class="dv">30</span><span class="op">,</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">azimuth</span><span class="op">:</span> <span class="dv">45</span><span class="op">,</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">beam_width</span><span class="op">:</span> <span class="dv">120</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<hr />
+<h2 id="capacity-and-rate-limiting">Capacity and Rate Limiting</h2>
+<p>The server allows two concurrent RF jobs by default and immediately
+returns <code>429</code> with <code>Retry-After: 1</code> when that
+capacity is full. Configure the limit with
+<code>MAX_CONCURRENT_RF_REQUESTS</code>.</p>
+<p>This is a process-level resource guard, not per-client rate limiting.
+For internet-facing deployments:</p>
+<ol type="1">
+<li>Deploy behind reverse proxy (nginx, HAProxy)</li>
+<li>Add rate limiting at proxy layer</li>
+<li>Add authentication or API keys</li>
+<li>Track per-client request counts</li>
+</ol>
+<p><strong>Recommended limits</strong>:</p>
+<ul>
+<li>10 requests/second per API key</li>
+<li>1000 requests/day per API key</li>
+<li>Keep RF concurrency aligned with the CPU allocation; the application
+default is 2</li>
+</ul>
+<hr />
+<h2 id="versioning">Versioning</h2>
+<p><strong>Current API Version</strong>: <code>1.0</code></p>
+<p>Future versions will:</p>
+<ul>
+<li>Add webhook support for async simulations</li>
+<li>Support batch optimization requests</li>
+<li>Include terrain elevation models</li>
+<li>Add custom propagation model endpoints</li>
+</ul>
+<p>Breaking changes will increment major version (e.g.,
+<code>/v2</code>).</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="503-service-unavailable">503 Service Unavailable</h3>
+<p><strong>Cause</strong>: Data not yet loaded at startup</p>
+<p><strong>Solution</strong>: Wait 5-10 seconds and retry</p>
+<h3 id="400-bad-request">400 Bad Request</h3>
+<p><strong>Cause</strong>: Invalid parameter values</p>
+<p><strong>Solution</strong>: Check parameter types and ranges in
+documentation</p>
+<h3 id="500-internal-server-error">500 Internal Server Error</h3>
+<p><strong>Cause</strong>: Computation timeout or backend crash</p>
+<p><strong>Solution</strong>:</p>
+<ul>
+<li>Check logs: <code>docker logs atom-simulator</code></li>
+<li>Reduce <code>rays</code> or <code>radius_m</code> for faster
+computation</li>
+<li>Increase timeout values if needed</li>
+</ul>
+<h3 id="slow-response-times">Slow Response Times</h3>
+<p><strong>Cause</strong>: Overlapping concurrent requests</p>
+<p><strong>Solution</strong>:</p>
+<ul>
+<li>Reduce grid size (10 m → 20 m)</li>
+<li>Increase container resources (CPU/RAM)</li>
+<li>Implement client-side request batching</li>
+</ul>
+<hr />
+<p><strong>Next</strong>: See <a href="./download.html">Getting
+Started</a> or <a href="./deployment.html">Deployment</a>.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

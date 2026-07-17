@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="A structured inventory of planning
+modes, analyses, map evidence, reports, and supported radio
+technologies." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Capabilities | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./academic-report.pdf">Report</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Capabilities page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#multi-generation-physics"
+      id="toc-multi-generation-physics">Multi-Generation
+      Physics</a></li>
+      <li><a href="#segmented-heatmap-raytracing"
+      id="toc-segmented-heatmap-raytracing">Segmented Heatmap
+      Raytracing</a></li>
+      <li><a href="#frequency-dependent-penetration"
+      id="toc-frequency-dependent-penetration">Frequency-Dependent
+      Penetration</a></li>
+      <li><a href="#smart-beamforming" id="toc-smart-beamforming">Smart
+      Beamforming</a></li>
+      <li><a href="#deterministic-auto-optimization"
+      id="toc-deterministic-auto-optimization">Deterministic
+      Auto-Optimization</a></li>
+      <li><a href="#coverage-gap-finder"
+      id="toc-coverage-gap-finder">Coverage Gap Finder</a></li>
+      <li><a href="#interactive-visualization"
+      id="toc-interactive-visualization">Interactive
+      Visualization</a></li>
+      <li><a href="#geojson-export" id="toc-geojson-export">GeoJSON
+      Export</a></li>
+      <li><a href="#performance-characteristics"
+      id="toc-performance-characteristics">Performance
+      Characteristics</a></li>
+      <li><a href="#data-sources" id="toc-data-sources">Data
+      Sources</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Product reference</span>
+        <h1>Capabilities</h1>
+        <p>A structured inventory of planning modes, analyses, map
+evidence, reports, and supported radio technologies.</p>
+        <div class="hero-actions">
+          <a class="button" href="./features.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>A.T.O.M provides a comprehensive suite of RF simulation and
+optimization capabilities.</p>
+<h2 id="multi-generation-physics">Multi-Generation Physics</h2>
+<h3 id="supported-frequency-bands">Supported Frequency Bands</h3>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Frequency</th>
+<th>Wavelength</th>
+<th>Primary Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4G LTE</strong></td>
+<td>2.6 GHz</td>
+<td>11.5 cm</td>
+<td>Wide-area coverage</td>
+</tr>
+<tr>
+<td><strong>5G mmWave</strong></td>
+<td>28 GHz</td>
+<td>1.07 cm</td>
+<td>High-capacity urban</td>
+</tr>
+<tr>
+<td><strong>6G Sub-THz</strong></td>
+<td>140 GHz</td>
+<td>2.14 mm</td>
+<td>Ultra-high-capacity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="free-space-path-loss-fspl">Free-Space Path Loss (FSPL)</h3>
+<p>All bands use the standard FSPL equation:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="prefix">[</mo><mi>m</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">[</mo><mi>G</mi><mi>H</mi><mi>z</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>92.45</mn></mrow><annotation encoding="application/x-tex">L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 92.45</annotation></semantics></math></p>
+<p>Where:</p>
+<ul>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+= distance in meters</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
+= frequency in GHz</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>L</mi><annotation encoding="application/x-tex">L</annotation></semantics></math>
+= path loss in dB</li>
+</ul>
+<h3 id="wall-attenuation">Wall Attenuation</h3>
+<p>The current backend applies generation-specific penetration losses
+when a ray crosses a building boundary:</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>4G LTE</th>
+<th>5G mmWave</th>
+<th>6G Sub-THz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Solid wall crossing</td>
+<td>+8 dB</td>
+<td>+30 dB</td>
+<td>+80 dB</td>
+</tr>
+<tr>
+<td>Dense facade / repeated crossings</td>
+<td>cumulative</td>
+<td>cumulative</td>
+<td>cumulative</td>
+</tr>
+</tbody>
+</table>
+<p>The current runtime intentionally uses frequency-dependent wall loss
+rather than per-material wall loss. OSM tags are used for demand scoring
+and diagnostics, while RF penetration is determined by the selected
+network generation.</p>
+<h2 id="segmented-heatmap-raytracing">Segmented Heatmap Raytracing</h2>
+<h3 id="color-coded-signal-strength">Color-Coded Signal Strength</h3>
+<p>Rays are visualized with <strong>dynamic color gradients</strong>
+based on received signal strength (Rx dBm):</p>
+<ul>
+<li>🟢 <strong>Green</strong> (-50 to -70 dBm): Strong signal, excellent
+coverage</li>
+<li>🟡 <strong>Yellow</strong> (-70 to -90 dBm): Moderate signal, usable
+coverage</li>
+<li>🔴 <strong>Red</strong> (-90 to -110 dBm): Weak signal, marginal
+coverage</li>
+</ul>
+<h3 id="ray-segmentation-algorithm">Ray Segmentation Algorithm</h3>
+<p>Instead of single rays from TX to each point, A.T.O.M generates
+<strong>discrete segments</strong>:</p>
+<ol type="1">
+<li>Start at transmitter antenna</li>
+<li>Cast ray toward target location</li>
+<li>Check polygon (building) intersections</li>
+<li>Apply cumulative wall loss</li>
+<li>Color segment based on final Rx dBm</li>
+<li>Export as GeoJSON linestring</li>
+</ol>
+<p>This enables:</p>
+<ul>
+<li>Precise visualization of signal degradation</li>
+<li>Identification of urban canyons and shadow areas</li>
+<li>Intuitive understanding of frequency-band differences</li>
+</ul>
+<h2 id="frequency-dependent-penetration">Frequency-Dependent
+Penetration</h2>
+<h3 id="4g-propagation">4G Propagation</h3>
+<ul>
+<li><strong>Penetrates</strong> concrete buildings with cumulative
+losses</li>
+<li><strong>Diffracts</strong> over rooftops</li>
+<li><strong>Reaches</strong> interior locations with degradation</li>
+<li><strong>Result</strong>: Wide coverage area despite obstacles</li>
+</ul>
+<h3 id="5g-mmwave-propagation">5G mmWave Propagation</h3>
+<ul>
+<li><strong>Heavily attenuates</strong> through walls</li>
+<li><strong>Requires</strong> line-of-sight in many cases</li>
+<li><strong>Blocks</strong> at forest edges</li>
+<li><strong>Result</strong>: Tight, directional coverage in dense
+areas</li>
+</ul>
+<h3 id="6g-sub-thz-propagation">6G Sub-THz Propagation</h3>
+<ul>
+<li><strong>Nearly blocked</strong> by most building materials</li>
+<li><strong>Ultra-tight</strong> spatial requirements</li>
+<li><strong>Requires</strong> optimal beamforming angles</li>
+<li><strong>Result</strong>: Localized coverage with high spectral
+efficiency</li>
+</ul>
+<h2 id="smart-beamforming">Smart Beamforming</h2>
+<h3 id="antenna-parameters">Antenna Parameters</h3>
+<p>Each transmitter can be configured with:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Range</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Azimuth</strong></td>
+<td>0° - 360°</td>
+<td>Horizontal direction of main lobe</td>
+</tr>
+<tr>
+<td><strong>Beam Width</strong></td>
+<td>10° - 360°</td>
+<td>Angular width of coverage sector</td>
+</tr>
+<tr>
+<td><strong>Power</strong></td>
+<td>0 - 60 dBm</td>
+<td>Transmit power level</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sector-coverage">Sector Coverage</h3>
+<p>Beamforming creates <strong>directional sectors</strong> instead of
+omnidirectional patterns:</p>
+<ul>
+<li>Typical 3-sector setup: 120° coverage each</li>
+<li>Each sector independently optimizable</li>
+<li>Reduces interference between sectors</li>
+<li>Improves spectral efficiency</li>
+</ul>
+<h2 id="deterministic-auto-optimization">Deterministic
+Auto-Optimization</h2>
+<h3 id="demand-aware-sector-scoring">Demand-Aware Sector Scoring</h3>
+<p>A.T.O.M uses a <strong>sweep-and-score</strong> optimizer to find the
+best azimuth for the selected tower:</p>
+<p><strong>Algorithm</strong>:</p>
+<ol type="1">
+<li>Define candidate azimuth angles (10° intervals)</li>
+<li>For each azimuth:
+<ul>
+<li>Cast rays through the selected beam width</li>
+<li>Apply frequency-specific attenuation</li>
+<li>Score unique POI and residential-demand buildings hit by the
+sector</li>
+<li>Add capped coverage as a tie-breaker</li>
+</ul></li>
+<li>Select azimuth with the highest demand-aware sector score</li>
+<li>Automatically snap antenna to optimal angle</li>
+</ol>
+<p><strong>Result</strong>: Engineers don't manually guess antenna
+directions; A.T.O.M prioritizes meaningful coverage over long empty
+corridors.</p>
+<h3 id="performance">Performance</h3>
+<ul>
+<li>Typical optimization runtime: &lt; 500 ms for 360° sweep</li>
+<li>Tested on 160,000+ Ankara building footprints</li>
+<li>Optimizes the currently selected tower; coordinated multi-site
+optimization is future work</li>
+</ul>
+<h2 id="coverage-gap-finder">Coverage Gap Finder</h2>
+<h3 id="demand-weighted-underservice-detection">Demand-Weighted
+Underservice Detection</h3>
+<p>A.T.O.M can identify buildings that sit inside the selected beam but
+still fall below usable received power. This closes the gap between "the
+ray reached somewhere" and "the intended users are actually served."</p>
+<p>The backend evaluates candidate buildings with nonzero
+<code>demand_weight</code> or <code>residential_demand</code>, estimates
+Rx at each centroid using EIRP, FSPL, beam geometry, and cumulative wall
+loss, then returns underserved targets as GeoJSON point markers.</p>
+<h3 id="planning-value">Planning Value</h3>
+<ul>
+<li>Prioritizes homes, apartments, schools, hospitals, malls, and
+commercial buildings</li>
+<li>Avoids treating empty farmland or wide roads as equivalent to
+settled demand</li>
+<li>Shows whether a chosen sector is demand-serving or merely
+distance-serving</li>
+<li>Produces compact stats: candidate buildings, served buildings, gap
+ratio, worst Rx, and total unmet demand</li>
+</ul>
+<h2 id="interactive-visualization">Interactive Visualization</h2>
+<h3 id="web-based-ui">Web-Based UI</h3>
+<ul>
+<li><strong>Leaflet Maps</strong>: Standard web mapping library</li>
+<li><strong>GeoJSON Layers</strong>: Dynamic overlay of coverage
+heatmaps</li>
+<li><strong>Real-time Updates</strong>: Instant response to parameter
+changes</li>
+<li><strong>Responsive Design</strong>: Works on desktop and tablet</li>
+</ul>
+<h3 id="control-panel-features">Control Panel Features</h3>
+<ul>
+<li>Frequency band selector (4G/5G/6G)</li>
+<li>Azimuth angle adjustment (slider or numeric input)</li>
+<li>Beam width configuration</li>
+<li>Transmit power control</li>
+<li>Coverage area display</li>
+<li>Signal strength colorbar</li>
+</ul>
+<h2 id="geojson-export">GeoJSON Export</h2>
+<p>All visualization data is stored in <strong>GeoJSON
+format</strong>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;FeatureCollection&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;features&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;Feature&quot;</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;properties&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;frequency&quot;</span><span class="fu">:</span> <span class="st">&quot;5G&quot;</span><span class="fu">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;azimuth&quot;</span><span class="fu">:</span> <span class="dv">45</span><span class="fu">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;rx_dbm&quot;</span><span class="fu">:</span> <span class="dv">-75</span><span class="fu">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;signal_quality&quot;</span><span class="fu">:</span> <span class="st">&quot;good&quot;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">},</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;geometry&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;LineString&quot;</span><span class="fu">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;coordinates&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="er">...</span><span class="ot">]</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="benefits">Benefits</h3>
+<ul>
+<li>📁 <strong>Portable</strong>: Import into ArcGIS, QGIS, Google Earth
+Pro</li>
+<li>🔄 <strong>Interoperable</strong>: Standard format supported by all
+GIS tools</li>
+<li>📊 <strong>Archivable</strong>: Version control your simulation
+outputs</li>
+<li>🔗 <strong>Shareable</strong>: Send results to team members
+instantly</li>
+</ul>
+<h2 id="performance-characteristics">Performance Characteristics</h2>
+<h3 id="scalability">Scalability</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Building geometries</td>
+<td>Up to 50,000 per simulation</td>
+</tr>
+<tr>
+<td>Ray-polygon intersections</td>
+<td>Sub-millisecond per query (R-Tree)</td>
+</tr>
+<tr>
+<td>Heatmap generation</td>
+<td>&lt; 2 seconds for 10,000-point grid</td>
+</tr>
+<tr>
+<td>API response time</td>
+<td>&lt; 100 ms (p99)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="concurrency">Concurrency</h3>
+<ul>
+<li><strong>Go Goroutines</strong>: Each ray batch processes in
+parallel</li>
+<li><strong>Multi-core utilization</strong>: Automatic load
+balancing</li>
+<li><strong>Memory efficiency</strong>: In-memory R-Tree (typically &lt;
+500 MB for Ankara)</li>
+<li><strong>No external processes</strong>: Self-contained in single
+container</li>
+</ul>
+<h2 id="data-sources">Data Sources</h2>
+<h3 id="openstreetmap-osm">OpenStreetMap (OSM)</h3>
+<ul>
+<li>Building footprints with material tags</li>
+<li>Street geometry and terrain features</li>
+<li>Vegetation layer for obstruction modeling</li>
+</ul>
+<h3 id="opencellid">OpenCellID</h3>
+<ul>
+<li>Real 5G tower locations</li>
+<li>Equipment specifications</li>
+<li>Historical coverage data</li>
+</ul>
+<h3 id="custom-data">Custom Data</h3>
+<p>Users can import:</p>
+<ul>
+<li>Custom building geometries (Shapefile, GeoJSON)</li>
+<li>Terrain elevation models (GeoTIFF)</li>
+<li>Custom antenna specifications</li>
+<li>Proprietary building material database</li>
+</ul>
+<hr />
+<p><strong>Next</strong>: Dive into <a
+href="./architecture.html">Architecture</a> or see visual examples in <a
+href="./visualization.html">Visualization</a>.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

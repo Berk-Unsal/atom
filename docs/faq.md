@@ -26,7 +26,7 @@ Yes! A.T.O.M is designed to work with any city. You need:
 2. Tower/node locations as GeoJSON points
 3. Replace data files in `data-pipeline/`
 
-See [Getting Started](getting-started.md) for data pipeline instructions.
+See [Download and Use](download.html) for installation and runtime-data verification.
 
 ---
 
@@ -179,7 +179,7 @@ Yes! A.T.O.M is **stateless**, so multiple instances can run behind a load balan
 
 ### Can I add a new building to the map?
 
-Yes! Edit OpenStreetMap, re-export data, rebuild simulator. See [Getting Started](getting-started.md#data-pipeline-optional).
+Yes. Update the source data, regenerate the GeoJSON, and rebuild the application. See [Download and Use](download.html) for installation and runtime-data verification.
 
 ### How often should I update the data?
 
@@ -274,9 +274,10 @@ Not directly, but you can:
 **Solution**: Ensure Dockerfile is complete. Download latest from GitHub:
 
 ```bash
-git clone https://github.com/your-org/A.T.O.M.git
+git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
 cd urban-ray-tracer
-docker build -t atom-simulator .
+git lfs pull
+docker compose up --build -d atom
 ```
 
 ### API returns validation error

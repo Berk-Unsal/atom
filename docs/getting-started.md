@@ -1,403 +1,158 @@
 # Getting Started
 
-Get A.T.O.M running on your machine in just a few minutes.
+The recommended way to run A.T.O.M is Docker Compose. For the visual, task-based version of this guide, open [Download and Use](./download.html).
 
 ## Prerequisites
 
-- **Docker**: [Install Docker Desktop](https://www.docker.com/products/docker-desktop)
-- **Git**: For cloning the repository (optional)
-- **Disk Space**: ~2 GB for Docker image
-- **Network**: Internet for initial Docker pull
+- Docker Desktop or Docker Engine with Compose
+- Git and [Git LFS](https://git-lfs.com/)
+- Internet access during the first build and for the default OpenStreetMap basemap
+- For source development: Go 1.22 and Node.js 18 or newer
 
-## Quick Start (Docker)
+## Get the Complete Repository
 
-### 1. Clone or Download Repository
+The Ankara building dataset is approximately 111 MB and is managed by Git LFS.
 
 ```bash
-git clone https://github.com/your-org/A.T.O.M.git
+git lfs install
+git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
 cd urban-ray-tracer
+git lfs pull
 ```
 
-### 2. Build Docker Image
+If you use the [repository ZIP](https://github.com/Berk-Unsal/urban-ray-tracer/archive/refs/heads/main.zip), verify that `data-pipeline/ankara_buildings.geojson` is roughly 111 MB and contains GeoJSON rather than a Git LFS pointer. Clone with Git LFS if it does not.
+
+## Docker Compose
+
+Build and start the application from the repository root:
 
 ```bash
-docker build -t atom-simulator .
+docker compose up --build -d atom
 ```
 
-**What happens**:
-- Pulls Alpine Linux base
-- Builds React frontend (Vite bundling)
-- Compiles Go backend
-- Copies static data files
-- Creates ~150 MB image
+Open [http://localhost:8080](http://localhost:8080).
 
-**Time**: ~3-5 minutes (first build includes npm/go downloads)
-
-### 3. Run Container
-
-```bash
-docker run -p 8080:8080 atom-simulator
-```
-
-**What happens**:
-- Container starts
-- Loads GeoJSON data (~1 second)
-- Builds R-Tree spatial index (~1 second)
-- HTTP server listens on port 8080
-
-**Expected output**:
-
-```
-2026/06/20 14:30:00 Loading buildings from data-pipeline/ankara_buildings.geojson...
-2026/06/20 14:30:01 Loaded 12047 buildings into R-Tree
-2026/06/20 14:30:01 Loading towers from data-pipeline/ankara_5g_nodes.geojson...
-2026/06/20 14:30:01 Loaded 287 towers
-2026/06/20 14:30:01 Server running on :8080
-```
-
-### 4. Access the Web Interface
-
-Open your browser to:
-
-```
-http://localhost:8080
-```
-
-You should see:
-- 🗺️ Interactive map of Ankara
-- 📊 Control panel (frequency, azimuth, beam width)
-- 🟢 Coverage heatmap overlay
-
----
-
-## Local Development Setup
-
-For development without Docker:
-
-### Backend (Go)
-
-**Requirements**:
-- Go 1.21+ ([Install Go](https://golang.org/doc/install))
-
-**Steps**:
-
-```bash
-# Navigate to backend
-cd backend-go
-
-# Download dependencies
-go mod download
-
-# Run server
-go run .
-```
-
-**Output**: Server on `http://localhost:8080`
-
-**To modify RF models**, edit `raytracer/geometry.go` and rebuild.
-
-### Frontend (React)
-
-**Requirements**:
-- Node.js 18+ ([Install Node.js](https://nodejs.org/))
-
-**Steps**:
-
-```bash
-# Navigate to frontend
-cd frontend-react
-
-# Install dependencies
-npm install
-
-# Start dev server
-npm run dev
-```
-
-**Output**: Dev server on `http://localhost:5173`
-
-**Frontend → Backend**: Configure API proxy in `vite.config.js`:
-
-```javascript
-export default {
-  server: {
-    proxy: {
-      '/api': 'http://localhost:8080'
-    }
-  }
-}
-```
-
-### Running Both Together
-
-**Terminal 1 (Backend)**:
-```bash
-cd backend-go
-go run .
-```
-
-**Terminal 2 (Frontend)**:
-```bash
-cd frontend-react
-npm run dev
-```
-
-**Open**: `http://localhost:5173` in browser
-
----
-
-## Data Pipeline (Optional)
-
-If you want to regenerate the GeoJSON data files from raw sources:
-
-### Requirements
-
-- Python 3.9+ ([Install Python](https://www.python.org/))
-- Osmium tool or OSM data file
-
-### Run Data Pipeline
-
-```bash
-cd data-pipeline
-
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate  # macOS/Linux
-# .venv\Scripts\activate  # Windows
-
-# Install dependencies
-pip install -r Requirements.txt
-
-# Extract Ankara buildings from OSM planet file
-python extract_ankara.py --input planet-latest.osm.pbf
-
-# Export to GeoJSON
-python export_ankara_buildings.py
-python export_tower_geojson.py
-```
-
-**Files generated**:
-- `ankara_buildings.geojson` (~80 MB)
-- `ankara_5g_nodes.geojson` (~2 MB)
-
----
-
-## Configuration
-
-### Environment Variables
-
-Override default paths:
-
-```bash
-# Custom data paths
-export BUILDINGS_GEOJSON_PATH=/path/to/custom_buildings.geojson
-export TOWERS_GEOJSON_PATH=/path/to/custom_towers.geojson
-
-# Server port
-export PORT=9000
-
-# Start backend
-go run .
-```
-
-### Building Docker Image with Custom Data
-
-```bash
-# Copy custom GeoJSON files
-cp custom_buildings.geojson data-pipeline/
-cp custom_towers.geojson data-pipeline/
-
-# Build image
-docker build -t atom-simulator .
-
-# Run
-docker run -p 8080:8080 atom-simulator
-```
-
----
-
-## Verification
-
-### API Readiness Check
+Verify that the runtime data and frontend are ready:
 
 ```bash
 curl http://localhost:8080/readyz
+docker compose logs -f atom
 ```
 
-**Expected response**:
+`/healthz` is a liveness check. `/readyz` returns success only when the required building data, tower data, and frontend bundle are available.
 
-```json
-{
-  "status": "ready",
-  "buildings": true,
-  "towers": true,
-  "frontend": true
-}
-```
-
-### Run Test Simulation
+Stop the application:
 
 ```bash
-curl -X POST http://localhost:8080/api/simulate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tower_lon": 32.8541,
-    "tower_lat": 39.9208,
-    "rays": 120,
-    "radius_m": 400,
-    "frequency_ghz": 28,
-    "tx_power_dbm": 30,
-    "azimuth": 45,
-    "beam_width": 120
-  }'
+docker compose down
 ```
 
-**Expected**: GeoJSON FeatureCollection with heatmap rays
+Update an existing clone:
 
-### Open Web UI
-
+```bash
+git pull --ff-only
+git lfs pull
+docker compose up --build -d atom
 ```
-http://localhost:8080
+
+## Local Development
+
+Run the backend and frontend in separate terminals.
+
+### Go Backend
+
+```bash
+cd backend-go
+go mod download
+go run .
 ```
 
-Should see:
-- ✅ Map loads without errors
-- ✅ Control panel is interactive
-- ✅ Changing azimuth updates heatmap
+The API listens on `http://localhost:8080`.
 
----
+### React Frontend
 
-## First Simulation: Step-by-Step
+```bash
+cd frontend-react
+npm ci
+npm run dev
+```
 
-### Step 1: Open Web Interface
+Open `http://localhost:5173`. Vite proxies API requests to the Go service on port 8080.
 
-Navigate to `http://localhost:8080` in your browser.
+## Optional 5G Core Lab
 
-### Step 2: Select a Frequency Band
+Core Lab is opt-in and applies only to 5G mode. Start the main application and adapter with:
 
-- Use dropdown to select: **4G**, **5G**, or **6G**
+```bash
+docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
+  --profile core-lab up --build
+```
 
-### Step 3: Adjust Antenna Direction
+The adapter provides deterministic Xn-C, Xn-U, N2, and N3 communication-path state. It can probe configured Open5GS status or metrics endpoints, but it does not bundle a complete Open5GS deployment.
 
-- Move the **Azimuth** slider (0-360°)
-- Watch coverage heatmap rotate in real-time
+## First Use
 
-### Step 4: Configure Beam Width
+### Single-Cell Sector Planning
 
-- Adjust **Beam Width** slider (5-180°)
-- Narrower beams = more focused coverage
+1. Open **Setup**, select **Single** mode and a network technology, then choose a tower.
+2. Open **Propagation** and set ray count, radius, azimuth, and beam width.
+3. Select **Run Sector** in the command bar.
+4. Inspect rays and gaps on the map or in **Results**.
 
-### Step 5: Run Auto-Optimization
+### Network Evaluation and Optimization
 
-- Click **"Auto-Optimize"** button
-- System finds optimal azimuth automatically
-- Results display in 2-3 seconds
+1. Select **Network** mode and choose two to six cells.
+2. Use **Evaluate Network** in the command bar to score the current plan.
+3. Use **Optimize Network** in Propagation to test deterministic azimuth candidates.
+4. Review score, demand reach, overlap, and before/after deltas in Results.
 
-### Step 6: Export Coverage Map
+### Interference Analysis
 
-- Click **"Export GeoJSON"**
-- Import into ArcGIS, QGIS, or Google Earth
+1. Use 4G LTE or 5G NR and select at least two cells.
+2. Open **Interference** and configure bandwidth, load, reuse, noise figure, and spacing.
+3. Select **Analyze Interference**.
+4. Switch between SINR, RSRP, and RSRQ, then inspect samples for serving-cell and strongest-interferer details.
 
----
+### 5G Communication Paths
+
+1. Start the optional Core Lab profile.
+2. Select 5G Network mode with at least two cells.
+3. Enable Core Lab from the **5G Core** tool.
+4. Run Xn degraded or unavailable scenarios to observe direct Xn paths and N2 fallback through AMF; inspect N3 user-plane state separately.
+
+### Results, Data, Layers, and Reports
+
+- Use **Layers** on the map to show or hide rays, gaps, selected cells, interference, and communication paths.
+- Select a tower, gap, path, or interference sample to open the persistent Inspector.
+- Use **Data** to review dataset confidence, RF assumptions, and exclusions.
+- Use **Report** to export Markdown or a printable PDF report from the current plan state.
 
 ## Troubleshooting
 
-### Docker Build Fails
+### Git LFS Pointer Instead of GeoJSON
 
-**Error**: `npm: not found`
+Run `git lfs install` and `git lfs pull`, then rebuild. A pointer file starts with `version https://git-lfs.github.com/spec/v1` and cannot be loaded as GeoJSON.
 
-**Solution**: Ensure Dockerfile stages are correct; rebuild with clean slate:
-```bash
-docker build --no-cache -t atom-simulator .
-```
+### Port Conflict
 
-### Docker Run: Port Already in Use
+Stop the process using port 8080 or 5173. For Docker, change the host side of the port mapping in `docker-compose.yml`, such as `8081:8080`.
 
-**Error**: `bind: address already in use`
+### Readiness Returns 503
 
-**Solution**: Use different port:
-```bash
-docker run -p 9000:8080 atom-simulator
-# Then open http://localhost:9000
-```
+Inspect the readiness JSON and `docker compose logs -f atom`. The usual causes are a missing LFS object, missing tower data, or a frontend bundle that was not built.
 
-### Slow Startup
+### RF Analysis Capacity Is Busy
 
-**Normal**: First run loads 12,000+ buildings (~5 seconds)
+A.T.O.M admits two RF jobs by default. A saturated request returns `429` with `Retry-After`. Let the active job finish, then retry; avoid starting optimization, interference, and repeated sector runs simultaneously.
 
-**Subsequent runs**: Fast (data cached in R-Tree)
+### Blank Basemap
 
-### UI Doesn't Load
+The RF engines and datasets run locally, but the default Leaflet layer requests OpenStreetMap tiles. Confirm network access or configure a separate local tile source.
 
-**Check**:
-1. Is server running? `curl http://localhost:8080`
-2. Are you using correct port? (default: 8080)
-3. Check browser console for errors (F12)
+## Next References
 
-### API Returns 500 Error
-
-**Check logs**:
-```bash
-docker logs atom-simulator
-```
-
-**Common causes**:
-- Invalid coordinate or ray-count input
-- Unsupported frequency_ghz value
-- Backend timeout
-
----
-
-## Next Steps
-
-- 📖 Read [Overview](overview.md) for project background
-- ⚙️ Explore [Architecture](architecture.md) to understand internals
-- 🔌 Check [API Reference](api.md) for programmatic access
-- 📈 See [Visualization](visualization.md) for example outputs
-- 🚀 Learn [Deployment](deployment.md) for production setup
-
----
-
-## Performance Tips
-
-### For Fast Simulations
-
-```bash
-# Use coarser grid (20 m instead of 10 m)
-# This reduces ray count by 4×
-curl -X POST http://localhost:8080/api/simulate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tower_lon": 32.8541,
-    "tower_lat": 39.9208,
-    "rays": 72,
-    "radius_m": 250,
-    "frequency_ghz": 28,
-    "tx_power_dbm": 30,
-    "azimuth": 45,
-    "beam_width": 120
-  }'
-```
-
-### For High-Quality Results
-
-```bash
-# Use fine grid (5 m)
-# This increases ray count and accuracy
-curl -X POST http://localhost:8080/api/simulate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tower_lon": 32.8541,
-    "tower_lat": 39.9208,
-    "rays": 240,
-    "radius_m": 600,
-    "frequency_ghz": 28,
-    "tx_power_dbm": 30,
-    "azimuth": 45,
-    "beam_width": 120
-  }'
-```
-
----
-
-**Ready to explore?** Start with the [Overview](overview.md) or dive into [Features](features.md).
+- [System architecture](./architecture.html)
+- [REST API](./api.md)
+- [RF algorithms](./algorithms.md)
+- [Model limitations](./modeling-limits.md)
+- [Deployment](./deployment.md)

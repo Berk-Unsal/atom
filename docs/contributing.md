@@ -8,7 +8,7 @@ A.T.O.M is an open-source project, and we welcome contributions from the communi
 
 Found a bug? Please report it!
 
-1. **Check existing issues** first: [GitHub Issues](https://github.com/your-org/A.T.O.M/issues)
+1. **Check existing issues** first: [GitHub Issues](https://github.com/Berk-Unsal/urban-ray-tracer/issues)
 2. **Create new issue** if not already reported
 3. **Include**:
    - OS and Docker version
@@ -46,7 +46,7 @@ Server error: index out of bounds
 
 Want to suggest an improvement?
 
-1. **Check existing proposals**: [Discussions](https://github.com/your-org/A.T.O.M/discussions)
+1. **Check existing proposals**: [Discussions](https://github.com/Berk-Unsal/urban-ray-tracer/discussions)
 2. **Start a discussion** or open an issue labeled `enhancement`
 3. **Describe**:
    - What problem it solves
@@ -437,7 +437,7 @@ If you'd like to support A.T.O.M financially:
 **Stuck? Need guidance?**
 
 1. Check [FAQ](faq.md)
-2. Search existing [GitHub Issues](https://github.com/your-org/A.T.O.M/issues)
+2. Search existing [GitHub Issues](https://github.com/Berk-Unsal/urban-ray-tracer/issues)
 3. Review [Architecture](architecture.md) for system overview
 4. Ask in GitHub Discussions
 5. Reach out to maintainers

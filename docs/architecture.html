@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Deep system architecture for the A.T.O.M RF planning platform." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>System Architecture | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html" aria-current="page">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./academic-report.pdf">Report</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout" id="main-content">
+    <aside class="page-toc" aria-label="Architecture page contents">
+      <strong>On this page</strong>
+      <nav>
+        <a href="#mental-model">Mental model</a>
+        <a href="#system-context">System context</a>
+        <a href="#runtime">Runtime components</a>
+        <a href="#data">Data and spatial index</a>
+        <a href="#requests">Request lifecycles</a>
+        <a href="#core-path">5G communication path</a>
+        <a href="#reliability">Reliability controls</a>
+        <a href="#deployment">Deployment</a>
+        <a href="#limits">Model limits</a>
+      </nav>
+    </aside>
+
+    <article class="page-content">
+      <header class="page-hero">
+        <div>
+          <span class="hero-label">System architecture</span>
+          <h1>From a map action to an inspectable RF result</h1>
+          <p>
+            A.T.O.M is a local-first React and Go application. The browser owns planning state and map presentation;
+            the Go service owns validation, bounded computation, spatial queries, and deterministic RF analysis.
+            An optional sidecar adds 5G communication-path state without changing the radio model.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#mental-model">Follow a request</a>
+            <a class="button" href="./api.html">Open API reference</a>
+            <a class="button" href="./algorithms.html">Read RF algorithms</a>
+          </div>
+        </div>
+        <div class="hero-facts" aria-label="Architecture facts">
+          <div class="hero-fact"><span>Primary runtime</span><strong>Single container</strong></div>
+          <div class="hero-fact"><span>Backend</span><strong>Go 1.22 + Gin</strong></div>
+          <div class="hero-fact"><span>Frontend</span><strong>React + Leaflet</strong></div>
+          <div class="hero-fact"><span>Persistent database</span><strong>None</strong></div>
+          <div class="hero-fact"><span>Default RF capacity</span><strong>2 concurrent jobs</strong></div>
+        </div>
+      </header>
+
+      <section class="content-section" id="mental-model" aria-labelledby="mental-model-heading">
+        <div class="section-heading">
+          <h2 id="mental-model-heading">The shortest useful mental model</h2>
+          <p>
+            A planning action becomes a validated JSON request. The backend narrows the Ankara dataset through an
+            in-memory spatial index, executes the selected deterministic engine, and returns GeoJSON plus statistics.
+            The browser then renders only the layers and result view relevant to that operation.
+          </p>
+        </div>
+        <div class="flow-strip" aria-label="Plain-language architecture flow">
+          <div class="flow-step"><span>01</span><strong>Configure cells</strong><small>Mode, technology, power, geometry, and selected towers.</small></div>
+          <div class="flow-step"><span>02</span><strong>Submit analysis</strong><small>Abortable REST request with a settings fingerprint.</small></div>
+          <div class="flow-step"><span>03</span><strong>Query spatial data</strong><small>R-tree bounds reduce building intersection and demand work.</small></div>
+          <div class="flow-step"><span>04</span><strong>Execute RF model</strong><small>Bounded workers calculate propagation, scoring, gaps, or interference.</small></div>
+          <div class="flow-step"><span>05</span><strong>Render evidence</strong><small>Leaflet layers, focused KPIs, Inspector details, and reports.</small></div>
+        </div>
+      </section>
+
+      <section class="content-section" id="system-context" aria-labelledby="context-heading">
+        <div class="section-heading">
+          <h2 id="context-heading">System context</h2>
+          <p>
+            The production image contains the built frontend, Go API, and Ankara data. Basemap tiles remain an external
+            dependency unless replaced or cached. Core Lab is opt-in and communicates through a separate adapter.
+          </p>
+        </div>
+        <figure class="diagram-frame">
+          <figcaption class="diagram-title"><span>System boundary</span><span>Solid nodes are part of the default A.T.O.M runtime</span></figcaption>
+          <div class="context-map">
+            <div class="diagram-column">
+              <div class="diagram-node diagram-arrow-right">
+                <strong>RF planner or reviewer</strong>
+                <span>Configures cells, runs analyses, inspects map objects, exports reports.</span>
+              </div>
+              <div class="diagram-node diagram-arrow-right">
+                <strong>API consumer</strong>
+                <span>Submits the same JSON contracts directly to <code>/api/*</code>.</span>
+              </div>
+            </div>
+            <div class="diagram-column">
+              <div class="diagram-node frontend">
+                <strong>A.T.O.M web workspace</strong>
+                <span>Focused command bar, workflow rail, tool drawer, Inspector, Leaflet map, and report assembly.</span>
+              </div>
+              <div class="diagram-node engine">
+                <strong>A.T.O.M Go service</strong>
+                <span>Static frontend host, REST API, validation, resource controls, spatial index, and RF engines.</span>
+              </div>
+              <div class="diagram-node data">
+                <strong>Ankara runtime data</strong>
+                <span>Tower points, 161k+ building footprints, and demand metadata loaded from local files.</span>
+              </div>
+            </div>
+            <div class="diagram-column">
+              <div class="diagram-node diagram-arrow-left">
+                <strong>OpenStreetMap tile service</strong>
+                <span>Provides the visual basemap; RF computation does not depend on live map APIs.</span>
+              </div>
+              <div class="diagram-node core diagram-arrow-left">
+                <strong>Core Lab adapter</strong>
+                <span>Optional deterministic overlay or bridge to configured Open5GS status and metrics endpoints.</span>
+              </div>
+              <div class="diagram-node diagram-arrow-left">
+                <strong>GitHub / Git LFS</strong>
+                <span>Distributes source and the large building dataset used by local builds.</span>
+              </div>
+            </div>
+          </div>
+        </figure>
+        <div class="info-band warning">
+          <span class="info-icon" aria-hidden="true">NET</span>
+          <div>
+            <strong>Local-first does not mean the default basemap is offline</strong>
+            <p>The RF engines and datasets run locally. Leaflet currently requests OpenStreetMap tiles over the network unless a local tile source is configured separately.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="runtime" aria-labelledby="runtime-heading">
+        <div class="section-heading">
+          <h2 id="runtime-heading">Runtime components</h2>
+          <p>
+            Frontend responsibilities stop at orchestration and presentation. Domain validation and RF calculations stay
+            behind the Go API, while the data layer exposes bounded spatial candidates to each engine.
+          </p>
+        </div>
+        <figure class="diagram-frame">
+          <figcaption class="diagram-title"><span>Container view</span><span>Default app plus optional Core Lab boundary</span></figcaption>
+          <div class="runtime-stack">
+            <section class="stack-column" aria-label="Frontend components">
+              <h3>React workspace</h3>
+              <div class="stack-unit"><strong>Command bar and workflow rail</strong><span>Active plan context, RF run command, focused tool navigation, and availability states.</span></div>
+              <div class="stack-unit"><strong>Tool drawer and Inspector</strong><span>Setup, propagation, interference, 5G Core, results, data, reports, and selected map-object details.</span></div>
+              <div class="stack-unit"><strong>Request coordinator</strong><span>AbortController channels, monotonic request IDs, latest-response checks, and settings invalidation.</span></div>
+              <div class="stack-unit"><strong>Leaflet map layers</strong><span>Canvas-backed towers, rays, gaps, interference samples, Xn/N2/N3 routes, and selection geometry.</span></div>
+              <div class="stack-unit"><strong>Report assembler</strong><span>Builds Markdown and printable HTML from current client state without a report API.</span></div>
+            </section>
+            <section class="stack-column" aria-label="Backend components">
+              <h3>Go + Gin service</h3>
+              <div class="stack-unit"><strong>HTTP boundary</strong><span>CORS, 1 MiB body limit, readiness/liveness, JSON binding, pointer-aware defaults, and validation.</span></div>
+              <div class="stack-unit"><strong>RF capacity limiter</strong><span>Two concurrent RF requests by default; saturated requests return 429 with Retry-After.</span></div>
+              <div class="stack-unit"><strong>Propagation engine</strong><span>Sector ray sampling, FSPL, antenna gain, polygon intersections, wall loss, and segment GeoJSON.</span></div>
+              <div class="stack-unit"><strong>Planning engines</strong><span>Coverage gaps, azimuth sweep, network evaluation, network optimization, and overlap scoring.</span></div>
+              <div class="stack-unit"><strong>Interference engine</strong><span>Adaptive grid, serving-cell choice, linear power sums, RSRP, SINR, RSRQ, RSSI, and demand impact.</span></div>
+              <div class="stack-unit"><strong>Core Lab proxy</strong><span>5G-only status, topology, sessions, events, and scenario requests with a 1.5 second adapter timeout.</span></div>
+            </section>
+            <section class="stack-column" aria-label="Data and integration components">
+              <h3>Data and integrations</h3>
+              <div class="stack-unit"><strong>Building R-tree</strong><span>161k+ footprint bounds and exact polygon geometry held in memory for fast candidate queries.</span></div>
+              <div class="stack-unit"><strong>Demand surface</strong><span>POI tags, residential weighting, density signals, confidence summary, and building centroids.</span></div>
+              <div class="stack-unit"><strong>Tower store</strong><span>451 local cell records loaded from GeoJSON and exposed to the browser.</span></div>
+              <div class="stack-unit"><strong>Static frontend bundle</strong><span>Vite build served by the same Go process in the production image.</span></div>
+              <div class="stack-unit"><strong>Optional adapter</strong><span>Core functions, deterministic scenarios, Xn eligibility, N2 fallback, N3 state, and Open5GS probing.</span></div>
+            </section>
+          </div>
+        </figure>
+      </section>
+
+      <section class="content-section" id="data" aria-labelledby="data-heading">
+        <div class="section-heading">
+          <h2 id="data-heading">Data preparation and spatial querying</h2>
+          <p>
+            The Python pipeline is not part of normal request handling. It prepares files ahead of time; the Go service
+            loads those files once at startup and serves all analyses from memory.
+          </p>
+        </div>
+        <div class="flow-strip" aria-label="A.T.O.M data flow">
+          <div class="flow-step"><span>01</span><strong>Source</strong><small>OSM building geometry and OpenCellID-derived tower records.</small></div>
+          <div class="flow-step"><span>02</span><strong>Enrich</strong><small>Normalize footprints and add POI, residential, and density demand signals.</small></div>
+          <div class="flow-step"><span>03</span><strong>Persist</strong><small>Write local GeoJSON and CSV artifacts; large buildings file uses Git LFS.</small></div>
+          <div class="flow-step"><span>04</span><strong>Index</strong><small>Parse polygons, compute bounds, and populate an in-memory R-tree at startup.</small></div>
+          <div class="flow-step"><span>05</span><strong>Query</strong><small>Search beam or cell bounds, then perform exact radius, sector, and intersection tests.</small></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Runtime artifact</th><th>Purpose</th><th>Lifecycle</th><th>Important consequence</th></tr></thead>
+            <tbody>
+              <tr><td><strong>ankara_buildings.geojson</strong></td><td>Footprints and demand properties</td><td>Loaded once into memory</td><td>Fast requests, higher startup memory</td></tr>
+              <tr><td><strong>ankara_5g_nodes.geojson</strong></td><td>Tower coordinates and cell identifiers</td><td>Loaded once; also served to frontend</td><td>No live tower API dependency</td></tr>
+              <tr><td><strong>Building R-tree</strong></td><td>Bounding-box candidate search</td><td>Built during startup</td><td>Avoids scanning every polygon per ray</td></tr>
+              <tr><td><strong>Demand summary</strong></td><td>Dataset confidence and counts</td><td>Computed from loaded footprints</td><td>Visible in Data and reports</td></tr>
+              <tr><td><strong>Analysis GeoJSON</strong></td><td>Rays, gaps, and radio-quality samples</td><td>Generated per request</td><td>Not stored server-side</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="content-section" id="requests" aria-labelledby="requests-heading">
+        <div class="section-heading">
+          <h2 id="requests-heading">Principal request lifecycles</h2>
+          <p>
+            The browser deliberately serializes expensive per-cell rendering where needed. This keeps a network workflow
+            inside the backend capacity budget while preserving a single cancellation boundary for the whole operation.
+          </p>
+        </div>
+        <div class="sequence-list">
+          <article class="sequence">
+            <header><h3>Run Sector</h3><span>Single selected cell</span></header>
+            <div class="sequence-steps">
+              <div class="sequence-step"><strong>Browser</strong><span>Build one normalized sector payload and start the current RF request channel.</span></div>
+              <div class="sequence-step"><strong>Parallel API calls</strong><span><code>/api/simulate</code> and <code>/api/coverage-gaps</code> execute together.</span></div>
+              <div class="sequence-step"><strong>Go engines</strong><span>Trace segmented rays and independently evaluate demand buildings below the service threshold.</span></div>
+              <div class="sequence-step"><strong>Commit</strong><span>Only the current request updates ray/gap layers, RF KPIs, Inspector data, and report state.</span></div>
+            </div>
+          </article>
+
+          <article class="sequence">
+            <header><h3>Evaluate or Optimize Network</h3><span>Two to six selected cells</span></header>
+            <div class="sequence-steps">
+              <div class="sequence-step"><strong>Score plan</strong><span>Evaluation keeps supplied azimuths; optimization sweeps candidate directions and applies overlap penalties.</span></div>
+              <div class="sequence-step"><strong>Return summary</strong><span>Backend returns network score, demand coverage, overlap, and per-cell azimuth records.</span></div>
+              <div class="sequence-step"><strong>Render sequentially</strong><span>The frontend queues one <code>/api/simulate</code> call per selected cell to avoid RF-capacity collisions.</span></div>
+              <div class="sequence-step"><strong>Combine</strong><span>Ray collections merge client-side; Results selects the network evaluation or comparison view.</span></div>
+            </div>
+          </article>
+
+          <article class="sequence">
+            <header><h3>Analyze Interference</h3><span>4G or 5G; two to six cells</span></header>
+            <div class="sequence-steps">
+              <div class="sequence-step"><strong>Bound surface</strong><span>Form the union of selected-cell coverage bounds and adapt spacing to keep surface samples bounded.</span></div>
+              <div class="sequence-step"><strong>Evaluate cells</strong><span>Apply sector/radius eligibility, FSPL, gain, wall loss, load, reuse channel, and receiver noise.</span></div>
+              <div class="sequence-step"><strong>Select and sum</strong><span>Strongest RSRP serves; co-channel interference and noise are added in linear power.</span></div>
+              <div class="sequence-step"><strong>Present</strong><span>Return SINR/RSRP/RSRQ/RSSI samples, demand impacts, percentiles, assumptions, and per-cell summaries.</span></div>
+            </div>
+          </article>
+
+          <article class="sequence">
+            <header><h3>Inspect and report</h3><span>Client-side detail flow</span></header>
+            <div class="sequence-steps">
+              <div class="sequence-step"><strong>Select object</strong><span>A tower, gap, path, or interference point becomes the current map object.</span></div>
+              <div class="sequence-step"><strong>Inspector takeover</strong><span>The drawer remembers its prior tool and shows complete persistent details while popups stay lightweight.</span></div>
+              <div class="sequence-step"><strong>Restore context</strong><span>Back returns to the previous tool; close returns keyboard focus to the map or originating control.</span></div>
+              <div class="sequence-step"><strong>Export</strong><span>Current client state becomes Markdown or printable HTML without storing the plan on the server.</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section" id="core-path" aria-labelledby="core-heading">
+        <div class="section-heading">
+          <h2 id="core-heading">5G communication-path overlay</h2>
+          <p>
+            Core Lab is intentionally independent from radio interference. It describes control and user-plane paths for
+            selected 5G cells; Core scenarios do not alter RF propagation, and radio load does not alter Core function health.
+          </p>
+        </div>
+        <figure class="diagram-frame">
+          <figcaption class="diagram-title"><span>Selected-cell communication paths</span><span>Available only in the 28 GHz 5G mode</span></figcaption>
+          <div class="runtime-stack">
+            <section class="stack-column">
+              <h3>NG-RAN</h3>
+              <div class="stack-unit"><strong>Selected tower to gNB mapping</strong><span>Stable selected-cell ordering supplies IDs and coordinates to topology queries.</span></div>
+              <div class="stack-unit"><strong>Xn-C</strong><span>Direct neighboring gNB control-plane coordination when distance and scenario eligibility pass.</span></div>
+              <div class="stack-unit"><strong>Xn-U</strong><span>Direct user-plane forwarding associated with handover between eligible neighbors.</span></div>
+            </section>
+            <section class="stack-column">
+              <h3>Fallback and session paths</h3>
+              <div class="stack-unit"><strong>N2 via AMF</strong><span>Coordination fallback when Xn is degraded or unavailable.</span></div>
+              <div class="stack-unit"><strong>N3 via UPF</strong><span>User-plane PDU-session traffic; UPF degradation affects this path without changing Xn-C.</span></div>
+              <div class="stack-unit"><strong>Route decision</strong><span>Each neighbor pair reports <code>direct_xn</code>, <code>ng_fallback</code>, or <code>unreachable</code> with a reason.</span></div>
+            </section>
+            <section class="stack-column">
+              <h3>Core functions and scenarios</h3>
+              <div class="stack-unit"><strong>AMF / SMF / UPF</strong><span>Access control, session management, and user-plane anchoring.</span></div>
+              <div class="stack-unit"><strong>Service functions</strong><span>NRF, UDM/UDR, AUSF, PCF, and NSSF health and interfaces.</span></div>
+              <div class="stack-unit"><strong>Deterministic scenarios</strong><span>Registration storm, function outages, policy degradation, UPF degradation, and Xn degradation/outage.</span></div>
+            </section>
+          </div>
+        </figure>
+        <div class="info-band">
+          <span class="info-icon" aria-hidden="true">5G</span>
+          <div>
+            <strong>Adapter behavior is explicit</strong>
+            <p>Without configured Open5GS endpoints, the adapter reports a deterministic <code>simulated_overlay</code>. With endpoints, it probes external state briefly and retains the same frontend-facing JSON contracts.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="reliability" aria-labelledby="reliability-heading">
+        <div class="section-heading">
+          <h2 id="reliability-heading">Resource and reliability controls</h2>
+          <p>
+            RF jobs are intentionally bounded. The frontend avoids stale commits and unnecessary concurrency; the backend
+            rejects oversized or excess work before it can monopolize the process.
+          </p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Control</th><th>Current behavior</th><th>User-visible result</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Request body limit</strong></td><td>1 MiB for incoming requests</td><td><code>413</code> for oversized bodies</td></tr>
+              <tr><td><strong>RF job limiter</strong></td><td>2 concurrent jobs by default through <code>MAX_CONCURRENT_RF_REQUESTS</code></td><td><code>429</code> plus <code>Retry-After</code> when saturated</td></tr>
+              <tr><td><strong>Per-job workers</strong></td><td>At most 4 Go workers for expensive RF operations</td><td>Predictable CPU pressure per request</td></tr>
+              <tr><td><strong>Client cancellation</strong></td><td>Superseded settings abort the active RF request channel</td><td>Old work stops when possible</td></tr>
+              <tr><td><strong>Latest-response check</strong></td><td>Request ID and settings fingerprint must still match</td><td>Old responses cannot replace newer results</td></tr>
+              <tr><td><strong>Network render queue</strong></td><td>Per-cell ray requests run sequentially</td><td>Network evaluation avoids self-generated overload</td></tr>
+              <tr><td><strong>HTTP timeouts</strong></td><td>5s headers, 15s read, 120s write, 60s idle</td><td>Long RF writes are allowed without unbounded connections</td></tr>
+              <tr><td><strong>Liveness</strong></td><td><code>/healthz</code> reports the process and loaded counts</td><td>Process monitoring remains independent of readiness</td></tr>
+              <tr><td><strong>Readiness</strong></td><td><code>/readyz</code> requires buildings, towers, and frontend bundle</td><td><code>503</code> until the instance can serve the application</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="content-section" id="deployment" aria-labelledby="deployment-heading">
+        <div class="section-heading">
+          <h2 id="deployment-heading">Deployment topology</h2>
+          <p>The same interfaces are used in development and production; only asset serving and the optional Core adapter boundary change.</p>
+        </div>
+        <div class="split-content">
+          <section class="text-panel">
+            <h3>Local development</h3>
+            <p>Vite serves the frontend on port 5173 and proxies API, health, and readiness requests to the Go service on port 8080.</p>
+            <ul><li>Fast frontend refresh and source maps</li><li>Go service reads data from repository-relative paths</li><li>Core adapter can run separately on port 8090</li></ul>
+          </section>
+          <section class="text-panel">
+            <h3>Production container</h3>
+            <p>A multi-stage Docker build compiles the React bundle and Go binary, then copies both plus the data into a non-root Alpine runtime.</p>
+            <ul><li>One public port: 8080</li><li>Go serves both static frontend and API</li><li>Readiness healthcheck is built into the image</li></ul>
+          </section>
+          <section class="text-panel">
+            <h3>Optional Core Lab profile</h3>
+            <p>The compose overlay enables the backend Core proxy and starts the adapter sidecar. The default app remains Core-free.</p>
+            <ul><li>Stable proxy routes remain under <code>/api/core/*</code></li><li>Adapter is internal to the compose network</li><li>Open5GS integration is optional</li></ul>
+          </section>
+          <section class="text-panel">
+            <h3>Internet-facing boundary</h3>
+            <p>The API has no built-in authentication. Public deployments need a trusted reverse proxy or gateway for TLS, authentication, and external rate policy.</p>
+            <ul><li>Keep <code>/healthz</code> and <code>/readyz</code> available to probes</li><li>Preserve the 120 second RF response window</li><li>Do not expose the adapter directly without need</li></ul>
+          </section>
+        </div>
+      </section>
+
+      <section class="content-section" id="limits" aria-labelledby="limits-heading">
+        <div class="section-heading">
+          <h2 id="limits-heading">Model and trust boundaries</h2>
+          <p>Architecture quality includes stating what the system does not claim. These limits apply to the current implementation and reports.</p>
+        </div>
+        <div class="split-content">
+          <div class="info-band limit">
+            <span class="info-icon" aria-hidden="true">RF</span>
+            <div><strong>Propagation limits</strong><p>No diffraction, reflection-heavy multipath, fast fading, sidelobes, MIMO beamforming gain, scheduling, adjacent-channel leakage, or uplink model.</p></div>
+          </div>
+          <div class="info-band limit">
+            <span class="info-icon" aria-hidden="true">DB</span>
+            <div><strong>Data limits</strong><p>Static OSM/OpenCellID-derived geometry and synthetic demand can be incomplete or stale. Confidence is context, not calibration.</p></div>
+          </div>
+          <div class="info-band warning">
+            <span class="info-icon" aria-hidden="true">KPI</span>
+            <div><strong>Measurement limits</strong><p>RSRP, SINR, RSRQ, RSSI, and coverage values are deterministic planning estimates, not UE, drive-test, or PHY measurements.</p></div>
+          </div>
+          <div class="info-band warning">
+            <span class="info-icon" aria-hidden="true">OPS</span>
+            <div><strong>Operational limits</strong><p>No authentication, plan database, multi-user collaboration, job queue, or durable analysis history is included in the current runtime.</p></div>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <a class="button primary" href="./download.html">Run the system</a>
+          <a class="button" href="./algorithms.html">Inspect the equations</a>
+          <a class="button" href="./academic-report.pdf">Read the engineering report</a>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>A.T.O.M architecture. Local-first RF planning with explicit resource and confidence boundaries.</span>
+      <nav class="footer-links" aria-label="Footer links">
+        <a href="./index.html">Overview</a>
+        <a href="./download.html">Download</a>
+        <a href="./api.html">API</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer">GitHub</a>
+        <span>&copy; <span data-current-year>2026</span></span>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

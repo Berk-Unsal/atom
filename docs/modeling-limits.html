@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="What the deterministic planning
+model includes, what it excludes, and how to interpret its outputs
+responsibly." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Modeling Limits | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./academic-report.pdf">Report</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Modeling
+Limits page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#what-the-model-uses"
+      id="toc-what-the-model-uses">What the Model Uses</a></li>
+      <li><a href="#propagation-effects-not-modeled"
+      id="toc-propagation-effects-not-modeled">Propagation Effects Not
+      Modeled</a></li>
+      <li><a href="#interference-metrics"
+      id="toc-interference-metrics">Interference Metrics</a></li>
+      <li><a href="#data-confidence" id="toc-data-confidence">Data
+      Confidence</a></li>
+      <li><a href="#appropriate-interpretation"
+      id="toc-appropriate-interpretation">Appropriate
+      Interpretation</a></li>
+      <li><a href="#related-references"
+      id="toc-related-references">Related References</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Confidence boundary</span>
+        <h1>Modeling Limits</h1>
+        <p>What the deterministic planning model includes, what it
+excludes, and how to interpret its outputs responsibly.</p>
+        <div class="hero-actions">
+          <a class="button" href="./modeling-limits.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>A.T.O.M produces deterministic planning estimates. It is designed for
+comparative RF planning, education, API experimentation, and inspectable
+scenario analysis. Its outputs are not UE measurements, drive-test
+results, calibrated link budgets, or a replacement for a commercial
+propagation tool.</p>
+<h2 id="what-the-model-uses">What the Model Uses</h2>
+<ul>
+<li>Selected tower coordinates, azimuth, beam width, radius, transmit
+power, frequency, and ray count</li>
+<li>Free-space path loss (FSPL)</li>
+<li>Technology-specific antenna gain assumptions</li>
+<li>Beam-sector and configured-radius eligibility</li>
+<li>Building-polygon intersections from the local Ankara GeoJSON
+dataset</li>
+<li>Frequency-dependent cumulative wall attenuation</li>
+<li>Deterministic POI and residential-demand enrichment for scoring</li>
+<li>Co-channel cell power, load, reuse, thermal noise, and
+resource-block presets for interference analysis</li>
+</ul>
+<p>The same request and dataset produce the same RF result. Core Lab
+scenario state does not modify propagation or interference
+calculations.</p>
+<h2 id="propagation-effects-not-modeled">Propagation Effects Not
+Modeled</h2>
+<ul>
+<li>Fast or slow fading</li>
+<li>Diffraction around roofs, corners, and terrain</li>
+<li>Multipath reflection or ray bouncing</li>
+<li>Terrain elevation, foliage, weather, and atmospheric absorption</li>
+<li>Antenna sidelobes and detailed antenna radiation patterns</li>
+<li>MIMO layers, beamforming codebooks, polarization, or device
+orientation</li>
+<li>Dynamic scheduling, mobility, handover margins, and UE
+implementation behavior</li>
+<li>Uplink interference and adjacent-channel leakage</li>
+</ul>
+<p>Cells outside their configured beam or radius contribute no signal in
+the current model. This sharp planning boundary explains why samples can
+show no signal immediately outside a sector even when a real antenna
+might contribute sidelobe energy.</p>
+<h2 id="interference-metrics">Interference Metrics</h2>
+<p>LTE RSRP and RSRQ are CRS-style planning estimates. 5G values are
+modeled SS-RSRP and SS-RSRQ estimates. SINR, RSSI, RSRP, and RSRQ are
+derived from deterministic carrier powers and standardized
+resource-block concepts; they are not sampled from UE or PHY measurement
+reports.</p>
+<p>An SINR near <code>0 dB</code> is expected when the serving cell and
+a co-channel interferer arrive at similar power and noise is
+comparatively small. A no-signal sample means no configured cell
+contributes under the current radius and beam geometry.</p>
+<h2 id="data-confidence">Data Confidence</h2>
+<ul>
+<li>Building footprints and metadata are static snapshots derived from
+OpenStreetMap processing.</li>
+<li>Tower locations are a planning dataset derived from
+OpenCellID-oriented source processing, not an operator inventory.</li>
+<li>Demand weights use available OSM tags and residential-density
+enrichment; missing tags reduce semantic confidence.</li>
+<li>Basemap tiles provide visual context only and do not enter RF
+calculations.</li>
+</ul>
+<p>Review the Data tool and exported report for the assumptions attached
+to a specific analysis.</p>
+<h2 id="appropriate-interpretation">Appropriate Interpretation</h2>
+<p>Use A.T.O.M to compare configurations, find deterministic coverage
+gaps, understand co-channel relationships, inspect communication-path
+fallbacks, and communicate planning assumptions. Validate deployment
+decisions with calibrated propagation models, current operator data,
+spectrum assumptions, link-budget engineering, and field
+measurements.</p>
+<h2 id="related-references">Related References</h2>
+<ul>
+<li><a href="./architecture.html">System architecture</a></li>
+<li><a href="./algorithms.html">RF algorithms</a></li>
+<li><a href="./api.html">REST API</a></li>
+<li><a href="./academic-report.pdf">Academic report</a></li>
+</ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

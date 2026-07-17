@@ -89,19 +89,23 @@ Generated artifacts such as `frontend-react/dist/`, local virtual environments, 
 ## Getting Started with Docker
 
 ### Prerequisites
-- Docker installed on your system
 
-### Build & Run
+- Docker with Compose
+- Git and [Git LFS](https://git-lfs.com/)
+
+### Clone, Build, and Run
+
+The 111 MB Ankara building dataset is managed by Git LFS, so clone the repository with LFS enabled:
 
 ```bash
-# Build the Docker image
-docker build -t atom-simulator .
-
-# Run the container
-docker run -p 8080:8080 atom-simulator
+git lfs install
+git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
+cd urban-ray-tracer
+git lfs pull
+docker compose up --build -d atom
 ```
 
-The application will be available at **`http://localhost:8080`**.
+Open **`http://localhost:8080`** and verify readiness with `curl http://localhost:8080/readyz`.
 
 ### Optional Core Lab Mode
 
@@ -125,7 +129,13 @@ Suggested Docker memory allocation:
 
 ## Documentation
 
-The full docs site lives in [docs/index.html](docs/index.html), with the source markdown pages alongside it in `docs/`.
+Start with the static [documentation hub](docs/index.html), then use:
+
+- [System architecture](docs/architecture.html) for runtime components, request lifecycles, spatial data, reliability controls, and model boundaries.
+- [Download and use](docs/download.html) for Docker, source development, Core Lab, troubleshooting, and guided workflows.
+- [Getting started](docs/getting-started.md) for the Markdown onboarding reference.
+- [REST API](docs/api.html), [RF algorithms](docs/algorithms.html), and [model limitations](docs/modeling-limits.html) for implementation details.
+- [Academic report](docs/academic-report.pdf) and [interactive visualizations](docs/visualizations.html) for deeper analysis.
 
 ---
 

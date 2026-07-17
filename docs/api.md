@@ -51,8 +51,8 @@ Check whether the HTTP process is alive. This endpoint remains `200` even while 
   "buildingIndex": {
     "sourcePath": "data-pipeline/ankara_buildings.geojson"
   },
-  "rtreeFootprints": 12047,
-  "towerCount": 287
+  "rtreeFootprints": 161784,
+  "towerCount": 451
 }
 ```
 
@@ -474,21 +474,41 @@ curl -X GET "http://localhost:8080/api/towers"
 
 ---
 
-## Client Libraries
+## Client Examples
 
-### Go Client
+### Go Standard Library
 
 ```go
-import "github.com/your-org/atom-client-go"
+package main
 
-client := atom.NewClient("http://localhost:8080")
+import (
+    "bytes"
+    "net/http"
+)
 
-result, err := client.Simulate(context.Background(), &atom.SimulateRequest{
-    TowerID: "ankara_001",
-    Frequency: "5G",
-    Azimuth: 45,
-    BeamWidth: 65,
-})
+func main() {
+    payload := []byte(`{
+      "tower_lon": 32.8541,
+      "tower_lat": 39.9208,
+      "frequency_ghz": 28,
+      "tx_power_dbm": 30,
+      "rays": 120,
+      "radius_m": 400,
+      "azimuth": 90,
+      "beam_width": 120
+    }`)
+    request, _ := http.NewRequest(
+        http.MethodPost,
+        "http://localhost:8080/api/simulate",
+        bytes.NewReader(payload),
+    )
+    request.Header.Set("Content-Type", "application/json")
+    response, err := http.DefaultClient.Do(request)
+    if err != nil {
+        panic(err)
+    }
+    defer response.Body.Close()
+}
 ```
 
 ### Python Client

@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="How to interpret sector rays,
+frequency-dependent attenuation, coverage evidence, and the current map
+layers." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Reading Propagation Maps | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./academic-report.pdf">Report</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Reading
+Propagation Maps page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#4g-lte-coverage-26-ghz"
+      id="toc-4g-lte-coverage-26-ghz">4G LTE Coverage (2.6 GHz)</a></li>
+      <li><a href="#5g-mmwave-coverage-28-ghz"
+      id="toc-5g-mmwave-coverage-28-ghz">5G mmWave Coverage (28
+      GHz)</a></li>
+      <li><a href="#6g-sub-thz-coverage-140-ghz"
+      id="toc-6g-sub-thz-coverage-140-ghz">6G Sub-THz Coverage (140
+      GHz)</a></li>
+      <li><a href="#auto-optimized-5g-sector"
+      id="toc-auto-optimized-5g-sector">Auto-Optimized 5G
+      Sector</a></li>
+      <li><a href="#color-mapping-reference"
+      id="toc-color-mapping-reference">Color Mapping Reference</a></li>
+      <li><a href="#comparative-analysis-4g-vs-5g-vs-6g"
+      id="toc-comparative-analysis-4g-vs-5g-vs-6g">Comparative Analysis:
+      4G vs 5G vs 6G</a></li>
+      <li><a href="#understanding-the-heatmaps"
+      id="toc-understanding-the-heatmaps">Understanding the
+      Heatmaps</a></li>
+      <li><a href="#validation-boundary"
+      id="toc-validation-boundary">Validation Boundary</a></li>
+      <li><a href="#export-and-integration"
+      id="toc-export-and-integration">Export and Integration</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Visual interpretation</span>
+        <h1>Reading Propagation Maps</h1>
+        <p>How to interpret sector rays, frequency-dependent
+attenuation, coverage evidence, and the current map layers.</p>
+        <div class="hero-actions">
+          <a class="button" href="./visualization.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>A.T.O.M visualizes deterministic RF planning estimates across
+frequency bands using Ankara's urban topology. The images are model
+outputs, not measured coverage maps.</p>
+<h2 id="4g-lte-coverage-26-ghz">4G LTE Coverage (2.6 GHz)</h2>
+<p><img src="./assets/4g.png" alt="4G Propagation" /></p>
+<h3 id="characteristics">Characteristics</h3>
+<ul>
+<li><strong>Wavelength</strong>: 11.5 cm</li>
+<li><strong>Coverage Type</strong>: Wide-area with building
+penetration</li>
+<li><strong>Penetration Loss</strong>: roughly +8 dB per wall crossing
+in the current LTE model</li>
+<li><strong>Urban Canyon Effect</strong>: Moderate (signals reach side
+streets)</li>
+</ul>
+<h3 id="interpretation">Interpretation</h3>
+<p>The 4G simulation shows:</p>
+<ul>
+<li>🟢 <strong>Green zones</strong>: Strong indoor coverage (-50 to -70
+dBm)</li>
+<li>🟡 <strong>Yellow zones</strong>: Moderate coverage (-70 to -90
+dBm), usable for typical applications</li>
+<li>🔴 <strong>Red zones</strong>: Marginal coverage (-90 to -110 dBm),
+possible dead zones</li>
+</ul>
+<p><strong>Key Insight</strong>: Lower FSPL and the model's lower
+per-wall loss generally let 4G estimates extend farther than
+higher-frequency modes.</p>
+<hr />
+<h2 id="5g-mmwave-coverage-28-ghz">5G mmWave Coverage (28 GHz)</h2>
+<p><img src="./assets/5g.png" alt="5G Propagation" /></p>
+<h3 id="characteristics-1">Characteristics</h3>
+<ul>
+<li><strong>Wavelength</strong>: 1.07 cm</li>
+<li><strong>Coverage Type</strong>: Directional, urban-specific
+hotspots</li>
+<li><strong>Penetration Loss</strong>: roughly +30 dB per wall crossing
+in the current mmWave model</li>
+<li><strong>Line-of-Sight Requirement</strong>: Often necessary for
+usable signal</li>
+</ul>
+<h3 id="interpretation-1">Interpretation</h3>
+<p>The 5G visualization reveals:</p>
+<ul>
+<li>🟢 <strong>Green zones</strong>: Excellent LOS coverage on main
+avenues</li>
+<li>🟡 <strong>Yellow zones</strong>: Partial coverage after distance
+and wall-loss attenuation</li>
+<li>🔴 <strong>Red zones</strong>: Deep urban canyons blocked by
+building walls</li>
+</ul>
+<p><strong>Key Insight</strong>: 5G requires careful site placement to
+reach street-level users. Antenna orientation (azimuth) dramatically
+affects coverage.</p>
+<hr />
+<h2 id="6g-sub-thz-coverage-140-ghz">6G Sub-THz Coverage (140 GHz)</h2>
+<p><img src="./assets/6g.png" alt="6G Propagation" /></p>
+<h3 id="characteristics-2">Characteristics</h3>
+<ul>
+<li><strong>Wavelength</strong>: 2.14 mm (near-optical)</li>
+<li><strong>Coverage Type</strong>: Ultra-localized, street-level
+only</li>
+<li><strong>Penetration Loss</strong>: roughly +80 dB per wall crossing
+in the current Sub-THz model</li>
+<li><strong>Line-of-Sight Requirement</strong>: Mandatory for
+coverage</li>
+</ul>
+<h3 id="interpretation-2">Interpretation</h3>
+<p>The 6G heatmap demonstrates:</p>
+<ul>
+<li>🟢 <strong>Green zones</strong>: Only direct line-of-sight
+points</li>
+<li>🟡 <strong>Yellow zones</strong>: Minimal; mostly absent</li>
+<li>🔴 <strong>Red zones</strong>: Vast majority (blocked by
+buildings)</li>
+</ul>
+<p><strong>Key Insight</strong>: 6G requires a <strong>"pave the
+streets"</strong> deployment model with frequent small cells (every
+50-100 meters). Coverage beyond the immediate vicinity is
+impractical.</p>
+<hr />
+<h2 id="auto-optimized-5g-sector">Auto-Optimized 5G Sector</h2>
+<p><img src="./assets/5g-auto-optimized.png"
+alt="5G Auto-Optimized" /></p>
+<h3 id="algorithm-result">Algorithm Result</h3>
+<p>This simulation shows the optimal antenna azimuth computed by
+A.T.O.M's sweep-and-score algorithm:</p>
+<ul>
+<li><strong>Demand-aware score</strong>: POI demand, residential-density
+demand, and capped coverage tie-breakers guide azimuth selection</li>
+<li><strong>Beam Width</strong>: 65° (typical 3-sector
+configuration)</li>
+<li><strong>Optimization Runtime</strong>: ~250 ms</li>
+</ul>
+<h3 id="interpretation-3">Interpretation</h3>
+<p>The auto-optimized placement achieves:</p>
+<ul>
+<li>✅ Stronger demand-serving direction within distance
+constraints</li>
+<li>Stronger modeled coverage toward demand-weighted locations</li>
+<li>A reproducible azimuth recommendation from the configured sweep</li>
+</ul>
+<p><strong>Key Insight</strong>: The optimizer consistently compares
+candidate azimuths using the same demand and coverage score. It does not
+predict live-network spectral efficiency.</p>
+<hr />
+<h2 id="color-mapping-reference">Color Mapping Reference</h2>
+<p>All visualizations use the same <strong>signal strength to color
+mapping</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Color</th>
+<th>Signal Range</th>
+<th>Quality</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🟢 Green</td>
+<td>-50 to -70 dBm</td>
+<td>Excellent</td>
+<td>Voice, video, IoT</td>
+</tr>
+<tr>
+<td>🟡 Yellow</td>
+<td>-70 to -90 dBm</td>
+<td>Good</td>
+<td>Voice, messaging</td>
+</tr>
+<tr>
+<td>🔴 Red</td>
+<td>-90 to -110 dBm</td>
+<td>Poor</td>
+<td>Emergency services</td>
+</tr>
+<tr>
+<td>⚫ Black</td>
+<td>&lt; -110 dBm</td>
+<td>No service</td>
+<td>(Not shown)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="comparative-analysis-4g-vs-5g-vs-6g">Comparative Analysis: 4G vs
+5G vs 6G</h2>
+<h3 id="coverage-radius-comparison">Coverage Radius Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Typical Radius</th>
+<th>Max Radius</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4G</strong></td>
+<td>2 km (urban)</td>
+<td>5 km (rural)</td>
+</tr>
+<tr>
+<td><strong>5G mmWave</strong></td>
+<td>300 m planning preset</td>
+<td>1 km configurable limit</td>
+</tr>
+<tr>
+<td><strong>6G Sub-THz</strong></td>
+<td>50 m (LOS)</td>
+<td>200 m (exceptional)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="site-density-required">Site Density Required</h3>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Sites per km²</th>
+<th>Building Density Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4G</strong></td>
+<td>1-3</td>
+<td>Low (penetrates walls)</td>
+</tr>
+<tr>
+<td><strong>5G mmWave</strong></td>
+<td>10-50</td>
+<td>High (requires LOS)</td>
+</tr>
+<tr>
+<td><strong>6G Sub-THz</strong></td>
+<td>100+</td>
+<td>Very High (street-level)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="urban-canyon-effect">Urban Canyon Effect</h3>
+<p>The visualizations clearly show how <strong>building density</strong>
+impacts each band:</p>
+<ul>
+<li><strong>4G</strong>: Usually produces the broadest modeled reach
+because FSPL and wall loss are lower.</li>
+<li><strong>5G</strong>: Produces more localized, directional modeled
+coverage at 28 GHz.</li>
+<li><strong>6G</strong>: Is a research overlay with the strongest
+configured wall attenuation and shortest practical range.</li>
+</ul>
+<hr />
+<h2 id="understanding-the-heatmaps">Understanding the Heatmaps</h2>
+<h3 id="ray-segments">Ray Segments</h3>
+<p>Each heatmap consists of thousands of <strong>ray segments</strong>
+(colored lines):</p>
+<ul>
+<li><strong>Start Point</strong>: Transmitter antenna</li>
+<li><strong>End Point</strong>: Coverage measurement location (typically
+20-100 meters away)</li>
+<li><strong>Color</strong>: Represents signal strength at that
+distance/direction</li>
+<li><strong>Direction</strong>: Shows propagation pattern and antenna
+beam orientation</li>
+</ul>
+<h3 id="reading-the-visualization">Reading the Visualization</h3>
+<ol type="1">
+<li><strong>Green Zones</strong>: Primary coverage area; reliable
+service expected</li>
+<li><strong>Yellow Zones</strong>: Secondary coverage; service possible
+with optimal conditions</li>
+<li><strong>Red Zones</strong>: Marginal; not recommended for primary
+coverage</li>
+<li><strong>No Color</strong>: Below sensitivity threshold; no usable
+signal</li>
+</ol>
+<h3 id="interactive-exploration">Interactive Exploration</h3>
+<p>In the web interface, you can:</p>
+<ul>
+<li>🔄 Adjust antenna azimuth and watch coverage rotate</li>
+<li>📊 Switch between frequency bands and compare</li>
+<li>🎯 Toggle beamforming on/off to see impact</li>
+<li>📍 Click points to see exact signal strength (Rx dBm)</li>
+</ul>
+<hr />
+<h2 id="validation-boundary">Validation Boundary</h2>
+<p>A.T.O.M has not been calibrated against operator drive tests or UE
+measurements. Treat Rx, RSRP, SINR, and RSRQ values as planning
+estimates for scenario comparison, then validate deployment decisions
+with calibrated tools and field measurements.</p>
+<hr />
+<h2 id="export-and-integration">Export and Integration</h2>
+<p>All visualizations can be exported as <strong>GeoJSON</strong> for
+use in:</p>
+<ul>
+<li>🗺️ <strong>ArcGIS</strong>: Professional GIS analysis</li>
+<li>🌍 <strong>Google Earth</strong>: 3D visualization</li>
+<li>📋 <strong>QGIS</strong>: Open-source mapping</li>
+<li>🔗 <strong>Custom applications</strong>: Any GeoJSON-compatible
+tool</li>
+</ul>
+<hr />
+<p><strong>Next</strong>: Learn the physics behind these visualizations
+in <a href="./algorithms.html">Algorithms &amp; Physics</a>.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

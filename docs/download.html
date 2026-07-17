@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Download, install, and operate the A.T.O.M RF planning application." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Download and Use | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./academic-report.pdf">Report</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html" aria-current="page">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout" id="main-content">
+    <aside class="page-toc" aria-label="Download page contents">
+      <strong>On this page</strong>
+      <nav>
+        <a href="#download">Get the source</a>
+        <a href="#docker">Docker Compose</a>
+        <a href="#development">Local development</a>
+        <a href="#core-lab">Optional 5G Core</a>
+        <a href="#first-use">First-use workflows</a>
+        <a href="#workspace">Workspace guide</a>
+        <a href="#troubleshooting">Troubleshooting</a>
+      </nav>
+    </aside>
+
+    <article class="page-content">
+      <header class="page-hero">
+        <div>
+          <span class="hero-label">Download and operate</span>
+          <h1>Start locally, then follow the workflow you need</h1>
+          <p>
+            Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara
+            datasets into one local application. Source development remains available for RF-model and interface work.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#docker">Start with Docker</a>
+            <a class="button" href="#first-use">Learn the workspace</a>
+            <a class="button" href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">View repository</a>
+          </div>
+        </div>
+        <div class="hero-facts" aria-label="Installation facts">
+          <div class="hero-fact"><span>Recommended runtime</span><strong>Docker Compose</strong></div>
+          <div class="hero-fact"><span>Application</span><strong>localhost:8080</strong></div>
+          <div class="hero-fact"><span>Source data</span><strong>Git LFS required</strong></div>
+          <div class="hero-fact"><span>Backend</span><strong>Go 1.22</strong></div>
+          <div class="hero-fact"><span>Frontend</span><strong>Node 18+</strong></div>
+        </div>
+      </header>
+
+      <section class="content-section" id="download" aria-labelledby="download-heading">
+        <div class="section-heading">
+          <h2 id="download-heading">Get the complete source and data</h2>
+          <p>
+            The Ankara building file is approximately 111 MB and is managed by Git LFS. A normal Git clone without
+            LFS can leave a tiny pointer file in its place, which prevents the backend from becoming ready.
+          </p>
+        </div>
+        <div class="install-choice">
+          <section class="install-primary" aria-labelledby="clone-heading">
+            <h3 id="clone-heading">Recommended: clone with Git LFS</h3>
+            <p>Use this path for Docker, local development, updates, and access to the complete planning dataset.</p>
+            <div class="code-block">
+              <button class="copy-button" type="button" data-copy aria-label="Copy Git clone commands">Copy</button>
+              <pre><code>git lfs install
+git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
+cd urban-ray-tracer
+git lfs pull</code></pre>
+            </div>
+            <p class="command-caption">Install Git LFS first from <a href="https://git-lfs.com/">git-lfs.com</a> if the command is unavailable.</p>
+          </section>
+          <section class="install-secondary" aria-labelledby="zip-heading">
+            <h3 id="zip-heading">Secondary: repository ZIP</h3>
+            <p>
+              A ZIP is convenient for reading the source, but GitHub archives can omit LFS object contents. Verify the
+              building file before attempting to run A.T.O.M.
+            </p>
+            <div class="hero-actions">
+              <a class="button" href="https://github.com/Berk-Unsal/urban-ray-tracer/archive/refs/heads/main.zip">Download ZIP</a>
+            </div>
+            <ul class="check-list">
+              <li><code>data-pipeline/ankara_buildings.geojson</code> should be roughly 111 MB.</li>
+              <li>It must begin with GeoJSON content, not <code>version https://git-lfs.github.com/spec/v1</code>.</li>
+              <li>Clone with Git LFS if either check fails.</li>
+            </ul>
+          </section>
+        </div>
+      </section>
+
+      <section class="content-section" id="docker" aria-labelledby="docker-heading">
+        <div class="section-heading">
+          <h2 id="docker-heading">Run the production-style container</h2>
+          <p>
+            This path serves the built frontend and API from port 8080. The first build downloads Go and npm
+            dependencies; later builds reuse Docker layers when the inputs have not changed.
+          </p>
+        </div>
+        <div class="split-content">
+          <section class="text-panel">
+            <h3>1. Build and start</h3>
+            <div class="code-block">
+              <button class="copy-button" type="button" data-copy aria-label="Copy Docker start command">Copy</button>
+              <pre><code>docker compose up --build -d atom</code></pre>
+            </div>
+            <p class="command-caption">Run from the repository root, then open <a href="http://localhost:8080">http://localhost:8080</a>.</p>
+          </section>
+          <section class="text-panel">
+            <h3>2. Verify readiness</h3>
+            <div class="code-block">
+              <button class="copy-button" type="button" data-copy aria-label="Copy readiness commands">Copy</button>
+              <pre><code>curl http://localhost:8080/readyz
+docker compose logs -f atom</code></pre>
+            </div>
+            <p class="command-caption"><code>/readyz</code> returns 200 only after buildings, towers, and the frontend bundle are available.</p>
+          </section>
+          <section class="text-panel">
+            <h3>Stop the application</h3>
+            <div class="code-block">
+              <button class="copy-button" type="button" data-copy aria-label="Copy Docker stop command">Copy</button>
+              <pre><code>docker compose down</code></pre>
+            </div>
+          </section>
+          <section class="text-panel">
+            <h3>Update an existing clone</h3>
+            <div class="code-block">
+              <button class="copy-button" type="button" data-copy aria-label="Copy update commands">Copy</button>
+              <pre><code>git pull --ff-only
+git lfs pull
+docker compose up --build -d atom</code></pre>
+            </div>
+          </section>
+        </div>
+        <div class="info-band note">
+          <span class="info-icon" aria-hidden="true">API</span>
+          <div>
+            <strong>Liveness and readiness answer different questions</strong>
+            <p><code>/healthz</code> confirms that the process is running. <code>/readyz</code> confirms that the runtime data and frontend are loaded and the instance can serve planning requests.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="development" aria-labelledby="development-heading">
+        <div class="section-heading">
+          <h2 id="development-heading">Run the frontend and backend separately</h2>
+          <p>
+            Use two terminals for local development. The Vite server proxies API traffic to the Go backend, so the
+            browser stays on port 5173 while requests are executed on port 8080.
+          </p>
+        </div>
+        <div class="split-content">
+          <section class="text-panel">
+            <h3>Terminal 1: Go API</h3>
+            <p>Requires Go 1.22 and the LFS-managed data files.</p>
+            <div class="code-block">
+              <button class="copy-button" type="button" data-copy aria-label="Copy backend development commands">Copy</button>
+              <pre><code>cd backend-go
+go mod download
+go run .</code></pre>
+            </div>
+            <p class="command-caption">API and production static host: <code>http://localhost:8080</code></p>
+          </section>
+          <section class="text-panel">
+            <h3>Terminal 2: React workspace</h3>
+            <p>Requires Node.js 18 or newer; Node 22 LTS is recommended.</p>
+            <div class="code-block">
+              <button class="copy-button" type="button" data-copy aria-label="Copy frontend development commands">Copy</button>
+              <pre><code>cd frontend-react
+npm ci
+npm run dev</code></pre>
+            </div>
+            <p class="command-caption">Development workspace: <a href="http://localhost:5173">http://localhost:5173</a></p>
+          </section>
+        </div>
+        <div class="info-band warning">
+          <span class="info-icon" aria-hidden="true">MAP</span>
+          <div>
+            <strong>The default basemap needs network access</strong>
+            <p>RF analysis and Ankara data run locally. The Leaflet basemap still requests OpenStreetMap tiles unless you configure a separate local tile source.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="core-lab" aria-labelledby="core-heading">
+        <div class="section-heading">
+          <h2 id="core-heading">Add the optional 5G Core Lab adapter</h2>
+          <p>
+            The compose overlay starts the Core Lab adapter on port 8090 and connects the main application to it. The
+            adapter provides a deterministic communication-path overlay by default and can probe configured Open5GS
+            status or metrics endpoints. It does not bundle a full Open5GS deployment.
+          </p>
+        </div>
+        <div class="code-block">
+          <button class="copy-button" type="button" data-copy aria-label="Copy Core Lab Docker command">Copy</button>
+          <pre><code>docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
+  --profile core-lab up --build</code></pre>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Path</th><th>Meaning in A.T.O.M</th><th>Availability</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Xn-C / Xn-U</strong></td><td>Direct control and user-plane coordination between eligible neighboring gNBs.</td><td>Selected 5G cells within neighbor criteria.</td></tr>
+              <tr><td><strong>N2 through AMF</strong></td><td>Control-plane fallback when direct Xn is unavailable or degraded.</td><td>Shown by Core Lab scenarios.</td></tr>
+              <tr><td><strong>N3 through UPF</strong></td><td>User-plane session path between the gNB and UPF.</td><td>Tracked separately from Xn-C health.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="info-band warning">
+          <span class="info-icon" aria-hidden="true">5G</span>
+          <div>
+            <strong>Core Lab is intentionally 5G-only</strong>
+            <p>The Core tool is marked not applicable in 4G LTE and 6G research mode. A.T.O.M does not reuse 5GC labels for LTE/EPC behavior.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="first-use" aria-labelledby="first-use-heading">
+        <div class="section-heading">
+          <h2 id="first-use-heading">Guided first-use workflows</h2>
+          <p>
+            The map is the workspace. The command bar holds the active context and RF run action; the rail opens one
+            focused tool at a time. Start with Setup, then move only to the analysis needed for the current question.
+          </p>
+        </div>
+
+        <section class="workflow" aria-labelledby="single-workflow">
+          <div class="workflow-name"><span>Workflow 01</span><h3 id="single-workflow">Plan one sector</h3></div>
+          <div class="workflow-steps">
+            <div class="workflow-step"><span>1</span><strong>Choose the context</strong><p>Open Setup, select Single mode and a network technology, then choose a tower on the map.</p></div>
+            <div class="workflow-step"><span>2</span><strong>Shape propagation</strong><p>Open Propagation and set ray count, radius, azimuth, and beam width.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Run and inspect</strong><p>Select Run Sector in the command bar. Inspect rays and gaps from the map or Results tool.</p></div>
+          </div>
+        </section>
+
+        <section class="workflow" aria-labelledby="network-workflow">
+          <div class="workflow-name"><span>Workflow 02</span><h3 id="network-workflow">Evaluate a cell cluster</h3></div>
+          <div class="workflow-steps">
+            <div class="workflow-step"><span>1</span><strong>Build the cluster</strong><p>Switch Setup to Network mode and select two to six towers. Numbered map badges preserve cluster order.</p></div>
+            <div class="workflow-step"><span>2</span><strong>Evaluate or optimize</strong><p>Use Evaluate Network in the command bar, or Optimize Network from Propagation.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Compare evidence</strong><p>Open Results for score, demand reach, overlap, and optimization deltas. Per-cell rays render sequentially.</p></div>
+          </div>
+        </section>
+
+        <section class="workflow" aria-labelledby="interference-workflow">
+          <div class="workflow-name"><span>Workflow 03</span><h3 id="interference-workflow">Analyze radio quality</h3></div>
+          <div class="workflow-steps">
+            <div class="workflow-step"><span>1</span><strong>Use 4G or 5G</strong><p>Select at least two cells. Interference is not available for the 6G research mode.</p></div>
+            <div class="workflow-step"><span>2</span><strong>Set assumptions</strong><p>Open Interference and choose bandwidth, load, reuse, noise figure, and sample spacing.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Read the surface</strong><p>Analyze, switch between SINR, RSRP, and RSRQ, then select a sample to see its serving and interfering cells.</p></div>
+          </div>
+        </section>
+
+        <section class="workflow" aria-labelledby="core-workflow">
+          <div class="workflow-name"><span>Workflow 04</span><h3 id="core-workflow">Exercise 5G paths</h3></div>
+          <div class="workflow-steps">
+            <div class="workflow-step"><span>1</span><strong>Start the profile</strong><p>Run the Core Lab compose overlay and select 5G Network mode with at least two cells.</p></div>
+            <div class="workflow-step"><span>2</span><strong>Enable the overlay</strong><p>Open 5G Core and activate Core Lab to load functions, sessions, events, and communication paths.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Change the route</strong><p>Run Xn degraded or unavailable scenarios and observe the N2 fallback while N3 session state remains distinct.</p></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="content-section" id="workspace" aria-labelledby="workspace-heading">
+        <div class="section-heading">
+          <h2 id="workspace-heading">Orient yourself in the focused workspace</h2>
+          <p>Every capability remains available, but the interface reveals one task at a time so the map stays primary.</p>
+        </div>
+        <figure class="screenshot-frame">
+          <img src="./assets/focused-workspace.jpg" alt="A.T.O.M focused workspace with a command bar, icon tool rail, Setup drawer, and full-height Ankara map" loading="lazy" />
+          <figcaption>The current desktop workspace. On mobile, tools move to a bottom bar and open in a dismissible sheet.</figcaption>
+        </figure>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Surface</th><th>Use it for</th><th>Operational detail</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Command bar</strong></td><td>Current mode, cell context, plan summary, run state, and the primary RF action.</td><td>The result summary opens the relevant Results view.</td></tr>
+              <tr><td><strong>Tool rail</strong></td><td>Setup, Propagation, Interference, 5G Core, Results, Data, and Report.</td><td>Click the active icon, Close, or press Escape to collapse the drawer.</td></tr>
+              <tr><td><strong>Map toolbar</strong></td><td>Draw, Clear, Fit, and layer visibility.</td><td>Metric controls appear only while an interference surface is active.</td></tr>
+              <tr><td><strong>Inspector</strong></td><td>Tower, coverage-gap, communication-path, and interference-sample details.</td><td>Back restores the previous tool; popups remain compact labels.</td></tr>
+              <tr><td><strong>Data and Report</strong></td><td>Review assumptions, limitations, dataset confidence, and export the active plan.</td><td>Reports are assembled from current client state.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="content-section" id="troubleshooting" aria-labelledby="troubleshooting-heading">
+        <div class="section-heading">
+          <h2 id="troubleshooting-heading">Troubleshooting</h2>
+          <p>Start with <code>docker compose logs -f atom</code> and <code>/readyz</code>; they distinguish missing data from an API or browser issue.</p>
+        </div>
+        <div class="faq-list">
+          <details>
+            <summary>The backend reports invalid GeoJSON or never becomes ready</summary>
+            <div class="faq-answer"><p>Check <code>data-pipeline/ankara_buildings.geojson</code>. If it is a small text file containing a Git LFS pointer, run <code>git lfs install</code> and <code>git lfs pull</code>, then rebuild the container.</p></div>
+          </details>
+          <details>
+            <summary>Port 8080 or 5173 is already in use</summary>
+            <div class="faq-answer"><p>Stop the process or container using the port. For Docker, change the host side of the mapping in <code>docker-compose.yml</code>, for example <code>8081:8080</code>, and open the new host port.</p></div>
+          </details>
+          <details>
+            <summary><code>/healthz</code> works but <code>/readyz</code> returns 503</summary>
+            <div class="faq-answer"><p>The process is alive but a required runtime dependency is missing. Review the readiness JSON and logs for building data, tower data, or the compiled frontend. Confirm Git LFS completed and rebuild after frontend changes.</p></div>
+          </details>
+          <details>
+            <summary>Docker exits or becomes slow during RF analysis</summary>
+            <div class="faq-answer"><p>Allocate at least 2 CPU cores and about 1 GB of memory to the main app. Allow more headroom when using the Core Lab profile or running repeated six-cell analyses.</p></div>
+          </details>
+          <details>
+            <summary>The API returns 429: RF analysis capacity is busy</summary>
+            <div class="faq-answer"><p>A.T.O.M admits two RF jobs by default to protect the host. Let the active run finish and retry after the response's <code>Retry-After</code> interval. Avoid launching optimization, interference, and repeated sector runs in parallel.</p></div>
+          </details>
+          <details>
+            <summary>The map is blank while controls and results still work</summary>
+            <div class="faq-answer"><p>The default OpenStreetMap tile layer needs network access. RF computation can still be local; confirm tile requests are not blocked, or configure a separate local tile service.</p></div>
+          </details>
+          <details>
+            <summary>SINR samples show no signal or approximately 0 dB</summary>
+            <div class="faq-answer"><p>No signal means no selected cell contributes at that point under the configured radius and beam geometry. Around 0 dB is expected where a serving cell and a co-channel interferer arrive at similar power; inspect the sample's serving and strongest-interferer fields.</p></div>
+          </details>
+        </div>
+      </section>
+
+      <section class="content-section" aria-labelledby="next-heading">
+        <div class="section-heading">
+          <h2 id="next-heading">Go deeper</h2>
+          <p>Use the architecture guide for system behavior and the model references before interpreting planning results as field measurements.</p>
+        </div>
+        <div class="hero-actions">
+          <a class="button primary" href="./architecture.html">System architecture</a>
+          <a class="button" href="./api.html">REST API</a>
+          <a class="button" href="./algorithms.html">RF algorithms</a>
+          <a class="button" href="./modeling-limits.html">Model limitations</a>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

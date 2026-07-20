@@ -98,6 +98,6 @@ jobs:
       - run: pip install PyYAML
       - run: sudo apt-get update && sudo apt-get install -y pandoc
       - run: sh docs/build-reference-pages.sh
-      - run: git diff --exit-code -- docs/*.html
+      - run: git diff --exit-code -- docs/*.html docs/search-index.json
       - run: node --check docs/assets/docs.js
       - run: python docs/validate_docs.py

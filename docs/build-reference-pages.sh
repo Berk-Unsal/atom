@@ -47,3 +47,5 @@ build_page modeling-limits.md modeling-limits.html "Modeling Limits" "Confidence
   "What the deterministic planning model includes, what it excludes, and how to interpret its outputs responsibly."
 build_page bug-fixes.md bug-fixes.html "Bug-Fix Register" "Quality history" \
   "Prioritized confirmed defects, user impact, root causes, corrections, and regression evidence for A.T.O.M releases."
+
+python3 build_search_index.py

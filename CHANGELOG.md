@@ -4,6 +4,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Added
+
+- Add keyboard-accessible full-site search to the static documentation website.
+
 ### Fixed
 
 - Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion.

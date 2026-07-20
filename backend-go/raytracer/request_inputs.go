@@ -1,6 +1,11 @@
 package raytracer
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
+
+const MaxTowerIDBytes = 128
 
 type StaticSimulationRequestInput struct {
 	TowerLon            *float64 `json:"tower_lon"`
@@ -51,6 +56,17 @@ type InterferenceRequestInput struct {
 	NoiseFigureDB       *float64                        `json:"noise_figure_db"`
 	SampleSpacingM      *float64                        `json:"sample_spacing_m"`
 	CalibrationOffsetDB *float64                        `json:"calibration_offset_db"`
+}
+
+func ValidateTowerID(id string) string {
+	id = strings.TrimSpace(id)
+	if id == "" {
+		return "each tower must include a non-empty id"
+	}
+	if len(id) > MaxTowerIDBytes {
+		return fmt.Sprintf("each tower id must be at most %d bytes", MaxTowerIDBytes)
+	}
+	return ""
 }
 
 func (input StaticSimulationRequestInput) ToRequest() StaticSimulationRequest {

@@ -317,8 +317,8 @@ func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest
 	}
 	seenTowerIDs := make(map[string]struct{}, len(req.Towers))
 	for _, tower := range req.Towers {
-		if tower.ID == "" {
-			return "each tower must include a non-empty id"
+		if validationError := raytracer.ValidateTowerID(tower.ID); validationError != "" {
+			return validationError
 		}
 		if _, exists := seenTowerIDs[tower.ID]; exists {
 			return "tower ids must be unique"

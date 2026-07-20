@@ -133,6 +133,9 @@ func ValidateSiteRecommendationRequest(req SiteRecommendationRequest) string {
 	}
 	seen := make(map[string]struct{}, len(req.Network.Towers))
 	for _, tower := range req.Network.Towers {
+		if validationError := ValidateTowerID(tower.ID); validationError != "" {
+			return validationError
+		}
 		if _, exists := seen[tower.ID]; exists {
 			return "tower ids must be unique"
 		}

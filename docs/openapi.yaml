@@ -113,12 +113,21 @@ paths:
     get:
       summary: Xn-C, Xn-U, N2, and N3 topology
       parameters:
-        - { name: cluster_tower_ids, in: query, schema: { type: string } }
+        - name: cluster_tower_ids
+          in: query
+          description: Comma-separated tower IDs; at most 64 entries and 128 UTF-8 bytes per ID.
+          schema: { type: string }
         - { name: network_tech, in: query, schema: { type: string, const: 5g } }
       responses: { "200": { description: gNB nodes, interface edges, and route decisions } }
   /api/core/sessions:
     get:
       summary: Optional Core Lab sessions
+      parameters:
+        - name: cluster_tower_ids
+          in: query
+          description: Comma-separated tower IDs; at most 64 entries and 128 UTF-8 bytes per ID.
+          schema: { type: string }
+        - { name: network_tech, in: query, schema: { type: string, const: 5g } }
       responses: { "200": { description: Selected-cell session state } }
   /api/core/events:
     get:
@@ -136,7 +145,11 @@ paths:
               required: [scenario]
               properties:
                 scenario: { type: string, enum: [normal, registration_storm, udm_outage, ausf_auth_failure, pcf_policy_degraded, upf_degraded, xn_degraded, xn_unavailable] }
-                cluster_tower_ids: { type: array, items: { type: string } }
+                cluster_tower_ids:
+                  type: array
+                  maxItems: 64
+                  description: Tower IDs are trimmed, deduplicated, and limited to 128 UTF-8 bytes each.
+                  items: { type: string }
                 network_tech: { type: string, const: 5g }
       responses:
         "200": { description: Scenario accepted }

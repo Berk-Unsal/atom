@@ -174,8 +174,8 @@ func ValidateMeasurementEvaluationRequest(input MeasurementEvaluationRequestInpu
 	}
 	seenTowers := make(map[string]struct{}, len(req.Radio.Towers))
 	for _, tower := range req.Radio.Towers {
-		if tower.ID == "" {
-			return "each tower must include a non-empty id"
+		if validationError := ValidateTowerID(tower.ID); validationError != "" {
+			return validationError
 		}
 		if _, exists := seenTowers[tower.ID]; exists {
 			return "tower ids must be unique"

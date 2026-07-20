@@ -6,6 +6,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion.
+- Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses.
 - Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change.
 - Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios.
 - Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide.

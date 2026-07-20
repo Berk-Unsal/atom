@@ -1,6 +1,31 @@
 package raytracer
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
+
+func TestValidateTowerIDEnforcesByteLimit(t *testing.T) {
+	tests := []struct {
+		name    string
+		id      string
+		wantErr bool
+	}{
+		{name: "maximum ASCII length", id: strings.Repeat("a", MaxTowerIDBytes)},
+		{name: "maximum UTF-8 byte length", id: strings.Repeat("é", MaxTowerIDBytes/2)},
+		{name: "over ASCII limit", id: strings.Repeat("a", MaxTowerIDBytes+1), wantErr: true},
+		{name: "over UTF-8 byte limit", id: strings.Repeat("é", MaxTowerIDBytes/2+1), wantErr: true},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			validationError := ValidateTowerID(test.id)
+			if (validationError != "") != test.wantErr {
+				t.Fatalf("ValidateTowerID() = %q, wantErr %t", validationError, test.wantErr)
+			}
+		})
+	}
+}
 
 func TestStaticSimulationInputPreservesExplicitZeroTxPower(t *testing.T) {
 	zero := 0.0

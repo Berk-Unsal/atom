@@ -64,6 +64,66 @@ func TestInterferenceRouteRejects6G(t *testing.T) {
 	}
 }
 
+func TestInterferenceRouteRejectsOversizedTowerID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	registerInterferenceRoute(router, raytracer.EmptyBuildingIndex())
+	overlongID := strings.Repeat("a", raytracer.MaxTowerIDBytes+1)
+	body := `{
+		"network_tech":"4g",
+		"towers":[
+			{"id":"` + overlongID + `","tower_lon":32.85,"tower_lat":39.92},
+			{"id":"b","tower_lon":32.86,"tower_lat":39.93}
+		],
+		"frequency_ghz":2.6,
+		"radius_m":100,
+		"bandwidth_mhz":20,
+		"load_factor":0.7,
+		"reuse_factor":1,
+		"noise_figure_db":7,
+		"sample_spacing_m":40
+	}`
+	req := httptest.NewRequest(http.MethodPost, "/api/interference", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, body = %s", recorder.Code, recorder.Body.String())
+	}
+	if !strings.Contains(recorder.Body.String(), "tower id must be at most 128 bytes") {
+		t.Fatalf("body = %q, want tower ID length error", recorder.Body.String())
+	}
+}
+
+func TestMeasurementRouteRejectsOversizedTowerID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	registerMeasurementRoute(router, raytracer.EmptyBuildingIndex())
+	overlongID := strings.Repeat("a", raytracer.MaxTowerIDBytes+1)
+	body := `{
+		"network_tech":"4g",
+		"towers":[{"id":"` + overlongID + `","tower_lon":32.85,"tower_lat":39.92}],
+		"frequency_ghz":2.6,
+		"radius_m":100,
+		"bandwidth_mhz":20,
+		"samples":[{"id":"sample-1","lon":32.85,"lat":39.92,"rsrp_dbm":-80}]
+	}`
+	req := httptest.NewRequest(http.MethodPost, "/api/measurements/evaluate", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, body = %s", recorder.Code, recorder.Body.String())
+	}
+	if !strings.Contains(recorder.Body.String(), "tower id must be at most 128 bytes") {
+		t.Fatalf("body = %q, want tower ID length error", recorder.Body.String())
+	}
+}
+
 func TestInterferenceRoutePreservesExplicitZeroNoiseFigure(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()

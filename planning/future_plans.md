@@ -2,6 +2,8 @@
 
 This file tracks the scoped planning-product roadmap. A.T.O.M remains deterministic, local-first, and explainable; it is not expanding into a general-purpose telecom simulator.
 
+Read [Product Compass](product-compass.md) before proposing new capabilities. It defines the enduring product strengths, feature-admission test, capability horizons, and deliberate non-goals behind this roadmap.
+
 ## Implemented Foundation
 
 | Capability | Status | Product boundary |

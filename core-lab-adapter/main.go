@@ -16,7 +16,12 @@ import (
 	"time"
 )
 
-const maxEvents = 80
+const (
+	maxEvents               = 80
+	maxClusterTowerIDs      = 64
+	maxTowerIDBytes         = 128
+	maxScenarioRequestBytes = 64 << 10
+)
 
 var functionNames = []string{"NRF", "AMF", "SMF", "UPF", "UDM", "UDR", "AUSF", "PCF", "NSSF"}
 
@@ -119,7 +124,6 @@ func (state *adapterState) handleStatus(w http.ResponseWriter, _ *http.Request) 
 
 func (state *adapterState) handleTopology(w http.ResponseWriter, r *http.Request) {
 	snapshot := state.snapshot()
-	towers := parseTowerIDs(r.URL.Query().Get("cluster_tower_ids"))
 	networkTech := strings.TrimSpace(r.URL.Query().Get("network_tech"))
 	if !is5GNetworkTech(networkTech) {
 		writeJSON(w, http.StatusOK, map[string]any{
@@ -132,7 +136,12 @@ func (state *adapterState) handleTopology(w http.ResponseWriter, r *http.Request
 		})
 		return
 	}
-	towerLocations := parseTowerLocations(r.URL.Query().Get("cluster_tower_locations"))
+	towers, validationError := parseTowerIDs(r.URL.Query().Get("cluster_tower_ids"))
+	if validationError != "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": validationError})
+		return
+	}
+	towerLocations := parseTowerLocations(r.URL.Query().Get("cluster_tower_locations"), towers)
 	nodes := make([]map[string]any, 0, len(functionNames)+len(towers))
 	edges := make([]map[string]any, 0, 16+len(towers)*4)
 	routeDecisions := make([]map[string]any, 0, len(towers))
@@ -210,7 +219,11 @@ func (state *adapterState) handleSessions(w http.ResponseWriter, r *http.Request
 		})
 		return
 	}
-	towers := parseTowerIDs(r.URL.Query().Get("cluster_tower_ids"))
+	towers, validationError := parseTowerIDs(r.URL.Query().Get("cluster_tower_ids"))
+	if validationError != "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": validationError})
+		return
+	}
 	if len(towers) == 0 {
 		towers = []string{"unmapped"}
 	}
@@ -257,8 +270,13 @@ func (state *adapterState) handleScenario(w http.ResponseWriter, r *http.Request
 		return
 	}
 	var req scenarioRequest
-	body, err := io.ReadAll(io.LimitReader(r.Body, 1<<20))
+	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxScenarioRequestBytes))
 	if err != nil {
+		var maxBytesError *http.MaxBytesError
+		if errors.As(err, &maxBytesError) {
+			writeJSON(w, http.StatusRequestEntityTooLarge, map[string]string{"error": "scenario request body is too large"})
+			return
+		}
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "could not read request"})
 		return
 	}
@@ -270,6 +288,12 @@ func (state *adapterState) handleScenario(w http.ResponseWriter, r *http.Request
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "unknown scenario: " + req.Scenario})
 		return
 	}
+	towers, validationError := normalizeTowerIDs(req.ClusterTowerIDs)
+	if validationError != "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": validationError})
+		return
+	}
+	req.ClusterTowerIDs = towers
 	state.mu.Lock()
 	state.scenario = req.Scenario
 	state.seedEventsLocked(req.Scenario, req.ClusterTowerIDs)
@@ -573,37 +597,94 @@ func scenarioState(scenario string) string {
 	return "scenario_running"
 }
 
-func parseTowerIDs(raw string) []string {
+func parseTowerIDs(raw string) ([]string, string) {
 	if strings.TrimSpace(raw) == "" {
-		return nil
+		return nil, ""
 	}
-	parts := strings.Split(raw, ",")
-	towers := make([]string, 0, len(parts))
-	for _, part := range parts {
-		value := strings.TrimSpace(part)
-		if value != "" {
-			towers = append(towers, value)
+	towers := make([]string, 0, maxClusterTowerIDs)
+	seen := make(map[string]struct{}, maxClusterTowerIDs)
+	submitted := 0
+	for {
+		part, remainder, found := strings.Cut(raw, ",")
+		if validationError := appendTowerID(&towers, seen, &submitted, part); validationError != "" {
+			return nil, validationError
 		}
+		if !found {
+			break
+		}
+		raw = remainder
 	}
-	return towers
+	return towers, ""
 }
 
-func parseTowerLocations(raw string) map[string]topologyPoint {
+func normalizeTowerIDs(values []string) ([]string, string) {
+	towers := make([]string, 0, maxClusterTowerIDs)
+	seen := make(map[string]struct{}, maxClusterTowerIDs)
+	submitted := 0
+	for _, value := range values {
+		if validationError := appendTowerID(&towers, seen, &submitted, value); validationError != "" {
+			return nil, validationError
+		}
+	}
+	return towers, ""
+}
+
+func appendTowerID(towers *[]string, seen map[string]struct{}, submitted *int, raw string) string {
+	value := strings.TrimSpace(raw)
+	if value == "" {
+		return ""
+	}
+	(*submitted)++
+	if *submitted > maxClusterTowerIDs {
+		return "cluster_tower_ids must contain no more than " + strconv.Itoa(maxClusterTowerIDs) + " IDs"
+	}
+	if len(value) > maxTowerIDBytes {
+		return "each cluster tower id must be at most " + strconv.Itoa(maxTowerIDBytes) + " bytes"
+	}
+	if _, exists := seen[value]; exists {
+		return ""
+	}
+	seen[value] = struct{}{}
+	*towers = append(*towers, value)
+	return ""
+}
+
+func parseTowerLocations(raw string, towerIDs []string) map[string]topologyPoint {
 	locations := map[string]topologyPoint{}
-	if strings.TrimSpace(raw) == "" {
+	if strings.TrimSpace(raw) == "" || len(towerIDs) == 0 {
 		return locations
 	}
-	for _, entry := range strings.Split(raw, ";") {
-		parts := strings.Split(entry, ":")
+	allowed := make(map[string]struct{}, len(towerIDs))
+	for _, towerID := range towerIDs {
+		allowed[towerID] = struct{}{}
+	}
+	for {
+		entry, remainder, found := strings.Cut(raw, ";")
+		parts := strings.SplitN(entry, ":", 3)
 		if len(parts) != 3 {
+			if !found {
+				break
+			}
+			raw = remainder
+			continue
+		}
+		towerID := strings.TrimSpace(parts[0])
+		if _, exists := allowed[towerID]; !exists {
+			if !found {
+				break
+			}
+			raw = remainder
 			continue
 		}
 		lon, lonErr := strconv.ParseFloat(parts[1], 64)
 		lat, latErr := strconv.ParseFloat(parts[2], 64)
-		if lonErr != nil || latErr != nil {
-			continue
+		if lonErr == nil && latErr == nil {
+			locations[towerID] = topologyPoint{Lon: lon, Lat: lat}
 		}
-		locations[strings.TrimSpace(parts[0])] = topologyPoint{Lon: lon, Lat: lat}
+		if !found {
+			break
+		}
+		raw = remainder
 	}
 	return locations
 }

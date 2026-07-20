@@ -222,8 +222,8 @@ func ValidateInterferenceRequest(req InterferenceRequest) string {
 	}
 	seen := make(map[string]bool, len(req.Towers))
 	for _, tower := range req.Towers {
-		if tower.ID == "" {
-			return "each tower must include a non-empty id"
+		if validationError := ValidateTowerID(tower.ID); validationError != "" {
+			return validationError
 		}
 		if seen[tower.ID] {
 			return "tower ids must be unique"

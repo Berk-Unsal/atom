@@ -166,6 +166,7 @@ Suggested Docker memory allocation:
 Start with the static [documentation hub](docs/index.html), then use:
 
 - [System architecture](docs/architecture.html) for runtime components, request lifecycles, spatial data, reliability controls, and model boundaries.
+- [Product compass](planning/product-compass.md) for enduring product strengths, capability horizons, feature-admission criteria, and deliberate non-goals.
 - [Download and use](docs/download.html) for Docker, source development, Core Lab, troubleshooting, and guided workflows.
 - [Getting started](docs/getting-started.md) for the Markdown onboarding reference.
 - [REST API](docs/api.html), downloadable [OpenAPI 3.1 contract](docs/openapi.yaml), [RF algorithms](docs/algorithms.html), and [model limitations](docs/modeling-limits.html) for implementation details.

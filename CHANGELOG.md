@@ -7,6 +7,11 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 ### Added
 
 - Add keyboard-accessible full-site search to the static documentation website.
+- Publish the canonical project changelog as a searchable documentation page.
+
+### Removed
+
+- Remove the academic report PDF and its documentation-only source and build assets.
 
 ### Fixed
 

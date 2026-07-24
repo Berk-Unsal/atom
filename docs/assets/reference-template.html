@@ -61,7 +61,7 @@
         <a href="./index.html">Overview</a>
         <a href="./architecture.html">Architecture</a>
         <a href="./api.html"$if(api_page)$ aria-current="page"$endif$>API</a>
-        <a href="./academic-report.pdf">Report</a>
+        <a href="./changelog.html"$if(changelog_page)$ aria-current="page"$endif$>Changelog</a>
         <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
         <a class="nav-cta" href="./download.html">Download &amp; Use</a>
       </nav>
@@ -80,7 +80,11 @@
         <h1>$title$</h1>
         <p>$summary$</p>
         <div class="hero-actions">
+$if(changelog_page)$
+          <a class="button" href="https://github.com/Berk-Unsal/urban-ray-tracer/blob/main/CHANGELOG.md">View Markdown source</a>
+$else$
           <a class="button" href="./$source$">View Markdown source</a>
+$endif$
 $if(api_page)$
           <a class="button" href="./openapi.yaml" download>Download OpenAPI 3.1</a>
 $endif$

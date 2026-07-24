@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="User-visible additions, changes,
+fixes, and release milestones generated from the canonical project
+changelog." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Changelog | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html" aria-current="page">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Changelog page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#unreleased" id="toc-unreleased">Unreleased</a></li>
+      <li><a href="#010---2026-07-17" id="toc-010---2026-07-17">0.1.0 -
+      2026-07-17</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Release history</span>
+        <h1>Changelog</h1>
+        <p>User-visible additions, changes, fixes, and release
+milestones generated from the canonical project changelog.</p>
+        <div class="hero-actions">
+          <a class="button" href="https://github.com/Berk-Unsal/urban-ray-tracer/blob/main/CHANGELOG.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>All notable changes to A.T.O.M are recorded here. The project follows
+<a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>
+and this file follows <a
+href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
+<h2 id="unreleased"><a
+href="https://github.com/Berk-Unsal/urban-ray-tracer/compare/v0.1.0...HEAD">Unreleased</a></h2>
+<h3 id="added">Added</h3>
+<ul>
+<li>Add keyboard-accessible full-site search to the static documentation
+website.</li>
+<li>Publish the canonical project changelog as a searchable
+documentation page.</li>
+</ul>
+<h3 id="removed">Removed</h3>
+<ul>
+<li>Remove the academic report PDF and its documentation-only source and
+build assets.</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Bound Core Lab cluster identifiers and scenario bodies to prevent
+topology, session, and event fan-out exhaustion.</li>
+<li>Bound RF tower identifiers to prevent small measurement and
+interference requests from amplifying into multi-gigabyte JSON
+responses.</li>
+<li>Persist the saved scenario a user opens, and detach the draft from
+that baseline when its planning inputs change.</li>
+<li>Prevent stale map layers from being stored with changed inputs or
+input-only recommendation scenarios.</li>
+<li>Assign new nested scenario IDs when projects are duplicated or
+imported so cache entries cannot collide.</li>
+<li>Restore the local-storage backup when IndexedDB is available but
+does not contain a workspace record.</li>
+<li>Mirror successful workspace saves to local storage so the fallback
+does not silently age behind IndexedDB.</li>
+<li>Compare dataset hash maps independently of JSON object key
+order.</li>
+<li>Score candidate recommendations from the active optimized per-cell
+azimuths instead of reverting to the global baseline azimuth.</li>
+<li>Invalidate old RF and residual layers when applying a
+measurement-derived calibration offset.</li>
+<li>Include dataset hashes in calibration compatibility checks so
+changed dataset content invalidates an old profile.</li>
+<li>Preserve per-cell azimuths through network evaluation, optimization,
+saved scenarios, and recommendation application.</li>
+<li>Align the Markdown documentation entry point with the maintained
+static docs hub, current version, and model limitations.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Establish a canonical <code>VERSION</code> file, automated version
+checks, release-note generation, and tag-driven GitHub Releases.</li>
+<li>Publish the <code>latest</code> container tag only for stable
+releases, never prerelease tags.</li>
+</ul>
+<h2 id="010---2026-07-17"><a
+href="https://github.com/Berk-Unsal/urban-ray-tracer/releases/tag/v0.1.0">0.1.0</a>
+- 2026-07-17</h2>
+<h3 id="added-1">Added</h3>
+<ul>
+<li>Deterministic sector, network, optimization, interference,
+recommendation, and measurement-validation workflows.</li>
+<li>Focused map workspace with projects, saved scenarios, comparison,
+reports, dataset metadata, and optional 5G Core communication
+paths.</li>
+<li>Go API resource controls, validated dataset packs, OpenAPI
+documentation, responsive browser tests, and multi-architecture
+container publishing.</li>
+</ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

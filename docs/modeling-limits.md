@@ -52,4 +52,3 @@ Use A.T.O.M to compare configurations, find deterministic coverage gaps, underst
 - [System architecture](./architecture.html)
 - [RF algorithms](./algorithms.md)
 - [REST API](./api.md)
-- [Academic report](./academic-report.pdf)

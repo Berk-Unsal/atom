@@ -551,7 +551,7 @@
       "page": "System Architecture",
       "title": "Model and trust boundaries",
       "url": "./architecture.html#limits-heading",
-      "text": "Architecture quality includes stating what the system does not claim. These limits apply to the current implementation and reports. RF Propagation limits No diffraction, reflection-heavy multipath, fast fading, sidelobes, MIMO beamforming gain, scheduling, adjacent-channel leakage, or uplink model. DB Data limits Static OSM/OpenCellID-derived geometry and synthetic demand can be incomplete or stale. Confidence is context, not calibration. KPI Measurement limits RSRP, SINR, RSRQ, RSSI, and coverage values remain deterministic planning estimates. Uploaded field data validates residuals; its optional global bias correction is not full propagation calibration. OPS Operational limits No authentication, server-side project database, multi-user collaboration, or job queue is included. Project history is durable only in the current browser or an exported project file. Run the system Inspect the equations Read the engineering report"
+      "text": "Architecture quality includes stating what the system does not claim. These limits apply to the current implementation and reports. RF Propagation limits No diffraction, reflection-heavy multipath, fast fading, sidelobes, MIMO beamforming gain, scheduling, adjacent-channel leakage, or uplink model. DB Data limits Static OSM/OpenCellID-derived geometry and synthetic demand can be incomplete or stale. Confidence is context, not calibration. KPI Measurement limits RSRP, SINR, RSRQ, RSSI, and coverage values remain deterministic planning estimates. Uploaded field data validates residuals; its optional global bias correction is not full propagation calibration. OPS Operational limits No authentication, server-side project database, multi-user collaboration, or job queue is included. Project history is durable only in the current browser or an exported project file. Run the system Inspect the equations Review release history"
     },
     {
       "page": "Bug-Fix Register",
@@ -630,6 +630,54 @@
       "title": "Open Audit Queue",
       "url": "./bug-fixes.html#open-audit-queue",
       "text": "No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test."
+    },
+    {
+      "page": "Changelog",
+      "title": "Changelog",
+      "url": "./changelog.html",
+      "text": "User-visible additions, changes, fixes, and release milestones generated from the canonical project changelog. View Markdown source System architecture All notable changes to A.T.O.M are recorded here. The project follows Semantic Versioning and this file follows Keep a Changelog ."
+    },
+    {
+      "page": "Changelog",
+      "title": "Unreleased",
+      "url": "./changelog.html#unreleased",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
+      "title": "Added",
+      "url": "./changelog.html#added",
+      "text": "Add keyboard-accessible full-site search to the static documentation website. Publish the canonical project changelog as a searchable documentation page."
+    },
+    {
+      "page": "Changelog",
+      "title": "Removed",
+      "url": "./changelog.html#removed",
+      "text": "Remove the academic report PDF and its documentation-only source and build assets."
+    },
+    {
+      "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed",
+      "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
+    },
+    {
+      "page": "Changelog",
+      "title": "Changed",
+      "url": "./changelog.html#changed",
+      "text": "Establish a canonical VERSION file, automated version checks, release-note generation, and tag-driven GitHub Releases. Publish the latest container tag only for stable releases, never prerelease tags."
+    },
+    {
+      "page": "Changelog",
+      "title": "0.1.0 - 2026-07-17",
+      "url": "./changelog.html#010---2026-07-17",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
+      "title": "Added",
+      "url": "./changelog.html#added-1",
+      "text": "Deterministic sector, network, optimization, interference, recommendation, and measurement-validation workflows. Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths. Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing."
     },
     {
       "page": "Contributing",
@@ -731,7 +779,7 @@
       "page": "Contributing",
       "title": "Project Structure",
       "url": "./contributing.html#project-structure",
-      "text": "urban-ray-tracer/ ├── backend-go/ # Go backend (API, raytracing) │ ├── main.go │ ├── raytracer/ # RF propagation, spatial index, optimization │ └── go.mod ├── frontend-react/ # React frontend (UI, visualization) │ ├── src/ │ │ ├── components/ # React components │ │ └── utils/ # Helpers (API calls, geometry) │ └── package.json ├── data-pipeline/ # Data processing scripts │ ├── extract_ankara.py │ ├── fetch_buildings.py │ ├── export_ankara_buildings.py │ └── export_tower_geojson.py └── docs/ # Static GitHub Pages documentation ├── index.html ├── academic-report.md └── ..."
+      "text": "urban-ray-tracer/ ├── backend-go/ # Go backend (API, raytracing) │ ├── main.go │ ├── raytracer/ # RF propagation, spatial index, optimization │ └── go.mod ├── frontend-react/ # React frontend (UI, visualization) │ ├── src/ │ │ ├── components/ # React components │ │ └── utils/ # Helpers (API calls, geometry) │ └── package.json ├── data-pipeline/ # Data processing scripts │ ├── extract_ankara.py │ ├── fetch_buildings.py │ ├── export_ankara_buildings.py │ └── export_tower_geojson.py └── docs/ # Static GitHub Pages documentation ├── index.html ├── changelog.html # Generated from the root CHANGELOG.md └── ..."
     },
     {
       "page": "Contributing",
@@ -1295,7 +1343,7 @@
       "page": "Overview",
       "title": "Understand the model. Run the system. Inspect every result.",
       "url": "./index.html#home-title",
-      "text": "A.T.O.M is a local-first telecom planning workspace for deterministic 4G LTE, 5G mmWave, and 6G Sub-THz propagation analysis across Ankara. These docs explain how the focused workspace, Go RF engines, spatial data, interference model, and optional 5G Core path fit together. Run A.T.O.M locally Explore the architecture Open academic report Current workspace: compact command bar, focused tools, persistent map, and contextual results."
+      "text": "A.T.O.M is a local-first telecom planning workspace for deterministic 4G LTE, 5G mmWave, and 6G Sub-THz propagation analysis across Ankara. These docs explain how the focused workspace, Go RF engines, spatial data, interference model, and optional 5G Core path fit together. Run A.T.O.M locally Explore the architecture Current workspace: compact command bar, focused tools, persistent map, and contextual results."
     },
     {
       "page": "Overview",
@@ -1367,7 +1415,7 @@
       "page": "Overview",
       "title": "Reference library",
       "url": "./index.html#reference-heading",
-      "text": "Use the focused guides above for orientation, then move into the detailed API, algorithms, deployment, and research material. REST API reference Endpoints and contracts Algorithms and RF physics Equations and geometry Capability details Supported workflows Reading propagation maps Visual interpretation Production deployment Operations guide Modeling limits Confidence boundary FAQ and troubleshooting Common questions Academic engineering report PDF Contributor guide Development workflow"
+      "text": "Use the focused guides above for orientation, then move into the detailed API, algorithms, deployment, and release history. REST API reference Endpoints and contracts Algorithms and RF physics Equations and geometry Capability details Supported workflows Reading propagation maps Visual interpretation Production deployment Operations guide Modeling limits Confidence boundary FAQ and troubleshooting Common questions Project changelog Releases and updates Contributor guide Development workflow"
     },
     {
       "page": "Modeling Limits",
@@ -1409,7 +1457,7 @@
       "page": "Modeling Limits",
       "title": "Related References",
       "url": "./modeling-limits.html#related-references",
-      "text": "System architecture RF algorithms REST API Academic report"
+      "text": "System architecture RF algorithms REST API"
     },
     {
       "page": "Reading Propagation Maps",

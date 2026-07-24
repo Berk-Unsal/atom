@@ -74,7 +74,7 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 backend-go/       Go API, in-memory R-tree, ray tracing, azimuth optimization
 frontend-react/   React/Vite/Leaflet dashboard and RF heatmap UI
 data-pipeline/    Python scripts for local tower/building data generation
-docs/             GitHub Pages documentation, academic report, charts, screenshots
+docs/             GitHub Pages documentation, search index, references, screenshots
 assets/           Source screenshots used by README/docs
 Dockerfile        Production multi-stage build for the static in-memory app
 ```
@@ -170,11 +170,13 @@ Start with the static [documentation hub](docs/index.html), then use:
 - [Download and use](docs/download.html) for Docker, source development, Core Lab, troubleshooting, and guided workflows.
 - [Getting started](docs/getting-started.md) for the Markdown onboarding reference.
 - [REST API](docs/api.html), downloadable [OpenAPI 3.1 contract](docs/openapi.yaml), [RF algorithms](docs/algorithms.html), and [model limitations](docs/modeling-limits.html) for implementation details.
-- [Academic report](docs/academic-report.pdf) and [map interpretation guide](docs/visualization.html) for deeper analysis.
+- [Map interpretation guide](docs/visualization.html) for reading propagation and radio-quality evidence.
 
 ## Versions and Release Notes
 
 A.T.O.M uses Semantic Versioning. [`VERSION`](VERSION) is the canonical application version and [`CHANGELOG.md`](CHANGELOG.md) records user-visible additions, changes, and bug fixes under **Unreleased** until a release is prepared.
+
+The same release history is available as a searchable [documentation changelog](docs/changelog.html).
 
 Creating a matching `vX.Y.Z` tag runs consistency checks, publishes multi-architecture GHCR images, and creates a GitHub Release announcement from that version's changelog section. Contributors can verify the release metadata locally with:
 

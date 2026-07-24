@@ -318,7 +318,7 @@ urban-ray-tracer/
 │   └── export_tower_geojson.py
 └── docs/                # Static GitHub Pages documentation
     ├── index.html
-    ├── academic-report.md
+    ├── changelog.html   # Generated from the root CHANGELOG.md
     └── ...
 ```
 

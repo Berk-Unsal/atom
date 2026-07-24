@@ -256,4 +256,3 @@ Static OSM/OpenCellID-derived data and synthetic demand can be incomplete or sta
 - [Algorithms and physics](./algorithms.md)
 - [Download and use](./download.html)
 - [Deployment](./deployment.md)
-- [Academic report](./academic-report.pdf)

@@ -11,6 +11,7 @@ build_page() {
   eyebrow=$4
   summary=$5
   api_page=${6:-false}
+  changelog_page=${7:-false}
 
   pandoc "$source_file" \
     --from=gfm \
@@ -26,6 +27,7 @@ build_page() {
     --metadata summary="$summary" \
     --metadata source="$source_file" \
     --metadata api_page="$api_page" \
+    --metadata changelog_page="$changelog_page" \
     --output="$output_file"
 }
 
@@ -47,5 +49,7 @@ build_page modeling-limits.md modeling-limits.html "Modeling Limits" "Confidence
   "What the deterministic planning model includes, what it excludes, and how to interpret its outputs responsibly."
 build_page bug-fixes.md bug-fixes.html "Bug-Fix Register" "Quality history" \
   "Prioritized confirmed defects, user impact, root causes, corrections, and regression evidence for A.T.O.M releases."
+build_page ../CHANGELOG.md changelog.html "Changelog" "Release history" \
+  "User-visible additions, changes, fixes, and release milestones generated from the canonical project changelog." false true
 
 python3 build_search_index.py

@@ -23,6 +23,23 @@ test.beforeEach(async ({ page }) => {
       },
       "/api/towers": towers,
       "/api/buildings/summary": { total_buildings: 12, demand_buildings: 8, confidence: "sample" },
+      "/api/analyze-sector": {
+        simulation: {
+          geojson: {
+            type: "FeatureCollection",
+            features: [{
+              type: "Feature",
+              properties: { rx_dbm: -72 },
+              geometry: { type: "LineString", coordinates: [[32.85, 39.92], [32.851, 39.921]] },
+            }],
+          },
+          stats: { avg_rx_dbm: -72, max_distance_m: 400, total_rays: 120 },
+        },
+        coverage_gaps: {
+          geojson: { type: "FeatureCollection", features: [] },
+          stats: { gap_pct: 0, gap_buildings: 0, candidate_buildings: 8 },
+        },
+      },
       "/api/simulate": {
         geojson: {
           type: "FeatureCollection",

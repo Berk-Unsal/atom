@@ -4,12 +4,13 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-26
+
 ### Fixed
 
 - Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests.
 - Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts.
 - Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation.
-- Run sector simulation and coverage-gap requests sequentially so one browser workflow does not consume the full default RF capacity.
 
 ## [0.2.0] - 2026-07-24
 
@@ -51,6 +52,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Berk-Unsal/atom/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Berk-Unsal/atom/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Berk-Unsal/atom/releases/tag/v0.1.0

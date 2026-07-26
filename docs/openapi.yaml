@@ -37,6 +37,18 @@ paths:
       summary: Building and demand quality summary
       responses:
         "200": { description: Dataset summary }
+  /api/analyze-sector:
+    post:
+      summary: Simulate one directional sector and find coverage gaps from shared ray profiles
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
+      responses:
+        "200": { description: Nested simulation and coverage_gaps results derived from one propagation pass }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "413": { $ref: "#/components/responses/TooLarge" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/simulate:
     post:
       summary: Simulate one directional sector

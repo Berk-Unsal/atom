@@ -328,19 +328,13 @@ export default function App() {
 
   const simulateForSettings = useCallback(async (tower, nextSettings, signal) => {
     const requestPayload = buildSimulationPayload(tower, nextSettings);
-    const simulationPayload = await postJSON(
-      "/api/simulate",
+    const payload = await postJSON(
+      "/api/analyze-sector",
       requestPayload,
-      "Simulation request failed",
+      "Sector analysis failed",
       signal,
     );
-    const gapPayload = await postJSON(
-      "/api/coverage-gaps",
-      requestPayload,
-      "Coverage gap request failed",
-      signal,
-    );
-    return { coverageGaps: gapPayload, simulation: simulationPayload };
+    return { coverageGaps: payload.coverage_gaps, simulation: payload.simulation };
   }, []);
 
   const simulateRaysForSettings = useCallback(async (tower, nextSettings, signal) => {

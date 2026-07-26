@@ -21,6 +21,7 @@ const (
 )
 
 var expensiveRFRoutes = map[string]struct{}{
+	"/api/analyze-sector":        {},
 	"/api/simulate":              {},
 	"/api/coverage-gaps":         {},
 	"/api/optimize-azimuth":      {},

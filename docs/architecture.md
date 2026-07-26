@@ -87,6 +87,7 @@ The Gin service provides:
 | GET | `/api/towers` | Tower GeoJSON |
 | GET | `/api/buildings` | Building GeoJSON |
 | GET | `/api/buildings/summary` | Demand and data-quality summary |
+| POST | `/api/analyze-sector` | Shared propagation and coverage-gap analysis for one sector |
 | POST | `/api/simulate` | Segmented directional propagation |
 | POST | `/api/coverage-gaps` | Demand-weighted underserved buildings |
 | POST | `/api/optimize-azimuth` | Single-sector demand-aware azimuth sweep |
@@ -173,7 +174,7 @@ Measurement evaluation accepts up to 5,000 4G or 5G RSRP points. It applies the 
 
 ### Run Sector
 
-The browser submits `/api/simulate` and `/api/coverage-gaps` in parallel with one cancellation signal. Both results must remain current before the map and RF result view are updated.
+The browser submits one `/api/analyze-sector` request. The backend computes ray profiles and building interactions once, derives both propagation and coverage-gap responses from that shared result, and returns them atomically under one cancellation signal.
 
 ### Optimize Sector
 

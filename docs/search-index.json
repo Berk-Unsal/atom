@@ -209,7 +209,7 @@
       "page": "API Reference",
       "title": "Response Format",
       "url": "./api.html#response-format",
-      "text": "All responses are JSON , but the exact shape depends on the route: GET /healthz returns a liveness status object GET /readyz returns dependency readiness GET /api/meta returns application, model, and active dataset identity GET /api/buildings and GET /api/towers return raw GeoJSON POST /api/simulate returns { geojson, stats } POST /api/coverage-gaps returns { geojson, stats } POST /api/interference returns { geojson, demand_geojson, stats, model } POST /api/optimize-azimuth returns { optimal_azimuth, coverage_score, demand_score, residential_score } POST /api/recommend-sites returns a baseline plus ranked candidate records and GeoJSON POST /api/measurements/evaluate returns residual GeoJSON, error statistics, and bias guidance Error responses use a simple object with an error message."
+      "text": "All responses are JSON , but the exact shape depends on the route: GET /healthz returns a liveness status object GET /readyz returns dependency readiness GET /api/meta returns application, model, and active dataset identity GET /api/buildings and GET /api/towers return raw GeoJSON POST /api/analyze-sector returns { simulation, coverage_gaps } from one shared ray-profile computation POST /api/simulate returns { geojson, stats } POST /api/coverage-gaps returns { geojson, stats } POST /api/interference returns { geojson, demand_geojson, stats, model } POST /api/optimize-azimuth returns { optimal_azimuth, coverage_score, demand_score, residential_score } POST /api/recommend-sites returns a baseline plus ranked candidate records and GeoJSON POST /api/measurements/evaluate returns residual GeoJSON, error statistics, and bias guidance Error responses use a simple object with an error message."
     },
     {
       "page": "API Reference",
@@ -246,6 +246,12 @@
       "title": "Get Towers",
       "url": "./api.html#get-towers",
       "text": "Endpoint : GET /api/towers Retrieve all 5G/4G tower locations. Query Parameters : None Response : { \"type\" : \"FeatureCollection\" , \"features\" : [ { \"type\" : \"Feature\" , \"properties\" : { \"cell_id\" : 20560152 , \"radio_type\" : \"NR\" , \"is_simulated\" : false }, \"geometry\" : { \"type\" : \"Point\" , \"coordinates\" : [ 32.8541 , 39.9208 ] } } ] }"
+    },
+    {
+      "page": "API Reference",
+      "title": "Analyze Sector",
+      "url": "./api.html#analyze-sector",
+      "text": "Endpoint : POST /api/analyze-sector This is the preferred browser workflow when both propagation rays and coverage gaps are needed. It accepts the same body as /api/simulate , computes ray profiles and building interactions once, and returns: { \"simulation\" : { \"geojson\" : {}, \"stats\" : {} }, \"coverage_gaps\" : { \"geojson\" : {}, \"stats\" : {} } } The standalone /api/simulate and /api/coverage-gaps endpoints remain available when a client needs only one result."
     },
     {
       "page": "API Reference",
@@ -647,7 +653,7 @@
       "page": "Changelog",
       "title": "Fixed",
       "url": "./changelog.html#fixed",
-      "text": "Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation. Run sector simulation and coverage-gap requests sequentially so one browser workflow does not consume the full default RF capacity."
+      "text": "Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests. Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation. Run sector simulation and coverage-gap requests sequentially so one browser workflow does not consume the full default RF capacity."
     },
     {
       "page": "Changelog",

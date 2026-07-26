@@ -58,6 +58,11 @@ type StaticSimulationResponse struct {
 	Stats   SimulationStats      `json:"stats"`
 }
 
+type SectorAnalysisResponse struct {
+	Simulation   StaticSimulationResponse `json:"simulation"`
+	CoverageGaps CoverageGapResponse      `json:"coverage_gaps"`
+}
+
 type AzimuthOptimizationResponse struct {
 	OptimalAzimuth          float64 `json:"optimal_azimuth"`
 	CoverageScore           float64 `json:"coverage_score"`
@@ -229,64 +234,22 @@ func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) S
 
 func SimulateStaticRaysContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (StaticSimulationResponse, error) {
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
-	rayFeatures := make([][]RayFeature, req.Rays)
-	terminals := make([]rayTerminal, req.Rays)
-
-	workerCount := runtime.NumCPU()
-	if workerCount > 4 {
-		workerCount = 4
-	}
-	if req.Rays < workerCount {
-		workerCount = req.Rays
-	}
-	if workerCount < 1 {
-		workerCount = 1
-	}
-
-	jobs := make(chan int)
-	var waitGroup sync.WaitGroup
-	waitGroup.Add(workerCount)
-
-	for worker := 0; worker < workerCount; worker++ {
-		go func() {
-			defer waitGroup.Done()
-			for {
-				select {
-				case <-ctx.Done():
-					return
-				case index, ok := <-jobs:
-					if !ok {
-						return
-					}
-					angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
-					segments, terminal, err := simulateSegmentedRayContext(ctx, origin, index, angle, req, buildings)
-					if err != nil {
-						return
-					}
-					rayFeatures[index], terminals[index] = segments, terminal
-				}
-			}
-		}()
-	}
-
-	for index := 0; index < req.Rays; index++ {
-		select {
-		case <-ctx.Done():
-			close(jobs)
-			waitGroup.Wait()
-			return StaticSimulationResponse{}, ctx.Err()
-		case jobs <- index:
-		}
-	}
-	close(jobs)
-	waitGroup.Wait()
-	if err := ctx.Err(); err != nil {
+	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
+	if err != nil {
 		return StaticSimulationResponse{}, err
 	}
+	return staticSimulationResponseFromProfilesContext(ctx, req, profiles)
+}
 
+func staticSimulationResponseFromProfilesContext(ctx context.Context, req StaticSimulationRequest, profiles []rayCoverageProfile) (StaticSimulationResponse, error) {
 	features := make([]RayFeature, 0, req.Rays*int(math.Ceil(req.RadiusMeters/SegmentStepMeters)))
-	for _, segments := range rayFeatures {
-		features = append(features, segments...)
+	terminals := make([]rayTerminal, len(profiles))
+	for index, profile := range profiles {
+		if err := ctx.Err(); err != nil {
+			return StaticSimulationResponse{}, err
+		}
+		features = append(features, profile.segments...)
+		terminals[index] = profile.terminal
 	}
 
 	sort.SliceStable(features, func(i, j int) bool {
@@ -304,6 +267,27 @@ func SimulateStaticRaysContext(ctx context.Context, req StaticSimulationRequest,
 		GeoJSON: geojson,
 		Stats:   CalculateSimulationStats(terminals),
 	}, nil
+}
+
+func AnalyzeSectorContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (SectorAnalysisResponse, error) {
+	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
+	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
+	if err != nil {
+		return SectorAnalysisResponse{}, err
+	}
+	simulation, err := staticSimulationResponseFromProfilesContext(ctx, req, profiles)
+	if err != nil {
+		return SectorAnalysisResponse{}, err
+	}
+	candidates, err := demandCandidatesInBeamContext(ctx, origin, req, buildings)
+	if err != nil {
+		return SectorAnalysisResponse{}, err
+	}
+	coverageGaps, err := coverageGapResponseFromProfilesContext(ctx, origin, req, candidates, profiles)
+	if err != nil {
+		return SectorAnalysisResponse{}, err
+	}
+	return SectorAnalysisResponse{Simulation: simulation, CoverageGaps: coverageGaps}, nil
 }
 
 func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) AzimuthOptimizationResponse {
@@ -618,14 +602,18 @@ func FindCoverageGaps(req StaticSimulationRequest, buildings *BuildingIndex) Cov
 
 func FindCoverageGapsContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (CoverageGapResponse, error) {
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
-	candidates, err := demandCandidatesInBeamContext(ctx, origin, req, buildings)
-	if err != nil {
-		return CoverageGapResponse{}, err
-	}
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
 		return CoverageGapResponse{}, err
 	}
+	candidates, err := demandCandidatesInBeamContext(ctx, origin, req, buildings)
+	if err != nil {
+		return CoverageGapResponse{}, err
+	}
+	return coverageGapResponseFromProfilesContext(ctx, origin, req, candidates, profiles)
+}
+
+func coverageGapResponseFromProfilesContext(ctx context.Context, origin Point, req StaticSimulationRequest, candidates []*BuildingFootprint, profiles []rayCoverageProfile) (CoverageGapResponse, error) {
 	coverageMap, err := buildingCoverageMapFromProfilesContext(ctx, profiles)
 	if err != nil {
 		return CoverageGapResponse{}, err
@@ -734,21 +722,55 @@ func buildBeamCoverageProfiles(origin Point, req StaticSimulationRequest, buildi
 }
 
 func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) ([]rayCoverageProfile, error) {
-	profiles := make([]rayCoverageProfile, 0, req.Rays)
+	profiles := make([]rayCoverageProfile, req.Rays)
+	workerCount := runtime.NumCPU()
+	if workerCount > 4 {
+		workerCount = 4
+	}
+	if req.Rays < workerCount {
+		workerCount = req.Rays
+	}
+	if workerCount < 1 {
+		workerCount = 1
+	}
+
+	jobs := make(chan int)
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(workerCount)
+	for worker := 0; worker < workerCount; worker++ {
+		go func() {
+			defer waitGroup.Done()
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case index, ok := <-jobs:
+					if !ok {
+						return
+					}
+					angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
+					segments, terminal, err := simulateSegmentedRayContext(ctx, origin, index, angle, req, buildings)
+					if err != nil {
+						return
+					}
+					profiles[index] = rayCoverageProfile{angle: angle, segments: segments, terminal: terminal}
+				}
+			}
+		}()
+	}
 	for index := 0; index < req.Rays; index++ {
-		if err := ctx.Err(); err != nil {
-			return nil, err
+		select {
+		case <-ctx.Done():
+			close(jobs)
+			waitGroup.Wait()
+			return nil, ctx.Err()
+		case jobs <- index:
 		}
-		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
-		segments, terminal, err := simulateSegmentedRayContext(ctx, origin, index, angle, req, buildings)
-		if err != nil {
-			return nil, err
-		}
-		profiles = append(profiles, rayCoverageProfile{
-			angle:    angle,
-			segments: segments,
-			terminal: terminal,
-		})
+	}
+	close(jobs)
+	waitGroup.Wait()
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
 	return profiles, nil
 }

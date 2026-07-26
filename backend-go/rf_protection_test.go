@@ -102,6 +102,12 @@ func TestRFProtectionRequiresConfiguredAPIKey(t *testing.T) {
 	}
 }
 
+func TestCombinedSectorRouteIsProtected(t *testing.T) {
+	if _, protected := expensiveRFRoutes["/api/analyze-sector"]; !protected {
+		t.Fatal("combined sector analysis route is missing RF protection")
+	}
+}
+
 func TestRFProtectionAppliesComputationDeadline(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()

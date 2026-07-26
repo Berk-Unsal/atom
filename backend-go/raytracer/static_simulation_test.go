@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"math"
+	"reflect"
 	"testing"
 )
 
@@ -15,6 +16,34 @@ func TestSegmentedRayStopsOnCanceledContext(t *testing.T) {
 	}, EmptyBuildingIndex())
 	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("error = %v, want context cancellation", err)
+	}
+}
+
+func TestAnalyzeSectorMatchesStandaloneResponses(t *testing.T) {
+	req := StaticSimulationRequest{
+		TowerLon: 32, TowerLat: 39, Rays: 12, RadiusMeters: 100,
+		FrequencyGHz: 140, TxPowerDBm: 30, AzimuthDeg: 90, BeamWidthDeg: 40,
+	}
+	buildings := testBuildingWallIndex(t)
+
+	combined, err := AnalyzeSectorContext(context.Background(), req, buildings)
+	if err != nil {
+		t.Fatalf("analyze sector: %v", err)
+	}
+	simulation, err := SimulateStaticRaysContext(context.Background(), req, buildings)
+	if err != nil {
+		t.Fatalf("simulate rays: %v", err)
+	}
+	gaps, err := FindCoverageGapsContext(context.Background(), req, buildings)
+	if err != nil {
+		t.Fatalf("find coverage gaps: %v", err)
+	}
+
+	if !reflect.DeepEqual(combined.Simulation, simulation) {
+		t.Fatalf("combined simulation differs from standalone response")
+	}
+	if !reflect.DeepEqual(combined.CoverageGaps, gaps) {
+		t.Fatalf("combined coverage gaps differ from standalone response")
 	}
 }
 

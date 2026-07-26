@@ -57,8 +57,8 @@ describe("App planning workflow", () => {
       return Promise.resolve({});
     });
     api.postJSON.mockImplementation((path) => {
-      if (path === "/api/coverage-gaps") {
-        return Promise.resolve(gapPayload);
+      if (path === "/api/analyze-sector") {
+        return Promise.resolve({ simulation: simulationPayload, coverage_gaps: gapPayload });
       }
       return Promise.resolve(simulationPayload);
     });
@@ -81,19 +81,19 @@ describe("App planning workflow", () => {
     expect(screen.queryByRole("button", { name: /Open Sector result results/i })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
-    await waitFor(() => expect(api.postJSON).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(api.postJSON).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(screen.getByText("Ready")).toBeInTheDocument());
   });
 
-  it("runs simulation and coverage-gap work sequentially", async () => {
-    let finishSimulation;
+  it("gets simulation and coverage gaps from one sector-analysis request", async () => {
+    let finishAnalysis;
     api.postJSON.mockImplementation((path) => {
-      if (path === "/api/simulate") {
+      if (path === "/api/analyze-sector") {
         return new Promise((resolve) => {
-          finishSimulation = () => resolve(simulationPayload);
+          finishAnalysis = () => resolve({ simulation: simulationPayload, coverage_gaps: gapPayload });
         });
       }
-      return Promise.resolve(gapPayload);
+      return Promise.resolve(simulationPayload);
     });
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
@@ -101,20 +101,14 @@ describe("App planning workflow", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
     await waitFor(() => expect(api.postJSON).toHaveBeenCalledTimes(1));
     expect(api.postJSON).toHaveBeenLastCalledWith(
-      "/api/simulate",
+      "/api/analyze-sector",
       expect.any(Object),
-      "Simulation request failed",
+      "Sector analysis failed",
       expect.any(AbortSignal),
     );
-
-    finishSimulation();
-    await waitFor(() => expect(api.postJSON).toHaveBeenCalledTimes(2));
-    expect(api.postJSON).toHaveBeenLastCalledWith(
-      "/api/coverage-gaps",
-      expect.any(Object),
-      "Coverage gap request failed",
-      expect.any(AbortSignal),
-    );
+    finishAnalysis();
+    await waitFor(() => expect(screen.getByText("Ready")).toBeInTheDocument());
+    expect(api.postJSON).toHaveBeenCalledTimes(1);
   });
 
   it("does not launch a sector request when switching into network planning", async () => {
@@ -166,7 +160,9 @@ describe("App planning workflow", () => {
 
   it("clears prior RF evidence when a measurement calibration changes the plan", async () => {
     api.postJSON.mockImplementation((path) => {
-      if (path === "/api/coverage-gaps") return Promise.resolve(gapPayload);
+      if (path === "/api/analyze-sector") {
+        return Promise.resolve({ simulation: simulationPayload, coverage_gaps: gapPayload });
+      }
       if (path === "/api/measurements/evaluate") {
         return Promise.resolve({
           geojson: {

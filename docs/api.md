@@ -26,6 +26,7 @@ All responses are **JSON**, but the exact shape depends on the route:
 - `GET /readyz` returns dependency readiness
 - `GET /api/meta` returns application, model, and active dataset identity
 - `GET /api/buildings` and `GET /api/towers` return raw GeoJSON
+- `POST /api/analyze-sector` returns `{ simulation, coverage_gaps }` from one shared ray-profile computation
 - `POST /api/simulate` returns `{ geojson, stats }`
 - `POST /api/coverage-gaps` returns `{ geojson, stats }`
 - `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`
@@ -166,6 +167,23 @@ Retrieve all 5G/4G tower locations.
   ]
 }
 ```
+
+---
+
+### Analyze Sector
+
+**Endpoint**: `POST /api/analyze-sector`
+
+This is the preferred browser workflow when both propagation rays and coverage gaps are needed. It accepts the same body as `/api/simulate`, computes ray profiles and building interactions once, and returns:
+
+```json
+{
+  "simulation": { "geojson": {}, "stats": {} },
+  "coverage_gaps": { "geojson": {}, "stats": {} }
+}
+```
+
+The standalone `/api/simulate` and `/api/coverage-gaps` endpoints remain available when a client needs only one result.
 
 ---
 

@@ -117,6 +117,23 @@ func main() {
 	router.GET("/api/buildings/summary", func(c *gin.Context) {
 		c.JSON(http.StatusOK, buildingDemandSummary)
 	})
+	router.POST("/api/analyze-sector", func(c *gin.Context) {
+		var input raytracer.StaticSimulationRequestInput
+		if !bindJSON(c, &input, "sector analysis") {
+			return
+		}
+		if input.MissingRequiredCoordinates() {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "tower_lon and tower_lat are required"})
+			return
+		}
+		req := input.ToRequest()
+		if validationError := validateSimulationRequest(req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		payload, runErr := raytracer.AnalyzeSectorContext(c.Request.Context(), req, buildingIndex)
+		writeRFResponse(c, payload, runErr)
+	})
 	router.POST("/api/simulate", func(c *gin.Context) {
 		var input raytracer.StaticSimulationRequestInput
 		if !bindJSON(c, &input, "simulation") {
@@ -388,7 +405,7 @@ func registerFrontendRoutes(router *gin.Engine, distPath string, indexPath strin
 				"service": "A.T.O.M API",
 				"routes": []string{
 					"/healthz", "/readyz", "/api/meta", "/api/towers", "/api/buildings", "/api/buildings/summary",
-					"/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network",
+					"/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network",
 					"/api/optimize-network", "/api/interference", "/api/recommend-sites", "/api/measurements/evaluate",
 					"/api/core/status", "/api/core/topology", "/api/core/sessions", "/api/core/events", "/api/core/scenario",
 				},

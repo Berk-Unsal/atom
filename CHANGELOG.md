@@ -6,6 +6,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts.
 - Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation.
 - Run sector simulation and coverage-gap requests sequentially so one browser workflow does not consume the full default RF capacity.
 

@@ -79,7 +79,7 @@ assets/           Source screenshots used by README/docs
 Dockerfile        Production multi-stage build for the static in-memory app
 ```
 
-Generated artifacts such as `frontend-react/dist/`, local virtual environments, and build caches are intentionally ignored. The large Ankara building GeoJSON is stored through Git LFS.
+Generated artifacts such as `frontend-react/dist/`, local virtual environments, OSMnx responses in `data-pipeline/cache/`, and build caches are intentionally ignored and excluded from Docker build contexts. The large Ankara building GeoJSON is stored through Git LFS.
 
 ---
 

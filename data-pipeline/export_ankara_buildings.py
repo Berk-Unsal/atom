@@ -344,6 +344,7 @@ def main() -> None:
         buildings = gpd.read_file(args.offline_input)
     else:
         ox.settings.use_cache = True
+        ox.settings.cache_folder = str(Path(__file__).with_name("cache"))
         ox.settings.log_console = True
         buildings = fetch_buildings()
 

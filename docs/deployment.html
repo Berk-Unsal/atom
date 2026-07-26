@@ -171,6 +171,12 @@ browser projects do not become collaborative storage.</p>
 </thead>
 <tbody>
 <tr>
+<td><code>BIND_ADDRESS</code></td>
+<td><code>127.0.0.1</code> (<code>0.0.0.0</code> in container)</td>
+<td>HTTP listener address; Compose publishes it on loopback by
+default</td>
+</tr>
+<tr>
 <td><code>PORT</code></td>
 <td><code>8080</code></td>
 <td>Public HTTP listener inside the container</td>
@@ -190,6 +196,33 @@ files</td>
 <td><code>MAX_CONCURRENT_RF_REQUESTS</code></td>
 <td><code>2</code></td>
 <td>Process-wide expensive RF admission limit</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT</code></td>
+<td><code>1</code></td>
+<td>Maximum simultaneous expensive jobs from one client identity</td>
+</tr>
+<tr>
+<td><code>RF_REQUESTS_PER_MINUTE</code></td>
+<td><code>20</code></td>
+<td>Per-client expensive-route request budget per process</td>
+</tr>
+<tr>
+<td><code>RF_REQUEST_TIMEOUT_SECONDS</code></td>
+<td><code>60</code></td>
+<td>Hard computation deadline for each expensive RF request</td>
+</tr>
+<tr>
+<td><code>RF_API_KEY</code></td>
+<td>unset</td>
+<td>Require this key on expensive RF routes as a bearer token or
+<code>X-API-Key</code> when configured</td>
+</tr>
+<tr>
+<td><code>TRUSTED_PROXIES</code></td>
+<td>unset</td>
+<td>Comma-separated proxy CIDRs whose forwarded client-IP headers are
+trusted</td>
 </tr>
 <tr>
 <td><code>CORE_LAB_ENABLED</code></td>
@@ -233,21 +266,26 @@ the application is ready.</li>
 indexes, and the frontend bundle.</li>
 <li>Request bodies are limited to 1 MiB; oversized requests return
 <code>413</code>.</li>
-<li>Two RF jobs are admitted by default; saturation returns
-<code>429</code> and <code>Retry-After</code>.</li>
-<li>Expensive jobs use no more than four workers each and observe client
-cancellation where supported.</li>
+<li>Two RF jobs are admitted globally, but one client can run only one
+at a time by default. Each client also receives 20 expensive-route
+attempts per minute. Rejection returns <code>429</code>,
+<code>Retry-After</code>, and rate-budget headers.</li>
+<li>Each expensive job has a 60-second computation deadline and uses no
+more than four workers. Ray, geometry, grid, measurement, and
+recommendation loops observe cancellation.</li>
 <li>HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120
 seconds for writes, and 60 seconds idle.</li>
 </ul>
-<p>Raise <code>MAX_CONCURRENT_RF_REQUESTS</code> only after measuring
-CPU, memory, and tail latency with representative two-to-six-cell
-requests. A load balancer cannot share the in-process admission counter
-between replicas.</p>
+<p>Raise <code>MAX_CONCURRENT_RF_REQUESTS</code> or its per-client
+counterpart only after measuring CPU, memory, and tail latency with
+representative two-to-six-cell requests. Admission and request budgets
+are process-local; use a gateway for a shared multi-replica budget.</p>
 <h2 id="reverse-proxy-boundary">Reverse Proxy Boundary</h2>
-<p>The application has no built-in authentication. An internet-facing
-deployment should place a trusted proxy or gateway in front of port 8080
-for:</p>
+<p>Compose binds the application to <code>127.0.0.1</code> by default.
+Set <code>ATOM_BIND_ADDRESS</code> only when another interface must
+accept traffic. For an internet-facing deployment, set a strong
+<code>RF_API_KEY</code> and place a trusted proxy or gateway in front of
+port 8080 for:</p>
 <ul>
 <li>TLS termination and authentication.</li>
 <li>Request-rate and source policy.</li>
@@ -255,6 +293,14 @@ for:</p>
 <li>A response timeout longer than the backend's 120-second RF write
 window.</li>
 </ul>
+<p>Authenticated clients send either
+<code>Authorization: Bearer &lt;key&gt;</code> or
+<code>X-API-Key: &lt;key&gt;</code>. The bundled browser UI does not
+store an API key, so deployments that set <code>RF_API_KEY</code> should
+terminate user authentication at a same-origin gateway and inject the
+backend key there. Keep <code>TRUSTED_PROXIES</code> unset unless the
+server is actually behind those proxies; otherwise forwarded IP headers
+are ignored for per-client budgets.</p>
 <p>Keep the Core Lab adapter private to the service network unless
 direct access is explicitly required.</p>
 <h2 id="optional-5g-core-lab">Optional 5G Core Lab</h2>
@@ -304,8 +350,8 @@ dataset details.</li>
 <li>A concurrent-capacity test returns bounded <code>429</code> behavior
 instead of unbounded CPU growth.</li>
 <li>Project export/import works in a clean browser profile.</li>
-<li>Public deployments enforce TLS and authentication outside the
-app.</li>
+<li>Public deployments enforce TLS and user authentication at the
+gateway and set <code>RF_API_KEY</code> on the backend hop.</li>
 </ul>
 <p>See <a href="download.html">Download and Use</a>, <a
 href="architecture.html">System Architecture</a>, and the <a

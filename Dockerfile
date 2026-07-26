@@ -35,9 +35,13 @@ COPY data-pipeline/ankara_5g_nodes.csv ./data-pipeline/ankara_5g_nodes.csv
 COPY data-pipeline/manifest.json ./data-pipeline/manifest.json
 
 ENV GIN_MODE=release
+ENV BIND_ADDRESS=0.0.0.0
 ENV PORT=8080
 ENV FRONTEND_DIST_PATH=/app/dist
 ENV MAX_CONCURRENT_RF_REQUESTS=2
+ENV MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT=1
+ENV RF_REQUESTS_PER_MINUTE=20
+ENV RF_REQUEST_TIMEOUT_SECONDS=60
 ENV ATOM_DATASET_DIR=/app/data-pipeline
 
 EXPOSE 8080

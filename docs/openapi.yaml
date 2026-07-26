@@ -40,71 +40,95 @@ paths:
   /api/simulate:
     post:
       summary: Simulate one directional sector
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
         "200": { description: Segmented propagation GeoJSON and statistics }
         "400": { $ref: "#/components/responses/BadRequest" }
         "413": { $ref: "#/components/responses/TooLarge" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/coverage-gaps:
     post:
       summary: Find underserved demand buildings
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
         "200": { description: Gap GeoJSON and demand statistics }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/optimize-azimuth:
     post:
       summary: Optimize one sector azimuth
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
         "200": { description: Optimal azimuth and score breakdown }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/evaluate-network:
     post:
       summary: Score supplied selected-cell azimuths
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkRequest" } } } }
       responses:
         "200": { description: Network score and per-cell results }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/optimize-network:
     post:
       summary: Coordinate selected-cell azimuth optimization
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkRequest" } } } }
       responses:
         "200": { description: Optimized azimuths and network score }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/interference:
     post:
       summary: Analyze 4G or 5G RSRP, SINR, RSRQ, and RSSI
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/InterferenceRequest" } } } }
       responses:
         "200": { description: Radio-quality surface, demand samples, statistics, and model metadata }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/recommend-sites:
     post:
       summary: Rank known candidate cell records
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       description: Scores one additional 4G or 5G cell. Candidates are planning records, not approved deployment sites; interference is excluded from scoring.
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RecommendationRequest" } } } }
       responses:
         "200": { description: Baseline, ranked candidates, candidate GeoJSON, and explicit notes }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/measurements/evaluate:
     post:
       summary: Compare measured and modeled RSRP
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       description: Returns residuals and an optional holdout-checked global bias correction. This is not full propagation calibration.
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MeasurementRequest" } } } }
       responses:
         "200": { description: Residual GeoJSON, aggregate/per-cell errors, and bias guidance }
         "400": { $ref: "#/components/responses/BadRequest" }
         "413": { $ref: "#/components/responses/TooLarge" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/core/status:
     get:
       summary: Optional 5G Core Lab status
@@ -155,13 +179,29 @@ paths:
         "200": { description: Scenario accepted }
         "400": { $ref: "#/components/responses/BadRequest" }
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Required on expensive RF routes when RF_API_KEY is configured.
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Alternative header for RF_API_KEY when configured.
   responses:
     BadRequest: { description: Invalid request, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
     TooLarge: { description: Request exceeds 1 MiB, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    Unauthorized: { description: RF_API_KEY is configured and the supplied credential is missing or invalid, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
     Busy:
-      description: Both RF job slots are occupied
-      headers: { Retry-After: { schema: { type: integer }, description: Suggested retry delay in seconds } }
+      description: Global capacity, per-client concurrency, or the per-client request budget rejected the request
+      headers:
+        Retry-After: { schema: { type: integer }, description: Suggested retry delay in seconds }
+        RateLimit-Limit: { schema: { type: integer }, description: Per-client requests allowed per minute }
+        RateLimit-Remaining: { schema: { type: integer }, description: Requests left in the current window }
+        RateLimit-Reset: { schema: { type: integer }, description: Seconds until the current window resets }
       content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    TimedOut: { description: RF analysis exceeded its configured computation deadline, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
   schemas:
     Error:
       type: object

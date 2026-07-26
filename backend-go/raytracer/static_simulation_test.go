@@ -1,9 +1,22 @@
 package raytracer
 
 import (
+	"context"
+	"errors"
 	"math"
 	"testing"
 )
+
+func TestSegmentedRayStopsOnCanceledContext(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	_, _, err := simulateSegmentedRayContext(ctx, Point{Lon: 32.85, Lat: 39.92}, 0, 90, StaticSimulationRequest{
+		Rays: 720, RadiusMeters: 5000, FrequencyGHz: 28, TxPowerDBm: 30, BeamWidthDeg: 120,
+	}, EmptyBuildingIndex())
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("error = %v, want context cancellation", err)
+	}
+}
 
 func TestBeamAngleForIndexWrapsAcrossNorth(t *testing.T) {
 	tests := []struct {

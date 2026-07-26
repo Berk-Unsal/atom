@@ -208,23 +208,28 @@ gaps, optimization, network evaluation, interference, recommendations,
 measurement evaluation, metadata, datasets, and Core Lab routes.</p>
 <h3 id="why-did-an-rf-request-return-429">Why did an RF request return
 429?</h3>
-<p>A.T.O.M admits two concurrent RF jobs by default and limits each
-expensive job to four workers. When capacity is occupied, it returns
-<code>429</code> with <code>Retry-After</code>. Let the active job
-finish or raise <code>MAX_CONCURRENT_RF_REQUESTS</code> cautiously for
-capable hardware.</p>
+<p>A.T.O.M admits two RF jobs globally, one per client, and 20
+expensive-route attempts per client each minute by default. Global
+capacity, per-client concurrency, or budget exhaustion returns
+<code>429</code> with <code>Retry-After</code> and rate-budget headers.
+Let active work finish or tune the corresponding limit cautiously.</p>
 <h3 id="what-request-limits-apply">What request limits apply?</h3>
-<p>POST bodies are limited to 1 MiB. The HTTP server uses bounded
-header, read, write, and idle timeouts. Frontend operations cancel
-superseded work and reject stale responses.</p>
+<p>POST bodies are limited to 1 MiB. Expensive work has a 60-second
+default computation deadline and deep-loop cancellation. The HTTP server
+also uses bounded header, read, write, and idle timeouts. Frontend
+operations cancel superseded work, reject stale responses, and sequence
+sector simulation and gap analysis.</p>
 <h3 id="is-the-server-stateless">Is the server stateless?</h3>
 <p>Yes. RF results and projects are not stored by the Go service. This
 allows multiple API replicas, but browser projects are not automatically
 shared between them or between users.</p>
 <h3 id="does-the-api-require-authentication">Does the API require
 authentication?</h3>
-<p>No. Internet-facing deployments should add TLS, authentication, and
-external rate policy at a trusted reverse proxy or gateway.</p>
+<p>Local-only use does not require it. Set <code>RF_API_KEY</code> to
+require a bearer token or <code>X-API-Key</code> on expensive RF routes.
+Internet-facing deployments should authenticate users at a trusted TLS
+gateway, inject that backend key, and enforce a shared gateway rate
+policy in addition to the built-in per-process client budget.</p>
 <h2 id="5g-core-lab">5G Core Lab</h2>
 <h3 id="does-core-lab-deploy-open5gs">Does Core Lab deploy Open5GS?</h3>
 <p>No. The optional adapter provides deterministic 5G topology, health,

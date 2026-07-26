@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -60,12 +61,16 @@ func main() {
 	frontendReady := fileExists(indexPath)
 
 	router := gin.New()
+	trustedProxies := splitCommaSeparated(os.Getenv("TRUSTED_PROXIES"))
+	if err := router.SetTrustedProxies(trustedProxies); err != nil {
+		log.Fatalf("configure trusted proxies: %v", err)
+	}
 	router.Use(gin.Logger(), gin.Recovery())
 	router.Use(limitRequestBody(maxRequestBodyBytes))
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173"},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Key"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
@@ -85,7 +90,16 @@ func main() {
 		datasetError = datasetErr.Error()
 	}
 	router.GET("/readyz", readinessHandler(buildingIndex.Len() > 0, len(towers) > 0, frontendReady, datasetError))
-	rfLimiter := newRFRequestLimiter(envInt("MAX_CONCURRENT_RF_REQUESTS", 2))
+	rfLimiter := newRFRequestLimiterWithBudget(
+		envInt("MAX_CONCURRENT_RF_REQUESTS", 2),
+		envInt("MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT", defaultRFClientLimit),
+		envInt("RF_REQUESTS_PER_MINUTE", defaultRFRequestsPerMinute),
+	)
+	router.Use(protectExpensiveRFRoutes(
+		rfLimiter,
+		time.Duration(envInt("RF_REQUEST_TIMEOUT_SECONDS", int(defaultRFRequestTimeout/time.Second)))*time.Second,
+		strings.TrimSpace(os.Getenv("RF_API_KEY")),
+	))
 	router.GET("/api/meta", func(c *gin.Context) {
 		response := gin.H{
 			"application_version":    appVersion,
@@ -103,7 +117,7 @@ func main() {
 	router.GET("/api/buildings/summary", func(c *gin.Context) {
 		c.JSON(http.StatusOK, buildingDemandSummary)
 	})
-	router.POST("/api/simulate", rfLimiter.middleware(), func(c *gin.Context) {
+	router.POST("/api/simulate", func(c *gin.Context) {
 		var input raytracer.StaticSimulationRequestInput
 		if !bindJSON(c, &input, "simulation") {
 			return
@@ -120,7 +134,7 @@ func main() {
 		payload, runErr := raytracer.SimulateStaticRaysContext(c.Request.Context(), req, buildingIndex)
 		writeRFResponse(c, payload, runErr)
 	})
-	router.POST("/api/optimize-azimuth", rfLimiter.middleware(), func(c *gin.Context) {
+	router.POST("/api/optimize-azimuth", func(c *gin.Context) {
 		var input raytracer.StaticSimulationRequestInput
 		if !bindJSON(c, &input, "optimization") {
 			return
@@ -137,7 +151,7 @@ func main() {
 		payload, runErr := raytracer.OptimizeAzimuthContext(c.Request.Context(), req, buildingIndex)
 		writeRFResponse(c, payload, runErr)
 	})
-	router.POST("/api/optimize-network", rfLimiter.middleware(), func(c *gin.Context) {
+	router.POST("/api/optimize-network", func(c *gin.Context) {
 		var input raytracer.NetworkOptimizationRequestInput
 		if !bindJSON(c, &input, "network optimization") {
 			return
@@ -154,7 +168,7 @@ func main() {
 		payload, runErr := raytracer.OptimizeNetworkContext(c.Request.Context(), req, buildingIndex)
 		writeRFResponse(c, payload, runErr)
 	})
-	router.POST("/api/evaluate-network", rfLimiter.middleware(), func(c *gin.Context) {
+	router.POST("/api/evaluate-network", func(c *gin.Context) {
 		var input raytracer.NetworkOptimizationRequestInput
 		if !bindJSON(c, &input, "network evaluation") {
 			return
@@ -171,7 +185,7 @@ func main() {
 		payload, runErr := raytracer.EvaluateNetworkContext(c.Request.Context(), req, buildingIndex)
 		writeRFResponse(c, payload, runErr)
 	})
-	router.POST("/api/coverage-gaps", rfLimiter.middleware(), func(c *gin.Context) {
+	router.POST("/api/coverage-gaps", func(c *gin.Context) {
 		var input raytracer.StaticSimulationRequestInput
 		if !bindJSON(c, &input, "coverage gap") {
 			return
@@ -188,13 +202,13 @@ func main() {
 		payload, runErr := raytracer.FindCoverageGapsContext(c.Request.Context(), req, buildingIndex)
 		writeRFResponse(c, payload, runErr)
 	})
-	registerInterferenceRoute(router, buildingIndex, rfLimiter.middleware())
-	registerRecommendationRoute(router, buildingIndex, towers, rfLimiter.middleware())
-	registerMeasurementRoute(router, buildingIndex, rfLimiter.middleware())
+	registerInterferenceRoute(router, buildingIndex)
+	registerRecommendationRoute(router, buildingIndex, towers)
+	registerMeasurementRoute(router, buildingIndex)
 	registerCoreLabRoutes(router)
 	registerFrontendRoutes(router, distPath, indexPath, frontendReady)
 
-	addr := ":" + getenv("PORT", "8080")
+	addr := net.JoinHostPort(getenv("BIND_ADDRESS", "127.0.0.1"), getenv("PORT", "8080"))
 	log.Printf("A.T.O.M API listening on %s", addr)
 	server := &http.Server{
 		Addr:              addr,
@@ -347,6 +361,20 @@ func envInt(key string, fallback int) int {
 	return value
 }
 
+func splitCommaSeparated(value string) []string {
+	if strings.TrimSpace(value) == "" {
+		return nil
+	}
+	parts := strings.Split(value, ",")
+	values := make([]string, 0, len(parts))
+	for _, part := range parts {
+		if trimmed := strings.TrimSpace(part); trimmed != "" {
+			values = append(values, trimmed)
+		}
+	}
+	return values
+}
+
 func fileExists(path string) bool {
 	info, err := os.Stat(path)
 	return err == nil && !info.IsDir()
@@ -419,28 +447,6 @@ func bindJSON(c *gin.Context, destination any, label string) bool {
 	}
 	return true
 }
-
-type rfRequestLimiter struct {
-	slots chan struct{}
-}
-
-func newRFRequestLimiter(capacity int) *rfRequestLimiter {
-	return &rfRequestLimiter{slots: make(chan struct{}, capacity)}
-}
-
-func (limiter *rfRequestLimiter) middleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		select {
-		case limiter.slots <- struct{}{}:
-			defer func() { <-limiter.slots }()
-			c.Next()
-		default:
-			c.Header("Retry-After", "1")
-			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "RF analysis capacity is busy; retry shortly"})
-		}
-	}
-}
-
 func writeRFResponse[T any](c *gin.Context, payload T, err error) {
 	if err == nil {
 		c.JSON(http.StatusOK, payload)

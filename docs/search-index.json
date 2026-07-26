@@ -203,7 +203,7 @@
       "page": "API Reference",
       "title": "Authentication",
       "url": "./api.html#authentication",
-      "text": "A.T.O.M v1.0 has no authentication (suitable for internal/private networks). For production deployments, add authentication via reverse proxy (e.g., nginx with OAuth2)."
+      "text": "Expensive RF routes can require a shared backend key by setting RF_API_KEY . Send it as Authorization: Bearer <key> or X-API-Key: <key> ; an invalid or missing key receives 401 . The setting is off for localhost-only development. Public deployments should authenticate users at a TLS gateway and inject this backend key rather than exposing it to browser JavaScript."
     },
     {
       "page": "API Reference",
@@ -359,7 +359,7 @@
       "page": "API Reference",
       "title": "Capacity and Rate Limiting",
       "url": "./api.html#capacity-and-rate-limiting",
-      "text": "The server allows two concurrent RF jobs by default and immediately returns 429 with Retry-After: 1 when that capacity is full. Configure the limit with MAX_CONCURRENT_RF_REQUESTS . This is a process-level resource guard, not per-client rate limiting. For internet-facing deployments: Deploy behind reverse proxy (nginx, HAProxy) Add rate limiting at proxy layer Add authentication or API keys Track per-client request counts Recommended limits : 10 requests/second per API key 1000 requests/day per API key Keep RF concurrency aligned with the CPU allocation; the application default is 2"
+      "text": "The server allows two RF jobs globally but only one active job per client by default. A client also has a 20-request-per-minute budget. Configure these with MAX_CONCURRENT_RF_REQUESTS , MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT , and RF_REQUESTS_PER_MINUTE . Rejected requests return 429 with Retry-After , RateLimit-Limit , RateLimit-Remaining , and RateLimit-Reset . Client identity comes from the socket peer unless TRUSTED_PROXIES explicitly lists the proxy CIDRs allowed to supply forwarding headers. These controls are process-local; a multi-replica deployment still needs a gateway-level shared budget. Set RF_REQUEST_TIMEOUT_SECONDS to bound compute time; the default is 60 seconds and expiration returns 504 . Keep RF concurrency aligned with CPU allocation and set RF_API_KEY for any non-private backend hop."
     },
     {
       "page": "API Reference",
@@ -645,6 +645,12 @@
     },
     {
       "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed",
+      "text": "Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation. Run sector simulation and coverage-gap requests sequentially so one browser workflow does not consume the full default RF capacity."
+    },
+    {
+      "page": "Changelog",
       "title": "0.2.0 - 2026-07-24",
       "url": "./changelog.html#020---2026-07-24",
       "text": ""
@@ -664,7 +670,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed",
+      "url": "./changelog.html#fixed-1",
       "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
     },
     {
@@ -893,7 +899,7 @@
       "page": "Deployment",
       "title": "Configuration",
       "url": "./deployment.html#configuration",
-      "text": "Variable Default Purpose PORT 8080 Public HTTP listener inside the container FRONTEND_DIST_PATH /app/dist Compiled frontend bundle ATOM_DATASET_DIR /app/data-pipeline Directory containing manifest.json and referenced data files MAX_CONCURRENT_RF_REQUESTS 2 Process-wide expensive RF admission limit CORE_LAB_ENABLED false Enables backend proxy routes for the optional adapter CORE_LAB_BASE_URL unset Internal adapter URL when Core Lab is enabled The manifest-driven dataset directory is the authoritative data boundary; individual building and tower paths are not configured independently."
+      "text": "Variable Default Purpose BIND_ADDRESS 127.0.0.1 ( 0.0.0.0 in container) HTTP listener address; Compose publishes it on loopback by default PORT 8080 Public HTTP listener inside the container FRONTEND_DIST_PATH /app/dist Compiled frontend bundle ATOM_DATASET_DIR /app/data-pipeline Directory containing manifest.json and referenced data files MAX_CONCURRENT_RF_REQUESTS 2 Process-wide expensive RF admission limit MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT 1 Maximum simultaneous expensive jobs from one client identity RF_REQUESTS_PER_MINUTE 20 Per-client expensive-route request budget per process RF_REQUEST_TIMEOUT_SECONDS 60 Hard computation deadline for each expensive RF request RF_API_KEY unset Require this key on expensive RF routes as a bearer token or X-API-Key when configured TRUSTED_PROXIES unset Comma-separated proxy CIDRs whose forwarded client-IP headers are trusted CORE_LAB_ENABLED false Enables backend proxy routes for the optional adapter CORE_LAB_BASE_URL unset Internal adapter URL when Core Lab is enabled The manifest-driven dataset directory is the authoritative data boundary; individual building and tower paths are not configured independently."
     },
     {
       "page": "Deployment",
@@ -905,13 +911,13 @@
       "page": "Deployment",
       "title": "Health And Capacity",
       "url": "./deployment.html#health-and-capacity",
-      "text": "GET /healthz is process liveness and can succeed before the application is ready. GET /readyz requires valid data, loaded tower/building indexes, and the frontend bundle. Request bodies are limited to 1 MiB; oversized requests return 413 . Two RF jobs are admitted by default; saturation returns 429 and Retry-After . Expensive jobs use no more than four workers each and observe client cancellation where supported. HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120 seconds for writes, and 60 seconds idle. Raise MAX_CONCURRENT_RF_REQUESTS only after measuring CPU, memory, and tail latency with representative two-to-six-cell requests. A load balancer cannot share the in-process admission counter between replicas."
+      "text": "GET /healthz is process liveness and can succeed before the application is ready. GET /readyz requires valid data, loaded tower/building indexes, and the frontend bundle. Request bodies are limited to 1 MiB; oversized requests return 413 . Two RF jobs are admitted globally, but one client can run only one at a time by default. Each client also receives 20 expensive-route attempts per minute. Rejection returns 429 , Retry-After , and rate-budget headers. Each expensive job has a 60-second computation deadline and uses no more than four workers. Ray, geometry, grid, measurement, and recommendation loops observe cancellation. HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120 seconds for writes, and 60 seconds idle. Raise MAX_CONCURRENT_RF_REQUESTS or its per-client counterpart only after measuring CPU, memory, and tail latency with representative two-to-six-cell requests. Admission and request budgets are process-local; use a gateway for a shared multi-replica budget."
     },
     {
       "page": "Deployment",
       "title": "Reverse Proxy Boundary",
       "url": "./deployment.html#reverse-proxy-boundary",
-      "text": "The application has no built-in authentication. An internet-facing deployment should place a trusted proxy or gateway in front of port 8080 for: TLS termination and authentication. Request-rate and source policy. Access logging and security headers. A response timeout longer than the backend's 120-second RF write window. Keep the Core Lab adapter private to the service network unless direct access is explicitly required."
+      "text": "Compose binds the application to 127.0.0.1 by default. Set ATOM_BIND_ADDRESS only when another interface must accept traffic. For an internet-facing deployment, set a strong RF_API_KEY and place a trusted proxy or gateway in front of port 8080 for: TLS termination and authentication. Request-rate and source policy. Access logging and security headers. A response timeout longer than the backend's 120-second RF write window. Authenticated clients send either Authorization: Bearer <key> or X-API-Key: <key> . The bundled browser UI does not store an API key, so deployments that set RF_API_KEY should terminate user authentication at a same-origin gateway and inject the backend key there. Keep TRUSTED_PROXIES unset unless the server is actually behind those proxies; otherwise forwarded IP headers are ignored for per-client budgets. Keep the Core Lab adapter private to the service network unless direct access is explicitly required."
     },
     {
       "page": "Deployment",
@@ -935,7 +941,7 @@
       "page": "Deployment",
       "title": "Verification Checklist",
       "url": "./deployment.html#verification-checklist",
-      "text": "/healthz , /readyz , and /api/meta return expected process, version, model, and dataset details. The Data tool shows the intended pack provenance and hashes. A single sector run completes and report metadata matches /api/meta . A concurrent-capacity test returns bounded 429 behavior instead of unbounded CPU growth. Project export/import works in a clean browser profile. Public deployments enforce TLS and authentication outside the app. See Download and Use , System Architecture , and the OpenAPI contract ."
+      "text": "/healthz , /readyz , and /api/meta return expected process, version, model, and dataset details. The Data tool shows the intended pack provenance and hashes. A single sector run completes and report metadata matches /api/meta . A concurrent-capacity test returns bounded 429 behavior instead of unbounded CPU growth. Project export/import works in a clean browser profile. Public deployments enforce TLS and user authentication at the gateway and set RF_API_KEY on the backend hop. See Download and Use , System Architecture , and the OpenAPI contract ."
     },
     {
       "page": "Download and Use",
@@ -1205,13 +1211,13 @@
       "page": "Frequently Asked Questions",
       "title": "Why did an RF request return 429?",
       "url": "./faq.html#why-did-an-rf-request-return-429",
-      "text": "A.T.O.M admits two concurrent RF jobs by default and limits each expensive job to four workers. When capacity is occupied, it returns 429 with Retry-After . Let the active job finish or raise MAX_CONCURRENT_RF_REQUESTS cautiously for capable hardware."
+      "text": "A.T.O.M admits two RF jobs globally, one per client, and 20 expensive-route attempts per client each minute by default. Global capacity, per-client concurrency, or budget exhaustion returns 429 with Retry-After and rate-budget headers. Let active work finish or tune the corresponding limit cautiously."
     },
     {
       "page": "Frequently Asked Questions",
       "title": "What request limits apply?",
       "url": "./faq.html#what-request-limits-apply",
-      "text": "POST bodies are limited to 1 MiB. The HTTP server uses bounded header, read, write, and idle timeouts. Frontend operations cancel superseded work and reject stale responses."
+      "text": "POST bodies are limited to 1 MiB. Expensive work has a 60-second default computation deadline and deep-loop cancellation. The HTTP server also uses bounded header, read, write, and idle timeouts. Frontend operations cancel superseded work, reject stale responses, and sequence sector simulation and gap analysis."
     },
     {
       "page": "Frequently Asked Questions",
@@ -1223,7 +1229,7 @@
       "page": "Frequently Asked Questions",
       "title": "Does the API require authentication?",
       "url": "./faq.html#does-the-api-require-authentication",
-      "text": "No. Internet-facing deployments should add TLS, authentication, and external rate policy at a trusted reverse proxy or gateway."
+      "text": "Local-only use does not require it. Set RF_API_KEY to require a bearer token or X-API-Key on expensive RF routes. Internet-facing deployments should authenticate users at a trusted TLS gateway, inject that backend key, and enforce a shared gateway rate policy in addition to the built-in per-process client budget."
     },
     {
       "page": "Frequently Asked Questions",

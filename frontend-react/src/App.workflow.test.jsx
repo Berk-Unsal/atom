@@ -85,6 +85,38 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByText("Ready")).toBeInTheDocument());
   });
 
+  it("runs simulation and coverage-gap work sequentially", async () => {
+    let finishSimulation;
+    api.postJSON.mockImplementation((path) => {
+      if (path === "/api/simulate") {
+        return new Promise((resolve) => {
+          finishSimulation = () => resolve(simulationPayload);
+        });
+      }
+      return Promise.resolve(gapPayload);
+    });
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(api.postJSON).toHaveBeenCalledTimes(1));
+    expect(api.postJSON).toHaveBeenLastCalledWith(
+      "/api/simulate",
+      expect.any(Object),
+      "Simulation request failed",
+      expect.any(AbortSignal),
+    );
+
+    finishSimulation();
+    await waitFor(() => expect(api.postJSON).toHaveBeenCalledTimes(2));
+    expect(api.postJSON).toHaveBeenLastCalledWith(
+      "/api/coverage-gaps",
+      expect.any(Object),
+      "Coverage gap request failed",
+      expect.any(AbortSignal),
+    );
+  });
+
   it("does not launch a sector request when switching into network planning", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());

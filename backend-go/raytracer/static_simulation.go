@@ -259,7 +259,11 @@ func SimulateStaticRaysContext(ctx context.Context, req StaticSimulationRequest,
 						return
 					}
 					angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
-					rayFeatures[index], terminals[index] = simulateSegmentedRay(origin, index, angle, req, buildings)
+					segments, terminal, err := simulateSegmentedRayContext(ctx, origin, index, angle, req, buildings)
+					if err != nil {
+						return
+					}
+					rayFeatures[index], terminals[index] = segments, terminal
 				}
 			}
 		}()
@@ -504,7 +508,12 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 		return stats, nil
 	}
 	buildingByID := make(map[string]*BuildingFootprint, len(buildings.Footprints()))
-	for _, building := range buildings.Footprints() {
+	for index, building := range buildings.Footprints() {
+		if index%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return NetworkOptimizationStats{}, err
+			}
+		}
 		if building != nil && building.ID != "" {
 			buildingByID[building.ID] = building
 		}
@@ -531,7 +540,14 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 		if err != nil {
 			return NetworkOptimizationStats{}, err
 		}
+		coverageIndex := 0
 		for buildingID, rx := range coverageMap {
+			if coverageIndex%64 == 0 {
+				if err := ctx.Err(); err != nil {
+					return NetworkOptimizationStats{}, err
+				}
+			}
+			coverageIndex++
 			if rx <= CoveredBuildingThresholdDBm {
 				continue
 			}
@@ -542,7 +558,14 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 		}
 	}
 
+	buildingIndex := 0
 	for buildingID := range bestRxByBuilding {
+		if buildingIndex%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return NetworkOptimizationStats{}, err
+			}
+		}
+		buildingIndex++
 		building := buildingByID[buildingID]
 		if building == nil {
 			continue
@@ -595,12 +618,18 @@ func FindCoverageGaps(req StaticSimulationRequest, buildings *BuildingIndex) Cov
 
 func FindCoverageGapsContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (CoverageGapResponse, error) {
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
-	candidates := demandCandidatesInBeam(origin, req, buildings)
+	candidates, err := demandCandidatesInBeamContext(ctx, origin, req, buildings)
+	if err != nil {
+		return CoverageGapResponse{}, err
+	}
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
 		return CoverageGapResponse{}, err
 	}
-	coverageMap := buildingCoverageMapFromProfiles(profiles)
+	coverageMap, err := buildingCoverageMapFromProfilesContext(ctx, profiles)
+	if err != nil {
+		return CoverageGapResponse{}, err
+	}
 	gaps := make([]PointFeature, 0, len(candidates))
 	stats := CoverageGapStats{
 		CandidateBuildings: len(candidates),
@@ -695,7 +724,7 @@ func BuildingCoverageMapContext(ctx context.Context, origin Point, req StaticSim
 	if err != nil {
 		return nil, err
 	}
-	return buildingCoverageMapFromProfiles(profiles), nil
+	return buildingCoverageMapFromProfilesContext(ctx, profiles)
 }
 
 func buildBeamCoverageProfiles(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) []rayCoverageProfile {
@@ -711,7 +740,10 @@ func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req Sta
 			return nil, err
 		}
 		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
-		segments, terminal := simulateSegmentedRay(origin, index, angle, req, buildings)
+		segments, terminal, err := simulateSegmentedRayContext(ctx, origin, index, angle, req, buildings)
+		if err != nil {
+			return nil, err
+		}
 		profiles = append(profiles, rayCoverageProfile{
 			angle:    angle,
 			segments: segments,
@@ -722,13 +754,30 @@ func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req Sta
 }
 
 func buildingCoverageMapFromProfiles(profiles []rayCoverageProfile) map[string]float64 {
+	coverage, _ := buildingCoverageMapFromProfilesContext(context.Background(), profiles)
+	return coverage
+}
+
+func buildingCoverageMapFromProfilesContext(ctx context.Context, profiles []rayCoverageProfile) (map[string]float64, error) {
 	coverage := make(map[string]float64)
-	for _, profile := range profiles {
+	for profileIndex, profile := range profiles {
+		if profileIndex%16 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
+		buildingIndex := 0
 		for buildingID, rx := range profile.terminal.buildingCoverage {
+			if buildingIndex%64 == 0 {
+				if err := ctx.Err(); err != nil {
+					return nil, err
+				}
+			}
+			buildingIndex++
 			recordBuildingCoverageValue(coverage, buildingID, rx)
 		}
 	}
-	return coverage
+	return coverage, nil
 }
 
 func interpolatedBeamRxAtPoint(origin Point, target Point, profiles []rayCoverageProfile) (float64, bool) {
@@ -846,12 +895,29 @@ func CoverageAreaScoreBreakdownContext(ctx context.Context, origin Point, req St
 			return CoverageScoreBreakdown{}, err
 		}
 		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
-		terminal := simulateRayTerminal(origin, index, angle, req, buildings)
+		terminal, err := simulateRayTerminalContext(ctx, origin, index, angle, req, buildings)
+		if err != nil {
+			return CoverageScoreBreakdown{}, err
+		}
 		breakdown.CoverageScore += CoverageTieBreakerScore(terminal.distanceMeters, req.RadiusMeters)
+		buildingIndex := 0
 		for buildingID, demandWeight := range terminal.hitBuildingDemandWeights {
+			if buildingIndex%64 == 0 {
+				if err := ctx.Err(); err != nil {
+					return CoverageScoreBreakdown{}, err
+				}
+			}
+			buildingIndex++
 			uniqueDemandWeights[buildingID] = demandWeight
 		}
+		buildingIndex = 0
 		for buildingID, residentialDemand := range terminal.hitBuildingResidentialDemands {
+			if buildingIndex%64 == 0 {
+				if err := ctx.Err(); err != nil {
+					return CoverageScoreBreakdown{}, err
+				}
+			}
+			buildingIndex++
 			uniqueResidentialDemands[buildingID] = residentialDemand
 		}
 	}
@@ -883,13 +949,23 @@ func CoverageTieBreakerScore(distanceMeters float64, radiusMeters float64) float
 }
 
 func demandCandidatesInBeam(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) []*BuildingFootprint {
+	candidates, _ := demandCandidatesInBeamContext(context.Background(), origin, req, buildings)
+	return candidates
+}
+
+func demandCandidatesInBeamContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) ([]*BuildingFootprint, error) {
 	if buildings == nil {
-		return nil
+		return nil, nil
 	}
 	searchBounds := BoundsAroundPoint(origin, req.RadiusMeters)
 	candidates := buildings.SearchBounds(searchBounds)
 	demandCandidates := make([]*BuildingFootprint, 0, len(candidates))
-	for _, building := range candidates {
+	for index, building := range candidates {
+		if index%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
 		if building == nil || building.DemandWeight+building.ResidentialDemand <= 0 {
 			continue
 		}
@@ -907,7 +983,7 @@ func demandCandidatesInBeam(origin Point, req StaticSimulationRequest, buildings
 		}
 		demandCandidates = append(demandCandidates, building)
 	}
-	return demandCandidates
+	return demandCandidates, nil
 }
 
 func makeCoverageGapFeature(building *BuildingFootprint, centroid Point, distance float64, rx float64) PointFeature {
@@ -965,15 +1041,33 @@ func BeamAngleForIndex(azimuthDeg float64, beamWidthDeg float64, rayCount int, i
 }
 
 func simulateSegmentedRay(origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex) ([]RayFeature, rayTerminal) {
-	return simulateSegmentedRayInternal(origin, rayIndex, angle, req, buildings, true)
+	segments, terminal, _ := simulateSegmentedRayContext(context.Background(), origin, rayIndex, angle, req, buildings)
+	return segments, terminal
 }
 
 func simulateRayTerminal(origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex) rayTerminal {
-	_, terminal := simulateSegmentedRayInternal(origin, rayIndex, angle, req, buildings, false)
+	terminal, _ := simulateRayTerminalContext(context.Background(), origin, rayIndex, angle, req, buildings)
 	return terminal
 }
 
+func simulateSegmentedRayContext(ctx context.Context, origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex) ([]RayFeature, rayTerminal, error) {
+	return simulateSegmentedRayInternalContext(ctx, origin, rayIndex, angle, req, buildings, true)
+}
+
+func simulateRayTerminalContext(ctx context.Context, origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex) (rayTerminal, error) {
+	_, terminal, err := simulateSegmentedRayInternalContext(ctx, origin, rayIndex, angle, req, buildings, false)
+	return terminal, err
+}
+
 func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex, collectFeatures bool) ([]RayFeature, rayTerminal) {
+	segments, terminal, _ := simulateSegmentedRayInternalContext(context.Background(), origin, rayIndex, angle, req, buildings, collectFeatures)
+	return segments, terminal
+}
+
+func simulateSegmentedRayInternalContext(ctx context.Context, origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex, collectFeatures bool) ([]RayFeature, rayTerminal, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, rayTerminal{}, err
+	}
 	effectiveTxPowerDBm := req.TxPowerDBm + req.CalibrationOffsetDB
 	clearAirLimit := MaxTheoreticalDistanceMeters(effectiveTxPowerDBm, req.FrequencyGHz, 0)
 	castDistance := math.Min(req.RadiusMeters, clearAirLimit)
@@ -985,7 +1079,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			distanceMeters:   0,
 			signalDBm:        ReceiverSensitivity,
 			buildingCoverage: make(map[string]float64),
-		}
+		}, nil
 	}
 
 	var segments []RayFeature
@@ -1005,6 +1099,9 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 	hitBuildingResidentialDemands := make(map[string]float64)
 	buildingCoverage := make(map[string]float64)
 	for startDistance := 0.0; startDistance < castDistance; startDistance += SegmentStepMeters {
+		if err := ctx.Err(); err != nil {
+			return nil, rayTerminal{}, err
+		}
 		endDistance := math.Min(startDistance+SegmentStepMeters, castDistance)
 		start := currentPoint
 		nextPoint := DestinationPoint(origin, angle, endDistance)
@@ -1022,13 +1119,19 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			break
 		}
 
-		intersections, candidateChecks := wallIntersectionsForSegment(origin, start, nextPoint, buildings)
+		intersections, candidateChecks, err := wallIntersectionsForSegmentContext(ctx, origin, start, nextPoint, buildings)
+		if err != nil {
+			return nil, rayTerminal{}, err
+		}
 		segmentStartPoint := start
 		segmentStartDistance := startDistance
 		segmentStartRx := startRx
 		rayStopped := false
 
 		for _, intersection := range intersections {
+			if err := ctx.Err(); err != nil {
+				return nil, rayTerminal{}, err
+			}
 			hitDistance := startDistance + intersection.distanceMeters
 			recordHitBuildingDemandWeight(hitBuildingDemandWeights, intersection.building)
 			recordHitBuildingResidentialDemand(hitBuildingResidentialDemands, intersection.building)
@@ -1089,7 +1192,9 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			stopPoint := DestinationPoint(origin, angle, stopDistance)
 			stopRx := ReceivedPowerDBm(stopDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
 			pathLoss := FreeSpacePathLossMetersGHz(stopDistance, req.FrequencyGHz) + cumulativeWallLoss
-			recordBuildingsContainingSegmentCoverage(buildingCoverage, origin, segmentStartPoint, stopPoint, buildings, math.Max(segmentStartRx, stopRx))
+			if err := recordBuildingsContainingSegmentCoverageContext(ctx, buildingCoverage, origin, segmentStartPoint, stopPoint, buildings, math.Max(segmentStartRx, stopRx)); err != nil {
+				return nil, rayTerminal{}, err
+			}
 			if collectFeatures && ApproxDistanceMeters(segmentStartPoint, stopPoint) > 0.01 {
 				segments = append(segments, makeRaySegmentFeature(
 					segmentStartPoint,
@@ -1120,7 +1225,9 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 			break
 		}
 
-		recordBuildingsContainingSegmentCoverage(buildingCoverage, origin, segmentStartPoint, nextPoint, buildings, math.Max(segmentStartRx, endRx))
+		if err := recordBuildingsContainingSegmentCoverageContext(ctx, buildingCoverage, origin, segmentStartPoint, nextPoint, buildings, math.Max(segmentStartRx, endRx)); err != nil {
+			return nil, rayTerminal{}, err
+		}
 		pathLoss := FreeSpacePathLossMetersGHz(endDistance, req.FrequencyGHz) + cumulativeWallLoss
 		if collectFeatures {
 			segments = append(segments, makeRaySegmentFeature(
@@ -1153,7 +1260,7 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 		currentPoint = nextPoint
 	}
 
-	return segments, terminal
+	return segments, terminal, nil
 }
 
 type wallIntersection struct {
@@ -1173,15 +1280,28 @@ type rayTerminal struct {
 }
 
 func wallIntersectionsForSegment(origin Point, start Point, end Point, buildings *BuildingIndex) ([]wallIntersection, int) {
+	intersections, checks, _ := wallIntersectionsForSegmentContext(context.Background(), origin, start, end, buildings)
+	return intersections, checks
+}
+
+func wallIntersectionsForSegmentContext(ctx context.Context, origin Point, start Point, end Point, buildings *BuildingIndex) ([]wallIntersection, int, error) {
 	candidates := buildings.SearchRay(start, end)
 	intersections := make([]wallIntersection, 0, len(candidates))
 
-	for _, building := range candidates {
+	for index, building := range candidates {
+		if index%16 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, len(candidates), err
+			}
+		}
 		if PointInPolygon(origin, building.Vertices) {
 			continue
 		}
 
-		points := SegmentPolygonIntersections(start, end, building.Vertices)
+		points, err := segmentPolygonIntersectionsContext(ctx, start, end, building.Vertices)
+		if err != nil {
+			return nil, len(candidates), err
+		}
 		for _, point := range points {
 			distance := ApproxDistanceMeters(start, point)
 			if distance <= 0.05 {
@@ -1199,7 +1319,7 @@ func wallIntersectionsForSegment(origin Point, start Point, end Point, buildings
 	sort.SliceStable(intersections, func(i, j int) bool {
 		return intersections[i].distanceMeters < intersections[j].distanceMeters
 	})
-	return intersections, len(candidates)
+	return intersections, len(candidates), nil
 }
 
 func appendUniqueWallIntersection(intersections []wallIntersection, candidate wallIntersection) []wallIntersection {
@@ -1231,14 +1351,23 @@ func recordBuildingCoverageValue(coverage map[string]float64, buildingID string,
 }
 
 func recordBuildingsContainingSegmentCoverage(coverage map[string]float64, origin Point, start Point, end Point, buildings *BuildingIndex, rx float64) {
+	_ = recordBuildingsContainingSegmentCoverageContext(context.Background(), coverage, origin, start, end, buildings, rx)
+}
+
+func recordBuildingsContainingSegmentCoverageContext(ctx context.Context, coverage map[string]float64, origin Point, start Point, end Point, buildings *BuildingIndex, rx float64) error {
 	if coverage == nil || buildings == nil {
-		return
+		return nil
 	}
 	midpoint := Point{
 		Lon: (start.Lon + end.Lon) / 2,
 		Lat: (start.Lat + end.Lat) / 2,
 	}
-	for _, building := range buildings.SearchRay(start, end) {
+	for index, building := range buildings.SearchRay(start, end) {
+		if index%16 == 0 {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
+		}
 		if building == nil || PointInPolygon(origin, building.Vertices) {
 			continue
 		}
@@ -1246,6 +1375,7 @@ func recordBuildingsContainingSegmentCoverage(coverage map[string]float64, origi
 			recordBuildingCoverage(coverage, building, rx)
 		}
 	}
+	return nil
 }
 
 func recordHitBuildingDemandWeight(weights map[string]float64, building *BuildingFootprint) {
@@ -1374,12 +1504,22 @@ func SegmentPolygonFirstIntersection(a Point, b Point, polygon []Point) (bool, P
 }
 
 func SegmentPolygonIntersections(a Point, b Point, polygon []Point) []Point {
+	points, _ := segmentPolygonIntersectionsContext(context.Background(), a, b, polygon)
+	return points
+}
+
+func segmentPolygonIntersectionsContext(ctx context.Context, a Point, b Point, polygon []Point) ([]Point, error) {
 	if len(polygon) < 3 {
-		return nil
+		return nil, nil
 	}
 
 	points := make([]Point, 0, 2)
 	for index := range polygon {
+		if index%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
 		next := (index + 1) % len(polygon)
 		hit, point := SegmentIntersectionPoint(a, b, polygon[index], polygon[next])
 		if !hit {
@@ -1387,7 +1527,7 @@ func SegmentPolygonIntersections(a Point, b Point, polygon []Point) []Point {
 		}
 		points = appendUniquePoint(points, point)
 	}
-	return points
+	return points, nil
 }
 
 func appendUniquePoint(points []Point, candidate Point) []Point {

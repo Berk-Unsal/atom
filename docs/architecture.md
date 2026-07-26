@@ -70,6 +70,9 @@ The Gin service provides:
 - Route-specific validation before engine execution.
 - Client-context propagation into RF engines.
 - Two concurrent RF jobs by default through `MAX_CONCURRENT_RF_REQUESTS`.
+- One active RF job and 20 expensive-route attempts per minute per client by default.
+- Optional backend API-key enforcement and explicit trusted-proxy configuration.
+- A 60-second computation deadline with cancellation inside ray, polygon, grid, measurement, and recommendation loops.
 - Up to four Go workers inside each expensive RF job.
 - `429 Too Many Requests` plus `Retry-After` when RF capacity is saturated.
 - Five-second header, 15-second read, 120-second write, and 60-second idle timeouts.
@@ -244,10 +247,10 @@ A.T.O.M does not currently include:
 - MIMO beamforming and scheduling gain.
 - Uplink interference.
 - Server-side project storage or shared analysis history. Local IndexedDB projects are supported.
-- Authentication or multi-user collaboration.
+- User accounts or multi-user collaboration. A shared backend RF API key is available for gateway-to-service authentication.
 - A bundled offline basemap.
 
-Static OSM/OpenCellID-derived data and synthetic demand can be incomplete or stale. Internet-facing deployments require a trusted reverse proxy or gateway because the API does not provide built-in authentication.
+Static OSM/OpenCellID-derived data and synthetic demand can be incomplete or stale. Internet-facing deployments require a trusted TLS gateway for user authentication and shared multi-replica rate policy; the backend can enforce `RF_API_KEY` on expensive routes.
 
 ## Further Reading
 

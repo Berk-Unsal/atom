@@ -81,11 +81,11 @@ Yes. The [API Reference](api.html) and downloadable [OpenAPI 3.1 specification](
 
 ### Why did an RF request return 429?
 
-A.T.O.M admits two concurrent RF jobs by default and limits each expensive job to four workers. When capacity is occupied, it returns `429` with `Retry-After`. Let the active job finish or raise `MAX_CONCURRENT_RF_REQUESTS` cautiously for capable hardware.
+A.T.O.M admits two RF jobs globally, one per client, and 20 expensive-route attempts per client each minute by default. Global capacity, per-client concurrency, or budget exhaustion returns `429` with `Retry-After` and rate-budget headers. Let active work finish or tune the corresponding limit cautiously.
 
 ### What request limits apply?
 
-POST bodies are limited to 1 MiB. The HTTP server uses bounded header, read, write, and idle timeouts. Frontend operations cancel superseded work and reject stale responses.
+POST bodies are limited to 1 MiB. Expensive work has a 60-second default computation deadline and deep-loop cancellation. The HTTP server also uses bounded header, read, write, and idle timeouts. Frontend operations cancel superseded work, reject stale responses, and sequence sector simulation and gap analysis.
 
 ### Is the server stateless?
 
@@ -93,7 +93,7 @@ Yes. RF results and projects are not stored by the Go service. This allows multi
 
 ### Does the API require authentication?
 
-No. Internet-facing deployments should add TLS, authentication, and external rate policy at a trusted reverse proxy or gateway.
+Local-only use does not require it. Set `RF_API_KEY` to require a bearer token or `X-API-Key` on expensive RF routes. Internet-facing deployments should authenticate users at a trusted TLS gateway, inject that backend key, and enforce a shared gateway rate policy in addition to the built-in per-process client budget.
 
 ## 5G Core Lab
 

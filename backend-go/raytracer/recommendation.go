@@ -177,7 +177,10 @@ func RecommendSitesContext(ctx context.Context, req SiteRecommendationRequest, t
 		if !PointInPolygon(point, req.SearchPolygon) {
 			continue
 		}
-		potential := nearbyDemandPotential(point, req.Network.RadiusMeters, buildings)
+		potential, err := nearbyDemandPotentialContext(ctx, point, req.Network.RadiusMeters, buildings)
+		if err != nil {
+			return SiteRecommendationResponse{}, err
+		}
 		candidates = append(candidates, recommendationCandidate{tower: tower, potential: potential})
 	}
 	sort.SliceStable(candidates, func(i, j int) bool {
@@ -281,18 +284,28 @@ func networkAzimuths(req NetworkOptimizationRequest) []float64 {
 }
 
 func nearbyDemandPotential(point Point, radiusMeters float64, buildings *BuildingIndex) float64 {
+	potential, _ := nearbyDemandPotentialContext(context.Background(), point, radiusMeters, buildings)
+	return potential
+}
+
+func nearbyDemandPotentialContext(ctx context.Context, point Point, radiusMeters float64, buildings *BuildingIndex) (float64, error) {
 	if buildings == nil {
-		return 0
+		return 0, nil
 	}
 	potential := 0.0
-	for _, building := range buildings.SearchBounds(BoundsAroundPoint(point, radiusMeters)) {
+	for index, building := range buildings.SearchBounds(BoundsAroundPoint(point, radiusMeters)) {
+		if index%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return 0, err
+			}
+		}
 		centroid, ok := PolygonCentroid(building.Vertices)
 		if !ok || ApproxDistanceMeters(point, centroid) > radiusMeters {
 			continue
 		}
 		potential += building.DemandWeight + building.ResidentialDemand
 	}
-	return potential
+	return potential, nil
 }
 
 func recommendationReason(stats NetworkOptimizationStats, baseline NetworkOptimizationStats) string {

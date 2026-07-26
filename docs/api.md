@@ -16,7 +16,7 @@ https://your-domain.com/api
 
 ## Authentication
 
-A.T.O.M v1.0 has **no authentication** (suitable for internal/private networks). For production deployments, add authentication via reverse proxy (e.g., nginx with OAuth2).
+Expensive RF routes can require a shared backend key by setting `RF_API_KEY`. Send it as `Authorization: Bearer <key>` or `X-API-Key: <key>`; an invalid or missing key receives `401`. The setting is off for localhost-only development. Public deployments should authenticate users at a TLS gateway and inject this backend key rather than exposing it to browser JavaScript.
 
 ## Response Format
 
@@ -652,19 +652,11 @@ const coverage = await simulateRF({
 
 ## Capacity and Rate Limiting
 
-The server allows two concurrent RF jobs by default and immediately returns `429` with `Retry-After: 1` when that capacity is full. Configure the limit with `MAX_CONCURRENT_RF_REQUESTS`.
+The server allows two RF jobs globally but only one active job per client by default. A client also has a 20-request-per-minute budget. Configure these with `MAX_CONCURRENT_RF_REQUESTS`, `MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT`, and `RF_REQUESTS_PER_MINUTE`.
 
-This is a process-level resource guard, not per-client rate limiting. For internet-facing deployments:
+Rejected requests return `429` with `Retry-After`, `RateLimit-Limit`, `RateLimit-Remaining`, and `RateLimit-Reset`. Client identity comes from the socket peer unless `TRUSTED_PROXIES` explicitly lists the proxy CIDRs allowed to supply forwarding headers. These controls are process-local; a multi-replica deployment still needs a gateway-level shared budget.
 
-1. Deploy behind reverse proxy (nginx, HAProxy)
-2. Add rate limiting at proxy layer
-3. Add authentication or API keys
-4. Track per-client request counts
-
-**Recommended limits**:
-- 10 requests/second per API key
-- 1000 requests/day per API key
-- Keep RF concurrency aligned with the CPU allocation; the application default is 2
+Set `RF_REQUEST_TIMEOUT_SECONDS` to bound compute time; the default is 60 seconds and expiration returns `504`. Keep RF concurrency aligned with CPU allocation and set `RF_API_KEY` for any non-private backend hop.
 
 ---
 

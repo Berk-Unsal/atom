@@ -118,9 +118,13 @@ all simulation and optimization features.</p>
 <p>Or in production:</p>
 <pre><code>https://your-domain.com/api</code></pre>
 <h2 id="authentication">Authentication</h2>
-<p>A.T.O.M v1.0 has <strong>no authentication</strong> (suitable for
-internal/private networks). For production deployments, add
-authentication via reverse proxy (e.g., nginx with OAuth2).</p>
+<p>Expensive RF routes can require a shared backend key by setting
+<code>RF_API_KEY</code>. Send it as
+<code>Authorization: Bearer &lt;key&gt;</code> or
+<code>X-API-Key: &lt;key&gt;</code>; an invalid or missing key receives
+<code>401</code>. The setting is off for localhost-only development.
+Public deployments should authenticate users at a TLS gateway and inject
+this backend key rather than exposing it to browser JavaScript.</p>
 <h2 id="response-format">Response Format</h2>
 <p>All responses are <strong>JSON</strong>, but the exact shape depends
 on the route:</p>
@@ -836,25 +840,22 @@ class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb25
 <span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
 <hr />
 <h2 id="capacity-and-rate-limiting">Capacity and Rate Limiting</h2>
-<p>The server allows two concurrent RF jobs by default and immediately
-returns <code>429</code> with <code>Retry-After: 1</code> when that
-capacity is full. Configure the limit with
-<code>MAX_CONCURRENT_RF_REQUESTS</code>.</p>
-<p>This is a process-level resource guard, not per-client rate limiting.
-For internet-facing deployments:</p>
-<ol type="1">
-<li>Deploy behind reverse proxy (nginx, HAProxy)</li>
-<li>Add rate limiting at proxy layer</li>
-<li>Add authentication or API keys</li>
-<li>Track per-client request counts</li>
-</ol>
-<p><strong>Recommended limits</strong>:</p>
-<ul>
-<li>10 requests/second per API key</li>
-<li>1000 requests/day per API key</li>
-<li>Keep RF concurrency aligned with the CPU allocation; the application
-default is 2</li>
-</ul>
+<p>The server allows two RF jobs globally but only one active job per
+client by default. A client also has a 20-request-per-minute budget.
+Configure these with <code>MAX_CONCURRENT_RF_REQUESTS</code>,
+<code>MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT</code>, and
+<code>RF_REQUESTS_PER_MINUTE</code>.</p>
+<p>Rejected requests return <code>429</code> with
+<code>Retry-After</code>, <code>RateLimit-Limit</code>,
+<code>RateLimit-Remaining</code>, and <code>RateLimit-Reset</code>.
+Client identity comes from the socket peer unless
+<code>TRUSTED_PROXIES</code> explicitly lists the proxy CIDRs allowed to
+supply forwarding headers. These controls are process-local; a
+multi-replica deployment still needs a gateway-level shared budget.</p>
+<p>Set <code>RF_REQUEST_TIMEOUT_SECONDS</code> to bound compute time;
+the default is 60 seconds and expiration returns <code>504</code>. Keep
+RF concurrency aligned with CPU allocation and set
+<code>RF_API_KEY</code> for any non-private backend hop.</p>
 <hr />
 <h2 id="versioning">Versioning</h2>
 <p><strong>Current API Version</strong>: <code>1.0</code></p>

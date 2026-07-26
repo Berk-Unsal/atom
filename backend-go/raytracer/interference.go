@@ -279,7 +279,10 @@ func AnalyzeInterference(req InterferenceRequest, buildings *BuildingIndex) Inte
 
 func AnalyzeInterferenceContext(ctx context.Context, req InterferenceRequest, buildings *BuildingIndex) (InterferenceResponse, error) {
 	preset, _ := interferencePresetFor(req.NetworkTech, req.BandwidthMHz)
-	samples, effectiveSpacing := buildInterferenceGrid(req)
+	samples, effectiveSpacing, err := buildInterferenceGridContext(ctx, req)
+	if err != nil {
+		return InterferenceResponse{}, err
+	}
 	features, err := evaluateInterferenceSamplesContext(ctx, req, preset, buildings, samples)
 	if err != nil {
 		return InterferenceResponse{}, err
@@ -336,6 +339,11 @@ func interferencePresetFor(networkTech string, bandwidthMHz float64) (interferen
 }
 
 func buildInterferenceGrid(req InterferenceRequest) ([]gridSample, float64) {
+	samples, spacing, _ := buildInterferenceGridContext(context.Background(), req)
+	return samples, spacing
+}
+
+func buildInterferenceGridContext(ctx context.Context, req InterferenceRequest) ([]gridSample, float64, error) {
 	effectiveSpacing := req.SampleSpacingM
 	areaEstimate := float64(len(req.Towers)) * math.Pi * req.RadiusMeters * req.RadiusMeters
 	minimumSpacing := math.Sqrt(areaEstimate / MaxInterferenceSamples)
@@ -344,21 +352,32 @@ func buildInterferenceGrid(req InterferenceRequest) ([]gridSample, float64) {
 	}
 
 	for attempts := 0; attempts < 5; attempts++ {
-		samples := generateGridSamples(req, effectiveSpacing)
+		samples, err := generateGridSamplesContext(ctx, req, effectiveSpacing)
+		if err != nil {
+			return nil, 0, err
+		}
 		if len(samples) <= MaxInterferenceSamples {
-			return samples, effectiveSpacing
+			return samples, effectiveSpacing, nil
 		}
 		effectiveSpacing *= math.Sqrt(float64(len(samples))/MaxInterferenceSamples) * 1.02
 	}
 
-	samples := generateGridSamples(req, effectiveSpacing)
+	samples, err := generateGridSamplesContext(ctx, req, effectiveSpacing)
+	if err != nil {
+		return nil, 0, err
+	}
 	if len(samples) > MaxInterferenceSamples {
 		samples = samples[:MaxInterferenceSamples]
 	}
-	return samples, effectiveSpacing
+	return samples, effectiveSpacing, nil
 }
 
 func generateGridSamples(req InterferenceRequest, spacingMeters float64) []gridSample {
+	samples, _ := generateGridSamplesContext(context.Background(), req, spacingMeters)
+	return samples
+}
+
+func generateGridSamplesContext(ctx context.Context, req InterferenceRequest, spacingMeters float64) ([]gridSample, error) {
 	minLon := req.Towers[0].TowerLon
 	minLat := req.Towers[0].TowerLat
 	meanLat := 0.0
@@ -376,10 +395,18 @@ func generateGridSamples(req InterferenceRequest, spacingMeters float64) []gridS
 	radiusSteps := int(math.Ceil(req.RadiusMeters/spacingMeters)) + 1
 
 	unique := make(map[string]gridSample)
-	for _, tower := range req.Towers {
+	for towerIndex, tower := range req.Towers {
+		if towerIndex%4 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
 		centerCol := int(math.Round((tower.TowerLon - originLon) / lonStep))
 		centerRow := int(math.Round((tower.TowerLat - originLat) / latStep))
 		for row := centerRow - radiusSteps; row <= centerRow+radiusSteps; row++ {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
 			for col := centerCol - radiusSteps; col <= centerCol+radiusSteps; col++ {
 				point := Point{Lon: originLon + float64(col)*lonStep, Lat: originLat + float64(row)*latStep}
 				if ApproxDistanceMeters(Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, point) > req.RadiusMeters {
@@ -401,7 +428,7 @@ func generateGridSamples(req InterferenceRequest, spacingMeters float64) []gridS
 		}
 		return samples[i].row < samples[j].row
 	})
-	return samples
+	return samples, nil
 }
 
 func evaluateInterferenceSamples(req InterferenceRequest, preset interferencePreset, buildings *BuildingIndex, samples []gridSample) []InterferenceFeature {
@@ -436,7 +463,11 @@ func evaluateInterferenceSamplesContext(ctx context.Context, req InterferenceReq
 					if !ok {
 						return
 					}
-					features[index] = makeInterferenceFeature(req, preset, buildings, samples[index].point, fmt.Sprintf("grid-%d", index+1))
+					feature, err := makeInterferenceFeatureContext(ctx, req, preset, buildings, samples[index].point, fmt.Sprintf("grid-%d", index+1))
+					if err != nil {
+						return
+					}
+					features[index] = feature
 				}
 			}
 		}()
@@ -459,19 +490,35 @@ func evaluateInterferenceSamplesContext(ctx context.Context, req InterferenceReq
 }
 
 func makeInterferenceFeature(req InterferenceRequest, preset interferencePreset, buildings *BuildingIndex, point Point, sampleID string) InterferenceFeature {
-	properties := evaluateInterferencePoint(req, preset, buildings, point)
+	feature, _ := makeInterferenceFeatureContext(context.Background(), req, preset, buildings, point, sampleID)
+	return feature
+}
+
+func makeInterferenceFeatureContext(ctx context.Context, req InterferenceRequest, preset interferencePreset, buildings *BuildingIndex, point Point, sampleID string) (InterferenceFeature, error) {
+	properties, err := evaluateInterferencePointContext(ctx, req, preset, buildings, point)
+	if err != nil {
+		return InterferenceFeature{}, err
+	}
 	properties.SampleID = sampleID
 	return InterferenceFeature{
 		Type:       "Feature",
 		Properties: properties,
 		Geometry:   PointGeometry{Type: "Point", Coordinates: []float64{point.Lon, point.Lat}},
-	}
+	}, nil
 }
 
 func evaluateInterferencePoint(req InterferenceRequest, preset interferencePreset, buildings *BuildingIndex, point Point) InterferenceProperties {
+	properties, _ := evaluateInterferencePointContext(context.Background(), req, preset, buildings, point)
+	return properties
+}
+
+func evaluateInterferencePointContext(ctx context.Context, req InterferenceRequest, preset interferencePreset, buildings *BuildingIndex, point Point) (InterferenceProperties, error) {
 	signals := make([]receivedCellSignal, 0, len(req.Towers))
 	rePowerOffsetDB := 10 * math.Log10(12*float64(preset.resourceBlocks))
 	for index, tower := range req.Towers {
+		if err := ctx.Err(); err != nil {
+			return InterferenceProperties{}, err
+		}
 		origin := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
 		distance := ApproxDistanceMeters(origin, point)
 		if distance > req.RadiusMeters {
@@ -480,7 +527,10 @@ func evaluateInterferencePoint(req InterferenceRequest, preset interferencePrese
 		if !AngleInBeam(BearingDegrees(origin, point), tower.AzimuthDeg, req.BeamWidthDeg) {
 			continue
 		}
-		intersections, _ := wallIntersectionsForSegment(origin, origin, point, buildings)
+		intersections, _, err := wallIntersectionsForSegmentContext(ctx, origin, origin, point, buildings)
+		if err != nil {
+			return InterferenceProperties{}, err
+		}
 		wallCount := len(intersections)
 		carrierRxDBm := ReceivedPowerDBm(distance, req.FrequencyGHz, req.TxPowerDBm+req.CalibrationOffsetDB, float64(wallCount)*PenetrationLossForFrequencyGHz(req.FrequencyGHz))
 		if carrierRxDBm <= ReceiverSensitivity {
@@ -495,7 +545,7 @@ func evaluateInterferencePoint(req InterferenceRequest, preset interferencePrese
 	}
 
 	if len(signals) == 0 {
-		return InterferenceProperties{QualityClass: "no_signal"}
+		return InterferenceProperties{QualityClass: "no_signal"}, nil
 	}
 	sort.SliceStable(signals, func(i, j int) bool { return signals[i].rsrpDBm > signals[j].rsrpDBm })
 	serving := signals[0]
@@ -546,7 +596,7 @@ func evaluateInterferencePoint(req InterferenceRequest, preset interferencePrese
 		properties.StrongestInterfererID = strongestInterfererID
 		properties.StrongestInterfererDBm = floatPointer(roundOne(strongestInterfererDBm))
 	}
-	return properties
+	return properties, nil
 }
 
 func evaluateDemandInterference(req InterferenceRequest, preset interferencePreset, buildings *BuildingIndex) ([]InterferenceFeature, int, int, float64) {
@@ -561,7 +611,11 @@ func evaluateDemandInterferenceContext(ctx context.Context, req InterferenceRequ
 	affected := make([]InterferenceFeature, 0)
 	candidates := 0
 	affectedDemand := 0.0
-	for index, building := range interferenceDemandCandidates(req, buildings) {
+	demandCandidates, err := interferenceDemandCandidatesContext(ctx, req, buildings)
+	if err != nil {
+		return nil, 0, 0, 0, err
+	}
+	for index, building := range demandCandidates {
 		if index%64 == 0 {
 			select {
 			case <-ctx.Done():
@@ -577,7 +631,10 @@ func evaluateDemandInterferenceContext(ctx context.Context, req InterferenceRequ
 			continue
 		}
 		candidates++
-		feature := makeInterferenceFeature(req, preset, buildings, centroid, "demand-"+building.ID)
+		feature, err := makeInterferenceFeatureContext(ctx, req, preset, buildings, centroid, "demand-"+building.ID)
+		if err != nil {
+			return nil, 0, 0, 0, err
+		}
 		if feature.Properties.Serviceable {
 			continue
 		}
@@ -605,13 +662,28 @@ func evaluateDemandInterferenceContext(ctx context.Context, req InterferenceRequ
 }
 
 func interferenceDemandCandidates(req InterferenceRequest, buildings *BuildingIndex) []*BuildingFootprint {
+	candidates, _ := interferenceDemandCandidatesContext(context.Background(), req, buildings)
+	return candidates
+}
+
+func interferenceDemandCandidatesContext(ctx context.Context, req InterferenceRequest, buildings *BuildingIndex) ([]*BuildingFootprint, error) {
 	if buildings == nil {
-		return nil
+		return nil, nil
 	}
 	byID := make(map[string]*BuildingFootprint)
-	for _, tower := range req.Towers {
+	for towerIndex, tower := range req.Towers {
+		if towerIndex%4 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
 		origin := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
-		for _, building := range buildings.SearchBounds(BoundsAroundPoint(origin, req.RadiusMeters)) {
+		for buildingIndex, building := range buildings.SearchBounds(BoundsAroundPoint(origin, req.RadiusMeters)) {
+			if buildingIndex%64 == 0 {
+				if err := ctx.Err(); err != nil {
+					return nil, err
+				}
+			}
 			if building != nil && building.ID != "" {
 				byID[building.ID] = building
 			}
@@ -626,5 +698,5 @@ func interferenceDemandCandidates(req InterferenceRequest, buildings *BuildingIn
 	for _, id := range ids {
 		result = append(result, byID[id])
 	}
-	return result
+	return result, nil
 }

@@ -225,7 +225,10 @@ func EvaluateMeasurementsContext(ctx context.Context, req MeasurementEvaluationR
 		if err := ctx.Err(); err != nil {
 			return MeasurementEvaluationResponse{}, err
 		}
-		properties := evaluateInterferencePoint(req.Radio, preset, buildings, Point{Lon: sample.Lon, Lat: sample.Lat})
+		properties, err := evaluateInterferencePointContext(ctx, req.Radio, preset, buildings, Point{Lon: sample.Lon, Lat: sample.Lat})
+		if err != nil {
+			return MeasurementEvaluationResponse{}, err
+		}
 		featureProperties := MeasurementProperties{
 			ID:               sample.ID,
 			Technology:       req.Radio.NetworkTech,

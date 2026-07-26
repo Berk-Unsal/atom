@@ -328,10 +328,18 @@ export default function App() {
 
   const simulateForSettings = useCallback(async (tower, nextSettings, signal) => {
     const requestPayload = buildSimulationPayload(tower, nextSettings);
-    const [simulationPayload, gapPayload] = await Promise.all([
-      postJSON("/api/simulate", requestPayload, "Simulation request failed", signal),
-      postJSON("/api/coverage-gaps", requestPayload, "Coverage gap request failed", signal),
-    ]);
+    const simulationPayload = await postJSON(
+      "/api/simulate",
+      requestPayload,
+      "Simulation request failed",
+      signal,
+    );
+    const gapPayload = await postJSON(
+      "/api/coverage-gaps",
+      requestPayload,
+      "Coverage gap request failed",
+      signal,
+    );
     return { coverageGaps: gapPayload, simulation: simulationPayload };
   }, []);
 

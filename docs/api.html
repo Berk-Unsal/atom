@@ -125,6 +125,9 @@ all simulation and optimization features.</p>
 <code>401</code>. The setting is off for localhost-only development.
 Public deployments should authenticate users at a TLS gateway and inject
 this backend key rather than exposing it to browser JavaScript.</p>
+<p>The large building dataset route can independently require
+<code>BUILDINGS_API_KEY</code> through the same headers. Keep this key
+at an origin gateway when using shared or public caches.</p>
 <h2 id="response-format">Response Format</h2>
 <p>All responses are <strong>JSON</strong>, but the exact shape depends
 on the route:</p>
@@ -234,8 +237,21 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb6-1"><a href="
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p><strong>Performance</strong>: ~100 MB response, consider client-side
-filtering.</p>
+<p><strong>Caching and limits</strong>: The approximately 117 MB
+response is identified by a strong SHA-256 <code>ETag</code> and served
+with <code>Cache-Control: public, max-age=3600, must-revalidate</code>
+by default. Revalidation with a matching <code>If-None-Match</code>
+returns <code>304</code> without consuming a download budget. Fresh
+transfers default to two globally, one concurrently per client, and two
+per minute per client. Configure these limits with
+<code>MAX_CONCURRENT_BUILDING_DOWNLOADS</code>,
+<code>MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT</code>, and
+<code>BUILDING_DOWNLOADS_PER_MINUTE</code>.</p>
+<p>Set <code>BUILDINGS_API_KEY</code> to require
+<code>Authorization: Bearer &lt;key&gt;</code> or
+<code>X-API-Key: &lt;key&gt;</code>. Authenticated responses use a
+private cache policy so shared caches cannot bypass the origin
+credential check.</p>
 <hr />
 <h3 id="get-towers">Get Towers</h3>
 <p><strong>Endpoint</strong>: <code>GET /api/towers</code></p>
@@ -361,6 +377,12 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb9-1"><a href="
 </tr>
 </tbody>
 </table>
+<p><code>rays</code> and <code>radius_m</code> also share a response
+budget: <code>rays × ceil(radius_m / 25)</code> must not exceed 25,000
+estimated base features. The full browser range remains valid, including
+360 rays at 1,500 meters. Building intersections can split a base
+segment, so the ray workers also enforce 25,000 as a hard ceiling on
+actual collected features.</p>
 <p><strong>Response</strong>:</p>
 <div class="sourceCode" id="cb10"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
@@ -394,6 +416,8 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb10-1"><a href=
 <li><code>200 OK</code> - Simulation completed successfully</li>
 <li><code>400 Bad Request</code> - Invalid parameters</li>
 <li><code>413 Content Too Large</code> - Request body exceeds 1 MiB</li>
+<li><code>422 Unprocessable Content</code> - Building intersections
+would exceed the hard 25,000-feature response ceiling</li>
 <li><code>429 Too Many Requests</code> - RF worker capacity is busy;
 inspect <code>Retry-After</code></li>
 <li><code>500 Internal Server Error</code> - Simulation error</li>
@@ -402,7 +426,10 @@ inspect <code>Retry-After</code></li>
 <ul>
 <li>Runtime depends on ray count, radius, and local building
 density.</li>
-<li>Maximum rays: 720 per request.</li>
+<li>Individual bounds remain 720 rays and 5,000 meters, but combinations
+must stay within the 25,000-feature estimate.</li>
+<li>The reported 720-ray, 5,000-meter combination estimates 144,000 base
+features and is rejected before ray allocation.</li>
 <li>The server uses a 120-second write timeout and caps each RF job at
 four workers.</li>
 </ul>
@@ -874,6 +901,13 @@ multi-replica deployment still needs a gateway-level shared budget.</p>
 the default is 60 seconds and expiration returns <code>504</code>. Keep
 RF concurrency aligned with CPU allocation and set
 <code>RF_API_KEY</code> for any non-private backend hop.</p>
+<p><code>GET /api/buildings</code> has a separate transfer budget
+because each cache miss serves the complete dataset. Its conditional
+<code>304</code> responses bypass transfer admission, while uncached
+responses return the same <code>RateLimit-*</code> and
+<code>Retry-After</code> headers as RF routes when applicable. Configure
+a gateway-level bandwidth budget for multi-replica or internet-facing
+deployments.</p>
 <hr />
 <h2 id="versioning">Versioning</h2>
 <p><strong>Current API Version</strong>: <code>1.0</code></p>

@@ -103,6 +103,22 @@ and this file follows <a
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 <h2 id="unreleased"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.3.0...HEAD">Unreleased</a></h2>
+<h3 id="security">Security</h3>
+<ul>
+<li>Upgrade backend and adapter builds to Go 1.26, frontend and CI
+builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so
+maintained toolchains provide current security fixes.</li>
+<li>Protect the full building-dataset response with strong ETag caching,
+conditional <code>304</code> responses, separate global and per-client
+transfer budgets, and optional origin API-key authentication.</li>
+<li>Bound segmented simulations to 25,000 estimated and actual GeoJSON
+features, reject oversized ray/radius combinations before allocation,
+and cancel parallel ray workers if building splits exhaust the shared
+feature budget.</li>
+<li>Pin every external GitHub Action to an immutable commit SHA, stop
+checkout from persisting release credentials, and enforce pinned
+workflow dependencies in CI.</li>
+</ul>
 <h2 id="030---2026-07-26"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.2.0...v0.3.0">0.3.0</a>
 - 2026-07-26</h2>

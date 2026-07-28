@@ -76,13 +76,18 @@ func newRFRequestLimiterWithBudget(capacity, perClientConcurrency, requestsPerMi
 }
 
 func (limiter *rfRequestLimiter) middleware() gin.HandlerFunc {
+	return limiter.middlewareFor("RF analysis")
+}
+
+func (limiter *rfRequestLimiter) middlewareFor(resource string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		clientID := c.ClientIP()
-		release, remaining, resetSeconds, retryAfter, reason := limiter.acquire(clientID)
+		release, remaining, resetSeconds, retryAfter, reason := limiter.acquire(clientID, resource)
 		c.Header("RateLimit-Limit", strconv.Itoa(limiter.requestsPerMinute))
 		c.Header("RateLimit-Remaining", strconv.Itoa(remaining))
 		c.Header("RateLimit-Reset", strconv.Itoa(resetSeconds))
 		if reason != "" {
+			c.Header("Cache-Control", "no-store")
 			c.Header("Retry-After", strconv.Itoa(retryAfter))
 			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": reason})
 			return
@@ -97,13 +102,14 @@ func (limiter *rfRequestLimiter) middleware() gin.HandlerFunc {
 			c.Next()
 		default:
 			release()
+			c.Header("Cache-Control", "no-store")
 			c.Header("Retry-After", "1")
-			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "RF analysis capacity is busy; retry shortly"})
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": resource + " capacity is busy; retry shortly"})
 		}
 	}
 }
 
-func (limiter *rfRequestLimiter) acquire(clientID string) (func(), int, int, int, string) {
+func (limiter *rfRequestLimiter) acquire(clientID string, resource string) (func(), int, int, int, string) {
 	limiter.mu.Lock()
 	defer limiter.mu.Unlock()
 
@@ -119,13 +125,13 @@ func (limiter *rfRequestLimiter) acquire(clientID string) (func(), int, int, int
 		resetSeconds = 1
 	}
 	if state.requests >= limiter.requestsPerMinute {
-		return func() {}, 0, resetSeconds, resetSeconds, "RF request budget exceeded; retry after the current rate-limit window"
+		return func() {}, 0, resetSeconds, resetSeconds, resource + " request budget exceeded; retry after the current rate-limit window"
 	}
 
 	state.requests++
 	remaining := limiter.requestsPerMinute - state.requests
 	if state.active >= limiter.perClientConcurrency {
-		return func() {}, remaining, resetSeconds, 1, "another RF analysis is already running for this client"
+		return func() {}, remaining, resetSeconds, 1, "another " + resource + " is already running for this client"
 	}
 	state.active++
 
@@ -182,7 +188,7 @@ func protectExpensiveRFRoutes(limiter *rfRequestLimiter, timeout time.Duration, 
 			c.Next()
 			return
 		}
-		if apiKey != "" && !validRFAPIKey(c, apiKey) {
+		if apiKey != "" && !validAPIKey(c, apiKey) {
 			c.Header("WWW-Authenticate", `Bearer realm="A.T.O.M RF API"`)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "valid RF API key required"})
 			return
@@ -199,7 +205,7 @@ func protectExpensiveRFRoutes(limiter *rfRequestLimiter, timeout time.Duration, 
 	}
 }
 
-func validRFAPIKey(c *gin.Context, expected string) bool {
+func validAPIKey(c *gin.Context, expected string) bool {
 	provided := strings.TrimSpace(c.GetHeader("X-API-Key"))
 	if authorization := strings.TrimSpace(c.GetHeader("Authorization")); strings.HasPrefix(strings.ToLower(authorization), "bearer ") {
 		provided = strings.TrimSpace(authorization[len("bearer "):])

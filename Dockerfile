@@ -1,4 +1,4 @@
-FROM node:18-alpine AS frontend-build
+FROM node:24-alpine AS frontend-build
 WORKDIR /frontend
 
 COPY frontend-react/package*.json ./
@@ -7,7 +7,7 @@ RUN npm ci
 COPY frontend-react/ ./
 RUN npm run build
 
-FROM golang:1.22-alpine AS backend-build
+FROM golang:1.26-alpine AS backend-build
 WORKDIR /src/backend-go
 
 ARG VERSION
@@ -22,7 +22,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
     -ldflags "-s -w -X main.appVersion=${VERSION:-$(cat /src/VERSION)} -X main.buildCommit=${COMMIT}" \
     -o /server .
 
-FROM alpine:latest AS production
+FROM alpine:3.24 AS production
 WORKDIR /app
 
 RUN addgroup -S atom && adduser -S atom -G atom
@@ -42,6 +42,9 @@ ENV MAX_CONCURRENT_RF_REQUESTS=2
 ENV MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT=1
 ENV RF_REQUESTS_PER_MINUTE=20
 ENV RF_REQUEST_TIMEOUT_SECONDS=60
+ENV MAX_CONCURRENT_BUILDING_DOWNLOADS=2
+ENV MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT=1
+ENV BUILDING_DOWNLOADS_PER_MINUTE=2
 ENV ATOM_DATASET_DIR=/app/data-pipeline
 
 EXPOSE 8080

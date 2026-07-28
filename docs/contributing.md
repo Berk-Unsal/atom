@@ -84,7 +84,7 @@ RF propagation is affected by hills and valleys, but A.T.O.M currently ignores t
 **Backend**:
 
 ```bash
-# Install Go 1.21+
+# Install Go 1.26+
 cd backend-go
 go mod download
 go run .
@@ -93,7 +93,7 @@ go run .
 **Frontend**:
 
 ```bash
-# Install Node.js 18+
+# Install Node.js 24+
 cd frontend-react
 npm install
 npm run dev

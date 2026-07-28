@@ -1,3 +1,3 @@
 module atom-core-lab-adapter
 
-go 1.22
+go 1.26

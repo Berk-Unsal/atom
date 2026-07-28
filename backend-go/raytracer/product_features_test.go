@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -45,6 +46,29 @@ func TestRecommendSitesReturnsDeterministicCandidate(t *testing.T) {
 	}
 	if first.Recommendations[0] != second.Recommendations[0] {
 		t.Fatalf("recommendations differ: %#v vs %#v", first.Recommendations[0], second.Recommendations[0])
+	}
+}
+
+func TestRecommendationValidationEnforcesSimulationFeatureBudget(t *testing.T) {
+	req := SiteRecommendationRequest{
+		NetworkTech: "5g",
+		Network: NetworkOptimizationRequest{
+			Towers: []NetworkTowerRequest{
+				{ID: "one", TowerLon: 32.85, TowerLat: 39.92},
+				{ID: "two", TowerLon: 32.86, TowerLat: 39.93},
+			},
+			Rays: 720, RadiusMeters: 5000,
+			FrequencyGHz: 28, TxPowerDBm: 30, BeamWidthDeg: 120,
+		},
+		SearchPolygon: []Point{
+			{Lon: 32.84, Lat: 39.91},
+			{Lon: 32.87, Lat: 39.91},
+			{Lon: 32.85, Lat: 39.94},
+		},
+		MaxResults: 5,
+	}
+	if validationError := ValidateSiteRecommendationRequest(req); !strings.Contains(validationError, "25000-feature") {
+		t.Fatalf("validation error = %q", validationError)
 	}
 }
 

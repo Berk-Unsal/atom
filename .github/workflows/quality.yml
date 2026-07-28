@@ -12,8 +12,13 @@ jobs:
   version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
       - run: python3 scripts/versioning.py check
+      - run: python3 scripts/check_runtime_versions.py
+      - run: python3 scripts/check_workflow_action_pins.py
+      - run: python3 -m unittest scripts/check_workflow_action_pins_test.py
 
   backend:
     runs-on: ubuntu-latest
@@ -21,10 +26,11 @@ jobs:
       run:
         working-directory: backend-go
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           lfs: true
-      - uses: actions/setup-go@v5
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
           go-version-file: backend-go/go.mod
           cache-dependency-path: backend-go/go.sum
@@ -38,8 +44,10 @@ jobs:
       run:
         working-directory: core-lab-adapter
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
           go-version-file: core-lab-adapter/go.mod
           cache-dependency-path: core-lab-adapter/go.sum
@@ -52,10 +60,12 @@ jobs:
       run:
         working-directory: frontend-react
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          node-version: 22
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
           cache: npm
           cache-dependency-path: frontend-react/package-lock.json
       - run: npm ci
@@ -69,10 +79,12 @@ jobs:
       run:
         working-directory: frontend-react
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          node-version: 22
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
           cache: npm
           cache-dependency-path: frontend-react/package-lock.json
       - run: npm ci
@@ -82,8 +94,10 @@ jobs:
   data-pipeline:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
       - run: python -m compileall -q -x '/\.venv/' data-pipeline
@@ -91,8 +105,10 @@ jobs:
   documentation:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
       - run: pip install PyYAML

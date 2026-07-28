@@ -100,6 +100,17 @@ func main() {
 		time.Duration(envInt("RF_REQUEST_TIMEOUT_SECONDS", int(defaultRFRequestTimeout/time.Second)))*time.Second,
 		strings.TrimSpace(os.Getenv("RF_API_KEY")),
 	))
+	buildingAPIKey := strings.TrimSpace(os.Getenv("BUILDINGS_API_KEY"))
+	buildingLimiter := newRFRequestLimiterWithBudget(
+		envInt("MAX_CONCURRENT_BUILDING_DOWNLOADS", defaultBuildingDownloadCapacity),
+		envInt("MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT", defaultBuildingDownloadClientLimit),
+		envInt("BUILDING_DOWNLOADS_PER_MINUTE", defaultBuildingDownloadsPerMinute),
+	)
+	buildingETag := ""
+	if datasetPack != nil {
+		buildingETag = strongETag(datasetPack.Manifest.SHA256[datasetPack.Manifest.Files.Buildings])
+	}
+	buildingCacheControl := buildingDatasetCacheControl(buildingAPIKey != "")
 	router.GET("/api/meta", func(c *gin.Context) {
 		response := gin.H{
 			"application_version":    appVersion,
@@ -113,7 +124,13 @@ func main() {
 		c.JSON(http.StatusOK, response)
 	})
 	router.GET("/api/towers", serveGeoJSONFile(towerGeoJSONPath, "ankara_5g_nodes.geojson is not configured"))
-	router.GET("/api/buildings", serveBuildingGeoJSON(buildingStats.SourcePath))
+	router.GET(
+		"/api/buildings",
+		requireBuildingAPIKey(buildingAPIKey),
+		serveBuildingNotModified(buildingETag, buildingCacheControl),
+		buildingLimiter.middlewareFor("building dataset download"),
+		serveBuildingGeoJSON(buildingStats.SourcePath, buildingETag, buildingCacheControl),
+	)
 	router.GET("/api/buildings/summary", func(c *gin.Context) {
 		c.JSON(http.StatusOK, buildingDemandSummary)
 	})
@@ -309,6 +326,9 @@ func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
 	if req.RadiusMeters < 25 || req.RadiusMeters > 5000 {
 		return "radius_m must be between 25 and 5000"
 	}
+	if validationError := raytracer.ValidateSimulationFeatureBudget(req.Rays, req.RadiusMeters); validationError != "" {
+		return validationError
+	}
 	if req.FrequencyGHz <= 0 || req.FrequencyGHz > 300 {
 		return "frequency_ghz must be between 0 and 300"
 	}
@@ -333,6 +353,9 @@ func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest
 	}
 	if req.RadiusMeters < 25 || req.RadiusMeters > 5000 {
 		return "radius_m must be between 25 and 5000"
+	}
+	if validationError := raytracer.ValidateSimulationFeatureBudget(req.Rays, req.RadiusMeters); validationError != "" {
+		return validationError
 	}
 	if req.FrequencyGHz <= 0 || req.FrequencyGHz > 300 {
 		return "frequency_ghz must be between 0 and 300"
@@ -476,6 +499,12 @@ func writeRFResponse[T any](c *gin.Context, payload T, err error) {
 		c.JSON(http.StatusGatewayTimeout, gin.H{"error": "RF analysis exceeded its request deadline"})
 		return
 	}
+	if errors.Is(err, raytracer.ErrSimulationFeatureLimit) {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"error": "simulation response exceeded the " + strconv.Itoa(raytracer.MaxSimulationResponseFeatures) + "-feature limit; reduce rays or radius_m",
+		})
+		return
+	}
 	c.JSON(http.StatusInternalServerError, gin.H{"error": "RF analysis failed"})
 }
 
@@ -508,10 +537,6 @@ func serveSPAFallback(distPath string, indexPath string) gin.HandlerFunc {
 		}
 		c.File(indexPath)
 	}
-}
-
-func serveBuildingGeoJSON(path string) gin.HandlerFunc {
-	return serveGeoJSONFile(path, "ankara_buildings.geojson is not configured")
 }
 
 func serveGeoJSONFile(path string, missingMessage string) gin.HandlerFunc {

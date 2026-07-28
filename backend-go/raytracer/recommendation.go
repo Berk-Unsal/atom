@@ -122,6 +122,9 @@ func ValidateSiteRecommendationRequest(req SiteRecommendationRequest) string {
 	if req.Network.Rays < 8 || req.Network.Rays > 720 || req.Network.RadiusMeters < 25 || req.Network.RadiusMeters > 5000 {
 		return "rays must be between 8 and 720 and radius_m between 25 and 5000"
 	}
+	if validationError := ValidateSimulationFeatureBudget(req.Network.Rays, req.Network.RadiusMeters); validationError != "" {
+		return validationError
+	}
 	if req.Network.TxPowerDBm < 0 || req.Network.TxPowerDBm > 60 || req.Network.BeamWidthDeg < 10 || req.Network.BeamWidthDeg > 360 {
 		return "tx_power_dbm must be between 0 and 60 and beam_width between 10 and 360"
 	}

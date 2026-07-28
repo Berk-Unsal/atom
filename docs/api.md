@@ -18,6 +18,8 @@ https://your-domain.com/api
 
 Expensive RF routes can require a shared backend key by setting `RF_API_KEY`. Send it as `Authorization: Bearer <key>` or `X-API-Key: <key>`; an invalid or missing key receives `401`. The setting is off for localhost-only development. Public deployments should authenticate users at a TLS gateway and inject this backend key rather than exposing it to browser JavaScript.
 
+The large building dataset route can independently require `BUILDINGS_API_KEY` through the same headers. Keep this key at an origin gateway when using shared or public caches.
+
 ## Response Format
 
 All responses are **JSON**, but the exact shape depends on the route:
@@ -134,7 +136,9 @@ Retrieve all building geometries as GeoJSON.
 }
 ```
 
-**Performance**: ~100 MB response, consider client-side filtering.
+**Caching and limits**: The approximately 117 MB response is identified by a strong SHA-256 `ETag` and served with `Cache-Control: public, max-age=3600, must-revalidate` by default. Revalidation with a matching `If-None-Match` returns `304` without consuming a download budget. Fresh transfers default to two globally, one concurrently per client, and two per minute per client. Configure these limits with `MAX_CONCURRENT_BUILDING_DOWNLOADS`, `MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT`, and `BUILDING_DOWNLOADS_PER_MINUTE`.
+
+Set `BUILDINGS_API_KEY` to require `Authorization: Bearer <key>` or `X-API-Key: <key>`. Authenticated responses use a private cache policy so shared caches cannot bypass the origin credential check.
 
 ---
 
@@ -221,6 +225,8 @@ Run RF propagation simulation with given parameters.
 | `azimuth` | number | Any finite angle | No | Antenna direction, normalized to 0-360; defaults to 0 |
 | `beam_width` | number | 10 - 360 | No | Sector width in degrees; defaults to 120 |
 
+`rays` and `radius_m` also share a response budget: `rays × ceil(radius_m / 25)` must not exceed 25,000 estimated base features. The full browser range remains valid, including 360 rays at 1,500 meters. Building intersections can split a base segment, so the ray workers also enforce 25,000 as a hard ceiling on actual collected features.
+
 **Response**:
 
 ```json
@@ -256,12 +262,14 @@ Run RF propagation simulation with given parameters.
 - `200 OK` - Simulation completed successfully
 - `400 Bad Request` - Invalid parameters
 - `413 Content Too Large` - Request body exceeds 1 MiB
+- `422 Unprocessable Content` - Building intersections would exceed the hard 25,000-feature response ceiling
 - `429 Too Many Requests` - RF worker capacity is busy; inspect `Retry-After`
 - `500 Internal Server Error` - Simulation error
 
 **Performance**:
 - Runtime depends on ray count, radius, and local building density.
-- Maximum rays: 720 per request.
+- Individual bounds remain 720 rays and 5,000 meters, but combinations must stay within the 25,000-feature estimate.
+- The reported 720-ray, 5,000-meter combination estimates 144,000 base features and is rejected before ray allocation.
 - The server uses a 120-second write timeout and caps each RF job at four workers.
 
 ---
@@ -675,6 +683,8 @@ The server allows two RF jobs globally but only one active job per client by def
 Rejected requests return `429` with `Retry-After`, `RateLimit-Limit`, `RateLimit-Remaining`, and `RateLimit-Reset`. Client identity comes from the socket peer unless `TRUSTED_PROXIES` explicitly lists the proxy CIDRs allowed to supply forwarding headers. These controls are process-local; a multi-replica deployment still needs a gateway-level shared budget.
 
 Set `RF_REQUEST_TIMEOUT_SECONDS` to bound compute time; the default is 60 seconds and expiration returns `504`. Keep RF concurrency aligned with CPU allocation and set `RF_API_KEY` for any non-private backend hop.
+
+`GET /api/buildings` has a separate transfer budget because each cache miss serves the complete dataset. Its conditional `304` responses bypass transfer admission, while uncached responses return the same `RateLimit-*` and `Retry-After` headers as RF routes when applicable. Configure a gateway-level bandwidth budget for multi-replica or internet-facing deployments.
 
 ---
 

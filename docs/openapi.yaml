@@ -30,8 +30,18 @@ paths:
   /api/buildings:
     get:
       summary: Active dataset building footprints
+      description: Large GeoJSON response with strong ETag caching and a separate per-client transfer budget. BUILDINGS_API_KEY can require origin authentication.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       responses:
-        "200": { description: Building GeoJSON, content: { application/geo+json: { schema: { $ref: "#/components/schemas/FeatureCollection" } } } }
+        "200":
+          description: Building GeoJSON
+          headers:
+            Cache-Control: { schema: { type: string }, description: Public or private one-hour cache policy with mandatory revalidation }
+            ETag: { schema: { type: string }, description: Strong SHA-256 content validator }
+          content: { application/geo+json: { schema: { $ref: "#/components/schemas/FeatureCollection" } } }
+        "304": { description: Client ETag matches; no dataset body is transferred }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
   /api/buildings/summary:
     get:
       summary: Building and demand quality summary
@@ -46,6 +56,7 @@ paths:
         "200": { description: Nested simulation and coverage_gaps results derived from one propagation pass }
         "400": { $ref: "#/components/responses/BadRequest" }
         "413": { $ref: "#/components/responses/TooLarge" }
+        "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
@@ -58,6 +69,7 @@ paths:
         "200": { description: Segmented propagation GeoJSON and statistics }
         "400": { $ref: "#/components/responses/BadRequest" }
         "413": { $ref: "#/components/responses/TooLarge" }
+        "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
@@ -69,6 +81,7 @@ paths:
       responses:
         "200": { description: Gap GeoJSON and demand statistics }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
@@ -80,6 +93,7 @@ paths:
       responses:
         "200": { description: Optimal azimuth and score breakdown }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
@@ -91,6 +105,7 @@ paths:
       responses:
         "200": { description: Network score and per-cell results }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
@@ -102,6 +117,7 @@ paths:
       responses:
         "200": { description: Optimized azimuths and network score }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
@@ -125,6 +141,7 @@ paths:
       responses:
         "200": { description: Baseline, ranked candidates, candidate GeoJSON, and explicit notes }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
@@ -195,16 +212,17 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      description: Required on expensive RF routes when RF_API_KEY is configured.
+      description: Carries RF_API_KEY or BUILDINGS_API_KEY when the selected route requires it.
     apiKeyAuth:
       type: apiKey
       in: header
       name: X-API-Key
-      description: Alternative header for RF_API_KEY when configured.
+      description: Alternative header for RF_API_KEY or BUILDINGS_API_KEY when configured.
   responses:
     BadRequest: { description: Invalid request, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
     TooLarge: { description: Request exceeds 1 MiB, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
-    Unauthorized: { description: RF_API_KEY is configured and the supplied credential is missing or invalid, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    TooComplex: { description: Actual segmented-ray output exceeded the hard 25,000-feature response ceiling, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    Unauthorized: { description: The route API key is configured and the supplied credential is missing or invalid, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
     Busy:
       description: Global capacity, per-client concurrency, or the per-client request budget rejected the request
       headers:
@@ -262,8 +280,8 @@ components:
     CommonRFSettings:
       type: object
       properties:
-        rays: { type: integer, minimum: 8, maximum: 720, default: 60 }
-        radius_m: { type: number, minimum: 25, maximum: 5000, default: 400 }
+        rays: { type: integer, minimum: 8, maximum: 720, default: 60, description: Combined with radius_m, rays × ceil(radius_m / 25) must not exceed 25,000. }
+        radius_m: { type: number, minimum: 25, maximum: 5000, default: 400, description: Combined with rays, rays × ceil(radius_m / 25) must not exceed 25,000. }
         frequency_ghz: { type: number, exclusiveMinimum: 0, maximum: 300, default: 28 }
         tx_power_dbm: { type: number, minimum: 0, maximum: 60, default: 30 }
         azimuth: { type: number, default: 0 }

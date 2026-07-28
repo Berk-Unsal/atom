@@ -65,7 +65,7 @@
       "page": "Algorithms and RF Physics",
       "title": "Pseudocode",
       "url": "./algorithms.html#pseudocode",
-      "text": "func TraceSector ( tx Location , req SimulationRequest ) GeoJSON { result := GeoJSON {} maxDistance := min ( req . radius_m , sensitivityLimitedDistance ( req )) for angle in sector_angles ( req . azimuth , req . beam_width , req . rays ) { current := tx wallLoss := 0.0 for segmentEnd in stepped_points ( tx , angle , maxDistance ) { segment := LineSegment { current , segmentEnd } intersections := rtree . Query ( segment . Bounds ()) for building in intersections { if segment_intersects_polygon ( segment , building . Polygon ) { wallLoss += penetration_loss ( req . frequency_ghz ) } } distance := haversine_distance ( tx , segmentEnd ) fspl := 20 * log10 ( distance ) + 20 * log10 ( req . frequency_ghz ) + 32.45 rxPower := EIRP_DBM - fspl - wallLoss if rxPower < ReceiverSensitivityDBm { break } result . Add ( LineString { current , segmentEnd }, rxPower ) current = segmentEnd } } return result }"
+      "text": "func TraceSector ( tx Location , req SimulationRequest ) GeoJSON { result := GeoJSON {} if req . rays * ceil ( req . radius_m / 25 ) > 25_000 { return error ( \"simulation response feature limit exceeded\" ) } maxDistance := min ( req . radius_m , sensitivityLimitedDistance ( req )) for angle in sector_angles ( req . azimuth , req . beam_width , req . rays ) { current := tx wallLoss := 0.0 for segmentEnd in stepped_points ( tx , angle , maxDistance ) { segment := LineSegment { current , segmentEnd } intersections := rtree . Query ( segment . Bounds ()) for building in intersections { if segment_intersects_polygon ( segment , building . Polygon ) { wallLoss += penetration_loss ( req . frequency_ghz ) } } distance := haversine_distance ( tx , segmentEnd ) fspl := 20 * log10 ( distance ) + 20 * log10 ( req . frequency_ghz ) + 32.45 rxPower := EIRP_DBM - fspl - wallLoss if rxPower < ReceiverSensitivityDBm { break } result . Add ( LineString { current , segmentEnd }, rxPower ) current = segmentEnd } } return result }"
     },
     {
       "page": "Algorithms and RF Physics",
@@ -155,19 +155,25 @@
       "page": "Algorithms and RF Physics",
       "title": "Benchmarks (Ankara Dataset)",
       "url": "./algorithms.html#benchmarks-ankara-dataset",
-      "text": "Operation Time Scaling Load GeoJSON 500 ms O(n) where n=12,000 buildings Build R-Tree 1 second O(n log n) Single ray trace < 1 μs O(log n) 90,000 rays ~2 seconds O(n log n) parallelized Optimization (72 iterations) 250 ms O(72 × n log n) with Goroutines API response < 100 ms p99 Network + serialization"
+      "text": "Operation Time Scaling Load GeoJSON 500 ms O(n) where n=12,000 buildings Build R-Tree 1 second O(n log n) Single ray trace < 1 μs O(log n) Up to 25,000 returned ray features Bounded O(n log n) parallelized Optimization (72 iterations) 250 ms O(72 × n log n) with Goroutines API response < 100 ms p99 Network + serialization"
     },
     {
       "page": "Algorithms and RF Physics",
       "title": "Memory Usage",
       "url": "./algorithms.html#memory-usage",
-      "text": "Component Size Buildings (GeoJSON) 80 MB (disk) → 40 MB (RAM) R-Tree indices 150 MB Tower locations 2 MB Working memory per request 5 MB Total footprint ~200 MB typical"
+      "text": "Component Size Buildings (GeoJSON) 80 MB (disk) → 40 MB (RAM) R-Tree indices 150 MB Tower locations 2 MB Returned ray features per request 25,000 maximum Total footprint ~200 MB typical"
     },
     {
       "page": "Algorithms and RF Physics",
       "title": "Validation & Limitations",
       "url": "./algorithms.html#validation--limitations",
       "text": ""
+    },
+    {
+      "page": "Algorithms and RF Physics",
+      "title": "Response Complexity Bound",
+      "url": "./algorithms.html#response-complexity-bound",
+      "text": "Before ray allocation, the API requires rays × ceil(radius_m / 25) ≤ 25,000 . The same atomic budget is shared by all ray workers and counts additional features created when building intersections split a 25-meter base segment. If the actual count reaches the ceiling, workers cancel the request before response assembly and serialization. Response assembly independently checks the ceiling, sizes its flattened slice from the actual count, and releases the per-ray slices when the top-level operation finishes."
     },
     {
       "page": "Algorithms and RF Physics",
@@ -203,7 +209,7 @@
       "page": "API Reference",
       "title": "Authentication",
       "url": "./api.html#authentication",
-      "text": "Expensive RF routes can require a shared backend key by setting RF_API_KEY . Send it as Authorization: Bearer <key> or X-API-Key: <key> ; an invalid or missing key receives 401 . The setting is off for localhost-only development. Public deployments should authenticate users at a TLS gateway and inject this backend key rather than exposing it to browser JavaScript."
+      "text": "Expensive RF routes can require a shared backend key by setting RF_API_KEY . Send it as Authorization: Bearer <key> or X-API-Key: <key> ; an invalid or missing key receives 401 . The setting is off for localhost-only development. Public deployments should authenticate users at a TLS gateway and inject this backend key rather than exposing it to browser JavaScript. The large building dataset route can independently require BUILDINGS_API_KEY through the same headers. Keep this key at an origin gateway when using shared or public caches."
     },
     {
       "page": "API Reference",
@@ -239,7 +245,7 @@
       "page": "API Reference",
       "title": "Get Buildings",
       "url": "./api.html#get-buildings",
-      "text": "Endpoint : GET /api/buildings Retrieve all building geometries as GeoJSON. Query Parameters : None Response : { \"type\" : \"FeatureCollection\" , \"features\" : [ { \"type\" : \"Feature\" , \"properties\" : { \"building\" : \"concrete\" , \"name\" : \"Ankara Central Tower\" , \"height\" : 45 }, \"geometry\" : { \"type\" : \"Polygon\" , \"coordinates\" : [[[ 33.8 , 39.9 ], [ 33.801 , 39.9 ], [ 33.8 , 39.9 ]]] } } ] } Performance : ~100 MB response, consider client-side filtering."
+      "text": "Endpoint : GET /api/buildings Retrieve all building geometries as GeoJSON. Query Parameters : None Response : { \"type\" : \"FeatureCollection\" , \"features\" : [ { \"type\" : \"Feature\" , \"properties\" : { \"building\" : \"concrete\" , \"name\" : \"Ankara Central Tower\" , \"height\" : 45 }, \"geometry\" : { \"type\" : \"Polygon\" , \"coordinates\" : [[[ 33.8 , 39.9 ], [ 33.801 , 39.9 ], [ 33.8 , 39.9 ]]] } } ] } Caching and limits : The approximately 117 MB response is identified by a strong SHA-256 ETag and served with Cache-Control: public, max-age=3600, must-revalidate by default. Revalidation with a matching If-None-Match returns 304 without consuming a download budget. Fresh transfers default to two globally, one concurrently per client, and two per minute per client. Configure these limits with MAX_CONCURRENT_BUILDING_DOWNLOADS , MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT , and BUILDING_DOWNLOADS_PER_MINUTE . Set BUILDINGS_API_KEY to require Authorization: Bearer <key> or X-API-Key: <key> . Authenticated responses use a private cache policy so shared caches cannot bypass the origin credential check."
     },
     {
       "page": "API Reference",
@@ -257,7 +263,7 @@
       "page": "API Reference",
       "title": "Simulate Propagation",
       "url": "./api.html#simulate-propagation",
-      "text": "Endpoint : POST /api/simulate Run RF propagation simulation with given parameters. Request Body : { \"tower_lon\" : 32.8541 , \"tower_lat\" : 39.9208 , \"rays\" : 120 , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"tx_power_dbm\" : 30 , \"azimuth\" : 45 , \"beam_width\" : 120 } Parameters : Parameter Type Range Required Description tower_lon number -180 - 180 Yes Tower longitude tower_lat number -90 - 90 Yes Tower latitude rays number 8 - 720 No Ray count used to sample the sector; defaults to 60 radius_m number 25 - 5000 No Maximum requested simulation radius; defaults to 400 frequency_ghz number > 0 - 300 No Network frequency in GHz; defaults to 28 tx_power_dbm number 0 - 60 No Transmit power before antenna gain; defaults to 30 azimuth number Any finite angle No Antenna direction, normalized to 0-360; defaults to 0 beam_width number 10 - 360 No Sector width in degrees; defaults to 120 Response : { \"geojson\" : { \"type\" : \"FeatureCollection\" , \"features\" : [ { \"type\" : \"Feature\" , \"properties\" : { \"ray_index\" : 0 , \"segment_index\" : 0 , \"signal_dbm\" : -78.4 , \"is_blocked\" : false }, \"geometry\" : { \"type\" : \"LineString\" , \"coordinates\" : [[ 32.8541 , 39.9208 ], [ 32.856 , 39.922 ]] } } ] }, \"stats\" : { \"blocked_pct\" : 42.5 , \"avg_rx_dbm\" : -88.2 , \"min_range_m\" : 24.7 , \"max_range_m\" : 398.1 } } Status Codes : 200 OK - Simulation completed successfully 400 Bad Request - Invalid parameters 413 Content Too Large - Request body exceeds 1 MiB 429 Too Many Requests - RF worker capacity is busy; inspect Retry-After 500 Internal Server Error - Simulation error Performance : Runtime depends on ray count, radius, and local building density. Maximum rays: 720 per request. The server uses a 120-second write timeout and caps each RF job at four workers."
+      "text": "Endpoint : POST /api/simulate Run RF propagation simulation with given parameters. Request Body : { \"tower_lon\" : 32.8541 , \"tower_lat\" : 39.9208 , \"rays\" : 120 , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"tx_power_dbm\" : 30 , \"azimuth\" : 45 , \"beam_width\" : 120 } Parameters : Parameter Type Range Required Description tower_lon number -180 - 180 Yes Tower longitude tower_lat number -90 - 90 Yes Tower latitude rays number 8 - 720 No Ray count used to sample the sector; defaults to 60 radius_m number 25 - 5000 No Maximum requested simulation radius; defaults to 400 frequency_ghz number > 0 - 300 No Network frequency in GHz; defaults to 28 tx_power_dbm number 0 - 60 No Transmit power before antenna gain; defaults to 30 azimuth number Any finite angle No Antenna direction, normalized to 0-360; defaults to 0 beam_width number 10 - 360 No Sector width in degrees; defaults to 120 rays and radius_m also share a response budget: rays × ceil(radius_m / 25) must not exceed 25,000 estimated base features. The full browser range remains valid, including 360 rays at 1,500 meters. Building intersections can split a base segment, so the ray workers also enforce 25,000 as a hard ceiling on actual collected features. Response : { \"geojson\" : { \"type\" : \"FeatureCollection\" , \"features\" : [ { \"type\" : \"Feature\" , \"properties\" : { \"ray_index\" : 0 , \"segment_index\" : 0 , \"signal_dbm\" : -78.4 , \"is_blocked\" : false }, \"geometry\" : { \"type\" : \"LineString\" , \"coordinates\" : [[ 32.8541 , 39.9208 ], [ 32.856 , 39.922 ]] } } ] }, \"stats\" : { \"blocked_pct\" : 42.5 , \"avg_rx_dbm\" : -88.2 , \"min_range_m\" : 24.7 , \"max_range_m\" : 398.1 } } Status Codes : 200 OK - Simulation completed successfully 400 Bad Request - Invalid parameters 413 Content Too Large - Request body exceeds 1 MiB 422 Unprocessable Content - Building intersections would exceed the hard 25,000-feature response ceiling 429 Too Many Requests - RF worker capacity is busy; inspect Retry-After 500 Internal Server Error - Simulation error Performance : Runtime depends on ray count, radius, and local building density. Individual bounds remain 720 rays and 5,000 meters, but combinations must stay within the 25,000-feature estimate. The reported 720-ray, 5,000-meter combination estimates 144,000 base features and is rejected before ray allocation. The server uses a 120-second write timeout and caps each RF job at four workers."
     },
     {
       "page": "API Reference",
@@ -365,7 +371,7 @@
       "page": "API Reference",
       "title": "Capacity and Rate Limiting",
       "url": "./api.html#capacity-and-rate-limiting",
-      "text": "The server allows two RF jobs globally but only one active job per client by default. A client also has a 20-request-per-minute budget. Configure these with MAX_CONCURRENT_RF_REQUESTS , MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT , and RF_REQUESTS_PER_MINUTE . Rejected requests return 429 with Retry-After , RateLimit-Limit , RateLimit-Remaining , and RateLimit-Reset . Client identity comes from the socket peer unless TRUSTED_PROXIES explicitly lists the proxy CIDRs allowed to supply forwarding headers. These controls are process-local; a multi-replica deployment still needs a gateway-level shared budget. Set RF_REQUEST_TIMEOUT_SECONDS to bound compute time; the default is 60 seconds and expiration returns 504 . Keep RF concurrency aligned with CPU allocation and set RF_API_KEY for any non-private backend hop."
+      "text": "The server allows two RF jobs globally but only one active job per client by default. A client also has a 20-request-per-minute budget. Configure these with MAX_CONCURRENT_RF_REQUESTS , MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT , and RF_REQUESTS_PER_MINUTE . Rejected requests return 429 with Retry-After , RateLimit-Limit , RateLimit-Remaining , and RateLimit-Reset . Client identity comes from the socket peer unless TRUSTED_PROXIES explicitly lists the proxy CIDRs allowed to supply forwarding headers. These controls are process-local; a multi-replica deployment still needs a gateway-level shared budget. Set RF_REQUEST_TIMEOUT_SECONDS to bound compute time; the default is 60 seconds and expiration returns 504 . Keep RF concurrency aligned with CPU allocation and set RF_API_KEY for any non-private backend hop. GET /api/buildings has a separate transfer budget because each cache miss serves the complete dataset. Its conditional 304 responses bypass transfer admission, while uncached responses return the same RateLimit-* and Retry-After headers as RF routes when applicable. Configure a gateway-level bandwidth budget for multi-replica or internet-facing deployments."
     },
     {
       "page": "API Reference",
@@ -407,7 +413,7 @@
       "page": "System Architecture",
       "title": "From a map action to an inspectable RF result",
       "url": "./architecture.html",
-      "text": "A.T.O.M is a local-first React and Go application. The browser owns planning state and map presentation; the Go service owns validation, bounded computation, spatial queries, and deterministic RF analysis. An optional sidecar adds 5G communication-path state without changing the radio model. Follow a request Open API reference Read RF algorithms Primary runtime Single container Backend Go 1.22 + Gin Frontend React + Leaflet Project persistence Browser IndexedDB Default RF capacity 2 concurrent jobs"
+      "text": "A.T.O.M is a local-first React and Go application. The browser owns planning state and map presentation; the Go service owns validation, bounded computation, spatial queries, and deterministic RF analysis. An optional sidecar adds 5G communication-path state without changing the radio model. Follow a request Open API reference Read RF algorithms Primary runtime Single container Backend Go 1.26 + Gin Frontend React + Leaflet Project persistence Browser IndexedDB Default RF capacity 2 concurrent jobs"
     },
     {
       "page": "System Architecture",
@@ -651,6 +657,12 @@
     },
     {
       "page": "Changelog",
+      "title": "Security",
+      "url": "./changelog.html#security",
+      "text": "Upgrade backend and adapter builds to Go 1.26, frontend and CI builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so maintained toolchains provide current security fixes. Protect the full building-dataset response with strong ETag caching, conditional 304 responses, separate global and per-client transfer budgets, and optional origin API-key authentication. Bound segmented simulations to 25,000 estimated and actual GeoJSON features, reject oversized ray/radius combinations before allocation, and cancel parallel ray workers if building splits exhaust the shared feature budget. Pin every external GitHub Action to an immutable commit SHA, stop checkout from persisting release credentials, and enforce pinned workflow dependencies in CI."
+    },
+    {
+      "page": "Changelog",
       "title": "0.3.0 - 2026-07-26",
       "url": "./changelog.html#030---2026-07-26",
       "text": ""
@@ -737,7 +749,7 @@
       "page": "Contributing",
       "title": "Setup Development Environment",
       "url": "./contributing.html#setup-development-environment",
-      "text": "Backend : # Install Go 1.21+ cd backend-go go mod download go run . Frontend : # Install Node.js 18+ cd frontend-react npm install npm run dev Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
+      "text": "Backend : # Install Go 1.26+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
     },
     {
       "page": "Contributing",
@@ -911,7 +923,7 @@
       "page": "Deployment",
       "title": "Configuration",
       "url": "./deployment.html#configuration",
-      "text": "Variable Default Purpose BIND_ADDRESS 127.0.0.1 ( 0.0.0.0 in container) HTTP listener address; Compose publishes it on loopback by default PORT 8080 Public HTTP listener inside the container FRONTEND_DIST_PATH /app/dist Compiled frontend bundle ATOM_DATASET_DIR /app/data-pipeline Directory containing manifest.json and referenced data files MAX_CONCURRENT_RF_REQUESTS 2 Process-wide expensive RF admission limit MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT 1 Maximum simultaneous expensive jobs from one client identity RF_REQUESTS_PER_MINUTE 20 Per-client expensive-route request budget per process RF_REQUEST_TIMEOUT_SECONDS 60 Hard computation deadline for each expensive RF request RF_API_KEY unset Require this key on expensive RF routes as a bearer token or X-API-Key when configured TRUSTED_PROXIES unset Comma-separated proxy CIDRs whose forwarded client-IP headers are trusted CORE_LAB_ENABLED false Enables backend proxy routes for the optional adapter CORE_LAB_BASE_URL unset Internal adapter URL when Core Lab is enabled The manifest-driven dataset directory is the authoritative data boundary; individual building and tower paths are not configured independently."
+      "text": "Variable Default Purpose BIND_ADDRESS 127.0.0.1 ( 0.0.0.0 in container) HTTP listener address; Compose publishes it on loopback by default PORT 8080 Public HTTP listener inside the container FRONTEND_DIST_PATH /app/dist Compiled frontend bundle ATOM_DATASET_DIR /app/data-pipeline Directory containing manifest.json and referenced data files MAX_CONCURRENT_RF_REQUESTS 2 Process-wide expensive RF admission limit MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT 1 Maximum simultaneous expensive jobs from one client identity RF_REQUESTS_PER_MINUTE 20 Per-client expensive-route request budget per process RF_REQUEST_TIMEOUT_SECONDS 60 Hard computation deadline for each expensive RF request RF_API_KEY unset Require this key on expensive RF routes as a bearer token or X-API-Key when configured MAX_CONCURRENT_BUILDING_DOWNLOADS 2 Process-wide admission limit for fresh full-dataset transfers MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT 1 Maximum simultaneous full-dataset transfers from one client identity BUILDING_DOWNLOADS_PER_MINUTE 2 Per-client fresh building-dataset transfer budget per process BUILDINGS_API_KEY unset Require this key on the full building-dataset route when configured TRUSTED_PROXIES unset Comma-separated proxy CIDRs whose forwarded client-IP headers are trusted CORE_LAB_ENABLED false Enables backend proxy routes for the optional adapter CORE_LAB_BASE_URL unset Internal adapter URL when Core Lab is enabled The manifest-driven dataset directory is the authoritative data boundary; individual building and tower paths are not configured independently."
     },
     {
       "page": "Deployment",
@@ -923,13 +935,13 @@
       "page": "Deployment",
       "title": "Health And Capacity",
       "url": "./deployment.html#health-and-capacity",
-      "text": "GET /healthz is process liveness and can succeed before the application is ready. GET /readyz requires valid data, loaded tower/building indexes, and the frontend bundle. Request bodies are limited to 1 MiB; oversized requests return 413 . Two RF jobs are admitted globally, but one client can run only one at a time by default. Each client also receives 20 expensive-route attempts per minute. Rejection returns 429 , Retry-After , and rate-budget headers. Each expensive job has a 60-second computation deadline and uses no more than four workers. Ray, geometry, grid, measurement, and recommendation loops observe cancellation. HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120 seconds for writes, and 60 seconds idle. Raise MAX_CONCURRENT_RF_REQUESTS or its per-client counterpart only after measuring CPU, memory, and tail latency with representative two-to-six-cell requests. Admission and request budgets are process-local; use a gateway for a shared multi-replica budget."
+      "text": "GET /healthz is process liveness and can succeed before the application is ready. GET /readyz requires valid data, loaded tower/building indexes, and the frontend bundle. Request bodies are limited to 1 MiB; oversized requests return 413 . Two RF jobs are admitted globally, but one client can run only one at a time by default. Each client also receives 20 expensive-route attempts per minute. Rejection returns 429 , Retry-After , and rate-budget headers. Fresh full-building-dataset responses are limited to two globally, one concurrently per client, and two per minute per client. A strong content-hash ETag and one-hour browser/shared-cache lifetime avoid retransferring the approximately 117 MB file; matching revalidations return 304 before download admission. Each expensive job has a 60-second computation deadline and uses no more than four workers. Ray, geometry, grid, measurement, and recommendation loops observe cancellation. Segmented-ray requests must satisfy rays × ceil(radius_m / 25) ≤ 25,000 ; a shared worker budget also prevents building-intersection splits from collecting or serializing more than 25,000 response features. HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120 seconds for writes, and 60 seconds idle. Raise MAX_CONCURRENT_RF_REQUESTS or its per-client counterpart only after measuring CPU, memory, and tail latency with representative two-to-six-cell requests. Admission and request budgets are process-local; use a gateway for a shared multi-replica budget."
     },
     {
       "page": "Deployment",
       "title": "Reverse Proxy Boundary",
       "url": "./deployment.html#reverse-proxy-boundary",
-      "text": "Compose binds the application to 127.0.0.1 by default. Set ATOM_BIND_ADDRESS only when another interface must accept traffic. For an internet-facing deployment, set a strong RF_API_KEY and place a trusted proxy or gateway in front of port 8080 for: TLS termination and authentication. Request-rate and source policy. Access logging and security headers. A response timeout longer than the backend's 120-second RF write window. Authenticated clients send either Authorization: Bearer <key> or X-API-Key: <key> . The bundled browser UI does not store an API key, so deployments that set RF_API_KEY should terminate user authentication at a same-origin gateway and inject the backend key there. Keep TRUSTED_PROXIES unset unless the server is actually behind those proxies; otherwise forwarded IP headers are ignored for per-client budgets. Keep the Core Lab adapter private to the service network unless direct access is explicitly required."
+      "text": "Compose binds the application to 127.0.0.1 by default. Set ATOM_BIND_ADDRESS only when another interface must accept traffic. For an internet-facing deployment, set strong RF_API_KEY and BUILDINGS_API_KEY values and place a trusted proxy or gateway in front of port 8080 for: TLS termination and authentication. Request-rate and source policy. Access logging and security headers. A response timeout longer than the backend's 120-second RF write window. Authenticated clients send either Authorization: Bearer <key> or X-API-Key: <key> . The bundled browser UI does not store API keys, so deployments that enable either backend key should terminate user authentication at a same-origin gateway and inject the appropriate key there. Keep TRUSTED_PROXIES unset unless the server is actually behind those proxies; otherwise forwarded IP headers are ignored for per-client budgets. Keep the Core Lab adapter private to the service network unless direct access is explicitly required."
     },
     {
       "page": "Deployment",
@@ -941,7 +953,7 @@
       "page": "Deployment",
       "title": "Tagged Multi-Architecture Images",
       "url": "./deployment.html#tagged-multi-architecture-images",
-      "text": "Pushing a v* Git tag triggers .github/workflows/release.yml . The workflow: Pulls Git LFS data. Builds Linux AMD64 and ARM64 images. Embeds the tag and commit into /api/meta using Go linker values. Publishes semantic-version tags to ghcr.io/<repository-owner>/atom . Use immutable version tags in deployments. The running application exposes its version, commit, model version, and dataset identity in Data and /api/meta ."
+      "text": "Pushing a v* Git tag triggers .github/workflows/release.yml . The workflow: Pulls Git LFS data. Builds Linux AMD64 and ARM64 images. Embeds the tag and commit into /api/meta using Go linker values. Publishes semantic-version tags to ghcr.io/<repository-owner>/atom . Every external action used by the quality and release workflows is pinned to a full commit SHA, with its release version retained in a comment for review. CI rejects mutable action references, checkout does not persist its Git credential, and weekly Dependabot updates keep the reviewed pins current. Use immutable version tags in deployments. The running application exposes its version, commit, model version, and dataset identity in Data and /api/meta ."
     },
     {
       "page": "Deployment",
@@ -953,13 +965,13 @@
       "page": "Deployment",
       "title": "Verification Checklist",
       "url": "./deployment.html#verification-checklist",
-      "text": "/healthz , /readyz , and /api/meta return expected process, version, model, and dataset details. The Data tool shows the intended pack provenance and hashes. A single sector run completes and report metadata matches /api/meta . A concurrent-capacity test returns bounded 429 behavior instead of unbounded CPU growth. Project export/import works in a clean browser profile. Public deployments enforce TLS and user authentication at the gateway and set RF_API_KEY on the backend hop. See Download and Use , System Architecture , and the OpenAPI contract ."
+      "text": "/healthz , /readyz , and /api/meta return expected process, version, model, and dataset details. The Data tool shows the intended pack provenance and hashes. A single sector run completes and report metadata matches /api/meta . A concurrent-capacity test returns bounded 429 behavior instead of unbounded CPU growth. Project export/import works in a clean browser profile. Public deployments enforce TLS and user authentication at the gateway and set RF_API_KEY plus BUILDINGS_API_KEY on the backend hop. See Download and Use , System Architecture , and the OpenAPI contract ."
     },
     {
       "page": "Download and Use",
       "title": "Start locally, then follow the workflow you need",
       "url": "./download.html",
-      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.22 Frontend Node 18+"
+      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.26 Frontend Node 24+"
     },
     {
       "page": "Download and Use",
@@ -1019,13 +1031,13 @@
       "page": "Download and Use",
       "title": "Terminal 1: Go API",
       "url": "./download.html#development-heading",
-      "text": "Requires Go 1.22 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
+      "text": "Requires Go 1.26 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
     },
     {
       "page": "Download and Use",
       "title": "Terminal 2: React workspace",
       "url": "./download.html#development-heading",
-      "text": "Requires Node.js 18 or newer; Node 22 LTS is recommended. Copy cd frontend-react npm ci npm run dev Development workspace: http://localhost:5173 MAP The default basemap needs network access RF analysis and Ankara data run locally. The Leaflet basemap still requests OpenStreetMap tiles unless you configure a separate local tile source."
+      "text": "Requires Node.js 24 or newer; Node 24 LTS is recommended. Copy cd frontend-react npm ci npm run dev Development workspace: http://localhost:5173 MAP The default basemap needs network access RF analysis and Ankara data run locally. The Leaflet basemap still requests OpenStreetMap tiles unless you configure a separate local tile source."
     },
     {
       "page": "Download and Use",

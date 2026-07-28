@@ -219,6 +219,28 @@ files</td>
 <code>X-API-Key</code> when configured</td>
 </tr>
 <tr>
+<td><code>MAX_CONCURRENT_BUILDING_DOWNLOADS</code></td>
+<td><code>2</code></td>
+<td>Process-wide admission limit for fresh full-dataset transfers</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT</code></td>
+<td><code>1</code></td>
+<td>Maximum simultaneous full-dataset transfers from one client
+identity</td>
+</tr>
+<tr>
+<td><code>BUILDING_DOWNLOADS_PER_MINUTE</code></td>
+<td><code>2</code></td>
+<td>Per-client fresh building-dataset transfer budget per process</td>
+</tr>
+<tr>
+<td><code>BUILDINGS_API_KEY</code></td>
+<td>unset</td>
+<td>Require this key on the full building-dataset route when
+configured</td>
+</tr>
+<tr>
 <td><code>TRUSTED_PROXIES</code></td>
 <td>unset</td>
 <td>Comma-separated proxy CIDRs whose forwarded client-IP headers are
@@ -270,9 +292,18 @@ indexes, and the frontend bundle.</li>
 at a time by default. Each client also receives 20 expensive-route
 attempts per minute. Rejection returns <code>429</code>,
 <code>Retry-After</code>, and rate-budget headers.</li>
+<li>Fresh full-building-dataset responses are limited to two globally,
+one concurrently per client, and two per minute per client. A strong
+content-hash <code>ETag</code> and one-hour browser/shared-cache
+lifetime avoid retransferring the approximately 117 MB file; matching
+revalidations return <code>304</code> before download admission.</li>
 <li>Each expensive job has a 60-second computation deadline and uses no
 more than four workers. Ray, geometry, grid, measurement, and
 recommendation loops observe cancellation.</li>
+<li>Segmented-ray requests must satisfy
+<code>rays × ceil(radius_m / 25) ≤ 25,000</code>; a shared worker budget
+also prevents building-intersection splits from collecting or
+serializing more than 25,000 response features.</li>
 <li>HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120
 seconds for writes, and 60 seconds idle.</li>
 </ul>
@@ -283,9 +314,9 @@ are process-local; use a gateway for a shared multi-replica budget.</p>
 <h2 id="reverse-proxy-boundary">Reverse Proxy Boundary</h2>
 <p>Compose binds the application to <code>127.0.0.1</code> by default.
 Set <code>ATOM_BIND_ADDRESS</code> only when another interface must
-accept traffic. For an internet-facing deployment, set a strong
-<code>RF_API_KEY</code> and place a trusted proxy or gateway in front of
-port 8080 for:</p>
+accept traffic. For an internet-facing deployment, set strong
+<code>RF_API_KEY</code> and <code>BUILDINGS_API_KEY</code> values and
+place a trusted proxy or gateway in front of port 8080 for:</p>
 <ul>
 <li>TLS termination and authentication.</li>
 <li>Request-rate and source policy.</li>
@@ -296,11 +327,11 @@ window.</li>
 <p>Authenticated clients send either
 <code>Authorization: Bearer &lt;key&gt;</code> or
 <code>X-API-Key: &lt;key&gt;</code>. The bundled browser UI does not
-store an API key, so deployments that set <code>RF_API_KEY</code> should
+store API keys, so deployments that enable either backend key should
 terminate user authentication at a same-origin gateway and inject the
-backend key there. Keep <code>TRUSTED_PROXIES</code> unset unless the
-server is actually behind those proxies; otherwise forwarded IP headers
-are ignored for per-client budgets.</p>
+appropriate key there. Keep <code>TRUSTED_PROXIES</code> unset unless
+the server is actually behind those proxies; otherwise forwarded IP
+headers are ignored for per-client budgets.</p>
 <p>Keep the Core Lab adapter private to the service network unless
 direct access is explicitly required.</p>
 <h2 id="optional-5g-core-lab">Optional 5G Core Lab</h2>
@@ -324,6 +355,11 @@ linker values.</li>
 <li>Publishes semantic-version tags to
 <code>ghcr.io/&lt;repository-owner&gt;/atom</code>.</li>
 </ol>
+<p>Every external action used by the quality and release workflows is
+pinned to a full commit SHA, with its release version retained in a
+comment for review. CI rejects mutable action references, checkout does
+not persist its Git credential, and weekly Dependabot updates keep the
+reviewed pins current.</p>
 <p>Use immutable version tags in deployments. The running application
 exposes its version, commit, model version, and dataset identity in Data
 and <code>/api/meta</code>.</p>
@@ -351,7 +387,8 @@ dataset details.</li>
 instead of unbounded CPU growth.</li>
 <li>Project export/import works in a clean browser profile.</li>
 <li>Public deployments enforce TLS and user authentication at the
-gateway and set <code>RF_API_KEY</code> on the backend hop.</li>
+gateway and set <code>RF_API_KEY</code> plus
+<code>BUILDINGS_API_KEY</code> on the backend hop.</li>
 </ul>
 <p>See <a href="download.html">Download and Use</a>, <a
 href="architecture.html">System Architecture</a>, and the <a

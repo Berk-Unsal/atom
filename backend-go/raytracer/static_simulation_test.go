@@ -19,6 +19,60 @@ func TestSegmentedRayStopsOnCanceledContext(t *testing.T) {
 	}
 }
 
+func TestSimulationFeatureEstimateAndPreflightLimit(t *testing.T) {
+	if got := EstimatedSimulationFeatureCount(720, 5000); got != 144000 {
+		t.Fatalf("estimated features = %d, want 144000", got)
+	}
+	if got := EstimatedSimulationFeatureCount(int(^uint(0)>>1), math.Inf(1)); got != int(^uint(0)>>1) {
+		t.Fatalf("overflow-safe estimate = %d", got)
+	}
+	if validationError := ValidateSimulationFeatureBudget(360, 1500); validationError != "" {
+		t.Fatalf("frontend maximum rejected: %s", validationError)
+	}
+	if validationError := ValidateSimulationFeatureBudget(720, 5000); validationError == "" {
+		t.Fatal("reported worst-case request passed the feature budget")
+	}
+
+	_, err := SimulateStaticRaysContext(context.Background(), StaticSimulationRequest{
+		TowerLon: 32.85, TowerLat: 39.92,
+		Rays: 720, RadiusMeters: 5000,
+		FrequencyGHz: 28, TxPowerDBm: 30, BeamWidthDeg: 120,
+	}, EmptyBuildingIndex())
+	if !errors.Is(err, ErrSimulationFeatureLimit) {
+		t.Fatalf("simulation error = %v, want feature limit", err)
+	}
+}
+
+func TestSegmentCollectionStopsAtSharedFeatureBudget(t *testing.T) {
+	budget := newSimulationFeatureBudget(2)
+	_, _, err := simulateSegmentedRayWithBudgetContext(
+		context.Background(),
+		Point{Lon: 32.85, Lat: 39.92},
+		0,
+		90,
+		StaticSimulationRequest{
+			Rays: 8, RadiusMeters: 100,
+			FrequencyGHz: 1, TxPowerDBm: 60, BeamWidthDeg: 120,
+		},
+		EmptyBuildingIndex(),
+		budget,
+	)
+	if !errors.Is(err, ErrSimulationFeatureLimit) {
+		t.Fatalf("simulation error = %v, want feature limit", err)
+	}
+	if got := budget.used.Load(); got != 3 {
+		t.Fatalf("reserved features = %d, want first rejected reservation at 3", got)
+	}
+}
+
+func TestResponseAssemblyRejectsActualFeatureOverflow(t *testing.T) {
+	profiles := []rayCoverageProfile{{segments: make([]RayFeature, MaxSimulationResponseFeatures+1)}}
+	_, err := staticSimulationResponseFromProfilesContext(context.Background(), StaticSimulationRequest{}, profiles)
+	if !errors.Is(err, ErrSimulationFeatureLimit) {
+		t.Fatalf("response error = %v, want feature limit", err)
+	}
+}
+
 func TestAnalyzeSectorMatchesStandaloneResponses(t *testing.T) {
 	req := StaticSimulationRequest{
 		TowerLon: 32, TowerLat: 39, Rays: 12, RadiusMeters: 100,

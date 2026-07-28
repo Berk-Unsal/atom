@@ -82,6 +82,9 @@ A.T.O.M uses a **deterministic segmented sector raytracer**:
 ```go
 func TraceSector(tx Location, req SimulationRequest) GeoJSON {
     result := GeoJSON{}
+    if req.rays * ceil(req.radius_m / 25) > 25_000 {
+        return error("simulation response feature limit exceeded")
+    }
     maxDistance := min(req.radius_m, sensitivityLimitedDistance(req))
 
     for angle in sector_angles(req.azimuth, req.beam_width, req.rays) {
@@ -356,7 +359,7 @@ for i := 1; i <= 72; i++ {
 | Load GeoJSON | 500 ms | O(n) where n=12,000 buildings |
 | Build R-Tree | 1 second | O(n log n) |
 | Single ray trace | < 1 μs | O(log n) |
-| 90,000 rays | ~2 seconds | O(n log n) parallelized |
+| Up to 25,000 returned ray features | Bounded | O(n log n) parallelized |
 | Optimization (72 iterations) | 250 ms | O(72 × n log n) with Goroutines |
 | API response | < 100 ms p99 | Network + serialization |
 
@@ -367,12 +370,16 @@ for i := 1; i <= 72; i++ {
 | Buildings (GeoJSON) | 80 MB (disk) → 40 MB (RAM) |
 | R-Tree indices | 150 MB |
 | Tower locations | 2 MB |
-| Working memory per request | 5 MB |
+| Returned ray features per request | 25,000 maximum |
 | **Total footprint** | ~200 MB typical |
 
 ---
 
 ## Validation & Limitations
+
+### Response Complexity Bound
+
+Before ray allocation, the API requires `rays × ceil(radius_m / 25) ≤ 25,000`. The same atomic budget is shared by all ray workers and counts additional features created when building intersections split a 25-meter base segment. If the actual count reaches the ceiling, workers cancel the request before response assembly and serialization. Response assembly independently checks the ceiling, sizes its flattened slice from the actual count, and releases the per-ray slices when the top-level operation finishes.
 
 ### Model Confidence
 

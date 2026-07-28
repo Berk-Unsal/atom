@@ -2,10 +2,13 @@ package raytracer
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"math"
 	"runtime"
 	"sort"
 	"sync"
+	"sync/atomic"
 )
 
 const ReceiverSensitivity = -115.0 // dBm
@@ -18,6 +21,37 @@ const CoverageTieBreakerMaxMeters = 500.0
 const NetworkOverlapPenaltyPerBuilding = 2500.0
 const CoveredBuildingThresholdDBm = -100.0
 const MaxCoverageGapFeatures = 500
+const MaxSimulationResponseFeatures = 25000
+
+var ErrSimulationFeatureLimit = errors.New("simulation response feature limit exceeded")
+
+func EstimatedSimulationFeatureCount(rays int, radiusMeters float64) int {
+	if rays <= 0 || radiusMeters <= 0 {
+		return 0
+	}
+	maxInt := int(^uint(0) >> 1)
+	segmentsPerRayFloat := math.Ceil(radiusMeters / SegmentStepMeters)
+	if math.IsNaN(segmentsPerRayFloat) || math.IsInf(segmentsPerRayFloat, 0) || segmentsPerRayFloat > float64(maxInt) {
+		return maxInt
+	}
+	segmentsPerRay := int(segmentsPerRayFloat)
+	if segmentsPerRay > 0 && rays > maxInt/segmentsPerRay {
+		return maxInt
+	}
+	return rays * segmentsPerRay
+}
+
+func ValidateSimulationFeatureBudget(rays int, radiusMeters float64) string {
+	estimated := EstimatedSimulationFeatureCount(rays, radiusMeters)
+	if estimated <= MaxSimulationResponseFeatures {
+		return ""
+	}
+	return fmt.Sprintf(
+		"rays and radius_m exceed the %d-feature simulation response limit (estimated %d); reduce rays or radius_m",
+		MaxSimulationResponseFeatures,
+		estimated,
+	)
+}
 
 type StaticSimulationRequest struct {
 	TowerLon            float64 `json:"tower_lon"`
@@ -238,18 +272,30 @@ func SimulateStaticRaysContext(ctx context.Context, req StaticSimulationRequest,
 	if err != nil {
 		return StaticSimulationResponse{}, err
 	}
+	defer releaseRayProfileSegments(profiles)
 	return staticSimulationResponseFromProfilesContext(ctx, req, profiles)
 }
 
 func staticSimulationResponseFromProfilesContext(ctx context.Context, req StaticSimulationRequest, profiles []rayCoverageProfile) (StaticSimulationResponse, error) {
-	features := make([]RayFeature, 0, req.Rays*int(math.Ceil(req.RadiusMeters/SegmentStepMeters)))
-	terminals := make([]rayTerminal, len(profiles))
-	for index, profile := range profiles {
+	featureCount := 0
+	for index := range profiles {
 		if err := ctx.Err(); err != nil {
 			return StaticSimulationResponse{}, err
 		}
-		features = append(features, profile.segments...)
-		terminals[index] = profile.terminal
+		if len(profiles[index].segments) > MaxSimulationResponseFeatures-featureCount {
+			return StaticSimulationResponse{}, ErrSimulationFeatureLimit
+		}
+		featureCount += len(profiles[index].segments)
+	}
+
+	features := make([]RayFeature, 0, featureCount)
+	terminals := make([]rayTerminal, len(profiles))
+	for index := range profiles {
+		if err := ctx.Err(); err != nil {
+			return StaticSimulationResponse{}, err
+		}
+		features = append(features, profiles[index].segments...)
+		terminals[index] = profiles[index].terminal
 	}
 
 	sort.SliceStable(features, func(i, j int) bool {
@@ -275,6 +321,7 @@ func AnalyzeSectorContext(ctx context.Context, req StaticSimulationRequest, buil
 	if err != nil {
 		return SectorAnalysisResponse{}, err
 	}
+	defer releaseRayProfileSegments(profiles)
 	simulation, err := staticSimulationResponseFromProfilesContext(ctx, req, profiles)
 	if err != nil {
 		return SectorAnalysisResponse{}, err
@@ -606,6 +653,7 @@ func FindCoverageGapsContext(ctx context.Context, req StaticSimulationRequest, b
 	if err != nil {
 		return CoverageGapResponse{}, err
 	}
+	defer releaseRayProfileSegments(profiles)
 	candidates, err := demandCandidatesInBeamContext(ctx, origin, req, buildings)
 	if err != nil {
 		return CoverageGapResponse{}, err
@@ -701,6 +749,25 @@ type nearbyBeamSample struct {
 	rx    float64
 }
 
+type simulationFeatureBudget struct {
+	limit int64
+	used  atomic.Int64
+}
+
+func newSimulationFeatureBudget(limit int) *simulationFeatureBudget {
+	return &simulationFeatureBudget{limit: int64(limit)}
+}
+
+func (budget *simulationFeatureBudget) reserve() error {
+	if budget == nil {
+		return nil
+	}
+	if budget.used.Add(1) > budget.limit {
+		return ErrSimulationFeatureLimit
+	}
+	return nil
+}
+
 func BuildingCoverageMap(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) map[string]float64 {
 	NormalizeStaticSimulationRequest(&req)
 	coverage, _ := BuildingCoverageMapContext(context.Background(), origin, req, buildings)
@@ -712,7 +779,14 @@ func BuildingCoverageMapContext(ctx context.Context, origin Point, req StaticSim
 	if err != nil {
 		return nil, err
 	}
+	defer releaseRayProfileSegments(profiles)
 	return buildingCoverageMapFromProfilesContext(ctx, profiles)
+}
+
+func releaseRayProfileSegments(profiles []rayCoverageProfile) {
+	for index := range profiles {
+		profiles[index].segments = nil
+	}
 }
 
 func buildBeamCoverageProfiles(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) []rayCoverageProfile {
@@ -722,7 +796,14 @@ func buildBeamCoverageProfiles(origin Point, req StaticSimulationRequest, buildi
 }
 
 func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) ([]rayCoverageProfile, error) {
+	if validationError := ValidateSimulationFeatureBudget(req.Rays, req.RadiusMeters); validationError != "" {
+		return nil, fmt.Errorf("%w: %s", ErrSimulationFeatureLimit, validationError)
+	}
+
+	workCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	profiles := make([]rayCoverageProfile, req.Rays)
+	featureBudget := newSimulationFeatureBudget(MaxSimulationResponseFeatures)
 	workerCount := runtime.NumCPU()
 	if workerCount > 4 {
 		workerCount = 4
@@ -735,6 +816,7 @@ func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req Sta
 	}
 
 	jobs := make(chan int)
+	workerErrors := make(chan error, 1)
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(workerCount)
 	for worker := 0; worker < workerCount; worker++ {
@@ -742,15 +824,20 @@ func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req Sta
 			defer waitGroup.Done()
 			for {
 				select {
-				case <-ctx.Done():
+				case <-workCtx.Done():
 					return
 				case index, ok := <-jobs:
 					if !ok {
 						return
 					}
 					angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
-					segments, terminal, err := simulateSegmentedRayContext(ctx, origin, index, angle, req, buildings)
+					segments, terminal, err := simulateSegmentedRayWithBudgetContext(workCtx, origin, index, angle, req, buildings, featureBudget)
 					if err != nil {
+						select {
+						case workerErrors <- err:
+						default:
+						}
+						cancel()
 						return
 					}
 					profiles[index] = rayCoverageProfile{angle: angle, segments: segments, terminal: terminal}
@@ -760,10 +847,18 @@ func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req Sta
 	}
 	for index := 0; index < req.Rays; index++ {
 		select {
-		case <-ctx.Done():
+		case <-workCtx.Done():
 			close(jobs)
 			waitGroup.Wait()
-			return nil, ctx.Err()
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+			select {
+			case err := <-workerErrors:
+				return nil, err
+			default:
+				return nil, workCtx.Err()
+			}
 		case jobs <- index:
 		}
 	}
@@ -771,6 +866,11 @@ func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req Sta
 	waitGroup.Wait()
 	if err := ctx.Err(); err != nil {
 		return nil, err
+	}
+	select {
+	case err := <-workerErrors:
+		return nil, err
+	default:
 	}
 	return profiles, nil
 }
@@ -1073,11 +1173,15 @@ func simulateRayTerminal(origin Point, rayIndex int, angle float64, req StaticSi
 }
 
 func simulateSegmentedRayContext(ctx context.Context, origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex) ([]RayFeature, rayTerminal, error) {
-	return simulateSegmentedRayInternalContext(ctx, origin, rayIndex, angle, req, buildings, true)
+	return simulateSegmentedRayWithBudgetContext(ctx, origin, rayIndex, angle, req, buildings, nil)
+}
+
+func simulateSegmentedRayWithBudgetContext(ctx context.Context, origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex, featureBudget *simulationFeatureBudget) ([]RayFeature, rayTerminal, error) {
+	return simulateSegmentedRayInternalWithBudgetContext(ctx, origin, rayIndex, angle, req, buildings, true, featureBudget)
 }
 
 func simulateRayTerminalContext(ctx context.Context, origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex) (rayTerminal, error) {
-	_, terminal, err := simulateSegmentedRayInternalContext(ctx, origin, rayIndex, angle, req, buildings, false)
+	_, terminal, err := simulateSegmentedRayInternalWithBudgetContext(ctx, origin, rayIndex, angle, req, buildings, false, nil)
 	return terminal, err
 }
 
@@ -1087,6 +1191,10 @@ func simulateSegmentedRayInternal(origin Point, rayIndex int, angle float64, req
 }
 
 func simulateSegmentedRayInternalContext(ctx context.Context, origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex, collectFeatures bool) ([]RayFeature, rayTerminal, error) {
+	return simulateSegmentedRayInternalWithBudgetContext(ctx, origin, rayIndex, angle, req, buildings, collectFeatures, nil)
+}
+
+func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin Point, rayIndex int, angle float64, req StaticSimulationRequest, buildings *BuildingIndex, collectFeatures bool, featureBudget *simulationFeatureBudget) ([]RayFeature, rayTerminal, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, rayTerminal{}, err
 	}
@@ -1164,6 +1272,9 @@ func simulateSegmentedRayInternalContext(ctx context.Context, origin Point, rayI
 			isTerminalBlock := wallRx <= ReceiverSensitivity
 			if collectFeatures {
 				if ApproxDistanceMeters(segmentStartPoint, intersection.point) > 0.01 {
+					if err := featureBudget.reserve(); err != nil {
+						return nil, rayTerminal{}, err
+					}
 					segments = append(segments, makeRaySegmentFeature(
 						segmentStartPoint,
 						intersection.point,
@@ -1218,6 +1329,9 @@ func simulateSegmentedRayInternalContext(ctx context.Context, origin Point, rayI
 				return nil, rayTerminal{}, err
 			}
 			if collectFeatures && ApproxDistanceMeters(segmentStartPoint, stopPoint) > 0.01 {
+				if err := featureBudget.reserve(); err != nil {
+					return nil, rayTerminal{}, err
+				}
 				segments = append(segments, makeRaySegmentFeature(
 					segmentStartPoint,
 					stopPoint,
@@ -1252,6 +1366,9 @@ func simulateSegmentedRayInternalContext(ctx context.Context, origin Point, rayI
 		}
 		pathLoss := FreeSpacePathLossMetersGHz(endDistance, req.FrequencyGHz) + cumulativeWallLoss
 		if collectFeatures {
+			if err := featureBudget.reserve(); err != nil {
+				return nil, rayTerminal{}, err
+			}
 			segments = append(segments, makeRaySegmentFeature(
 				segmentStartPoint,
 				nextPoint,

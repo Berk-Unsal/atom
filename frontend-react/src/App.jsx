@@ -34,6 +34,7 @@ import { runNetworkSimulationQueue } from "./utils/networkSimulationQueue.js";
 import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/polygonSelection.js";
 import { parseMeasurementCsv } from "./utils/measurementCsv.js";
 import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
+import { compactRecommendationResponse } from "./utils/recommendations.js";
 import {
   buildInterferencePayload,
   buildMeasurementPayload,
@@ -260,7 +261,7 @@ export default function App() {
     setInterferenceAnalysis(artifacts?.interferenceAnalysis ?? EMPTY_INTERFERENCE_ANALYSIS);
     setNetworkOptimization(artifacts?.networkOptimization ?? null);
     setOptimizationDiagnostics(artifacts?.optimizationDiagnostics ?? null);
-    setSiteRecommendations(artifacts?.siteRecommendations ?? null);
+    setSiteRecommendations(compactRecommendationResponse(artifacts?.siteRecommendations) ?? null);
     setMeasurementAnalysis(artifacts?.measurementAnalysis ?? null);
     setCalibrationProfile(calibrationCompatible ? snapshot?.calibrationProfile ?? null : null);
     setLastAnalysisKind(snapshot?.summary?.kind ?? "rf");
@@ -934,7 +935,7 @@ export default function App() {
         request.signal,
       );
       if (!request.isCurrent()) return;
-      setSiteRecommendations(payload);
+      setSiteRecommendations(compactRecommendationResponse(payload));
       setActiveResultsView("recommendations");
       setLastAnalysisKind("recommendation");
       setPlanDirty(false);
@@ -1549,7 +1550,7 @@ export default function App() {
             interferenceMetric={interferenceMetric}
             interferenceLayerKey={interferenceRevision}
             measurements={measurementAnalysis?.geojson}
-            recommendations={siteRecommendations?.geojson}
+            recommendations={siteRecommendations}
           />
           {mapPlanPrompt && activeRFTask === null ? (
             <div className="map-plan-prompt" role="status">

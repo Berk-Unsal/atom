@@ -15,6 +15,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 ### Fixed
 
 - Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload.
+- Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts.
 
 ## [0.3.0] - 2026-07-26
 

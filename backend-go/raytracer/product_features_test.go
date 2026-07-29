@@ -1,7 +1,9 @@
 package raytracer
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -46,6 +48,19 @@ func TestRecommendSitesReturnsDeterministicCandidate(t *testing.T) {
 	}
 	if first.Recommendations[0] != second.Recommendations[0] {
 		t.Fatalf("recommendations differ: %#v vs %#v", first.Recommendations[0], second.Recommendations[0])
+	}
+	if len(first.GeoJSON.Features) != 1 || first.GeoJSON.Features[0].ID != first.Recommendations[0].ID {
+		t.Fatalf("GeoJSON feature does not reference the canonical recommendation: %#v", first.GeoJSON.Features)
+	}
+	payload, marshalErr := json.Marshal(first)
+	if marshalErr != nil {
+		t.Fatalf("marshal recommendation response: %v", marshalErr)
+	}
+	if count := bytes.Count(payload, []byte(`"marginal_network_score"`)); count != 1 {
+		t.Fatalf("marginal_network_score appears %d times in response, want canonical occurrence only", count)
+	}
+	if count := bytes.Count(payload, []byte(first.Recommendations[0].Reason)); count != 1 {
+		t.Fatalf("recommendation reason appears %d times in response, want canonical occurrence only", count)
 	}
 }
 

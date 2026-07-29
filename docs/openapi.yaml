@@ -139,7 +139,9 @@ paths:
       description: Scores one additional 4G or 5G cell. Candidates are planning records, not approved deployment sites; interference is excluded from scoring.
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RecommendationRequest" } } } }
       responses:
-        "200": { description: Baseline, ranked candidates, candidate GeoJSON, and explicit notes }
+        "200":
+          description: Baseline, canonical ranked candidates, compact candidate GeoJSON, and explicit notes
+          content: { application/json: { schema: { $ref: "#/components/schemas/RecommendationResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
@@ -327,6 +329,45 @@ components:
               minItems: 3
               items: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
             max_results: { type: integer, minimum: 1, maximum: 10, default: 5 }
+    Recommendation:
+      type: object
+      required: [id, cell_id, tower_lon, tower_lat, optimal_azimuth, marginal_network_score, stats, reason]
+      properties:
+        id: { type: string }
+        cell_id: { type: integer, format: int64 }
+        tower_lon: { type: number, minimum: -180, maximum: 180 }
+        tower_lat: { type: number, minimum: -90, maximum: 90 }
+        optimal_azimuth: { type: number }
+        marginal_network_score: { type: number }
+        stats: { type: object, additionalProperties: true }
+        reason: { type: string }
+    RecommendationFeature:
+      type: object
+      required: [type, id, properties, geometry]
+      properties:
+        type: { type: string, const: Feature }
+        id: { type: string, description: References the canonical recommendations item with the same id. }
+        properties: { type: object, maxProperties: 0 }
+        geometry:
+          type: object
+          required: [type, coordinates]
+          properties:
+            type: { type: string, const: Point }
+            coordinates: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
+    RecommendationResponse:
+      type: object
+      required: [baseline, candidates_evaluated, recommendations, geojson, notes]
+      properties:
+        baseline: { type: object, additionalProperties: true }
+        candidates_evaluated: { type: integer, minimum: 0 }
+        recommendations: { type: array, items: { $ref: "#/components/schemas/Recommendation" } }
+        geojson:
+          type: object
+          required: [type, features]
+          properties:
+            type: { type: string, const: FeatureCollection }
+            features: { type: array, items: { $ref: "#/components/schemas/RecommendationFeature" } }
+        notes: { type: array, items: { type: string } }
     MeasurementRequest:
       allOf:
         - { $ref: "#/components/schemas/InterferenceRequest" }

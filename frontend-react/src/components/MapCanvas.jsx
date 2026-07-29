@@ -2,6 +2,7 @@ import { Fragment, useEffect } from "react";
 import { circleMarker, divIcon, latLngBounds } from "leaflet";
 import { CircleMarker, GeoJSON, MapContainer, Marker, Polygon, Polyline, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { rxPowerColor } from "../utils/geojson.js";
+import { recommendationMapFeatures } from "../utils/recommendations.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
 
@@ -179,7 +180,7 @@ export default function MapCanvas({
 }
 
 function RecommendationLayer({ onSelectMapObject, recommendations, selectedMapObject }) {
-  const features = recommendations?.features ?? [];
+  const features = recommendationMapFeatures(recommendations);
   return features.map((feature, index) => {
     const [lon, lat] = feature.geometry?.coordinates ?? [];
     if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;

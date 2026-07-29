@@ -1,3 +1,5 @@
+import { compactRecommendationResponse } from "./recommendations.js";
+
 export const PROJECT_SCHEMA_VERSION = 1;
 
 /** @typedef {{ kind: string, resultsView: string, avgRxDBm: number|null, gapPct: number|null, networkScore: number|null, overlapBuildings: number|null, avgSINRDB: number|null, serviceablePct: number|null, affectedDemand: number|null, calibrationOffsetDB: number }} ScenarioSummary */
@@ -246,10 +248,17 @@ function compactWorkspace(workspace) {
     projects: workspace.projects.map((project) => ({
       ...project,
       scenarios: project.scenarios.map((scenario) => retained.has(`${project.id}:${scenario.id}`)
-        ? scenario
+        ? { ...scenario, artifacts: compactScenarioArtifacts(scenario.artifacts) }
         : { ...scenario, artifacts: null, requiresRerun: Boolean(scenario.artifacts) }),
     })),
   };
+}
+
+function compactScenarioArtifacts(artifacts) {
+  if (!artifacts?.siteRecommendations) return artifacts;
+  const siteRecommendations = compactRecommendationResponse(artifacts.siteRecommendations);
+  if (siteRecommendations === artifacts.siteRecommendations) return artifacts;
+  return { ...artifacts, siteRecommendations };
 }
 
 function copyProjectWithNewIDs(project, name) {

@@ -304,6 +304,27 @@ arbitration, primary-only writes, fallback recovery, dual-backend
 failure, and strict rapid-save ordering.
 <code>useProjectWorkspace.test.jsx</code> verifies same-tick edits build
 on the latest synchronous workspace.</p>
+<h3
+id="atom-011-recommendation-details-were-duplicated-in-geojson">ATOM-011:
+Recommendation Details Were Duplicated In GeoJSON</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Recommendation responses and scenario
+persistence</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Each candidate was returned once in the ranked
+<code>recommendations</code> array and again as the complete
+<code>properties</code> object of its GeoJSON point. Network responses
+and saved scenario artifacts therefore stored the same scores,
+statistics, reasons, identifiers, and coordinates twice.</p>
+<p>Recommendation details now remain canonical in the ranked array.
+GeoJSON features carry only point geometry, an empty properties object,
+and a standard top-level feature ID that references the canonical
+record. The frontend joins records only for rendering and compacts
+legacy full-property features whenever a scenario is saved.</p>
+<p><strong>Regression evidence:</strong> Go response tests ensure
+recommendation-only fields occur once in serialized output. Frontend
+helper and project-store tests cover rendering joins and legacy artifact
+compaction.</p>
 <h2 id="open-audit-queue">Open Audit Queue</h2>
 <p>No Critical defect is currently confirmed. The next audit pass will
 focus on backend RF cancellation and timeout boundaries,

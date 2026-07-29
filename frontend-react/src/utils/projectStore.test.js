@@ -194,6 +194,41 @@ describe("projectStore", () => {
       .toEqual(["First edit", "Second edit"]);
     expect(secondSaved.persistence.revision).toBeGreaterThan(firstSaved.persistence.revision);
   });
+
+  it("removes duplicate recommendation properties from persisted scenario artifacts", async () => {
+    vi.stubGlobal("localStorage", { getItem: vi.fn(), removeItem: vi.fn(), setItem: vi.fn() });
+    const indexedDB = controlledIndexedDB();
+    vi.stubGlobal("indexedDB", indexedDB);
+    const workspace = createProjectWorkspace();
+    const recommendation = {
+      id: "LTE-3",
+      cell_id: 3,
+      marginal_network_score: 120,
+      reason: "adds demand",
+    };
+    workspace.projects[0].scenarios.push(createScenario("Candidates", {
+      artifacts: {
+        siteRecommendations: {
+          recommendations: [recommendation],
+          geojson: {
+            type: "FeatureCollection",
+            features: [{
+              type: "Feature",
+              properties: recommendation,
+              geometry: { type: "Point", coordinates: [32.85, 39.92] },
+            }],
+          },
+        },
+      },
+    }));
+
+    await saveProjectWorkspace(workspace);
+
+    const persisted = indexedDB.state.writes[0].projects[0].scenarios[0]
+      .artifacts.siteRecommendations;
+    expect(persisted.geojson.features[0]).toMatchObject({ id: "LTE-3", properties: {} });
+    expect(JSON.stringify(persisted).match(/marginal_network_score/g)).toHaveLength(1);
+  });
 });
 
 function controlledIndexedDB({ failWrites = false, writeDelay = 0 } = {}) {

@@ -60,10 +60,13 @@ type RecommendationFeatureCollection struct {
 }
 
 type RecommendationFeature struct {
-	Type       string             `json:"type"`
-	Properties SiteRecommendation `json:"properties"`
-	Geometry   PointGeometry      `json:"geometry"`
+	Type       string                          `json:"type"`
+	ID         string                          `json:"id"`
+	Properties RecommendationFeatureProperties `json:"properties"`
+	Geometry   PointGeometry                   `json:"geometry"`
 }
+
+type RecommendationFeatureProperties struct{}
 
 func (input SiteRecommendationRequestInput) ToRequest() SiteRecommendationRequest {
 	networkInput := NetworkOptimizationRequestInput{
@@ -256,9 +259,9 @@ func RecommendSitesContext(ctx context.Context, req SiteRecommendationRequest, t
 	features := make([]RecommendationFeature, 0, len(recommendations))
 	for _, recommendation := range recommendations {
 		features = append(features, RecommendationFeature{
-			Type:       "Feature",
-			Properties: recommendation,
-			Geometry:   PointGeometry{Type: "Point", Coordinates: []float64{recommendation.TowerLon, recommendation.TowerLat}},
+			Type:     "Feature",
+			ID:       recommendation.ID,
+			Geometry: PointGeometry{Type: "Point", Coordinates: []float64{recommendation.TowerLon, recommendation.TowerLat}},
 		})
 	}
 	return SiteRecommendationResponse{

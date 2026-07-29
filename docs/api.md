@@ -481,6 +481,36 @@ Ranks known, unselected tower records inside a search polygon for a 4G or 5G net
 }
 ```
 
+The response stores complete candidate details only in `recommendations`. Each `geojson.features[]` entry contains its point geometry, an empty `properties` object, and a top-level `id` that references the canonical recommendation with the same `id`:
+
+```json
+{
+  "recommendations": [
+    {
+      "id": "LTE-3",
+      "cell_id": 3,
+      "tower_lon": 32.851,
+      "tower_lat": 39.92,
+      "optimal_azimuth": 90,
+      "marginal_network_score": 120,
+      "stats": { "network_score": 8120 },
+      "reason": "adds demand with limited overlap"
+    }
+  ],
+  "geojson": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": "LTE-3",
+        "properties": {},
+        "geometry": { "type": "Point", "coordinates": [32.851, 39.92] }
+      }
+    ]
+  }
+}
+```
+
 Candidate records are not approved deployment sites. Cost, backhaul, permitting, and interference are not included in candidate scoring; run `/api/interference` after applying a candidate.
 
 ### Evaluate Field Measurements

@@ -135,6 +135,20 @@ Commits now receive monotonic persistence revisions and run through one save que
 
 **Regression evidence:** `projectStore.test.js` covers revision and legacy arbitration, primary-only writes, fallback recovery, dual-backend failure, and strict rapid-save ordering. `useProjectWorkspace.test.jsx` verifies same-tick edits build on the latest synchronous workspace.
 
+### ATOM-011: Recommendation Details Were Duplicated In GeoJSON
+
+**Priority:** Medium
+
+**Affected area:** Recommendation responses and scenario persistence
+
+**Target release:** Next release after 0.3.0
+
+Each candidate was returned once in the ranked `recommendations` array and again as the complete `properties` object of its GeoJSON point. Network responses and saved scenario artifacts therefore stored the same scores, statistics, reasons, identifiers, and coordinates twice.
+
+Recommendation details now remain canonical in the ranked array. GeoJSON features carry only point geometry, an empty properties object, and a standard top-level feature ID that references the canonical record. The frontend joins records only for rendering and compacts legacy full-property features whenever a scenario is saved.
+
+**Regression evidence:** Go response tests ensure recommendation-only fields occur once in serialized output. Frontend helper and project-store tests cover rendering joins and legacy artifact compaction.
+
 ## Open Audit Queue
 
 No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test.

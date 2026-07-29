@@ -293,7 +293,7 @@
       "page": "API Reference",
       "title": "Recommend Candidate Cells",
       "url": "./api.html#recommend-candidate-cells",
-      "text": "Endpoint : POST /api/recommend-sites Ranks known, unselected tower records inside a search polygon for a 4G or 5G network containing two to five selected cells. The backend prefilters candidates by nearby unmet demand, optimizes only the candidate azimuth, and returns at most the requested number of deterministic recommendations. { \"network_tech\" : \"5g\" , \"towers\" : [ { \"id\" : \"101\" , \"tower_lon\" : 32.85 , \"tower_lat\" : 39.92 , \"azimuth\" : 90 } , { \"id\" : \"102\" , \"tower_lon\" : 32.852 , \"tower_lat\" : 39.921 , \"azimuth\" : 180 } ] , \"rays\" : 120 , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"tx_power_dbm\" : 30 , \"beam_width\" : 120 , \"search_polygon\" : [[ 32.84 , 39.91 ], [ 32.87 , 39.91 ], [ 32.87 , 39.94 ], [ 32.84 , 39.94 ]] , \"max_results\" : 5 } Candidate records are not approved deployment sites. Cost, backhaul, permitting, and interference are not included in candidate scoring; run /api/interference after applying a candidate."
+      "text": "Endpoint : POST /api/recommend-sites Ranks known, unselected tower records inside a search polygon for a 4G or 5G network containing two to five selected cells. The backend prefilters candidates by nearby unmet demand, optimizes only the candidate azimuth, and returns at most the requested number of deterministic recommendations. { \"network_tech\" : \"5g\" , \"towers\" : [ { \"id\" : \"101\" , \"tower_lon\" : 32.85 , \"tower_lat\" : 39.92 , \"azimuth\" : 90 } , { \"id\" : \"102\" , \"tower_lon\" : 32.852 , \"tower_lat\" : 39.921 , \"azimuth\" : 180 } ] , \"rays\" : 120 , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"tx_power_dbm\" : 30 , \"beam_width\" : 120 , \"search_polygon\" : [[ 32.84 , 39.91 ], [ 32.87 , 39.91 ], [ 32.87 , 39.94 ], [ 32.84 , 39.94 ]] , \"max_results\" : 5 } The response stores complete candidate details only in recommendations . Each geojson.features[] entry contains its point geometry, an empty properties object, and a top-level id that references the canonical recommendation with the same id : { \"recommendations\" : [ { \"id\" : \"LTE-3\" , \"cell_id\" : 3 , \"tower_lon\" : 32.851 , \"tower_lat\" : 39.92 , \"optimal_azimuth\" : 90 , \"marginal_network_score\" : 120 , \"stats\" : { \"network_score\" : 8120 }, \"reason\" : \"adds demand with limited overlap\" } ] , \"geojson\" : { \"type\" : \"FeatureCollection\" , \"features\" : [ { \"type\" : \"Feature\" , \"id\" : \"LTE-3\" , \"properties\" : {}, \"geometry\" : { \"type\" : \"Point\" , \"coordinates\" : [ 32.851 , 39.92 ] } } ] } } Candidate records are not approved deployment sites. Cost, backhaul, permitting, and interference are not included in candidate scoring; run /api/interference after applying a candidate."
     },
     {
       "page": "API Reference",
@@ -645,6 +645,12 @@
     },
     {
       "page": "Bug-Fix Register",
+      "title": "ATOM-011: Recommendation Details Were Duplicated In GeoJSON",
+      "url": "./bug-fixes.html#atom-011-recommendation-details-were-duplicated-in-geojson",
+      "text": "Priority: Medium Affected area: Recommendation responses and scenario persistence Target release: Next release after 0.3.0 Each candidate was returned once in the ranked recommendations array and again as the complete properties object of its GeoJSON point. Network responses and saved scenario artifacts therefore stored the same scores, statistics, reasons, identifiers, and coordinates twice. Recommendation details now remain canonical in the ranked array. GeoJSON features carry only point geometry, an empty properties object, and a standard top-level feature ID that references the canonical record. The frontend joins records only for rendering and compacts legacy full-property features whenever a scenario is saved. Regression evidence: Go response tests ensure recommendation-only fields occur once in serialized output. Frontend helper and project-store tests cover rendering joins and legacy artifact compaction."
+    },
+    {
+      "page": "Bug-Fix Register",
       "title": "Open Audit Queue",
       "url": "./bug-fixes.html#open-audit-queue",
       "text": "No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test."
@@ -671,7 +677,7 @@
       "page": "Changelog",
       "title": "Fixed",
       "url": "./changelog.html#fixed",
-      "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload."
+      "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts."
     },
     {
       "page": "Changelog",

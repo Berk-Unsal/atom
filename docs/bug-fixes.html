@@ -281,6 +281,29 @@ process, and explicit planning-estimate limitation.</p>
 <p><strong>Regression evidence:</strong>
 <code>docs/validate_docs.py</code> verifies internal documentation
 targets after each documentation build.</p>
+<h3
+id="atom-010-workspace-copies-could-diverge-and-restore-stale-state">ATOM-010:
+Workspace Copies Could Diverge And Restore Stale State</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Browser persistence ordering and
+fallback storage</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Every commit launched an independent IndexedDB write and then
+duplicated the full workspace into local storage. Rapid edits could
+finish out of order, partial failures could leave divergent copies, and
+loading preferred IndexedDB even when the fallback contained a newer
+workspace.</p>
+<p>Commits now receive monotonic persistence revisions and run through
+one save queue. IndexedDB is the normal authoritative store; local
+storage is written only when the primary commit fails. Loads compare
+both valid copies by revision and commit time, with project-content
+timestamps providing arbitration for legacy records.</p>
+<p><strong>Regression evidence:</strong>
+<code>projectStore.test.js</code> covers revision and legacy
+arbitration, primary-only writes, fallback recovery, dual-backend
+failure, and strict rapid-save ordering.
+<code>useProjectWorkspace.test.jsx</code> verifies same-tick edits build
+on the latest synchronous workspace.</p>
 <h2 id="open-audit-queue">Open Audit Queue</h2>
 <p>No Critical defect is currently confirmed. The next audit pass will
 focus on backend RF cancellation and timeout boundaries,

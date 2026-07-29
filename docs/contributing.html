@@ -249,8 +249,9 @@ refactor: simplify optimization algorithm</code></pre>
 <h4 id="go-backend-tests">Go Backend Tests</h4>
 <div class="sourceCode" id="cb10"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test ./...</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test <span class="at">-cover</span> ./...</span></code></pre></div>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> vet ./...</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">govulncheck</span> ./...</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test <span class="at">-race</span> ./...</span></code></pre></div>
 <p><strong>Add tests</strong> for new features:</p>
 <div class="sourceCode" id="cb11"><pre
 class="sourceCode go"><code class="sourceCode go"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> TestCalculatePathLoss<span class="op">(</span>t <span class="op">*</span>testing<span class="op">.</span>T<span class="op">)</span> <span class="op">{</span></span>
@@ -283,7 +284,9 @@ class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb13
 <p>Before submitting PR, verify:</p>
 <ul>
 <li>✅ Code follows project style</li>
-<li>✅ Tests pass: <code>go test ./...</code></li>
+<li>✅ Backend vulnerability scan passes:
+<code>govulncheck ./...</code></li>
+<li>✅ Tests pass: <code>go test -race ./...</code></li>
 <li>✅ No lint errors: <code>golint ./...</code></li>
 <li>✅ Comments explain "why", not "what"</li>
 <li>✅ Commit messages are clear</li>

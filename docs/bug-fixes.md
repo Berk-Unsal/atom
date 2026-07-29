@@ -121,6 +121,20 @@ The Markdown entry point now directs readers to the maintained documentation hub
 
 **Regression evidence:** `docs/validate_docs.py` verifies internal documentation targets after each documentation build.
 
+### ATOM-010: Workspace Copies Could Diverge And Restore Stale State
+
+**Priority:** Medium
+
+**Affected area:** Browser persistence ordering and fallback storage
+
+**Target release:** Next release after 0.3.0
+
+Every commit launched an independent IndexedDB write and then duplicated the full workspace into local storage. Rapid edits could finish out of order, partial failures could leave divergent copies, and loading preferred IndexedDB even when the fallback contained a newer workspace.
+
+Commits now receive monotonic persistence revisions and run through one save queue. IndexedDB is the normal authoritative store; local storage is written only when the primary commit fails. Loads compare both valid copies by revision and commit time, with project-content timestamps providing arbitration for legacy records.
+
+**Regression evidence:** `projectStore.test.js` covers revision and legacy arbitration, primary-only writes, fallback recovery, dual-backend failure, and strict rapid-save ordering. `useProjectWorkspace.test.jsx` verifies same-tick edits build on the latest synchronous workspace.
+
 ## Open Audit Queue
 
 No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test.

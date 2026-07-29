@@ -150,8 +150,10 @@ Core language are intentionally unavailable where their assumptions are
 unsupported.</p>
 <h2 id="projects-and-results">Projects And Results</h2>
 <h3 id="where-are-projects-stored">Where are projects stored?</h3>
-<p>Projects are stored in the current browser through IndexedDB, with a
-local-storage fallback. The server remains stateless. Export a versioned
+<p>Projects are stored in the current browser through IndexedDB. Saves
+are serialized, and local storage is used only when an IndexedDB write
+fails. If both copies exist, persistence revisions select the newest
+valid workspace. The server remains stateless. Export a versioned
 <code>.atom-project.json</code> file for backup or transfer to another
 browser.</p>
 <h3 id="why-is-a-saved-result-marked-stale">Why is a saved result marked

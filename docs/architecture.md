@@ -58,7 +58,7 @@ This prevents slow responses from replacing results produced by newer settings.
 
 ### Local Project Persistence
 
-The browser stores projects in IndexedDB without adding a server database. Each scenario records exact inputs, selected cells, area geometry, compact KPI summaries, application/model metadata, and active dataset identity. Full GeoJSON layers are retained for the five most recently used scenarios; older scenarios preserve reproducible requests and are marked for rerun. Exported `.atom-project.json` files use a versioned schema and warn when the active dataset hash differs.
+The browser stores projects in IndexedDB without adding a server database. Workspace commits are serialized and carry monotonic persistence revisions. Local storage is written only when the IndexedDB commit fails; if both copies exist after a partial failure, loading selects the newest revision and uses content timestamps to arbitrate legacy copies. Each scenario records exact inputs, selected cells, area geometry, compact KPI summaries, application/model metadata, and active dataset identity. Full GeoJSON layers are retained for the five most recently used scenarios; older scenarios preserve reproducible requests and are marked for rerun. Exported `.atom-project.json` files use a versioned schema and warn when the active dataset hash differs.
 
 ## Go API Boundary
 

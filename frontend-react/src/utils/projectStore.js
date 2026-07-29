@@ -4,16 +4,20 @@ export const PROJECT_SCHEMA_VERSION = 1;
 /** @typedef {{ kind: "robust_global_path_loss_bias", offsetDb: number, technology: "4g"|"5g", frequencyGHz: number, modelVersion: string, dataset: {id: string, version: string, hashes: object}, validation: object }} CalibrationProfile */
 /** @typedef {{ id: string, name: string, createdAt: string, updatedAt: string, plan: object, request: object|null, meta: object|null, summary: ScenarioSummary, artifacts: object|null, calibrationProfile: CalibrationProfile|null, requiresRerun: boolean }} ScenarioSnapshot */
 /** @typedef {{ id: string, name: string, datasetRef: object|null, createdAt: string, updatedAt: string, activeScenarioId: string|null, draft: object|null, scenarios: ScenarioSnapshot[] }} ProjectV1 */
+/** @typedef {{ revision: number, committedAt: string|null }} WorkspacePersistence */
 const DATABASE_NAME = "atom-planning-workspace";
 const STORE_NAME = "workspace";
 const WORKSPACE_KEY = "current";
 const FALLBACK_KEY = "atom.planning.workspace.v1";
 const MAX_CACHED_SCENARIOS = 5;
+let lastPersistenceRevision = 0;
+let workspaceSaveQueue = Promise.resolve();
 
 export function createProjectWorkspace(datasetRef = null) {
   const project = createProject("Ankara Plan", datasetRef);
   return {
     schemaVersion: PROJECT_SCHEMA_VERSION,
+    persistence: { revision: 0, committedAt: null },
     activeProjectId: project.id,
     projects: [project],
   };
@@ -100,7 +104,12 @@ export function normalizeWorkspace(candidate, datasetRef = null) {
   const activeProjectId = projects.some((project) => project.id === migrated.activeProjectId)
     ? migrated.activeProjectId
     : projects[0].id;
-  return compactWorkspace({ ...migrated, projects, activeProjectId });
+  return compactWorkspace({
+    ...migrated,
+    persistence: normalizeWorkspacePersistence(migrated.persistence),
+    projects,
+    activeProjectId,
+  });
 }
 
 export function migrateWorkspace(candidate) {
@@ -134,35 +143,68 @@ export async function loadProjectWorkspace(datasetRef = null) {
 }
 
 export function resolveWorkspaceData(indexedWorkspace, fallbackJSON, datasetRef = null) {
-  if (indexedWorkspace !== null && indexedWorkspace !== undefined) {
-    return normalizeWorkspace(indexedWorkspace, datasetRef);
+  const indexedCandidate = parseWorkspaceCandidate(indexedWorkspace, datasetRef);
+  const fallbackCandidate = parseFallbackCandidate(fallbackJSON, datasetRef);
+  const candidates = [indexedCandidate.workspace, fallbackCandidate.workspace].filter(Boolean);
+  if (candidates.length === 0) {
+    const errors = [indexedCandidate.error, fallbackCandidate.error].filter(Boolean);
+    if (errors.length === 1) throw errors[0];
+    if (errors.length > 1) {
+      throw new AggregateError(errors, "Stored project workspaces could not be read");
+    }
+    return createProjectWorkspace(datasetRef);
   }
-  if (fallbackJSON) {
-    return normalizeWorkspace(JSON.parse(fallbackJSON), datasetRef);
-  }
-  return createProjectWorkspace(datasetRef);
+  const selected = candidates.reduce((newest, candidate) => (
+    compareWorkspaceFreshness(candidate, newest) > 0 ? candidate : newest
+  ));
+  lastPersistenceRevision = Math.max(lastPersistenceRevision, selected.persistence.revision);
+  return selected;
 }
 
 export async function saveProjectWorkspace(workspace) {
+  return queueProjectWorkspaceSave(workspace).saved;
+}
+
+export function queueProjectWorkspaceSave(workspace) {
   const normalized = compactWorkspace(normalizeWorkspace(workspace));
+  const persistence = {
+    revision: Math.min(
+      Number.MAX_SAFE_INTEGER,
+      Math.max(lastPersistenceRevision, normalized.persistence.revision) + 1,
+    ),
+    committedAt: new Date().toISOString(),
+  };
+  const preparedWorkspace = { ...workspace, persistence };
+  const persistedWorkspace = { ...normalized, persistence };
+  lastPersistenceRevision = persistence.revision;
+  const saved = workspaceSaveQueue
+    .catch(() => undefined)
+    .then(() => persistProjectWorkspace(persistedWorkspace));
+  workspaceSaveQueue = saved;
+  return { workspace: preparedWorkspace, saved };
+}
+
+async function persistProjectWorkspace(workspace) {
   let indexedDBError = null;
   try {
-    await writeIndexedDB(normalized);
+    await writeIndexedDB(workspace);
   } catch (error) {
     indexedDBError = error;
   }
-  try {
-    globalThis.localStorage?.setItem(FALLBACK_KEY, JSON.stringify(normalized));
-  } catch (fallbackError) {
-    if (indexedDBError) {
-      throw new AggregateError(
-        [indexedDBError, fallbackError],
-        "Project workspace could not be saved",
-        { cause: fallbackError },
-      );
-    }
+  if (!indexedDBError) {
+    removeFallbackWorkspaceIfNotNewer(workspace);
+    return workspace;
   }
-  return normalized;
+  try {
+    writeFallbackWorkspace(workspace);
+  } catch (fallbackError) {
+    throw new AggregateError(
+      [indexedDBError, fallbackError],
+      "Project workspace could not be saved",
+      { cause: fallbackError },
+    );
+  }
+  return workspace;
 }
 
 export function exportProjectFile(project) {
@@ -247,6 +289,73 @@ function readFallbackWorkspace() {
   }
 }
 
+function writeFallbackWorkspace(workspace) {
+  if (typeof globalThis.localStorage?.setItem !== "function") {
+    throw new Error("Local storage is unavailable");
+  }
+  globalThis.localStorage.setItem(FALLBACK_KEY, JSON.stringify(workspace));
+}
+
+function removeFallbackWorkspaceIfNotNewer(workspace) {
+  const fallbackJSON = readFallbackWorkspace();
+  if (!fallbackJSON || typeof globalThis.localStorage?.removeItem !== "function") return;
+  const fallbackCandidate = parseFallbackCandidate(fallbackJSON);
+  if (!fallbackCandidate.workspace || compareWorkspaceFreshness(fallbackCandidate.workspace, workspace) <= 0) {
+    try {
+      globalThis.localStorage.removeItem(FALLBACK_KEY);
+    } catch {
+      // IndexedDB is authoritative; an inaccessible stale fallback is harmless.
+    }
+  }
+}
+
+function parseWorkspaceCandidate(candidate, datasetRef = null) {
+  if (candidate === null || candidate === undefined) return { workspace: null, error: null };
+  try {
+    return { workspace: normalizeWorkspace(candidate, datasetRef), error: null };
+  } catch (error) {
+    return { workspace: null, error };
+  }
+}
+
+function parseFallbackCandidate(fallbackJSON, datasetRef = null) {
+  if (!fallbackJSON) return { workspace: null, error: null };
+  try {
+    const parsed = JSON.parse(fallbackJSON);
+    return parseWorkspaceCandidate(parsed, datasetRef);
+  } catch (error) {
+    return { workspace: null, error };
+  }
+}
+
+function normalizeWorkspacePersistence(candidate) {
+  const revision = Number.isSafeInteger(candidate?.revision) && candidate.revision >= 0
+    ? candidate.revision
+    : 0;
+  const committedAt = typeof candidate?.committedAt === "string" && Number.isFinite(Date.parse(candidate.committedAt))
+    ? candidate.committedAt
+    : null;
+  return { revision, committedAt };
+}
+
+function compareWorkspaceFreshness(left, right) {
+  const revisionDifference = left.persistence.revision - right.persistence.revision;
+  if (revisionDifference !== 0) return revisionDifference;
+  return workspaceTimestamp(left) - workspaceTimestamp(right);
+}
+
+function workspaceTimestamp(workspace) {
+  const timestamps = [workspace.persistence.committedAt]
+    .concat(workspace.projects.flatMap((project) => [
+      project.updatedAt,
+      project.draft?.updatedAt,
+      ...(project.scenarios ?? []).map((scenario) => scenario.updatedAt),
+    ]))
+    .map((value) => Date.parse(value))
+    .filter(Number.isFinite);
+  return timestamps.length > 0 ? Math.max(...timestamps) : 0;
+}
+
 function isValidProject(project) {
   return Boolean(project && typeof project.id === "string" && typeof project.name === "string");
 }
@@ -297,6 +406,11 @@ async function writeIndexedDB(workspace) {
       database.close();
       resolve();
     };
-    transaction.onerror = () => reject(transaction.error ?? new Error("Workspace could not be saved"));
+    const rejectTransaction = () => {
+      database.close();
+      reject(transaction.error ?? new Error("Workspace could not be saved"));
+    };
+    transaction.onerror = rejectTransaction;
+    transaction.onabort = rejectTransaction;
   });
 }

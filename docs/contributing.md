@@ -159,8 +159,9 @@ refactor: simplify optimization algorithm
 
 ```bash
 cd backend-go
-go test ./...
-go test -cover ./...
+go vet ./...
+govulncheck ./...
+go test -race ./...
 ```
 
 **Add tests** for new features:
@@ -205,7 +206,8 @@ test('Azimuth slider updates coverage', () => {
 Before submitting PR, verify:
 
 - ✅ Code follows project style
-- ✅ Tests pass: `go test ./...`
+- ✅ Backend vulnerability scan passes: `govulncheck ./...`
+- ✅ Tests pass: `go test -race ./...`
 - ✅ No lint errors: `golint ./...`
 - ✅ Comments explain "why", not "what"
 - ✅ Commit messages are clear

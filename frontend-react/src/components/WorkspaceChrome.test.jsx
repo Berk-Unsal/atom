@@ -1,9 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { Activity } from "lucide-react";
 import { describe, expect, it, vi } from "vitest";
 import {
   CommandBar,
   MapToolbar,
+  ProjectMenu,
   ToolDrawer,
   WorkflowRail,
 } from "./WorkspaceChrome.jsx";
@@ -116,5 +117,37 @@ describe("focused workspace chrome", () => {
     expect(layersButton).toHaveFocus();
     fireEvent.click(layersButton);
     expect(onLayerMenuToggle).toHaveBeenCalledWith(false);
+  });
+
+  it("reports scenario durability only after persistence completes", async () => {
+    let finishSave;
+    const onSaveScenario = vi.fn(() => new Promise((resolve) => { finishSave = resolve; }));
+    const project = { id: "project-1", name: "Plan", scenarios: [] };
+    render(
+      <ProjectMenu
+        activeProject={project}
+        compatible
+        exportContent={() => "{}"}
+        onAddProject={vi.fn()}
+        onDeleteProject={vi.fn()}
+        onDeleteScenario={vi.fn()}
+        onDuplicateProject={vi.fn()}
+        onImportProject={vi.fn()}
+        onOpenScenario={vi.fn()}
+        onRenameProject={vi.fn()}
+        onSaveScenario={onSaveScenario}
+        onSelectProject={vi.fn()}
+        projects={[project]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save current" }));
+    expect(screen.getByRole("button", { name: "Saving…" })).toBeDisabled();
+    expect(screen.getByRole("status")).toHaveTextContent("Saving scenario…");
+
+    await act(async () => finishSave());
+
+    expect(screen.getByRole("status")).toHaveTextContent("Scenario saved");
   });
 });

@@ -8,21 +8,25 @@ import {
   exportProjectFile,
   importProjectFile,
   loadProjectWorkspace,
-  saveProjectWorkspace,
+  queueProjectWorkspaceSave,
   updateProjectDraft,
 } from "../utils/projectStore.js";
 
 export default function useProjectWorkspace(meta) {
   const initialDatasetRef = useRef(datasetReference(meta));
   const [workspace, setWorkspace] = useState(() => createProjectWorkspace(datasetReference(meta)));
+  const workspaceRef = useRef(workspace);
+  const mountedRef = useRef(true);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    mountedRef.current = true;
     let mounted = true;
     loadProjectWorkspace(initialDatasetRef.current)
       .then((stored) => {
         if (mounted) {
+          workspaceRef.current = stored;
           setWorkspace(stored);
           setLoaded(true);
         }
@@ -33,15 +37,25 @@ export default function useProjectWorkspace(meta) {
           setLoaded(true);
         }
       });
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+      mountedRef.current = false;
+    };
   }, []);
 
   const commit = useCallback((recipe) => {
-    setWorkspace((current) => {
-      const next = recipe(current);
-      saveProjectWorkspace(next).catch((saveError) => setError(saveError.message));
-      return next;
-    });
+    const { workspace: next, saved } = queueProjectWorkspaceSave(recipe(workspaceRef.current));
+    workspaceRef.current = next;
+    setWorkspace(next);
+    saved.then(
+      () => {
+        if (mountedRef.current) setError("");
+      },
+      (saveError) => {
+        if (mountedRef.current) setError(saveError.message);
+      },
+    );
+    return saved;
   }, []);
 
   const activeProject = useMemo(
@@ -51,7 +65,7 @@ export default function useProjectWorkspace(meta) {
   const activeProjectID = activeProject?.id;
 
   const updateProject = useCallback((projectID, updater) => {
-    commit((current) => ({
+    return commit((current) => ({
       ...current,
       projects: current.projects.map((project) => project.id === projectID
         ? { ...updater(project), updatedAt: new Date().toISOString() }
@@ -103,13 +117,13 @@ export default function useProjectWorkspace(meta) {
   const saveScenario = useCallback((name, snapshot) => {
     if (!activeProjectID) return null;
     const scenario = createScenario(name, snapshot);
-    updateProject(activeProjectID, (project) => ({
+    const saved = updateProject(activeProjectID, (project) => ({
       ...project,
       activeScenarioId: scenario.id,
       datasetRef: project.datasetRef ?? datasetReference(meta),
       scenarios: [...project.scenarios, scenario],
     }));
-    return scenario;
+    return saved.then(() => scenario);
   }, [activeProjectID, meta, updateProject]);
 
   const deleteScenario = useCallback((scenarioID) => {

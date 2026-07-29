@@ -89,21 +89,117 @@ describe("projectStore", () => {
     expect(resolved.projects[0].name).toBe("Recovered plan");
   });
 
-  it("mirrors successful IndexedDB saves to local storage", async () => {
+  it("loads the newest revision instead of always preferring IndexedDB", () => {
+    const indexed = createProjectWorkspace();
+    indexed.persistence = { revision: 7, committedAt: "2026-07-29T08:00:00.000Z" };
+    indexed.projects[0].name = "Indexed plan";
+    const fallback = structuredClone(indexed);
+    fallback.persistence = { revision: 8, committedAt: "2026-07-29T08:01:00.000Z" };
+    fallback.projects[0].name = "Newer fallback plan";
+
+    const resolved = resolveWorkspaceData(indexed, JSON.stringify(fallback));
+
+    expect(resolved.projects[0].name).toBe("Newer fallback plan");
+  });
+
+  it("uses content timestamps to arbitrate legacy copies without revisions", () => {
+    const indexed = createProjectWorkspace();
+    delete indexed.persistence;
+    indexed.projects[0].name = "Older legacy plan";
+    indexed.projects[0].updatedAt = "2026-07-29T08:00:00.000Z";
+    const fallback = structuredClone(indexed);
+    fallback.projects[0].name = "Newer legacy plan";
+    fallback.projects[0].updatedAt = "2026-07-29T08:01:00.000Z";
+
+    const resolved = resolveWorkspaceData(indexed, JSON.stringify(fallback));
+
+    expect(resolved.projects[0].name).toBe("Newer legacy plan");
+  });
+
+  it("writes successful saves only to IndexedDB and removes an older fallback", async () => {
     const setItem = vi.fn();
-    vi.stubGlobal("localStorage", { getItem: vi.fn(), setItem });
-    vi.stubGlobal("indexedDB", successfulIndexedDB());
+    const removeItem = vi.fn();
+    const fallback = createProjectWorkspace();
+    fallback.persistence = { revision: 1, committedAt: "2026-07-29T08:00:00.000Z" };
+    vi.stubGlobal("localStorage", { getItem: () => JSON.stringify(fallback), removeItem, setItem });
+    const indexedDB = controlledIndexedDB();
+    vi.stubGlobal("indexedDB", indexedDB);
     const workspace = createProjectWorkspace();
 
-    await saveProjectWorkspace(workspace);
+    const saved = await saveProjectWorkspace(workspace);
+
+    expect(indexedDB.state.writes).toHaveLength(1);
+    expect(indexedDB.state.writes[0].persistence.revision).toBe(saved.persistence.revision);
+    expect(setItem).not.toHaveBeenCalled();
+    expect(removeItem).toHaveBeenCalledOnce();
+  });
+
+  it("does not remove a fallback that is newer than a successful IndexedDB save", async () => {
+    const fallback = createProjectWorkspace();
+    fallback.persistence = {
+      revision: Number.MAX_SAFE_INTEGER,
+      committedAt: "2026-07-29T08:02:00.000Z",
+    };
+    const removeItem = vi.fn();
+    vi.stubGlobal("localStorage", {
+      getItem: () => JSON.stringify(fallback),
+      removeItem,
+      setItem: vi.fn(),
+    });
+    vi.stubGlobal("indexedDB", controlledIndexedDB());
+
+    await saveProjectWorkspace(createProjectWorkspace());
+
+    expect(removeItem).not.toHaveBeenCalled();
+  });
+
+  it("uses local storage only when the IndexedDB write fails", async () => {
+    const setItem = vi.fn();
+    vi.stubGlobal("localStorage", { getItem: vi.fn(), removeItem: vi.fn(), setItem });
+    vi.stubGlobal("indexedDB", controlledIndexedDB({ failWrites: true }));
+
+    const saved = await saveProjectWorkspace(createProjectWorkspace());
 
     expect(setItem).toHaveBeenCalledOnce();
-    expect(JSON.parse(setItem.mock.calls[0][1]).activeProjectId).toBe(workspace.activeProjectId);
+    expect(JSON.parse(setItem.mock.calls[0][1]).persistence.revision).toBe(saved.persistence.revision);
+  });
+
+  it("reports a save failure when neither storage backend accepts the payload", async () => {
+    vi.stubGlobal("localStorage", {
+      getItem: vi.fn(),
+      removeItem: vi.fn(),
+      setItem: () => { throw new Error("quota exceeded"); },
+    });
+    vi.stubGlobal("indexedDB", controlledIndexedDB({ failWrites: true }));
+
+    await expect(saveProjectWorkspace(createProjectWorkspace())).rejects.toThrow(/could not be saved/i);
+  });
+
+  it("serializes rapid saves and leaves the newest workspace in IndexedDB", async () => {
+    vi.stubGlobal("localStorage", { getItem: vi.fn(), removeItem: vi.fn(), setItem: vi.fn() });
+    const indexedDB = controlledIndexedDB({ writeDelay: 5 });
+    vi.stubGlobal("indexedDB", indexedDB);
+    const first = createProjectWorkspace();
+    first.projects[0].name = "First edit";
+    const second = structuredClone(first);
+    second.projects[0].name = "Second edit";
+
+    const [firstSaved, secondSaved] = await Promise.all([
+      saveProjectWorkspace(first),
+      saveProjectWorkspace(second),
+    ]);
+
+    expect(indexedDB.state.maxActiveWrites).toBe(1);
+    expect(indexedDB.state.writes.map((workspace) => workspace.projects[0].name))
+      .toEqual(["First edit", "Second edit"]);
+    expect(secondSaved.persistence.revision).toBeGreaterThan(firstSaved.persistence.revision);
   });
 });
 
-function successfulIndexedDB() {
+function controlledIndexedDB({ failWrites = false, writeDelay = 0 } = {}) {
+  const state = { activeWrites: 0, maxActiveWrites: 0, writes: [] };
   return {
+    state,
     open() {
       const request = {};
       const database = {
@@ -112,7 +208,20 @@ function successfulIndexedDB() {
         transaction() {
           const transaction = {
             objectStore: () => ({
-              put: () => queueMicrotask(() => transaction.oncomplete?.()),
+              put: (workspace) => {
+                state.activeWrites += 1;
+                state.maxActiveWrites = Math.max(state.maxActiveWrites, state.activeWrites);
+                setTimeout(() => {
+                  state.activeWrites -= 1;
+                  if (failWrites) {
+                    transaction.error = new Error("IndexedDB write failed");
+                    transaction.onerror?.();
+                    return;
+                  }
+                  state.writes.push(structuredClone(workspace));
+                  transaction.oncomplete?.();
+                }, writeDelay);
+              },
             }),
           };
           return transaction;

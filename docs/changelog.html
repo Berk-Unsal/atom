@@ -118,11 +118,20 @@ feature budget.</li>
 <li>Pin every external GitHub Action to an immutable commit SHA, stop
 checkout from persisting release credentials, and enforce pinned
 workflow dependencies in CI.</li>
+<li>Upgrade <code>golang.org/x/net</code> to v0.57.0 and its
+security-sensitive transitive modules, add <code>govulncheck</code> to
+backend CI, and enable weekly Go module updates.</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Serialize browser workspace commits, arbitrate IndexedDB and
+fallback copies by persistence revision, and reserve local storage for
+failed primary writes instead of duplicating every payload.</li>
 </ul>
 <h2 id="030---2026-07-26"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.2.0...v0.3.0">0.3.0</a>
 - 2026-07-26</h2>
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed-1">Fixed</h3>
 <ul>
 <li>Compute sector propagation and coverage gaps from one shared
 ray-profile pass instead of launching duplicate frontend requests.</li>
@@ -147,7 +156,7 @@ documentation page.</li>
 <li>Remove the academic report PDF and its documentation-only source and
 build assets.</li>
 </ul>
-<h3 id="fixed-1">Fixed</h3>
+<h3 id="fixed-2">Fixed</h3>
 <ul>
 <li>Bound Core Lab cluster identifiers and scenario bodies to prevent
 topology, session, and event fan-out exhaustion.</li>

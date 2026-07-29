@@ -10,6 +10,11 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Protect the full building-dataset response with strong ETag caching, conditional `304` responses, separate global and per-client transfer budgets, and optional origin API-key authentication.
 - Bound segmented simulations to 25,000 estimated and actual GeoJSON features, reject oversized ray/radius combinations before allocation, and cancel parallel ray workers if building splits exhaust the shared feature budget.
 - Pin every external GitHub Action to an immutable commit SHA, stop checkout from persisting release credentials, and enforce pinned workflow dependencies in CI.
+- Upgrade `golang.org/x/net` to v0.57.0 and its security-sensitive transitive modules, add `govulncheck` to backend CI, and enable weekly Go module updates.
+
+### Fixed
+
+- Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload.
 
 ## [0.3.0] - 2026-07-26
 

@@ -34,7 +34,7 @@ The 140 GHz mode is an exploratory Sub-THz propagation overlay. Interference ana
 
 ### Where are projects stored?
 
-Projects are stored in the current browser through IndexedDB, with a local-storage fallback. The server remains stateless. Export a versioned `.atom-project.json` file for backup or transfer to another browser.
+Projects are stored in the current browser through IndexedDB. Saves are serialized, and local storage is used only when an IndexedDB write fails. If both copies exist, persistence revisions select the newest valid workspace. The server remains stateless. Export a versioned `.atom-project.json` file for backup or transfer to another browser.
 
 ### Why is a saved result marked stale?
 

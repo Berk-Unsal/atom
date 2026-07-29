@@ -161,6 +161,7 @@ export default function App() {
   const projectWorkspace = useProjectWorkspace(appMeta);
   const activeProject = projectWorkspace.activeProject;
   const workspaceLoaded = projectWorkspace.loaded;
+  const visibleError = projectWorkspace.error || error;
   const saveProjectDraft = projectWorkspace.saveDraft;
   const saveProjectScenario = projectWorkspace.saveScenario;
   const isLoading = activeRFTask === "simulation" || activeRFTask === "network_evaluation";
@@ -1325,7 +1326,7 @@ export default function App() {
   const saveCurrentScenario = useCallback(() => {
     const count = activeProject?.scenarios?.length ?? 0;
     const label = lastAnalysisKind === "recommendation" ? "Candidate search" : lastAnalysisKind === "interference" ? "Interference" : planningMode === "network" ? "Network plan" : "Sector plan";
-    saveProjectScenario(`${label} ${count + 1}`, buildCurrentScenarioSnapshot());
+    return saveProjectScenario(`${label} ${count + 1}`, buildCurrentScenarioSnapshot());
   }, [activeProject?.scenarios?.length, buildCurrentScenarioSnapshot, lastAnalysisKind, planningMode, saveProjectScenario]);
 
   const openSavedScenario = useCallback((scenario) => {
@@ -1450,9 +1451,12 @@ export default function App() {
       <CommandBar
         appIconUrl={APP_ICON_URL}
         contextLabel={contextLabel}
-        error={drawerOpen ? "" : error}
+        error={drawerOpen && !projectWorkspace.error ? "" : visibleError}
         networkTech={activeNetworkTech}
-        onDismissError={() => setError("")}
+        onDismissError={() => {
+          setError("");
+          projectWorkspace.clearError();
+        }}
         onOpenResults={() => openResults(resultSummary?.view)}
         onRun={planningMode === "network" ? evaluateNetwork : runSimulation}
         planSummary={planSummary}
@@ -1478,7 +1482,7 @@ export default function App() {
         primaryDisabled={activeRFTask !== null || (planningMode === "network" ? selectedCellCount < 2 : !selectedTower)}
         resultSummary={resultSummary}
         runState={runState}
-        statusTone={error ? "error" : activeRFTask !== null ? "busy" : planDirty ? "pending" : "ready"}
+        statusTone={visibleError ? "error" : activeRFTask !== null ? "busy" : planDirty ? "pending" : "ready"}
       />
 
       <section className={`workspace-frame ${drawerOpen ? "drawer-open" : ""}`}>

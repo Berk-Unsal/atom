@@ -123,6 +123,7 @@ export function ProjectMenu({
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(activeProject?.name ?? "");
   const [message, setMessage] = useState("");
+  const [savingScenario, setSavingScenario] = useState(false);
   const rootRef = useRef(null);
   const fileRef = useRef(null);
 
@@ -159,6 +160,19 @@ export function ProjectMenu({
       setMessage("Project exported");
     } catch (error) {
       setMessage(error.message);
+    }
+  };
+
+  const saveScenario = async () => {
+    setSavingScenario(true);
+    setMessage("Saving scenario…");
+    try {
+      await onSaveScenario();
+      setMessage("Scenario saved");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setSavingScenario(false);
     }
   };
 
@@ -200,7 +214,9 @@ export function ProjectMenu({
           </div>
           <div className="scenario-menu-header">
             <strong>Scenarios</strong>
-            <button type="button" onClick={onSaveScenario}><Save size={14} /> Save current</button>
+            <button type="button" onClick={saveScenario} disabled={savingScenario}>
+              <Save size={14} /> {savingScenario ? "Saving…" : "Save current"}
+            </button>
           </div>
           <div className="scenario-menu-list">
             {(activeProject?.scenarios ?? []).length ? activeProject.scenarios.map((scenario) => (

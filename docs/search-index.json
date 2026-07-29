@@ -639,6 +639,12 @@
     },
     {
       "page": "Bug-Fix Register",
+      "title": "ATOM-010: Workspace Copies Could Diverge And Restore Stale State",
+      "url": "./bug-fixes.html#atom-010-workspace-copies-could-diverge-and-restore-stale-state",
+      "text": "Priority: Medium Affected area: Browser persistence ordering and fallback storage Target release: Next release after 0.3.0 Every commit launched an independent IndexedDB write and then duplicated the full workspace into local storage. Rapid edits could finish out of order, partial failures could leave divergent copies, and loading preferred IndexedDB even when the fallback contained a newer workspace. Commits now receive monotonic persistence revisions and run through one save queue. IndexedDB is the normal authoritative store; local storage is written only when the primary commit fails. Loads compare both valid copies by revision and commit time, with project-content timestamps providing arbitration for legacy records. Regression evidence: projectStore.test.js covers revision and legacy arbitration, primary-only writes, fallback recovery, dual-backend failure, and strict rapid-save ordering. useProjectWorkspace.test.jsx verifies same-tick edits build on the latest synchronous workspace."
+    },
+    {
+      "page": "Bug-Fix Register",
       "title": "Open Audit Queue",
       "url": "./bug-fixes.html#open-audit-queue",
       "text": "No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test."
@@ -659,7 +665,13 @@
       "page": "Changelog",
       "title": "Security",
       "url": "./changelog.html#security",
-      "text": "Upgrade backend and adapter builds to Go 1.26, frontend and CI builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so maintained toolchains provide current security fixes. Protect the full building-dataset response with strong ETag caching, conditional 304 responses, separate global and per-client transfer budgets, and optional origin API-key authentication. Bound segmented simulations to 25,000 estimated and actual GeoJSON features, reject oversized ray/radius combinations before allocation, and cancel parallel ray workers if building splits exhaust the shared feature budget. Pin every external GitHub Action to an immutable commit SHA, stop checkout from persisting release credentials, and enforce pinned workflow dependencies in CI."
+      "text": "Upgrade backend and adapter builds to Go 1.26, frontend and CI builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so maintained toolchains provide current security fixes. Protect the full building-dataset response with strong ETag caching, conditional 304 responses, separate global and per-client transfer budgets, and optional origin API-key authentication. Bound segmented simulations to 25,000 estimated and actual GeoJSON features, reject oversized ray/radius combinations before allocation, and cancel parallel ray workers if building splits exhaust the shared feature budget. Pin every external GitHub Action to an immutable commit SHA, stop checkout from persisting release credentials, and enforce pinned workflow dependencies in CI. Upgrade golang.org/x/net to v0.57.0 and its security-sensitive transitive modules, add govulncheck to backend CI, and enable weekly Go module updates."
+    },
+    {
+      "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed",
+      "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload."
     },
     {
       "page": "Changelog",
@@ -670,7 +682,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed",
+      "url": "./changelog.html#fixed-1",
       "text": "Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests. Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation."
     },
     {
@@ -694,7 +706,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-1",
+      "url": "./changelog.html#fixed-2",
       "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
     },
     {
@@ -761,13 +773,13 @@
       "page": "Contributing",
       "title": "Testing",
       "url": "./contributing.html#testing",
-      "text": "Go Backend Tests cd backend-go go test ./... go test -cover ./... Add tests for new features: func TestCalculatePathLoss ( t * testing . T ) { distance := 1000.0 frequency := \"5G\" result := CalculatePathLoss ( distance , frequency ) // 5G at 1 km should be ~84 dB expected := 84.0 if math . Abs ( result - expected ) > 1.0 { t . Fatalf ( \"Expected %f, got %f\" , expected , result ) } } React Frontend Tests cd frontend-react npm test Add tests using Jest/React Testing Library: test ( 'Azimuth slider updates coverage' , () => { render ( < ControlPanel /> ) ; const slider = screen . getByRole ( 'slider' , { name : /azimuth/i }) ; fireEvent . change (slider , { target : { value : 90 }}) ; expect (slider . value ) . toBe ( '90' ) ; }) ;"
+      "text": "Go Backend Tests cd backend-go go vet ./... govulncheck ./... go test -race ./... Add tests for new features: func TestCalculatePathLoss ( t * testing . T ) { distance := 1000.0 frequency := \"5G\" result := CalculatePathLoss ( distance , frequency ) // 5G at 1 km should be ~84 dB expected := 84.0 if math . Abs ( result - expected ) > 1.0 { t . Fatalf ( \"Expected %f, got %f\" , expected , result ) } } React Frontend Tests cd frontend-react npm test Add tests using Jest/React Testing Library: test ( 'Azimuth slider updates coverage' , () => { render ( < ControlPanel /> ) ; const slider = screen . getByRole ( 'slider' , { name : /azimuth/i }) ; fireEvent . change (slider , { target : { value : 90 }}) ; expect (slider . value ) . toBe ( '90' ) ; }) ;"
     },
     {
       "page": "Contributing",
       "title": "Code Review Checklist",
       "url": "./contributing.html#code-review-checklist",
-      "text": "Before submitting PR, verify: ✅ Code follows project style ✅ Tests pass: go test ./... ✅ No lint errors: golint ./... ✅ Comments explain \"why\", not \"what\" ✅ Commit messages are clear ✅ Documentation updated if needed ✅ No breaking changes (or documented)"
+      "text": "Before submitting PR, verify: ✅ Code follows project style ✅ Backend vulnerability scan passes: govulncheck ./... ✅ Tests pass: go test -race ./... ✅ No lint errors: golint ./... ✅ Comments explain \"why\", not \"what\" ✅ Commit messages are clear ✅ Documentation updated if needed ✅ No breaking changes (or documented)"
     },
     {
       "page": "Contributing",
@@ -1169,7 +1181,7 @@
       "page": "Frequently Asked Questions",
       "title": "Where are projects stored?",
       "url": "./faq.html#where-are-projects-stored",
-      "text": "Projects are stored in the current browser through IndexedDB, with a local-storage fallback. The server remains stateless. Export a versioned .atom-project.json file for backup or transfer to another browser."
+      "text": "Projects are stored in the current browser through IndexedDB. Saves are serialized, and local storage is used only when an IndexedDB write fails. If both copies exist, persistence revisions select the newest valid workspace. The server remains stateless. Export a versioned .atom-project.json file for backup or transfer to another browser."
     },
     {
       "page": "Frequently Asked Questions",

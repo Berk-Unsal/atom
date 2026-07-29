@@ -76,6 +76,7 @@ test("runs a sector and preserves a named scenario", async ({ page }) => {
   await page.getByRole("button", { name: "Open project menu" }).click();
   await page.getByRole("button", { name: "Save current" }).click();
   await expect(page.getByRole("dialog", { name: "Project and scenarios" })).toContainText("Sector plan 1");
+  await expect(page.getByRole("status")).toHaveText("Scenario saved");
 
   await page.reload();
   await page.getByRole("button", { name: "Open project menu" }).click();

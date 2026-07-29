@@ -106,7 +106,7 @@ func TestTopologyRejectsTooManyTowerIDs(t *testing.T) {
 
 func TestTopologyRejectsOversizedTowerID(t *testing.T) {
 	state := &adapterState{scenario: "normal"}
-	overlongID := strings.Repeat("a", maxTowerIDBytes+1)
+	overlongID := strings.Repeat("a", policyMaxTowerIDBytes+1)
 	req := httptest.NewRequest(http.MethodGet, "/topology?network_tech=5g&cluster_tower_ids="+overlongID, nil)
 	recorder := httptest.NewRecorder()
 

@@ -73,6 +73,7 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 ```text
 backend-go/       Go API, in-memory R-tree, ray tracing, azimuth optimization
 frontend-react/   React/Vite/Leaflet dashboard and RF heatmap UI
+policy/           Canonical Core Lab, RF default, technology, and validation policy
 data-pipeline/    Python scripts for local tower/building data generation
 docs/             GitHub Pages documentation, search index, references, screenshots
 assets/           Source screenshots used by README/docs
@@ -80,6 +81,8 @@ Dockerfile        Production multi-stage build for the static in-memory app
 ```
 
 Generated artifacts such as `frontend-react/dist/`, local virtual environments, OSMnx responses in `data-pipeline/cache/`, and build caches are intentionally ignored and excluded from Docker build contexts. The large Ankara building GeoJSON is stored through Git LFS.
+
+Runtime policy bindings are generated from `policy/rf-policy.json`. After changing that source, run `python3 scripts/generate_policy.py`; CI runs the same command with `--check` so backend, adapter, and frontend policy copies cannot drift.
 
 ---
 

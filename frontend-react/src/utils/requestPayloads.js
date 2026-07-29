@@ -1,3 +1,5 @@
+import { DEFAULT_RECOMMENDATION_RESULTS, networkTechnologyForFrequency } from "../generated/policy.js";
+
 export function buildSimulationPayload(selectedTower, settings) {
   return {
     tower_lon: selectedTower.coordinates[0],
@@ -34,7 +36,7 @@ export function buildInterferencePayload(selectedNetworkTowers, settings, networ
     (networkOptimization?.optimized_towers ?? []).map((tower) => [String(tower.id), tower]),
   );
   return {
-    network_tech: settings.frequencyGHz < 10 ? "4g" : "5g",
+    network_tech: networkTechnologyForFrequency(settings.frequencyGHz),
     towers: selectedNetworkTowers.map((tower) => {
       const id = String(tower.cellId ?? tower.id);
       return {
@@ -68,11 +70,11 @@ export function buildRecommendationPayload(selectedNetworkTowers, settings, sele
       ...tower,
       azimuth: Number(optimizedByID.get(tower.id)?.optimal_azimuth ?? tower.azimuth),
     })),
-    network_tech: settings.frequencyGHz < 10 ? "4g" : "5g",
+    network_tech: networkTechnologyForFrequency(settings.frequencyGHz),
     search_polygon: selectionPolygon.map((point) => Array.isArray(point)
       ? [point[0], point[1]]
       : [point.lng ?? point.lon, point.lat]),
-    max_results: 5,
+    max_results: DEFAULT_RECOMMENDATION_RESULTS,
   };
 }
 

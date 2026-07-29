@@ -1,7 +1,7 @@
 FROM golang:1.26-alpine AS build
 WORKDIR /src
 COPY go.mod ./
-COPY main.go ./
+COPY main.go policy_generated.go ./
 RUN go build -o /out/core-lab-adapter .
 
 FROM alpine:3.24

@@ -17,17 +17,6 @@ import (
 
 const defaultCoreLabTimeout = 1500 * time.Millisecond
 
-var allowedCoreLabScenarios = map[string]struct{}{
-	"normal":              {},
-	"registration_storm":  {},
-	"udm_outage":          {},
-	"ausf_auth_failure":   {},
-	"pcf_policy_degraded": {},
-	"upf_degraded":        {},
-	"xn_degraded":         {},
-	"xn_unavailable":      {},
-}
-
 type coreLabConfig struct {
 	Enabled    bool
 	AdapterURL string
@@ -88,7 +77,7 @@ func proxyCoreLabScenario(config coreLabConfig) gin.HandlerFunc {
 			return
 		}
 		req.Scenario = strings.TrimSpace(req.Scenario)
-		if _, ok := allowedCoreLabScenarios[req.Scenario]; !ok {
+		if !isAllowedCoreLabScenario(req.Scenario) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "unknown core scenario: " + req.Scenario})
 			return
 		}

@@ -325,6 +325,26 @@ legacy full-property features whenever a scenario is saved.</p>
 recommendation-only fields occur once in serialized output. Frontend
 helper and project-store tests cover rendering joins and legacy artifact
 compaction.</p>
+<h3 id="atom-012-runtime-policy-copies-could-drift">ATOM-012: Runtime
+Policy Copies Could Drift</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Backend API, Core Lab adapter, and
+frontend request policy</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Core Lab scenario allowlists were independently maintained in three
+runtimes. RF defaults, technology thresholds, validation bounds,
+bandwidth choices, and structurally identical tower request types were
+also repeated across endpoint and frontend code. A change in one copy
+could silently create different accepted behavior or limits
+elsewhere.</p>
+<p>One versioned JSON policy now generates self-contained Go and
+JavaScript bindings. All three runtime layers consume those generated
+values, CI rejects stale bindings, and measurement, interference,
+optimization, and recommendation requests share one Go tower input
+type.</p>
+<p><strong>Regression evidence:</strong> generator tests verify scenario
+propagation and stale-file detection; Go and frontend tests verify the
+shared technology boundaries and generated UI defaults.</p>
 <h2 id="open-audit-queue">Open Audit Queue</h2>
 <p>No Critical defect is currently confirmed. The next audit pass will
 focus on backend RF cancellation and timeout boundaries,

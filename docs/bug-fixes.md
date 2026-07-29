@@ -149,6 +149,20 @@ Recommendation details now remain canonical in the ranked array. GeoJSON feature
 
 **Regression evidence:** Go response tests ensure recommendation-only fields occur once in serialized output. Frontend helper and project-store tests cover rendering joins and legacy artifact compaction.
 
+### ATOM-012: Runtime Policy Copies Could Drift
+
+**Priority:** Medium
+
+**Affected area:** Backend API, Core Lab adapter, and frontend request policy
+
+**Target release:** Next release after 0.3.0
+
+Core Lab scenario allowlists were independently maintained in three runtimes. RF defaults, technology thresholds, validation bounds, bandwidth choices, and structurally identical tower request types were also repeated across endpoint and frontend code. A change in one copy could silently create different accepted behavior or limits elsewhere.
+
+One versioned JSON policy now generates self-contained Go and JavaScript bindings. All three runtime layers consume those generated values, CI rejects stale bindings, and measurement, interference, optimization, and recommendation requests share one Go tower input type.
+
+**Regression evidence:** generator tests verify scenario propagation and stale-file detection; Go and frontend tests verify the shared technology boundaries and generated UI defaults.
+
 ## Open Audit Queue
 
 No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test.

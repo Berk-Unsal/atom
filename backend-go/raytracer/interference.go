@@ -11,16 +11,11 @@ import (
 )
 
 const (
-	DefaultInterferenceBandwidthLTE = 20.0
-	DefaultInterferenceBandwidthNR  = 100.0
-	DefaultInterferenceLoadFactor   = 0.7
-	DefaultInterferenceNoiseFigure  = 7.0
-	DefaultInterferenceSpacingM     = 40.0
-	MaxInterferenceSamples          = 3000
-	MaxInterferenceDemandFeatures   = 500
-	InterferenceRSRPThresholdDBm    = -110.0
-	InterferenceSINRThresholdDB     = 0.0
-	InterferenceRSRQThresholdDB     = -20.0
+	MaxInterferenceSamples        = 3000
+	MaxInterferenceDemandFeatures = 500
+	InterferenceRSRPThresholdDBm  = -110.0
+	InterferenceSINRThresholdDB   = 0.0
+	InterferenceRSRQThresholdDB   = -20.0
 )
 
 type InterferenceTowerRequest struct {
@@ -164,29 +159,23 @@ type cellAccumulator struct {
 func NormalizeInterferenceRequest(req *InterferenceRequest) {
 	req.NetworkTech = strings.ToLower(strings.TrimSpace(req.NetworkTech))
 	if req.NetworkTech == "" {
-		if req.FrequencyGHz < 10 {
-			req.NetworkTech = "4g"
-		} else if req.FrequencyGHz < 100 {
-			req.NetworkTech = "5g"
-		} else {
-			req.NetworkTech = "6g"
-		}
+		req.NetworkTech = NetworkTechnologyForFrequency(req.FrequencyGHz)
 	}
 	if req.RadiusMeters == 0 {
-		req.RadiusMeters = 400
+		req.RadiusMeters = DefaultRadiusMeters
 	}
 	if req.FrequencyGHz == 0 {
 		if req.NetworkTech == "4g" {
-			req.FrequencyGHz = 2.6
+			req.FrequencyGHz = DefaultFrequencyForTechnology("4g")
 		} else {
-			req.FrequencyGHz = 28
+			req.FrequencyGHz = DefaultFrequencyForTechnology("5g")
 		}
 	}
 	if req.TxPowerDBm == 0 {
-		req.TxPowerDBm = 30
+		req.TxPowerDBm = DefaultTxPowerDBm
 	}
 	if req.BeamWidthDeg == 0 {
-		req.BeamWidthDeg = 120
+		req.BeamWidthDeg = DefaultBeamWidthDeg
 	}
 	if req.BandwidthMHz == 0 {
 		if req.NetworkTech == "4g" {
@@ -199,7 +188,7 @@ func NormalizeInterferenceRequest(req *InterferenceRequest) {
 		req.LoadFactor = DefaultInterferenceLoadFactor
 	}
 	if req.ReuseFactor == 0 {
-		req.ReuseFactor = 1
+		req.ReuseFactor = DefaultInterferenceReuseFactor
 	}
 	if req.NoiseFigureDB == 0 {
 		req.NoiseFigureDB = DefaultInterferenceNoiseFigure
@@ -214,10 +203,10 @@ func NormalizeInterferenceRequest(req *InterferenceRequest) {
 }
 
 func ValidateInterferenceRequest(req InterferenceRequest) string {
-	if req.NetworkTech != "4g" && req.NetworkTech != "5g" {
+	if !IsAnalysisTechnology(req.NetworkTech) {
 		return "network_tech must be 4g or 5g; 6g interference KPIs are not applicable"
 	}
-	if len(req.Towers) < 2 || len(req.Towers) > 6 {
+	if len(req.Towers) < MinNetworkTowers || len(req.Towers) > MaxNetworkTowers {
 		return "towers must contain between 2 and 6 selected cells"
 	}
 	seen := make(map[string]bool, len(req.Towers))
@@ -229,44 +218,44 @@ func ValidateInterferenceRequest(req InterferenceRequest) string {
 			return "tower ids must be unique"
 		}
 		seen[tower.ID] = true
-		if tower.TowerLon < -180 || tower.TowerLon > 180 || tower.TowerLat < -90 || tower.TowerLat > 90 {
+		if tower.TowerLon < MinLongitude || tower.TowerLon > MaxLongitude || tower.TowerLat < MinLatitude || tower.TowerLat > MaxLatitude {
 			return "each tower must include valid tower_lon and tower_lat coordinates"
 		}
 	}
-	if req.RadiusMeters < 25 || req.RadiusMeters > 5000 {
+	if req.RadiusMeters < MinRadiusMeters || req.RadiusMeters > MaxRadiusMeters {
 		return "radius_m must be between 25 and 5000"
 	}
-	if req.FrequencyGHz <= 0 || req.FrequencyGHz >= 100 {
+	if req.FrequencyGHz <= 0 || req.FrequencyGHz >= NRFrequencyMaxGHz {
 		return "frequency_ghz must be between 0 and 100 for interference analysis"
 	}
-	if req.NetworkTech == "4g" && req.FrequencyGHz >= 10 {
+	if req.NetworkTech == "4g" && !FrequencyMatchesTechnology(req.NetworkTech, req.FrequencyGHz) {
 		return "4g interference analysis requires frequency_ghz below 10"
 	}
-	if req.NetworkTech == "5g" && (req.FrequencyGHz < 10 || req.FrequencyGHz >= 100) {
+	if req.NetworkTech == "5g" && !FrequencyMatchesTechnology(req.NetworkTech, req.FrequencyGHz) {
 		return "5g interference analysis requires frequency_ghz from 10 up to 100"
 	}
-	if req.TxPowerDBm < 0 || req.TxPowerDBm > 60 {
+	if req.TxPowerDBm < MinTxPowerDBm || req.TxPowerDBm > MaxTxPowerDBm {
 		return "tx_power_dbm must be between 0 and 60"
 	}
-	if req.BeamWidthDeg < 10 || req.BeamWidthDeg > 360 {
+	if req.BeamWidthDeg < MinBeamWidthDeg || req.BeamWidthDeg > MaxBeamWidthDeg {
 		return "beam_width must be between 10 and 360"
 	}
 	if _, err := interferencePresetFor(req.NetworkTech, req.BandwidthMHz); err != nil {
 		return err.Error()
 	}
-	if req.LoadFactor <= 0 || req.LoadFactor > 1 {
+	if req.LoadFactor <= MinInterferenceLoadFactorExclusive || req.LoadFactor > MaxInterferenceLoadFactor {
 		return "load_factor must be greater than 0 and no more than 1"
 	}
 	if req.ReuseFactor != 1 && req.ReuseFactor != 3 {
 		return "reuse_factor must be 1 or 3"
 	}
-	if req.NoiseFigureDB < 0 || req.NoiseFigureDB > 20 {
+	if req.NoiseFigureDB < MinNoiseFigureDB || req.NoiseFigureDB > MaxNoiseFigureDB {
 		return "noise_figure_db must be between 0 and 20"
 	}
-	if req.SampleSpacingM < 20 || req.SampleSpacingM > 200 {
+	if req.SampleSpacingM < MinSampleSpacingM || req.SampleSpacingM > MaxSampleSpacingM {
 		return "sample_spacing_m must be between 20 and 200"
 	}
-	if req.CalibrationOffsetDB < -40 || req.CalibrationOffsetDB > 40 {
+	if req.CalibrationOffsetDB < MinCalibrationOffsetDB || req.CalibrationOffsetDB > MaxCalibrationOffsetDB {
 		return "calibration_offset_db must be between -40 and 40"
 	}
 	return ""

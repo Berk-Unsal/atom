@@ -63,12 +63,28 @@ func TestInterferenceInputDefaultsOnlyOmittedValues(t *testing.T) {
 func TestNetworkInputPreservesStableTowerOrder(t *testing.T) {
 	lonA, latA := 32.85, 39.92
 	lonB, latB := 32.86, 39.93
-	input := NetworkOptimizationRequestInput{Towers: []NetworkTowerRequestInput{
+	input := NetworkOptimizationRequestInput{Towers: []TowerRequestInput{
 		{ID: "second", TowerLon: &lonB, TowerLat: &latB},
 		{ID: "first", TowerLon: &lonA, TowerLat: &latA},
 	}}
 	req := input.ToRequest()
 	if req.Towers[0].ID != "second" || req.Towers[1].ID != "first" {
 		t.Fatalf("tower order changed: %+v", req.Towers)
+	}
+}
+
+func TestNetworkTechnologyUsesCanonicalFrequencyBoundaries(t *testing.T) {
+	tests := []struct {
+		frequency float64
+		want      string
+	}{
+		{frequency: 2.6, want: "4g"},
+		{frequency: LTEFrequencyMaxGHz, want: "5g"},
+		{frequency: NRFrequencyMaxGHz, want: "6g"},
+	}
+	for _, test := range tests {
+		if got := NetworkTechnologyForFrequency(test.frequency); got != test.want {
+			t.Fatalf("NetworkTechnologyForFrequency(%v) = %q, want %q", test.frequency, got, test.want)
+		}
 	}
 }

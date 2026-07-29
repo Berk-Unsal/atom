@@ -12,20 +12,19 @@ import (
 const (
 	MaxRecommendationCandidates  = 50
 	MaxRecommendationEvaluations = 12
-	DefaultRecommendationResults = 5
 )
 
 type SiteRecommendationRequestInput struct {
-	NetworkTech         string                     `json:"network_tech"`
-	Towers              []NetworkTowerRequestInput `json:"towers"`
-	Rays                *int                       `json:"rays"`
-	RadiusMeters        *float64                   `json:"radius_m"`
-	FrequencyGHz        *float64                   `json:"frequency_ghz"`
-	TxPowerDBm          *float64                   `json:"tx_power_dbm"`
-	BeamWidthDeg        *float64                   `json:"beam_width"`
-	CalibrationOffsetDB *float64                   `json:"calibration_offset_db"`
-	SearchPolygon       [][]float64                `json:"search_polygon"`
-	MaxResults          *int                       `json:"max_results"`
+	NetworkTech         string              `json:"network_tech"`
+	Towers              []TowerRequestInput `json:"towers"`
+	Rays                *int                `json:"rays"`
+	RadiusMeters        *float64            `json:"radius_m"`
+	FrequencyGHz        *float64            `json:"frequency_ghz"`
+	TxPowerDBm          *float64            `json:"tx_power_dbm"`
+	BeamWidthDeg        *float64            `json:"beam_width"`
+	CalibrationOffsetDB *float64            `json:"calibration_offset_db"`
+	SearchPolygon       [][]float64         `json:"search_polygon"`
+	MaxResults          *int                `json:"max_results"`
 }
 
 type SiteRecommendationRequest struct {
@@ -102,39 +101,39 @@ func (input SiteRecommendationRequestInput) MissingRequiredTowerFields() bool {
 }
 
 func ValidateSiteRecommendationRequest(req SiteRecommendationRequest) string {
-	if req.NetworkTech != "4g" && req.NetworkTech != "5g" {
+	if !IsAnalysisTechnology(req.NetworkTech) {
 		return "network_tech must be 4g or 5g"
 	}
-	if len(req.Network.Towers) < 2 || len(req.Network.Towers) > 5 {
+	if len(req.Network.Towers) < MinNetworkTowers || len(req.Network.Towers) > MaxRecommendationTowers {
 		return "towers must contain between 2 and 5 selected towers"
 	}
 	if len(req.SearchPolygon) < 3 {
 		return "search_polygon must contain at least 3 coordinates"
 	}
 	for _, point := range req.SearchPolygon {
-		if point.Lon < -180 || point.Lon > 180 || point.Lat < -90 || point.Lat > 90 {
+		if point.Lon < MinLongitude || point.Lon > MaxLongitude || point.Lat < MinLatitude || point.Lat > MaxLatitude {
 			return "search_polygon contains an invalid coordinate"
 		}
 	}
-	if req.MaxResults < 1 || req.MaxResults > 10 {
+	if req.MaxResults < MinRecommendationResults || req.MaxResults > MaxRecommendationResults {
 		return "max_results must be between 1 and 10"
 	}
-	if req.CalibrationOffsetDB() < -40 || req.CalibrationOffsetDB() > 40 {
+	if req.CalibrationOffsetDB() < MinCalibrationOffsetDB || req.CalibrationOffsetDB() > MaxCalibrationOffsetDB {
 		return "calibration_offset_db must be between -40 and 40"
 	}
-	if req.Network.Rays < 8 || req.Network.Rays > 720 || req.Network.RadiusMeters < 25 || req.Network.RadiusMeters > 5000 {
+	if req.Network.Rays < MinSimulationRays || req.Network.Rays > MaxSimulationRays || req.Network.RadiusMeters < MinRadiusMeters || req.Network.RadiusMeters > MaxRadiusMeters {
 		return "rays must be between 8 and 720 and radius_m between 25 and 5000"
 	}
 	if validationError := ValidateSimulationFeatureBudget(req.Network.Rays, req.Network.RadiusMeters); validationError != "" {
 		return validationError
 	}
-	if req.Network.TxPowerDBm < 0 || req.Network.TxPowerDBm > 60 || req.Network.BeamWidthDeg < 10 || req.Network.BeamWidthDeg > 360 {
+	if req.Network.TxPowerDBm < MinTxPowerDBm || req.Network.TxPowerDBm > MaxTxPowerDBm || req.Network.BeamWidthDeg < MinBeamWidthDeg || req.Network.BeamWidthDeg > MaxBeamWidthDeg {
 		return "tx_power_dbm must be between 0 and 60 and beam_width between 10 and 360"
 	}
-	if req.NetworkTech == "4g" && (req.Network.FrequencyGHz <= 0 || req.Network.FrequencyGHz >= 10) {
+	if req.NetworkTech == "4g" && !FrequencyMatchesTechnology(req.NetworkTech, req.Network.FrequencyGHz) {
 		return "4g recommendations require frequency_ghz below 10"
 	}
-	if req.NetworkTech == "5g" && (req.Network.FrequencyGHz < 10 || req.Network.FrequencyGHz >= 100) {
+	if req.NetworkTech == "5g" && !FrequencyMatchesTechnology(req.NetworkTech, req.Network.FrequencyGHz) {
 		return "5g recommendations require frequency_ghz from 10 up to 100"
 	}
 	seen := make(map[string]struct{}, len(req.Network.Towers))
@@ -146,7 +145,7 @@ func ValidateSiteRecommendationRequest(req SiteRecommendationRequest) string {
 			return "tower ids must be unique"
 		}
 		seen[tower.ID] = struct{}{}
-		if tower.TowerLon < -180 || tower.TowerLon > 180 || tower.TowerLat < -90 || tower.TowerLat > 90 {
+		if tower.TowerLon < MinLongitude || tower.TowerLon > MaxLongitude || tower.TowerLat < MinLatitude || tower.TowerLat > MaxLatitude {
 			return "each tower must include valid tower_lon and tower_lat coordinates"
 		}
 	}

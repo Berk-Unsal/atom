@@ -35,6 +35,7 @@ import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/pol
 import { parseMeasurementCsv } from "./utils/measurementCsv.js";
 import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
 import { compactRecommendationResponse } from "./utils/recommendations.js";
+import { CORE_LAB_SCENARIOS, DEFAULT_SIMULATION, NETWORK_TECH_OPTIONS, networkTechnologyForFrequency } from "./generated/policy.js";
 import {
   buildInterferencePayload,
   buildMeasurementPayload,
@@ -54,32 +55,6 @@ import {
 const APP_ICON_URL = "/icon/icon.svg";
 const CORE_LAB_START_COMMAND =
   "docker compose -f docker-compose.yml -f docker-compose.core-lab.yml --profile core-lab up";
-const CORE_LAB_SCENARIOS = [
-  { id: "normal", label: "Normal" },
-  { id: "registration_storm", label: "Registration storm" },
-  { id: "udm_outage", label: "UDM outage" },
-  { id: "ausf_auth_failure", label: "AUSF auth failure" },
-  { id: "pcf_policy_degraded", label: "PCF degraded" },
-  { id: "upf_degraded", label: "UPF degraded" },
-  { id: "xn_degraded", label: "Xn degraded" },
-  { id: "xn_unavailable", label: "Xn unavailable" },
-];
-
-const DEFAULT_SIMULATION = {
-  frequencyGHz: 28,
-  txPowerDbm: 30,
-  rayCount: 120,
-  radiusMeters: 400,
-  azimuthDeg: 90,
-  beamWidthDeg: 120,
-  interferenceBandwidthMHz: 100,
-  cellLoadPct: 70,
-  reuseFactor: 1,
-  noiseFigureDb: 7,
-  sampleSpacingMeters: 40,
-  calibrationOffsetDb: 0,
-};
-
 const EMPTY_INTERFERENCE_ANALYSIS = {
   geojson: { type: "FeatureCollection", features: [] },
   demand_geojson: { type: "FeatureCollection", features: [] },
@@ -603,7 +578,7 @@ export default function App() {
     return new Map(selectedNetworkTowerIds.map((towerID, index) => [towerID, index + 1]));
   }, [selectedNetworkTowerIds]);
   const coreLabApplicable = is5GCoreFrequency(settings.frequencyGHz);
-  const interferenceApplicable = settings.frequencyGHz < 100;
+  const interferenceApplicable = networkTechnologyForFrequency(settings.frequencyGHz) !== "6g";
 
   const analyzeInterference = useCallback(async () => {
     if (!interferenceApplicable) {
@@ -953,7 +928,7 @@ export default function App() {
     if (!file) return;
     try {
       const samples = parseMeasurementCsv(await file.text());
-      const expectedTechnology = settings.frequencyGHz < 10 ? "4g" : settings.frequencyGHz < 100 ? "5g" : "6g";
+      const expectedTechnology = networkTechnologyForFrequency(settings.frequencyGHz);
       if (expectedTechnology === "6g" || samples.some((sample) => sample.technology !== expectedTechnology)) {
         throw new Error(`Measurement technology must match the active ${expectedTechnology.toUpperCase()} plan`);
       }
@@ -1012,7 +987,7 @@ export default function App() {
     setCalibrationProfile({
       kind: "robust_global_path_loss_bias",
       offsetDb: Number(offset),
-      technology: settings.frequencyGHz < 10 ? "4g" : "5g",
+      technology: networkTechnologyForFrequency(settings.frequencyGHz),
       frequencyGHz: settings.frequencyGHz,
       modelVersion: appMeta?.model_version ?? "unknown",
       dataset: datasetReference(appMeta),
@@ -1606,11 +1581,14 @@ export default function App() {
               coreLab={coreLab}
               enabled={coreLabEnabled}
               onRunScenario={runCoreLabScenario}
-              onUse5G={() => updateSettings((current) => ({
-                ...current,
-                frequencyGHz: 28,
-                interferenceBandwidthMHz: 100,
-              }))}
+              onUse5G={() => {
+                const technology = NETWORK_TECH_OPTIONS.find((option) => option.id === "5g");
+                updateSettings((current) => ({
+                  ...current,
+                  frequencyGHz: technology.frequencyGHz,
+                  interferenceBandwidthMHz: technology.defaultBandwidthMHz,
+                }));
+              }}
               onToggle={toggleCoreLab}
               scenarios={CORE_LAB_SCENARIOS}
               startCommand={CORE_LAB_START_COMMAND}
@@ -2564,7 +2542,7 @@ function formatScenario(value) {
 function isCalibrationProfileCompatible(profile, settings, meta) {
   if (!profile) return true;
   if (!meta) return true;
-  const technology = settings.frequencyGHz < 10 ? "4g" : settings.frequencyGHz < 100 ? "5g" : "6g";
+  const technology = networkTechnologyForFrequency(settings.frequencyGHz);
   return profile.kind === "robust_global_path_loss_bias"
     && profile.technology === technology
     && Number(profile.frequencyGHz) === Number(settings.frequencyGHz)

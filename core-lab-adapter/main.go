@@ -19,7 +19,6 @@ import (
 const (
 	maxEvents               = 80
 	maxClusterTowerIDs      = 64
-	maxTowerIDBytes         = 128
 	maxScenarioRequestBytes = 64 << 10
 )
 
@@ -638,8 +637,8 @@ func appendTowerID(towers *[]string, seen map[string]struct{}, submitted *int, r
 	if *submitted > maxClusterTowerIDs {
 		return "cluster_tower_ids must contain no more than " + strconv.Itoa(maxClusterTowerIDs) + " IDs"
 	}
-	if len(value) > maxTowerIDBytes {
-		return "each cluster tower id must be at most " + strconv.Itoa(maxTowerIDBytes) + " bytes"
+	if len(value) > policyMaxTowerIDBytes {
+		return "each cluster tower id must be at most " + strconv.Itoa(policyMaxTowerIDBytes) + " bytes"
 	}
 	if _, exists := seen[value]; exists {
 		return ""
@@ -687,15 +686,6 @@ func parseTowerLocations(raw string, towerIDs []string) map[string]topologyPoint
 		raw = remainder
 	}
 	return locations
-}
-
-func isAllowedScenario(scenario string) bool {
-	switch scenario {
-	case "normal", "registration_storm", "udm_outage", "ausf_auth_failure", "pcf_policy_degraded", "upf_degraded", "xn_degraded", "xn_unavailable":
-		return true
-	default:
-		return false
-	}
 }
 
 func is5GNetworkTech(value string) bool {

@@ -26,12 +26,12 @@ export default function ControlPanel({
     onChange((current) => ({
       ...current,
       frequencyGHz: option.frequencyGHz,
-      interferenceBandwidthMHz:
-        option.frequencyGHz === 2.6 ? 20 : option.frequencyGHz === 28 ? 100 : current.interferenceBandwidthMHz,
+      interferenceBandwidthMHz: option.defaultBandwidthMHz ?? current.interferenceBandwidthMHz,
     }));
   };
 
-  const bandwidthOptions = settings.frequencyGHz === 2.6 ? [1.4, 3, 5, 10, 15, 20] : [50, 100, 200, 400];
+  const activeTechnology = NETWORK_TECH_OPTIONS.find((option) => option.frequencyGHz === settings.frequencyGHz);
+  const bandwidthOptions = activeTechnology?.bandwidthsMHz ?? [];
 
   if (activeTool === "setup") {
     return (
@@ -203,7 +203,7 @@ export default function ControlPanel({
     }
 
     if (!interferenceApplicable) {
-      const nrOption = NETWORK_TECH_OPTIONS.find((option) => option.frequencyGHz === 28);
+      const nrOption = NETWORK_TECH_OPTIONS.find((option) => option.id === "5g");
       return (
         <ToolReadinessState
           actionLabel="Use 5G mmWave"

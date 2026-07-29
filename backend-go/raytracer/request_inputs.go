@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-const MaxTowerIDBytes = 128
-
 type StaticSimulationRequestInput struct {
 	TowerLon            *float64 `json:"tower_lon"`
 	TowerLat            *float64 `json:"tower_lat"`
@@ -19,7 +17,7 @@ type StaticSimulationRequestInput struct {
 	CalibrationOffsetDB *float64 `json:"calibration_offset_db"`
 }
 
-type NetworkTowerRequestInput struct {
+type TowerRequestInput struct {
 	ID         string   `json:"id"`
 	TowerLon   *float64 `json:"tower_lon"`
 	TowerLat   *float64 `json:"tower_lat"`
@@ -27,35 +25,28 @@ type NetworkTowerRequestInput struct {
 }
 
 type NetworkOptimizationRequestInput struct {
-	Towers              []NetworkTowerRequestInput `json:"towers"`
-	Rays                *int                       `json:"rays"`
-	RadiusMeters        *float64                   `json:"radius_m"`
-	FrequencyGHz        *float64                   `json:"frequency_ghz"`
-	TxPowerDBm          *float64                   `json:"tx_power_dbm"`
-	BeamWidthDeg        *float64                   `json:"beam_width"`
-	CalibrationOffsetDB *float64                   `json:"calibration_offset_db"`
-}
-
-type InterferenceTowerRequestInput struct {
-	ID         string   `json:"id"`
-	TowerLon   *float64 `json:"tower_lon"`
-	TowerLat   *float64 `json:"tower_lat"`
-	AzimuthDeg *float64 `json:"azimuth"`
+	Towers              []TowerRequestInput `json:"towers"`
+	Rays                *int                `json:"rays"`
+	RadiusMeters        *float64            `json:"radius_m"`
+	FrequencyGHz        *float64            `json:"frequency_ghz"`
+	TxPowerDBm          *float64            `json:"tx_power_dbm"`
+	BeamWidthDeg        *float64            `json:"beam_width"`
+	CalibrationOffsetDB *float64            `json:"calibration_offset_db"`
 }
 
 type InterferenceRequestInput struct {
-	NetworkTech         string                          `json:"network_tech"`
-	Towers              []InterferenceTowerRequestInput `json:"towers"`
-	RadiusMeters        *float64                        `json:"radius_m"`
-	FrequencyGHz        *float64                        `json:"frequency_ghz"`
-	TxPowerDBm          *float64                        `json:"tx_power_dbm"`
-	BeamWidthDeg        *float64                        `json:"beam_width"`
-	BandwidthMHz        *float64                        `json:"bandwidth_mhz"`
-	LoadFactor          *float64                        `json:"load_factor"`
-	ReuseFactor         *int                            `json:"reuse_factor"`
-	NoiseFigureDB       *float64                        `json:"noise_figure_db"`
-	SampleSpacingM      *float64                        `json:"sample_spacing_m"`
-	CalibrationOffsetDB *float64                        `json:"calibration_offset_db"`
+	NetworkTech         string              `json:"network_tech"`
+	Towers              []TowerRequestInput `json:"towers"`
+	RadiusMeters        *float64            `json:"radius_m"`
+	FrequencyGHz        *float64            `json:"frequency_ghz"`
+	TxPowerDBm          *float64            `json:"tx_power_dbm"`
+	BeamWidthDeg        *float64            `json:"beam_width"`
+	BandwidthMHz        *float64            `json:"bandwidth_mhz"`
+	LoadFactor          *float64            `json:"load_factor"`
+	ReuseFactor         *int                `json:"reuse_factor"`
+	NoiseFigureDB       *float64            `json:"noise_figure_db"`
+	SampleSpacingM      *float64            `json:"sample_spacing_m"`
+	CalibrationOffsetDB *float64            `json:"calibration_offset_db"`
 }
 
 func ValidateTowerID(id string) string {
@@ -73,13 +64,13 @@ func (input StaticSimulationRequestInput) ToRequest() StaticSimulationRequest {
 	return StaticSimulationRequest{
 		TowerLon:            valueOr(input.TowerLon, 0),
 		TowerLat:            valueOr(input.TowerLat, 0),
-		Rays:                valueOr(input.Rays, 60),
-		RadiusMeters:        valueOr(input.RadiusMeters, 400),
-		FrequencyGHz:        valueOr(input.FrequencyGHz, 28),
-		TxPowerDBm:          valueOr(input.TxPowerDBm, 30),
+		Rays:                valueOr(input.Rays, DefaultStaticSimulationRays),
+		RadiusMeters:        valueOr(input.RadiusMeters, DefaultRadiusMeters),
+		FrequencyGHz:        valueOr(input.FrequencyGHz, DefaultFrequencyGHz),
+		TxPowerDBm:          valueOr(input.TxPowerDBm, DefaultTxPowerDBm),
 		AzimuthDeg:          normalizeDegrees(valueOr(input.AzimuthDeg, 0)),
-		BeamWidthDeg:        valueOr(input.BeamWidthDeg, 120),
-		CalibrationOffsetDB: valueOr(input.CalibrationOffsetDB, 0),
+		BeamWidthDeg:        valueOr(input.BeamWidthDeg, DefaultBeamWidthDeg),
+		CalibrationOffsetDB: valueOr(input.CalibrationOffsetDB, DefaultCalibrationOffsetDB),
 	}
 }
 
@@ -95,12 +86,12 @@ func (input NetworkOptimizationRequestInput) ToRequest() NetworkOptimizationRequ
 	}
 	return NetworkOptimizationRequest{
 		Towers:              towers,
-		Rays:                valueOr(input.Rays, 72),
-		RadiusMeters:        valueOr(input.RadiusMeters, 400),
-		FrequencyGHz:        valueOr(input.FrequencyGHz, 28),
-		TxPowerDBm:          valueOr(input.TxPowerDBm, 30),
-		BeamWidthDeg:        valueOr(input.BeamWidthDeg, 120),
-		CalibrationOffsetDB: valueOr(input.CalibrationOffsetDB, 0),
+		Rays:                valueOr(input.Rays, DefaultNetworkOptimizationRays),
+		RadiusMeters:        valueOr(input.RadiusMeters, DefaultRadiusMeters),
+		FrequencyGHz:        valueOr(input.FrequencyGHz, DefaultFrequencyGHz),
+		TxPowerDBm:          valueOr(input.TxPowerDBm, DefaultTxPowerDBm),
+		BeamWidthDeg:        valueOr(input.BeamWidthDeg, DefaultBeamWidthDeg),
+		CalibrationOffsetDB: valueOr(input.CalibrationOffsetDB, DefaultCalibrationOffsetDB),
 	}
 }
 
@@ -108,23 +99,14 @@ func (input InterferenceRequestInput) ToRequest() InterferenceRequest {
 	networkTech := strings.ToLower(strings.TrimSpace(input.NetworkTech))
 	frequencyGHz := valueOr(input.FrequencyGHz, 0)
 	if networkTech == "" {
-		switch {
-		case input.FrequencyGHz == nil:
-			networkTech = "5g"
-		case frequencyGHz < 10:
-			networkTech = "4g"
-		case frequencyGHz < 100:
-			networkTech = "5g"
-		default:
-			networkTech = "6g"
+		if input.FrequencyGHz == nil {
+			networkTech = NetworkTechnologyForFrequency(DefaultFrequencyGHz)
+		} else {
+			networkTech = NetworkTechnologyForFrequency(frequencyGHz)
 		}
 	}
 	if input.FrequencyGHz == nil {
-		if networkTech == "4g" {
-			frequencyGHz = 2.6
-		} else {
-			frequencyGHz = 28
-		}
+		frequencyGHz = DefaultFrequencyForTechnology(networkTech)
 	}
 	defaultBandwidth := DefaultInterferenceBandwidthNR
 	if networkTech == "4g" {
@@ -142,16 +124,16 @@ func (input InterferenceRequestInput) ToRequest() InterferenceRequest {
 	return InterferenceRequest{
 		NetworkTech:         networkTech,
 		Towers:              towers,
-		RadiusMeters:        valueOr(input.RadiusMeters, 400),
+		RadiusMeters:        valueOr(input.RadiusMeters, DefaultRadiusMeters),
 		FrequencyGHz:        frequencyGHz,
-		TxPowerDBm:          valueOr(input.TxPowerDBm, 30),
-		BeamWidthDeg:        valueOr(input.BeamWidthDeg, 120),
+		TxPowerDBm:          valueOr(input.TxPowerDBm, DefaultTxPowerDBm),
+		BeamWidthDeg:        valueOr(input.BeamWidthDeg, DefaultBeamWidthDeg),
 		BandwidthMHz:        valueOr(input.BandwidthMHz, defaultBandwidth),
 		LoadFactor:          valueOr(input.LoadFactor, DefaultInterferenceLoadFactor),
-		ReuseFactor:         valueOr(input.ReuseFactor, 1),
+		ReuseFactor:         valueOr(input.ReuseFactor, DefaultInterferenceReuseFactor),
 		NoiseFigureDB:       valueOr(input.NoiseFigureDB, DefaultInterferenceNoiseFigure),
 		SampleSpacingM:      valueOr(input.SampleSpacingM, DefaultInterferenceSpacingM),
-		CalibrationOffsetDB: valueOr(input.CalibrationOffsetDB, 0),
+		CalibrationOffsetDB: valueOr(input.CalibrationOffsetDB, DefaultCalibrationOffsetDB),
 	}
 }
 

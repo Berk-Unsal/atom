@@ -423,6 +423,12 @@
     },
     {
       "page": "System Architecture",
+      "title": "Shared runtime policy",
+      "url": "./architecture.html#shared-policy-heading",
+      "text": "Core Lab scenarios, technology frequency bands, RF defaults, bandwidth choices, and validation limits originate in policy/rf-policy.json . A checked generator produces self-contained Go and JavaScript bindings for the API, adapter, and browser; CI rejects stale output. Measurement, interference, optimization, and recommendation requests also use one shared Go tower input type."
+    },
+    {
+      "page": "System Architecture",
       "title": "System context",
       "url": "./architecture.html#context-heading",
       "text": "The production image contains the built frontend, Go API, and default Ankara dataset pack. Basemap tiles remain an external dependency unless replaced or cached. Core Lab is opt-in and communicates through a separate adapter. System boundary Solid nodes are part of the default A.T.O.M runtime RF planner or reviewer Configures cells, runs analyses, inspects map objects, exports reports. API consumer Submits the same JSON contracts directly to /api/* . A.T.O.M web workspace Focused command bar, workflow rail, tool drawer, Inspector, Leaflet map, and report assembly. A.T.O.M Go service Static frontend host, REST API, validation, resource controls, spatial index, and RF engines. Validated dataset pack Manifest, provenance, hashes, tower points, building footprints, and demand metadata loaded from local files. OpenStreetMap tile service Provides the visual basemap; RF computation does not depend on live map APIs. Core Lab adapter Optional deterministic overlay or bridge to configured Open5GS status and metrics endpoints. GitHub / Git LFS Distributes source and the large building dataset used by local builds. NET Local-first does not mean the default basemap is offline The RF engines and datasets run locally. Leaflet currently requests OpenStreetMap tiles over the network unless a local tile source is configured separately."
@@ -651,6 +657,12 @@
     },
     {
       "page": "Bug-Fix Register",
+      "title": "ATOM-012: Runtime Policy Copies Could Drift",
+      "url": "./bug-fixes.html#atom-012-runtime-policy-copies-could-drift",
+      "text": "Priority: Medium Affected area: Backend API, Core Lab adapter, and frontend request policy Target release: Next release after 0.3.0 Core Lab scenario allowlists were independently maintained in three runtimes. RF defaults, technology thresholds, validation bounds, bandwidth choices, and structurally identical tower request types were also repeated across endpoint and frontend code. A change in one copy could silently create different accepted behavior or limits elsewhere. One versioned JSON policy now generates self-contained Go and JavaScript bindings. All three runtime layers consume those generated values, CI rejects stale bindings, and measurement, interference, optimization, and recommendation requests share one Go tower input type. Regression evidence: generator tests verify scenario propagation and stale-file detection; Go and frontend tests verify the shared technology boundaries and generated UI defaults."
+    },
+    {
+      "page": "Bug-Fix Register",
       "title": "Open Audit Queue",
       "url": "./bug-fixes.html#open-audit-queue",
       "text": "No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test."
@@ -677,7 +689,7 @@
       "page": "Changelog",
       "title": "Fixed",
       "url": "./changelog.html#fixed",
-      "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts."
+      "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts. Generate backend, Core Lab adapter, and frontend scenario/RF policy bindings from one canonical source, and share one tower input type across RF endpoints."
     },
     {
       "page": "Changelog",

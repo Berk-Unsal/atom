@@ -32,6 +32,10 @@ Go + Gin API
 
 The production Docker image contains the built frontend, Go binary, and local Ankara data. There is no runtime database. Leaflet currently requests OpenStreetMap basemap tiles over the network unless a separate local tile source is configured.
 
+## Shared Runtime Policy
+
+Core Lab scenario IDs, technology frequency bands, RF defaults, and validation limits have one canonical source in `policy/rf-policy.json`. `scripts/generate_policy.py` produces self-contained bindings for the backend, Core Lab adapter, and frontend. CI checks generated output byte-for-byte, so a policy change cannot merge while any runtime consumer still carries an older binding. Measurement, interference, optimization, and recommendation inputs also share one Go tower DTO.
+
 ## Frontend Workspace
 
 The React application is organized around a map-first focused workspace:

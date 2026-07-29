@@ -317,56 +317,56 @@ func registerInterferenceRoute(router *gin.Engine, buildingIndex *raytracer.Buil
 }
 
 func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
-	if req.TowerLon < -180 || req.TowerLon > 180 || req.TowerLat < -90 || req.TowerLat > 90 {
+	if req.TowerLon < raytracer.MinLongitude || req.TowerLon > raytracer.MaxLongitude || req.TowerLat < raytracer.MinLatitude || req.TowerLat > raytracer.MaxLatitude {
 		return "tower_lon and tower_lat must be valid coordinates"
 	}
-	if req.Rays < 8 || req.Rays > 720 {
+	if req.Rays < raytracer.MinSimulationRays || req.Rays > raytracer.MaxSimulationRays {
 		return "rays must be between 8 and 720"
 	}
-	if req.RadiusMeters < 25 || req.RadiusMeters > 5000 {
+	if req.RadiusMeters < raytracer.MinRadiusMeters || req.RadiusMeters > raytracer.MaxRadiusMeters {
 		return "radius_m must be between 25 and 5000"
 	}
 	if validationError := raytracer.ValidateSimulationFeatureBudget(req.Rays, req.RadiusMeters); validationError != "" {
 		return validationError
 	}
-	if req.FrequencyGHz <= 0 || req.FrequencyGHz > 300 {
+	if req.FrequencyGHz <= 0 || req.FrequencyGHz > raytracer.MaxFrequencyGHz {
 		return "frequency_ghz must be between 0 and 300"
 	}
-	if req.TxPowerDBm < 0 || req.TxPowerDBm > 60 {
+	if req.TxPowerDBm < raytracer.MinTxPowerDBm || req.TxPowerDBm > raytracer.MaxTxPowerDBm {
 		return "tx_power_dbm must be between 0 and 60"
 	}
-	if req.BeamWidthDeg < 10 || req.BeamWidthDeg > 360 {
+	if req.BeamWidthDeg < raytracer.MinBeamWidthDeg || req.BeamWidthDeg > raytracer.MaxBeamWidthDeg {
 		return "beam_width must be between 10 and 360"
 	}
-	if req.CalibrationOffsetDB < -40 || req.CalibrationOffsetDB > 40 {
+	if req.CalibrationOffsetDB < raytracer.MinCalibrationOffsetDB || req.CalibrationOffsetDB > raytracer.MaxCalibrationOffsetDB {
 		return "calibration_offset_db must be between -40 and 40"
 	}
 	return ""
 }
 
 func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest) string {
-	if len(req.Towers) < 2 || len(req.Towers) > 6 {
+	if len(req.Towers) < raytracer.MinNetworkTowers || len(req.Towers) > raytracer.MaxNetworkTowers {
 		return "towers must contain between 2 and 6 selected towers"
 	}
-	if req.Rays < 8 || req.Rays > 720 {
+	if req.Rays < raytracer.MinSimulationRays || req.Rays > raytracer.MaxSimulationRays {
 		return "rays must be between 8 and 720"
 	}
-	if req.RadiusMeters < 25 || req.RadiusMeters > 5000 {
+	if req.RadiusMeters < raytracer.MinRadiusMeters || req.RadiusMeters > raytracer.MaxRadiusMeters {
 		return "radius_m must be between 25 and 5000"
 	}
 	if validationError := raytracer.ValidateSimulationFeatureBudget(req.Rays, req.RadiusMeters); validationError != "" {
 		return validationError
 	}
-	if req.FrequencyGHz <= 0 || req.FrequencyGHz > 300 {
+	if req.FrequencyGHz <= 0 || req.FrequencyGHz > raytracer.MaxFrequencyGHz {
 		return "frequency_ghz must be between 0 and 300"
 	}
-	if req.TxPowerDBm < 0 || req.TxPowerDBm > 60 {
+	if req.TxPowerDBm < raytracer.MinTxPowerDBm || req.TxPowerDBm > raytracer.MaxTxPowerDBm {
 		return "tx_power_dbm must be between 0 and 60"
 	}
-	if req.BeamWidthDeg < 10 || req.BeamWidthDeg > 360 {
+	if req.BeamWidthDeg < raytracer.MinBeamWidthDeg || req.BeamWidthDeg > raytracer.MaxBeamWidthDeg {
 		return "beam_width must be between 10 and 360"
 	}
-	if req.CalibrationOffsetDB < -40 || req.CalibrationOffsetDB > 40 {
+	if req.CalibrationOffsetDB < raytracer.MinCalibrationOffsetDB || req.CalibrationOffsetDB > raytracer.MaxCalibrationOffsetDB {
 		return "calibration_offset_db must be between -40 and 40"
 	}
 	seenTowerIDs := make(map[string]struct{}, len(req.Towers))
@@ -378,7 +378,7 @@ func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest
 			return "tower ids must be unique"
 		}
 		seenTowerIDs[tower.ID] = struct{}{}
-		if tower.TowerLon < -180 || tower.TowerLon > 180 || tower.TowerLat < -90 || tower.TowerLat > 90 {
+		if tower.TowerLon < raytracer.MinLongitude || tower.TowerLon > raytracer.MaxLongitude || tower.TowerLat < raytracer.MinLatitude || tower.TowerLat > raytracer.MaxLatitude {
 			return "each tower must include valid tower_lon and tower_lat coordinates"
 		}
 	}

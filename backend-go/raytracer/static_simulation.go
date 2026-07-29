@@ -211,50 +211,50 @@ type PointGeometry struct {
 
 func NormalizeStaticSimulationRequest(req *StaticSimulationRequest) {
 	if req.Rays == 0 {
-		req.Rays = 60
+		req.Rays = DefaultStaticSimulationRays
 	}
 	if req.RadiusMeters == 0 {
-		req.RadiusMeters = 400
+		req.RadiusMeters = DefaultRadiusMeters
 	}
 	if req.FrequencyGHz == 0 {
-		req.FrequencyGHz = 28
+		req.FrequencyGHz = DefaultFrequencyGHz
 	}
 	if req.TxPowerDBm == 0 {
-		req.TxPowerDBm = 30
+		req.TxPowerDBm = DefaultTxPowerDBm
 	}
 	req.AzimuthDeg = normalizeDegrees(req.AzimuthDeg)
 	if req.BeamWidthDeg == 0 {
-		req.BeamWidthDeg = 120
+		req.BeamWidthDeg = DefaultBeamWidthDeg
 	}
-	if req.BeamWidthDeg < 10 {
-		req.BeamWidthDeg = 10
+	if req.BeamWidthDeg < MinBeamWidthDeg {
+		req.BeamWidthDeg = MinBeamWidthDeg
 	}
-	if req.BeamWidthDeg > 360 {
-		req.BeamWidthDeg = 360
+	if req.BeamWidthDeg > MaxBeamWidthDeg {
+		req.BeamWidthDeg = MaxBeamWidthDeg
 	}
 }
 
 func NormalizeNetworkOptimizationRequest(req *NetworkOptimizationRequest) {
 	if req.Rays == 0 {
-		req.Rays = 72
+		req.Rays = DefaultNetworkOptimizationRays
 	}
 	if req.RadiusMeters == 0 {
-		req.RadiusMeters = 400
+		req.RadiusMeters = DefaultRadiusMeters
 	}
 	if req.FrequencyGHz == 0 {
-		req.FrequencyGHz = 28
+		req.FrequencyGHz = DefaultFrequencyGHz
 	}
 	if req.TxPowerDBm == 0 {
-		req.TxPowerDBm = 30
+		req.TxPowerDBm = DefaultTxPowerDBm
 	}
 	if req.BeamWidthDeg == 0 {
-		req.BeamWidthDeg = 120
+		req.BeamWidthDeg = DefaultBeamWidthDeg
 	}
-	if req.BeamWidthDeg < 10 {
-		req.BeamWidthDeg = 10
+	if req.BeamWidthDeg < MinBeamWidthDeg {
+		req.BeamWidthDeg = MinBeamWidthDeg
 	}
-	if req.BeamWidthDeg > 360 {
-		req.BeamWidthDeg = 360
+	if req.BeamWidthDeg > MaxBeamWidthDeg {
+		req.BeamWidthDeg = MaxBeamWidthDeg
 	}
 	for index := range req.Towers {
 		req.Towers[index].AzimuthDeg = normalizeDegrees(req.Towers[index].AzimuthDeg)
@@ -1590,9 +1590,9 @@ func FreeSpacePathLossMetersGHz(distanceMeters float64, frequencyGHz float64) fl
 
 func PenetrationLossForFrequencyGHz(frequencyGHz float64) float64 {
 	switch {
-	case frequencyGHz < 10:
+	case frequencyGHz < LTEFrequencyMaxGHz:
 		return 8
-	case frequencyGHz < 100:
+	case frequencyGHz < NRFrequencyMaxGHz:
 		return 30
 	default:
 		return 80

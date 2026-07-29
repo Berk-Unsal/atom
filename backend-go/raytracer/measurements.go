@@ -10,16 +10,16 @@ import (
 const MaxMeasurementSamples = 5000
 
 type MeasurementEvaluationRequestInput struct {
-	NetworkTech         string                          `json:"network_tech"`
-	Towers              []InterferenceTowerRequestInput `json:"towers"`
-	RadiusMeters        *float64                        `json:"radius_m"`
-	FrequencyGHz        *float64                        `json:"frequency_ghz"`
-	TxPowerDBm          *float64                        `json:"tx_power_dbm"`
-	BeamWidthDeg        *float64                        `json:"beam_width"`
-	BandwidthMHz        *float64                        `json:"bandwidth_mhz"`
-	NoiseFigureDB       *float64                        `json:"noise_figure_db"`
-	CalibrationOffsetDB *float64                        `json:"calibration_offset_db"`
-	Samples             []MeasurementSampleInput        `json:"samples"`
+	NetworkTech         string                   `json:"network_tech"`
+	Towers              []TowerRequestInput      `json:"towers"`
+	RadiusMeters        *float64                 `json:"radius_m"`
+	FrequencyGHz        *float64                 `json:"frequency_ghz"`
+	TxPowerDBm          *float64                 `json:"tx_power_dbm"`
+	BeamWidthDeg        *float64                 `json:"beam_width"`
+	BandwidthMHz        *float64                 `json:"bandwidth_mhz"`
+	NoiseFigureDB       *float64                 `json:"noise_figure_db"`
+	CalibrationOffsetDB *float64                 `json:"calibration_offset_db"`
+	Samples             []MeasurementSampleInput `json:"samples"`
 }
 
 type MeasurementSampleInput struct {
@@ -148,25 +148,25 @@ func ValidateMeasurementEvaluationRequest(input MeasurementEvaluationRequestInpu
 	if len(req.Samples) == 0 || len(req.Samples) > MaxMeasurementSamples {
 		return "samples must contain between 1 and 5000 measurements"
 	}
-	if req.Radio.NetworkTech != "4g" && req.Radio.NetworkTech != "5g" {
+	if !IsAnalysisTechnology(req.Radio.NetworkTech) {
 		return "network_tech must be 4g or 5g"
 	}
-	if len(req.Radio.Towers) < 1 || len(req.Radio.Towers) > 6 {
+	if len(req.Radio.Towers) < MinMeasurementTowers || len(req.Radio.Towers) > MaxMeasurementTowers {
 		return "towers must contain between 1 and 6 selected towers"
 	}
-	if req.Radio.RadiusMeters < 25 || req.Radio.RadiusMeters > 5000 {
+	if req.Radio.RadiusMeters < MinRadiusMeters || req.Radio.RadiusMeters > MaxRadiusMeters {
 		return "radius_m must be between 25 and 5000"
 	}
-	if req.Radio.TxPowerDBm < 0 || req.Radio.TxPowerDBm > 60 || req.Radio.BeamWidthDeg < 10 || req.Radio.BeamWidthDeg > 360 {
+	if req.Radio.TxPowerDBm < MinTxPowerDBm || req.Radio.TxPowerDBm > MaxTxPowerDBm || req.Radio.BeamWidthDeg < MinBeamWidthDeg || req.Radio.BeamWidthDeg > MaxBeamWidthDeg {
 		return "tx_power_dbm must be between 0 and 60 and beam_width between 10 and 360"
 	}
-	if req.Radio.CalibrationOffsetDB < -40 || req.Radio.CalibrationOffsetDB > 40 {
+	if req.Radio.CalibrationOffsetDB < MinCalibrationOffsetDB || req.Radio.CalibrationOffsetDB > MaxCalibrationOffsetDB {
 		return "calibration_offset_db must be between -40 and 40"
 	}
-	if req.Radio.NetworkTech == "4g" && (req.Radio.FrequencyGHz <= 0 || req.Radio.FrequencyGHz >= 10) {
+	if req.Radio.NetworkTech == "4g" && !FrequencyMatchesTechnology(req.Radio.NetworkTech, req.Radio.FrequencyGHz) {
 		return "4g measurement evaluation requires frequency_ghz below 10"
 	}
-	if req.Radio.NetworkTech == "5g" && (req.Radio.FrequencyGHz < 10 || req.Radio.FrequencyGHz >= 100) {
+	if req.Radio.NetworkTech == "5g" && !FrequencyMatchesTechnology(req.Radio.NetworkTech, req.Radio.FrequencyGHz) {
 		return "5g measurement evaluation requires frequency_ghz from 10 up to 100"
 	}
 	if _, err := interferencePresetFor(req.Radio.NetworkTech, req.Radio.BandwidthMHz); err != nil {
@@ -181,7 +181,7 @@ func ValidateMeasurementEvaluationRequest(input MeasurementEvaluationRequestInpu
 			return "tower ids must be unique"
 		}
 		seenTowers[tower.ID] = struct{}{}
-		if tower.TowerLon < -180 || tower.TowerLon > 180 || tower.TowerLat < -90 || tower.TowerLat > 90 {
+		if tower.TowerLon < MinLongitude || tower.TowerLon > MaxLongitude || tower.TowerLat < MinLatitude || tower.TowerLat > MaxLatitude {
 			return "each tower must include valid tower_lon and tower_lat coordinates"
 		}
 	}
@@ -197,7 +197,7 @@ func ValidateMeasurementEvaluationRequest(input MeasurementEvaluationRequestInpu
 			return "sample ids must be unique"
 		}
 		seen[sample.ID] = struct{}{}
-		if sample.Lon < -180 || sample.Lon > 180 || sample.Lat < -90 || sample.Lat > 90 {
+		if sample.Lon < MinLongitude || sample.Lon > MaxLongitude || sample.Lat < MinLatitude || sample.Lat > MaxLatitude {
 			return "each sample must include valid lon and lat coordinates"
 		}
 		if sample.RSRPDBm < -180 || sample.RSRPDBm > -20 {
@@ -333,7 +333,7 @@ func buildBiasCalibration(residuals []measurementResidual, currentOffset float64
 	}
 	adjustment := medianFloat64(training)
 	totalOffset := currentOffset + adjustment
-	if totalOffset < -40 || totalOffset > 40 {
+	if totalOffset < MinCalibrationOffsetDB || totalOffset > MaxCalibrationOffsetDB {
 		calibration.Reason = "Suggested correction exceeds the supported +/-40 dB range."
 		return calibration
 	}

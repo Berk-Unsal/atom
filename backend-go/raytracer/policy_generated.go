@@ -48,6 +48,34 @@ const (
 	MaxNoiseFigureDB                   = 20
 	MinSampleSpacingM                  = 20
 	MaxSampleSpacingM                  = 200
+	RFProfileSchemaVersion             = 1
+	DefaultAntennaGainDBi              = 25
+	DefaultSystemLossDB                = 0
+	DefaultAntennaHeightM              = 25
+	DefaultMechanicalDowntiltDeg       = 0
+	DefaultElectricalDowntiltDeg       = 0
+	DefaultOrientationDeg              = 0
+	DefaultReceiverHeightM             = 1.5
+	DefaultReceiverSensitivityDBm      = -115
+	MaxRFProfileTextBytes              = 64
+	MinBandwidthMHz                    = 0.1
+	MaxBandwidthMHz                    = 2000
+	MinAntennaGainDBi                  = -20
+	MaxAntennaGainDBi                  = 80
+	MinSystemLossDB                    = 0
+	MaxSystemLossDB                    = 100
+	MinAntennaHeightM                  = 0.5
+	MaxAntennaHeightM                  = 300
+	MinDowntiltDeg                     = -30
+	MaxDowntiltDeg                     = 90
+	MaxRFProfileReuseFactor            = 12
+	MinPCI                             = 0
+	MaxLTEPCI                          = 503
+	MaxNRPCI                           = 1007
+	MinReceiverHeightM                 = 0.1
+	MaxReceiverHeightM                 = 100
+	MinReceiverSensitivityDBm          = -180
+	MaxReceiverSensitivityDBm          = -20
 )
 
 func NetworkTechnologyForFrequency(frequencyGHz float64) string {
@@ -62,10 +90,43 @@ func NetworkTechnologyForFrequency(frequencyGHz float64) string {
 }
 
 func DefaultFrequencyForTechnology(networkTech string) float64 {
-	if networkTech == "4g" {
+	switch networkTech {
+	case "4g":
 		return 2.6
+	case "5g":
+		return 28
+	default:
+		return 140
 	}
-	return 28
+}
+
+func DefaultBandForTechnology(networkTech string) string {
+	switch networkTech {
+	case "4g":
+		return "LTE Band 7"
+	case "5g":
+		return "NR n257"
+	default:
+		return "Sub-THz research"
+	}
+}
+
+func DefaultDuplexModeForTechnology(networkTech string) string {
+	if networkTech == "4g" {
+		return "fdd"
+	}
+	return "tdd"
+}
+
+func DefaultBandwidthForTechnology(networkTech string) float64 {
+	switch networkTech {
+	case "4g":
+		return 20.0
+	case "5g":
+		return 100.0
+	default:
+		return 1000.0
+	}
 }
 
 func IsAnalysisTechnology(networkTech string) bool {

@@ -106,8 +106,9 @@ func interferenceQualityClass(rsrpDBm float64, sinrDB float64, rsrqDB float64) s
 }
 
 func pointInsideAnyTowerRadius(req InterferenceRequest, point Point) bool {
-	for _, tower := range req.Towers {
-		if ApproxDistanceMeters(Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, point) <= req.RadiusMeters {
+	for index, tower := range req.Towers {
+		profile := effectiveInterferenceTowerProfile(req, tower, index)
+		if ApproxDistanceMeters(Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, point) <= profile.RadiusMeters {
 			return true
 		}
 	}

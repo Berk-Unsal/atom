@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "ankara-open-planning",
   "name": "Ankara Open Planning Dataset",
   "version": "2026.07",
@@ -13,6 +13,43 @@
     "towers": "ankara_5g_nodes.geojson",
     "buildings": "ankara_buildings.geojson"
   },
+	"layers": {
+		"towers": {
+			"kind": "cell_inventory",
+			"format": "geojson",
+			"crs": "EPSG:4326",
+			"optional": false,
+			"source": "OpenCellID-derived planning records",
+			"license": "Review upstream OpenCellID terms before redistribution",
+			"confidence": "Planning inventory; not operator-verified."
+		},
+		"buildings": {
+			"kind": "building_footprints",
+			"format": "geojson",
+			"crs": "EPSG:4326",
+			"optional": false,
+			"source": "OpenStreetMap",
+			"license": "ODbL 1.0",
+			"confidence": "Static footprints with heuristic demand enrichment."
+		}
+	},
+	"quality": {
+		"summary": "Geometry and hashes validated; RF inventory and demand attributes remain planning-grade.",
+		"feature_counts": {
+			"towers": 451,
+			"buildings": 161626
+		},
+		"missing_fields": {},
+		"geometry": {
+			"towers": { "invalid_input": 0, "repaired": 0, "dropped": 0, "output": 451 },
+			"buildings": { "invalid_input": 0, "repaired": 0, "dropped": 0, "output": 161626 }
+		},
+		"coverage": {
+			"requested_bounds": [32.45, 39.55, 33.25, 40.25],
+			"data_bounds": [32.45, 39.55, 33.25, 40.25],
+			"coverage_ratio": 1.0
+		}
+	},
   "sha256": {
     "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
     "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"

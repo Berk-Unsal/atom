@@ -30,6 +30,27 @@ func TestInterferenceRouteRejectsMalformedJSON(t *testing.T) {
 	if !strings.Contains(recorder.Body.String(), "invalid interference JSON") {
 		t.Fatalf("body = %q, want malformed JSON error", recorder.Body.String())
 	}
+	if strings.Contains(recorder.Body.String(), "unexpected") {
+		t.Fatalf("body leaked parser diagnostics: %q", recorder.Body.String())
+	}
+}
+
+func TestInterferenceRouteRejectsUnknownJSONField(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	registerInterferenceRoute(router, raytracer.EmptyBuildingIndex())
+	req := httptest.NewRequest(http.MethodPost, "/api/interference", strings.NewReader(`{"network_tech":"4g","network_tehc":"4g"}`))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, body = %s; want 400", recorder.Code, recorder.Body.String())
+	}
+	if strings.Contains(recorder.Body.String(), "network_tehc") {
+		t.Fatalf("body leaked rejected field name: %q", recorder.Body.String())
+	}
 }
 
 func TestInterferenceRouteRejects6G(t *testing.T) {
@@ -202,14 +223,29 @@ func TestReadinessRequiresAllRuntimeAssets(t *testing.T) {
 	}
 }
 
+func TestReadinessRedactsDatasetDiagnostics(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	router.GET("/readyz", readinessHandler(false, false, true, "/private/data/manifest.json: checksum mismatch"))
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/readyz", nil))
+	if recorder.Code != http.StatusServiceUnavailable {
+		t.Fatalf("status = %d, want 503", recorder.Code)
+	}
+	if strings.Contains(recorder.Body.String(), "/private/data") || !strings.Contains(recorder.Body.String(), "dataset unavailable") {
+		t.Fatalf("body = %s, want generic dataset diagnostic", recorder.Body.String())
+	}
+}
+
 func TestGeoJSONRouteUsesJSONMediaTypeAndDisablesCaching(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	path := filepath.Join(t.TempDir(), "towers.geojson")
 	if err := os.WriteFile(path, []byte(`{"type":"FeatureCollection","features":[]}`), 0o600); err != nil {
 		t.Fatalf("write fixture: %v", err)
 	}
+	runtime := newDatasetRuntime(&raytracer.DatasetPack{TowerPath: path}, nil, "")
 	router := gin.New()
-	router.GET("/api/towers", serveGeoJSONFile(path, "missing"))
+	router.GET("/api/towers", serveRuntimeTowerGeoJSON(runtime))
 	req := httptest.NewRequest(http.MethodGet, "/api/towers", nil)
 	req.Header.Set("If-Modified-Since", "Wed, 15 Jul 2026 00:00:00 GMT")
 	recorder := httptest.NewRecorder()

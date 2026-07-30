@@ -1,3 +1,11 @@
+import {
+  escapeHtml,
+  formatCompactNumber,
+  formatNumber,
+  markdownValue,
+  printTable,
+} from "./reportFormatting.js";
+
 export function renderMarkdownInterferenceSection(report) {
   const analysis = report.interferenceAnalysis;
   if (!analysis?.stats || !analysis?.model) {
@@ -79,40 +87,4 @@ export function renderPrintableInterferenceSection(report) {
       <table><thead><tr><th>Serving cell</th><th>Channel</th><th>Samples</th><th>Avg SINR</th><th>Avg RSRP</th><th>Avg RSRQ</th></tr></thead><tbody>${cellRows || "<tr><td colspan=\"6\">n/a</td></tr>"}</tbody></table>
       <p>Deterministic planning estimate, not a UE or protocol measurement.</p>
     </section>`;
-}
-
-function printTable(title, rows) {
-  return `<div><h2>${escapeHtml(title)}</h2><table><tbody>${rows
-    .map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value ?? "n/a")}</td></tr>`)
-    .join("")}</tbody></table></div>`;
-}
-
-function formatNumber(value, digits = 1) {
-  if (value === null || value === undefined || !Number.isFinite(Number(value))) {
-    return "n/a";
-  }
-  return Number(value).toLocaleString("en", { maximumFractionDigits: digits, minimumFractionDigits: digits });
-}
-
-function formatCompactNumber(value) {
-  if (value === null || value === undefined || !Number.isFinite(Number(value))) {
-    return "n/a";
-  }
-  return Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(Number(value));
-}
-
-function markdownValue(value) {
-  if (value === null || value === undefined || value === "") {
-    return "n/a";
-  }
-  return String(value).replace(/\|/g, "\\|");
-}
-
-function escapeHtml(value) {
-  return String(value ?? "n/a")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
 }

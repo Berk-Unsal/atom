@@ -42,6 +42,8 @@ export const NETWORK_TECHNOLOGIES = Object.freeze([
     "default_frequency_ghz": 2.6,
     "minimum_frequency_ghz": 0,
     "maximum_frequency_ghz": 10,
+    "default_band": "LTE Band 7",
+    "default_duplex_mode": "fdd",
     "default_bandwidth_mhz": 20.0,
     "bandwidths_mhz": [
       1.4,
@@ -58,6 +60,8 @@ export const NETWORK_TECHNOLOGIES = Object.freeze([
     "default_frequency_ghz": 28,
     "minimum_frequency_ghz": 10,
     "maximum_frequency_ghz": 100,
+    "default_band": "NR n257",
+    "default_duplex_mode": "tdd",
     "default_bandwidth_mhz": 100.0,
     "bandwidths_mhz": [
       50,
@@ -71,7 +75,16 @@ export const NETWORK_TECHNOLOGIES = Object.freeze([
     "label": "6G Sub-THz",
     "default_frequency_ghz": 140,
     "minimum_frequency_ghz": 100,
-    "maximum_frequency_ghz": 300
+    "maximum_frequency_ghz": 300,
+    "default_band": "Sub-THz research",
+    "default_duplex_mode": "tdd",
+    "default_bandwidth_mhz": 1000.0,
+    "bandwidths_mhz": [
+      100,
+      400,
+      800,
+      1000
+    ]
   }
 ]);
 
@@ -96,6 +109,66 @@ export const DEFAULT_SIMULATION = Object.freeze({
   "noiseFigureDb": 7,
   "sampleSpacingMeters": 40,
   "calibrationOffsetDb": 0
+});
+
+export const RF_PROFILE_SCHEMA_VERSION = 1;
+
+export const DEFAULT_RF_PROFILE = Object.freeze({
+  "schemaVersion": 1,
+  "band": "NR n257",
+  "bandwidthMHz": 100.0,
+  "channelId": "CH-1",
+  "duplexMode": "tdd",
+  "antennaGainDbi": 25,
+  "systemLossDb": 0,
+  "antennaHeightM": 25,
+  "mechanicalDowntiltDeg": 0,
+  "electricalDowntiltDeg": 0,
+  "orientationDeg": 0,
+  "horizontalPatternId": "ideal-sector",
+  "verticalPatternId": "flat",
+  "loadFactor": 0.7,
+  "reuseFactor": 1,
+  "pci": null,
+  "receiverHeightM": 1.5,
+  "receiverSensitivityDbm": -115
+});
+
+export const RF_PROFILE_OPTIONS = Object.freeze({
+  "duplexModes": [
+    "fdd",
+    "tdd",
+    "sdl",
+    "sul"
+  ],
+  "horizontalPatterns": [
+    {
+      "id": "ideal-sector",
+      "label": "Ideal sector"
+    },
+    {
+      "id": "cosine-sector",
+      "label": "Cosine sector"
+    },
+    {
+      "id": "omni",
+      "label": "Omnidirectional"
+    }
+  ],
+  "verticalPatterns": [
+    {
+      "id": "flat",
+      "label": "Flat"
+    },
+    {
+      "id": "panel-10deg",
+      "label": "10\u00b0 panel"
+    },
+    {
+      "id": "panel-20deg",
+      "label": "20\u00b0 panel"
+    }
+  ]
 });
 
 export const DEFAULT_RECOMMENDATION_RESULTS = 5;
@@ -129,7 +202,26 @@ export const POLICY_LIMITS = Object.freeze({
   "noise_figure_db_min": 0,
   "noise_figure_db_max": 20,
   "sample_spacing_m_min": 20,
-  "sample_spacing_m_max": 200
+  "sample_spacing_m_max": 200,
+  "profile_text_bytes": 64,
+  "bandwidth_mhz_min": 0.1,
+  "bandwidth_mhz_max": 2000,
+  "antenna_gain_dbi_min": -20,
+  "antenna_gain_dbi_max": 80,
+  "system_loss_db_min": 0,
+  "system_loss_db_max": 100,
+  "antenna_height_m_min": 0.5,
+  "antenna_height_m_max": 300,
+  "downtilt_deg_min": -30,
+  "downtilt_deg_max": 90,
+  "reuse_factor_max": 12,
+  "pci_min": 0,
+  "pci_lte_max": 503,
+  "pci_nr_max": 1007,
+  "receiver_height_m_min": 0.1,
+  "receiver_height_m_max": 100,
+  "receiver_sensitivity_dbm_min": -180,
+  "receiver_sensitivity_dbm_max": -20
 });
 
 export function networkTechnologyForFrequency(frequencyGHz) {

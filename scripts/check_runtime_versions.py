@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-GO_VERSION = "1.26"
+GO_VERSION = "1.26.5"
 NODE_VERSION = "24"
 ALPINE_VERSION = "3.24"
 IMAGE_DIGEST_PATTERN = r"sha256:[0-9a-f]{64}"

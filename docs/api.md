@@ -20,6 +20,10 @@ Expensive RF routes can require a shared backend key by setting `RF_API_KEY`. Se
 
 The large building dataset route can independently require `BUILDINGS_API_KEY` through the same headers. Keep this key at an origin gateway when using shared or public caches.
 
+Dataset activation can independently require `DATASET_ADMIN_API_KEY`. `GET /api/datasets` remains readable so the Data tool can show installed packs; only `POST /api/datasets/switch` requires the credential when configured. Inject it at an origin gateway rather than storing it in browser JavaScript.
+
+When Core Lab is enabled, `POST /api/core/scenario` requires `CORE_LAB_API_KEY` through the same headers. The backend validates the client credential and supplies the configured key on its private adapter hop. An enabled deployment without this key rejects scenario mutation with `503`.
+
 ## Response Format
 
 All responses are **JSON**, but the exact shape depends on the route:
@@ -27,9 +31,10 @@ All responses are **JSON**, but the exact shape depends on the route:
 - `GET /healthz` returns a liveness status object
 - `GET /readyz` returns dependency readiness
 - `GET /api/meta` returns application, model, and active dataset identity
+- `GET /api/datasets` returns installed packs and the active manifest ID
 - `GET /api/buildings` and `GET /api/towers` return raw GeoJSON
 - `POST /api/analyze-sector` returns `{ simulation, coverage_gaps }` from one shared ray-profile computation
-- `POST /api/simulate` returns `{ geojson, stats }`
+- `POST /api/simulate` returns `{ geojson, stats, rf_profile }`
 - `POST /api/coverage-gaps` returns `{ geojson, stats }`
 - `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`
 - `POST /api/optimize-azimuth` returns `{ optimal_azimuth, coverage_score, demand_score, residential_score }`
@@ -37,6 +42,55 @@ All responses are **JSON**, but the exact shape depends on the route:
 - `POST /api/measurements/evaluate` returns residual GeoJSON, error statistics, and bias guidance
 
 Error responses use a simple object with an `error` message.
+
+## Per-Cell RF Profile Contract
+
+Single-sector requests accept `rf_profile` at the request root. Network, interference, recommendation, and measurement requests accept it independently inside every `towers[]` item. Legacy top-level fields remain defaults; an explicit nested property overrides its top-level/default counterpart only for that cell. Normalized simulation, optimized-tower, recommendation, and interference-model responses include resolved profiles for reproducibility.
+
+```json
+{
+  "tower_lon": 32.8541,
+  "tower_lat": 39.9208,
+  "azimuth": 45,
+  "rf_profile": {
+    "schema_version": 1,
+    "network_tech": "5g",
+    "frequency_ghz": 28,
+    "band": "n257",
+    "bandwidth_mhz": 100,
+    "channel_id": "NR-634666",
+    "duplex_mode": "tdd",
+    "tx_power_dbm": 37,
+    "antenna_gain_dbi": 17,
+    "system_loss_db": 2,
+    "radius_m": 1200,
+    "beam_width": 65,
+    "antenna_height_m": 32,
+    "mechanical_downtilt_deg": 2,
+    "electrical_downtilt_deg": 4,
+    "orientation_deg": 0,
+    "horizontal_pattern_id": "cosine-sector",
+    "vertical_pattern_id": "panel-10deg",
+    "load_factor": 0.65,
+    "reuse_factor": 1,
+    "pci": 321,
+    "receiver_height_m": 1.5,
+    "receiver_sensitivity_dbm": -110
+  }
+}
+```
+
+| Field group | Accepted values |
+|---|---|
+| Identity | schema `1`; technology `4g`, `5g`, or `6g`; non-empty band/channel up to 64 UTF-8 bytes; duplex `fdd`, `tdd`, `sdl`, or `sul` |
+| Carrier | frequency `>0–300 GHz` and compatible with technology; bandwidth `0.1–2000 MHz` |
+| Link budget | TX `0–60 dBm`; gain `-20–80 dBi`; system loss `0–100 dB` |
+| Geometry | radius `25–5000 m`; beam `10–360°`; antenna height `0.5–300 m`; receiver height `0.1–100 m`; orientation `0–<360°` |
+| Tilt/pattern | mechanical/electrical tilt `-30–90°`; horizontal `ideal-sector`, `cosine-sector`, or `omni`; vertical `flat`, `panel-10deg`, or `panel-20deg` |
+| Interference | load `>0–1`; reuse `1–12`; optional PCI `0–503` for LTE or `0–1007` for NR |
+| Receiver | sensitivity `-180–-20 dBm` |
+
+The profile pattern IDs are analytic planning presets, not imported vendor radiation diagrams. Interference analysis remains limited to 4G and 5G even though propagation accepts the 6G research profile.
 
 ---
 
@@ -55,7 +109,8 @@ Check whether the HTTP process is alive. This endpoint remains `200` even while 
   "status": "ok",
   "backend": "static-in-memory",
   "buildingIndex": {
-    "sourcePath": "data-pipeline/ankara_buildings.geojson"
+    "footprintCount": 161784,
+    "treeCount": 161784
   },
   "rtreeFootprints": 161784,
   "towerCount": 451
@@ -70,6 +125,8 @@ Check whether the HTTP process is alive. This endpoint remains `200` even while 
 **Endpoint**: `GET /readyz`
 
 Check whether the building index, tower dataset, and frontend bundle are available. Use this route for deployment readiness probes.
+
+Readiness reports only generic dependency state. Detailed dataset paths and validation errors remain in server logs.
 
 ```json
 {
@@ -94,7 +151,7 @@ Returns the running application and model versions, build commit, supported tech
 {
   "application_version": "1.0.0",
   "build_commit": "abc1234",
-  "model_version": "fspl-walls-v1",
+  "model_version": "fspl-walls-cell-profiles-v2",
   "supported_technologies": ["4g", "5g", "6g-research"],
   "dataset": {
     "id": "ankara-open-planning",
@@ -182,7 +239,7 @@ This is the preferred browser workflow when both propagation rays and coverage g
 
 ```json
 {
-  "simulation": { "geojson": {}, "stats": {} },
+  "simulation": { "geojson": {}, "stats": {}, "rf_profile": {} },
   "coverage_gaps": { "geojson": {}, "stats": {} }
 }
 ```
@@ -539,7 +596,40 @@ The response separates valid predictions, no-signal samples, and requested-cell 
 
 ### Dataset Packs
 
-The backend loads one validated pack from `ATOM_DATASET_DIR` at startup. A pack contains `manifest.json`, tower GeoJSON, and building GeoJSON. The manifest fixes the dataset identity, EPSG:4326 bounds, provenance, licenses, filenames, and SHA-256 hashes. Invalid packs keep `/readyz` at `503`.
+The backend loads the initial validated pack from `ATOM_DATASET_DIR`. Schema-v1 packs remain compatible. Schema v2 adds per-layer provenance and confidence, geometry/missing-field/coverage QA, and optional terrain, clutter, building-height, and material layers. All referenced files require SHA-256 hashes. Optional-layer metadata is exposed but those layers are not yet consumed by RF calculations.
+
+`GET /api/datasets` lists packs discovered at `ATOM_DATASETS_ROOT` itself and its immediate child directories:
+
+```json
+{
+  "active_id": "ankara-open-planning",
+  "datasets": [
+    {
+      "id": "ankara-open-planning",
+      "name": "Ankara Open Planning Dataset",
+      "version": "2026.07",
+      "schema_version": 2,
+      "crs": "EPSG:4326",
+      "bounds": [32.45, 39.55, 33.25, 40.25],
+      "sources": ["OpenStreetMap"],
+      "licenses": ["ODbL 1.0"],
+      "confidence": "Planning dataset; not an operator inventory.",
+      "files": { "towers": "towers.geojson", "buildings": "buildings.geojson" },
+      "sha256": { "towers.geojson": "...", "buildings.geojson": "..." },
+      "active": true,
+      "available": true
+    }
+  ]
+}
+```
+
+`POST /api/datasets/switch` accepts only an installed ID:
+
+```json
+{ "id": "izmir-planning-2026" }
+```
+
+The server resolves the ID inside the configured root, validates all hashes and required geometry, and swaps the immutable runtime snapshot only after success. It returns `404` for an unknown ID, `422` for a failed installed-pack validation, and keeps the old pack active in both cases. Configure `DATASET_ADMIN_API_KEY` to protect activation.
 
 Validate a pack before starting the server:
 
@@ -547,6 +637,8 @@ Validate a pack before starting the server:
 cd backend-go
 go run ./cmd/validate-dataset ../data-pipeline
 ```
+
+Use [Dataset Pack Studio](dataset-pack-studio.html) to inspect, repair, reproject, and build arbitrary-region schema-v2 packs locally.
 
 The complete machine-readable contract is available as [`openapi.yaml`](openapi.yaml).
 

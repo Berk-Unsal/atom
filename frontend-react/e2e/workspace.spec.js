@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
       "/api/meta": {
         application_version: "e2e",
         build_commit: "test",
-        model_version: "fspl-walls-v1",
+        model_version: "fspl-walls-cell-profiles-v2",
         supported_technologies: ["4g", "5g", "6g"],
         dataset: { id: "ankara-default", version: "1.0.0", sha256: {} },
       },

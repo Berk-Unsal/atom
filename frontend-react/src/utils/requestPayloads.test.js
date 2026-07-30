@@ -51,4 +51,14 @@ describe("interference request payload", () => {
 
     expect(payload.towers.map((tower) => tower.azimuth)).toEqual([45, 180]);
   });
+
+  it("serializes independent per-cell RF profiles", () => {
+    const payload = buildNetworkOptimizationPayload([
+      { ...towers[0], rfProfile: { networkTech: "4g", frequencyGHz: 2.6, txPowerDbm: 43, channelId: "A" } },
+      { ...towers[1], rfProfile: { networkTech: "5g", frequencyGHz: 28, txPowerDbm: 30, channelId: "B" } },
+    ], settings);
+
+    expect(payload.towers[0].rf_profile).toMatchObject({ network_tech: "4g", frequency_ghz: 2.6, tx_power_dbm: 43, channel_id: "A" });
+    expect(payload.towers[1].rf_profile).toMatchObject({ network_tech: "5g", frequency_ghz: 28, tx_power_dbm: 30, channel_id: "B" });
+  });
 });

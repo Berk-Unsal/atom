@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate static documentation links, anchors, assets, and OpenAPI syntax."""
 
+import hashlib
 import json
 from html.parser import HTMLParser
 from pathlib import Path
@@ -10,6 +11,7 @@ import yaml
 
 
 DOCS = Path(__file__).resolve().parent
+ROOT = DOCS.parent
 ATTRIBUTES = {"a": "href", "img": "src", "link": "href", "script": "src", "source": "src"}
 
 
@@ -37,13 +39,31 @@ def parse_page(path):
     return parser
 
 
+def duplicate_asset_errors():
+    hashes = {}
+    errors = []
+    for directory in (ROOT / "assets", DOCS / "assets"):
+        if not directory.exists():
+            continue
+        for path in sorted(item for item in directory.rglob("*") if item.is_file()):
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            previous = hashes.get(digest)
+            if previous is not None:
+                errors.append(
+                    f"duplicate asset content: {previous.relative_to(ROOT)} and {path.relative_to(ROOT)}"
+                )
+            else:
+                hashes[digest] = path
+    return errors
+
+
 def main():
     pages = {
         path.resolve(): parse_page(path)
         for path in DOCS.rglob("*.html")
         if path.name != "reference-template.html"
     }
-    errors = []
+    errors = duplicate_asset_errors()
     for page, parser in pages.items():
         if parser.search_indexes != ["./search-index.json"]:
             errors.append(f"{page.relative_to(DOCS)}: expected one documentation search control")

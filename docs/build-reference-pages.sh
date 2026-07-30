@@ -41,6 +41,8 @@ build_page visualization.md visualization.html "Reading Propagation Maps" "Visua
   "How to interpret sector rays, frequency-dependent attenuation, coverage evidence, and the current map layers."
 build_page deployment.md deployment.html "Deployment" "Operations guide" \
   "Container, reverse-proxy, readiness, capacity, scaling, and production-hardening guidance for A.T.O.M."
+build_page dataset-pack-studio.md dataset-pack-studio.html "Dataset Pack Studio" "Local data tooling" \
+  "Inspect, repair, reproject, package, validate, install, and safely switch arbitrary-region A.T.O.M dataset packs."
 build_page faq.md faq.html "Frequently Asked Questions" "Help and troubleshooting" \
   "Answers for setup, RF interpretation, performance, data, API access, and common operating problems."
 build_page contributing.md contributing.html "Contributing" "Contributor guide" \

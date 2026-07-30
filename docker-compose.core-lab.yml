@@ -4,6 +4,7 @@ services:
       CORE_LAB_ENABLED: "true"
       CORE_LAB_ADAPTER_URL: "http://core-lab-adapter:8090"
       CORE_LAB_TIMEOUT_MS: "1500"
+      CORE_LAB_API_KEY: "${CORE_LAB_API_KEY:?set CORE_LAB_API_KEY}"
     depends_on:
       core-lab-adapter:
         condition: service_started
@@ -17,11 +18,17 @@ services:
     profiles:
       - core-lab
     restart: unless-stopped
-    ports:
-      - "8090:8090"
+    expose:
+      - "8090"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     environment:
       PORT: "8090"
       CORE_LAB_MODE: "open5gs"
+      CORE_LAB_API_KEY: "${CORE_LAB_API_KEY:?set CORE_LAB_API_KEY}"
       # Optional: point these at a real Open5GS lab when available.
       # Without them, the adapter exposes a deterministic simulated_overlay
       # so A.T.O.M can exercise Core Lab UX and reporting locally.

@@ -79,6 +79,9 @@ technologies." />
       Workspace</a></li>
       <li><a href="#projects-and-scenarios"
       id="toc-projects-and-scenarios">Projects And Scenarios</a></li>
+      <li><a href="#cell-inventory-and-rf-profiles"
+      id="toc-cell-inventory-and-rf-profiles">Cell Inventory And RF
+      Profiles</a></li>
       <li><a href="#propagation-and-coverage"
       id="toc-propagation-and-coverage">Propagation And
       Coverage</a></li>
@@ -123,8 +126,8 @@ comparing urban 4G, 5G, and exploratory 6G sector plans. Its outputs are
 planning estimates, not UE or PHY measurements.</p>
 <h2 id="focused-planning-workspace">Focused Planning Workspace</h2>
 <ul>
-<li>Seven workflow tools in one rail: Setup, Propagation, Interference,
-5G Core, Results, Data, and Report.</li>
+<li>Eight workflow tools in one rail: Setup, Inventory, Propagation,
+Interference, 5G Core, Results, Data, and Report.</li>
 <li>A compact command bar keeps the current project, cell context,
 technology, RF summary, and primary run action visible.</li>
 <li>The map remains full size while tool and Inspector drawers overlay
@@ -150,6 +153,31 @@ the source snapshot.</li>
 </ul>
 <p>Project history is local to the browser. A.T.O.M does not provide
 accounts, shared editing, or server-side project storage.</p>
+<h2 id="cell-inventory-and-rf-profiles">Cell Inventory And RF
+Profiles</h2>
+<ul>
+<li>Place cells manually on the map, drag editable cells, edit
+coordinates, duplicate or delete them, and import bounded CSV or GeoJSON
+inventories.</li>
+<li>Search the inventory and select cells without losing their per-cell
+overrides.</li>
+<li>Configure technology, band, frequency, bandwidth, channel, duplex
+mode, transmit power, antenna gain, system loss, radius, beam width,
+height, mechanical/electrical downtilt, orientation, horizontal/vertical
+pattern, load, reuse, PCI, receiver height, and receiver sensitivity
+independently for every cell.</li>
+<li>Validate technology/frequency compatibility and all numeric/text
+limits before RF execution.</li>
+<li>Persist the complete inventory and profile overrides in schema-v2
+project drafts and scenarios; schema-v1 files remain importable.</li>
+<li>Include resolved per-cell profiles in simulation, network,
+interference, recommendation, measurement, and planning-report
+contracts.</li>
+</ul>
+<p>Legacy top-level RF controls remain request defaults. A nested
+<code>rf_profile</code> overrides those defaults for its cell, so older
+API clients continue to work while heterogeneous networks can be modeled
+explicitly.</p>
 <h2 id="propagation-and-coverage">Propagation And Coverage</h2>
 <h3 id="supported-modes">Supported Modes</h3>
 <table>
@@ -255,20 +283,31 @@ or dataset changes.</li>
 calibration.</p>
 <h2 id="validated-dataset-packs">Validated Dataset Packs</h2>
 <ul>
-<li><code>ATOM_DATASET_DIR</code> selects a dataset directory at
-application startup; Ankara remains the default.</li>
-<li>A versioned manifest records dataset ID/version, EPSG:4326 bounds,
-sources, licenses, generation date, filenames, and SHA-256 hashes.</li>
+<li><code>ATOM_DATASET_DIR</code> selects the initial dataset directory;
+Ankara remains the default.</li>
+<li>Dataset Pack Studio previews source CRS, coverage, geometry
+repair/drop counts, and missing fields before building an
+arbitrary-region pack.</li>
+<li>Schema v2 records dataset identity, EPSG:4326 bounds, sources,
+licenses, confidence, generation date, filenames, SHA-256 hashes,
+per-layer metadata, and quality evidence.</li>
+<li>Optional terrain, clutter, building-height, and material layers can
+be packaged and validated for provenance and future model versions.</li>
 <li>The validator checks hashes, required properties, geometry,
 coordinate bounds, duplicate IDs, and building-index viability.</li>
 <li>Invalid packs keep <code>/readyz</code> unavailable with an
 explanatory error.</li>
 <li>Active dataset identity and provenance appear in Data, scenarios,
 reports, and <code>/api/meta</code>.</li>
+<li><code>ATOM_DATASETS_ROOT</code> enables a local installed-pack
+catalog. Switching accepts a manifest ID rather than a path, rejects
+root escapes and duplicate IDs, validates the whole candidate, and swaps
+the immutable runtime snapshot only after success.</li>
 </ul>
-<p>Changing datasets requires an application restart. The application
-does not perform arbitrary-city live ingestion or large browser
-uploads.</p>
+<p>Schema-v1 packs remain loadable. The application does not perform
+arbitrary-city live ingestion or large browser uploads; building is an
+explicit local CLI workflow. Optional layers are not yet consumed by RF
+calculations.</p>
 <h2 id="5g-communication-paths">5G Communication Paths</h2>
 <p>The optional 5G Core Lab applies only to 5G mmWave and remains
 independent from RF interference:</p>

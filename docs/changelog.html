@@ -105,10 +105,85 @@ and this file follows <a
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 <h2 id="unreleased"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.4.0...HEAD">Unreleased</a></h2>
+<h3 id="added">Added</h3>
+<ul>
+<li>Add a persistent cell Inventory workspace with manual map placement,
+dragging, duplication, deletion, bounded CSV/GeoJSON import, search,
+validation, and independent per-cell RF profiles across propagation,
+network, interference, recommendation, measurement, and report
+workflows.</li>
+<li>Add Dataset Pack Studio for arbitrary-region source inspection,
+geometry repair, reprojection/cropping, schema-v2 manifests, hashes,
+provenance/licenses/confidence, QA evidence, and optional terrain,
+clutter, building-height, and material layers.</li>
+<li>Add a local installed-dataset catalog and atomic manifest-ID
+switching that retains the active immutable pack on validation failure,
+with optional administration-key protection.</li>
+</ul>
+<h3 id="security">Security</h3>
+<ul>
+<li>Upgrade <code>brace-expansion</code> to 5.0.8, require Go 1.26.5 for
+both services, and align container builder tags with the patched
+toolchain.</li>
+<li>Reject measurement CSV files above 2 MiB before reading them into
+browser memory while retaining the independent 5,000-sample limit.</li>
+<li>Add weekly npm dependency updates, a high-severity frontend advisory
+gate, and matching <code>govulncheck</code> coverage for the Core Lab
+adapter.</li>
+<li>Require constant-time API-key authorization for Core Lab scenario
+mutation at both the public backend route and the private adapter
+hop.</li>
+<li>Run the Core Lab adapter as a non-root user with a read-only
+filesystem, no Linux capabilities, no privilege escalation, and no
+host-published port.</li>
+<li>Bound imported project files to 16 MiB and deeply validate scenario
+counts, nesting, collection sizes, strings, and nested snapshot types
+before persistence.</li>
+<li>Limit recommendation search polygons to 256 coordinates before
+candidate point-in-polygon evaluation.</li>
+<li>Add restrictive browser security headers, HTTPS-aware HSTS, and an
+opt-in transport requirement for deployments behind a TLS gateway.</li>
+<li>Keep adapter response bodies, dataset filesystem paths, and detailed
+load failures in server logs instead of returning them to API
+clients.</li>
+<li>Reject unknown or trailing JSON input across backend RF routes and
+Core Lab scenario mutation without exposing parser diagnostics.</li>
+<li>Bound frontend JSON response parsing to 32 MiB using both
+<code>Content-Length</code> checks and streaming byte accounting.</li>
+<li>Stream building GeoJSON features into the spatial index instead of
+retaining the full encoded file and decoded collection together, with
+explicit manifest, tower, and building file ceilings.</li>
+<li>Resolve dataset file symlinks before containment checks so manifests
+cannot escape the configured dataset directory.</li>
+</ul>
+<h3 id="removed">Removed</h3>
+<ul>
+<li>Remove duplicate root copies of propagation screenshots and keep the
+documentation asset paths canonical.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Upgrade project files and dataset manifests to schema v2 with
+backward-compatible v1 import/loading migrations.</li>
+<li>Include resolved per-cell RF profiles and dataset QA/provenance in
+reproducibility outputs and planning reports.</li>
+<li>Extract frontend workspace formatting/state helpers and backend
+RF/segment geometry math from the application and simulation monoliths
+into focused, tested modules.</li>
+<li>Refresh Open5GS reachability outside the adapter cache mutex, serve
+stale probe state during refresh, and treat HTTP client/server failures
+as disconnected.</li>
+<li>Remove redundant RF convenience APIs that created background
+contexts and silently discarded computation errors.</li>
+<li>Drain in-flight backend and Core Lab adapter requests on interrupt
+or termination signals with a bounded graceful-shutdown window.</li>
+<li>Consolidate report escaping, numeric/Markdown formatting, and
+printable table construction behind one tested utility.</li>
+</ul>
 <h2 id="040---2026-07-30"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.3.0...v0.4.0">0.4.0</a>
 - 2026-07-30</h2>
-<h3 id="security">Security</h3>
+<h3 id="security-1">Security</h3>
 <ul>
 <li>Pin container base images by digest, lock Python dependencies and
 hashes, review pull-request dependency changes, scan production images,
@@ -158,14 +233,14 @@ deep-loop cancellation.</li>
 <h2 id="020---2026-07-24"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.1.0...v0.2.0">0.2.0</a>
 - 2026-07-24</h2>
-<h3 id="added">Added</h3>
+<h3 id="added-1">Added</h3>
 <ul>
 <li>Add keyboard-accessible full-site search to the static documentation
 website.</li>
 <li>Publish the canonical project changelog as a searchable
 documentation page.</li>
 </ul>
-<h3 id="removed">Removed</h3>
+<h3 id="removed-1">Removed</h3>
 <ul>
 <li>Remove the academic report PDF and its documentation-only source and
 build assets.</li>
@@ -200,7 +275,7 @@ saved scenarios, and recommendation application.</li>
 <li>Align the Markdown documentation entry point with the maintained
 static docs hub, current version, and model limitations.</li>
 </ul>
-<h3 id="changed">Changed</h3>
+<h3 id="changed-1">Changed</h3>
 <ul>
 <li>Establish a canonical <code>VERSION</code> file, automated version
 checks, release-note generation, and tag-driven GitHub Releases.</li>
@@ -210,7 +285,7 @@ releases, never prerelease tags.</li>
 <h2 id="010---2026-07-17"><a
 href="https://github.com/Berk-Unsal/atom/releases/tag/v0.1.0">0.1.0</a>
 - 2026-07-17</h2>
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 <ul>
 <li>Deterministic sector, network, optimization, interference,
 recommendation, and measurement-validation workflows.</li>

@@ -145,6 +145,61 @@ describe("App planning workflow", () => {
     expect(screen.getByText(/Fast fading, diffraction, sidelobes/)).toBeInTheDocument();
   });
 
+  it("sends edited per-cell inventory profiles with RF requests", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Inventory" }));
+    const cellPower = screen.getByRole("spinbutton", { name: /TX power/i });
+    fireEvent.change(cellPower, { target: { value: "41" } });
+    expect(screen.getByText(/Profile valid/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(api.postJSON).toHaveBeenCalledWith(
+      "/api/analyze-sector",
+      expect.objectContaining({ rf_profile: expect.objectContaining({ tx_power_dbm: 41 }) }),
+      "Sector analysis failed",
+      expect.any(AbortSignal),
+    ));
+  });
+
+  it("switches only by installed dataset ID and reloads the active catalog", async () => {
+    let activeID = "first-pack";
+    api.getJSON.mockImplementation((path) => {
+      if (path === "/api/towers") return Promise.resolve(towerGeoJSON);
+      if (path === "/api/buildings/summary") return Promise.resolve({ total_buildings: 100, data_quality: "good" });
+      if (path === "/api/meta") return Promise.resolve({ dataset: { id: activeID, name: activeID, version: "1", sources: [], licenses: [], sha256: {} } });
+      if (path === "/api/datasets") return Promise.resolve({
+        active_id: activeID,
+        datasets: [
+          { id: "first-pack", name: "First pack", version: "1", schema_version: 2, active: activeID === "first-pack" },
+          { id: "second-pack", name: "Second pack", version: "1", schema_version: 2, active: activeID === "second-pack" },
+        ],
+        warnings: [],
+      });
+      return Promise.resolve({});
+    });
+    api.postJSON.mockImplementation((path, body) => {
+      if (path === "/api/datasets/switch") {
+        activeID = body.id;
+        return Promise.resolve({ status: "active", dataset: { id: body.id, name: "Second pack" } });
+      }
+      return Promise.resolve(simulationPayload);
+    });
+
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    fireEvent.click(await screen.findByRole("button", { name: /Second pack.*Activate/i }));
+
+    await waitFor(() => expect(api.postJSON).toHaveBeenCalledWith(
+      "/api/datasets/switch",
+      { id: "second-pack" },
+      "Dataset switch failed",
+    ));
+    await waitFor(() => expect(screen.getByRole("button", { name: /Second pack.*Active/i })).toBeDisabled());
+  });
+
   it("shows a consistent global recovery state when RF capacity is busy", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
@@ -192,8 +247,10 @@ describe("App planning workflow", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Data" }));
     const fileInput = screen.getByLabelText(/Import measurement CSV/i);
+    const measurementCsv = "id,longitude,latitude,technology,rsrp_dbm\nm-1,32.85,39.92,5g,-80";
     const measurementFile = {
-      text: () => Promise.resolve("id,longitude,latitude,technology,rsrp_dbm\nm-1,32.85,39.92,5g,-80"),
+      size: measurementCsv.length,
+      text: () => Promise.resolve(measurementCsv),
     };
     fireEvent.change(fileInput, { target: { files: [measurementFile] } });
     await waitFor(() => expect(screen.getByRole("button", { name: "Evaluate residuals" })).toBeEnabled());

@@ -4,7 +4,7 @@ A.T.O.M is a local-first, deterministic RF planning workspace for comparing urba
 
 ## Focused Planning Workspace
 
-- Seven workflow tools in one rail: Setup, Propagation, Interference, 5G Core, Results, Data, and Report.
+- Eight workflow tools in one rail: Setup, Inventory, Propagation, Interference, 5G Core, Results, Data, and Report.
 - A compact command bar keeps the current project, cell context, technology, RF summary, and primary run action visible.
 - The map remains full size while tool and Inspector drawers overlay it.
 - Contextual layers appear only when their results exist.
@@ -20,6 +20,17 @@ A.T.O.M is a local-first, deterministic RF planning workspace for comparing urba
 - Promote either comparison side to the active plan without modifying the source snapshot.
 
 Project history is local to the browser. A.T.O.M does not provide accounts, shared editing, or server-side project storage.
+
+## Cell Inventory And RF Profiles
+
+- Place cells manually on the map, drag editable cells, edit coordinates, duplicate or delete them, and import bounded CSV or GeoJSON inventories.
+- Search the inventory and select cells without losing their per-cell overrides.
+- Configure technology, band, frequency, bandwidth, channel, duplex mode, transmit power, antenna gain, system loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and receiver sensitivity independently for every cell.
+- Validate technology/frequency compatibility and all numeric/text limits before RF execution.
+- Persist the complete inventory and profile overrides in schema-v2 project drafts and scenarios; schema-v1 files remain importable.
+- Include resolved per-cell profiles in simulation, network, interference, recommendation, measurement, and planning-report contracts.
+
+Legacy top-level RF controls remain request defaults. A nested `rf_profile` overrides those defaults for its cell, so older API clients continue to work while heterogeneous networks can be modeled explicitly.
 
 ## Propagation And Coverage
 
@@ -86,13 +97,16 @@ This is global path-loss bias correction, not full propagation calibration.
 
 ## Validated Dataset Packs
 
-- `ATOM_DATASET_DIR` selects a dataset directory at application startup; Ankara remains the default.
-- A versioned manifest records dataset ID/version, EPSG:4326 bounds, sources, licenses, generation date, filenames, and SHA-256 hashes.
+- `ATOM_DATASET_DIR` selects the initial dataset directory; Ankara remains the default.
+- Dataset Pack Studio previews source CRS, coverage, geometry repair/drop counts, and missing fields before building an arbitrary-region pack.
+- Schema v2 records dataset identity, EPSG:4326 bounds, sources, licenses, confidence, generation date, filenames, SHA-256 hashes, per-layer metadata, and quality evidence.
+- Optional terrain, clutter, building-height, and material layers can be packaged and validated for provenance and future model versions.
 - The validator checks hashes, required properties, geometry, coordinate bounds, duplicate IDs, and building-index viability.
 - Invalid packs keep `/readyz` unavailable with an explanatory error.
 - Active dataset identity and provenance appear in Data, scenarios, reports, and `/api/meta`.
+- `ATOM_DATASETS_ROOT` enables a local installed-pack catalog. Switching accepts a manifest ID rather than a path, rejects root escapes and duplicate IDs, validates the whole candidate, and swaps the immutable runtime snapshot only after success.
 
-Changing datasets requires an application restart. The application does not perform arbitrary-city live ingestion or large browser uploads.
+Schema-v1 packs remain loadable. The application does not perform arbitrary-city live ingestion or large browser uploads; building is an explicit local CLI workflow. Optional layers are not yet consumed by RF calculations.
 
 ## 5G Communication Paths
 

@@ -3,6 +3,14 @@ import {
   renderMarkdownInterferenceSection,
   renderPrintableInterferenceSection,
 } from "./interferenceReport.js";
+import {
+  escapeHtml,
+  formatCompactNumber,
+  formatNumber,
+  markdownValue,
+  printTable,
+} from "./reportFormatting.js";
+import { resolveRFProfile } from "./rfProfile.js";
 
 const SVG_WIDTH = 720;
 const SVG_HEIGHT = 460;
@@ -25,6 +33,7 @@ export function buildPlanningReport({
   project,
   recommendations,
   selectedTower,
+	selectedNetworkTowers = [],
   settings,
   simulation,
   stats,
@@ -44,6 +53,11 @@ export function buildPlanningReport({
   const comparisonMetrics = getComparisonMetrics(comparison);
   const comparisonBarChartSvg = buildComparisonBarChartSvg(comparison);
   const comparisonSlopeChartSvg = buildComparisonSlopeChartSvg(comparison);
+	const profileTowers = selectedNetworkTowers.length ? selectedNetworkTowers : [selectedTower].filter(Boolean);
+	const rfProfiles = profileTowers.map((tower, index) => ({
+		cellId: tower.cellId ?? tower.id,
+		...resolveRFProfile(tower, settings, index),
+	}));
 
   return {
     activeNetworkTech,
@@ -68,6 +82,7 @@ export function buildPlanningReport({
     recommendations,
     reportId,
     selectedTower,
+		rfProfiles,
     settings,
     stats,
     topGaps,
@@ -117,6 +132,12 @@ Generated: ${generatedAt}
 | Frequency | ${formatNumber(report.settings.frequencyGHz, 1)} GHz |
 | Calibration offset | ${formatNumber(report.settings.calibrationOffsetDb ?? 0, 1)} dB |
 
+## Per-cell RF Profiles
+
+| Cell | Technology | Band / channel | Frequency | Bandwidth | TX / gain / loss | Antenna | Patterns | Load / reuse | PCI | Receiver |
+|---|---|---|---:|---:|---:|---|---|---:|---:|---|
+${(report.rfProfiles ?? []).map((profile) => `| ${markdownValue(profile.cellId)} | ${markdownValue(profile.networkTech?.toUpperCase())} | ${markdownValue(`${profile.band} / ${profile.channelId}`)} | ${formatNumber(profile.frequencyGHz, 3)} GHz | ${formatNumber(profile.bandwidthMHz, 1)} MHz | ${formatNumber(profile.txPowerDbm, 1)} / ${formatNumber(profile.antennaGainDbi, 1)} / ${formatNumber(profile.systemLossDb, 1)} dB | ${formatNumber(profile.antennaHeightM, 1)} m; ${formatNumber(profile.mechanicalDowntiltDeg + profile.electricalDowntiltDeg, 1)}° tilt; ${formatNumber(profile.orientationDeg, 1)}° orient | ${markdownValue(`${profile.horizontalPatternId} / ${profile.verticalPatternId}`)} | ${formatNumber(profile.loadFactor * 100, 0)}% / ${formatNumber(profile.reuseFactor, 0)} | ${markdownValue(profile.pci)} | ${formatNumber(profile.receiverHeightM, 1)} m / ${formatNumber(profile.receiverSensitivityDbm, 1)} dBm |`).join("\n") || "| n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |"}
+
 ## Simulation KPIs
 
 | Metric | Value |
@@ -165,6 +186,14 @@ ${renderMarkdownSavedScenarioSection(report)}
 | Residential demand buildings | ${formatNumber(report.buildingSummary?.residential_weighted_buildings, 0)} |
 | Dataset | ${markdownValue(report.appMeta?.dataset?.name)} |
 | Dataset version | ${markdownValue(report.appMeta?.dataset?.version)} |
+| Manifest schema | ${markdownValue(report.appMeta?.dataset?.schema_version)} |
+| Sources | ${markdownValue((report.appMeta?.dataset?.sources ?? []).join(", "))} |
+| Licenses | ${markdownValue((report.appMeta?.dataset?.licenses ?? []).join(", "))} |
+| Confidence | ${markdownValue(report.appMeta?.dataset?.confidence)} |
+| Pack QA | ${markdownValue(report.appMeta?.dataset?.quality?.summary)} |
+| Requested coverage | ${report.appMeta?.dataset?.quality?.coverage?.coverage_ratio === undefined ? "n/a" : `${formatNumber(report.appMeta.dataset.quality.coverage.coverage_ratio * 100, 1)}%`} |
+| Layers | ${markdownValue(Object.keys(report.appMeta?.dataset?.layers ?? {}).join(", "))} |
+| Hashed files | ${formatNumber(Object.keys(report.appMeta?.dataset?.sha256 ?? {}).length, 0)} |
 | Model version | ${markdownValue(report.appMeta?.model_version)} |
 | Application version | ${markdownValue(report.appMeta?.application_version)} |
 
@@ -379,6 +408,7 @@ function renderPrintableReport(report) {
     </section>
     ${printComparisonSection(report)}
     ${printNetworkSection(report)}
+    ${printRFProfileSection(report)}
     ${renderPrintableInterferenceSection(report)}
     ${printCoreLabSection(report)}
     ${printMeasurementSection(report)}
@@ -421,6 +451,14 @@ function renderPrintableReport(report) {
         ["Unmet demand score", formatCompactNumber(report.gapStats?.total_gap_demand)],
         ["Dataset", report.appMeta?.dataset?.name ?? "n/a"],
         ["Dataset version", report.appMeta?.dataset?.version ?? "n/a"],
+        ["Manifest schema", report.appMeta?.dataset?.schema_version ?? "n/a"],
+        ["Sources", (report.appMeta?.dataset?.sources ?? []).join(", ") || "n/a"],
+        ["Licenses", (report.appMeta?.dataset?.licenses ?? []).join(", ") || "n/a"],
+        ["Confidence", report.appMeta?.dataset?.confidence ?? "n/a"],
+        ["Pack QA", report.appMeta?.dataset?.quality?.summary ?? "n/a"],
+        ["Requested coverage", report.appMeta?.dataset?.quality?.coverage?.coverage_ratio === undefined ? "n/a" : `${formatNumber(report.appMeta.dataset.quality.coverage.coverage_ratio * 100, 1)}%`],
+        ["Layers", Object.keys(report.appMeta?.dataset?.layers ?? {}).join(", ") || "n/a"],
+        ["Hashed files", formatNumber(Object.keys(report.appMeta?.dataset?.sha256 ?? {}).length, 0)],
         ["Model version", report.appMeta?.model_version ?? "n/a"],
       ])}
     </section>
@@ -431,6 +469,24 @@ function renderPrintableReport(report) {
   </main>
 </body>
 </html>`;
+}
+
+function printRFProfileSection(report) {
+  const profiles = report.rfProfiles ?? [];
+  if (!profiles.length) return "";
+  return `<section>
+    <h2>Per-cell RF Profiles</h2>
+    <table>
+      <thead><tr><th>Cell</th><th>Radio</th><th>RF</th><th>Antenna</th><th>Planning</th></tr></thead>
+      <tbody>${profiles.map((profile) => `<tr>
+        <td>${escapeHtml(profile.cellId)}</td>
+        <td>${escapeHtml(`${profile.networkTech.toUpperCase()} · ${profile.band} · ${profile.channelId} · ${profile.duplexMode.toUpperCase()}`)}</td>
+        <td>${escapeHtml(`${formatNumber(profile.frequencyGHz, 3)} GHz · ${formatNumber(profile.bandwidthMHz, 1)} MHz · ${formatNumber(profile.txPowerDbm, 1)} dBm TX · ${formatNumber(profile.antennaGainDbi, 1)} dBi · ${formatNumber(profile.systemLossDb, 1)} dB loss`)}</td>
+        <td>${escapeHtml(`${formatNumber(profile.antennaHeightM, 1)} m · ${formatNumber(profile.mechanicalDowntiltDeg, 1)}° mechanical · ${formatNumber(profile.electricalDowntiltDeg, 1)}° electrical · ${formatNumber(profile.orientationDeg, 1)}° orientation · ${profile.horizontalPatternId}/${profile.verticalPatternId}`)}</td>
+        <td>${escapeHtml(`${formatNumber(profile.radiusMeters, 0)} m radius · ${formatNumber(profile.beamWidthDeg, 0)}° beam · ${formatNumber(profile.loadFactor * 100, 0)}% load · reuse ${profile.reuseFactor} · PCI ${profile.pci ?? "n/a"} · UE ${formatNumber(profile.receiverHeightM, 1)} m/${formatNumber(profile.receiverSensitivityDbm, 1)} dBm`)}</td>
+      </tr>`).join("")}</tbody>
+    </table>
+  </section>`;
 }
 
 function buildMapSvg({ activeNetworkTech, coverageGaps, interference, selectedTower, settings, simulation }) {
@@ -1177,12 +1233,6 @@ function printMetric(label, value) {
   return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value ?? "n/a")}</strong></div>`;
 }
 
-function printTable(title, rows) {
-  return `<div><h2>${escapeHtml(title)}</h2><table><tbody>${rows
-    .map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value ?? "n/a")}</td></tr>`)
-    .join("")}</tbody></table></div>`;
-}
-
 function printGapTable(gaps) {
   if (gaps.length === 0) {
     return `<p>No coverage gaps were returned for the current simulation.</p>`;
@@ -1210,50 +1260,6 @@ function downloadBlob(filename, content, type) {
 
 function formatDateSlug(date) {
   return date.toISOString().slice(0, 19).replace(/[-:T]/g, "");
-}
-
-function formatNumber(value, digits = 1) {
-  if (value === null || value === undefined) {
-    return "n/a";
-  }
-  const number = Number(value);
-  if (!Number.isFinite(number)) {
-    return "n/a";
-  }
-  return number.toLocaleString("en", {
-    maximumFractionDigits: digits,
-    minimumFractionDigits: digits,
-  });
-}
-
-function formatCompactNumber(value) {
-  if (value === null || value === undefined) {
-    return "n/a";
-  }
-  const number = Number(value);
-  if (!Number.isFinite(number)) {
-    return "n/a";
-  }
-  return Intl.NumberFormat("en", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(number);
-}
-
-function markdownValue(value) {
-  if (value === null || value === undefined || value === "") {
-    return "n/a";
-  }
-  return String(value).replace(/\|/g, "\\|");
-}
-
-function escapeHtml(value) {
-  return String(value ?? "n/a")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
 }
 
 function escapeSvgText(value) {

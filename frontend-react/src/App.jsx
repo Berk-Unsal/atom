@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
 import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
+import InventoryPanel from "./components/InventoryPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 import {
   CommandBar,
@@ -32,9 +33,24 @@ import { getJSON, isAbortError, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
 import { runNetworkSimulationQueue } from "./utils/networkSimulationQueue.js";
 import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/polygonSelection.js";
-import { parseMeasurementCsv } from "./utils/measurementCsv.js";
+import { readMeasurementCsvFile } from "./utils/measurementCsv.js";
+import { duplicateInventoryCell } from "./utils/inventoryImport.js";
+import { resolveRFProfile, rfProfileOverrideFromProperties, validateRFProfile } from "./utils/rfProfile.js";
 import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
 import { compactRecommendationResponse } from "./utils/recommendations.js";
+import {
+  buildComparisonSnapshot,
+  buildNetworkComparisonSnapshot,
+  combineNetworkSimulations,
+  formatCompactNumber,
+  formatCoreLabState,
+  formatMetric,
+  formatNumber,
+  formatScenario,
+  isCalibrationProfileCompatible,
+  networkAzimuthFor,
+  networkAzimuthMap,
+} from "./utils/appWorkspace.js";
 import { CORE_LAB_SCENARIOS, DEFAULT_SIMULATION, NETWORK_TECH_OPTIONS, networkTechnologyForFrequency } from "./generated/policy.js";
 import {
   buildInterferencePayload,
@@ -101,6 +117,7 @@ export default function App() {
   const [settings, setSettings] = useState(DEFAULT_SIMULATION);
   const [planDirty, setPlanDirty] = useState(false);
   const [towers, setTowers] = useState([]);
+	const [isPlacingCell, setIsPlacingCell] = useState(false);
   const [selectedTower, setSelectedTower] = useState(null);
   const [selectedNetworkTowerIds, setSelectedNetworkTowerIds] = useState([]);
   const [networkAzimuths, setNetworkAzimuths] = useState({});
@@ -113,6 +130,11 @@ export default function App() {
   const [interferenceMetric, setInterferenceMetric] = useState("sinr");
   const [buildingSummary, setBuildingSummary] = useState(null);
   const [appMeta, setAppMeta] = useState(null);
+	const [datasetRevision, setDatasetRevision] = useState(0);
+	const [hydratedDatasetRevision, setHydratedDatasetRevision] = useState(0);
+	const [installedDatasets, setInstalledDatasets] = useState({ active_id: "", datasets: [], warnings: [] });
+	const [isSwitchingDataset, setIsSwitchingDataset] = useState(false);
+	const [datasetMessage, setDatasetMessage] = useState("");
   const [siteRecommendations, setSiteRecommendations] = useState(null);
   const [measurementSamples, setMeasurementSamples] = useState([]);
   const [measurementAnalysis, setMeasurementAnalysis] = useState(null);
@@ -153,7 +175,15 @@ export default function App() {
       .then((meta) => { if (isMounted) setAppMeta(meta); })
       .catch(() => { if (isMounted) setAppMeta(null); });
     return () => { isMounted = false; };
-  }, []);
+	}, [datasetRevision]);
+
+	useEffect(() => {
+		let isMounted = true;
+		getJSON("/api/datasets", "Installed datasets could not be loaded")
+			.then((catalog) => { if (isMounted) setInstalledDatasets(catalog); })
+			.catch((requestError) => { if (isMounted) setDatasetMessage(requestError.message); });
+		return () => { isMounted = false; };
+	}, [datasetRevision]);
 
   useEffect(() => {
     let isMounted = true;
@@ -167,25 +197,34 @@ export default function App() {
         }
         const loadedTowers = (geojson.features ?? [])
           .filter((feature) => feature.geometry?.type === "Point")
-          .map((feature) => ({
-            id: feature.id ?? `${feature.properties?.radio_type}-${feature.properties?.cell_id}`,
-            cellId: feature.properties?.cell_id,
-            radioType: feature.properties?.radio_type,
-            isSimulated: Boolean(feature.properties?.is_simulated),
-            coordinates: feature.geometry.coordinates,
-          }));
+          .map((feature) => {
+            const rfProfile = rfProfileOverrideFromProperties(feature.properties);
+            return {
+              id: String(feature.id ?? `${feature.properties?.radio_type}-${feature.properties?.cell_id}`),
+              cellId: feature.properties?.cell_id,
+              radioType: feature.properties?.radio_type,
+              isSimulated: Boolean(feature.properties?.is_simulated),
+              coordinates: feature.geometry.coordinates,
+					inventorySource: "dataset",
+					editable: true,
+              ...(Object.keys(rfProfile).length ? { rfProfile } : {}),
+            };
+          });
         setTowers(loadedTowers);
-        setSelectedTower((current) => current ?? loadedTowers[0] ?? null);
+				setSelectedTower((current) => loadedTowers.find((tower) => tower.id === current?.id) ?? loadedTowers[0] ?? null);
+				setHydratedDatasetRevision(datasetRevision);
+				setIsSwitchingDataset(false);
       })
       .catch((requestError) => {
         if (isMounted) {
           setError(requestError.message);
+					setIsSwitchingDataset(false);
         }
       });
     return () => {
       isMounted = false;
     };
-  }, []);
+	}, [datasetRevision]);
 
   useEffect(() => {
     let isMounted = true;
@@ -203,7 +242,7 @@ export default function App() {
     return () => {
       isMounted = false;
     };
-  }, []);
+	}, [datasetRevision]);
 
   const clearInterferenceAnalysis = useCallback(() => {
     setInterferenceAnalysis(EMPTY_INTERFERENCE_ANALYSIS);
@@ -219,15 +258,19 @@ export default function App() {
     const restoredSettings = { ...DEFAULT_SIMULATION, ...plan.settings };
     const calibrationCompatible = isCalibrationProfileCompatible(snapshot?.calibrationProfile, restoredSettings, appMeta);
     if (!calibrationCompatible) restoredSettings.calibrationOffsetDb = 0;
-    setSettings(restoredSettings);
+		const restoredInventory = Array.isArray(plan.inventory)
+			? plan.inventory.filter((tower) => tower && typeof tower.id === "string" && Array.isArray(tower.coordinates) && tower.coordinates.length >= 2)
+			: towers;
+		if (restoredInventory !== towers) setTowers(restoredInventory);
+		setSettings(restoredSettings);
     if (plan.planningMode) setPlanningMode(plan.planningMode);
     if (Array.isArray(plan.selectionPolygon)) setSelectionPolygon(plan.selectionPolygon);
     if (Array.isArray(plan.selectedNetworkTowerIds)) {
-      setSelectedNetworkTowerIds(plan.selectedNetworkTowerIds.filter((id) => towers.some((tower) => tower.id === id)));
+			setSelectedNetworkTowerIds(plan.selectedNetworkTowerIds.filter((id) => restoredInventory.some((tower) => tower.id === id)));
     }
     setNetworkAzimuths(plan.networkAzimuths ?? {});
     if (plan.selectedTowerId) {
-      setSelectedTower(towers.find((tower) => tower.id === plan.selectedTowerId) ?? towers[0] ?? null);
+			setSelectedTower(restoredInventory.find((tower) => tower.id === plan.selectedTowerId) ?? restoredInventory[0] ?? null);
     }
     if (plan.layerVisibility) setLayerVisibility((current) => ({ ...current, ...plan.layerVisibility }));
     const artifacts = snapshot?.artifacts;
@@ -273,7 +316,7 @@ export default function App() {
   }, [activeProject, restorePlanningSnapshot, towers.length, workspaceLoaded]);
 
   useEffect(() => {
-    if (!workspaceLoaded || restoredProjectRef.current !== activeProject?.id) {
+    if (!workspaceLoaded || restoredProjectRef.current !== activeProject?.id || hydratedDatasetRevision !== datasetRevision) {
       return undefined;
     }
     const timeout = window.setTimeout(() => {
@@ -286,6 +329,7 @@ export default function App() {
           selectedTowerId: selectedTower?.id ?? null,
           selectionPolygon,
           settings,
+			inventory: towers,
         },
       });
     }, 500);
@@ -300,6 +344,9 @@ export default function App() {
     selectedTower?.id,
     selectionPolygon,
     settings,
+		towers,
+		datasetRevision,
+		hydratedDatasetRevision,
     workspaceLoaded,
   ]);
 
@@ -577,8 +624,12 @@ export default function App() {
   const selectedTowerOrder = useMemo(() => {
     return new Map(selectedNetworkTowerIds.map((towerID, index) => [towerID, index + 1]));
   }, [selectedNetworkTowerIds]);
-  const coreLabApplicable = is5GCoreFrequency(settings.frequencyGHz);
-  const interferenceApplicable = networkTechnologyForFrequency(settings.frequencyGHz) !== "6g";
+  const selectedNetworkProfileTechs = selectedNetworkTowers.map((tower, index) => resolveRFProfile(tower, settings, index).networkTech);
+  const coreContextTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
+  const coreLabApplicable = is5GCoreFrequency(settings.frequencyGHz)
+    && coreContextTowers.every((tower, index) => resolveRFProfile(tower, settings, index).networkTech === "5g");
+  const interferenceApplicable = networkTechnologyForFrequency(settings.frequencyGHz) !== "6g"
+    && selectedNetworkProfileTechs.every((technology) => technology !== "6g");
 
   const analyzeInterference = useCallback(async () => {
     if (!interferenceApplicable) {
@@ -769,6 +820,32 @@ export default function App() {
     setPlanDirty(true);
   }, [clearRenderedAnalysis, requests, resetNetworkArtifacts]);
 
+	const switchDataset = useCallback(async (datasetID) => {
+		if (!datasetID || datasetID === installedDatasets.active_id || isSwitchingDataset) return;
+		setIsSwitchingDataset(true);
+		setDatasetMessage("Validating and loading dataset…");
+		try {
+			const response = await postJSON("/api/datasets/switch", { id: datasetID }, "Dataset switch failed");
+			requests.cancel("rf");
+			setActiveRFTask(null);
+			setTowers([]);
+			setSelectedTower(null);
+			setSelectedNetworkTowerIds([]);
+			setNetworkAzimuths({});
+			setSelectionPolygon([]);
+			setOptimizationDiagnostics(null);
+			resetNetworkArtifacts();
+			clearRenderedAnalysis();
+			setCalibrationProfile(null);
+			setPlanDirty(true);
+			setDatasetMessage(`${response.dataset?.name ?? datasetID} is active. Existing project scenarios remain bound to their original dataset.`);
+			setDatasetRevision((current) => current + 1);
+		} catch (requestError) {
+			setDatasetMessage(requestError.message);
+			setIsSwitchingDataset(false);
+		}
+	}, [clearRenderedAnalysis, installedDatasets.active_id, isSwitchingDataset, requests, resetNetworkArtifacts]);
+
   const updateSettings = useCallback((nextSettings) => {
     invalidatePlanResults();
     setSettings((current) => {
@@ -806,6 +883,89 @@ export default function App() {
     invalidatePlanResults();
     setSelectedTower(tower);
   }, [invalidatePlanResults, planningMode, selectedNetworkTowerIds]);
+
+	const selectInventoryCell = useCallback((tower) => {
+		setSelectedTower(tower);
+		setSelectedMapObject(null);
+	}, []);
+
+	const updateInventoryTower = useCallback((towerID, updater) => {
+		invalidatePlanResults();
+		setTowers((current) => current.map((tower) => tower.id === towerID ? updater(tower) : tower));
+		setSelectedTower((current) => current?.id === towerID ? updater(current) : current);
+	}, [invalidatePlanResults]);
+
+	const updateInventoryProfile = useCallback((towerID, rfProfile) => {
+		updateInventoryTower(towerID, (tower) => ({ ...tower, rfProfile, editable: true, inventorySource: tower.inventorySource === "dataset" ? "project override" : tower.inventorySource }));
+	}, [updateInventoryTower]);
+
+	const resetInventoryProfile = useCallback((towerID) => {
+		updateInventoryTower(towerID, (tower) => {
+			const next = { ...tower };
+			delete next.rfProfile;
+			return next;
+		});
+	}, [updateInventoryTower]);
+
+	const moveInventoryCell = useCallback((towerID, coordinates) => {
+		if (!Array.isArray(coordinates) || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) return;
+		if (coordinates[0] < -180 || coordinates[0] > 180 || coordinates[1] < -90 || coordinates[1] > 90) return;
+		updateInventoryTower(towerID, (tower) => ({ ...tower, coordinates, editable: true, inventorySource: tower.inventorySource === "dataset" ? "project override" : tower.inventorySource }));
+	}, [updateInventoryTower]);
+
+	const placeInventoryCell = useCallback((coordinates) => {
+		const used = new Set(towers.map((tower) => tower.id));
+		let counter = towers.length + 1;
+		let id = `manual-${counter}`;
+		while (used.has(id)) {
+			counter += 1;
+			id = `manual-${counter}`;
+		}
+		const tower = {
+			id,
+			cellId: id,
+			radioType: networkTechnologyForFrequency(settings.frequencyGHz),
+			isSimulated: true,
+			coordinates,
+			rfProfile: resolveRFProfile({}, settings, towers.length),
+			inventorySource: "manual",
+			editable: true,
+		};
+		invalidatePlanResults();
+		setTowers((current) => [...current, tower]);
+		setSelectedTower(tower);
+		setIsPlacingCell(false);
+		setSelectionNotice(`Placed ${id}. Drag its selected marker to refine the position.`);
+	}, [invalidatePlanResults, settings, towers]);
+
+	const duplicateInventoryTower = useCallback((tower) => {
+		const duplicate = duplicateInventoryCell(tower, towers.map((candidate) => candidate.id));
+		invalidatePlanResults();
+		setTowers((current) => [...current, duplicate]);
+		setSelectedTower(duplicate);
+	}, [invalidatePlanResults, towers]);
+
+	const deleteInventoryTower = useCallback((towerID) => {
+		invalidatePlanResults();
+		setTowers((current) => {
+			const next = current.filter((tower) => tower.id !== towerID);
+			setSelectedTower((selected) => selected?.id === towerID ? next[0] ?? null : selected);
+			return next;
+		});
+		setSelectedNetworkTowerIds((current) => current.filter((id) => id !== towerID));
+		setNetworkAzimuths((current) => {
+			const next = { ...current };
+			delete next[towerID];
+			return next;
+		});
+	}, [invalidatePlanResults]);
+
+	const importInventoryCells = useCallback((imported) => {
+		if (!imported.length) return;
+		invalidatePlanResults();
+		setTowers((current) => [...current, ...imported]);
+		setSelectedTower(imported[0]);
+	}, [invalidatePlanResults]);
 
   const changePlanningMode = useCallback((mode) => {
     if (mode === planningMode) {
@@ -927,7 +1087,7 @@ export default function App() {
   const loadMeasurementFile = useCallback(async (file) => {
     if (!file) return;
     try {
-      const samples = parseMeasurementCsv(await file.text());
+      const samples = await readMeasurementCsvFile(file);
       const expectedTechnology = networkTechnologyForFrequency(settings.frequencyGHz);
       if (expectedTechnology === "6g" || samples.some((sample) => sample.technology !== expectedTechnology)) {
         throw new Error(`Measurement technology must match the active ${expectedTechnology.toUpperCase()} plan`);
@@ -1019,6 +1179,7 @@ export default function App() {
   }, [activeTool]);
 
   const selectWorkspaceTool = useCallback((tool) => {
+		if (tool !== "inventory") setIsPlacingCell(false);
     if (drawerOpen && drawerMode === "tool" && activeTool === tool) {
       closeDrawer();
       return;
@@ -1174,6 +1335,10 @@ export default function App() {
     return null;
   }, [gapStats, interferenceAnalysis.stats, lastAnalysisKind, networkOptimization, networkResultKind, simulation?.stats, siteRecommendations, stats.avgPower]);
   const selectedCellCount = selectedNetworkTowerIds.length;
+	const activeProfileTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
+	const invalidProfileCount = activeProfileTowers.filter((tower, index) => (
+		Object.keys(validateRFProfile(resolveRFProfile(tower, settings, index))).length > 0
+	)).length;
   const contextLabel = planningMode === "network"
     ? `Network · ${selectedCellCount} ${selectedCellCount === 1 ? "cell" : "cells"}`
     : `Single · Cell ${selectedTowerLabel}`;
@@ -1183,13 +1348,14 @@ export default function App() {
   const interferenceUnavailableReason = planningMode !== "network"
     ? "Interference requires Network planning mode"
     : !interferenceApplicable
-      ? "Interference is not applicable to 6G research mode"
+      ? "Interference is not applicable when the plan or a selected cell uses 6G research mode"
       : selectedCellCount < 2
         ? "Select at least two cells"
         : null;
-  const coreUnavailableReason = coreLabApplicable ? null : "5G Core is available only in 5G mmWave mode";
+  const coreUnavailableReason = coreLabApplicable ? null : "5G Core requires 5G mmWave plan defaults and 5G profiles on the active cells";
   const toolState = {
     setup: { badge: planningMode === "network" ? String(selectedNetworkTowerIds.length) : null },
+		inventory: { badge: invalidProfileCount ? "!" : null, tone: invalidProfileCount ? "warning" : "success" },
     propagation: {},
     interference: {
       unavailable: Boolean(interferenceUnavailableReason),
@@ -1219,7 +1385,12 @@ export default function App() {
         ? "Running..."
         : "Run Sector";
   const mapPlanPrompt = planDirty
-    ? planningMode === "network" && cellsNeeded > 0
+		? invalidProfileCount > 0
+			? {
+				title: "RF profile needs attention",
+				detail: `Fix ${invalidProfileCount} invalid selected cell profile${invalidProfileCount === 1 ? "" : "s"} in Inventory.`,
+			}
+			: planningMode === "network" && cellsNeeded > 0
       ? {
           title: `Add ${cellsNeeded} more ${cellsNeeded === 1 ? "cell" : "cells"}`,
           detail: "Select towers on the map or draw an area to build the cluster.",
@@ -1242,6 +1413,7 @@ export default function App() {
     calibrationProfile,
     plan: {
       settings,
+		inventory: towers,
       planningMode,
       selectedTowerId: selectedTower?.id ?? null,
         selectedNetworkTowerIds,
@@ -1297,6 +1469,7 @@ export default function App() {
     settings,
     simulation,
     siteRecommendations,
+		towers,
   ]);
 
   const saveCurrentScenario = useCallback(() => {
@@ -1369,6 +1542,7 @@ export default function App() {
         project: activeProject,
         recommendations: siteRecommendations,
         selectedTower,
+				selectedNetworkTowers: planningMode === "network" ? selectedNetworkTowers : [],
         settings,
         simulation,
         stats,
@@ -1388,6 +1562,8 @@ export default function App() {
       networkOptimization,
       coverageGaps,
       optimizationDiagnostics,
+			planningMode,
+			selectedNetworkTowers,
       selectedTower,
       settings,
       simulation,
@@ -1414,6 +1590,7 @@ export default function App() {
 
   const drawerSubtitles = {
     setup: "Mode, technology, power, and cell selection",
+		inventory: "Local cells, map placement, imports, and per-cell RF profiles",
     propagation: "Ray geometry, coverage radius, and optimization",
     interference: "Co-channel load and radio-quality assumptions",
     core: "Xn, N2, N3, sessions, and lab scenarios",
@@ -1455,7 +1632,7 @@ export default function App() {
           />
         )}
         primaryActionLabel={primaryActionLabel}
-        primaryDisabled={activeRFTask !== null || (planningMode === "network" ? selectedCellCount < 2 : !selectedTower)}
+		primaryDisabled={activeRFTask !== null || invalidProfileCount > 0 || (planningMode === "network" ? selectedCellCount < 2 : !selectedTower)}
         resultSummary={resultSummary}
         runState={runState}
         statusTone={visibleError ? "error" : activeRFTask !== null ? "busy" : planDirty ? "pending" : "ready"}
@@ -1526,6 +1703,9 @@ export default function App() {
             interferenceLayerKey={interferenceRevision}
             measurements={measurementAnalysis?.geojson}
             recommendations={siteRecommendations}
+			isPlacingCell={isPlacingCell}
+			onPlaceCell={placeInventoryCell}
+			onMoveTower={moveInventoryCell}
           />
           {mapPlanPrompt && activeRFTask === null ? (
             <div className="map-plan-prompt" role="status">
@@ -1574,6 +1754,27 @@ export default function App() {
               isAnalyzingInterference={isAnalyzingInterference}
             />
           ) : null}
+
+			{drawerMode === "tool" && activeTool === "inventory" ? (
+				<InventoryPanel
+					isPlacingCell={isPlacingCell}
+					onCancelPlacement={() => setIsPlacingCell(false)}
+					onDeleteCell={deleteInventoryTower}
+					onDuplicateCell={duplicateInventoryTower}
+					onImportCells={importInventoryCells}
+					onMoveCell={moveInventoryCell}
+					onResetProfile={resetInventoryProfile}
+					onSelectCell={selectInventoryCell}
+					onStartPlacement={() => {
+						setIsPlacingCell(true);
+						setSelectionNotice("Click the map to place a new cell.");
+					}}
+					onUpdateProfile={updateInventoryProfile}
+					selectedTower={selectedTower}
+					settings={settings}
+					towers={towers}
+				/>
+			) : null}
 
           {drawerMode === "tool" && activeTool === "core" ? (
             <CoreLabTool
@@ -1633,6 +1834,10 @@ export default function App() {
               onEvaluateMeasurements={evaluateMeasurements}
               onMeasurementFile={loadMeasurementFile}
               evaluatingMeasurements={isEvaluatingMeasurements}
+				installedDatasets={installedDatasets}
+				datasetMessage={datasetMessage}
+				isSwitchingDataset={isSwitchingDataset}
+				onSwitchDataset={switchDataset}
             />
           ) : null}
 
@@ -2208,6 +2413,10 @@ function DataPanel({
   onMeasurementFile,
   settings,
   summary,
+	installedDatasets,
+	datasetMessage,
+	isSwitchingDataset,
+	onSwitchDataset,
 }) {
   const dataQuality = diagnostics?.data_quality ?? summary?.data_quality ?? "unknown";
   const totalBuildings = summary?.total_buildings ?? null;
@@ -2243,6 +2452,33 @@ function DataPanel({
         Static OSM/OpenCellID-derived files are loaded locally. Demand values combine explicit POI tags
         with residential-density heuristics, so confidence is useful context for optimization results.
       </p>
+		<section className="model-assumptions dataset-switcher" aria-label="Installed dataset packs">
+			<div className="panel-title"><Database size={16} /><span>Installed Dataset Packs</span></div>
+			<p className="data-note">Only packs discovered under the configured local <code>ATOM_DATASETS_ROOT</code> can be activated. A candidate is fully hash- and geometry-validated before the active in-memory snapshot changes.</p>
+			<div className="dataset-pack-list">
+				{(installedDatasets?.datasets ?? []).map((dataset) => (
+					<button key={dataset.id} type="button" className={dataset.active ? "active" : ""} disabled={dataset.active || isSwitchingDataset} onClick={() => onSwitchDataset(dataset.id)}>
+						<span><strong>{dataset.name}</strong><small>{dataset.id} · v{dataset.version} · schema {dataset.schema_version}</small></span>
+						<em>{dataset.active ? "Active" : "Activate"}</em>
+					</button>
+				))}
+			</div>
+			{datasetMessage ? <p className="inventory-message" role="status">{datasetMessage}</p> : null}
+			{(installedDatasets?.warnings ?? []).map((warning, index) => <p className="inventory-validation" key={`${warning}-${index}`}>{warning}</p>)}
+			{appMeta?.dataset?.quality ? (
+				<div className="dataset-quality-preview">
+					<strong>Pack QA</strong>
+					<p>{appMeta.dataset.quality.summary}</p>
+					<MiniDatum label="Coverage" value={`${formatNumber((appMeta.dataset.quality.coverage?.coverage_ratio ?? 0) * 100, 1)}%`} />
+					<MiniDatum label="Optional layers" value={Object.keys(appMeta.dataset.layers ?? {}).filter((key) => appMeta.dataset.layers[key]?.optional).join(", ") || "None"} />
+					<MiniDatum label="Sources" value={(appMeta.dataset.sources ?? []).join(", ") || "n/a"} />
+					<MiniDatum label="Licenses" value={(appMeta.dataset.licenses ?? []).join(", ") || "n/a"} />
+					<MiniDatum label="Hashed files" value={Object.keys(appMeta.dataset.sha256 ?? {}).length.toLocaleString()} />
+					<p>{appMeta.dataset.confidence}</p>
+				</div>
+			) : null}
+			<pre className="dataset-studio-command">python data-pipeline/pack_studio.py inspect --towers cells.geojson --buildings buildings.gpkg{"\n"}python data-pipeline/pack_studio.py build --help</pre>
+		</section>
       <section className="model-assumptions" aria-label="Propagation model assumptions">
         <div className="panel-title">
           <RadioTower size={16} />
@@ -2483,91 +2719,6 @@ function MetricRow({ label, value }) {
   );
 }
 
-function formatCompactNumber(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) {
-    return "n/a";
-  }
-  return Intl.NumberFormat("en", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(number);
-}
-
-function formatNumber(value, digits = 1) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) {
-    return "n/a";
-  }
-  return number.toLocaleString("en", {
-    maximumFractionDigits: digits,
-    minimumFractionDigits: digits,
-  });
-}
-
-function formatMetric(value, unit) {
-  if (value === null || value === undefined) {
-    return "n/a";
-  }
-  const number = Number(value);
-  return Number.isFinite(number) ? `${number.toFixed(1)} ${unit}` : "n/a";
-}
-
-function formatCoreLabState(state) {
-  if (state === "scenario_running") {
-    return "Scenario running";
-  }
-  if (state === "connected") {
-    return "Connected";
-  }
-  if (state === "disconnected") {
-    return "Disconnected";
-  }
-  if (state === "disabled") {
-    return "Disabled";
-  }
-  if (state === "not_applicable") {
-    return "Not applicable";
-  }
-  return state ?? "Off";
-}
-
-function formatScenario(value) {
-  return String(value ?? "normal")
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
-function isCalibrationProfileCompatible(profile, settings, meta) {
-  if (!profile) return true;
-  if (!meta) return true;
-  const technology = networkTechnologyForFrequency(settings.frequencyGHz);
-  return profile.kind === "robust_global_path_loss_bias"
-    && profile.technology === technology
-    && Number(profile.frequencyGHz) === Number(settings.frequencyGHz)
-    && profile.modelVersion === meta.model_version
-    && isDatasetCompatible({ datasetRef: profile.dataset }, meta);
-}
-
-function networkAzimuthFor(tower, azimuths, fallback) {
-  const value = azimuths[tower.id] ?? azimuths[String(tower.id)] ?? azimuths[String(tower.cellId ?? "")];
-  return Number.isFinite(Number(value)) ? Number(value) : fallback;
-}
-
-function networkAzimuthMap(towers, optimization, existing = {}) {
-  const optimizedByID = new Map(
-    (optimization?.optimized_towers ?? []).map((tower) => [String(tower.id), tower.optimal_azimuth]),
-  );
-  return towers.reduce((azimuths, tower) => {
-    const optimized = optimizedByID.get(String(tower.cellId ?? tower.id));
-    if (Number.isFinite(Number(optimized))) {
-      azimuths[tower.id] = Number(optimized);
-    }
-    return azimuths;
-  }, { ...existing });
-}
-
 function MiniDatum({ label, value }) {
   return (
     <div className="mini-datum">
@@ -2575,98 +2726,4 @@ function MiniDatum({ label, value }) {
       <strong>{value}</strong>
     </div>
   );
-}
-
-function buildComparisonSnapshot({ coverageGaps, diagnostics, label, settings, simulation, tower }) {
-  return {
-    coverageGaps,
-    diagnostics,
-    kind: "single",
-    label,
-    settings: { ...settings },
-    stats: normalizeSimulationStats(simulation, coverageGaps),
-    timestamp: new Date().toISOString(),
-    tower,
-  };
-}
-
-function buildNetworkComparisonSnapshot({ label, optimization, settings, towers }) {
-  return {
-    kind: "network",
-    label,
-    optimization,
-    settings: { ...settings },
-    stats: normalizeNetworkStats(optimization),
-    timestamp: new Date().toISOString(),
-    towers,
-  };
-}
-
-function combineNetworkSimulations(simulations) {
-  const features = simulations.flatMap((payload, simulationIndex) =>
-    (payload?.geojson?.features ?? []).map((feature) => ({
-      ...feature,
-      properties: {
-        ...(feature.properties ?? {}),
-        network_tower_index: simulationIndex,
-      },
-    })),
-  );
-  const stats = simulations.map((payload) => payload?.stats).filter(Boolean);
-  return {
-    geojson: {
-      type: "FeatureCollection",
-      features,
-    },
-    stats: {
-      avg_rx_dbm: average(stats.map((item) => item.avg_rx_dbm)),
-      blocked_pct: average(stats.map((item) => item.blocked_pct)),
-      max_range_m: Math.max(...stats.map((item) => Number(item.max_range_m ?? 0)), 0),
-      min_range_m: minFinite(stats.map((item) => item.min_range_m)),
-    },
-  };
-}
-
-function average(values) {
-  const numbers = values.map(Number).filter(Number.isFinite);
-  if (numbers.length === 0) {
-    return 0;
-  }
-  return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
-}
-
-function minFinite(values) {
-  const numbers = values.map(Number).filter(Number.isFinite);
-  if (numbers.length === 0) {
-    return 0;
-  }
-  return Math.min(...numbers);
-}
-
-function normalizeSimulationStats(simulation, coverageGaps) {
-  return {
-    avgPower: simulation?.stats?.avg_rx_dbm ?? null,
-    blockedRatio: simulation?.stats?.blocked_pct ?? null,
-    gapBuildings: coverageGaps?.stats?.gap_buildings ?? null,
-    gapRatio: coverageGaps?.stats?.gap_pct ?? null,
-    maxRange: simulation?.stats?.max_range_m ?? null,
-    minRange: simulation?.stats?.min_range_m ?? null,
-    rayCount: simulation?.geojson?.features?.length ?? 0,
-    totalGapDemand: coverageGaps?.stats?.total_gap_demand ?? null,
-    worstRx: coverageGaps?.stats?.worst_rx_dbm ?? null,
-  };
-}
-
-function normalizeNetworkStats(optimization) {
-  const stats = optimization?.stats ?? {};
-  return {
-    coverageScore: stats.coverage_score ?? null,
-    demandScore: stats.demand_score ?? null,
-    networkScore: stats.network_score ?? null,
-    overlapBuildings: stats.overlap_buildings ?? null,
-    overlapPenalty: stats.overlap_penalty ?? null,
-    residentialScore: stats.residential_score ?? null,
-    uniqueDemandBuildings: stats.unique_demand_buildings ?? null,
-    uniqueResidentialBuildings: stats.unique_residential_buildings ?? null,
-  };
 }

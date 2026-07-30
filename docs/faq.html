@@ -176,14 +176,19 @@ applying a recommendation.</p>
 <h2 id="data">Data</h2>
 <h3 id="can-i-use-a-region-other-than-ankara">Can I use a region other
 than Ankara?</h3>
-<p>Yes, through a validated dataset pack. Set
-<code>ATOM_DATASET_DIR</code> to a directory containing the versioned
-manifest and referenced tower/building files, then restart the
-application. The validator checks schema, CRS, coordinates, geometry,
-duplicate IDs, and SHA-256 hashes.</p>
+<p>Yes. Dataset Pack Studio can inspect, repair, reproject, crop, and
+package local tower/building sources for an arbitrary region. Set
+<code>ATOM_DATASET_DIR</code> to the initial validated pack. To switch
+without restarting, mount packs beneath <code>ATOM_DATASETS_ROOT</code>
+and activate one by manifest ID from Data; the current pack remains
+active if candidate validation fails. The validator checks schema, CRS,
+coordinates, geometry, duplicate IDs, and SHA-256 hashes.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run ./cmd/validate-dataset <span class="at">-dataset-dir</span> /path/to/dataset</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run ./cmd/validate-dataset /path/to/dataset</span></code></pre></div>
+<p>See <a href="dataset-pack-studio.html">Dataset Pack Studio</a> for
+schema-v2 provenance, QA, optional layers, and installation
+guidance.</p>
 <p>The application does not yet download or build arbitrary cities from
 the browser.</p>
 <h3 id="why-does-readyz-return-503">Why does <code>/readyz</code> return

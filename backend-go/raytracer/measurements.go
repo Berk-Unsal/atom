@@ -184,6 +184,9 @@ func ValidateMeasurementEvaluationRequest(input MeasurementEvaluationRequestInpu
 		if tower.TowerLon < MinLongitude || tower.TowerLon > MaxLongitude || tower.TowerLat < MinLatitude || tower.TowerLat > MaxLatitude {
 			return "each tower must include valid tower_lon and tower_lat coordinates"
 		}
+		if validationError := ValidateCellRFProfile(tower.RFProfile, true); validationError != "" {
+			return validationError
+		}
 	}
 	seen := make(map[string]struct{}, len(req.Samples))
 	for index, sample := range req.Samples {

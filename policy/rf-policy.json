@@ -11,10 +11,24 @@
     { "id": "xn_unavailable", "label": "Xn unavailable" }
   ],
   "technologies": [
-    { "id": "4g", "label": "4G LTE", "default_frequency_ghz": 2.6, "minimum_frequency_ghz": 0, "maximum_frequency_ghz": 10, "default_bandwidth_mhz": 20.0, "bandwidths_mhz": [1.4, 3, 5, 10, 15, 20] },
-    { "id": "5g", "label": "5G mmWave", "default_frequency_ghz": 28, "minimum_frequency_ghz": 10, "maximum_frequency_ghz": 100, "default_bandwidth_mhz": 100.0, "bandwidths_mhz": [50, 100, 200, 400] },
-    { "id": "6g", "label": "6G Sub-THz", "default_frequency_ghz": 140, "minimum_frequency_ghz": 100, "maximum_frequency_ghz": 300 }
+    { "id": "4g", "label": "4G LTE", "default_frequency_ghz": 2.6, "minimum_frequency_ghz": 0, "maximum_frequency_ghz": 10, "default_band": "LTE Band 7", "default_duplex_mode": "fdd", "default_bandwidth_mhz": 20.0, "bandwidths_mhz": [1.4, 3, 5, 10, 15, 20] },
+    { "id": "5g", "label": "5G mmWave", "default_frequency_ghz": 28, "minimum_frequency_ghz": 10, "maximum_frequency_ghz": 100, "default_band": "NR n257", "default_duplex_mode": "tdd", "default_bandwidth_mhz": 100.0, "bandwidths_mhz": [50, 100, 200, 400] },
+    { "id": "6g", "label": "6G Sub-THz", "default_frequency_ghz": 140, "minimum_frequency_ghz": 100, "maximum_frequency_ghz": 300, "default_band": "Sub-THz research", "default_duplex_mode": "tdd", "default_bandwidth_mhz": 1000.0, "bandwidths_mhz": [100, 400, 800, 1000] }
   ],
+  "rf_profile": {
+    "schema_version": 1,
+    "duplex_modes": ["fdd", "tdd", "sdl", "sul"],
+    "horizontal_patterns": [
+      { "id": "ideal-sector", "label": "Ideal sector" },
+      { "id": "cosine-sector", "label": "Cosine sector" },
+      { "id": "omni", "label": "Omnidirectional" }
+    ],
+    "vertical_patterns": [
+      { "id": "flat", "label": "Flat" },
+      { "id": "panel-10deg", "label": "10° panel" },
+      { "id": "panel-20deg", "label": "20° panel" }
+    ]
+  },
   "defaults": {
     "static_simulation_rays": 60,
     "network_optimization_rays": 72,
@@ -29,7 +43,17 @@
     "noise_figure_db": 7,
     "sample_spacing_m": 40,
     "calibration_offset_db": 0,
-    "recommendation_results": 5
+    "recommendation_results": 5,
+    "antenna_gain_dbi": 25,
+    "system_loss_db": 0,
+    "antenna_height_m": 25,
+    "mechanical_downtilt_deg": 0,
+    "electrical_downtilt_deg": 0,
+    "orientation_deg": 0,
+    "horizontal_pattern_id": "ideal-sector",
+    "vertical_pattern_id": "flat",
+    "receiver_height_m": 1.5,
+    "receiver_sensitivity_dbm": -115
   },
   "limits": {
     "tower_id_bytes": 128,
@@ -60,6 +84,25 @@
     "noise_figure_db_min": 0,
     "noise_figure_db_max": 20,
     "sample_spacing_m_min": 20,
-    "sample_spacing_m_max": 200
+    "sample_spacing_m_max": 200,
+    "profile_text_bytes": 64,
+    "bandwidth_mhz_min": 0.1,
+    "bandwidth_mhz_max": 2000,
+    "antenna_gain_dbi_min": -20,
+    "antenna_gain_dbi_max": 80,
+    "system_loss_db_min": 0,
+    "system_loss_db_max": 100,
+    "antenna_height_m_min": 0.5,
+    "antenna_height_m_max": 300,
+    "downtilt_deg_min": -30,
+    "downtilt_deg_max": 90,
+    "reuse_factor_max": 12,
+    "pci_min": 0,
+    "pci_lte_max": 503,
+    "pci_nr_max": 1007,
+    "receiver_height_m_min": 0.1,
+    "receiver_height_m_max": 100,
+    "receiver_sensitivity_dbm_min": -180,
+    "receiver_sensitivity_dbm_max": -20
   }
 }

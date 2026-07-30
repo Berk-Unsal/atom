@@ -11,8 +11,8 @@ import (
 	"sync/atomic"
 )
 
-const ReceiverSensitivity = -115.0 // dBm
-const AntennaGainDBi = 25.0
+const ReceiverSensitivity = DefaultReceiverSensitivityDBm // Legacy default; per-cell profiles override it.
+const AntennaGainDBi = DefaultAntennaGainDBi              // Legacy default; per-cell profiles override it.
 const SegmentStepMeters = 25.0
 const DemandScoreMultiplier = 10000.0
 const ResidentialScoreMultiplier = 10000.0
@@ -54,22 +54,24 @@ func ValidateSimulationFeatureBudget(rays int, radiusMeters float64) string {
 }
 
 type StaticSimulationRequest struct {
-	TowerLon            float64 `json:"tower_lon"`
-	TowerLat            float64 `json:"tower_lat"`
-	Rays                int     `json:"rays"`
-	RadiusMeters        float64 `json:"radius_m"`
-	FrequencyGHz        float64 `json:"frequency_ghz"`
-	TxPowerDBm          float64 `json:"tx_power_dbm"`
-	AzimuthDeg          float64 `json:"azimuth"`
-	BeamWidthDeg        float64 `json:"beam_width"`
-	CalibrationOffsetDB float64 `json:"calibration_offset_db,omitempty"`
+	TowerLon            float64       `json:"tower_lon"`
+	TowerLat            float64       `json:"tower_lat"`
+	Rays                int           `json:"rays"`
+	RadiusMeters        float64       `json:"radius_m"`
+	FrequencyGHz        float64       `json:"frequency_ghz"`
+	TxPowerDBm          float64       `json:"tx_power_dbm"`
+	AzimuthDeg          float64       `json:"azimuth"`
+	BeamWidthDeg        float64       `json:"beam_width"`
+	CalibrationOffsetDB float64       `json:"calibration_offset_db,omitempty"`
+	RFProfile           CellRFProfile `json:"rf_profile"`
 }
 
 type NetworkTowerRequest struct {
-	ID         string  `json:"id"`
-	TowerLon   float64 `json:"tower_lon"`
-	TowerLat   float64 `json:"tower_lat"`
-	AzimuthDeg float64 `json:"azimuth"`
+	ID         string        `json:"id"`
+	TowerLon   float64       `json:"tower_lon"`
+	TowerLat   float64       `json:"tower_lat"`
+	AzimuthDeg float64       `json:"azimuth"`
+	RFProfile  CellRFProfile `json:"rf_profile"`
 }
 
 type NetworkOptimizationRequest struct {
@@ -80,6 +82,7 @@ type NetworkOptimizationRequest struct {
 	TxPowerDBm          float64               `json:"tx_power_dbm"`
 	BeamWidthDeg        float64               `json:"beam_width"`
 	CalibrationOffsetDB float64               `json:"calibration_offset_db,omitempty"`
+	RFProfile           CellRFProfile         `json:"rf_profile"`
 }
 
 type RayFeatureCollection struct {
@@ -88,8 +91,9 @@ type RayFeatureCollection struct {
 }
 
 type StaticSimulationResponse struct {
-	GeoJSON RayFeatureCollection `json:"geojson"`
-	Stats   SimulationStats      `json:"stats"`
+	GeoJSON   RayFeatureCollection `json:"geojson"`
+	Stats     SimulationStats      `json:"stats"`
+	RFProfile CellRFProfile        `json:"rf_profile"`
 }
 
 type SectorAnalysisResponse struct {
@@ -108,9 +112,10 @@ type AzimuthOptimizationResponse struct {
 }
 
 type NetworkOptimizedTower struct {
-	ID             string  `json:"id"`
-	OptimalAzimuth float64 `json:"optimal_azimuth"`
-	Score          float64 `json:"score"`
+	ID             string        `json:"id"`
+	OptimalAzimuth float64       `json:"optimal_azimuth"`
+	Score          float64       `json:"score"`
+	RFProfile      CellRFProfile `json:"rf_profile"`
 }
 
 type NetworkOptimizationStats struct {
@@ -232,6 +237,15 @@ func NormalizeStaticSimulationRequest(req *StaticSimulationRequest) {
 	if req.BeamWidthDeg > MaxBeamWidthDeg {
 		req.BeamWidthDeg = MaxBeamWidthDeg
 	}
+	if req.RFProfile.SchemaVersion == 0 {
+		req.RFProfile = DefaultCellRFProfile(NetworkTechnologyForFrequency(req.FrequencyGHz), req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, 0, 0, 0)
+	} else {
+		req.RFProfile = req.RFProfile.normalized()
+		req.RadiusMeters = req.RFProfile.RadiusMeters
+		req.FrequencyGHz = req.RFProfile.FrequencyGHz
+		req.TxPowerDBm = req.RFProfile.TxPowerDBm
+		req.BeamWidthDeg = req.RFProfile.BeamWidthDeg
+	}
 }
 
 func NormalizeNetworkOptimizationRequest(req *NetworkOptimizationRequest) {
@@ -256,17 +270,21 @@ func NormalizeNetworkOptimizationRequest(req *NetworkOptimizationRequest) {
 	if req.BeamWidthDeg > MaxBeamWidthDeg {
 		req.BeamWidthDeg = MaxBeamWidthDeg
 	}
+	if req.RFProfile.SchemaVersion == 0 {
+		req.RFProfile = DefaultCellRFProfile(NetworkTechnologyForFrequency(req.FrequencyGHz), req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, 0, 0, 0)
+	}
 	for index := range req.Towers {
 		req.Towers[index].AzimuthDeg = normalizeDegrees(req.Towers[index].AzimuthDeg)
+		if req.Towers[index].RFProfile.SchemaVersion == 0 {
+			req.Towers[index].RFProfile = req.RFProfile
+		} else {
+			req.Towers[index].RFProfile = req.Towers[index].RFProfile.normalized()
+		}
 	}
 }
 
-func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) StaticSimulationResponse {
-	response, _ := SimulateStaticRaysContext(context.Background(), req, buildings)
-	return response
-}
-
 func SimulateStaticRaysContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (StaticSimulationResponse, error) {
+	NormalizeStaticSimulationRequest(&req)
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
@@ -310,12 +328,14 @@ func staticSimulationResponseFromProfilesContext(ctx context.Context, req Static
 		Features: features,
 	}
 	return StaticSimulationResponse{
-		GeoJSON: geojson,
-		Stats:   CalculateSimulationStats(terminals),
+		GeoJSON:   geojson,
+		Stats:     CalculateSimulationStats(terminals),
+		RFProfile: req.RFProfile,
 	}, nil
 }
 
 func AnalyzeSectorContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (SectorAnalysisResponse, error) {
+	NormalizeStaticSimulationRequest(&req)
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
@@ -337,13 +357,8 @@ func AnalyzeSectorContext(ctx context.Context, req StaticSimulationRequest, buil
 	return SectorAnalysisResponse{Simulation: simulation, CoverageGaps: coverageGaps}, nil
 }
 
-func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) AzimuthOptimizationResponse {
-	NormalizeStaticSimulationRequest(&req)
-	response, _ := OptimizeAzimuthContext(context.Background(), req, buildings)
-	return response
-}
-
 func OptimizeAzimuthContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (AzimuthOptimizationResponse, error) {
+	NormalizeStaticSimulationRequest(&req)
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 
 	type sweepResult struct {
@@ -427,13 +442,8 @@ func OptimizeAzimuthContext(ctx context.Context, req StaticSimulationRequest, bu
 	}, nil
 }
 
-func OptimizeNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) NetworkOptimizationResponse {
-	NormalizeNetworkOptimizationRequest(&req)
-	response, _ := OptimizeNetworkContext(context.Background(), req, buildings)
-	return response
-}
-
 func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
+	NormalizeNetworkOptimizationRequest(&req)
 	azimuths := make([]float64, len(req.Towers))
 	for index, tower := range req.Towers {
 		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
@@ -478,6 +488,7 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 			ID:             tower.ID,
 			OptimalAzimuth: azimuths[index],
 			Score:          math.Round(score*10) / 10,
+			RFProfile:      tower.RFProfile,
 		})
 	}
 
@@ -489,13 +500,8 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 	}, nil
 }
 
-func EvaluateNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) NetworkOptimizationResponse {
-	NormalizeNetworkOptimizationRequest(&req)
-	response, _ := EvaluateNetworkContext(context.Background(), req, buildings)
-	return response
-}
-
 func EvaluateNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
+	NormalizeNetworkOptimizationRequest(&req)
 	azimuths := make([]float64, len(req.Towers))
 	for index, tower := range req.Towers {
 		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
@@ -517,6 +523,7 @@ func EvaluateNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 			ID:             tower.ID,
 			OptimalAzimuth: azimuths[index],
 			Score:          math.Round(score*10) / 10,
+			RFProfile:      tower.RFProfile,
 		})
 	}
 
@@ -526,11 +533,6 @@ func EvaluateNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 		OptimizedTowers: optimized,
 		Stats:           breakdown.rounded(),
 	}, nil
-}
-
-func NetworkCoverageScoreBreakdown(req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) NetworkOptimizationStats {
-	stats, _ := NetworkCoverageScoreBreakdownContext(context.Background(), req, azimuths, buildings)
-	return stats
 }
 
 func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) (NetworkOptimizationStats, error) {
@@ -619,16 +621,24 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 }
 
 func networkTowerToStaticRequest(req NetworkOptimizationRequest, tower NetworkTowerRequest, azimuth float64) StaticSimulationRequest {
+	profile := tower.RFProfile
+	if profile.SchemaVersion == 0 {
+		profile = req.RFProfile
+		if profile.SchemaVersion == 0 {
+			profile = DefaultCellRFProfile(NetworkTechnologyForFrequency(req.FrequencyGHz), req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, 0, 0, 0)
+		}
+	}
 	return StaticSimulationRequest{
 		TowerLon:            tower.TowerLon,
 		TowerLat:            tower.TowerLat,
 		Rays:                req.Rays,
-		RadiusMeters:        req.RadiusMeters,
-		FrequencyGHz:        req.FrequencyGHz,
-		TxPowerDBm:          req.TxPowerDBm,
+		RadiusMeters:        profile.RadiusMeters,
+		FrequencyGHz:        profile.FrequencyGHz,
+		TxPowerDBm:          profile.TxPowerDBm,
 		AzimuthDeg:          normalizeDegrees(azimuth),
-		BeamWidthDeg:        req.BeamWidthDeg,
+		BeamWidthDeg:        profile.BeamWidthDeg,
 		CalibrationOffsetDB: req.CalibrationOffsetDB,
+		RFProfile:           profile,
 	}
 }
 
@@ -641,13 +651,8 @@ func (stats NetworkOptimizationStats) rounded() NetworkOptimizationStats {
 	return stats
 }
 
-func FindCoverageGaps(req StaticSimulationRequest, buildings *BuildingIndex) CoverageGapResponse {
-	NormalizeStaticSimulationRequest(&req)
-	response, _ := FindCoverageGapsContext(context.Background(), req, buildings)
-	return response
-}
-
 func FindCoverageGapsContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (CoverageGapResponse, error) {
+	NormalizeStaticSimulationRequest(&req)
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
@@ -692,7 +697,7 @@ func coverageGapResponseFromProfilesContext(ctx context.Context, origin Point, r
 			}
 		}
 		if !hasCoverage {
-			rx = ReceiverSensitivity
+			rx = req.RFProfile.ReceiverSensitivityDBm
 		}
 		totalDemand := building.DemandWeight + building.ResidentialDemand
 		if hasCoverage && rx > CoveredBuildingThresholdDBm {
@@ -703,7 +708,7 @@ func coverageGapResponseFromProfilesContext(ctx context.Context, origin Point, r
 		stats.GapBuildings++
 		stats.TotalGapDemand += totalDemand
 		stats.WorstRxDBm = math.Min(stats.WorstRxDBm, rx)
-		gaps = append(gaps, makeCoverageGapFeature(building, centroid, distance, rx))
+		gaps = append(gaps, makeCoverageGapFeature(building, centroid, distance, rx, req.RFProfile.ReceiverSensitivityDBm))
 	}
 
 	sort.SliceStable(gaps, func(i, j int) bool {
@@ -768,13 +773,8 @@ func (budget *simulationFeatureBudget) reserve() error {
 	return nil
 }
 
-func BuildingCoverageMap(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) map[string]float64 {
-	NormalizeStaticSimulationRequest(&req)
-	coverage, _ := BuildingCoverageMapContext(context.Background(), origin, req, buildings)
-	return coverage
-}
-
 func BuildingCoverageMapContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) (map[string]float64, error) {
+	NormalizeStaticSimulationRequest(&req)
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
 		return nil, err
@@ -787,12 +787,6 @@ func releaseRayProfileSegments(profiles []rayCoverageProfile) {
 	for index := range profiles {
 		profiles[index].segments = nil
 	}
-}
-
-func buildBeamCoverageProfiles(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) []rayCoverageProfile {
-	NormalizeStaticSimulationRequest(&req)
-	profiles, _ := buildBeamCoverageProfilesContext(context.Background(), origin, req, buildings)
-	return profiles
 }
 
 func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) ([]rayCoverageProfile, error) {
@@ -830,7 +824,7 @@ func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req Sta
 					if !ok {
 						return
 					}
-					angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
+					angle := BeamAngleForIndex(req.RFProfile.EffectiveAzimuth(req.AzimuthDeg), req.RFProfile.EffectiveBeamWidthDeg(), req.Rays, index)
 					segments, terminal, err := simulateSegmentedRayWithBudgetContext(workCtx, origin, index, angle, req, buildings, featureBudget)
 					if err != nil {
 						select {
@@ -990,10 +984,6 @@ func angularSeparationDegrees(a float64, b float64) float64 {
 	return delta
 }
 
-func CoverageAreaScore(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) float64 {
-	return CoverageAreaScoreBreakdown(origin, req, buildings).TotalScore
-}
-
 type CoverageScoreBreakdown struct {
 	CoverageScore           float64
 	DemandScore             float64
@@ -1001,11 +991,6 @@ type CoverageScoreBreakdown struct {
 	TotalScore              float64
 	HitDemandBuildings      int
 	HitResidentialBuildings int
-}
-
-func CoverageAreaScoreBreakdown(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) CoverageScoreBreakdown {
-	breakdown, _ := CoverageAreaScoreBreakdownContext(context.Background(), origin, req, buildings)
-	return breakdown
 }
 
 func CoverageAreaScoreBreakdownContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) (CoverageScoreBreakdown, error) {
@@ -1016,7 +1001,7 @@ func CoverageAreaScoreBreakdownContext(ctx context.Context, origin Point, req St
 		if err := ctx.Err(); err != nil {
 			return CoverageScoreBreakdown{}, err
 		}
-		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
+		angle := BeamAngleForIndex(req.RFProfile.EffectiveAzimuth(req.AzimuthDeg), req.RFProfile.EffectiveBeamWidthDeg(), req.Rays, index)
 		terminal, err := simulateRayTerminalContext(ctx, origin, index, angle, req, buildings)
 		if err != nil {
 			return CoverageScoreBreakdown{}, err
@@ -1100,7 +1085,7 @@ func demandCandidatesInBeamContext(ctx context.Context, origin Point, req Static
 			continue
 		}
 		bearing := BearingDegrees(origin, centroid)
-		if !AngleInBeam(bearing, req.AzimuthDeg, req.BeamWidthDeg) {
+		if req.RFProfile.HorizontalPatternID != "omni" && !AngleInBeam(bearing, req.RFProfile.EffectiveAzimuth(req.AzimuthDeg), req.BeamWidthDeg) {
 			continue
 		}
 		demandCandidates = append(demandCandidates, building)
@@ -1108,10 +1093,10 @@ func demandCandidatesInBeamContext(ctx context.Context, origin Point, req Static
 	return demandCandidates, nil
 }
 
-func makeCoverageGapFeature(building *BuildingFootprint, centroid Point, distance float64, rx float64) PointFeature {
+func makeCoverageGapFeature(building *BuildingFootprint, centroid Point, distance float64, rx float64, receiverSensitivityDBm float64) PointFeature {
 	totalDemand := building.DemandWeight + building.ResidentialDemand
 	severity := "weak"
-	if rx <= ReceiverSensitivity {
+	if rx <= receiverSensitivityDBm {
 		severity = "outage"
 	}
 	return PointFeature{
@@ -1198,16 +1183,25 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 	if err := ctx.Err(); err != nil {
 		return nil, rayTerminal{}, err
 	}
-	effectiveTxPowerDBm := req.TxPowerDBm + req.CalibrationOffsetDB
-	clearAirLimit := MaxTheoreticalDistanceMeters(effectiveTxPowerDBm, req.FrequencyGHz, 0)
-	castDistance := math.Min(req.RadiusMeters, clearAirLimit)
+	profile := req.RFProfile
+	if profile.SchemaVersion == 0 {
+		profile = DefaultCellRFProfile(NetworkTechnologyForFrequency(req.FrequencyGHz), req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, 0, 0, 0)
+	}
+	castDistance := profile.RadiusMeters
 	wallLossPerIntersection := PenetrationLossForFrequencyGHz(req.FrequencyGHz)
+	horizontalOffsetDeg := smallestAngleDifference(angle, profile.EffectiveAzimuth(req.AzimuthDeg))
+	receivedPower := func(distanceMeters, attenuationDB float64) float64 {
+		return profile.ReceivedPowerDBm(distanceMeters, attenuationDB, req.CalibrationOffsetDB, horizontalOffsetDeg)
+	}
+	pathLoss := func(distanceMeters, attenuationDB float64) float64 {
+		return profile.TxPowerDBm + profile.AntennaGainDBi + req.CalibrationOffsetDB - receivedPower(distanceMeters, attenuationDB)
+	}
 
 	if castDistance <= 0 {
 		return nil, rayTerminal{
 			blocked:          false,
 			distanceMeters:   0,
-			signalDBm:        ReceiverSensitivity,
+			signalDBm:        profile.ReceiverSensitivityDBm,
 			buildingCoverage: make(map[string]float64),
 		}, nil
 	}
@@ -1219,7 +1213,7 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 	terminal := rayTerminal{
 		blocked:        false,
 		distanceMeters: castDistance,
-		signalDBm:      ReceivedPowerDBm(castDistance, req.FrequencyGHz, effectiveTxPowerDBm, 0),
+		signalDBm:      receivedPower(castDistance, 0),
 	}
 
 	segmentIndex := 0
@@ -1235,9 +1229,9 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 		endDistance := math.Min(startDistance+SegmentStepMeters, castDistance)
 		start := currentPoint
 		nextPoint := DestinationPoint(origin, angle, endDistance)
-		startRx := ReceivedPowerDBm(math.Max(startDistance, 1), req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
+		startRx := receivedPower(math.Max(startDistance, 1), cumulativeWallLoss)
 
-		if startDistance > 0 && startRx <= ReceiverSensitivity {
+		if profile.VerticalPatternID == "flat" && startDistance > 0 && startRx <= profile.ReceiverSensitivityDBm {
 			terminal = rayTerminal{
 				blocked:                       cumulativeWallLoss > 0,
 				distanceMeters:                startDistance,
@@ -1266,10 +1260,10 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 			recordHitBuildingDemandWeight(hitBuildingDemandWeights, intersection.building)
 			recordHitBuildingResidentialDemand(hitBuildingResidentialDemands, intersection.building)
 			cumulativeWallLoss += wallLossPerIntersection
-			wallRx := ReceivedPowerDBm(hitDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
+			wallRx := receivedPower(hitDistance, cumulativeWallLoss)
 			recordBuildingCoverage(buildingCoverage, intersection.building, wallRx)
-			pathLoss := FreeSpacePathLossMetersGHz(hitDistance, req.FrequencyGHz) + cumulativeWallLoss
-			isTerminalBlock := wallRx <= ReceiverSensitivity
+			pathLossDB := pathLoss(hitDistance, cumulativeWallLoss)
+			isTerminalBlock := profile.VerticalPatternID == "flat" && wallRx <= profile.ReceiverSensitivityDBm
 			if collectFeatures {
 				if ApproxDistanceMeters(segmentStartPoint, intersection.point) > 0.01 {
 					if err := featureBudget.reserve(); err != nil {
@@ -1285,7 +1279,7 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 						hitDistance,
 						segmentStartRx,
 						wallRx,
-						pathLoss,
+						pathLossDB,
 						cumulativeWallLoss,
 						isTerminalBlock,
 						intersection.buildingID,
@@ -1316,15 +1310,15 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 			break
 		}
 
-		endRx := ReceivedPowerDBm(endDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
-		if endRx <= ReceiverSensitivity {
-			stopDistance := MaxTheoreticalDistanceMeters(effectiveTxPowerDBm, req.FrequencyGHz, cumulativeWallLoss)
+		endRx := receivedPower(endDistance, cumulativeWallLoss)
+		if profile.VerticalPatternID == "flat" && endRx <= profile.ReceiverSensitivityDBm {
+			stopDistance := sensitivityCrossingDistance(profile, segmentStartDistance, endDistance, cumulativeWallLoss, req.CalibrationOffsetDB, horizontalOffsetDeg)
 			if stopDistance < segmentStartDistance {
 				stopDistance = segmentStartDistance
 			}
 			stopPoint := DestinationPoint(origin, angle, stopDistance)
-			stopRx := ReceivedPowerDBm(stopDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
-			pathLoss := FreeSpacePathLossMetersGHz(stopDistance, req.FrequencyGHz) + cumulativeWallLoss
+			stopRx := receivedPower(stopDistance, cumulativeWallLoss)
+			pathLossDB := pathLoss(stopDistance, cumulativeWallLoss)
 			if err := recordBuildingsContainingSegmentCoverageContext(ctx, buildingCoverage, origin, segmentStartPoint, stopPoint, buildings, math.Max(segmentStartRx, stopRx)); err != nil {
 				return nil, rayTerminal{}, err
 			}
@@ -1342,7 +1336,7 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 					stopDistance,
 					segmentStartRx,
 					stopRx,
-					pathLoss,
+					pathLossDB,
 					cumulativeWallLoss,
 					cumulativeWallLoss > 0,
 					"",
@@ -1364,7 +1358,7 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 		if err := recordBuildingsContainingSegmentCoverageContext(ctx, buildingCoverage, origin, segmentStartPoint, nextPoint, buildings, math.Max(segmentStartRx, endRx)); err != nil {
 			return nil, rayTerminal{}, err
 		}
-		pathLoss := FreeSpacePathLossMetersGHz(endDistance, req.FrequencyGHz) + cumulativeWallLoss
+		pathLossDB := pathLoss(endDistance, cumulativeWallLoss)
 		if collectFeatures {
 			if err := featureBudget.reserve(); err != nil {
 				return nil, rayTerminal{}, err
@@ -1379,7 +1373,7 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 				endDistance,
 				segmentStartRx,
 				endRx,
-				pathLoss,
+				pathLossDB,
 				cumulativeWallLoss,
 				false,
 				"",
@@ -1583,122 +1577,18 @@ func makeRaySegmentFeature(
 	}
 }
 
-func FreeSpacePathLossMetersGHz(distanceMeters float64, frequencyGHz float64) float64 {
-	distance := math.Max(distanceMeters, 1)
-	return 20*math.Log10(distance) + 20*math.Log10(frequencyGHz) + 32.45
-}
-
-func PenetrationLossForFrequencyGHz(frequencyGHz float64) float64 {
-	switch {
-	case frequencyGHz < LTEFrequencyMaxGHz:
-		return 8
-	case frequencyGHz < NRFrequencyMaxGHz:
-		return 30
-	default:
-		return 80
-	}
-}
-
-func ReceivedPowerDBm(distanceMeters float64, frequencyGHz float64, txPowerDBm float64, attenuationDB float64) float64 {
-	return EffectiveIsotropicRadiatedPowerDBm(txPowerDBm) - FreeSpacePathLossMetersGHz(distanceMeters, frequencyGHz) - attenuationDB
-}
-
-func MaxTheoreticalDistanceMeters(txPowerDBm float64, frequencyGHz float64, attenuationDB float64) float64 {
-	if frequencyGHz <= 0 {
-		return 0
-	}
-	exponent := (EffectiveIsotropicRadiatedPowerDBm(txPowerDBm) - ReceiverSensitivity - attenuationDB - 20*math.Log10(frequencyGHz) - 32.45) / 20
-	return math.Pow(10, exponent)
-}
-
-func EffectiveIsotropicRadiatedPowerDBm(txPowerDBm float64) float64 {
-	return txPowerDBm + AntennaGainDBi
-}
-
-func SegmentPolygonFirstIntersection(a Point, b Point, polygon []Point) (bool, Point) {
-	if len(polygon) < 3 {
-		return false, Point{}
-	}
-	if PointInPolygon(a, polygon) {
-		return true, a
-	}
-
-	found := false
-	closestPoint := Point{}
-	closestDistance := math.Inf(1)
-	for index := range polygon {
-		next := (index + 1) % len(polygon)
-		hit, point := SegmentIntersectionPoint(a, b, polygon[index], polygon[next])
-		if !hit {
-			continue
-		}
-		distance := ApproxDistanceMeters(a, point)
-		if distance < closestDistance {
-			closestDistance = distance
-			closestPoint = point
-			found = true
+func sensitivityCrossingDistance(profile CellRFProfile, startDistance, endDistance, attenuationDB, calibrationOffsetDB, horizontalOffsetDeg float64) float64 {
+	low := math.Max(startDistance, 0)
+	high := math.Max(endDistance, low)
+	for iteration := 0; iteration < 32; iteration++ {
+		mid := (low + high) / 2
+		if profile.ReceivedPowerDBm(mid, attenuationDB, calibrationOffsetDB, horizontalOffsetDeg) > profile.ReceiverSensitivityDBm {
+			low = mid
+		} else {
+			high = mid
 		}
 	}
-	return found, closestPoint
-}
-
-func SegmentPolygonIntersections(a Point, b Point, polygon []Point) []Point {
-	points, _ := segmentPolygonIntersectionsContext(context.Background(), a, b, polygon)
-	return points
-}
-
-func segmentPolygonIntersectionsContext(ctx context.Context, a Point, b Point, polygon []Point) ([]Point, error) {
-	if len(polygon) < 3 {
-		return nil, nil
-	}
-
-	points := make([]Point, 0, 2)
-	for index := range polygon {
-		if index%64 == 0 {
-			if err := ctx.Err(); err != nil {
-				return nil, err
-			}
-		}
-		next := (index + 1) % len(polygon)
-		hit, point := SegmentIntersectionPoint(a, b, polygon[index], polygon[next])
-		if !hit {
-			continue
-		}
-		points = appendUniquePoint(points, point)
-	}
-	return points, nil
-}
-
-func appendUniquePoint(points []Point, candidate Point) []Point {
-	for _, existing := range points {
-		if ApproxDistanceMeters(existing, candidate) <= 0.05 {
-			return points
-		}
-	}
-	return append(points, candidate)
-}
-
-func SegmentIntersectionPoint(p1 Point, p2 Point, q1 Point, q2 Point) (bool, Point) {
-	x1, y1 := p1.Lon, p1.Lat
-	x2, y2 := p2.Lon, p2.Lat
-	x3, y3 := q1.Lon, q1.Lat
-	x4, y4 := q2.Lon, q2.Lat
-
-	denominator := (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4)
-	if math.Abs(denominator) < 1e-14 {
-		return false, Point{}
-	}
-
-	t := ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / denominator
-	u := -((x1-x2)*(y1-y3) - (y1-y2)*(x1-x3)) / denominator
-	if t < 0 || t > 1 || u < 0 || u > 1 {
-		return false, Point{}
-	}
-
-	return true, Point{
-		Lon: x1 + t*(x2-x1),
-		Lat: y1 + t*(y2-y1),
-	}
+	return high
 }
 
 func CalculateSimulationStats(terminals []rayTerminal) SimulationStats {

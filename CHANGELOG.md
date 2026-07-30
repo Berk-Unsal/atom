@@ -4,6 +4,42 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Added
+
+- Add a persistent cell Inventory workspace with manual map placement, dragging, duplication, deletion, bounded CSV/GeoJSON import, search, validation, and independent per-cell RF profiles across propagation, network, interference, recommendation, measurement, and report workflows.
+- Add Dataset Pack Studio for arbitrary-region source inspection, geometry repair, reprojection/cropping, schema-v2 manifests, hashes, provenance/licenses/confidence, QA evidence, and optional terrain, clutter, building-height, and material layers.
+- Add a local installed-dataset catalog and atomic manifest-ID switching that retains the active immutable pack on validation failure, with optional administration-key protection.
+
+### Security
+
+- Upgrade `brace-expansion` to 5.0.8, require Go 1.26.5 for both services, and align container builder tags with the patched toolchain.
+- Reject measurement CSV files above 2 MiB before reading them into browser memory while retaining the independent 5,000-sample limit.
+- Add weekly npm dependency updates, a high-severity frontend advisory gate, and matching `govulncheck` coverage for the Core Lab adapter.
+- Require constant-time API-key authorization for Core Lab scenario mutation at both the public backend route and the private adapter hop.
+- Run the Core Lab adapter as a non-root user with a read-only filesystem, no Linux capabilities, no privilege escalation, and no host-published port.
+- Bound imported project files to 16 MiB and deeply validate scenario counts, nesting, collection sizes, strings, and nested snapshot types before persistence.
+- Limit recommendation search polygons to 256 coordinates before candidate point-in-polygon evaluation.
+- Add restrictive browser security headers, HTTPS-aware HSTS, and an opt-in transport requirement for deployments behind a TLS gateway.
+- Keep adapter response bodies, dataset filesystem paths, and detailed load failures in server logs instead of returning them to API clients.
+- Reject unknown or trailing JSON input across backend RF routes and Core Lab scenario mutation without exposing parser diagnostics.
+- Bound frontend JSON response parsing to 32 MiB using both `Content-Length` checks and streaming byte accounting.
+- Stream building GeoJSON features into the spatial index instead of retaining the full encoded file and decoded collection together, with explicit manifest, tower, and building file ceilings.
+- Resolve dataset file symlinks before containment checks so manifests cannot escape the configured dataset directory.
+
+### Removed
+
+- Remove duplicate root copies of propagation screenshots and keep the documentation asset paths canonical.
+
+### Changed
+
+- Upgrade project files and dataset manifests to schema v2 with backward-compatible v1 import/loading migrations.
+- Include resolved per-cell RF profiles and dataset QA/provenance in reproducibility outputs and planning reports.
+- Extract frontend workspace formatting/state helpers and backend RF/segment geometry math from the application and simulation monoliths into focused, tested modules.
+- Refresh Open5GS reachability outside the adapter cache mutex, serve stale probe state during refresh, and treat HTTP client/server failures as disconnected.
+- Remove redundant RF convenience APIs that created background contexts and silently discarded computation errors.
+- Drain in-flight backend and Core Lab adapter requests on interrupt or termination signals with a bounded graceful-shutdown window.
+- Consolidate report escaping, numeric/Markdown formatting, and printable table construction behind one tested utility.
+
 ## [0.4.0] - 2026-07-30
 
 ### Security

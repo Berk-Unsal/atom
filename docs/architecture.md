@@ -88,6 +88,8 @@ The Gin service provides:
 | GET | `/healthz` | Process liveness and loaded-data counts |
 | GET | `/readyz` | Building, tower, and frontend readiness |
 | GET | `/api/meta` | Application, model, build, and active dataset identity |
+| GET | `/api/datasets` | Installed local pack catalog and active pack ID |
+| POST | `/api/datasets/switch` | Validate and atomically activate an installed pack by ID |
 | GET | `/api/towers` | Tower GeoJSON |
 | GET | `/api/buildings` | Building GeoJSON |
 | GET | `/api/buildings/summary` | Demand and data-quality summary |
@@ -104,25 +106,29 @@ The Gin service provides:
 
 ## Runtime Data and Spatial Index
 
-The offline data pipeline prepares the runtime files ahead of time:
+The offline data pipeline and Dataset Pack Studio prepare runtime files ahead of time:
 
 1. Extract building geometry and tower records from OSM/OpenCellID-derived sources.
 2. Normalize footprints and add POI, residential, and local-density demand signals.
-3. Write local GeoJSON/CSV artifacts and a versioned dataset manifest.
-4. Record EPSG:4326 bounds, provenance, licenses, filenames, and SHA-256 hashes.
+3. Inspect source CRS, missing fields, requested-area coverage, and invalid geometry; repair/reproject/crop vector layers to EPSG:4326.
+4. Write local GeoJSON/binary artifacts and a schema-v2 dataset manifest with geometry QA, layer metadata, provenance, licenses, confidence, filenames, and SHA-256 hashes.
 5. Store the large building GeoJSON through Git LFS.
-6. Validate the pack selected by `ATOM_DATASET_DIR`, then populate the in-memory R-tree during backend startup.
+6. Validate the initial pack selected by `ATOM_DATASET_DIR`, then populate the in-memory R-tree during backend startup.
+
+If `ATOM_DATASETS_ROOT` is configured, the server scans only that directory and its immediate children, resolves symlinks beneath the root, and indexes unique manifest IDs. Switching loads and validates a candidate outside the runtime read lock, then atomically replaces the immutable pack pointer. Requests that already captured the previous pointer complete against the old pack; failed validation leaves it active. The API never accepts a dataset filesystem path.
+
+Schema v2 can carry terrain, clutter, building-height, and material layers. The loader validates and exposes them, but the current propagation engines consume only cell and building data.
 
 Each RF engine first queries bounded candidates from the R-tree, then applies exact geometry, radius, sector, and intersection tests. This avoids scanning the complete building dataset for every ray or demand point.
 
 ## Propagation Engine
 
-For each sampled angle inside the active beam, the propagation engine:
+For each sampled angle inside the active per-cell beam/pattern, the propagation engine:
 
 1. Converts the requested geographic radius into ray segments.
 2. Queries candidate building bounds from the R-tree.
 3. Performs exact segment/polygon intersection tests.
-4. Calculates free-space path loss with meter/GHz units and antenna gain.
+4. Calculates slant-distance free-space path loss with meter/GHz units, per-cell transmit power, antenna gain/system loss, orientation, simplified horizontal/vertical pattern attenuation, and receiver sensitivity.
 5. Applies frequency-dependent cumulative wall loss.
 6. Emits signal-colored GeoJSON line segments and aggregate range/power statistics.
 
@@ -240,7 +246,7 @@ The multi-stage Docker build:
 
 ### Optional Core Lab Profile
 
-The compose overlay sets `CORE_LAB_ENABLED=true`, points the backend at the adapter, and starts the adapter as a separate service. It does not start a full Open5GS deployment by itself.
+The compose overlay sets `CORE_LAB_ENABLED=true`, points the backend at the adapter, and starts the adapter as a non-root, read-only service without Linux capabilities or a host-published port. It does not start a full Open5GS deployment by itself.
 
 ## Trust and Model Boundaries
 

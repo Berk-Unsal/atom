@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestStatusReflectsScenarioOverlay(t *testing.T) {
@@ -170,6 +171,21 @@ func TestScenarioRejectsUnknownScenario(t *testing.T) {
 	}
 }
 
+func TestScenarioRejectsUnknownJSONField(t *testing.T) {
+	state := &adapterState{scenario: "normal"}
+	req := httptest.NewRequest(http.MethodPost, "/scenario", strings.NewReader(`{"scenario":"normal","scenaro":"normal"}`))
+	recorder := httptest.NewRecorder()
+
+	state.handleScenario(recorder, req)
+
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("status code = %d, body = %s; want 400", recorder.Code, recorder.Body.String())
+	}
+	if strings.Contains(recorder.Body.String(), "scenaro") {
+		t.Fatalf("body leaked rejected field name: %s", recorder.Body.String())
+	}
+}
+
 func TestScenarioRejectsTooManyTowerIDsWithoutMutatingState(t *testing.T) {
 	state := &adapterState{scenario: "normal"}
 	body, err := json.Marshal(scenarioRequest{
@@ -205,6 +221,103 @@ func TestScenarioRejectsOversizedBody(t *testing.T) {
 	}
 	if state.snapshot().scenario != "normal" {
 		t.Fatalf("scenario changed to %q after oversized request", state.snapshot().scenario)
+	}
+}
+
+func TestScenarioMutationRequiresConfiguredAPIKey(t *testing.T) {
+	state := &adapterState{scenario: "normal"}
+	handler := requireAPIKey("", http.HandlerFunc(state.handleScenario))
+	req := httptest.NewRequest(http.MethodPost, "/scenario", strings.NewReader(`{"scenario":"upf_degraded"}`))
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusServiceUnavailable {
+		t.Fatalf("status code = %d, body = %s; want 503", recorder.Code, recorder.Body.String())
+	}
+	if state.snapshot().scenario != "normal" {
+		t.Fatalf("scenario changed to %q after unauthenticated request", state.snapshot().scenario)
+	}
+}
+
+func TestScenarioMutationRejectsInvalidAPIKey(t *testing.T) {
+	state := &adapterState{scenario: "normal"}
+	handler := requireAPIKey("correct-key", http.HandlerFunc(state.handleScenario))
+	req := httptest.NewRequest(http.MethodPost, "/scenario", strings.NewReader(`{"scenario":"upf_degraded"}`))
+	req.Header.Set("X-API-Key", "wrong-key")
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusUnauthorized {
+		t.Fatalf("status code = %d, body = %s; want 401", recorder.Code, recorder.Body.String())
+	}
+	if state.snapshot().scenario != "normal" {
+		t.Fatalf("scenario changed to %q after rejected request", state.snapshot().scenario)
+	}
+}
+
+func TestScenarioMutationAcceptsBearerAPIKey(t *testing.T) {
+	state := &adapterState{scenario: "normal"}
+	handler := requireAPIKey("correct-key", http.HandlerFunc(state.handleScenario))
+	req := httptest.NewRequest(http.MethodPost, "/scenario", strings.NewReader(`{"scenario":"upf_degraded"}`))
+	req.Header.Set("Authorization", "Bearer correct-key")
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status code = %d, body = %s; want 200", recorder.Code, recorder.Body.String())
+	}
+	if state.snapshot().scenario != "upf_degraded" {
+		t.Fatalf("scenario = %q, want upf_degraded", state.snapshot().scenario)
+	}
+}
+
+func TestProbeEmulatorSourceRejectsClientErrors(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer server.Close()
+	t.Setenv("OPEN5GS_STATUS_URL", server.URL)
+	t.Setenv("OPEN5GS_METRICS_URL", "")
+
+	if source := probeEmulatorSource(); source != "disconnected" {
+		t.Fatalf("source = %q, want disconnected for HTTP 401", source)
+	}
+}
+
+func TestEmulatorSourceServesStaleCacheDuringRefresh(t *testing.T) {
+	entered := make(chan struct{})
+	release := make(chan struct{})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		close(entered)
+		<-release
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+	t.Setenv("OPEN5GS_STATUS_URL", server.URL)
+	t.Setenv("OPEN5GS_METRICS_URL", "")
+
+	sourceProbeCache.Lock()
+	sourceProbeCache.source = "open5gs"
+	sourceProbeCache.expiresAt = time.Now().Add(-time.Second)
+	sourceProbeCache.refreshing = false
+	sourceProbeCache.Unlock()
+
+	refreshed := make(chan string, 1)
+	go func() { refreshed <- emulatorSource() }()
+	<-entered
+	started := time.Now()
+	if source := emulatorSource(); source != "open5gs" {
+		t.Fatalf("source = %q, want stale open5gs value", source)
+	}
+	if elapsed := time.Since(started); elapsed > 100*time.Millisecond {
+		t.Fatalf("stale cache lookup took %s while refresh was in flight", elapsed)
+	}
+	close(release)
+	if source := <-refreshed; source != "open5gs" {
+		t.Fatalf("refreshed source = %q, want open5gs", source)
 	}
 }
 

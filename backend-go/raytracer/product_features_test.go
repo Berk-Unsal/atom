@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -87,6 +88,44 @@ func TestRecommendationValidationEnforcesSimulationFeatureBudget(t *testing.T) {
 	}
 }
 
+func TestRecommendationValidationEnforcesPerCellSimulationFeatureBudget(t *testing.T) {
+	profile := DefaultCellRFProfile("5g", 28, 30, 5000, 120, 100, 0.7, 1)
+	req := SiteRecommendationRequest{
+		NetworkTech: "5g",
+		Network: NetworkOptimizationRequest{
+			Towers: []NetworkTowerRequest{
+				{ID: "one", TowerLon: 32.85, TowerLat: 39.92, RFProfile: profile},
+				{ID: "two", TowerLon: 32.86, TowerLat: 39.93, RFProfile: DefaultCellRFProfile("5g", 28, 30, 25, 120, 100, 0.7, 1)},
+			},
+			Rays: 720, RadiusMeters: 25, FrequencyGHz: 28, TxPowerDBm: 30, BeamWidthDeg: 120,
+		},
+		SearchPolygon: []Point{{Lon: 32.84, Lat: 39.91}, {Lon: 32.87, Lat: 39.91}, {Lon: 32.85, Lat: 39.94}},
+		MaxResults:    5,
+	}
+	if validationError := ValidateSiteRecommendationRequest(req); !strings.Contains(validationError, `tower "one"`) || !strings.Contains(validationError, "25000-feature") {
+		t.Fatalf("validation error = %q", validationError)
+	}
+}
+
+func TestRecommendationValidationBoundsSearchPolygonComplexity(t *testing.T) {
+	req := SiteRecommendationRequest{
+		NetworkTech: "5g",
+		Network: NetworkOptimizationRequest{
+			Towers: []NetworkTowerRequest{
+				{ID: "one", TowerLon: 32.85, TowerLat: 39.92},
+				{ID: "two", TowerLon: 32.86, TowerLat: 39.93},
+			},
+			Rays: 12, RadiusMeters: 250,
+			FrequencyGHz: 28, TxPowerDBm: 30, BeamWidthDeg: 120,
+		},
+		SearchPolygon: make([]Point, MaxSearchPolygonCoordinates+1),
+		MaxResults:    5,
+	}
+	if validationError := ValidateSiteRecommendationRequest(req); !strings.Contains(validationError, "no more than 256") {
+		t.Fatalf("validation error = %q", validationError)
+	}
+}
+
 func TestMeasurementBiasCalibrationUsesHoldout(t *testing.T) {
 	origin := Point{Lon: 32.85, Lat: 39.92}
 	samples := make([]MeasurementSample, 20)
@@ -159,6 +198,43 @@ func TestDatasetManifestRejectsUnsupportedCRS(t *testing.T) {
 	}
 }
 
+func TestDatasetFilePathRejectsSymlinkEscape(t *testing.T) {
+	parent := t.TempDir()
+	root := filepath.Join(parent, "dataset")
+	if err := os.Mkdir(root, 0o700); err != nil {
+		t.Fatalf("create dataset root: %v", err)
+	}
+	outside := filepath.Join(parent, "outside.geojson")
+	if err := os.WriteFile(outside, []byte(`{}`), 0o600); err != nil {
+		t.Fatalf("write outside fixture: %v", err)
+	}
+	link := filepath.Join(root, "buildings.geojson")
+	if err := os.Symlink(outside, link); err != nil {
+		t.Skipf("symlinks unavailable: %v", err)
+	}
+	if _, err := datasetFilePath(root, "buildings.geojson"); err == nil || !strings.Contains(err.Error(), "inside") {
+		t.Fatalf("error = %v, want symlink escape rejection", err)
+	}
+}
+
+func TestReadFileWithLimitRejectsOversizedManifest(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "manifest.json")
+	file, err := os.Create(path)
+	if err != nil {
+		t.Fatalf("create fixture: %v", err)
+	}
+	if err := file.Truncate(MaxDatasetManifestBytes + 1); err != nil {
+		file.Close()
+		t.Fatalf("truncate fixture: %v", err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatalf("close fixture: %v", err)
+	}
+	if _, err := readFileWithLimit(path, MaxDatasetManifestBytes, "dataset manifest"); err == nil || !strings.Contains(err.Error(), "exceeds") {
+		t.Fatalf("error = %v, want size rejection", err)
+	}
+}
+
 func TestLoadPortableDatasetPackFixture(t *testing.T) {
 	pack, err := LoadDatasetPack(filepath.Join("testdata", "sample-pack"))
 	if err != nil {
@@ -166,5 +242,81 @@ func TestLoadPortableDatasetPackFixture(t *testing.T) {
 	}
 	if pack.Manifest.ID != "sample-portability-pack" || len(pack.Towers) != 2 || pack.BuildingIndex.Len() != 1 {
 		t.Fatalf("unexpected sample pack: id=%s towers=%d buildings=%d", pack.Manifest.ID, len(pack.Towers), pack.BuildingIndex.Len())
+	}
+}
+
+func TestLoadDatasetPackSchemaV2ValidatesOptionalLayers(t *testing.T) {
+	root := t.TempDir()
+	fixture := filepath.Join("testdata", "sample-pack")
+	for _, name := range []string{"towers.geojson", "buildings.geojson"} {
+		contents, err := os.ReadFile(filepath.Join(fixture, name))
+		if err != nil {
+			t.Fatalf("read %s: %v", name, err)
+		}
+		if err := os.WriteFile(filepath.Join(root, name), contents, 0o600); err != nil {
+			t.Fatalf("write %s: %v", name, err)
+		}
+	}
+	terrainName := "terrain.tif"
+	if err := os.WriteFile(filepath.Join(root, terrainName), []byte("fixture terrain"), 0o600); err != nil {
+		t.Fatalf("write terrain: %v", err)
+	}
+	hashes := make(map[string]string)
+	for _, name := range []string{"towers.geojson", "buildings.geojson", terrainName} {
+		hash, err := fileSHA256(filepath.Join(root, name))
+		if err != nil {
+			t.Fatalf("hash %s: %v", name, err)
+		}
+		hashes[name] = hash
+	}
+	manifest := DatasetManifest{
+		SchemaVersion: 2,
+		ID:            "v2-pack",
+		Name:          "V2 Pack",
+		Version:       "2.0.0",
+		CRS:           "EPSG:4326",
+		Bounds:        []float64{32.84, 39.91, 32.86, 39.93},
+		GeneratedAt:   "2026-07-31T00:00:00Z",
+		Sources:       []string{"Synthetic"},
+		Licenses:      []string{"MIT"},
+		Confidence:    "Test only",
+		Files:         DatasetFiles{Towers: "towers.geojson", Buildings: "buildings.geojson", Terrain: terrainName},
+		SHA256:        hashes,
+		Layers: map[string]DatasetLayer{
+			"towers":    {Kind: "cell_inventory", Format: "geojson", CRS: "EPSG:4326"},
+			"buildings": {Kind: "building_footprints", Format: "geojson", CRS: "EPSG:4326"},
+			"terrain":   {Kind: "terrain_elevation", Format: "geotiff", CRS: "EPSG:4326", Units: "m", Optional: true},
+		},
+		Quality: &DatasetQualityReport{Summary: "Validated synthetic fixture"},
+	}
+	manifestBytes, err := json.Marshal(manifest)
+	if err != nil {
+		t.Fatalf("encode manifest: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "manifest.json"), manifestBytes, 0o600); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+
+	pack, err := LoadDatasetPack(root)
+	if err != nil {
+		t.Fatalf("load v2 pack: %v", err)
+	}
+	if pack.Manifest.SchemaVersion != 2 || filepath.Base(pack.LayerPaths["terrain"]) != terrainName {
+		t.Fatalf("optional v2 layer not exposed: %+v", pack.LayerPaths)
+	}
+}
+
+func TestDatasetManifestV2RequiresMetadataForEveryFile(t *testing.T) {
+	manifest := DatasetManifest{
+		SchemaVersion: 2,
+		ID:            "test", Name: "Test", Version: "2", CRS: "EPSG:4326",
+		Bounds: []float64{0, 0, 1, 1}, GeneratedAt: "2026-07-31", Sources: []string{"x"}, Licenses: []string{"x"}, Confidence: "x",
+		Files:   DatasetFiles{Towers: "towers.geojson", Buildings: "buildings.geojson"},
+		SHA256:  map[string]string{"towers.geojson": strings.Repeat("a", 64), "buildings.geojson": strings.Repeat("b", 64)},
+		Layers:  map[string]DatasetLayer{"towers": {Kind: "cell_inventory", Format: "geojson", CRS: "EPSG:4326"}},
+		Quality: &DatasetQualityReport{Summary: "x"},
+	}
+	if err := validateDatasetManifest(manifest); err == nil || !strings.Contains(err.Error(), "metadata") {
+		t.Fatalf("error = %v, want missing layer metadata", err)
 	}
 }

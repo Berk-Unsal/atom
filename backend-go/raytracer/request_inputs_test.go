@@ -73,6 +73,30 @@ func TestNetworkInputPreservesStableTowerOrder(t *testing.T) {
 	}
 }
 
+func TestNetworkInputAppliesRFProfilePerTower(t *testing.T) {
+	lonA, latA := 32.85, 39.92
+	lonB, latB := 32.86, 39.93
+	frequencyA, frequencyB := 2.6, 28.0
+	techA, techB := "4g", "5g"
+	powerA, powerB := 43.0, 30.0
+	input := NetworkOptimizationRequestInput{Towers: []TowerRequestInput{
+		{ID: "lte", TowerLon: &lonA, TowerLat: &latA, RFProfile: &CellRFProfileInput{NetworkTech: &techA, FrequencyGHz: &frequencyA, TxPowerDBm: &powerA}},
+		{ID: "nr", TowerLon: &lonB, TowerLat: &latB, RFProfile: &CellRFProfileInput{NetworkTech: &techB, FrequencyGHz: &frequencyB, TxPowerDBm: &powerB}},
+	}}
+	req := input.ToRequest()
+	if req.Towers[0].RFProfile.NetworkTech != "4g" || req.Towers[0].RFProfile.TxPowerDBm != 43 {
+		t.Fatalf("LTE profile lost: %+v", req.Towers[0].RFProfile)
+	}
+	if req.Towers[1].RFProfile.NetworkTech != "5g" || req.Towers[1].RFProfile.FrequencyGHz != 28 {
+		t.Fatalf("NR profile lost: %+v", req.Towers[1].RFProfile)
+	}
+	for _, tower := range req.Towers {
+		if validationError := ValidateCellRFProfile(tower.RFProfile, false); validationError != "" {
+			t.Fatalf("%s profile invalid: %s", tower.ID, validationError)
+		}
+	}
+}
+
 func TestNetworkTechnologyUsesCanonicalFrequencyBoundaries(t *testing.T) {
 	tests := []struct {
 		frequency float64

@@ -209,13 +209,19 @@
       "page": "API Reference",
       "title": "Authentication",
       "url": "./api.html#authentication",
-      "text": "Expensive RF routes can require a shared backend key by setting RF_API_KEY . Send it as Authorization: Bearer <key> or X-API-Key: <key> ; an invalid or missing key receives 401 . The setting is off for localhost-only development. Public deployments should authenticate users at a TLS gateway and inject this backend key rather than exposing it to browser JavaScript. The large building dataset route can independently require BUILDINGS_API_KEY through the same headers. Keep this key at an origin gateway when using shared or public caches."
+      "text": "Expensive RF routes can require a shared backend key by setting RF_API_KEY . Send it as Authorization: Bearer <key> or X-API-Key: <key> ; an invalid or missing key receives 401 . The setting is off for localhost-only development. Public deployments should authenticate users at a TLS gateway and inject this backend key rather than exposing it to browser JavaScript. The large building dataset route can independently require BUILDINGS_API_KEY through the same headers. Keep this key at an origin gateway when using shared or public caches. Dataset activation can independently require DATASET_ADMIN_API_KEY . GET /api/datasets remains readable so the Data tool can show installed packs; only POST /api/datasets/switch requires the credential when configured. Inject it at an origin gateway rather than storing it in browser JavaScript. When Core Lab is enabled, POST /api/core/scenario requires CORE_LAB_API_KEY through the same headers. The backend validates the client credential and supplies the configured key on its private adapter hop. An enabled deployment without this key rejects scenario mutation with 503 ."
     },
     {
       "page": "API Reference",
       "title": "Response Format",
       "url": "./api.html#response-format",
-      "text": "All responses are JSON , but the exact shape depends on the route: GET /healthz returns a liveness status object GET /readyz returns dependency readiness GET /api/meta returns application, model, and active dataset identity GET /api/buildings and GET /api/towers return raw GeoJSON POST /api/analyze-sector returns { simulation, coverage_gaps } from one shared ray-profile computation POST /api/simulate returns { geojson, stats } POST /api/coverage-gaps returns { geojson, stats } POST /api/interference returns { geojson, demand_geojson, stats, model } POST /api/optimize-azimuth returns { optimal_azimuth, coverage_score, demand_score, residential_score } POST /api/recommend-sites returns a baseline plus ranked candidate records and GeoJSON POST /api/measurements/evaluate returns residual GeoJSON, error statistics, and bias guidance Error responses use a simple object with an error message."
+      "text": "All responses are JSON , but the exact shape depends on the route: GET /healthz returns a liveness status object GET /readyz returns dependency readiness GET /api/meta returns application, model, and active dataset identity GET /api/datasets returns installed packs and the active manifest ID GET /api/buildings and GET /api/towers return raw GeoJSON POST /api/analyze-sector returns { simulation, coverage_gaps } from one shared ray-profile computation POST /api/simulate returns { geojson, stats, rf_profile } POST /api/coverage-gaps returns { geojson, stats } POST /api/interference returns { geojson, demand_geojson, stats, model } POST /api/optimize-azimuth returns { optimal_azimuth, coverage_score, demand_score, residential_score } POST /api/recommend-sites returns a baseline plus ranked candidate records and GeoJSON POST /api/measurements/evaluate returns residual GeoJSON, error statistics, and bias guidance Error responses use a simple object with an error message."
+    },
+    {
+      "page": "API Reference",
+      "title": "Per-Cell RF Profile Contract",
+      "url": "./api.html#per-cell-rf-profile-contract",
+      "text": "Single-sector requests accept rf_profile at the request root. Network, interference, recommendation, and measurement requests accept it independently inside every towers[] item. Legacy top-level fields remain defaults; an explicit nested property overrides its top-level/default counterpart only for that cell. Normalized simulation, optimized-tower, recommendation, and interference-model responses include resolved profiles for reproducibility. { \"tower_lon\" : 32.8541 , \"tower_lat\" : 39.9208 , \"azimuth\" : 45 , \"rf_profile\" : { \"schema_version\" : 1 , \"network_tech\" : \"5g\" , \"frequency_ghz\" : 28 , \"band\" : \"n257\" , \"bandwidth_mhz\" : 100 , \"channel_id\" : \"NR-634666\" , \"duplex_mode\" : \"tdd\" , \"tx_power_dbm\" : 37 , \"antenna_gain_dbi\" : 17 , \"system_loss_db\" : 2 , \"radius_m\" : 1200 , \"beam_width\" : 65 , \"antenna_height_m\" : 32 , \"mechanical_downtilt_deg\" : 2 , \"electrical_downtilt_deg\" : 4 , \"orientation_deg\" : 0 , \"horizontal_pattern_id\" : \"cosine-sector\" , \"vertical_pattern_id\" : \"panel-10deg\" , \"load_factor\" : 0.65 , \"reuse_factor\" : 1 , \"pci\" : 321 , \"receiver_height_m\" : 1.5 , \"receiver_sensitivity_dbm\" : -110 } } Field group Accepted values Identity schema 1 ; technology 4g , 5g , or 6g ; non-empty band/channel up to 64 UTF-8 bytes; duplex fdd , tdd , sdl , or sul Carrier frequency >0–300 GHz and compatible with technology; bandwidth 0.1–2000 MHz Link budget TX 0–60 dBm ; gain -20–80 dBi ; system loss 0–100 dB Geometry radius 25–5000 m ; beam 10–360° ; antenna height 0.5–300 m ; receiver height 0.1–100 m ; orientation 0–<360° Tilt/pattern mechanical/electrical tilt -30–90° ; horizontal ideal-sector , cosine-sector , or omni ; vertical flat , panel-10deg , or panel-20deg Interference load >0–1 ; reuse 1–12 ; optional PCI 0–503 for LTE or 0–1007 for NR Receiver sensitivity -180–-20 dBm The profile pattern IDs are analytic planning presets, not imported vendor radiation diagrams. Interference analysis remains limited to 4G and 5G even though propagation accepts the 6G research profile."
     },
     {
       "page": "API Reference",
@@ -227,19 +233,19 @@
       "page": "API Reference",
       "title": "Health Check",
       "url": "./api.html#health-check",
-      "text": "Endpoint : GET /healthz Check whether the HTTP process is alive. This endpoint remains 200 even while required datasets or the frontend bundle are unavailable. Response : { \"status\" : \"ok\" , \"backend\" : \"static-in-memory\" , \"buildingIndex\" : { \"sourcePath\" : \"data-pipeline/ankara_buildings.geojson\" }, \"rtreeFootprints\" : 161784 , \"towerCount\" : 451 } Status Codes : 200 OK - Process is alive"
+      "text": "Endpoint : GET /healthz Check whether the HTTP process is alive. This endpoint remains 200 even while required datasets or the frontend bundle are unavailable. Response : { \"status\" : \"ok\" , \"backend\" : \"static-in-memory\" , \"buildingIndex\" : { \"footprintCount\" : 161784 , \"treeCount\" : 161784 }, \"rtreeFootprints\" : 161784 , \"towerCount\" : 451 } Status Codes : 200 OK - Process is alive"
     },
     {
       "page": "API Reference",
       "title": "Readiness Check",
       "url": "./api.html#readiness-check",
-      "text": "Endpoint : GET /readyz Check whether the building index, tower dataset, and frontend bundle are available. Use this route for deployment readiness probes. { \"status\" : \"ready\" , \"buildings\" : true , \"towers\" : true , \"frontend\" : true } Status Codes : 200 OK - Instance is ready to receive traffic 503 Service Unavailable - At least one required dependency is unavailable"
+      "text": "Endpoint : GET /readyz Check whether the building index, tower dataset, and frontend bundle are available. Use this route for deployment readiness probes. Readiness reports only generic dependency state. Detailed dataset paths and validation errors remain in server logs. { \"status\" : \"ready\" , \"buildings\" : true , \"towers\" : true , \"frontend\" : true } Status Codes : 200 OK - Instance is ready to receive traffic 503 Service Unavailable - At least one required dependency is unavailable"
     },
     {
       "page": "API Reference",
       "title": "Reproducibility Metadata",
       "url": "./api.html#reproducibility-metadata",
-      "text": "Endpoint : GET /api/meta Returns the running application and model versions, build commit, supported technology modes, and the validated dataset manifest. Store this response with planning scenarios and reports when exact reproduction matters. { \"application_version\" : \"1.0.0\" , \"build_commit\" : \"abc1234\" , \"model_version\" : \"fspl-walls-v1\" , \"supported_technologies\" : [ \"4g\" , \"5g\" , \"6g-research\" ] , \"dataset\" : { \"id\" : \"ankara-open-planning\" , \"version\" : \"2026.07\" , \"crs\" : \"EPSG:4326\" } }"
+      "text": "Endpoint : GET /api/meta Returns the running application and model versions, build commit, supported technology modes, and the validated dataset manifest. Store this response with planning scenarios and reports when exact reproduction matters. { \"application_version\" : \"1.0.0\" , \"build_commit\" : \"abc1234\" , \"model_version\" : \"fspl-walls-cell-profiles-v2\" , \"supported_technologies\" : [ \"4g\" , \"5g\" , \"6g-research\" ] , \"dataset\" : { \"id\" : \"ankara-open-planning\" , \"version\" : \"2026.07\" , \"crs\" : \"EPSG:4326\" } }"
     },
     {
       "page": "API Reference",
@@ -257,7 +263,7 @@
       "page": "API Reference",
       "title": "Analyze Sector",
       "url": "./api.html#analyze-sector",
-      "text": "Endpoint : POST /api/analyze-sector This is the preferred browser workflow when both propagation rays and coverage gaps are needed. It accepts the same body as /api/simulate , computes ray profiles and building interactions once, and returns: { \"simulation\" : { \"geojson\" : {}, \"stats\" : {} }, \"coverage_gaps\" : { \"geojson\" : {}, \"stats\" : {} } } The standalone /api/simulate and /api/coverage-gaps endpoints remain available when a client needs only one result."
+      "text": "Endpoint : POST /api/analyze-sector This is the preferred browser workflow when both propagation rays and coverage gaps are needed. It accepts the same body as /api/simulate , computes ray profiles and building interactions once, and returns: { \"simulation\" : { \"geojson\" : {}, \"stats\" : {}, \"rf_profile\" : {} }, \"coverage_gaps\" : { \"geojson\" : {}, \"stats\" : {} } } The standalone /api/simulate and /api/coverage-gaps endpoints remain available when a client needs only one result."
     },
     {
       "page": "API Reference",
@@ -305,7 +311,7 @@
       "page": "API Reference",
       "title": "Dataset Packs",
       "url": "./api.html#dataset-packs",
-      "text": "The backend loads one validated pack from ATOM_DATASET_DIR at startup. A pack contains manifest.json , tower GeoJSON, and building GeoJSON. The manifest fixes the dataset identity, EPSG:4326 bounds, provenance, licenses, filenames, and SHA-256 hashes. Invalid packs keep /readyz at 503 . Validate a pack before starting the server: cd backend-go go run ./cmd/validate-dataset ../data-pipeline The complete machine-readable contract is available as openapi.yaml ."
+      "text": "The backend loads the initial validated pack from ATOM_DATASET_DIR . Schema-v1 packs remain compatible. Schema v2 adds per-layer provenance and confidence, geometry/missing-field/coverage QA, and optional terrain, clutter, building-height, and material layers. All referenced files require SHA-256 hashes. Optional-layer metadata is exposed but those layers are not yet consumed by RF calculations. GET /api/datasets lists packs discovered at ATOM_DATASETS_ROOT itself and its immediate child directories: { \"active_id\" : \"ankara-open-planning\" , \"datasets\" : [ { \"id\" : \"ankara-open-planning\" , \"name\" : \"Ankara Open Planning Dataset\" , \"version\" : \"2026.07\" , \"schema_version\" : 2 , \"crs\" : \"EPSG:4326\" , \"bounds\" : [ 32.45 , 39.55 , 33.25 , 40.25 ] , \"sources\" : [ \"OpenStreetMap\" ] , \"licenses\" : [ \"ODbL 1.0\" ] , \"confidence\" : \"Planning dataset; not an operator inventory.\" , \"files\" : { \"towers\" : \"towers.geojson\" , \"buildings\" : \"buildings.geojson\" }, \"sha256\" : { \"towers.geojson\" : \"...\" , \"buildings.geojson\" : \"...\" }, \"active\" : true , \"available\" : true } ] } POST /api/datasets/switch accepts only an installed ID: { \"id\" : \"izmir-planning-2026\" } The server resolves the ID inside the configured root, validates all hashes and required geometry, and swaps the immutable runtime snapshot only after success. It returns 404 for an unknown ID, 422 for a failed installed-pack validation, and keeps the old pack active in both cases. Configure DATASET_ADMIN_API_KEY to protect activation. Validate a pack before starting the server: cd backend-go go run ./cmd/validate-dataset ../data-pipeline Use Dataset Pack Studio to inspect, repair, reproject, and build arbitrary-region schema-v2 packs locally. The complete machine-readable contract is available as openapi.yaml ."
     },
     {
       "page": "API Reference",
@@ -413,7 +419,7 @@
       "page": "System Architecture",
       "title": "From a map action to an inspectable RF result",
       "url": "./architecture.html",
-      "text": "A.T.O.M is a local-first React and Go application. The browser owns planning state and map presentation; the Go service owns validation, bounded computation, spatial queries, and deterministic RF analysis. An optional sidecar adds 5G communication-path state without changing the radio model. Follow a request Open API reference Read RF algorithms Primary runtime Single container Backend Go 1.26 + Gin Frontend React + Leaflet Project persistence Browser IndexedDB Default RF capacity 2 concurrent jobs"
+      "text": "A.T.O.M is a local-first React and Go application. The browser owns planning state and map presentation; the Go service owns validation, bounded computation, spatial queries, and deterministic RF analysis. An optional sidecar adds 5G communication-path state without changing the radio model. Follow a request Open API reference Read RF algorithms Primary runtime Single container Backend Go 1.26.5 + Gin Frontend React + Leaflet Project persistence Browser IndexedDB Default RF capacity 2 concurrent jobs"
     },
     {
       "page": "System Architecture",
@@ -687,6 +693,30 @@
     },
     {
       "page": "Changelog",
+      "title": "Added",
+      "url": "./changelog.html#added",
+      "text": "Add a persistent cell Inventory workspace with manual map placement, dragging, duplication, deletion, bounded CSV/GeoJSON import, search, validation, and independent per-cell RF profiles across propagation, network, interference, recommendation, measurement, and report workflows. Add Dataset Pack Studio for arbitrary-region source inspection, geometry repair, reprojection/cropping, schema-v2 manifests, hashes, provenance/licenses/confidence, QA evidence, and optional terrain, clutter, building-height, and material layers. Add a local installed-dataset catalog and atomic manifest-ID switching that retains the active immutable pack on validation failure, with optional administration-key protection."
+    },
+    {
+      "page": "Changelog",
+      "title": "Security",
+      "url": "./changelog.html#security",
+      "text": "Upgrade brace-expansion to 5.0.8, require Go 1.26.5 for both services, and align container builder tags with the patched toolchain. Reject measurement CSV files above 2 MiB before reading them into browser memory while retaining the independent 5,000-sample limit. Add weekly npm dependency updates, a high-severity frontend advisory gate, and matching govulncheck coverage for the Core Lab adapter. Require constant-time API-key authorization for Core Lab scenario mutation at both the public backend route and the private adapter hop. Run the Core Lab adapter as a non-root user with a read-only filesystem, no Linux capabilities, no privilege escalation, and no host-published port. Bound imported project files to 16 MiB and deeply validate scenario counts, nesting, collection sizes, strings, and nested snapshot types before persistence. Limit recommendation search polygons to 256 coordinates before candidate point-in-polygon evaluation. Add restrictive browser security headers, HTTPS-aware HSTS, and an opt-in transport requirement for deployments behind a TLS gateway. Keep adapter response bodies, dataset filesystem paths, and detailed load failures in server logs instead of returning them to API clients. Reject unknown or trailing JSON input across backend RF routes and Core Lab scenario mutation without exposing parser diagnostics. Bound frontend JSON response parsing to 32 MiB using both Content-Length checks and streaming byte accounting. Stream building GeoJSON features into the spatial index instead of retaining the full encoded file and decoded collection together, with explicit manifest, tower, and building file ceilings. Resolve dataset file symlinks before containment checks so manifests cannot escape the configured dataset directory."
+    },
+    {
+      "page": "Changelog",
+      "title": "Removed",
+      "url": "./changelog.html#removed",
+      "text": "Remove duplicate root copies of propagation screenshots and keep the documentation asset paths canonical."
+    },
+    {
+      "page": "Changelog",
+      "title": "Changed",
+      "url": "./changelog.html#changed",
+      "text": "Upgrade project files and dataset manifests to schema v2 with backward-compatible v1 import/loading migrations. Include resolved per-cell RF profiles and dataset QA/provenance in reproducibility outputs and planning reports. Extract frontend workspace formatting/state helpers and backend RF/segment geometry math from the application and simulation monoliths into focused, tested modules. Refresh Open5GS reachability outside the adapter cache mutex, serve stale probe state during refresh, and treat HTTP client/server failures as disconnected. Remove redundant RF convenience APIs that created background contexts and silently discarded computation errors. Drain in-flight backend and Core Lab adapter requests on interrupt or termination signals with a bounded graceful-shutdown window. Consolidate report escaping, numeric/Markdown formatting, and printable table construction behind one tested utility."
+    },
+    {
+      "page": "Changelog",
       "title": "0.4.0 - 2026-07-30",
       "url": "./changelog.html#040---2026-07-30",
       "text": ""
@@ -694,7 +724,7 @@
     {
       "page": "Changelog",
       "title": "Security",
-      "url": "./changelog.html#security",
+      "url": "./changelog.html#security-1",
       "text": "Pin container base images by digest, lock Python dependencies and hashes, review pull-request dependency changes, scan production images, and publish release SBOM and provenance attestations. Upgrade backend and adapter builds to Go 1.26, frontend and CI builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so maintained toolchains provide current security fixes. Protect the full building-dataset response with strong ETag caching, conditional 304 responses, separate global and per-client transfer budgets, and optional origin API-key authentication. Bound segmented simulations to 25,000 estimated and actual GeoJSON features, reject oversized ray/radius combinations before allocation, and cancel parallel ray workers if building splits exhaust the shared feature budget. Pin every external GitHub Action to an immutable commit SHA, stop checkout from persisting release credentials, and enforce pinned workflow dependencies in CI. Upgrade golang.org/x/net to v0.57.0 and its security-sensitive transitive modules, add govulncheck to backend CI, and enable weekly Go module updates."
     },
     {
@@ -724,13 +754,13 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added",
+      "url": "./changelog.html#added-1",
       "text": "Add keyboard-accessible full-site search to the static documentation website. Publish the canonical project changelog as a searchable documentation page."
     },
     {
       "page": "Changelog",
       "title": "Removed",
-      "url": "./changelog.html#removed",
+      "url": "./changelog.html#removed-1",
       "text": "Remove the academic report PDF and its documentation-only source and build assets."
     },
     {
@@ -742,7 +772,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed",
+      "url": "./changelog.html#changed-1",
       "text": "Establish a canonical VERSION file, automated version checks, release-note generation, and tag-driven GitHub Releases. Publish the latest container tag only for stable releases, never prerelease tags."
     },
     {
@@ -754,7 +784,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-1",
+      "url": "./changelog.html#added-2",
       "text": "Deterministic sector, network, optimization, interference, recommendation, and measurement-validation workflows. Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths. Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing."
     },
     {
@@ -791,7 +821,7 @@
       "page": "Contributing",
       "title": "Setup Development Environment",
       "url": "./contributing.html#setup-development-environment",
-      "text": "Backend : # Install Go 1.26+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Python tooling : Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution: python -m pip install --require-hashes --only-binary = :all: -r data-pipeline/Requirements.txt python -m pip install --require-hashes --only-binary = :all: -r docs/requirements.txt After deliberately changing either .in file, install uv==0.12.0 and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles. Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
+      "text": "Backend : # Install Go 1.26.5+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Python tooling : Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution: python -m pip install --require-hashes --only-binary = :all: -r data-pipeline/Requirements.txt python -m pip install --require-hashes --only-binary = :all: -r docs/requirements.txt After deliberately changing either .in file, install uv==0.12.0 and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles. Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
     },
     {
       "page": "Contributing",
@@ -944,10 +974,58 @@
       "text": "Before submitting: I've read CONTRIBUTING.md I've tested my changes locally I've added/updated documentation I've added tests for new features My code follows project style guidelines I've verified no breaking changes I've updated the CHANGELOG Thank you for contributing to A.T.O.M! Together, we're building the future of RF simulation. 🚀 Questions? Open an issue or email berk@berkunsal.com"
     },
     {
+      "page": "Dataset Pack Studio",
+      "title": "Dataset Pack Studio",
+      "url": "./dataset-pack-studio.html",
+      "text": "Inspect, repair, reproject, package, validate, install, and safely switch arbitrary-region A.T.O.M dataset packs. View Markdown source System architecture Dataset Pack Studio builds portable, local A.T.O.M dataset packs for arbitrary regions. It inspects source coverage before build, repairs vector geometry, reprojects vectors to EPSG:4326, crops to an optional planning extent, writes deterministic GeoJSON, hashes every emitted layer, and produces a schema-v2 manifest with provenance and QA evidence. It does not download data from a browser or upload source data to a service. Input processing and runtime switching remain local."
+    },
+    {
+      "page": "Dataset Pack Studio",
+      "title": "Environment",
+      "url": "./dataset-pack-studio.html#environment",
+      "text": "Install the hash-locked pipeline environment: python3 -m venv data-pipeline/.venv data-pipeline/.venv/bin/pip install --require-hashes -r data-pipeline/Requirements.txt The Studio directly uses GeoPandas, Shapely, and PyProj. Supported vector inputs are formats readable by GeoPandas, including GeoJSON and GeoPackage. Terrain is copied as a binary layer and must have truthful CRS and unit metadata."
+    },
+    {
+      "page": "Dataset Pack Studio",
+      "title": "Inspect Sources Before Building",
+      "url": "./dataset-pack-studio.html#inspect-sources-before-building",
+      "text": "data-pipeline/.venv/bin/python data-pipeline/pack_studio.py inspect \\ --towers /data/izmir/cells.gpkg \\ --buildings /data/izmir/buildings.gpkg \\ --bounds 26.80,38.30,27.35,38.65 \\ --json The preview reports source and output CRS, input/invalid/repaired/dropped/output geometry counts, per-field missing counts, output bounds, and requested-area coverage. Use --towers-crs or another --<layer>-crs override only when a source has no embedded CRS and the supplied value is authoritative."
+    },
+    {
+      "page": "Dataset Pack Studio",
+      "title": "Build A Schema-v2 Pack",
+      "url": "./dataset-pack-studio.html#build-a-schema-v2-pack",
+      "text": "data-pipeline/.venv/bin/python data-pipeline/pack_studio.py build \\ --id izmir-planning-2026 \\ --name \"Izmir Planning Dataset\" \\ --version 2026.07 \\ --output /datasets/izmir-planning-2026 \\ --source \"Municipal building inventory, 2026-06\" \\ --source \"Operator-authorized planning export, 2026-07\" \\ --license \"Municipal Open Data License\" \\ --license \"Internal planning use only\" \\ --confidence \"Planning-grade cells; heights are partially surveyed.\" \\ --bounds 26.80,38.30,27.35,38.65 \\ --towers /data/izmir/cells.gpkg \\ --buildings /data/izmir/buildings.gpkg \\ --terrain /data/izmir/elevation.tif \\ --terrain-crs EPSG:32635 \\ --terrain-units m \\ --clutter /data/izmir/clutter.gpkg \\ --building-heights /data/izmir/heights.gpkg \\ --materials /data/izmir/materials.gpkg The output directory must be absent or empty. The Studio stages the pack beside the destination and publishes it only after all layers and the manifest are complete. Required tower/building layers are normalized to towers.geojson and buildings.geojson ; optional layers use stable filenames. Every referenced file receives a SHA-256 entry."
+    },
+    {
+      "page": "Dataset Pack Studio",
+      "title": "Manifest Schema v2",
+      "url": "./dataset-pack-studio.html#manifest-schema-v2",
+      "text": "Schema v2 retains the required identity, EPSG:4326 bounds, sources, licenses, confidence note, files, and hashes from v1, and adds: Per-layer kind, format, CRS, optionality, source, license, confidence, and optional units. Geometry repair and output counts for each vector layer. Missing-field counts and requested/data coverage bounds. Optional terrain , clutter , building_heights , and materials files. The current RF engine loads, validates, and exposes optional-layer metadata but does not yet apply terrain, clutter, material-specific attenuation, or a separate height layer to propagation. Their presence improves provenance and prepares a pack for later model versions; it must not be interpreted as evidence that those effects were simulated."
+    },
+    {
+      "page": "Dataset Pack Studio",
+      "title": "Validate And Install",
+      "url": "./dataset-pack-studio.html#validate-and-install",
+      "text": "Validate the finished pack with the same loader used by the server: cd backend-go go run ./cmd/validate-dataset /datasets/izmir-planning-2026 Set ATOM_DATASET_DIR to the initial pack. To enable the Data tool's installed-pack list and safe switching, set ATOM_DATASETS_ROOT to a directory that contains packs as immediate child directories: /datasets/ ├── ankara-open-planning/manifest.json └── izmir-planning-2026/manifest.json The runtime never accepts a filesystem path from the switch API. POST /api/datasets/switch accepts an installed manifest ID, resolves only entries beneath ATOM_DATASETS_ROOT , rejects duplicate IDs and symlink escapes, validates the candidate's geometry and hashes, then swaps the immutable in-memory pack. A failed load leaves the previous pack active. Configure DATASET_ADMIN_API_KEY at an origin gateway when dataset activation must be restricted."
+    },
+    {
+      "page": "Dataset Pack Studio",
+      "title": "Required Review",
+      "url": "./dataset-pack-studio.html#required-review",
+      "text": "Before using a pack for a planning decision, review source authority, redistribution terms, missing RF fields, geometry repairs/drops, requested coverage ratio, coordinate reference systems, optional raster units, and whether confidence statements match the actual collection method. A successful hash or geometry validation proves integrity and structural usability, not operator accuracy."
+    },
+    {
+      "page": "Dataset Pack Studio",
+      "title": "Related References",
+      "url": "./dataset-pack-studio.html#related-references",
+      "text": "Deployment REST API Modeling limits"
+    },
+    {
       "page": "Deployment",
       "title": "Deployment",
       "url": "./deployment.html",
-      "text": "Container, reverse-proxy, readiness, capacity, scaling, and production-hardening guidance for A.T.O.M. View Markdown source System architecture A.T.O.M is local-first and stateless on the server. The production image serves the compiled React workspace, Go API, and one validated dataset pack from a single non-root container."
+      "text": "Container, reverse-proxy, readiness, capacity, scaling, and production-hardening guidance for A.T.O.M. View Markdown source System architecture A.T.O.M is local-first and stateless on the server. The production image serves the compiled React workspace, Go API, and an immutable active dataset-pack snapshot from a single non-root container."
     },
     {
       "page": "Deployment",
@@ -965,13 +1043,13 @@
       "page": "Deployment",
       "title": "Configuration",
       "url": "./deployment.html#configuration",
-      "text": "Variable Default Purpose BIND_ADDRESS 127.0.0.1 ( 0.0.0.0 in container) HTTP listener address; Compose publishes it on loopback by default PORT 8080 Public HTTP listener inside the container FRONTEND_DIST_PATH /app/dist Compiled frontend bundle ATOM_DATASET_DIR /app/data-pipeline Directory containing manifest.json and referenced data files MAX_CONCURRENT_RF_REQUESTS 2 Process-wide expensive RF admission limit MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT 1 Maximum simultaneous expensive jobs from one client identity RF_REQUESTS_PER_MINUTE 20 Per-client expensive-route request budget per process RF_REQUEST_TIMEOUT_SECONDS 60 Hard computation deadline for each expensive RF request RF_API_KEY unset Require this key on expensive RF routes as a bearer token or X-API-Key when configured MAX_CONCURRENT_BUILDING_DOWNLOADS 2 Process-wide admission limit for fresh full-dataset transfers MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT 1 Maximum simultaneous full-dataset transfers from one client identity BUILDING_DOWNLOADS_PER_MINUTE 2 Per-client fresh building-dataset transfer budget per process BUILDINGS_API_KEY unset Require this key on the full building-dataset route when configured TRUSTED_PROXIES unset Comma-separated proxy CIDRs whose forwarded client-IP headers are trusted CORE_LAB_ENABLED false Enables backend proxy routes for the optional adapter CORE_LAB_BASE_URL unset Internal adapter URL when Core Lab is enabled The manifest-driven dataset directory is the authoritative data boundary; individual building and tower paths are not configured independently."
+      "text": "Variable Default Purpose BIND_ADDRESS 127.0.0.1 ( 0.0.0.0 in container) HTTP listener address; Compose publishes it on loopback by default PORT 8080 Public HTTP listener inside the container FRONTEND_DIST_PATH /app/dist Compiled frontend bundle ATOM_DATASET_DIR /app/data-pipeline Directory containing manifest.json and referenced data files ATOM_DATASETS_ROOT unset Local directory whose own pack and immediate child pack directories are listed for safe runtime switching DATASET_ADMIN_API_KEY unset Require this key to activate an installed dataset pack by ID MAX_CONCURRENT_RF_REQUESTS 2 Process-wide expensive RF admission limit MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT 1 Maximum simultaneous expensive jobs from one client identity RF_REQUESTS_PER_MINUTE 20 Per-client expensive-route request budget per process RF_REQUEST_TIMEOUT_SECONDS 60 Hard computation deadline for each expensive RF request RF_API_KEY unset Require this key on expensive RF routes as a bearer token or X-API-Key when configured MAX_CONCURRENT_BUILDING_DOWNLOADS 2 Process-wide admission limit for fresh full-dataset transfers MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT 1 Maximum simultaneous full-dataset transfers from one client identity BUILDING_DOWNLOADS_PER_MINUTE 2 Per-client fresh building-dataset transfer budget per process BUILDINGS_API_KEY unset Require this key on the full building-dataset route when configured TRUSTED_PROXIES unset Comma-separated proxy CIDRs whose forwarded client-IP headers are trusted REQUIRE_HTTPS false Reject non-HTTPS requests with 426 ; enable behind a TLS proxy that supplies X-Forwarded-Proto CORE_LAB_ENABLED false Enables backend proxy routes for the optional adapter CORE_LAB_ADAPTER_URL http://localhost:8090 Internal adapter URL when Core Lab is enabled CORE_LAB_API_KEY unset Required shared key for Core Lab scenario mutation when Core Lab is enabled The manifest-driven dataset directory is the authoritative data boundary; individual building and tower paths are not configured independently. ATOM_DATASETS_ROOT expands that boundary only to installed child packs and never permits client-supplied paths."
     },
     {
       "page": "Deployment",
       "title": "Dataset Mounts",
       "url": "./deployment.html#dataset-mounts",
-      "text": "Validate a pack before deployment: cd backend-go go run ./cmd/validate-dataset /absolute/path/to/dataset Mount it read-only and set ATOM_DATASET_DIR : services : atom : build : . ports : - \"8080:8080\" environment : ATOM_DATASET_DIR : /datasets/region volumes : - /absolute/path/to/dataset:/datasets/region:ro A dataset change requires restart. Missing files, hash mismatches, invalid EPSG:4326 bounds, duplicate tower IDs, or unusable geometry keep readiness at 503 with an explanatory dataset error."
+      "text": "Validate a pack before deployment: cd backend-go go run ./cmd/validate-dataset /absolute/path/to/dataset Mount one pack read-only and set ATOM_DATASET_DIR : services : atom : build : . ports : - \"8080:8080\" environment : ATOM_DATASET_DIR : /datasets/region volumes : - /absolute/path/to/dataset:/datasets/region:ro For a local catalog, make the initial pack a child of the mounted root and set both variables: services : atom : environment : ATOM_DATASET_DIR : /datasets/ankara ATOM_DATASETS_ROOT : /datasets DATASET_ADMIN_API_KEY : ${DATASET_ADMIN_API_KEY} volumes : - /absolute/path/to/installed-packs:/datasets:ro The Data tool and GET /api/datasets list unique valid manifests. Activation submits only a manifest ID. The backend resolves entries beneath the configured root, validates every referenced hash plus tower/building usability, and atomically replaces the pack after success; ongoing requests retain their captured old snapshot. Failed candidates, duplicate IDs, and symlink escapes do not change the active pack. When DATASET_ADMIN_API_KEY is configured, a same-origin gateway must inject it because the browser does not store administration credentials. Missing files, hash mismatches, invalid EPSG:4326 bounds, duplicate tower IDs, or unusable geometry keep initial readiness at 503 . See Dataset Pack Studio to build and validate arbitrary-region schema-v2 packs."
     },
     {
       "page": "Deployment",
@@ -983,13 +1061,13 @@
       "page": "Deployment",
       "title": "Reverse Proxy Boundary",
       "url": "./deployment.html#reverse-proxy-boundary",
-      "text": "Compose binds the application to 127.0.0.1 by default. Set ATOM_BIND_ADDRESS only when another interface must accept traffic. For an internet-facing deployment, set strong RF_API_KEY and BUILDINGS_API_KEY values and place a trusted proxy or gateway in front of port 8080 for: TLS termination and authentication. Request-rate and source policy. Access logging and security headers. A response timeout longer than the backend's 120-second RF write window. Authenticated clients send either Authorization: Bearer <key> or X-API-Key: <key> . The bundled browser UI does not store API keys, so deployments that enable either backend key should terminate user authentication at a same-origin gateway and inject the appropriate key there. Keep TRUSTED_PROXIES unset unless the server is actually behind those proxies; otherwise forwarded IP headers are ignored for per-client budgets. Keep the Core Lab adapter private to the service network unless direct access is explicitly required."
+      "text": "Compose binds the application to 127.0.0.1 by default. Set ATOM_BIND_ADDRESS only when another interface must accept traffic. For an internet-facing deployment, set strong RF_API_KEY , BUILDINGS_API_KEY , and DATASET_ADMIN_API_KEY values as applicable and place a trusted proxy or gateway in front of port 8080 for: TLS termination and authentication. Request-rate and source policy. Access logging and security headers. A response timeout longer than the backend's 120-second RF write window. Authenticated clients send either Authorization: Bearer <key> or X-API-Key: <key> . The bundled browser UI does not store API keys, so deployments that enable either backend key should terminate user authentication at a same-origin gateway and inject the appropriate key there. Keep TRUSTED_PROXIES unset unless the server is actually behind those proxies; otherwise forwarded IP headers are ignored for per-client budgets. The backend emits CSP, frame-ancestor, MIME-sniffing, referrer, permissions, and opener-policy headers on every response. HSTS is emitted for TLS requests. The container intentionally serves HTTP on its internal port; terminate TLS at the gateway and set REQUIRE_HTTPS=true after the gateway is configured to supply X-Forwarded-Proto: https . The Core Lab overlay keeps the adapter private to the service network, runs it as a non-root user with a read-only filesystem, drops all Linux capabilities, and prevents privilege escalation. Use an explicit, separately reviewed override if direct host access is required for diagnostics."
     },
     {
       "page": "Deployment",
       "title": "Optional 5G Core Lab",
       "url": "./deployment.html#optional-5g-core-lab",
-      "text": "docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \\ --profile core-lab up --build The adapter does not deploy a complete Open5GS core. Without configured Open5GS endpoints it returns a deterministic simulated_overlay ; with endpoints it briefly probes external health/metrics while preserving the same /api/core/* contracts."
+      "text": "export CORE_LAB_API_KEY = \" $( openssl rand -hex 32 ) \" docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \\ --profile core-lab up --build The adapter does not deploy a complete Open5GS core. Without configured Open5GS endpoints it returns a deterministic simulated_overlay ; with endpoints it briefly probes external health/metrics while preserving the same /api/core/* contracts. Both the backend mutation route and the adapter require CORE_LAB_API_KEY ; the backend forwards its configured credential on the private adapter hop. Browser deployments should inject the key at a same-origin gateway rather than store it in frontend code."
     },
     {
       "page": "Deployment",
@@ -1013,7 +1091,7 @@
       "page": "Download and Use",
       "title": "Start locally, then follow the workflow you need",
       "url": "./download.html",
-      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.26 Frontend Node 24+"
+      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.26.5 Frontend Node 24+"
     },
     {
       "page": "Download and Use",
@@ -1073,7 +1151,7 @@
       "page": "Download and Use",
       "title": "Terminal 1: Go API",
       "url": "./download.html#development-heading",
-      "text": "Requires Go 1.26 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
+      "text": "Requires Go 1.26.5 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
     },
     {
       "page": "Download and Use",
@@ -1085,7 +1163,7 @@
       "page": "Download and Use",
       "title": "Add the optional 5G Core Lab adapter",
       "url": "./download.html#core-heading",
-      "text": "The compose overlay starts the Core Lab adapter on port 8090 and connects the main application to it. The adapter provides a deterministic communication-path overlay by default and can probe configured Open5GS status or metrics endpoints. It does not bundle a full Open5GS deployment. Copy docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \\ --profile core-lab up --build Path Meaning in A.T.O.M Availability Xn-C / Xn-U Direct control and user-plane coordination between eligible neighboring gNBs. Selected 5G cells within neighbor criteria. N2 through AMF Control-plane fallback when direct Xn is unavailable or degraded. Shown by Core Lab scenarios. N3 through UPF User-plane session path between the gNB and UPF. Tracked separately from Xn-C health. 5G Core Lab is intentionally 5G-only The Core tool is marked not applicable in 4G LTE and 6G research mode. A.T.O.M does not reuse 5GC labels for LTE/EPC behavior."
+      "text": "The compose overlay starts the Core Lab adapter on its private service network and connects the main application to it. The adapter runs as a non-root, read-only service, provides a deterministic communication-path overlay by default, and can probe configured Open5GS status or metrics endpoints. It does not bundle a full Open5GS deployment. Copy export CORE_LAB_API_KEY=\"$(openssl rand -hex 32)\" docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \\ --profile core-lab up --build Path Meaning in A.T.O.M Availability Xn-C / Xn-U Direct control and user-plane coordination between eligible neighboring gNBs. Selected 5G cells within neighbor criteria. N2 through AMF Control-plane fallback when direct Xn is unavailable or degraded. Shown by Core Lab scenarios. N3 through UPF User-plane session path between the gNB and UPF. Tracked separately from Xn-C health. 5G Core Lab is intentionally 5G-only The Core tool is marked not applicable in 4G LTE and 6G research mode. A.T.O.M does not reuse 5GC labels for LTE/EPC behavior."
     },
     {
       "page": "Download and Use",
@@ -1241,7 +1319,7 @@
       "page": "Frequently Asked Questions",
       "title": "Can I use a region other than Ankara?",
       "url": "./faq.html#can-i-use-a-region-other-than-ankara",
-      "text": "Yes, through a validated dataset pack. Set ATOM_DATASET_DIR to a directory containing the versioned manifest and referenced tower/building files, then restart the application. The validator checks schema, CRS, coordinates, geometry, duplicate IDs, and SHA-256 hashes. cd backend-go go run ./cmd/validate-dataset -dataset-dir /path/to/dataset The application does not yet download or build arbitrary cities from the browser."
+      "text": "Yes. Dataset Pack Studio can inspect, repair, reproject, crop, and package local tower/building sources for an arbitrary region. Set ATOM_DATASET_DIR to the initial validated pack. To switch without restarting, mount packs beneath ATOM_DATASETS_ROOT and activate one by manifest ID from Data; the current pack remains active if candidate validation fails. The validator checks schema, CRS, coordinates, geometry, duplicate IDs, and SHA-256 hashes. cd backend-go go run ./cmd/validate-dataset /path/to/dataset See Dataset Pack Studio for schema-v2 provenance, QA, optional layers, and installation guidance. The application does not yet download or build arbitrary cities from the browser."
     },
     {
       "page": "Frequently Asked Questions",
@@ -1349,13 +1427,19 @@
       "page": "Capabilities",
       "title": "Focused Planning Workspace",
       "url": "./features.html#focused-planning-workspace",
-      "text": "Seven workflow tools in one rail: Setup, Propagation, Interference, 5G Core, Results, Data, and Report. A compact command bar keeps the current project, cell context, technology, RF summary, and primary run action visible. The map remains full size while tool and Inspector drawers overlay it. Contextual layers appear only when their results exist. Towers, gaps, communication paths, interference samples, candidate sites, and measurement residuals open persistent Inspector details."
+      "text": "Eight workflow tools in one rail: Setup, Inventory, Propagation, Interference, 5G Core, Results, Data, and Report. A compact command bar keeps the current project, cell context, technology, RF summary, and primary run action visible. The map remains full size while tool and Inspector drawers overlay it. Contextual layers appear only when their results exist. Towers, gaps, communication paths, interference samples, candidate sites, and measurement residuals open persistent Inspector details."
     },
     {
       "page": "Capabilities",
       "title": "Projects And Scenarios",
       "url": "./features.html#projects-and-scenarios",
       "text": "Native browser IndexedDB persistence with automatic last-workspace restoration. Named scenarios preserve exact inputs, selected cells, RF settings, result summaries, model metadata, and recent GeoJSON layers. Rename, duplicate, delete, import, and export complete projects as versioned .atom-project.json files. Input changes mark saved results stale instead of presenting them as current. Compare exactly two scenarios using KPI deltas and an A/B map switch. Promote either comparison side to the active plan without modifying the source snapshot. Project history is local to the browser. A.T.O.M does not provide accounts, shared editing, or server-side project storage."
+    },
+    {
+      "page": "Capabilities",
+      "title": "Cell Inventory And RF Profiles",
+      "url": "./features.html#cell-inventory-and-rf-profiles",
+      "text": "Place cells manually on the map, drag editable cells, edit coordinates, duplicate or delete them, and import bounded CSV or GeoJSON inventories. Search the inventory and select cells without losing their per-cell overrides. Configure technology, band, frequency, bandwidth, channel, duplex mode, transmit power, antenna gain, system loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and receiver sensitivity independently for every cell. Validate technology/frequency compatibility and all numeric/text limits before RF execution. Persist the complete inventory and profile overrides in schema-v2 project drafts and scenarios; schema-v1 files remain importable. Include resolved per-cell profiles in simulation, network, interference, recommendation, measurement, and planning-report contracts. Legacy top-level RF controls remain request defaults. A nested rf_profile overrides those defaults for its cell, so older API clients continue to work while heterogeneous networks can be modeled explicitly."
     },
     {
       "page": "Capabilities",
@@ -1397,7 +1481,7 @@
       "page": "Capabilities",
       "title": "Validated Dataset Packs",
       "url": "./features.html#validated-dataset-packs",
-      "text": "ATOM_DATASET_DIR selects a dataset directory at application startup; Ankara remains the default. A versioned manifest records dataset ID/version, EPSG:4326 bounds, sources, licenses, generation date, filenames, and SHA-256 hashes. The validator checks hashes, required properties, geometry, coordinate bounds, duplicate IDs, and building-index viability. Invalid packs keep /readyz unavailable with an explanatory error. Active dataset identity and provenance appear in Data, scenarios, reports, and /api/meta . Changing datasets requires an application restart. The application does not perform arbitrary-city live ingestion or large browser uploads."
+      "text": "ATOM_DATASET_DIR selects the initial dataset directory; Ankara remains the default. Dataset Pack Studio previews source CRS, coverage, geometry repair/drop counts, and missing fields before building an arbitrary-region pack. Schema v2 records dataset identity, EPSG:4326 bounds, sources, licenses, confidence, generation date, filenames, SHA-256 hashes, per-layer metadata, and quality evidence. Optional terrain, clutter, building-height, and material layers can be packaged and validated for provenance and future model versions. The validator checks hashes, required properties, geometry, coordinate bounds, duplicate IDs, and building-index viability. Invalid packs keep /readyz unavailable with an explanatory error. Active dataset identity and provenance appear in Data, scenarios, reports, and /api/meta . ATOM_DATASETS_ROOT enables a local installed-pack catalog. Switching accepts a manifest ID rather than a path, rejects root escapes and duplicate IDs, validates the whole candidate, and swaps the immutable runtime snapshot only after success. Schema-v1 packs remain loadable. The application does not perform arbitrary-city live ingestion or large browser uploads; building is an explicit local CLI workflow. Optional layers are not yet consumed by RF calculations."
     },
     {
       "page": "Capabilities",
@@ -1493,7 +1577,7 @@
       "page": "Overview",
       "title": "Reference library",
       "url": "./index.html#reference-heading",
-      "text": "Use the focused guides above for orientation, then move into the detailed API, algorithms, deployment, and release history. REST API reference Endpoints and contracts Algorithms and RF physics Equations and geometry Capability details Supported workflows Reading propagation maps Visual interpretation Production deployment Operations guide Modeling limits Confidence boundary FAQ and troubleshooting Common questions Project changelog Releases and updates Contributor guide Development workflow"
+      "text": "Use the focused guides above for orientation, then move into the detailed API, algorithms, deployment, and release history. REST API reference Endpoints and contracts Algorithms and RF physics Equations and geometry Capability details Supported workflows Reading propagation maps Visual interpretation Production deployment Operations guide Dataset Pack Studio Build arbitrary-region packs Modeling limits Confidence boundary FAQ and troubleshooting Common questions Project changelog Releases and updates Contributor guide Development workflow"
     },
     {
       "page": "Modeling Limits",
@@ -1505,13 +1589,13 @@
       "page": "Modeling Limits",
       "title": "What the Model Uses",
       "url": "./modeling-limits.html#what-the-model-uses",
-      "text": "Selected tower coordinates, azimuth, beam width, radius, transmit power, frequency, and ray count Free-space path loss (FSPL) Technology-specific antenna gain assumptions Beam-sector and configured-radius eligibility Building-polygon intersections from the local Ankara GeoJSON dataset Frequency-dependent cumulative wall attenuation Deterministic POI and residential-demand enrichment for scoring Co-channel cell power, load, reuse, thermal noise, and resource-block presets for interference analysis The same request and dataset produce the same RF result. Core Lab scenario state does not modify propagation or interference calculations."
+      "text": "Per-cell coordinates, azimuth, technology/frequency/bandwidth, interference channel, beam width, radius, transmit power, antenna gain/loss, antenna and receiver heights, downtilts, orientation, pattern preset, sensitivity, and load Free-space path loss (FSPL) Configured per-cell antenna gain and system loss Beam-sector, horizontal/vertical pattern-preset attenuation, receiver-sensitivity, and configured-radius eligibility Building-polygon intersections from the local Ankara GeoJSON dataset Frequency-dependent cumulative wall attenuation Deterministic POI and residential-demand enrichment for scoring Co-channel cell power, load, reuse, thermal noise, and resource-block presets for interference analysis The same request and dataset produce the same RF result. Core Lab scenario state does not modify propagation or interference calculations."
     },
     {
       "page": "Modeling Limits",
       "title": "Propagation Effects Not Modeled",
       "url": "./modeling-limits.html#propagation-effects-not-modeled",
-      "text": "Fast or slow fading Diffraction around roofs, corners, and terrain Multipath reflection or ray bouncing Terrain elevation, foliage, weather, and atmospheric absorption Antenna sidelobes and detailed antenna radiation patterns MIMO layers, beamforming codebooks, polarization, or device orientation Dynamic scheduling, mobility, handover margins, and UE implementation behavior Uplink interference and adjacent-channel leakage Cells outside their configured beam or radius contribute no signal in the current model. This sharp planning boundary explains why samples can show no signal immediately outside a sector even when a real antenna might contribute sidelobe energy."
+      "text": "Fast or slow fading Diffraction around roofs, corners, and terrain Multipath reflection or ray bouncing Terrain elevation, foliage, weather, and atmospheric absorption Measured antenna diagrams, sidelobes, polarization, and per-frequency pattern interpolation MIMO layers, beamforming codebooks, polarization, or device orientation Dynamic scheduling, mobility, handover margins, and UE implementation behavior Uplink interference and adjacent-channel leakage Cells outside their configured beam or radius contribute no signal in the current model. This sharp planning boundary explains why samples can show no signal immediately outside a sector even when a real antenna might contribute sidelobe energy. The ideal-sector , cosine-sector , omni , flat , panel-10deg , and panel-20deg choices are deterministic analytic presets, not vendor antenna files. Mechanical and electrical downtilt are combined against a simple elevation angle; antenna and receiver heights affect slant distance but do not create a full 3D scene. Band labels, duplex mode, reuse factor, and PCI are retained and validated as inventory/reproducibility metadata. Channel IDs determine co-channel interference, while reuse supplies deterministic default channel assignment; the engine does not otherwise simulate duplex timing, PCI planning, or band-specific protocol behavior."
     },
     {
       "page": "Modeling Limits",
@@ -1523,7 +1607,7 @@
       "page": "Modeling Limits",
       "title": "Data Confidence",
       "url": "./modeling-limits.html#data-confidence",
-      "text": "Building footprints and metadata are static snapshots derived from OpenStreetMap processing. Tower locations are a planning dataset derived from OpenCellID-oriented source processing, not an operator inventory. Demand weights use available OSM tags and residential-density enrichment; missing tags reduce semantic confidence. Basemap tiles provide visual context only and do not enter RF calculations. Review the Data tool and exported report for the assumptions attached to a specific analysis."
+      "text": "Building footprints and metadata are static snapshots derived from OpenStreetMap processing. Tower locations are a planning dataset derived from OpenCellID-oriented source processing, not an operator inventory. Demand weights use available OSM tags and residential-density enrichment; missing tags reduce semantic confidence. Basemap tiles provide visual context only and do not enter RF calculations. Schema-v2 terrain, clutter, building-height, and material layers are integrity-checked and exposed as pack metadata, but the current RF model does not consume them. Their presence must not be described as terrain- or material-aware propagation. Review the Data tool and exported report for the assumptions attached to a specific analysis."
     },
     {
       "page": "Modeling Limits",

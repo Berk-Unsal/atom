@@ -19,10 +19,11 @@ const (
 )
 
 type InterferenceTowerRequest struct {
-	ID         string  `json:"id"`
-	TowerLon   float64 `json:"tower_lon"`
-	TowerLat   float64 `json:"tower_lat"`
-	AzimuthDeg float64 `json:"azimuth"`
+	ID         string        `json:"id"`
+	TowerLon   float64       `json:"tower_lon"`
+	TowerLat   float64       `json:"tower_lat"`
+	AzimuthDeg float64       `json:"azimuth"`
+	RFProfile  CellRFProfile `json:"rf_profile"`
 }
 
 type InterferenceRequest struct {
@@ -38,6 +39,7 @@ type InterferenceRequest struct {
 	NoiseFigureDB       float64                    `json:"noise_figure_db"`
 	SampleSpacingM      float64                    `json:"sample_spacing_m"`
 	CalibrationOffsetDB float64                    `json:"calibration_offset_db,omitempty"`
+	RFProfile           CellRFProfile              `json:"rf_profile"`
 }
 
 type InterferenceResponse struct {
@@ -113,19 +115,21 @@ type InterferenceCellSummary struct {
 }
 
 type InterferenceModel struct {
-	Type                    string   `json:"type"`
-	NetworkTech             string   `json:"network_tech"`
-	MeasurementFamily       string   `json:"measurement_family"`
-	FrequencyGHz            float64  `json:"frequency_ghz"`
-	BandwidthMHz            float64  `json:"bandwidth_mhz"`
-	SubcarrierSpacingKHz    float64  `json:"subcarrier_spacing_khz"`
-	ResourceBlocks          int      `json:"resource_blocks"`
-	NoiseFigureDB           float64  `json:"noise_figure_db"`
-	LoadFactor              float64  `json:"load_factor"`
-	ReuseFactor             int      `json:"reuse_factor"`
-	RequestedSampleSpacingM float64  `json:"requested_sample_spacing_m"`
-	EffectiveSampleSpacingM float64  `json:"effective_sample_spacing_m"`
-	Assumptions             []string `json:"assumptions"`
+	Type                    string          `json:"type"`
+	NetworkTech             string          `json:"network_tech"`
+	MeasurementFamily       string          `json:"measurement_family"`
+	FrequencyGHz            float64         `json:"frequency_ghz"`
+	BandwidthMHz            float64         `json:"bandwidth_mhz"`
+	SubcarrierSpacingKHz    float64         `json:"subcarrier_spacing_khz"`
+	ResourceBlocks          int             `json:"resource_blocks"`
+	NoiseFigureDB           float64         `json:"noise_figure_db"`
+	LoadFactor              float64         `json:"load_factor"`
+	ReuseFactor             int             `json:"reuse_factor"`
+	RequestedSampleSpacingM float64         `json:"requested_sample_spacing_m"`
+	EffectiveSampleSpacingM float64         `json:"effective_sample_spacing_m"`
+	Assumptions             []string        `json:"assumptions"`
+	HeterogeneousProfiles   bool            `json:"heterogeneous_profiles"`
+	Profiles                []CellRFProfile `json:"profiles"`
 }
 
 type interferencePreset struct {
@@ -135,10 +139,12 @@ type interferencePreset struct {
 }
 
 type receivedCellSignal struct {
-	cellID    string
-	channelID string
-	rsrpDBm   float64
-	wallCount int
+	cellID     string
+	channelID  string
+	rsrpDBm    float64
+	wallCount  int
+	loadFactor float64
+	preset     interferencePreset
 }
 
 type gridSample struct {
@@ -190,16 +196,38 @@ func NormalizeInterferenceRequest(req *InterferenceRequest) {
 	if req.ReuseFactor == 0 {
 		req.ReuseFactor = DefaultInterferenceReuseFactor
 	}
-	if req.NoiseFigureDB == 0 {
-		req.NoiseFigureDB = DefaultInterferenceNoiseFigure
-	}
 	if req.SampleSpacingM == 0 {
 		req.SampleSpacingM = DefaultInterferenceSpacingM
+	}
+	if req.RFProfile.SchemaVersion == 0 {
+		req.RFProfile = DefaultCellRFProfile(req.NetworkTech, req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, req.BandwidthMHz, req.LoadFactor, req.ReuseFactor)
 	}
 	for index := range req.Towers {
 		req.Towers[index].ID = strings.TrimSpace(req.Towers[index].ID)
 		req.Towers[index].AzimuthDeg = normalizeDegrees(req.Towers[index].AzimuthDeg)
+		if req.Towers[index].RFProfile.SchemaVersion == 0 {
+			req.Towers[index].RFProfile = req.RFProfile
+			req.Towers[index].RFProfile.ChannelID = fmt.Sprintf("CH-%d", index%req.ReuseFactor+1)
+		} else {
+			req.Towers[index].RFProfile = req.Towers[index].RFProfile.normalized()
+		}
 	}
+}
+
+func effectiveInterferenceTowerProfile(req InterferenceRequest, tower InterferenceTowerRequest, index int) CellRFProfile {
+	if tower.RFProfile.SchemaVersion != 0 {
+		return tower.RFProfile.normalized()
+	}
+	profile := req.RFProfile
+	if profile.SchemaVersion == 0 {
+		profile = DefaultCellRFProfile(req.NetworkTech, req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, req.BandwidthMHz, req.LoadFactor, req.ReuseFactor)
+	}
+	reuseFactor := profile.ReuseFactor
+	if reuseFactor < 1 {
+		reuseFactor = 1
+	}
+	profile.ChannelID = fmt.Sprintf("CH-%d", index%reuseFactor+1)
+	return profile
 }
 
 func ValidateInterferenceRequest(req InterferenceRequest) string {
@@ -220,6 +248,12 @@ func ValidateInterferenceRequest(req InterferenceRequest) string {
 		seen[tower.ID] = true
 		if tower.TowerLon < MinLongitude || tower.TowerLon > MaxLongitude || tower.TowerLat < MinLatitude || tower.TowerLat > MaxLatitude {
 			return "each tower must include valid tower_lon and tower_lat coordinates"
+		}
+		if validationError := ValidateCellRFProfile(tower.RFProfile, true); validationError != "" {
+			return fmt.Sprintf("tower %q: %s", tower.ID, validationError)
+		}
+		if _, err := interferencePresetFor(tower.RFProfile.NetworkTech, tower.RFProfile.BandwidthMHz); err != nil {
+			return fmt.Sprintf("tower %q: rf_profile.%s", tower.ID, err.Error())
 		}
 	}
 	if req.RadiusMeters < MinRadiusMeters || req.RadiusMeters > MaxRadiusMeters {
@@ -261,12 +295,8 @@ func ValidateInterferenceRequest(req InterferenceRequest) string {
 	return ""
 }
 
-func AnalyzeInterference(req InterferenceRequest, buildings *BuildingIndex) InterferenceResponse {
-	response, _ := AnalyzeInterferenceContext(context.Background(), req, buildings)
-	return response
-}
-
 func AnalyzeInterferenceContext(ctx context.Context, req InterferenceRequest, buildings *BuildingIndex) (InterferenceResponse, error) {
+	NormalizeInterferenceRequest(&req)
 	preset, _ := interferencePresetFor(req.NetworkTech, req.BandwidthMHz)
 	samples, effectiveSpacing, err := buildInterferenceGridContext(ctx, req)
 	if err != nil {
@@ -282,6 +312,14 @@ func AnalyzeInterferenceContext(ctx context.Context, req InterferenceRequest, bu
 	}
 	stats := calculateInterferenceStats(req, features, demandCandidates, affectedDemandBuildings, affectedDemand)
 
+	profiles := make([]CellRFProfile, len(req.Towers))
+	heterogeneousProfiles := false
+	for index, tower := range req.Towers {
+		profiles[index] = tower.RFProfile
+		if index > 0 && !cellRFProfilesEqual(tower.RFProfile, req.Towers[0].RFProfile) {
+			heterogeneousProfiles = true
+		}
+	}
 	return InterferenceResponse{
 		GeoJSON:       InterferenceFeatureCollection{Type: "FeatureCollection", Features: features},
 		DemandGeoJSON: InterferenceFeatureCollection{Type: "FeatureCollection", Features: demandFeatures},
@@ -300,11 +338,13 @@ func AnalyzeInterferenceContext(ctx context.Context, req InterferenceRequest, bu
 			RequestedSampleSpacingM: req.SampleSpacingM,
 			EffectiveSampleSpacingM: roundOne(effectiveSpacing),
 			Assumptions: []string{
-				"Uniform transmit power across active resource elements.",
+				"Each cell's transmit power, gain, loss, height, pattern, load, channel, bandwidth, and receiver assumptions are applied independently.",
 				"Only selected co-channel cells inside their configured beam and radius contribute.",
-				"FSPL and cumulative frequency-dependent wall-boundary loss are deterministic.",
+				"FSPL, antenna-pattern attenuation, and cumulative frequency-dependent wall-boundary loss are deterministic.",
 				"Sidelobes, fading, diffraction, MIMO scheduling, uplink, and adjacent-channel leakage are excluded.",
 			},
+			HeterogeneousProfiles: heterogeneousProfiles,
+			Profiles:              profiles,
 		},
 	}, nil
 }
@@ -334,7 +374,11 @@ func buildInterferenceGrid(req InterferenceRequest) ([]gridSample, float64) {
 
 func buildInterferenceGridContext(ctx context.Context, req InterferenceRequest) ([]gridSample, float64, error) {
 	effectiveSpacing := req.SampleSpacingM
-	areaEstimate := float64(len(req.Towers)) * math.Pi * req.RadiusMeters * req.RadiusMeters
+	areaEstimate := 0.0
+	for index, tower := range req.Towers {
+		profile := effectiveInterferenceTowerProfile(req, tower, index)
+		areaEstimate += math.Pi * profile.RadiusMeters * profile.RadiusMeters
+	}
 	minimumSpacing := math.Sqrt(areaEstimate / MaxInterferenceSamples)
 	if minimumSpacing > effectiveSpacing {
 		effectiveSpacing = minimumSpacing * 1.03
@@ -361,6 +405,14 @@ func buildInterferenceGridContext(ctx context.Context, req InterferenceRequest) 
 	return samples, effectiveSpacing, nil
 }
 
+func maximumInterferenceRadius(req InterferenceRequest) float64 {
+	maximum := req.RadiusMeters
+	for index, tower := range req.Towers {
+		maximum = math.Max(maximum, effectiveInterferenceTowerProfile(req, tower, index).RadiusMeters)
+	}
+	return maximum
+}
+
 func generateGridSamples(req InterferenceRequest, spacingMeters float64) []gridSample {
 	samples, _ := generateGridSamplesContext(context.Background(), req, spacingMeters)
 	return samples
@@ -379,9 +431,9 @@ func generateGridSamplesContext(ctx context.Context, req InterferenceRequest, sp
 	latStep := spacingMeters / 111_320
 	lonScale := math.Max(math.Cos(meanLat*math.Pi/180), 0.05)
 	lonStep := spacingMeters / (111_320 * lonScale)
-	originLon := minLon - req.RadiusMeters/(111_320*lonScale) - lonStep
-	originLat := minLat - req.RadiusMeters/111_320 - latStep
-	radiusSteps := int(math.Ceil(req.RadiusMeters/spacingMeters)) + 1
+	maxRadius := maximumInterferenceRadius(req)
+	originLon := minLon - maxRadius/(111_320*lonScale) - lonStep
+	originLat := minLat - maxRadius/111_320 - latStep
 
 	unique := make(map[string]gridSample)
 	for towerIndex, tower := range req.Towers {
@@ -390,6 +442,8 @@ func generateGridSamplesContext(ctx context.Context, req InterferenceRequest, sp
 				return nil, err
 			}
 		}
+		radiusMeters := effectiveInterferenceTowerProfile(req, tower, towerIndex).RadiusMeters
+		radiusSteps := int(math.Ceil(radiusMeters/spacingMeters)) + 1
 		centerCol := int(math.Round((tower.TowerLon - originLon) / lonStep))
 		centerRow := int(math.Round((tower.TowerLat - originLat) / latStep))
 		for row := centerRow - radiusSteps; row <= centerRow+radiusSteps; row++ {
@@ -398,7 +452,7 @@ func generateGridSamplesContext(ctx context.Context, req InterferenceRequest, sp
 			}
 			for col := centerCol - radiusSteps; col <= centerCol+radiusSteps; col++ {
 				point := Point{Lon: originLon + float64(col)*lonStep, Lat: originLat + float64(row)*latStep}
-				if ApproxDistanceMeters(Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, point) > req.RadiusMeters {
+				if ApproxDistanceMeters(Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, point) > radiusMeters {
 					continue
 				}
 				key := fmt.Sprintf("%d:%d", row, col)
@@ -503,17 +557,23 @@ func evaluateInterferencePoint(req InterferenceRequest, preset interferencePrese
 
 func evaluateInterferencePointContext(ctx context.Context, req InterferenceRequest, preset interferencePreset, buildings *BuildingIndex, point Point) (InterferenceProperties, error) {
 	signals := make([]receivedCellSignal, 0, len(req.Towers))
-	rePowerOffsetDB := 10 * math.Log10(12*float64(preset.resourceBlocks))
 	for index, tower := range req.Towers {
 		if err := ctx.Err(); err != nil {
 			return InterferenceProperties{}, err
 		}
+		profile := effectiveInterferenceTowerProfile(req, tower, index)
+		towerPreset, presetErr := interferencePresetFor(profile.NetworkTech, profile.BandwidthMHz)
+		if presetErr != nil {
+			towerPreset = preset
+		}
 		origin := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
 		distance := ApproxDistanceMeters(origin, point)
-		if distance > req.RadiusMeters {
+		if distance > profile.RadiusMeters {
 			continue
 		}
-		if !AngleInBeam(BearingDegrees(origin, point), tower.AzimuthDeg, req.BeamWidthDeg) {
+		bearing := BearingDegrees(origin, point)
+		effectiveAzimuth := profile.EffectiveAzimuth(tower.AzimuthDeg)
+		if profile.HorizontalPatternID != "omni" && !AngleInBeam(bearing, effectiveAzimuth, profile.BeamWidthDeg) {
 			continue
 		}
 		intersections, _, err := wallIntersectionsForSegmentContext(ctx, origin, origin, point, buildings)
@@ -521,15 +581,23 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 			return InterferenceProperties{}, err
 		}
 		wallCount := len(intersections)
-		carrierRxDBm := ReceivedPowerDBm(distance, req.FrequencyGHz, req.TxPowerDBm+req.CalibrationOffsetDB, float64(wallCount)*PenetrationLossForFrequencyGHz(req.FrequencyGHz))
-		if carrierRxDBm <= ReceiverSensitivity {
+		carrierRxDBm := profile.ReceivedPowerDBm(
+			distance,
+			float64(wallCount)*PenetrationLossForFrequencyGHz(profile.FrequencyGHz),
+			req.CalibrationOffsetDB,
+			smallestAngleDifference(bearing, effectiveAzimuth),
+		)
+		if carrierRxDBm <= profile.ReceiverSensitivityDBm {
 			continue
 		}
+		rePowerOffsetDB := 10 * math.Log10(12*float64(towerPreset.resourceBlocks))
 		signals = append(signals, receivedCellSignal{
-			cellID:    tower.ID,
-			channelID: fmt.Sprintf("CH-%d", index%req.ReuseFactor+1),
-			rsrpDBm:   carrierRxDBm - rePowerOffsetDB,
-			wallCount: wallCount,
+			cellID:     tower.ID,
+			channelID:  profile.ChannelID,
+			rsrpDBm:    carrierRxDBm - rePowerOffsetDB,
+			wallCount:  wallCount,
+			loadFactor: profile.LoadFactor,
+			preset:     towerPreset,
 		})
 	}
 
@@ -539,7 +607,7 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 	sort.SliceStable(signals, func(i, j int) bool { return signals[i].rsrpDBm > signals[j].rsrpDBm })
 	serving := signals[0]
 	servingMW := DBmToMilliwatts(serving.rsrpDBm)
-	noiseDBm := ThermalNoisePerREDBm(preset.scsKHz, req.NoiseFigureDB)
+	noiseDBm := ThermalNoisePerREDBm(serving.preset.scsKHz, req.NoiseFigureDB)
 	noiseMW := DBmToMilliwatts(noiseDBm)
 	interferenceMW := 0.0
 	strongestInterfererID := ""
@@ -549,7 +617,7 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 		if signal.channelID != serving.channelID {
 			continue
 		}
-		loadedMW := DBmToMilliwatts(signal.rsrpDBm) * req.LoadFactor
+		loadedMW := DBmToMilliwatts(signal.rsrpDBm) * signal.loadFactor
 		interferenceMW += loadedMW
 		contributingCells++
 		loadedDBm := MilliwattsToDBm(loadedMW)
@@ -560,9 +628,9 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 	}
 
 	sinrDB := 10 * math.Log10(servingMW/(noiseMW+interferenceMW))
-	rssiMW := 12 * float64(preset.resourceBlocks) * (servingMW + interferenceMW + noiseMW)
+	rssiMW := 12 * float64(serving.preset.resourceBlocks) * (servingMW + interferenceMW + noiseMW)
 	rssiDBm := MilliwattsToDBm(rssiMW)
-	rsrqDB := 10 * math.Log10(float64(preset.resourceBlocks)*servingMW/rssiMW)
+	rsrqDB := 10 * math.Log10(float64(serving.preset.resourceBlocks)*servingMW/rssiMW)
 	interferenceDBm := MilliwattsToDBm(interferenceMW)
 	serviceable := serving.rsrpDBm >= InterferenceRSRPThresholdDBm && sinrDB >= InterferenceSINRThresholdDB && rsrqDB >= InterferenceRSRQThresholdDB
 	interferenceLimited := serving.rsrpDBm >= InterferenceRSRPThresholdDBm && (sinrDB < InterferenceSINRThresholdDB || rsrqDB < InterferenceRSRQThresholdDB)
@@ -667,7 +735,8 @@ func interferenceDemandCandidatesContext(ctx context.Context, req InterferenceRe
 			}
 		}
 		origin := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
-		for buildingIndex, building := range buildings.SearchBounds(BoundsAroundPoint(origin, req.RadiusMeters)) {
+		profile := effectiveInterferenceTowerProfile(req, tower, towerIndex)
+		for buildingIndex, building := range buildings.SearchBounds(BoundsAroundPoint(origin, profile.RadiusMeters)) {
 			if buildingIndex%64 == 0 {
 				if err := ctx.Err(); err != nil {
 					return nil, err

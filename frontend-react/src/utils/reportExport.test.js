@@ -5,6 +5,20 @@ describe("planning report interference section", () => {
   it("includes planning assumptions and unavailable aggregate metrics", () => {
     const report = buildPlanningReport({
       activeNetworkTech: "5G mmWave",
+      appMeta: {
+        model_version: "fspl-walls-cell-profiles-v2",
+        dataset: {
+          name: "Test Pack",
+          version: "2",
+          schema_version: 2,
+          sources: ["Municipality"],
+          licenses: ["Open data"],
+          confidence: "Planning-grade fixture",
+          layers: { towers: {}, buildings: {}, terrain: {} },
+          quality: { summary: "Geometry checked", coverage: { coverage_ratio: 0.95 } },
+          sha256: { "towers.geojson": "a", "buildings.geojson": "b" },
+        },
+      },
       buildingSummary: null,
       comparison: null,
       coreLab: null,
@@ -39,6 +53,19 @@ describe("planning report interference section", () => {
         },
       },
       networkOptimization: null,
+      selectedNetworkTowers: [{
+        cellId: 1,
+        coordinates: [32.85, 39.92],
+        rfProfile: {
+          networkTech: "5g",
+          band: "n257",
+          channelId: "C-17",
+          frequencyGHz: 28,
+          txPowerDbm: 37,
+          antennaGainDbi: 17,
+          systemLossDb: 2,
+        },
+      }],
       selectedTower: { cellId: 1, coordinates: [32.85, 39.92] },
       settings: {
         azimuthDeg: 90,
@@ -55,5 +82,11 @@ describe("planning report interference section", () => {
     expect(markdown).toContain("## Interference and Radio Quality");
     expect(markdown).toContain("n/a / n/a dB");
     expect(markdown).toContain("Planning estimate only");
+    expect(markdown).toContain("## Per-cell RF Profiles");
+    expect(markdown).toContain("n257 / C-17");
+    expect(markdown).toContain("37.0 / 17.0 / 2.0 dB");
+    expect(markdown).toContain("Geometry checked");
+    expect(markdown).toContain("95.0%");
+    expect(markdown).toContain("Municipality");
   });
 });

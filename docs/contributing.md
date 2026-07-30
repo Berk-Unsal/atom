@@ -84,7 +84,7 @@ RF propagation is affected by hills and valleys, but A.T.O.M currently ignores t
 **Backend**:
 
 ```bash
-# Install Go 1.26+
+# Install Go 1.26.5+
 cd backend-go
 go mod download
 go run .

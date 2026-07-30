@@ -73,6 +73,8 @@ jobs:
           go-version-file: core-lab-adapter/go.mod
           cache-dependency-path: core-lab-adapter/go.sum
       - run: go vet ./...
+      - run: go install golang.org/x/vuln/cmd/govulncheck@v1.6.0
+      - run: govulncheck ./...
       - run: go test -race ./...
 
   frontend:
@@ -90,6 +92,7 @@ jobs:
           cache: npm
           cache-dependency-path: frontend-react/package-lock.json
       - run: npm ci
+      - run: npm run audit:security
       - run: npm run lint
       - run: npm test
       - run: npm run build

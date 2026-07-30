@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"hash/fnv"
@@ -26,8 +29,9 @@ var functionNames = []string{"NRF", "AMF", "SMF", "UPF", "UDM", "UDR", "AUSF", "
 
 var sourceProbeCache struct {
 	sync.Mutex
-	expiresAt time.Time
-	source    string
+	expiresAt  time.Time
+	source     string
+	refreshing bool
 }
 
 type adapterState struct {
@@ -80,7 +84,7 @@ func main() {
 	mux.HandleFunc("/topology", state.handleTopology)
 	mux.HandleFunc("/sessions", state.handleSessions)
 	mux.HandleFunc("/events", state.handleEvents)
-	mux.HandleFunc("/scenario", state.handleScenario)
+	mux.Handle("/scenario", requireAPIKey(strings.TrimSpace(os.Getenv("CORE_LAB_API_KEY")), http.HandlerFunc(state.handleScenario)))
 
 	addr := ":" + getenv("PORT", "8090")
 	log.Printf("A.T.O.M Core Lab adapter listening on %s", addr)
@@ -92,7 +96,7 @@ func main() {
 		WriteTimeout:      15 * time.Second,
 		IdleTimeout:       60 * time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	if err := runHTTPServer(server); err != nil {
 		log.Fatalf("run adapter: %v", err)
 	}
 }
@@ -279,7 +283,13 @@ func (state *adapterState) handleScenario(w http.ResponseWriter, r *http.Request
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "could not read request"})
 		return
 	}
-	if err := json.Unmarshal(body, &req); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(body))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid scenario JSON"})
+		return
+	}
+	if err := decoder.Decode(&struct{}{}); err != io.EOF {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid scenario JSON"})
 		return
 	}
@@ -449,13 +459,29 @@ func applyScenario(fn *coreFunction, scenario string) {
 
 func emulatorSource() string {
 	sourceProbeCache.Lock()
-	defer sourceProbeCache.Unlock()
 	if time.Now().Before(sourceProbeCache.expiresAt) && sourceProbeCache.source != "" {
-		return sourceProbeCache.source
+		source := sourceProbeCache.source
+		sourceProbeCache.Unlock()
+		return source
 	}
+	if sourceProbeCache.refreshing {
+		source := sourceProbeCache.source
+		sourceProbeCache.Unlock()
+		if source == "" {
+			return "disconnected"
+		}
+		return source
+	}
+	sourceProbeCache.refreshing = true
+	sourceProbeCache.Unlock()
+
 	source := probeEmulatorSource()
+
+	sourceProbeCache.Lock()
 	sourceProbeCache.source = source
 	sourceProbeCache.expiresAt = time.Now().Add(3 * time.Second)
+	sourceProbeCache.refreshing = false
+	sourceProbeCache.Unlock()
 	return source
 }
 
@@ -475,7 +501,7 @@ func probeEmulatorSource() string {
 			io.Copy(io.Discard, io.LimitReader(response.Body, 4096))
 			response.Body.Close()
 		}
-		if err == nil && response.StatusCode >= 200 && response.StatusCode < 500 {
+		if err == nil && response.StatusCode >= 200 && response.StatusCode < 400 {
 			return "open5gs"
 		}
 	}
@@ -701,10 +727,35 @@ func writeJSON(w http.ResponseWriter, status int, payload any) {
 	}
 }
 
+func requireAPIKey(expected string, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if expected == "" {
+			writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "scenario mutation requires CORE_LAB_API_KEY"})
+			return
+		}
+		if !validAPIKey(r, expected) {
+			w.Header().Set("WWW-Authenticate", `Bearer realm="A.T.O.M Core Lab Adapter"`)
+			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "valid Core Lab API key required"})
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func validAPIKey(r *http.Request, expected string) bool {
+	provided := strings.TrimSpace(r.Header.Get("X-API-Key"))
+	if authorization := strings.TrimSpace(r.Header.Get("Authorization")); strings.HasPrefix(strings.ToLower(authorization), "bearer ") {
+		provided = strings.TrimSpace(authorization[len("bearer "):])
+	}
+	providedHash := sha256.Sum256([]byte(provided))
+	expectedHash := sha256.Sum256([]byte(expected))
+	return subtle.ConstantTimeCompare(providedHash[:], expectedHash[:]) == 1
+}
+
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Key")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)

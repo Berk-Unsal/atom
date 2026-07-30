@@ -1,6 +1,8 @@
 import { DEFAULT_RECOMMENDATION_RESULTS, networkTechnologyForFrequency } from "../generated/policy.js";
+import { resolveRFProfile, rfProfileToPayload } from "./rfProfile.js";
 
 export function buildSimulationPayload(selectedTower, settings) {
+  const profile = resolveRFProfile(selectedTower, settings, 0);
   return {
     tower_lon: selectedTower.coordinates[0],
     tower_lat: selectedTower.coordinates[1],
@@ -11,16 +13,18 @@ export function buildSimulationPayload(selectedTower, settings) {
     azimuth: settings.azimuthDeg,
     beam_width: settings.beamWidthDeg,
     calibration_offset_db: settings.calibrationOffsetDb ?? 0,
+    rf_profile: rfProfileToPayload(profile),
   };
 }
 
 export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths = {}) {
   return {
-    towers: selectedNetworkTowers.map((tower) => ({
+    towers: selectedNetworkTowers.map((tower, index) => ({
       id: String(tower.cellId ?? tower.id),
       tower_lon: tower.coordinates[0],
       tower_lat: tower.coordinates[1],
       azimuth: azimuthForTower(tower, settings, networkAzimuths),
+      rf_profile: rfProfileToPayload(resolveRFProfile(tower, settings, index)),
     })),
     rays: settings.rayCount,
     radius_m: settings.radiusMeters,
@@ -37,13 +41,14 @@ export function buildInterferencePayload(selectedNetworkTowers, settings, networ
   );
   return {
     network_tech: networkTechnologyForFrequency(settings.frequencyGHz),
-    towers: selectedNetworkTowers.map((tower) => {
+    towers: selectedNetworkTowers.map((tower, index) => {
       const id = String(tower.cellId ?? tower.id);
       return {
         id,
         tower_lon: tower.coordinates[0],
         tower_lat: tower.coordinates[1],
         azimuth: Number(optimizedByID.get(id)?.optimal_azimuth ?? azimuthForTower(tower, settings, networkAzimuths)),
+        rf_profile: rfProfileToPayload(resolveRFProfile(tower, settings, index)),
       };
     }),
     radius_m: settings.radiusMeters,

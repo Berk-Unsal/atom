@@ -1,6 +1,6 @@
 module ankara-5g-raytracer
 
-go 1.26
+go 1.26.5
 
 require (
 	github.com/gin-contrib/cors v1.7.2

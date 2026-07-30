@@ -112,11 +112,14 @@ results, calibrated link budgets, or a replacement for a commercial
 propagation tool.</p>
 <h2 id="what-the-model-uses">What the Model Uses</h2>
 <ul>
-<li>Selected tower coordinates, azimuth, beam width, radius, transmit
-power, frequency, and ray count</li>
+<li>Per-cell coordinates, azimuth, technology/frequency/bandwidth,
+interference channel, beam width, radius, transmit power, antenna
+gain/loss, antenna and receiver heights, downtilts, orientation, pattern
+preset, sensitivity, and load</li>
 <li>Free-space path loss (FSPL)</li>
-<li>Technology-specific antenna gain assumptions</li>
-<li>Beam-sector and configured-radius eligibility</li>
+<li>Configured per-cell antenna gain and system loss</li>
+<li>Beam-sector, horizontal/vertical pattern-preset attenuation,
+receiver-sensitivity, and configured-radius eligibility</li>
 <li>Building-polygon intersections from the local Ankara GeoJSON
 dataset</li>
 <li>Frequency-dependent cumulative wall attenuation</li>
@@ -134,7 +137,8 @@ Modeled</h2>
 <li>Diffraction around roofs, corners, and terrain</li>
 <li>Multipath reflection or ray bouncing</li>
 <li>Terrain elevation, foliage, weather, and atmospheric absorption</li>
-<li>Antenna sidelobes and detailed antenna radiation patterns</li>
+<li>Measured antenna diagrams, sidelobes, polarization, and
+per-frequency pattern interpolation</li>
 <li>MIMO layers, beamforming codebooks, polarization, or device
 orientation</li>
 <li>Dynamic scheduling, mobility, handover margins, and UE
@@ -145,6 +149,17 @@ implementation behavior</li>
 the current model. This sharp planning boundary explains why samples can
 show no signal immediately outside a sector even when a real antenna
 might contribute sidelobe energy.</p>
+<p>The <code>ideal-sector</code>, <code>cosine-sector</code>,
+<code>omni</code>, <code>flat</code>, <code>panel-10deg</code>, and
+<code>panel-20deg</code> choices are deterministic analytic presets, not
+vendor antenna files. Mechanical and electrical downtilt are combined
+against a simple elevation angle; antenna and receiver heights affect
+slant distance but do not create a full 3D scene.</p>
+<p>Band labels, duplex mode, reuse factor, and PCI are retained and
+validated as inventory/reproducibility metadata. Channel IDs determine
+co-channel interference, while reuse supplies deterministic default
+channel assignment; the engine does not otherwise simulate duplex
+timing, PCI planning, or band-specific protocol behavior.</p>
 <h2 id="interference-metrics">Interference Metrics</h2>
 <p>LTE RSRP and RSRQ are CRS-style planning estimates. 5G values are
 modeled SS-RSRP and SS-RSRQ estimates. SINR, RSSI, RSRP, and RSRQ are
@@ -165,6 +180,10 @@ OpenCellID-oriented source processing, not an operator inventory.</li>
 enrichment; missing tags reduce semantic confidence.</li>
 <li>Basemap tiles provide visual context only and do not enter RF
 calculations.</li>
+<li>Schema-v2 terrain, clutter, building-height, and material layers are
+integrity-checked and exposed as pack metadata, but the current RF model
+does not consume them. Their presence must not be described as terrain-
+or material-aware propagation.</li>
 </ul>
 <p>Review the Data tool and exported report for the assumptions attached
 to a specific analysis.</p>

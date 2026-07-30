@@ -1,11 +1,18 @@
 import { compactRecommendationResponse } from "./recommendations.js";
 
-export const PROJECT_SCHEMA_VERSION = 1;
+export const PROJECT_SCHEMA_VERSION = 2;
+export const MAX_PROJECT_FILE_BYTES = 16 * 1024 * 1024;
+const MAX_PROJECT_SCENARIOS = 100;
+const MAX_PROJECT_JSON_DEPTH = 40;
+const MAX_PROJECT_JSON_NODES = 250_000;
+const MAX_PROJECT_OBJECT_KEYS = 2_000;
+const MAX_PROJECT_ARRAY_ITEMS = 25_000;
+const MAX_PROJECT_STRING_BYTES = 1 * 1024 * 1024;
 
 /** @typedef {{ kind: string, resultsView: string, avgRxDBm: number|null, gapPct: number|null, networkScore: number|null, overlapBuildings: number|null, avgSINRDB: number|null, serviceablePct: number|null, affectedDemand: number|null, calibrationOffsetDB: number }} ScenarioSummary */
 /** @typedef {{ kind: "robust_global_path_loss_bias", offsetDb: number, technology: "4g"|"5g", frequencyGHz: number, modelVersion: string, dataset: {id: string, version: string, hashes: object}, validation: object }} CalibrationProfile */
 /** @typedef {{ id: string, name: string, createdAt: string, updatedAt: string, plan: object, request: object|null, meta: object|null, summary: ScenarioSummary, artifacts: object|null, calibrationProfile: CalibrationProfile|null, requiresRerun: boolean }} ScenarioSnapshot */
-/** @typedef {{ id: string, name: string, datasetRef: object|null, createdAt: string, updatedAt: string, activeScenarioId: string|null, draft: object|null, scenarios: ScenarioSnapshot[] }} ProjectV1 */
+/** @typedef {{ id: string, name: string, datasetRef: object|null, createdAt: string, updatedAt: string, activeScenarioId: string|null, draft: object|null, scenarios: ScenarioSnapshot[] }} ProjectV2 */
 /** @typedef {{ revision: number, committedAt: string|null }} WorkspacePersistence */
 const DATABASE_NAME = "atom-planning-workspace";
 const STORE_NAME = "workspace";
@@ -116,6 +123,9 @@ export function normalizeWorkspace(candidate, datasetRef = null) {
 
 export function migrateWorkspace(candidate) {
   if (candidate.schemaVersion === PROJECT_SCHEMA_VERSION) return candidate;
+	if (candidate.schemaVersion === 1 && Array.isArray(candidate.projects)) {
+		return { ...candidate, schemaVersion: PROJECT_SCHEMA_VERSION };
+	}
   if ((candidate.schemaVersion === 0 || candidate.schemaVersion === undefined) && isValidProject(candidate.project)) {
     return {
       schemaVersion: PROJECT_SCHEMA_VERSION,
@@ -217,13 +227,17 @@ export function exportProjectFile(project) {
 }
 
 export function importProjectFile(text) {
+  if (typeof text !== "string" || new TextEncoder().encode(text).byteLength > MAX_PROJECT_FILE_BYTES) {
+    throw new Error(`Project file must be no larger than ${MAX_PROJECT_FILE_BYTES / (1024 * 1024)} MiB`);
+  }
   let parsed;
   try {
     parsed = JSON.parse(text);
   } catch {
     throw new Error("Project file is not valid JSON");
   }
-  if (parsed?.schemaVersion !== PROJECT_SCHEMA_VERSION || !isValidProject(parsed.project)) {
+  validateProjectJSONBudget(parsed);
+	if (![1, PROJECT_SCHEMA_VERSION].includes(parsed?.schemaVersion) || !isValidProject(parsed.project)) {
     throw new Error("Project file does not use the supported A.T.O.M schema");
   }
   return copyProjectWithNewIDs(parsed.project, `${parsed.project.name} (Imported)`);
@@ -366,11 +380,91 @@ function workspaceTimestamp(workspace) {
 }
 
 function isValidProject(project) {
-  return Boolean(project && typeof project.id === "string" && typeof project.name === "string");
+  return Boolean(
+    isPlainObject(project)
+    && isBoundedString(project.id, 200)
+    && isBoundedString(project.name, 200)
+    && (project.datasetRef === null || project.datasetRef === undefined || isPlainObject(project.datasetRef))
+    && (project.draft === null || project.draft === undefined || isValidSnapshot(project.draft))
+    && Array.isArray(project.scenarios)
+    && project.scenarios.length <= MAX_PROJECT_SCENARIOS
+    && project.scenarios.every(isValidScenario)
+    && (project.activeScenarioId === null || project.activeScenarioId === undefined
+      || project.scenarios.some((scenario) => scenario.id === project.activeScenarioId))
+  );
 }
 
 function isValidScenario(scenario) {
-  return Boolean(scenario && typeof scenario.id === "string" && typeof scenario.name === "string");
+  return Boolean(
+    isPlainObject(scenario)
+    && isBoundedString(scenario.id, 200)
+    && isBoundedString(scenario.name, 200)
+    && isValidSnapshot(scenario)
+  );
+}
+
+function isValidSnapshot(snapshot) {
+  return Boolean(
+    isPlainObject(snapshot)
+    && (snapshot.plan === undefined || isPlainObject(snapshot.plan))
+    && (snapshot.request === null || snapshot.request === undefined || isPlainObject(snapshot.request))
+    && (snapshot.meta === null || snapshot.meta === undefined || isPlainObject(snapshot.meta))
+    && (snapshot.summary === undefined || isPlainObject(snapshot.summary))
+    && (snapshot.artifacts === null || snapshot.artifacts === undefined || isPlainObject(snapshot.artifacts))
+    && (snapshot.calibrationProfile === null || snapshot.calibrationProfile === undefined
+      || isPlainObject(snapshot.calibrationProfile))
+    && (snapshot.requiresRerun === undefined || typeof snapshot.requiresRerun === "boolean")
+  );
+}
+
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    && (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
+}
+
+function isBoundedString(value, maxBytes) {
+  return typeof value === "string" && value.trim().length > 0
+    && new TextEncoder().encode(value).byteLength <= maxBytes;
+}
+
+function validateProjectJSONBudget(root) {
+  const stack = [{ value: root, depth: 0 }];
+  let nodes = 0;
+  while (stack.length > 0) {
+    const { value, depth } = stack.pop();
+    nodes += 1;
+    if (nodes > MAX_PROJECT_JSON_NODES) {
+      throw new Error("Project file contains too many nested values");
+    }
+    if (depth > MAX_PROJECT_JSON_DEPTH) {
+      throw new Error("Project file is nested too deeply");
+    }
+    if (typeof value === "string") {
+      if (new TextEncoder().encode(value).byteLength > MAX_PROJECT_STRING_BYTES) {
+        throw new Error("Project file contains an oversized string value");
+      }
+      continue;
+    }
+    if (value === null || typeof value === "boolean" || typeof value === "number") continue;
+    if (Array.isArray(value)) {
+      if (value.length > MAX_PROJECT_ARRAY_ITEMS) {
+        throw new Error("Project file contains an oversized array");
+      }
+      for (const item of value) stack.push({ value: item, depth: depth + 1 });
+      continue;
+    }
+    if (!isPlainObject(value)) throw new Error("Project file contains an unsupported value");
+    const entries = Object.entries(value);
+    if (entries.length > MAX_PROJECT_OBJECT_KEYS) {
+      throw new Error("Project file contains an object with too many fields");
+    }
+    for (const [key, item] of entries) {
+      if (key === "__proto__" || key === "prototype" || key === "constructor") {
+        throw new Error("Project file contains an unsafe object field");
+      }
+      stack.push({ value: item, depth: depth + 1 });
+    }
+  }
 }
 
 function createID(prefix) {

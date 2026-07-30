@@ -35,6 +35,9 @@ export default function MapCanvas({
   interferenceModel,
   measurements,
   recommendations,
+	isPlacingCell,
+	onPlaceCell,
+	onMoveTower,
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map" preferCanvas>
@@ -49,6 +52,7 @@ export default function MapCanvas({
         onFinish={onFinishAreaSelection}
         polygon={selectionPolygon}
       />
+		<CellPlacementLayer active={isPlacingCell} onPlace={onPlaceCell} />
       <FitSelectionLayer
         fitRequestVersion={fitRequestVersion}
         selectedNetworkTowerIds={selectedNetworkTowerIds}
@@ -154,6 +158,19 @@ export default function MapCanvas({
                 })}
               />
             ) : null}
+			{isSelected && tower.editable ? (
+				<Marker
+					position={[lat, lon]}
+					draggable
+					icon={divIcon({ className: "inventory-drag-marker", html: "<span></span>", iconAnchor: [12, 12] })}
+					eventHandlers={{
+						dragend: (event) => {
+							const position = event.target.getLatLng();
+							onMoveTower?.(tower.id, [position.lng, position.lat]);
+						},
+					}}
+				/>
+			) : null}
           </Fragment>
         );
       })}
@@ -177,6 +194,15 @@ export default function MapCanvas({
       )}
     </MapContainer>
   );
+}
+
+function CellPlacementLayer({ active, onPlace }) {
+	useMapEvents({
+		click: (event) => {
+			if (active) onPlace?.([event.latlng.lng, event.latlng.lat]);
+		},
+	});
+	return null;
 }
 
 function RecommendationLayer({ onSelectMapObject, recommendations, selectedMapObject }) {

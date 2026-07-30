@@ -3,6 +3,7 @@ package raytracer
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -43,5 +44,23 @@ func TestLoadBuildingIndexDefaultsMissingDemandWeightToZero(t *testing.T) {
 	}
 	if footprints[0].DensityScore != 0 {
 		t.Fatalf("missing density_score default = %.1f, want 0", footprints[0].DensityScore)
+	}
+}
+
+func TestLoadBuildingIndexRejectsOversizedDatasetBeforeDecoding(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "oversized.geojson")
+	file, err := os.Create(path)
+	if err != nil {
+		t.Fatalf("create fixture: %v", err)
+	}
+	if err := file.Truncate(MaxBuildingDatasetBytes + 1); err != nil {
+		file.Close()
+		t.Fatalf("truncate fixture: %v", err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatalf("close fixture: %v", err)
+	}
+	if _, _, err := LoadBuildingIndexFromGeoJSON(path); err == nil || !strings.Contains(err.Error(), "exceeds") {
+		t.Fatalf("error = %v, want dataset size rejection", err)
 	}
 }

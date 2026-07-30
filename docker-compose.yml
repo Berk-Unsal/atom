@@ -22,6 +22,7 @@ services:
       BUILDING_DOWNLOADS_PER_MINUTE: "2"
       BUILDINGS_API_KEY: "${BUILDINGS_API_KEY:-}"
       TRUSTED_PROXIES: "${TRUSTED_PROXIES:-}"
+      REQUIRE_HTTPS: "${REQUIRE_HTTPS:-false}"
       ATOM_DATASET_DIR: /app/data-pipeline
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/readyz"]

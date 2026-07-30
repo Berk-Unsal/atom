@@ -52,12 +52,14 @@ It ranks unselected records from the active tower dataset by bounded, determinis
 
 ### Can I use a region other than Ankara?
 
-Yes, through a validated dataset pack. Set `ATOM_DATASET_DIR` to a directory containing the versioned manifest and referenced tower/building files, then restart the application. The validator checks schema, CRS, coordinates, geometry, duplicate IDs, and SHA-256 hashes.
+Yes. Dataset Pack Studio can inspect, repair, reproject, crop, and package local tower/building sources for an arbitrary region. Set `ATOM_DATASET_DIR` to the initial validated pack. To switch without restarting, mount packs beneath `ATOM_DATASETS_ROOT` and activate one by manifest ID from Data; the current pack remains active if candidate validation fails. The validator checks schema, CRS, coordinates, geometry, duplicate IDs, and SHA-256 hashes.
 
 ```bash
 cd backend-go
-go run ./cmd/validate-dataset -dataset-dir /path/to/dataset
+go run ./cmd/validate-dataset /path/to/dataset
 ```
+
+See [Dataset Pack Studio](dataset-pack-studio.html) for schema-v2 provenance, QA, optional layers, and installation guidance.
 
 The application does not yet download or build arbitrary cities from the browser.
 

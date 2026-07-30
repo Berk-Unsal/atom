@@ -22,6 +22,33 @@ paths:
       summary: Reproducibility metadata
       responses:
         "200": { description: Build, model, technology, and active dataset metadata, content: { application/json: { schema: { $ref: "#/components/schemas/Meta" } } } }
+  /api/datasets:
+    get:
+      summary: List locally installed dataset packs
+      description: Scans ATOM_DATASETS_ROOT and its immediate child directories. Invalid entries are omitted and reported only as generic warnings.
+      responses:
+        "200":
+          description: Installed packs and the active pack ID
+          content: { application/json: { schema: { $ref: "#/components/schemas/InstalledDatasetList" } } }
+  /api/datasets/switch:
+    post:
+      summary: Atomically activate an installed dataset pack
+      description: Accepts an installed dataset ID, fully validates files and hashes before swapping the immutable runtime snapshot, and leaves the previous pack active on failure. DATASET_ADMIN_API_KEY can require origin authentication.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties: { id: { type: string, minLength: 1, maxLength: 128 } }
+      responses:
+        "200": { description: Pack is active, content: { application/json: { schema: { type: object, properties: { status: { type: string, const: active }, dataset: { $ref: "#/components/schemas/DatasetManifest" } } } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { description: Dataset ID is not installed, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "422": { description: Installed pack failed validation and the active pack was retained, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
   /api/towers:
     get:
       summary: Active dataset tower records
@@ -191,6 +218,8 @@ paths:
   /api/core/scenario:
     post:
       summary: Activate a Core Lab scenario
+      description: Requires CORE_LAB_API_KEY whenever Core Lab is enabled.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }]
       requestBody:
         required: true
         content:
@@ -209,17 +238,19 @@ paths:
       responses:
         "200": { description: Scenario accepted }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { description: Core Lab is enabled without a scenario-mutation key }
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: Carries RF_API_KEY or BUILDINGS_API_KEY when the selected route requires it.
+      description: Carries RF_API_KEY, BUILDINGS_API_KEY, DATASET_ADMIN_API_KEY, or CORE_LAB_API_KEY when the selected route requires it.
     apiKeyAuth:
       type: apiKey
       in: header
       name: X-API-Key
-      description: Alternative header for RF_API_KEY or BUILDINGS_API_KEY when configured.
+      description: Alternative header for RF_API_KEY, BUILDINGS_API_KEY, DATASET_ADMIN_API_KEY, or CORE_LAB_API_KEY when configured.
   responses:
     BadRequest: { description: Invalid request, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
     TooLarge: { description: Request exceeds 1 MiB, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
@@ -257,9 +288,9 @@ components:
         dataset: { $ref: "#/components/schemas/DatasetManifest" }
     DatasetManifest:
       type: object
-      required: [schema_version, id, name, version, crs, bounds, files, sha256]
+      required: [schema_version, id, name, version, crs, bounds, generated_at, sources, licenses, confidence, files, sha256]
       properties:
-        schema_version: { type: integer, const: 1 }
+        schema_version: { type: integer, enum: [1, 2], description: Schema v2 adds layer metadata, a quality report, and optional terrain, clutter, building-height, and material layers. }
         id: { type: string }
         name: { type: string }
         version: { type: string }
@@ -269,8 +300,95 @@ components:
         sources: { type: array, items: { type: string } }
         licenses: { type: array, items: { type: string } }
         confidence: { type: string }
-        files: { type: object, properties: { towers: { type: string }, buildings: { type: string } } }
+        files:
+          type: object
+          required: [towers, buildings]
+          properties:
+            towers: { type: string }
+            buildings: { type: string }
+            terrain: { type: string }
+            clutter: { type: string }
+            building_heights: { type: string }
+            materials: { type: string }
         sha256: { type: object, additionalProperties: { type: string } }
+        layers: { type: object, additionalProperties: { $ref: "#/components/schemas/DatasetLayer" } }
+        quality: { $ref: "#/components/schemas/DatasetQuality" }
+    DatasetLayer:
+      type: object
+      required: [kind, format, crs, optional]
+      properties:
+        kind: { type: string }
+        format: { type: string }
+        crs: { type: string }
+        units: { type: string }
+        optional: { type: boolean }
+        source: { type: string }
+        license: { type: string }
+        confidence: { type: string }
+    DatasetQuality:
+      type: object
+      required: [summary]
+      properties:
+        summary: { type: string }
+        feature_counts: { type: object, additionalProperties: { type: integer } }
+        missing_fields: { type: object, additionalProperties: { type: object, additionalProperties: { type: integer } } }
+        geometry:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              invalid_input: { type: integer }
+              repaired: { type: integer }
+              dropped: { type: integer }
+              output: { type: integer }
+        coverage:
+          type: object
+          properties:
+            requested_bounds: { type: array, minItems: 4, maxItems: 4, items: { type: number } }
+            data_bounds: { type: array, minItems: 4, maxItems: 4, items: { type: number } }
+            coverage_ratio: { type: number, minimum: 0, maximum: 1 }
+    InstalledDataset:
+      allOf:
+        - { $ref: "#/components/schemas/DatasetManifest" }
+        - type: object
+          required: [active, available]
+          properties:
+            active: { type: boolean }
+            available: { type: boolean }
+    InstalledDatasetList:
+      type: object
+      required: [datasets]
+      properties:
+        active_id: { type: string }
+        datasets: { type: array, items: { $ref: "#/components/schemas/InstalledDataset" } }
+        warnings: { type: array, items: { type: string } }
+    RFProfile:
+      type: object
+      description: Complete per-cell RF contract. Omitted properties inherit the enclosing request defaults; normalized responses include every property.
+      properties:
+        schema_version: { type: integer, const: 1, default: 1 }
+        network_tech: { type: string, enum: [4g, 5g, 6g] }
+        frequency_ghz: { type: number, exclusiveMinimum: 0, maximum: 300 }
+        band: { type: string, minLength: 1, maxLength: 64 }
+        bandwidth_mhz: { type: number, minimum: 0.1, maximum: 2000 }
+        channel_id: { type: string, minLength: 1, maxLength: 64 }
+        duplex_mode: { type: string, enum: [fdd, tdd, sdl, sul] }
+        tx_power_dbm: { type: number, minimum: 0, maximum: 60 }
+        antenna_gain_dbi: { type: number, minimum: -20, maximum: 80 }
+        system_loss_db: { type: number, minimum: 0, maximum: 100 }
+        radius_m: { type: number, minimum: 25, maximum: 5000 }
+        beam_width: { type: number, minimum: 10, maximum: 360 }
+        antenna_height_m: { type: number, minimum: 0.5, maximum: 300 }
+        mechanical_downtilt_deg: { type: number, minimum: -30, maximum: 90 }
+        electrical_downtilt_deg: { type: number, minimum: -30, maximum: 90 }
+        orientation_deg: { type: number, minimum: 0, exclusiveMaximum: 360 }
+        horizontal_pattern_id: { type: string, enum: [ideal-sector, cosine-sector, omni] }
+        vertical_pattern_id: { type: string, enum: [flat, panel-10deg, panel-20deg] }
+        load_factor: { type: number, exclusiveMinimum: 0, maximum: 1 }
+        reuse_factor: { type: integer, minimum: 1, maximum: 12 }
+        pci: { type: [integer, "null"], minimum: 0, maximum: 1007, description: LTE profiles are limited to 503; NR profiles are limited to 1007. }
+        receiver_height_m: { type: number, minimum: 0.1, maximum: 100 }
+        receiver_sensitivity_dbm: { type: number, minimum: -180, maximum: -20 }
     Tower:
       type: object
       required: [id, tower_lon, tower_lat]
@@ -279,6 +397,7 @@ components:
         tower_lon: { type: number, minimum: -180, maximum: 180 }
         tower_lat: { type: number, minimum: -90, maximum: 90 }
         azimuth: { type: number }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
     CommonRFSettings:
       type: object
       properties:
@@ -297,6 +416,7 @@ components:
           properties:
             tower_lon: { type: number, minimum: -180, maximum: 180 }
             tower_lat: { type: number, minimum: -90, maximum: 90 }
+            rf_profile: { $ref: "#/components/schemas/RFProfile" }
     NetworkRequest:
       allOf:
         - { $ref: "#/components/schemas/CommonRFSettings" }
@@ -327,6 +447,7 @@ components:
             search_polygon:
               type: array
               minItems: 3
+              maxItems: 256
               items: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
             max_results: { type: integer, minimum: 1, maximum: 10, default: 5 }
     Recommendation:

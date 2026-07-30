@@ -4,12 +4,14 @@ import {
   Database,
   FileText,
   Radar,
+  RadioTower,
   Server,
   SlidersHorizontal,
 } from "lucide-react";
 
 export const WORKSPACE_TOOLS = [
   { id: "setup", label: "Setup", icon: SlidersHorizontal, group: "plan" },
+	{ id: "inventory", label: "Inventory", icon: RadioTower, group: "plan" },
   { id: "propagation", label: "Propagation", icon: Radar, group: "plan" },
   { id: "interference", label: "Interference", icon: Activity, group: "plan" },
   { id: "core", label: "5G Core", icon: Server, group: "plan" },

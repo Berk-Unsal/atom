@@ -7,7 +7,7 @@ The recommended way to run A.T.O.M is Docker Compose. For the visual, task-based
 - Docker Desktop or Docker Engine with Compose
 - Git and [Git LFS](https://git-lfs.com/)
 - Internet access during the first build and for the default OpenStreetMap basemap
-- For source development: Go 1.26 and Node.js 24 or newer
+- For source development: Go 1.26.5 and Node.js 24 or newer
 
 ## Get the Complete Repository
 
@@ -84,11 +84,12 @@ Open `http://localhost:5173`. Vite proxies API requests to the Go service on por
 Core Lab is opt-in and applies only to 5G mode. Start the main application and adapter with:
 
 ```bash
+export CORE_LAB_API_KEY="$(openssl rand -hex 32)"
 docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
   --profile core-lab up --build
 ```
 
-The adapter provides deterministic Xn-C, Xn-U, N2, and N3 communication-path state. It can probe configured Open5GS status or metrics endpoints, but it does not bundle a complete Open5GS deployment.
+The adapter is available only to the Compose service network and runs as a non-root, read-only service. It provides deterministic Xn-C, Xn-U, N2, and N3 communication-path state. Scenario changes require `CORE_LAB_API_KEY`. The adapter can probe configured Open5GS status or metrics endpoints, but it does not bundle a complete Open5GS deployment.
 
 ## First Use
 
@@ -100,6 +101,16 @@ The adapter provides deterministic Xn-C, Xn-U, N2, and N3 communication-path sta
 4. Export a `.atom-project.json` file to move the full project to another browser or keep an external archive.
 
 The five most recently used scenarios retain complete map layers. Older scenarios keep settings and summaries and may require a rerun.
+
+### Build A Cell Inventory
+
+1. Open **Inventory** to search or select the active local cells.
+2. Choose **Place cell**, click the map, and drag the new marker or edit its coordinates precisely.
+3. Configure the cell's carrier, link budget, radius/beam, antenna heights/tilts/orientation/patterns, interference load/reuse/PCI, and receiver assumptions.
+4. Duplicate a cell to create a nearby sector, or import CSV/GeoJSON inventory records in bulk.
+5. Resolve every inline validation error before running an analysis. The complete inventory and per-cell overrides autosave with the project.
+
+Legacy Setup/Propagation values supply defaults when a cell has no explicit override. Use **Reset profile** to return a selected cell to those defaults.
 
 ### Single-Cell Sector Planning
 
@@ -147,6 +158,12 @@ Candidate records come from the active tower dataset and do not imply site avail
 4. With at least 20 valid samples, review holdout error before explicitly applying the suggested global bias correction.
 
 Applied correction is stored in the project and recorded in reports. It is a global bias adjustment, not full propagation calibration.
+
+### Build Or Switch Dataset Packs
+
+Use [Dataset Pack Studio](dataset-pack-studio.html) to preview source coverage, invalid geometry, CRS, and missing fields before building a local schema-v2 pack for another region. Validate its output with `go run ./cmd/validate-dataset /path/to/pack` from `backend-go`.
+
+When the server has `ATOM_DATASETS_ROOT` configured, **Data** lists installed child packs with provenance and QA. Activating one clears current rendered analysis and inventory selection, then reloads the new immutable pack. Existing saved scenarios remain bound to their original dataset identity and are marked stale rather than silently reinterpreted.
 
 ### 5G Communication Paths
 

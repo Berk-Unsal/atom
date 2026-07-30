@@ -101,7 +101,7 @@
           <div class="hero-fact"><span>Recommended runtime</span><strong>Docker Compose</strong></div>
           <div class="hero-fact"><span>Application</span><strong>localhost:8080</strong></div>
           <div class="hero-fact"><span>Source data</span><strong>Git LFS required</strong></div>
-          <div class="hero-fact"><span>Backend</span><strong>Go 1.26</strong></div>
+          <div class="hero-fact"><span>Backend</span><strong>Go 1.26.5</strong></div>
           <div class="hero-fact"><span>Frontend</span><strong>Node 24+</strong></div>
         </div>
       </header>
@@ -208,7 +208,7 @@ docker compose up --build -d atom</code></pre>
         <div class="split-content">
           <section class="text-panel">
             <h3>Terminal 1: Go API</h3>
-            <p>Requires Go 1.26 and the LFS-managed data files.</p>
+            <p>Requires Go 1.26.5 and the LFS-managed data files.</p>
             <div class="code-block">
               <button class="copy-button" type="button" data-copy aria-label="Copy backend development commands">Copy</button>
               <pre><code>cd backend-go
@@ -242,14 +242,15 @@ npm run dev</code></pre>
         <div class="section-heading">
           <h2 id="core-heading">Add the optional 5G Core Lab adapter</h2>
           <p>
-            The compose overlay starts the Core Lab adapter on port 8090 and connects the main application to it. The
-            adapter provides a deterministic communication-path overlay by default and can probe configured Open5GS
-            status or metrics endpoints. It does not bundle a full Open5GS deployment.
+            The compose overlay starts the Core Lab adapter on its private service network and connects the main application to it. The
+            adapter runs as a non-root, read-only service, provides a deterministic communication-path overlay by default, and can probe
+            configured Open5GS status or metrics endpoints. It does not bundle a full Open5GS deployment.
           </p>
         </div>
         <div class="code-block">
           <button class="copy-button" type="button" data-copy aria-label="Copy Core Lab Docker command">Copy</button>
-          <pre><code>docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
+          <pre><code>export CORE_LAB_API_KEY="$(openssl rand -hex 32)"
+docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
   --profile core-lab up --build</code></pre>
         </div>
         <div class="table-wrap">

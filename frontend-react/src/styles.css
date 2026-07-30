@@ -1210,6 +1210,326 @@ a:focus-visible {
 
 }
 
+.inventory-panel {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-strong);
+}
+
+.inventory-actions,
+.inventory-editor-heading,
+.inventory-editor-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.inventory-actions button,
+.inventory-editor-heading button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: var(--slate);
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.inventory-actions button.active {
+  border-color: #be123c;
+  color: #9f1239;
+  background: #fff1f2;
+}
+
+.inventory-placement,
+.inventory-message,
+.inventory-validation,
+.inventory-valid,
+.inventory-empty {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.inventory-placement,
+.inventory-message {
+  color: #155e75;
+}
+
+.inventory-validation {
+  color: #9f1239;
+  font-weight: 750;
+}
+
+.inventory-valid {
+  color: #047857;
+  font-weight: 750;
+}
+
+.inventory-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.inventory-search input {
+  min-width: 0;
+  width: 100%;
+  min-height: 36px;
+  border: 0;
+  outline: 0;
+  color: var(--ink);
+  background: transparent;
+}
+
+.inventory-list {
+  display: grid;
+  gap: 3px;
+  max-height: 210px;
+  overflow: auto;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--slate-soft);
+}
+
+.inventory-list > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 42px;
+  padding: 7px 9px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.inventory-list > button[aria-selected="true"] {
+  border-color: #7cb8aa;
+  background: #eef9f5;
+}
+
+.inventory-list span,
+.inventory-editor-heading > span {
+  display: grid;
+  gap: 2px;
+}
+
+.inventory-list small,
+.inventory-editor-heading small {
+  color: var(--subtle);
+  font-size: 0.66rem;
+}
+
+.inventory-list em {
+  color: var(--teal);
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.inventory-editor {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.inventory-editor-heading {
+  justify-content: space-between;
+}
+
+.inventory-editor-heading button {
+  width: 32px;
+  padding: 0;
+}
+
+.inventory-editor fieldset {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+
+.inventory-editor legend {
+  padding: 0 5px;
+  color: var(--slate);
+  font-size: 0.7rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.inventory-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.inventory-field-grid label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.inventory-field-grid label > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.inventory-field-grid label small {
+  color: var(--subtle);
+  font-size: 0.62rem;
+  font-weight: 650;
+}
+
+.inventory-field-grid input,
+.inventory-field-grid select {
+  min-width: 0;
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 7px;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+}
+
+.inventory-field-grid label.invalid input,
+.inventory-field-grid label.invalid select {
+  border-color: #e11d48;
+  background: #fff7f8;
+}
+
+.inventory-field-grid label em {
+  color: #be123c;
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 650;
+}
+
+.field-help {
+  margin: 0;
+  color: var(--subtle);
+  font-size: 0.65rem;
+}
+
+.inventory-drag-marker span {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #0f766e;
+  border-radius: 50% 50% 50% 0;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.28);
+  transform: rotate(-45deg);
+}
+
+.dataset-pack-list {
+  display: grid;
+  gap: 6px;
+}
+
+.dataset-pack-list button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dataset-pack-list button.active {
+  border-color: #7cb8aa;
+  background: #eef9f5;
+}
+
+.dataset-pack-list button:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.dataset-pack-list button span {
+  display: grid;
+  gap: 3px;
+}
+
+.dataset-pack-list button small {
+  color: var(--subtle);
+  font-size: 0.65rem;
+}
+
+.dataset-pack-list button em {
+  color: var(--teal);
+  font-size: 0.7rem;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.dataset-quality-preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--slate-soft);
+}
+
+.dataset-quality-preview > strong,
+.dataset-quality-preview > p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.dataset-quality-preview > p {
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.dataset-studio-command {
+  overflow: auto;
+  margin: 0;
+  padding: 9px;
+  border-radius: 6px;
+  color: #d8f3ea;
+  background: #17342f;
+  font-size: 0.65rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
 /* Local-first projects and evidence workflows */
 .project-menu-wrap {
   position: relative;

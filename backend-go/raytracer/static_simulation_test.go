@@ -136,7 +136,7 @@ func TestOptimizeAzimuthReturnsFirstBestCandidateOnTie(t *testing.T) {
 		BeamWidthDeg: 120,
 	}
 
-	got := OptimizeAzimuth(req, EmptyBuildingIndex())
+	got := mustResult(OptimizeAzimuthContext(context.Background(), req, EmptyBuildingIndex()))
 	if got.OptimalAzimuth != 0 {
 		t.Fatalf("OptimizeAzimuth() = %.1f, want 0.0 on equal-score tie", got.OptimalAzimuth)
 	}
@@ -208,11 +208,11 @@ func TestCoverageAreaScoreIncludesUniqueBuildingDemandWeight(t *testing.T) {
 
 	eastReq := req
 	eastReq.AzimuthDeg = 100
-	eastScore := CoverageAreaScoreBreakdown(origin, eastReq, buildings)
+	eastScore := mustResult(CoverageAreaScoreBreakdownContext(context.Background(), origin, eastReq, buildings))
 
 	northReq := req
 	northReq.AzimuthDeg = 10
-	northScore := CoverageAreaScoreBreakdown(origin, northReq, buildings)
+	northScore := mustResult(CoverageAreaScoreBreakdownContext(context.Background(), origin, northReq, buildings))
 
 	if eastScore.TotalScore <= northScore.TotalScore {
 		t.Fatalf("weighted sector score = %.1f, empty sector score = %.1f; want weighted sector higher", eastScore.TotalScore, northScore.TotalScore)
@@ -245,7 +245,7 @@ func TestGenericBuildingDoesNotAddDemandBonus(t *testing.T) {
 		BeamWidthDeg: 20,
 	}
 
-	score := CoverageAreaScoreBreakdown(origin, req, buildings)
+	score := mustResult(CoverageAreaScoreBreakdownContext(context.Background(), origin, req, buildings))
 	if score.DemandScore != 0 {
 		t.Fatalf("generic building demand score = %.1f, want 0", score.DemandScore)
 	}
@@ -271,12 +271,12 @@ func TestResidentialDemandBeatsLongEmptyCoverageTieBreaker(t *testing.T) {
 		AzimuthDeg:   100,
 		BeamWidthDeg: 20,
 	}
-	residentialScore := CoverageAreaScoreBreakdown(origin, residentialReq, buildings)
+	residentialScore := mustResult(CoverageAreaScoreBreakdownContext(context.Background(), origin, residentialReq, buildings))
 
 	emptyReq := residentialReq
 	emptyReq.AzimuthDeg = 10
 	emptyReq.RadiusMeters = 500
-	emptyScore := CoverageAreaScoreBreakdown(origin, emptyReq, buildings)
+	emptyScore := mustResult(CoverageAreaScoreBreakdownContext(context.Background(), origin, emptyReq, buildings))
 
 	if residentialScore.ResidentialScore <= emptyScore.CoverageScore {
 		t.Fatalf("residential score = %.1f, empty coverage tie-breaker = %.1f; want residential demand to dominate", residentialScore.ResidentialScore, emptyScore.CoverageScore)
@@ -300,7 +300,7 @@ func TestCoverageGapFinderFlagsWeakDemandBuilding(t *testing.T) {
 		BeamWidthDeg: 40,
 	}
 
-	response := FindCoverageGaps(req, buildings)
+	response := mustResult(FindCoverageGapsContext(context.Background(), req, buildings))
 	if response.Stats.CandidateBuildings != 1 {
 		t.Fatalf("candidate buildings = %d, want 1", response.Stats.CandidateBuildings)
 	}
@@ -329,7 +329,7 @@ func TestCoverageGapFinderTreatsLTEBuildingAsServed(t *testing.T) {
 		BeamWidthDeg: 40,
 	}
 
-	response := FindCoverageGaps(req, buildings)
+	response := mustResult(FindCoverageGapsContext(context.Background(), req, buildings))
 	if response.Stats.CandidateBuildings != 1 {
 		t.Fatalf("candidate buildings = %d, want 1", response.Stats.CandidateBuildings)
 	}
@@ -355,7 +355,7 @@ func TestBuildingCoverageMapRecordsPenetratedLTEBuilding(t *testing.T) {
 		BeamWidthDeg: 20,
 	}
 
-	coverage := BuildingCoverageMap(origin, req, buildings)
+	coverage := mustResult(BuildingCoverageMapContext(context.Background(), origin, req, buildings))
 	rx, ok := coverage["test-wall"]
 	if !ok {
 		t.Fatal("penetrated LTE building was not recorded in coverage map")
@@ -379,7 +379,7 @@ func TestCoverageGapFinderServesBuildingBetweenStrongLTERays(t *testing.T) {
 		BeamWidthDeg: 40,
 	}
 
-	response := FindCoverageGaps(req, buildings)
+	response := mustResult(FindCoverageGapsContext(context.Background(), req, buildings))
 	if response.Stats.CandidateBuildings != 1 {
 		t.Fatalf("candidate buildings = %d, want 1", response.Stats.CandidateBuildings)
 	}
@@ -408,7 +408,7 @@ func TestCoverageGapFinderIgnoresDemandOutsideBeam(t *testing.T) {
 		BeamWidthDeg: 20,
 	}
 
-	response := FindCoverageGaps(req, buildings)
+	response := mustResult(FindCoverageGapsContext(context.Background(), req, buildings))
 	if response.Stats.CandidateBuildings != 0 {
 		t.Fatalf("candidate buildings = %d, want 0 outside beam", response.Stats.CandidateBuildings)
 	}
@@ -440,7 +440,7 @@ func TestNetworkCoverageCountsDuplicateDemandOnceAndPenalizesOverlap(t *testing.
 		BeamWidthDeg: 40,
 	}
 
-	score := NetworkCoverageScoreBreakdown(req, []float64{90, 90}, buildings)
+	score := mustResult(NetworkCoverageScoreBreakdownContext(context.Background(), req, []float64{90, 90}, buildings))
 	if score.UniqueDemandBuildings != 1 {
 		t.Fatalf("unique demand buildings = %d, want 1", score.UniqueDemandBuildings)
 	}
@@ -470,8 +470,8 @@ func TestOptimizeNetworkImprovesOrEqualsBaselineClusterScore(t *testing.T) {
 		BeamWidthDeg: 40,
 	}
 
-	baseline := NetworkCoverageScoreBreakdown(req, []float64{0, 0}, buildings)
-	optimized := OptimizeNetwork(req, buildings)
+	baseline := mustResult(NetworkCoverageScoreBreakdownContext(context.Background(), req, []float64{0, 0}, buildings))
+	optimized := mustResult(OptimizeNetworkContext(context.Background(), req, buildings))
 	if optimized.Stats.NetworkScore < baseline.NetworkScore {
 		t.Fatalf("optimized network score = %.1f, baseline = %.1f; want optimized >= baseline", optimized.Stats.NetworkScore, baseline.NetworkScore)
 	}
@@ -495,8 +495,8 @@ func TestEvaluateNetworkUsesCurrentTowerAzimuths(t *testing.T) {
 		BeamWidthDeg: 40,
 	}
 
-	evaluated := EvaluateNetwork(req, buildings)
-	baseline := NetworkCoverageScoreBreakdown(req, []float64{0, 0}, buildings).rounded()
+	evaluated := mustResult(EvaluateNetworkContext(context.Background(), req, buildings))
+	baseline := mustResult(NetworkCoverageScoreBreakdownContext(context.Background(), req, []float64{0, 0}, buildings)).rounded()
 	if evaluated.Stats.NetworkScore != baseline.NetworkScore {
 		t.Fatalf("evaluated network score = %.1f, baseline = %.1f", evaluated.Stats.NetworkScore, baseline.NetworkScore)
 	}
@@ -532,6 +532,13 @@ func testDemandBuildingAt(t *testing.T, id string, center Point, halfSizeMeters 
 		Bounds:       bounds,
 		Vertices:     vertices,
 	}})
+}
+
+func mustResult[T any](value T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return value
 }
 
 func testBuildingWallIndex(t *testing.T) *BuildingIndex {

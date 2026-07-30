@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { WORKSPACE_TOOLS } from "./workspaceTools.js";
+import { MAX_PROJECT_FILE_BYTES } from "../utils/projectStore.js";
 
 export function CommandBar({
   appIconUrl,
@@ -141,6 +142,9 @@ export function ProjectMenu({
     event.target.value = "";
     if (!file) return;
     try {
+      if (file.size > MAX_PROJECT_FILE_BYTES) {
+        throw new Error(`Project file must be no larger than ${MAX_PROJECT_FILE_BYTES / (1024 * 1024)} MiB`);
+      }
       onImportProject(await file.text());
       setMessage("Project imported");
     } catch (error) {

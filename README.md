@@ -36,6 +36,8 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 - **Sector Planning**: Sector antenna simulation with adjustable azimuth and beam width. Version 1 uses hard beam eligibility and does not model sidelobes, fading, diffraction, or MIMO scheduling.
 
+- **Per-Cell RF Inventory**: Places, drags, duplicates, imports, validates, and persists cells with independent technology, band/channel, duplex, power, gain/loss, antenna geometry and patterns, load/reuse, PCI, and receiver assumptions.
+
 - **Interference Analysis**: Produces planning-grade RSRP, SINR, RSRQ, RSSI, serving-cell, and strongest-interferer surfaces for selected 4G and 5G cells.
 
 - **Deterministic Network Optimization**: Sweeps candidate azimuths and scores sectors or two-to-six-cell clusters using POI demand, residential-density demand, coverage, and overlap penalties.
@@ -52,7 +54,9 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 - **Measurement Validation**: Imports up to 5,000 4G/5G RSRP samples, maps model residuals, reports MAE/RMSE/bias, and offers an explicitly labeled holdout-checked global dB correction when enough valid samples exist.
 
-- **Validated Dataset Packs**: Loads a manifest-driven tower/building pack through `ATOM_DATASET_DIR`, verifies EPSG:4326 metadata and SHA-256 hashes, and exposes active dataset/model identity through `/api/meta`.
+- **Dataset Pack Studio**: Inspects, repairs, reprojects, crops, and packages arbitrary-region local data into schema-v2 packs with hashes, licenses, confidence, coverage/field QA, and optional terrain, clutter, height, and material layers.
+
+- **Validated Dataset Switching**: Lists only packs installed beneath `ATOM_DATASETS_ROOT` and atomically activates a fully validated pack by manifest ID, retaining the current immutable pack if validation fails.
 
 ---
 
@@ -63,7 +67,7 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 | **Backend** | Go (Golang) | Bounded RF worker execution, validation, resource controls, and in-memory R-Tree spatial queries |
 | **Frontend** | React + Leaflet | GeoJSON and canvas-backed map layers with interactive simulation controls |
 | **Data Pipeline** | Python + OSMnx | Local tower/building extraction and demand-surface enrichment |
-| **Runtime Data** | Manifest + GeoJSON + CSV | Validated local dataset packs loaded into memory at startup; no database required |
+| **Runtime Data** | Schema-v2 manifest + geospatial files | Validated local dataset packs loaded into immutable in-memory snapshots; no database required |
 | **Deployment** | Docker | Multi-stage build compiling both React and Go into a single, lightweight Alpine container |
 
 ---
@@ -75,8 +79,7 @@ backend-go/       Go API, in-memory R-tree, ray tracing, azimuth optimization
 frontend-react/   React/Vite/Leaflet dashboard and RF heatmap UI
 policy/           Canonical Core Lab, RF default, technology, and validation policy
 data-pipeline/    Python scripts for local tower/building data generation
-docs/             GitHub Pages documentation, search index, references, screenshots
-assets/           Source screenshots used by README/docs
+docs/             GitHub Pages documentation, search index, references, canonical assets
 Dockerfile        Production multi-stage build for the static in-memory app
 ```
 
@@ -97,16 +100,16 @@ The current interface uses a compact command bar, workflow rail, overlay tool dr
 ## Propagation Visualization
 
 ### 4G Coverage
-![4G Propagation](./assets/4g.png)
+![4G Propagation](./docs/assets/4g.png)
 
 ### 5G Coverage
-![5G Propagation](./assets/5g.png)
+![5G Propagation](./docs/assets/5g.png)
 
 ### 6G Sub-THz Coverage
-![6G Propagation](./assets/6g.png)
+![6G Propagation](./docs/assets/6g.png)
 
 ### Auto-Optimized 5G Beamforming
-![5G Auto-Optimized](./assets/5g-auto-optimized.png)
+![5G Auto-Optimized](./docs/assets/5g-auto-optimized.png)
 
 *Visualizing multi-generation RF propagation patterns and deterministic antenna-placement recommendations in urban environments.*
 
@@ -142,17 +145,18 @@ cd backend-go
 go run ./cmd/validate-dataset ../data-pipeline
 ```
 
-To use another prepared geography, mount its manifest and GeoJSON files and set `ATOM_DATASET_DIR` before startup. Dataset changes require a restart.
+To build another geography, use the local [Dataset Pack Studio](docs/dataset-pack-studio.html), validate its output, and set `ATOM_DATASET_DIR` to the initial pack. Mount a parent directory as `ATOM_DATASETS_ROOT` to list and safely switch among installed packs from the Data tool without restarting.
 
 ### Optional Core Lab Mode
 
 Core Lab Mode is opt-in. The default app does **not** start any 5G Core containers or require Open5GS.
 
 ```bash
+export CORE_LAB_API_KEY="$(openssl rand -hex 32)"
 docker compose -f docker-compose.yml -f docker-compose.core-lab.yml --profile core-lab up --build
 ```
 
-This starts A.T.O.M with `CORE_LAB_ENABLED=true` and a lightweight `core-lab-adapter` sidecar at port `8090`. The adapter exposes stable Core Lab JSON for AMF, SMF, UPF, UDM/UDR, AUSF, PCF, NRF, and NSSF status. If no Open5GS endpoint is configured, scenario effects are marked as a deterministic `simulated_overlay`; point `OPEN5GS_STATUS_URL` or `OPEN5GS_METRICS_URL` at a real Open5GS lab to bridge external emulator state.
+This starts A.T.O.M with `CORE_LAB_ENABLED=true` and a lightweight `core-lab-adapter` sidecar reachable only over the Compose service network. Scenario mutation requires `CORE_LAB_API_KEY`; a same-origin gateway should inject the key for browser requests instead of exposing it to JavaScript. The adapter runs as a non-root user with a read-only filesystem and exposes stable Core Lab JSON for AMF, SMF, UPF, UDM/UDR, AUSF, PCF, NRF, and NSSF status. If no Open5GS endpoint is configured, scenario effects are marked as a deterministic `simulated_overlay`; point `OPEN5GS_STATUS_URL` or `OPEN5GS_METRICS_URL` at a real Open5GS lab to bridge external emulator state.
 
 Suggested Docker memory allocation:
 
@@ -172,7 +176,7 @@ Start with the static [documentation hub](docs/index.html), then use:
 - [Product compass](planning/product-compass.md) for enduring product strengths, capability horizons, feature-admission criteria, and deliberate non-goals.
 - [Download and use](docs/download.html) for Docker, source development, Core Lab, troubleshooting, and guided workflows.
 - [Getting started](docs/getting-started.md) for the Markdown onboarding reference.
-- [REST API](docs/api.html), downloadable [OpenAPI 3.1 contract](docs/openapi.yaml), [RF algorithms](docs/algorithms.html), and [model limitations](docs/modeling-limits.html) for implementation details.
+- [REST API](docs/api.html), downloadable [OpenAPI 3.1 contract](docs/openapi.yaml), [RF algorithms](docs/algorithms.html), [Dataset Pack Studio](docs/dataset-pack-studio.html), and [model limitations](docs/modeling-limits.html) for implementation details.
 - [Map interpretation guide](docs/visualization.html) for reading propagation and radio-quality evidence.
 
 ## Versions and Release Notes

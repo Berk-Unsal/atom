@@ -687,6 +687,12 @@
     },
     {
       "page": "Changelog",
+      "title": "0.4.0 - 2026-07-30",
+      "url": "./changelog.html#040---2026-07-30",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
       "title": "Security",
       "url": "./changelog.html#security",
       "text": "Pin container base images by digest, lock Python dependencies and hashes, review pull-request dependency changes, scan production images, and publish release SBOM and provenance attestations. Upgrade backend and adapter builds to Go 1.26, frontend and CI builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so maintained toolchains provide current security fixes. Protect the full building-dataset response with strong ETag caching, conditional 304 responses, separate global and per-client transfer budgets, and optional origin API-key authentication. Bound segmented simulations to 25,000 estimated and actual GeoJSON features, reject oversized ray/radius combinations before allocation, and cancel parallel ray workers if building splits exhaust the shared feature budget. Pin every external GitHub Action to an immutable commit SHA, stop checkout from persisting release credentials, and enforce pinned workflow dependencies in CI. Upgrade golang.org/x/net to v0.57.0 and its security-sensitive transitive modules, add govulncheck to backend CI, and enable weekly Go module updates."

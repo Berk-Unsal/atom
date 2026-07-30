@@ -15,7 +15,7 @@ Use the [documentation hub](index.html) for the maintained browser experience. I
 
 ## Release Status
 
-The current source version is [`0.3.0`](../VERSION). User-visible changes are published in the documentation [changelog](changelog.html), generated from the canonical root `CHANGELOG.md`. A matching `vX.Y.Z` tag validates metadata, publishes the container images, and creates the GitHub Release announcement from that changelog section.
+The current source version is [`0.4.0`](../VERSION). User-visible changes are published in the documentation [changelog](changelog.html), generated from the canonical root `CHANGELOG.md`. A matching `vX.Y.Z` tag validates metadata, publishes the container images, and creates the GitHub Release announcement from that changelog section.
 
 ## Model Boundary
 

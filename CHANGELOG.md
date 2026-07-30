@@ -4,6 +4,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-07-30
+
 ### Security
 
 - Pin container base images by digest, lock Python dependencies and hashes, review pull-request dependency changes, scan production images, and publish release SBOM and provenance attestations.
@@ -67,7 +69,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/Berk-Unsal/atom/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Berk-Unsal/atom/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Berk-Unsal/atom/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Berk-Unsal/atom/releases/tag/v0.1.0

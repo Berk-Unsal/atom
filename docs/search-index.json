@@ -663,6 +663,12 @@
     },
     {
       "page": "Bug-Fix Register",
+      "title": "ATOM-013: Build Inputs And Container Artifacts Were Not Reproducible",
+      "url": "./bug-fixes.html#atom-013-build-inputs-and-container-artifacts-were-not-reproducible",
+      "text": "Priority: Medium Affected area: Container builds, Python tooling, and CI supply-chain controls Target release: Next release after 0.3.0 Production and build stages selected container tags without immutable manifest digests, including a floating Alpine tag. Pipeline dependencies allowed broad ranges without a transitive lock or artifact hashes, while documentation CI installed an unconstrained PyYAML release. CI did not review dependency changes or inspect the resulting production image. All container stages now combine readable version tags with immutable multi-architecture digests. Python direct inputs are exact, and generated transitive locks include SHA-256 hashes enforced during installation. Pull requests receive dependency review; CI emits SPDX SBOMs for both application images and rejects fixable high or critical image vulnerabilities; released images include SBOM and provenance attestations. Weekly dependency automation covers each manifest family. Regression evidence: the supply-chain checker and unit tests reject floating base images, ranged direct dependencies, unhashed lock entries, and missing workflow controls. CI also installs both Python locks and exercises the production container build."
+    },
+    {
+      "page": "Bug-Fix Register",
       "title": "Open Audit Queue",
       "url": "./bug-fixes.html#open-audit-queue",
       "text": "No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test."
@@ -683,7 +689,7 @@
       "page": "Changelog",
       "title": "Security",
       "url": "./changelog.html#security",
-      "text": "Upgrade backend and adapter builds to Go 1.26, frontend and CI builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so maintained toolchains provide current security fixes. Protect the full building-dataset response with strong ETag caching, conditional 304 responses, separate global and per-client transfer budgets, and optional origin API-key authentication. Bound segmented simulations to 25,000 estimated and actual GeoJSON features, reject oversized ray/radius combinations before allocation, and cancel parallel ray workers if building splits exhaust the shared feature budget. Pin every external GitHub Action to an immutable commit SHA, stop checkout from persisting release credentials, and enforce pinned workflow dependencies in CI. Upgrade golang.org/x/net to v0.57.0 and its security-sensitive transitive modules, add govulncheck to backend CI, and enable weekly Go module updates."
+      "text": "Pin container base images by digest, lock Python dependencies and hashes, review pull-request dependency changes, scan production images, and publish release SBOM and provenance attestations. Upgrade backend and adapter builds to Go 1.26, frontend and CI builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so maintained toolchains provide current security fixes. Protect the full building-dataset response with strong ETag caching, conditional 304 responses, separate global and per-client transfer budgets, and optional origin API-key authentication. Bound segmented simulations to 25,000 estimated and actual GeoJSON features, reject oversized ray/radius combinations before allocation, and cancel parallel ray workers if building splits exhaust the shared feature budget. Pin every external GitHub Action to an immutable commit SHA, stop checkout from persisting release credentials, and enforce pinned workflow dependencies in CI. Upgrade golang.org/x/net to v0.57.0 and its security-sensitive transitive modules, add govulncheck to backend CI, and enable weekly Go module updates."
     },
     {
       "page": "Changelog",
@@ -779,7 +785,7 @@
       "page": "Contributing",
       "title": "Setup Development Environment",
       "url": "./contributing.html#setup-development-environment",
-      "text": "Backend : # Install Go 1.26+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
+      "text": "Backend : # Install Go 1.26+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Python tooling : Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution: python -m pip install --require-hashes --only-binary = :all: -r data-pipeline/Requirements.txt python -m pip install --require-hashes --only-binary = :all: -r docs/requirements.txt After deliberately changing either .in file, install uv==0.12.0 and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles. Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
     },
     {
       "page": "Contributing",
@@ -983,7 +989,7 @@
       "page": "Deployment",
       "title": "Tagged Multi-Architecture Images",
       "url": "./deployment.html#tagged-multi-architecture-images",
-      "text": "Pushing a v* Git tag triggers .github/workflows/release.yml . The workflow: Pulls Git LFS data. Builds Linux AMD64 and ARM64 images. Embeds the tag and commit into /api/meta using Go linker values. Publishes semantic-version tags to ghcr.io/<repository-owner>/atom . Every external action used by the quality and release workflows is pinned to a full commit SHA, with its release version retained in a comment for review. CI rejects mutable action references, checkout does not persist its Git credential, and weekly Dependabot updates keep the reviewed pins current. Use immutable version tags in deployments. The running application exposes its version, commit, model version, and dataset identity in Data and /api/meta ."
+      "text": "Pushing a v* Git tag triggers .github/workflows/release.yml . The workflow: Pulls Git LFS data. Builds Linux AMD64 and ARM64 images. Embeds the tag and commit into /api/meta using Go linker values. Publishes semantic-version tags to ghcr.io/<repository-owner>/atom with SPDX SBOM and provenance attestations. Every external action used by the quality and release workflows is pinned to a full commit SHA, with its release version retained in a comment for review. Container build stages retain readable version tags but are also pinned to immutable multi-architecture image digests. CI rejects mutable build inputs, reviews dependency changes on pull requests, builds the production and Core Lab adapter images, stores SPDX JSON SBOMs, and fails on fixable high or critical vulnerabilities. Checkout does not persist its Git credential, and weekly Dependabot updates keep reviewed action, module, Python, and container pins current. Use immutable version tags in deployments. The running application exposes its version, commit, model version, and dataset identity in Data and /api/meta ."
     },
     {
       "page": "Deployment",

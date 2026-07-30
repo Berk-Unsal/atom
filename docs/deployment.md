@@ -116,9 +116,9 @@ Pushing a `v*` Git tag triggers `.github/workflows/release.yml`. The workflow:
 1. Pulls Git LFS data.
 2. Builds Linux AMD64 and ARM64 images.
 3. Embeds the tag and commit into `/api/meta` using Go linker values.
-4. Publishes semantic-version tags to `ghcr.io/<repository-owner>/atom`.
+4. Publishes semantic-version tags to `ghcr.io/<repository-owner>/atom` with SPDX SBOM and provenance attestations.
 
-Every external action used by the quality and release workflows is pinned to a full commit SHA, with its release version retained in a comment for review. CI rejects mutable action references, checkout does not persist its Git credential, and weekly Dependabot updates keep the reviewed pins current.
+Every external action used by the quality and release workflows is pinned to a full commit SHA, with its release version retained in a comment for review. Container build stages retain readable version tags but are also pinned to immutable multi-architecture image digests. CI rejects mutable build inputs, reviews dependency changes on pull requests, builds the production and Core Lab adapter images, stores SPDX JSON SBOMs, and fails on fixable high or critical vulnerabilities. Checkout does not persist its Git credential, and weekly Dependabot updates keep reviewed action, module, Python, and container pins current.
 
 Use immutable version tags in deployments. The running application exposes its version, commit, model version, and dataset identity in Data and `/api/meta`.
 

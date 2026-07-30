@@ -1,4 +1,4 @@
-FROM node:24-alpine AS frontend-build
+FROM node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS frontend-build
 WORKDIR /frontend
 
 COPY frontend-react/package*.json ./
@@ -7,7 +7,7 @@ RUN npm ci
 COPY frontend-react/ ./
 RUN npm run build
 
-FROM golang:1.26-alpine AS backend-build
+FROM golang:1.26-alpine@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2 AS backend-build
 WORKDIR /src/backend-go
 
 ARG VERSION
@@ -22,7 +22,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
     -ldflags "-s -w -X main.appVersion=${VERSION:-$(cat /src/VERSION)} -X main.buildCommit=${COMMIT}" \
     -o /server .
 
-FROM alpine:3.24 AS production
+FROM alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b AS production
 WORKDIR /app
 
 RUN addgroup -S atom && adduser -S atom -G atom

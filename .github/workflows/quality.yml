@@ -9,6 +9,18 @@ permissions:
   contents: read
 
 jobs:
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+          show-patched-versions: true
+
   version:
     runs-on: ubuntu-latest
     steps:
@@ -21,8 +33,9 @@ jobs:
           cache: false
       - run: python3 scripts/versioning.py check
       - run: python3 scripts/check_runtime_versions.py
+      - run: python3 scripts/check_supply_chain.py
       - run: python3 scripts/check_workflow_action_pins.py
-      - run: python3 -m unittest scripts/check_workflow_action_pins_test.py
+      - run: python3 -m unittest scripts/check_supply_chain_test.py scripts/check_workflow_action_pins_test.py
       - run: python3 scripts/generate_policy.py --check
       - run: python3 -m unittest scripts/generate_policy_test.py
 
@@ -108,6 +121,10 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: data-pipeline/Requirements.txt
+      - run: "python -m pip install --require-hashes --only-binary=:all: -r data-pipeline/Requirements.txt"
+      - run: python -c "import geopandas, numpy, osmnx, pandas, shapely"
       - run: python -m compileall -q -x '/\.venv/' data-pipeline
 
   documentation:
@@ -119,9 +136,77 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
-      - run: pip install PyYAML
+          cache: pip
+          cache-dependency-path: docs/requirements.txt
+      - run: "python -m pip install --require-hashes --only-binary=:all: -r docs/requirements.txt"
       - run: sudo apt-get update && sudo apt-get install -y pandoc
       - run: sh docs/build-reference-pages.sh
       - run: git diff --exit-code -- docs/*.html docs/search-index.json
       - run: node --check docs/assets/docs.js
       - run: python docs/validate_docs.py
+
+  container-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          lfs: true
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - name: Build production image for inspection
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: .
+          load: true
+          tags: atom:ci
+          build-args: |
+            VERSION=ci
+            COMMIT=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Generate SPDX SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          image: atom:ci
+          format: spdx-json
+          output-file: atom.spdx.json
+          artifact-name: atom-sbom
+          syft-version: v1.44.0
+          upload-artifact: true
+      - name: Scan production image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: atom:ci
+          version: v0.70.0
+          format: table
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Build Core Lab adapter image for inspection
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: core-lab-adapter
+          load: true
+          tags: atom-core-lab-adapter:ci
+          cache-from: type=gha,scope=core-lab-adapter
+          cache-to: type=gha,mode=max,scope=core-lab-adapter
+      - name: Generate Core Lab adapter SPDX SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          image: atom-core-lab-adapter:ci
+          format: spdx-json
+          output-file: atom-core-lab-adapter.spdx.json
+          artifact-name: atom-core-lab-adapter-sbom
+          syft-version: v1.44.0
+          upload-artifact: true
+      - name: Scan Core Lab adapter image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: atom-core-lab-adapter:ci
+          version: v0.70.0
+          format: table
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"

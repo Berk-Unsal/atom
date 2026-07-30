@@ -99,6 +99,17 @@ npm install
 npm run dev
 ```
 
+**Python tooling**:
+
+Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution:
+
+```bash
+python -m pip install --require-hashes --only-binary=:all: -r data-pipeline/Requirements.txt
+python -m pip install --require-hashes --only-binary=:all: -r docs/requirements.txt
+```
+
+After deliberately changing either `.in` file, install `uv==0.12.0` and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles.
+
 **Both together**:
 
 ```bash

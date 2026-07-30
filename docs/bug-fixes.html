@@ -345,6 +345,30 @@ type.</p>
 <p><strong>Regression evidence:</strong> generator tests verify scenario
 propagation and stale-file detection; Go and frontend tests verify the
 shared technology boundaries and generated UI defaults.</p>
+<h3
+id="atom-013-build-inputs-and-container-artifacts-were-not-reproducible">ATOM-013:
+Build Inputs And Container Artifacts Were Not Reproducible</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Container builds, Python tooling, and
+CI supply-chain controls</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Production and build stages selected container tags without immutable
+manifest digests, including a floating Alpine tag. Pipeline dependencies
+allowed broad ranges without a transitive lock or artifact hashes, while
+documentation CI installed an unconstrained PyYAML release. CI did not
+review dependency changes or inspect the resulting production image.</p>
+<p>All container stages now combine readable version tags with immutable
+multi-architecture digests. Python direct inputs are exact, and
+generated transitive locks include SHA-256 hashes enforced during
+installation. Pull requests receive dependency review; CI emits SPDX
+SBOMs for both application images and rejects fixable high or critical
+image vulnerabilities; released images include SBOM and provenance
+attestations. Weekly dependency automation covers each manifest
+family.</p>
+<p><strong>Regression evidence:</strong> the supply-chain checker and
+unit tests reject floating base images, ranged direct dependencies,
+unhashed lock entries, and missing workflow controls. CI also installs
+both Python locks and exercises the production container build.</p>
 <h2 id="open-audit-queue">Open Audit Queue</h2>
 <p>No Critical defect is currently confirmed. The next audit pass will
 focus on backend RF cancellation and timeout boundaries,

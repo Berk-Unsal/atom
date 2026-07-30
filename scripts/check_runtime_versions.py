@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GO_VERSION = "1.26"
 NODE_VERSION = "24"
 ALPINE_VERSION = "3.24"
+IMAGE_DIGEST_PATTERN = r"sha256:[0-9a-f]{64}"
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -28,21 +29,25 @@ def main() -> None:
         actual = match.group(1) if match else None
         require(actual == GO_VERSION, f"{module}: expected go {GO_VERSION}, found {actual!r}", errors)
 
-    dockerfiles = {
+    dockerfiles: dict[str, tuple[str, ...]] = {
         "Dockerfile": (
-            f"FROM node:{NODE_VERSION}-alpine AS frontend-build",
-            f"FROM golang:{GO_VERSION}-alpine AS backend-build",
-            f"FROM alpine:{ALPINE_VERSION} AS production",
+            rf"FROM node:{NODE_VERSION}-alpine@{IMAGE_DIGEST_PATTERN} AS frontend-build",
+            rf"FROM golang:{GO_VERSION}-alpine@{IMAGE_DIGEST_PATTERN} AS backend-build",
+            rf"FROM alpine:{ALPINE_VERSION}@{IMAGE_DIGEST_PATTERN} AS production",
         ),
         "core-lab-adapter/Dockerfile": (
-            f"FROM golang:{GO_VERSION}-alpine AS build",
-            f"FROM alpine:{ALPINE_VERSION}",
+            rf"FROM golang:{GO_VERSION}-alpine@{IMAGE_DIGEST_PATTERN} AS build",
+            rf"FROM alpine:{ALPINE_VERSION}@{IMAGE_DIGEST_PATTERN}",
         ),
     }
-    for dockerfile, expected_lines in dockerfiles.items():
+    for dockerfile, expected_patterns in dockerfiles.items():
         content = (ROOT / dockerfile).read_text(encoding="utf-8")
-        for line in expected_lines:
-            require(line in content, f"{dockerfile}: missing {line!r}", errors)
+        for pattern in expected_patterns:
+            require(
+                re.search(rf"^{pattern}$", content, flags=re.MULTILINE) is not None,
+                f"{dockerfile}: missing pattern {pattern!r}",
+                errors,
+            )
 
     package = json.loads((ROOT / "frontend-react/package.json").read_text(encoding="utf-8"))
     package_lock = json.loads((ROOT / "frontend-react/package-lock.json").read_text(encoding="utf-8"))
@@ -61,7 +66,10 @@ def main() -> None:
 
     if errors:
         raise SystemExit("Runtime version check failed:\n- " + "\n- ".join(errors))
-    print(f"Runtime versions are consistent: Go {GO_VERSION}, Node {NODE_VERSION}, Alpine {ALPINE_VERSION}")
+    print(
+        f"Runtime versions and image digests are consistent: "
+        f"Go {GO_VERSION}, Node {NODE_VERSION}, Alpine {ALPINE_VERSION}"
+    )
 
 
 if __name__ == "__main__":

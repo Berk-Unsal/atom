@@ -163,6 +163,20 @@ One versioned JSON policy now generates self-contained Go and JavaScript binding
 
 **Regression evidence:** generator tests verify scenario propagation and stale-file detection; Go and frontend tests verify the shared technology boundaries and generated UI defaults.
 
+### ATOM-013: Build Inputs And Container Artifacts Were Not Reproducible
+
+**Priority:** Medium
+
+**Affected area:** Container builds, Python tooling, and CI supply-chain controls
+
+**Target release:** Next release after 0.3.0
+
+Production and build stages selected container tags without immutable manifest digests, including a floating Alpine tag. Pipeline dependencies allowed broad ranges without a transitive lock or artifact hashes, while documentation CI installed an unconstrained PyYAML release. CI did not review dependency changes or inspect the resulting production image.
+
+All container stages now combine readable version tags with immutable multi-architecture digests. Python direct inputs are exact, and generated transitive locks include SHA-256 hashes enforced during installation. Pull requests receive dependency review; CI emits SPDX SBOMs for both application images and rejects fixable high or critical image vulnerabilities; released images include SBOM and provenance attestations. Weekly dependency automation covers each manifest family.
+
+**Regression evidence:** the supply-chain checker and unit tests reject floating base images, ranged direct dependencies, unhashed lock entries, and missing workflow controls. CI also installs both Python locks and exercises the production container build.
+
 ## Open Audit Queue
 
 No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test.

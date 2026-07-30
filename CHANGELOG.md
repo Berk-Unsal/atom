@@ -6,6 +6,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Security
 
+- Pin container base images by digest, lock Python dependencies and hashes, review pull-request dependency changes, scan production images, and publish release SBOM and provenance attestations.
 - Upgrade backend and adapter builds to Go 1.26, frontend and CI builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so maintained toolchains provide current security fixes.
 - Protect the full building-dataset response with strong ETag caching, conditional `304` responses, separate global and per-client transfer budgets, and optional origin API-key authentication.
 - Bound segmented simulations to 25,000 estimated and actual GeoJSON features, reject oversized ray/radius combinations before allocation, and cancel parallel ray workers if building splits exhaust the shared feature budget.

@@ -105,6 +105,9 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.3.0...HEAD">Unreleased</a></h2>
 <h3 id="security">Security</h3>
 <ul>
+<li>Pin container base images by digest, lock Python dependencies and
+hashes, review pull-request dependency changes, scan production images,
+and publish release SBOM and provenance attestations.</li>
 <li>Upgrade backend and adapter builds to Go 1.26, frontend and CI
 builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so
 maintained toolchains provide current security fixes.</li>

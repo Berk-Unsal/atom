@@ -26,12 +26,13 @@ const maxRequestBodyBytes int64 = 1 << 20
 var (
 	appVersion   = "dev"
 	buildCommit  = "unknown"
-	modelVersion = "fspl-walls-cell-profiles-v2"
+	modelVersion = "fspl-walls-2p5d-v3"
 )
 
 func main() {
 	datasetPack, datasetErr := loadRuntimeDataset()
 	datasets := newDatasetRuntime(datasetPack, datasetErr, os.Getenv("ATOM_DATASETS_ROOT"))
+	experiments := newExperimentManager(modelVersion, envInt("EXPERIMENT_WORKERS", 1), envInt("EXPERIMENT_QUEUE_SIZE", defaultExperimentQueueSize))
 	buildingIndex := raytracer.EmptyBuildingIndex()
 	buildingStats := raytracer.BuildingIndexStats{SourcePath: "not found"}
 	var towers []raytracer.TowerStation
@@ -73,7 +74,7 @@ func main() {
 	router.Use(limitRequestBody(maxRequestBodyBytes))
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173"},
-		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodOptions},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Key"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -118,6 +119,11 @@ func main() {
 		envInt("MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT", defaultBuildingDownloadClientLimit),
 		envInt("BUILDING_DOWNLOADS_PER_MINUTE", defaultBuildingDownloadsPerMinute),
 	)
+	buildingFeatureLimiter := newRFRequestLimiterWithBudget(
+		envInt("MAX_CONCURRENT_BUILDING_FEATURE_QUERIES", 4),
+		envInt("MAX_CONCURRENT_BUILDING_FEATURE_QUERIES_PER_CLIENT", 2),
+		envInt("BUILDING_FEATURE_QUERIES_PER_MINUTE", 120),
+	)
 	buildingCacheControl := buildingDatasetCacheControl(buildingAPIKey != "")
 	router.GET("/api/meta", func(c *gin.Context) {
 		response := gin.H{
@@ -159,7 +165,16 @@ func main() {
 		}
 		c.JSON(http.StatusOK, pack.BuildingIndex.DemandSummary(""))
 	})
+	registerBuildingFeatureRoutes(
+		router,
+		datasets,
+		requireBuildingAPIKey(buildingAPIKey),
+		buildingFeatureLimiter.middlewareFor("bounded building feature query"),
+	)
 	registerDatasetRoutes(router, datasets, strings.TrimSpace(os.Getenv("DATASET_ADMIN_API_KEY")))
+	registerExperimentRoutes(router, experiments, datasets)
+	registerPathProfileRoute(router, datasets)
+	registerCoverageSurfaceRoute(router, datasets)
 	router.POST("/api/analyze-sector", func(c *gin.Context) {
 		var input raytracer.StaticSimulationRequestInput
 		if !bindJSON(c, &input, "sector analysis") {
@@ -363,6 +378,27 @@ func registerInterferenceRouteProvider(router *gin.Engine, provider func() *rayt
 	router.POST("/api/interference", append(middleware, handler)...)
 }
 
+func registerPathProfileRoute(router *gin.Engine, runtime *datasetRuntime) {
+	router.POST("/api/path-profile", func(c *gin.Context) {
+		var input raytracer.PathProfileRequestInput
+		if !bindJSON(c, &input, "path profile") {
+			return
+		}
+		request := input.ToRequest()
+		if validationError := raytracer.ValidatePathProfileRequest(input, request); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		pack := runtime.Current()
+		if pack == nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "dataset unavailable"})
+			return
+		}
+		response, err := raytracer.AnalyzePathProfileContext(c.Request.Context(), request, pack.Terrain, pack.BuildingIndex)
+		writeRFResponse(c, response, err)
+	})
+}
+
 func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
 	if req.TowerLon < raytracer.MinLongitude || req.TowerLon > raytracer.MaxLongitude || req.TowerLat < raytracer.MinLatitude || req.TowerLat > raytracer.MaxLatitude {
 		return "tower_lon and tower_lat must be valid coordinates"
@@ -444,6 +480,9 @@ func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest
 			return fmt.Sprintf("tower %q: %s", tower.ID, validationError)
 		}
 	}
+	if validationError := raytracer.ValidateOptimizationConfig(req.Optimization); validationError != "" {
+		return validationError
+	}
 	return ""
 }
 
@@ -490,7 +529,7 @@ func registerFrontendRoutes(router *gin.Engine, distPath string, indexPath strin
 				"service": "A.T.O.M API",
 				"routes": []string{
 					"/healthz", "/readyz", "/api/meta", "/api/datasets", "/api/datasets/switch", "/api/towers", "/api/buildings", "/api/buildings/summary",
-					"/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network",
+					"/api/conformance", "/api/collections", "/api/collections/buildings", "/api/collections/buildings/items", "/api/path-profile", "/api/coverage-surface", "/api/processes/batch-experiment", "/api/processes/batch-experiment/execution", "/api/jobs/:jobID", "/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network",
 					"/api/optimize-network", "/api/interference", "/api/recommend-sites", "/api/measurements/evaluate",
 					"/api/core/status", "/api/core/topology", "/api/core/sessions", "/api/core/events", "/api/core/scenario",
 				},

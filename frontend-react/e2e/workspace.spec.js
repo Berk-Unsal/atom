@@ -93,6 +93,24 @@ test("keeps the focused workspace usable without horizontal overflow", async ({ 
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
+test("keeps propagation actions clear of the vertical path profile", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Propagation" }).click();
+
+  const optimizeButton = page.getByRole("button", { name: "Auto-Optimize Sector" });
+  const pathProfile = page.getByRole("region", { name: "Vertical path profile" });
+  await expect(optimizeButton).toBeVisible();
+  await expect(pathProfile).toBeVisible();
+
+  const [optimizeBox, pathProfileBox] = await Promise.all([
+    optimizeButton.boundingBox(),
+    pathProfile.boundingBox(),
+  ]);
+  expect(optimizeBox).not.toBeNull();
+  expect(pathProfileBox).not.toBeNull();
+  expect(pathProfileBox.y - (optimizeBox.y + optimizeBox.height)).toBeGreaterThanOrEqual(8);
+});
+
 function point(id, cellID, longitude, latitude) {
   return {
     type: "Feature",

@@ -36,7 +36,10 @@ export function formatScenario(value) {
 
 export function isCalibrationProfileCompatible(profile, settings, meta) {
   if (!profile || !meta) return true;
-  return profile.kind === "robust_global_path_loss_bias"
+  const supportedKind = profile.kind === "robust_global_path_loss_bias"
+    || profile.kind === "spatially_validated_robust_global_path_loss_bias";
+  const notExpired = !profile.expiresAt || Date.parse(profile.expiresAt) > Date.now();
+  return supportedKind && notExpired
     && profile.technology === networkTechnologyForFrequency(settings.frequencyGHz)
     && Number(profile.frequencyGHz) === Number(settings.frequencyGHz)
     && profile.modelVersion === meta.model_version

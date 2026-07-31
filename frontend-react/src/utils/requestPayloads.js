@@ -1,5 +1,6 @@
 import { DEFAULT_RECOMMENDATION_RESULTS, networkTechnologyForFrequency } from "../generated/policy.js";
 import { resolveRFProfile, rfProfileToPayload } from "./rfProfile.js";
+import { optimizationConfigToPayload } from "./optimizationConfig.js";
 
 export function buildSimulationPayload(selectedTower, settings) {
   const profile = resolveRFProfile(selectedTower, settings, 0);
@@ -17,7 +18,46 @@ export function buildSimulationPayload(selectedTower, settings) {
   };
 }
 
-export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths = {}) {
+export function buildPathProfilePayload(selectedTower, receiver, settings, options = {}) {
+  const profile = resolveRFProfile(selectedTower, settings, 0);
+  return {
+    transmitter: { lon: selectedTower.coordinates[0], lat: selectedTower.coordinates[1] },
+    receiver: { lon: Number(receiver[0]), lat: Number(receiver[1]) },
+    sample_spacing_m: Number(options.sampleSpacingM ?? 10),
+    model_profile: options.modelProfile ?? defaultPathModelProfile(profile.frequencyGHz),
+    azimuth: settings.azimuthDeg,
+    calibration_offset_db: settings.calibrationOffsetDb ?? 0,
+    rf_profile: rfProfileToPayload(profile),
+    fidelity: {
+      building_loss_mode: options.buildingLossMode ?? "screen-diffraction",
+      diffraction_model: options.diffractionModel ?? "single-knife-edge",
+      default_wall_material: options.defaultWallMaterial ?? "concrete",
+      clutter_specific_attenuation_db_per_km: Number(options.clutterSpecificAttenuationDbPerKm ?? 0),
+      vegetation_depth_m: Number(options.vegetationDepthM ?? 0),
+      vegetation_specific_attenuation_db_per_m: Number(options.vegetationSpecificAttenuationDbPerM ?? 0),
+      gas_specific_attenuation_db_per_km: Number(options.gasSpecificAttenuationDbPerKm ?? 0),
+      rain_specific_attenuation_db_per_km: Number(options.rainSpecificAttenuationDbPerKm ?? 0),
+      shadow_sigma_db: Number(options.shadowSigmaDb ?? 0),
+    },
+  };
+}
+
+export function buildCoverageSurfacePayload(selectedTower, settings, options = {}) {
+  return {
+    ...buildSimulationPayload(selectedTower, settings),
+    cell_size_m: Number(options.cellSizeMeters ?? 25),
+    thresholds_dbm: [...(options.thresholdsDBm ?? [-110, -100, -90, -80])].map(Number),
+  };
+}
+
+export function defaultPathModelProfile(frequencyGHz) {
+  const frequency = Number(frequencyGHz);
+  if (frequency <= 6) return "terrain-profile";
+  if (frequency <= 100) return "urban-short-range";
+  return "research-sub-thz";
+}
+
+export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths = {}, optimizationConfig) {
   return {
     towers: selectedNetworkTowers.map((tower, index) => ({
       id: String(tower.cellId ?? tower.id),
@@ -32,6 +72,7 @@ export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings,
     tx_power_dbm: settings.txPowerDbm,
     beam_width: settings.beamWidthDeg,
     calibration_offset_db: settings.calibrationOffsetDb ?? 0,
+    ...(optimizationConfig ? { optimization: optimizationConfigToPayload(optimizationConfig) } : {}),
   };
 }
 
@@ -83,7 +124,7 @@ export function buildRecommendationPayload(selectedNetworkTowers, settings, sele
   };
 }
 
-export function buildMeasurementPayload(towers, settings, samples, networkOptimization, networkAzimuths = {}) {
+export function buildMeasurementPayload(towers, settings, samples, networkOptimization, networkAzimuths = {}, provenance) {
   const interference = buildInterferencePayload(towers, settings, networkOptimization, networkAzimuths);
   return {
     network_tech: interference.network_tech,
@@ -95,6 +136,7 @@ export function buildMeasurementPayload(towers, settings, samples, networkOptimi
     bandwidth_mhz: interference.bandwidth_mhz,
     noise_figure_db: interference.noise_figure_db,
     calibration_offset_db: interference.calibration_offset_db,
+    ...(provenance ? { calibration_provenance: provenance } : {}),
     samples,
   };
 }

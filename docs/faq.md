@@ -12,7 +12,7 @@ No. RSRP, SINR, RSRQ, RSSI, coverage, and demand KPIs are planning estimates fro
 
 ### Which propagation model is used?
 
-The default model combines free-space path loss with antenna gain, beam/radius eligibility, exact building intersections, and cumulative frequency-dependent wall loss. It does not currently implement Okumura-Hata, diffraction, reflections, fading, terrain, sidelobes, MIMO scheduling, or uplink propagation.
+The default sector model combines free-space path loss with antenna gain, beam/radius eligibility, exact building intersections, and cumulative frequency-dependent wall loss. It does not implement Okumura-Hata, reflections, fading, MIMO scheduling, or uplink propagation. A separate point-to-point profile can add optional COG/GeoTIFF terrain, building height, LOS/Fresnel evidence, material sensitivity, and a selected single knife-edge approximation.
 
 ### Why can SINR be close to 0 dB?
 
@@ -24,7 +24,7 @@ A cell contributes only when the point is inside its configured radius and beam.
 
 ### Does measurement import calibrate the complete model?
 
-No. A.T.O.M compares measured and predicted RSRP and may suggest one robust global path-loss bias when at least 20 valid samples exist. A deterministic holdout reports whether that correction improves unseen samples. It does not fit separate wall, clutter, terrain, or fading parameters.
+No. A.T.O.M compares measured and predicted RSRP and may suggest one robust global path-loss bias when at least 20 valid, spatially diverse samples exist. Five deterministic spatial blocks report whether that correction generalizes to held-out areas. It does not automatically fit separate wall, clutter, terrain, or fading parameters.
 
 ### What is the 6G mode?
 

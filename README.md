@@ -34,7 +34,9 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 - **Frequency-Dependent Penetration**: 4G rays penetrate concrete buildings with Cumulative Wall Loss calculations, while 5G/6G rays experience heavy attenuation or immediate blockage, reflecting real-world propagation behavior.
 
-- **Sector Planning**: Sector antenna simulation with adjustable azimuth and beam width. Version 1 uses hard beam eligibility and does not model sidelobes, fading, diffraction, or MIMO scheduling.
+- **Sector Planning**: Fast sector simulation with adjustable azimuth and beam width. The sector engine uses analytic antenna presets and does not model reflection-heavy multipath, fading, multiple-edge diffraction, or MIMO scheduling.
+- **2.5D Path Profiles**: Optional COG/GeoTIFF terrain, building-height obstruction, LOS/Fresnel evidence, selected single knife-edge diffraction, inspectable fidelity components, and a vertical cross section.
+- **Experiments And Surfaces**: Asynchronous reproducible parameter matrices, Pareto evidence, regular coverage rasters/isolines, and GeoTIFF/GeoJSON/CSV interchange.
 
 - **Per-Cell RF Inventory**: Places, drags, duplicates, imports, validates, and persists cells with independent technology, band/channel, duplex, power, gain/loss, antenna geometry and patterns, load/reuse, PCI, and receiver assumptions.
 

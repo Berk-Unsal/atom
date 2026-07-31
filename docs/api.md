@@ -18,7 +18,7 @@ https://your-domain.com/api
 
 Expensive RF routes can require a shared backend key by setting `RF_API_KEY`. Send it as `Authorization: Bearer <key>` or `X-API-Key: <key>`; an invalid or missing key receives `401`. The setting is off for localhost-only development. Public deployments should authenticate users at a TLS gateway and inject this backend key rather than exposing it to browser JavaScript.
 
-The large building dataset route can independently require `BUILDINGS_API_KEY` through the same headers. Keep this key at an origin gateway when using shared or public caches.
+The full and bounded building-data routes can independently require `BUILDINGS_API_KEY` through the same headers. Keep this key at an origin gateway when using shared or public caches.
 
 Dataset activation can independently require `DATASET_ADMIN_API_KEY`. `GET /api/datasets` remains readable so the Data tool can show installed packs; only `POST /api/datasets/switch` requires the credential when configured. Inject it at an origin gateway rather than storing it in browser JavaScript.
 
@@ -26,20 +26,24 @@ When Core Lab is enabled, `POST /api/core/scenario` requires `CORE_LAB_API_KEY` 
 
 ## Response Format
 
-All responses are **JSON**, but the exact shape depends on the route:
+Most responses are **JSON**. Explicit GIS export representations use GeoJSON, CSV, or GeoTIFF as documented below:
 
 - `GET /healthz` returns a liveness status object
 - `GET /readyz` returns dependency readiness
 - `GET /api/meta` returns application, model, and active dataset identity
 - `GET /api/datasets` returns installed packs and the active manifest ID
-- `GET /api/buildings` and `GET /api/towers` return raw GeoJSON
+- `GET /api/buildings` and `GET /api/towers` return raw GeoJSON; bounded clients should prefer `/api/collections/buildings/items`
+- `GET /api/collections/buildings/items` returns viewport-bounded building GeoJSON or CSV
 - `POST /api/analyze-sector` returns `{ simulation, coverage_gaps }` from one shared ray-profile computation
+- `POST /api/path-profile` returns an inspectable 2.5D vertical profile and component loss budget
+- `POST /api/coverage-surface` returns a compact regular raster, isolines, statistics, and model assumptions, or an export representation
 - `POST /api/simulate` returns `{ geojson, stats, rf_profile }`
 - `POST /api/coverage-gaps` returns `{ geojson, stats }`
 - `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`
 - `POST /api/optimize-azimuth` returns `{ optimal_azimuth, coverage_score, demand_score, residential_score }`
 - `POST /api/recommend-sites` returns a baseline plus ranked candidate records and GeoJSON
-- `POST /api/measurements/evaluate` returns residual GeoJSON, error statistics, and bias guidance
+- `POST /api/measurements/evaluate` returns residual GeoJSON, subgroup diagnostics, uncertainty, and spatially validated bias guidance
+- `/api/processes/batch-experiment` and `/api/jobs/{jobID}` expose asynchronous experiment execution, progress, results, and cancellation
 
 Error responses use a simple object with an `error` message.
 
@@ -151,7 +155,7 @@ Returns the running application and model versions, build commit, supported tech
 {
   "application_version": "1.0.0",
   "build_commit": "abc1234",
-  "model_version": "fspl-walls-cell-profiles-v2",
+  "model_version": "fspl-walls-2p5d-v3",
   "supported_technologies": ["4g", "5g", "6g-research"],
   "dataset": {
     "id": "ankara-open-planning",
@@ -167,7 +171,7 @@ Returns the running application and model versions, build commit, supported tech
 
 **Endpoint**: `GET /api/buildings`
 
-Retrieve all building geometries as GeoJSON.
+Retrieve all building geometries as GeoJSON. This legacy whole-file route can exceed 100 MB. Interactive maps should use the bounded collection endpoint below.
 
 **Query Parameters**: None
 
@@ -196,6 +200,20 @@ Retrieve all building geometries as GeoJSON.
 **Caching and limits**: The approximately 117 MB response is identified by a strong SHA-256 `ETag` and served with `Cache-Control: public, max-age=3600, must-revalidate` by default. Revalidation with a matching `If-None-Match` returns `304` without consuming a download budget. Fresh transfers default to two globally, one concurrently per client, and two per minute per client. Configure these limits with `MAX_CONCURRENT_BUILDING_DOWNLOADS`, `MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT`, and `BUILDING_DOWNLOADS_PER_MINUTE`.
 
 Set `BUILDINGS_API_KEY` to require `Authorization: Bearer <key>` or `X-API-Key: <key>`. Authenticated responses use a private cache policy so shared caches cannot bypass the origin credential check.
+
+---
+
+### Query Viewport Buildings
+
+**Endpoint**: `GET /api/collections/buildings/items?bbox=minLon,minLat,maxLon,maxLat&limit=1000&offset=0`
+
+The `bbox` parameter is mandatory in OGC CRS84 longitude/latitude order and its diagonal may not exceed 50 km. `limit` defaults to 1,000 and is capped at 5,000. Results are sorted by stable building ID and report `numberMatched`, `numberReturned`, `limit`, and `offset`; a further page includes an HTTP `Link` header with `rel="next"`.
+
+The default representation is `application/geo+json`. Send `f=csv` or `Accept: text/csv` for CSV containing WKT polygon geometry, inferred height/source, normalized material, and demand fields. Discover the collection at `GET /api/collections`, inspect metadata at `GET /api/collections/buildings`, and inspect the standards declaration at `GET /api/conformance`. Its `conformsTo` list is deliberately empty because this project does not claim a complete OGC conformance class.
+
+This interface follows OGC API Features collection and bounding-box concepts. It is not a vector-tile endpoint.
+
+The bounded query shares the `BUILDINGS_API_KEY` policy but uses an independent interactive budget: four globally, two concurrently per client, and 120 per minute per client by default. Configure it with `MAX_CONCURRENT_BUILDING_FEATURE_QUERIES`, `MAX_CONCURRENT_BUILDING_FEATURE_QUERIES_PER_CLIENT`, and `BUILDING_FEATURE_QUERIES_PER_MINUTE`.
 
 ---
 
@@ -245,6 +263,54 @@ This is the preferred browser workflow when both propagation rays and coverage g
 ```
 
 The standalone `/api/simulate` and `/api/coverage-gaps` endpoints remain available when a client needs only one result.
+
+---
+
+### Analyze A 2.5D Path Profile
+
+**Endpoint**: `POST /api/path-profile`
+
+```json
+{
+  "transmitter": { "lon": 32.8541, "lat": 39.9208 },
+  "receiver": { "lon": 32.861, "lat": 39.924 },
+  "sample_spacing_m": 10,
+  "model_profile": "urban-short-range",
+  "azimuth": 45,
+  "rf_profile": { "network_tech": "5g", "frequency_ghz": 28, "antenna_height_m": 30, "receiver_height_m": 1.5 },
+  "fidelity": {
+    "building_loss_mode": "screen-diffraction",
+    "diffraction_model": "single-knife-edge",
+    "default_wall_material": "concrete",
+    "clutter_specific_attenuation_db_per_km": 0,
+    "vegetation_depth_m": 0,
+    "vegetation_specific_attenuation_db_per_m": 0,
+    "gas_specific_attenuation_db_per_km": 0,
+    "rain_specific_attenuation_db_per_km": 0,
+    "shadow_sigma_db": 6
+  }
+}
+```
+
+The response contains sampled terrain/building elevations, endpoint height above ground, direct LOS and 60% Fresnel classification, the dominant obstruction, one selected knife-edge approximation, component losses, P50 and shadow-sensitivity bounds, and an applicability statement. `terrain-profile` accepts 0.03–6 GHz, `urban-short-range` accepts 0.3–100 GHz, and `research-sub-thz` is explicitly outside those ITU-R profile ranges.
+
+COG/GeoTIFF support is limited to north-up EPSG:4326, one-band integer/float samples, none/DEFLATE compression, and supported integer predictors. The response lists these limitations.
+
+---
+
+### Generate A Coverage Surface
+
+**Endpoint**: `POST /api/coverage-surface`
+
+Use the normal sector request fields plus `cell_size_m` from 10–250 and one to ten unique `thresholds_dbm`. The regular grid is capped at 100,000 cells.
+
+The default JSON response contains a CRS84 row-major raster (`grid`), marching-square line segments (`contours`), bounds/statistics, and explicit model assumptions. Export the same request using:
+
+- `?f=geotiff` for an uncompressed float32 EPSG:4326 GeoTIFF with `-9999` nodata
+- `?f=geojson` for isoline GeoJSON
+- `?f=csv` for valid grid-center longitude, latitude, and received power
+
+The surface uses the fast FSPL, antenna-pattern, calibration, and frequency wall-loss model. It does not currently apply the terrain-profile or environmental sensitivity components.
 
 ---
 
@@ -511,6 +577,36 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 - Parallelization: Up to four workers per RF request
 - Server write timeout: 120 seconds
 
+### Evaluate Or Optimize A Network
+
+**Endpoints**: `POST /api/evaluate-network` and `POST /api/optimize-network`
+
+Network requests contain two to six `towers` and may add an `optimization` object:
+
+```json
+{
+  "towers": [
+    { "id": "101", "tower_lon": 32.85, "tower_lat": 39.92, "azimuth": 90 },
+    { "id": "102", "tower_lon": 32.86, "tower_lat": 39.93, "azimuth": 210 }
+  ],
+  "radius_m": 400,
+  "frequency_ghz": 28,
+  "optimization": {
+    "objectives": [
+      { "id": "coverage", "weight": 2 },
+      { "id": "demand", "weight": 1 },
+      { "id": "overlap", "weight": 3 }
+    ],
+    "constraints": {
+      "min_unique_demand_buildings": 10,
+      "max_overlap_buildings": 25
+    }
+  }
+}
+```
+
+Objective IDs are `coverage`, `demand`, `residential`, and `overlap`; each weight is greater than zero and at most 100. Constraints may set minimum coverage score, minimum unique demand/residential buildings, and maximum overlap buildings. Responses include the objective score, feasibility/violations, adjusted parameter list, and up to 25 feasible non-dominated evaluated azimuth sets with explanations. This version adjusts azimuth only.
+
 ---
 
 ## Planning Product Endpoints
@@ -574,7 +670,7 @@ Candidate records are not approved deployment sites. Cost, backhaul, permitting,
 
 **Endpoint**: `POST /api/measurements/evaluate`
 
-Compares one to 5,000 measured 4G or 5G RSRP points with the deterministic model. At least one selected cell is required. With 20 or more valid predictions, the response includes a robust global bias suggestion evaluated against a deterministic 20% holdout.
+Compares one to 5,000 measured 4G or 5G RSRP points with the deterministic model. At least one selected cell is required. With 20 or more valid predictions, at least five distinct 50 m spatial areas, and a campaign span of at least 100 m, the response includes a robust global bias suggestion evaluated through deterministic spatially blocked five-fold validation.
 
 ```json
 {
@@ -586,17 +682,48 @@ Compares one to 5,000 measured 4G or 5G RSRP points with the deterministic model
   "beam_width": 120,
   "bandwidth_mhz": 100,
   "noise_figure_db": 7,
+  "calibration_provenance": {
+    "campaign_id": "ankara-drive-2026-07",
+    "source": "drive-test.csv",
+    "collected_at": "2026-07-01T10:00:00Z",
+    "expires_at": "2027-01-01T00:00:00Z"
+  },
   "samples": [
     { "id": "drive-001", "lon": 32.851, "lat": 39.921, "technology": "5g", "rsrp_dbm": -91, "cell_id": "101" }
   ]
 }
 ```
 
-The response separates valid predictions, no-signal samples, and requested-cell mismatches before reporting residual MAE, RMSE, mean/median bias, and per-cell statistics. The correction is a single dB path-loss offset, not full propagation calibration. When applied, send `calibration_offset_db` with compatible simulation, network, interference, recommendation, and measurement requests. Accepted range is `-40` to `40` dB.
+The response separates valid predictions, no-signal samples, and requested-cell mismatches before reporting residual MAE/RMSE/bias, P50/P90 absolute error, per-cell and per-band summaries, distance/obstruction bins, robust MAD outliers, fold metrics, a 95% median-adjustment interval, and provenance/expiration state. The correction remains a single dB path-loss offset, not full propagation calibration. When applied, send `calibration_offset_db` with compatible simulation, network, interference, recommendation, and measurement requests. Accepted range is `-40` to `40` dB.
+
+### Run Batch Experiments
+
+**Discovery**: `GET /api/processes/batch-experiment`
+
+**Execution**: `POST /api/processes/batch-experiment/execution`
+
+```json
+{
+  "name": "Azimuth and power sweep",
+  "base": { "tower_lon": 32.8541, "tower_lat": 39.9208, "radius_m": 400, "frequency_ghz": 28, "tx_power_dbm": 30, "beam_width": 120 },
+  "matrix": { "tx_powers_dbm": [27, 30, 33], "azimuths_deg": [0, 30, 60, 90] }
+}
+```
+
+The Cartesian product is capped at 64 runs. Execution returns an asynchronous job with `job_id`, `status`, `progress`, `fingerprint`, and run counts. Poll `GET /api/jobs/{jobID}`; cancel an accepted or running job with `DELETE /api/jobs/{jobID}`. Successful results contain compact metrics, per-run fingerprints, Pareto labels/explanations, and cache state. The fingerprint includes the normalized definition, dataset identity/hashes, and model version.
+
+Run the same definition headlessly:
+
+```bash
+cd backend-go
+go run ./cmd/run-experiment -definition experiment.json -base-url http://localhost:8080
+```
+
+The process/job resource shape is inspired by OGC API Processes; this implementation does not advertise full standard conformance.
 
 ### Dataset Packs
 
-The backend loads the initial validated pack from `ATOM_DATASET_DIR`. Schema-v1 packs remain compatible. Schema v2 adds per-layer provenance and confidence, geometry/missing-field/coverage QA, and optional terrain, clutter, building-height, and material layers. All referenced files require SHA-256 hashes. Optional-layer metadata is exposed but those layers are not yet consumed by RF calculations.
+The backend loads the initial validated pack from `ATOM_DATASET_DIR`. Schema-v1 packs remain compatible. Schema v2 adds per-layer provenance and confidence, geometry/missing-field/coverage QA, and optional terrain, clutter, building-height, and material layers. All referenced files require SHA-256 hashes. A supported terrain COG/GeoTIFF is consumed by `/api/path-profile`; other optional sidecar layers remain metadata until explicitly integrated.
 
 `GET /api/datasets` lists packs discovered at `ATOM_DATASETS_ROOT` itself and its immediate child directories:
 

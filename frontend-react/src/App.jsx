@@ -14,9 +14,13 @@ import {
   Upload,
 } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
+import ExperimentPanel from "./components/ExperimentPanel.jsx";
 import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
 import InventoryPanel from "./components/InventoryPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
+import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
+import PathProfilePanel from "./components/PathProfilePanel.jsx";
+import SurfacePanel from "./components/SurfacePanel.jsx";
 import {
   CommandBar,
   InterferenceLegend,
@@ -29,12 +33,13 @@ import { WORKSPACE_TOOLS } from "./components/workspaceTools.js";
 import useRequestCoordinator from "./hooks/useRequestCoordinator.js";
 import useProjectWorkspace from "./hooks/useProjectWorkspace.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
-import { getJSON, isAbortError, postJSON } from "./utils/apiClient.js";
+import { getJSON, isAbortError, postBlob, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
 import { runNetworkSimulationQueue } from "./utils/networkSimulationQueue.js";
 import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/polygonSelection.js";
 import { readMeasurementCsvFile } from "./utils/measurementCsv.js";
 import { duplicateInventoryCell } from "./utils/inventoryImport.js";
+import { createDefaultOptimizationConfig, normalizeOptimizationConfig, OPTIMIZATION_OBJECTIVES } from "./utils/optimizationConfig.js";
 import { resolveRFProfile, rfProfileOverrideFromProperties, validateRFProfile } from "./utils/rfProfile.js";
 import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
 import { compactRecommendationResponse } from "./utils/recommendations.js";
@@ -54,8 +59,10 @@ import {
 import { CORE_LAB_SCENARIOS, DEFAULT_SIMULATION, NETWORK_TECH_OPTIONS, networkTechnologyForFrequency } from "./generated/policy.js";
 import {
   buildInterferencePayload,
+  buildCoverageSurfacePayload,
   buildMeasurementPayload,
   buildNetworkOptimizationPayload,
+  buildPathProfilePayload,
   buildRecommendationPayload,
   buildSimulationPayload,
 } from "./utils/requestPayloads.js";
@@ -95,6 +102,8 @@ const DEFAULT_LAYER_VISIBILITY = {
   communicationPaths: true,
   interference: true,
   measurements: true,
+  surfaces: true,
+  buildings: false,
 };
 
 export default function App() {
@@ -118,9 +127,16 @@ export default function App() {
   const [planDirty, setPlanDirty] = useState(false);
   const [towers, setTowers] = useState([]);
 	const [isPlacingCell, setIsPlacingCell] = useState(false);
+  const [isSelectingPathEndpoint, setIsSelectingPathEndpoint] = useState(false);
+  const [pathProfileEndpoint, setPathProfileEndpoint] = useState(null);
+  const [pathProfile, setPathProfile] = useState(null);
+  const [coverageSurface, setCoverageSurface] = useState(null);
+  const [coverageSurfaceRequest, setCoverageSurfaceRequest] = useState(null);
+  const [surfaceOptions, setSurfaceOptions] = useState({ cellSizeMeters: 25, thresholdsDBm: [-110, -100, -90, -80], opacity: 0.62, displayThresholdDBm: -110 });
   const [selectedTower, setSelectedTower] = useState(null);
   const [selectedNetworkTowerIds, setSelectedNetworkTowerIds] = useState([]);
   const [networkAzimuths, setNetworkAzimuths] = useState({});
+  const [optimizationConfig, setOptimizationConfig] = useState(createDefaultOptimizationConfig);
   const [simulation, setSimulation] = useState(EMPTY_SIMULATION);
   const [simulationRevision, setSimulationRevision] = useState(0);
   const [coverageGaps, setCoverageGaps] = useState(EMPTY_COVERAGE_GAPS);
@@ -137,6 +153,7 @@ export default function App() {
 	const [datasetMessage, setDatasetMessage] = useState("");
   const [siteRecommendations, setSiteRecommendations] = useState(null);
   const [measurementSamples, setMeasurementSamples] = useState([]);
+  const [measurementProvenance, setMeasurementProvenance] = useState(null);
   const [measurementAnalysis, setMeasurementAnalysis] = useState(null);
   const [calibrationProfile, setCalibrationProfile] = useState(null);
   const [activeRFTask, setActiveRFTask] = useState(null);
@@ -168,6 +185,8 @@ export default function App() {
   const isAnalyzingInterference = activeRFTask === "interference";
   const isRecommendingSites = activeRFTask === "recommendation";
   const isEvaluatingMeasurements = activeRFTask === "measurements";
+  const isAnalyzingPathProfile = activeRFTask === "path_profile";
+  const isGeneratingSurface = activeRFTask === "coverage_surface";
 
   useEffect(() => {
     let isMounted = true;
@@ -269,6 +288,7 @@ export default function App() {
 			setSelectedNetworkTowerIds(plan.selectedNetworkTowerIds.filter((id) => restoredInventory.some((tower) => tower.id === id)));
     }
     setNetworkAzimuths(plan.networkAzimuths ?? {});
+    setOptimizationConfig(normalizeOptimizationConfig(plan.optimizationConfig));
     if (plan.selectedTowerId) {
 			setSelectedTower(restoredInventory.find((tower) => tower.id === plan.selectedTowerId) ?? restoredInventory[0] ?? null);
     }
@@ -326,6 +346,7 @@ export default function App() {
           planningMode,
           selectedNetworkTowerIds,
           networkAzimuths,
+          optimizationConfig,
           selectedTowerId: selectedTower?.id ?? null,
           selectionPolygon,
           settings,
@@ -341,6 +362,7 @@ export default function App() {
     saveProjectDraft,
     selectedNetworkTowerIds,
     networkAzimuths,
+    optimizationConfig,
     selectedTower?.id,
     selectionPolygon,
     settings,
@@ -369,6 +391,73 @@ export default function App() {
       signal,
     );
   }, []);
+
+  const analyzePathProfile = useCallback(async (options) => {
+    if (!selectedTower || !pathProfileEndpoint) {
+      setError("Select a transmitter cell and receiver point first");
+      return;
+    }
+    const request = requests.begin("path-profile");
+    setActiveRFTask("path_profile");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/path-profile",
+        buildPathProfilePayload(selectedTower, pathProfileEndpoint, settings, options),
+        "Path profile analysis failed",
+        request.signal,
+      );
+      if (request.isCurrent()) setPathProfile(payload);
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [pathProfileEndpoint, requests, selectedTower, settings]);
+
+  const analyzeCoverageSurface = useCallback(async (options) => {
+    if (!selectedTower) {
+      setError("Select a transmitter cell first");
+      return;
+    }
+    const request = requests.begin("coverage-surface");
+    const requestPayload = buildCoverageSurfacePayload(selectedTower, settings, options);
+    setActiveRFTask("coverage_surface");
+    setError("");
+    try {
+      const payload = await postJSON("/api/coverage-surface", requestPayload, "Coverage surface generation failed", request.signal);
+      if (!request.isCurrent()) return;
+      setCoverageSurface(payload);
+      setCoverageSurfaceRequest(requestPayload);
+      setLayerVisibility((current) => ({ ...current, surfaces: true }));
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [requests, selectedTower, settings]);
+
+  const exportCoverageSurface = useCallback(async (format) => {
+    if (!coverageSurfaceRequest) return;
+    try {
+      const blob = await postBlob(`/api/coverage-surface?f=${format}`, coverageSurfaceRequest, "Coverage surface export failed");
+      const extension = format === "geotiff" ? "tif" : format === "geojson" ? "geojson" : "csv";
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `coverage-surface.${extension}`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (exportError) {
+      setError(exportError.message);
+    }
+  }, [coverageSurfaceRequest]);
 
   const runSimulation = useCallback(async () => {
     if (!selectedTower) {
@@ -493,7 +582,7 @@ export default function App() {
     setError("");
     clearInterferenceAnalysis();
     try {
-      const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths);
+      const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig);
       const baselinePayload = await postJSON(
         "/api/evaluate-network",
         networkRequest,
@@ -560,7 +649,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [clearInterferenceAnalysis, networkAzimuths, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [clearInterferenceAnalysis, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const evaluateNetwork = useCallback(async () => {
     const selected = selectedNetworkTowerIds
@@ -576,7 +665,7 @@ export default function App() {
     setError("");
     clearInterferenceAnalysis();
     try {
-      const networkRequest = buildNetworkOptimizationPayload(selected, settings, networkAzimuths);
+      const networkRequest = buildNetworkOptimizationPayload(selected, settings, networkAzimuths, optimizationConfig);
       const payload = await postJSON(
         "/api/evaluate-network",
         networkRequest,
@@ -612,7 +701,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [clearInterferenceAnalysis, networkAzimuths, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [clearInterferenceAnalysis, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const selectedNetworkTowers = useMemo(
     () =>
@@ -809,11 +898,16 @@ export default function App() {
     setSimulationRevision((current) => current + 1);
     setCoverageGapRevision((current) => current + 1);
     setSelectedMapObject((current) => current?.type === "tower" ? current : null);
+    setCoverageSurface(null);
+    setCoverageSurfaceRequest(null);
   }, []);
 
   const invalidatePlanResults = useCallback(() => {
     requests.cancel("rf");
+    requests.cancel("path-profile");
+    requests.cancel("coverage-surface");
     setActiveRFTask(null);
+    setPathProfile(null);
     setOptimizationDiagnostics(null);
     resetNetworkArtifacts();
     clearRenderedAnalysis();
@@ -827,7 +921,11 @@ export default function App() {
 		try {
 			const response = await postJSON("/api/datasets/switch", { id: datasetID }, "Dataset switch failed");
 			requests.cancel("rf");
+			requests.cancel("path-profile");
+			requests.cancel("coverage-surface");
 			setActiveRFTask(null);
+			setPathProfile(null);
+			setPathProfileEndpoint(null);
 			setTowers([]);
 			setSelectedTower(null);
 			setSelectedNetworkTowerIds([]);
@@ -859,6 +957,11 @@ export default function App() {
       }
       return resolved;
     });
+  }, [invalidatePlanResults]);
+
+  const updateOptimizationConfig = useCallback((nextConfig) => {
+    invalidatePlanResults();
+    setOptimizationConfig(normalizeOptimizationConfig(nextConfig));
   }, [invalidatePlanResults]);
 
   const selectTower = useCallback((tower) => {
@@ -912,6 +1015,26 @@ export default function App() {
 		if (coordinates[0] < -180 || coordinates[0] > 180 || coordinates[1] < -90 || coordinates[1] > 90) return;
 		updateInventoryTower(towerID, (tower) => ({ ...tower, coordinates, editable: true, inventorySource: tower.inventorySource === "dataset" ? "project override" : tower.inventorySource }));
 	}, [updateInventoryTower]);
+
+  const startPathEndpointSelection = useCallback(() => {
+    if (!selectedTower) {
+      setError("Select a transmitter cell first");
+      return;
+    }
+    setIsPlacingCell(false);
+    setIsDrawingSelection(false);
+    setIsSelectingPathEndpoint(true);
+    setSelectionNotice("Click the map to place the path receiver.");
+    setError("");
+  }, [selectedTower]);
+
+  const selectPathEndpoint = useCallback((coordinates) => {
+    if (!Array.isArray(coordinates) || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) return;
+    setPathProfileEndpoint(coordinates);
+    setPathProfile(null);
+    setIsSelectingPathEndpoint(false);
+    setSelectionNotice("Receiver selected. Analyze the path to build its vertical profile.");
+  }, []);
 
 	const placeInventoryCell = useCallback((coordinates) => {
 		const used = new Set(towers.map((tower) => tower.id));
@@ -1093,10 +1216,17 @@ export default function App() {
         throw new Error(`Measurement technology must match the active ${expectedTechnology.toUpperCase()} plan`);
       }
       setMeasurementSamples(samples);
+      setMeasurementProvenance({
+        source: file.name || "measurement_csv",
+        ...(Number.isFinite(file.lastModified) && file.lastModified > 0
+          ? { collected_at: new Date(file.lastModified).toISOString() }
+          : {}),
+      });
       setMeasurementAnalysis(null);
       setError("");
     } catch (fileError) {
       setMeasurementSamples([]);
+      setMeasurementProvenance(null);
       setMeasurementAnalysis(null);
       setError(fileError.message);
     }
@@ -1118,7 +1248,7 @@ export default function App() {
     try {
       const payload = await postJSON(
         "/api/measurements/evaluate",
-        buildMeasurementPayload(measurementTowers, settings, measurementSamples, networkOptimization, networkAzimuths),
+        buildMeasurementPayload(measurementTowers, settings, measurementSamples, networkOptimization, networkAzimuths, measurementProvenance),
         "Measurement evaluation failed",
         request.signal,
       );
@@ -1134,7 +1264,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [interferenceApplicable, measurementSamples, networkAzimuths, networkOptimization, planningMode, requests, selectedNetworkTowers, selectedTower, settings]);
+  }, [interferenceApplicable, measurementProvenance, measurementSamples, networkAzimuths, networkOptimization, planningMode, requests, selectedNetworkTowers, selectedTower, settings]);
 
   const applyCalibration = useCallback(() => {
     const offset = measurementAnalysis?.calibration?.recommended_total_offset_db;
@@ -1145,12 +1275,14 @@ export default function App() {
     invalidatePlanResults();
     setSettings((current) => ({ ...current, calibrationOffsetDb: Number(offset) }));
     setCalibrationProfile({
-      kind: "robust_global_path_loss_bias",
+      kind: "spatially_validated_robust_global_path_loss_bias",
       offsetDb: Number(offset),
       technology: networkTechnologyForFrequency(settings.frequencyGHz),
       frequencyGHz: settings.frequencyGHz,
       modelVersion: appMeta?.model_version ?? "unknown",
       dataset: datasetReference(appMeta),
+      provenance: measurementAnalysis.calibration?.provenance ?? {},
+      expiresAt: measurementAnalysis.calibration?.provenance?.expires_at || undefined,
       validation: measurementAnalysis.calibration,
     });
   }, [appMeta, invalidatePlanResults, measurementAnalysis, settings.frequencyGHz]);
@@ -1180,6 +1312,7 @@ export default function App() {
 
   const selectWorkspaceTool = useCallback((tool) => {
 		if (tool !== "inventory") setIsPlacingCell(false);
+    if (tool !== "propagation") setIsSelectingPathEndpoint(false);
     if (drawerOpen && drawerMode === "tool" && activeTool === tool) {
       closeDrawer();
       return;
@@ -1226,6 +1359,10 @@ export default function App() {
         setLayerMenuOpen(false);
         return;
       }
+      if (isSelectingPathEndpoint) {
+        setIsSelectingPathEndpoint(false);
+        return;
+      }
       if (isDrawingSelection) {
         cancelAreaSelection();
         return;
@@ -1236,7 +1373,7 @@ export default function App() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [cancelAreaSelection, closeDrawer, drawerMode, drawerOpen, isDrawingSelection, layerMenuOpen]);
+  }, [cancelAreaSelection, closeDrawer, drawerMode, drawerOpen, isDrawingSelection, isSelectingPathEndpoint, layerMenuOpen]);
 
   useEffect(() => {
     if (!coreLabEnabled || !coreLabApplicable) {
@@ -1357,6 +1494,8 @@ export default function App() {
     setup: { badge: planningMode === "network" ? String(selectedNetworkTowerIds.length) : null },
 		inventory: { badge: invalidProfileCount ? "!" : null, tone: invalidProfileCount ? "warning" : "success" },
     propagation: {},
+    experiments: {},
+    surfaces: { badge: coverageSurface ? "•" : null, tone: coverageSurface ? "success" : undefined },
     interference: {
       unavailable: Boolean(interferenceUnavailableReason),
       reason: interferenceUnavailableReason,
@@ -1418,12 +1557,13 @@ export default function App() {
       selectedTowerId: selectedTower?.id ?? null,
         selectedNetworkTowerIds,
         networkAzimuths,
+        optimizationConfig,
       selectionPolygon,
       layerVisibility,
       ...overrides.plan,
     },
     request: planningMode === "network"
-      ? buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths)
+      ? buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig)
       : selectedTower ? buildSimulationPayload(selectedTower, settings) : null,
     summary: {
       kind: lastAnalysisKind,
@@ -1457,6 +1597,7 @@ export default function App() {
     lastAnalysisKind,
     layerVisibility,
     networkAzimuths,
+    optimizationConfig,
     measurementAnalysis,
     networkOptimization,
     optimizationDiagnostics,
@@ -1592,6 +1733,8 @@ export default function App() {
     setup: "Mode, technology, power, and cell selection",
 		inventory: "Local cells, map placement, imports, and per-cell RF profiles",
     propagation: "Ray geometry, coverage radius, and optimization",
+    experiments: "Queued parameter sweeps, fingerprints, and Pareto comparison",
+    surfaces: "Continuous coverage raster, contours, and GIS exports",
     interference: "Co-channel load and radio-quality assumptions",
     core: "Xn, N2, N3, sessions, and lab scenarios",
     results: "Focused analysis from the latest RF operation",
@@ -1651,9 +1794,11 @@ export default function App() {
           <MapToolbar
             availableLayers={{
               communicationPaths: Boolean(coreLabApplicable && coreLabEnabled && coreLab.topology),
+              buildings: Boolean(buildingSummary?.total_buildings),
               gaps: Boolean(coverageGaps?.geojson?.features?.length),
               interference: hasInterferenceData,
               measurements: Boolean(measurementAnalysis?.geojson?.features?.length),
+              surfaces: Boolean(coverageSurface?.grid?.values?.length),
               rays: Boolean(simulation?.geojson?.features?.length),
               selectedCells: selectedNetworkTowerIds.length > 0,
             }}
@@ -1706,6 +1851,12 @@ export default function App() {
 			isPlacingCell={isPlacingCell}
 			onPlaceCell={placeInventoryCell}
 			onMoveTower={moveInventoryCell}
+            isSelectingPathEndpoint={isSelectingPathEndpoint}
+            onSelectPathEndpoint={selectPathEndpoint}
+            pathProfile={pathProfile}
+            coverageSurface={coverageSurface}
+            surfaceOpacity={surfaceOptions.opacity}
+            surfaceDisplayThresholdDBm={surfaceOptions.displayThresholdDBm}
           />
           {mapPlanPrompt && activeRFTask === null ? (
             <div className="map-plan-prompt" role="status">
@@ -1752,6 +1903,42 @@ export default function App() {
               planningMode={planningMode}
               interferenceApplicable={interferenceApplicable}
               isAnalyzingInterference={isAnalyzingInterference}
+            />
+          ) : null}
+
+          {drawerMode === "tool" && activeTool === "propagation" ? (
+            <>
+              {planningMode === "network" ? (
+                <OptimizationGoalsPanel config={optimizationConfig} onChange={updateOptimizationConfig} />
+              ) : null}
+              <PathProfilePanel
+                endpoint={pathProfileEndpoint}
+                isAnalyzing={isAnalyzingPathProfile}
+                isSelectingEndpoint={isSelectingPathEndpoint}
+                onAnalyze={analyzePathProfile}
+                onCancelSelection={() => setIsSelectingPathEndpoint(false)}
+                onEndpointChange={selectPathEndpoint}
+                onStartSelection={startPathEndpointSelection}
+                profile={pathProfile}
+                selectedTower={selectedTower}
+                settings={settings}
+              />
+            </>
+          ) : null}
+
+          {drawerMode === "tool" && activeTool === "experiments" ? (
+            <ExperimentPanel selectedTower={selectedTower} settings={settings} />
+          ) : null}
+
+          {drawerMode === "tool" && activeTool === "surfaces" ? (
+            <SurfacePanel
+              disabled={!selectedTower}
+              isLoading={isGeneratingSurface}
+              onExport={exportCoverageSurface}
+              onOptionsChange={setSurfaceOptions}
+              onRun={analyzeCoverageSurface}
+              options={surfaceOptions}
+              surface={coverageSurface}
             />
           ) : null}
 
@@ -2216,6 +2403,9 @@ function NetworkOptimizationPanel({ optimization, kind }) {
     return null;
   }
   const stats = optimization.stats ?? {};
+  const outcome = optimization.optimization ?? {};
+  const objectiveLabels = new Map(OPTIMIZATION_OBJECTIVES.map((objective) => [objective.id, objective]));
+  const frontier = optimization.pareto_frontier ?? [];
   return (
     <section className="network-card" aria-label={`${kind === "evaluation" ? "Network evaluation" : "Network optimization"} summary`}>
       <div className="panel-title">
@@ -2231,7 +2421,20 @@ function NetworkOptimizationPanel({ optimization, kind }) {
         />
         <MetricRow label="Overlap buildings" value={(stats.overlap_buildings ?? 0).toLocaleString()} />
         <MetricRow label="Overlap penalty" value={formatCompactNumber(stats.overlap_penalty)} />
+        <MetricRow label="Objective score" value={formatCompactNumber(outcome.objective_score)} />
+        <MetricRow label="Constraints" value={outcome.constraints_satisfied === false ? "Not satisfied" : "Satisfied"} />
       </div>
+      <div className="optimization-result-summary">
+        <span className={outcome.constraints_satisfied === false ? "constraint-state failed" : "constraint-state passed"}>
+          {outcome.constraints_satisfied === false ? "Infeasible best available" : "Feasible solution"}
+        </span>
+        {(outcome.objectives ?? []).map((objective) => (
+          <span className="objective-chip" key={objective.id}>
+            {objectiveLabels.get(objective.id)?.label ?? objective.id} × {formatNumber(objective.weight, 2)}
+          </span>
+        ))}
+      </div>
+      {(outcome.violations ?? []).map((violation) => <p className="optimization-violation" key={violation}>{violation}</p>)}
       <div className="network-tower-list">
         {(optimization.optimized_towers ?? []).map((tower) => (
           <span key={tower.id}>
@@ -2239,6 +2442,22 @@ function NetworkOptimizationPanel({ optimization, kind }) {
           </span>
         ))}
       </div>
+      {frontier.length > 0 ? (
+        <details className="pareto-frontier-list">
+          <summary>{frontier.length} non-dominated evaluated solution{frontier.length === 1 ? "" : "s"}</summary>
+          <p className="data-note">Each row is feasible and is not worse on every selected objective than another evaluated azimuth set.</p>
+          {frontier.slice(0, 12).map((solution, index) => (
+            <article key={`${solution.objective_score}-${index}`}>
+              <div><strong>#{index + 1} · {formatCompactNumber(solution.objective_score)}</strong><span>{(solution.towers ?? []).map((tower) => `${tower.id}: ${formatNumber(tower.azimuth_deg, 0)}°`).join(" · ")}</span></div>
+              <small>Demand {solution.stats?.unique_demand_buildings ?? 0} · Residential {solution.stats?.unique_residential_buildings ?? 0} · Overlap {solution.stats?.overlap_buildings ?? 0}</small>
+              <p>{solution.explanation}</p>
+            </article>
+          ))}
+        </details>
+      ) : (
+        <p className="data-note">No feasible non-dominated set was found under the active constraints.</p>
+      )}
+      <p className="data-note">Adjusted parameters: {(outcome.adjusted_parameters ?? ["azimuth"]).join(", ")}. Tilt, power, candidate-site, cost, fiber, and permitting inputs are not synthesized by this optimizer.</p>
     </section>
   );
 }
@@ -2542,10 +2761,23 @@ function DataPanel({
               <MiniDatum label="MAE" value={formatMetric(measurementAnalysis.stats.mae_db, "dB")} />
               <MiniDatum label="RMSE" value={formatMetric(measurementAnalysis.stats.rmse_db, "dB")} />
               <MiniDatum label="Median bias" value={formatMetric(measurementAnalysis.stats.median_bias_db, "dB")} />
+              <MiniDatum label="P50 absolute error" value={formatMetric(measurementAnalysis.stats.p50_abs_error_db, "dB")} />
+              <MiniDatum label="P90 absolute error" value={formatMetric(measurementAnalysis.stats.p90_abs_error_db, "dB")} />
             </div>
             <div className="calibration-review">
-              <strong>Global bias correction</strong>
+              <strong>Spatially validated global bias</strong>
               <p>{measurementAnalysis.calibration?.reason}</p>
+              <div className="dataset-grid">
+                <MiniDatum label="Spatial areas" value={(measurementAnalysis.calibration?.spatial_group_count ?? 0).toLocaleString()} />
+                <MiniDatum label="Campaign span" value={formatMetric(measurementAnalysis.calibration?.spatial_span_m, "m")} />
+                <MiniDatum label="Spatial folds" value={(measurementAnalysis.calibration?.fold_count ?? 0).toLocaleString()} />
+                <MiniDatum label="Outliers" value={(measurementAnalysis.diagnostics?.outlier_count ?? 0).toLocaleString()} />
+                <MiniDatum label="Validation P50" value={formatMetric(measurementAnalysis.calibration?.p50_absolute_error_db, "dB")} />
+                <MiniDatum label="Validation P90" value={formatMetric(measurementAnalysis.calibration?.p90_absolute_error_db, "dB")} />
+              </div>
+              {measurementAnalysis.calibration?.adjustment_confidence_95 ? (
+                <p>95% median-adjustment interval: {formatNumber(measurementAnalysis.calibration.adjustment_confidence_95.lower_db, 1)} to {formatNumber(measurementAnalysis.calibration.adjustment_confidence_95.upper_db, 1)} dB.</p>
+              ) : null}
               {measurementAnalysis.calibration?.eligible ? (
                 <>
                   <div className="dataset-grid">
@@ -2556,11 +2788,58 @@ function DataPanel({
                   <button type="button" onClick={onApplyCalibration}>Apply correction to plan</button>
                 </>
               ) : null}
+              <CalibrationDiagnosticsPanel analysis={measurementAnalysis} />
             </div>
           </>
         ) : null}
         {calibrationProfile ? <p className="calibration-active">Active correction: {formatNumber(calibrationProfile.offsetDb, 1)} dB. This is a global bias adjustment, not full calibration.</p> : null}
       </section>
+    </section>
+  );
+}
+
+function CalibrationDiagnosticsPanel({ analysis }) {
+  const perCell = analysis?.per_cell ?? [];
+  const perBand = analysis?.per_band ?? [];
+  const distanceBins = analysis?.diagnostics?.residual_vs_distance ?? [];
+  const obstructionBins = analysis?.diagnostics?.residual_vs_obstruction ?? [];
+  const folds = analysis?.calibration?.folds ?? [];
+  if (perCell.length === 0 && perBand.length === 0 && folds.length === 0) return null;
+  return (
+    <details className="calibration-diagnostics">
+      <summary>Inspect residual diagnostics</summary>
+      <DiagnosticRows title="Per cell" rows={perCell.map((row) => ({
+        key: row.cell_id, label: `Cell ${row.cell_id}`, count: row.sample_count,
+        detail: `bias ${formatNumber(row.mean_bias_db, 1)} dB · MAE ${formatNumber(row.mae_db, 1)} dB`,
+      }))} />
+      <DiagnosticRows title="Per band" rows={perBand.map((row) => ({
+        key: row.frequency_ghz, label: `${formatNumber(row.frequency_ghz, 2)} GHz`, count: row.sample_count,
+        detail: `bias ${formatNumber(row.mean_bias_db, 1)} dB · MAE ${formatNumber(row.mae_db, 1)} dB`,
+      }))} />
+      <DiagnosticRows title="Residual versus distance" rows={distanceBins.map((row) => ({
+        key: row.label, label: row.label, count: row.sample_count,
+        detail: `bias ${formatNumber(row.mean_bias_db, 1)} dB · MAE ${formatNumber(row.mae_db, 1)} dB`,
+      }))} />
+      <DiagnosticRows title="Residual versus obstruction" rows={obstructionBins.map((row) => ({
+        key: row.label, label: row.label, count: row.sample_count,
+        detail: `bias ${formatNumber(row.mean_bias_db, 1)} dB · MAE ${formatNumber(row.mae_db, 1)} dB`,
+      }))} />
+      <DiagnosticRows title="Spatial folds" rows={folds.map((fold) => ({
+        key: fold.fold, label: `Fold ${fold.fold}`, count: fold.validation_sample_count,
+        detail: `${formatNumber(fold.mae_before_db, 1)} → ${formatNumber(fold.mae_after_db, 1)} dB MAE`,
+      }))} />
+    </details>
+  );
+}
+
+function DiagnosticRows({ title, rows }) {
+  if (rows.length === 0) return null;
+  return (
+    <section className="diagnostic-group">
+      <strong>{title}</strong>
+      {rows.map((row) => (
+        <div key={row.key}><span>{row.label}</span><small>{row.detail}</small><em>{row.count} samples</em></div>
+      ))}
     </section>
   );
 }

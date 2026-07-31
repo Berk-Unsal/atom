@@ -21,15 +21,18 @@ const (
 )
 
 var expensiveRFRoutes = map[string]struct{}{
-	"/api/analyze-sector":        {},
-	"/api/simulate":              {},
-	"/api/coverage-gaps":         {},
-	"/api/optimize-azimuth":      {},
-	"/api/evaluate-network":      {},
-	"/api/optimize-network":      {},
-	"/api/interference":          {},
-	"/api/recommend-sites":       {},
-	"/api/measurements/evaluate": {},
+	"/api/path-profile":                         {},
+	"/api/coverage-surface":                     {},
+	"/api/processes/batch-experiment/execution": {},
+	"/api/analyze-sector":                       {},
+	"/api/simulate":                             {},
+	"/api/coverage-gaps":                        {},
+	"/api/optimize-azimuth":                     {},
+	"/api/evaluate-network":                     {},
+	"/api/optimize-network":                     {},
+	"/api/interference":                         {},
+	"/api/recommend-sites":                      {},
+	"/api/measurements/evaluate":                {},
 }
 
 type rfClientState struct {

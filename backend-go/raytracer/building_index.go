@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/tidwall/rtree"
@@ -25,6 +26,9 @@ type Bounds struct {
 type BuildingFootprint struct {
 	ID                    string            `json:"id"`
 	Tags                  map[string]string `json:"tags"`
+	HeightMeters          float64           `json:"heightMeters"`
+	HeightSource          string            `json:"heightSource"`
+	Material              string            `json:"material"`
 	Weight                float64           `json:"weight"`
 	DemandWeight          float64           `json:"demandWeight"`
 	ResidentialDemand     float64           `json:"residentialDemand"`
@@ -147,6 +151,8 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 
 func appendFeatureFootprints(footprints []*BuildingFootprint, feature feature, featureIndex int) []*BuildingFootprint {
 	tags := feature.StringProperties()
+	heightMeters, heightSource := buildingHeight(feature)
+	material := buildingMaterial(tags)
 	weight := feature.FloatProperty("weight", 1.0)
 	if weight <= 0 {
 		weight = 1.0
@@ -203,6 +209,9 @@ func appendFeatureFootprints(footprints []*BuildingFootprint, feature feature, f
 		footprints = append(footprints, &BuildingFootprint{
 			ID:                    id,
 			Tags:                  tags,
+			HeightMeters:          heightMeters,
+			HeightSource:          heightSource,
+			Material:              material,
 			Weight:                weight,
 			DemandWeight:          demandWeight,
 			ResidentialDemand:     residentialDemand,
@@ -218,6 +227,63 @@ func appendFeatureFootprints(footprints []*BuildingFootprint, feature feature, f
 		})
 	}
 	return footprints
+}
+
+const defaultBuildingHeightMeters = 9.0
+
+func buildingHeight(feature feature) (float64, string) {
+	if height, ok := parseBuildingLength(feature.StringProperty("height", "")); ok {
+		return height, "height"
+	}
+	if levels, ok := parsePositiveNumber(feature.StringProperty("building:levels", "")); ok {
+		return math.Min(levels*3, 500), "building:levels"
+	}
+	return defaultBuildingHeightMeters, "default-3-storey"
+}
+
+func parseBuildingLength(value string) (float64, bool) {
+	cleaned := strings.ToLower(strings.TrimSpace(value))
+	if cleaned == "" {
+		return 0, false
+	}
+	multiplier := 1.0
+	if strings.HasSuffix(cleaned, "ft") || strings.HasSuffix(cleaned, "feet") || strings.HasSuffix(cleaned, "'") {
+		multiplier = 0.3048
+	}
+	cleaned = strings.TrimSpace(strings.TrimSuffix(strings.TrimSuffix(strings.TrimSuffix(cleaned, "feet"), "ft"), "'"))
+	number, ok := parsePositiveNumber(cleaned)
+	if !ok {
+		return 0, false
+	}
+	height := number * multiplier
+	if height < 1 || height > 500 {
+		return 0, false
+	}
+	return height, true
+}
+
+func parsePositiveNumber(value string) (float64, bool) {
+	number, err := strconv.ParseFloat(strings.TrimSpace(value), 64)
+	return number, err == nil && !math.IsNaN(number) && !math.IsInf(number, 0) && number > 0
+}
+
+func buildingMaterial(tags map[string]string) string {
+	for _, key := range []string{"building:material", "material", "facade:material"} {
+		value := strings.ToLower(strings.TrimSpace(tags[key]))
+		switch {
+		case strings.Contains(value, "glass"):
+			return "glass"
+		case strings.Contains(value, "brick"):
+			return "brick"
+		case strings.Contains(value, "wood") || strings.Contains(value, "timber"):
+			return "wood"
+		case strings.Contains(value, "metal") || strings.Contains(value, "steel"):
+			return "metal"
+		case strings.Contains(value, "concrete") || strings.Contains(value, "cement") || strings.Contains(value, "stone"):
+			return "concrete"
+		}
+	}
+	return "unknown"
 }
 
 func skipJSONValue(decoder *json.Decoder) error {
@@ -301,6 +367,16 @@ func (idx *BuildingIndex) SearchBounds(bounds Bounds) []*BuildingFootprint {
 
 func (idx *BuildingIndex) SearchRay(origin Point, end Point) []*BuildingFootprint {
 	return idx.SearchBounds(BoundsFromSegment(origin, end))
+}
+
+func (idx *BuildingIndex) BuildingAt(point Point) *BuildingFootprint {
+	var tallest *BuildingFootprint
+	for _, building := range idx.SearchBounds(BoundsAroundPoint(point, 0.5)) {
+		if building != nil && PointInPolygon(point, building.Vertices) && (tallest == nil || building.HeightMeters > tallest.HeightMeters) {
+			tallest = building
+		}
+	}
+	return tallest
 }
 
 func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary {

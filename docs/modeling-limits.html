@@ -84,6 +84,9 @@ Limits page contents">
       id="toc-interference-metrics">Interference Metrics</a></li>
       <li><a href="#data-confidence" id="toc-data-confidence">Data
       Confidence</a></li>
+      <li><a href="#recommendation-applicability"
+      id="toc-recommendation-applicability">Recommendation
+      Applicability</a></li>
       <li><a href="#appropriate-interpretation"
       id="toc-appropriate-interpretation">Appropriate
       Interpretation</a></li>
@@ -126,6 +129,11 @@ dataset</li>
 <li>Deterministic POI and residential-demand enrichment for scoring</li>
 <li>Co-channel cell power, load, reuse, thermal noise, and
 resource-block presets for interference analysis</li>
+<li>Optional COG/GeoTIFF ground elevation, building-height obstruction,
+LOS/Fresnel geometry, and one dominant single knife-edge approximation
+in the point-to-point path-profile workflow</li>
+<li>Optional, user-entered material, clutter, vegetation, gas, rain, and
+shadow-sensitivity components in that path-profile workflow</li>
 </ul>
 <p>The same request and dataset produce the same RF result. Core Lab
 scenario state does not modify propagation or interference
@@ -134,9 +142,11 @@ calculations.</p>
 Modeled</h2>
 <ul>
 <li>Fast or slow fading</li>
-<li>Diffraction around roofs, corners, and terrain</li>
+<li>Multiple-obstacle diffraction, roof/corner diffraction beyond the
+selected single knife-edge approximation</li>
 <li>Multipath reflection or ray bouncing</li>
-<li>Terrain elevation, foliage, weather, and atmospheric absorption</li>
+<li>Automatic foliage, weather, atmospheric, and clutter datasets; those
+effects are explicit sensitivity inputs when enabled</li>
 <li>Measured antenna diagrams, sidelobes, polarization, and
 per-frequency pattern interpolation</li>
 <li>MIMO layers, beamforming codebooks, polarization, or device
@@ -180,13 +190,38 @@ OpenCellID-oriented source processing, not an operator inventory.</li>
 enrichment; missing tags reduce semantic confidence.</li>
 <li>Basemap tiles provide visual context only and do not enter RF
 calculations.</li>
-<li>Schema-v2 terrain, clutter, building-height, and material layers are
-integrity-checked and exposed as pack metadata, but the current RF model
-does not consume them. Their presence must not be described as terrain-
-or material-aware propagation.</li>
+<li>A supported north-up EPSG:4326 COG/GeoTIFF terrain layer is consumed
+by the point-to-point profile only. The fast sector, interference,
+optimization, batch, and regular-surface engines do not consume
+terrain.</li>
+<li>Building footprints infer height from <code>height</code>, then
+<code>building:levels</code>, then an explicit 9 m fallback. Material
+tags are normalized when present; explicit material/environment controls
+must not be described as surveyed site data.</li>
+<li>Separate clutter, height, and material sidecar layers are validated
+as pack metadata but are not automatically spatially joined into all
+analyses.</li>
 </ul>
 <p>Review the Data tool and exported report for the assumptions attached
 to a specific analysis.</p>
+<h2 id="recommendation-applicability">Recommendation Applicability</h2>
+<p>The <code>terrain-profile</code> label is available only from 30 MHz
+to 6 GHz, matching the published frequency range of <a
+href="https://www.itu.int/rec/R-REC-P.1812-8-202509-I/en">ITU-R
+P.1812-8</a>. The <code>urban-short-range</code> label is available from
+300 MHz to 100 GHz, matching <a
+href="https://www.itu.int/rec/R-REC-P.1411-9-201706-I/en">ITU-R
+P.1411-9</a>. A research sub-THz profile is explicitly outside both
+ranges. A.T.O.M implements selected inspectable concepts and sensitivity
+components; it does not implement either Recommendation in full.</p>
+<p>The single knife-edge term is an approximation informed by <a
+href="https://www.itu.int/rec/R-REC-P.526/en">ITU-R P.526</a>.
+User-selected material, atmospheric-gas, and rain terms are informed by
+<a href="https://www.itu.int/rec/r-rec-p.2040/en">ITU-R P.2040</a>, <a
+href="https://www.itu.int/rec/R-REC-P.676/en">ITU-R P.676</a>, and <a
+href="https://www.itu.int/rec/R-REC-P.838/en">ITU-R P.838</a>,
+respectively. They are not automatic implementations driven by surveyed
+construction or current meteorological data.</p>
 <h2 id="appropriate-interpretation">Appropriate Interpretation</h2>
 <p>Use A.T.O.M to compare configurations, find deterministic coverage
 gaps, understand co-channel relationships, inspect communication-path

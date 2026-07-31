@@ -34,6 +34,7 @@ type NetworkOptimizationRequestInput struct {
 	TxPowerDBm          *float64            `json:"tx_power_dbm"`
 	BeamWidthDeg        *float64            `json:"beam_width"`
 	CalibrationOffsetDB *float64            `json:"calibration_offset_db"`
+	Optimization        *OptimizationConfig `json:"optimization"`
 }
 
 type InterferenceRequestInput struct {
@@ -131,6 +132,7 @@ func (input NetworkOptimizationRequestInput) ToRequest() NetworkOptimizationRequ
 		BeamWidthDeg:        defaults.BeamWidthDeg,
 		CalibrationOffsetDB: valueOr(input.CalibrationOffsetDB, DefaultCalibrationOffsetDB),
 		RFProfile:           defaults,
+		Optimization:        NormalizeOptimizationConfig(input.Optimization),
 	}
 }
 

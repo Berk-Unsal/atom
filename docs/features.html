@@ -87,6 +87,11 @@ technologies." />
       Coverage</a></li>
       <li><a href="#demand-aware-planning"
       id="toc-demand-aware-planning">Demand-Aware Planning</a></li>
+      <li><a href="#batch-experiments" id="toc-batch-experiments">Batch
+      Experiments</a></li>
+      <li><a href="#analytical-surfaces-and-gis-interchange"
+      id="toc-analytical-surfaces-and-gis-interchange">Analytical
+      Surfaces And GIS Interchange</a></li>
       <li><a href="#interference-and-radio-quality"
       id="toc-interference-and-radio-quality">Interference And Radio
       Quality</a></li>
@@ -126,8 +131,9 @@ comparing urban 4G, 5G, and exploratory 6G sector plans. Its outputs are
 planning estimates, not UE or PHY measurements.</p>
 <h2 id="focused-planning-workspace">Focused Planning Workspace</h2>
 <ul>
-<li>Eight workflow tools in one rail: Setup, Inventory, Propagation,
-Interference, 5G Core, Results, Data, and Report.</li>
+<li>Ten workflow tools in one rail: Setup, Inventory, Propagation,
+Experiments, Surfaces, Interference, 5G Core, Results, Data, and
+Report.</li>
 <li>A compact command bar keeps the current project, cell context,
 technology, RF summary, and primary run action visible.</li>
 <li>The map remains full size while tool and Inspector drawers overlay
@@ -211,9 +217,42 @@ explicitly.</p>
 <p>It then applies configured transmit power, antenna gain, beam/radius
 eligibility, and cumulative frequency-dependent wall loss. Rays are
 segmented and returned as GeoJSON with modeled received power.</p>
-<p>The current model does not simulate diffraction, reflections, fast
-fading, terrain, material-specific penetration, sidelobes, MIMO
-scheduling, or uplink behavior.</p>
+<p>The fast sector and surface models remain FSPL-plus-walls estimators.
+A separate 2.5D point-to-point workflow adds terrain/building profiles,
+LOS and Fresnel classification, material-specific wall planning losses,
+and an explicitly selected single knife-edge approximation. It does not
+claim full ITU-R Recommendation conformance or simulate reflection-heavy
+multipath, fast fading, MIMO scheduling, or uplink behavior.</p>
+<h3 id="25d-path-profiles-and-fidelity">2.5D Path Profiles And
+Fidelity</h3>
+<ul>
+<li>Loads an optional north-up EPSG:4326 COG/GeoTIFF terrain layer
+lazily by strip/tile and samples it bilinearly.</li>
+<li>Combines ground elevation, inferred or explicit building height,
+transmitter/receiver height above ground, direct LOS, 60% first-Fresnel
+clearance, and a dominant obstruction.</li>
+<li>Provides <code>terrain-profile</code> (30 MHz–6 GHz),
+<code>urban-short-range</code> (300 MHz–100 GHz), and explicitly
+out-of-range research profiles. These applicability labels follow the
+published ranges of <a
+href="https://www.itu.int/rec/R-REC-P.1812-8-202509-I/en">ITU-R
+P.1812-8</a> and <a
+href="https://www.itu.int/rec/R-REC-P.1411-9-201706-I/en">ITU-R
+P.1411-9</a>; the implementation is an inspectable planning
+approximation, not either complete method.</li>
+<li>Exposes free-space, antenna-pattern, system, wall, diffraction,
+clutter, vegetation, atmospheric-gas, rain, calibration, and
+shadow-sensitivity components rather than hiding them in one total.</li>
+<li>Uses an explicitly selected single knife-edge approximation informed
+by <a href="https://www.itu.int/rec/R-REC-P.526/en">ITU-R P.526</a>.
+Material, gas, and rain controls are planning inputs informed by <a
+href="https://www.itu.int/rec/r-rec-p.2040/en">ITU-R P.2040</a>, <a
+href="https://www.itu.int/rec/R-REC-P.676/en">ITU-R P.676</a>, and <a
+href="https://www.itu.int/rec/R-REC-P.838/en">ITU-R P.838</a>, not
+automatic weather or construction-data inference.</li>
+<li>Displays a vertical terrain/building/LOS/Fresnel cross section with
+the loss budget and P50/P90-style shadow-sensitivity bounds.</li>
+</ul>
 <h2 id="demand-aware-planning">Demand-Aware Planning</h2>
 <ul>
 <li>Coverage gaps identify demand-building centroids that are inside a
@@ -224,8 +263,50 @@ geometry.</li>
 sweep.</li>
 <li>Network evaluation scores two to six selected cells using coverage,
 unique demand, and overlap.</li>
-<li>Network optimization coordinates selected-cell azimuths and renders
-each cell through a bounded sequential queue.</li>
+<li>Network optimization coordinates selected-cell azimuths using
+selected objectives/weights, optional minimum coverage/demand and
+maximum-overlap constraints, feasibility violations, and an explained
+Pareto frontier. Tilt, power, and site selection are not silently
+adjusted.</li>
+</ul>
+<h2 id="batch-experiments">Batch Experiments</h2>
+<ul>
+<li>Sweeps frequency, transmit power, beam width, azimuth, and
+calibration offset across at most 64 deterministic combinations.</li>
+<li>Executes through bounded asynchronous jobs with progress,
+cancellation, a dataset/model/request fingerprint, and a small result
+cache.</li>
+<li>Compares runs in a scenario table and Pareto view and exports the
+exact experiment definition.</li>
+<li>Runs headlessly through
+<code>go run ./cmd/run-experiment -definition experiment.json</code> or
+the process/job API.</li>
+<li>Follows the asynchronous execution shape of <a
+href="https://www.ogc.org/standards/ogcapi-processes/">OGC API
+Processes</a> without claiming a complete conformance class
+implementation.</li>
+</ul>
+<h2 id="analytical-surfaces-and-gis-interchange">Analytical Surfaces And
+GIS Interchange</h2>
+<ul>
+<li>Evaluates bounded regular received-power grids with a 100,000-cell
+ceiling and produces unsmoothed marching-square isolines.</li>
+<li>Renders the raster below the cell/measurement overlays with opacity
+and minimum-display-threshold controls.</li>
+<li>Exports the regular grid as float32 EPSG:4326 GeoTIFF, valid grid
+cells as CSV, and isolines as GeoJSON.</li>
+<li>Queries building footprints through mandatory viewport
+<code>bbox</code>, pagination, a 50 km diagonal ceiling, and a
+5,000-feature page ceiling; outputs GeoJSON or CSV/WKT.</li>
+<li>Provides an opt-in material/height-tinted map overlay at zoom 12 or
+closer; panning cancels stale requests and loads only the current
+bounded viewport.</li>
+<li>Uses OGC API Features-style collections and query parameters,
+informed by <a href="https://www.ogc.org/standards/ogcapi-features/">OGC
+API Features</a>. Vector tiles and GeoPackage export remain future work;
+<a href="https://www.ogc.org/standards/ogcapi-tiles/">OGC API Tiles</a>
+and <a href="https://www.ogc.org/standards/geopackage/">GeoPackage</a>
+are the intended interoperability references.</li>
 </ul>
 <h2 id="interference-and-radio-quality">Interference And Radio
 Quality</h2>
@@ -272,8 +353,13 @@ technology, measured RSRP, and optional cell ID.</li>
 cells and RF assumptions.</li>
 <li>Reports residual GeoJSON, MAE, RMSE, mean/median bias, no-signal
 count, and per-cell statistics.</li>
-<li>With at least 20 valid points, uses a deterministic training/holdout
-split to evaluate a robust global bias correction.</li>
+<li>With at least 20 valid points, requires at least five distinct 50 m
+spatial areas spanning at least 100 m, then evaluates a robust global
+bias through deterministic spatially blocked five-fold validation.</li>
+<li>Reports per-cell and per-band residuals, residual-versus-distance
+and residual-versus-obstruction bins, robust MAD outliers, P50/P90
+errors, a median-adjustment confidence interval, fold evidence, and
+provenance/expiration state.</li>
 <li>Applies correction only after explicit user confirmation and stores
 the profile with the project.</li>
 <li>Invalidates calibration when technology, frequency, model version,
@@ -306,8 +392,11 @@ the immutable runtime snapshot only after success.</li>
 </ul>
 <p>Schema-v1 packs remain loadable. The application does not perform
 arbitrary-city live ingestion or large browser uploads; building is an
-explicit local CLI workflow. Optional layers are not yet consumed by RF
-calculations.</p>
+explicit local CLI workflow. The optional terrain layer is consumed only
+by the 2.5D point-to-point profile. Clutter and material controls can be
+selected explicitly, but raster clutter and separate height/material
+sidecar layers are not yet automatically joined into every RF
+workflow.</p>
 <h2 id="5g-communication-paths">5G Communication Paths</h2>
 <p>The optional 5G Core Lab applies only to 5G mmWave and remains
 independent from RF interference:</p>
@@ -340,8 +429,8 @@ behavior.</li>
 </ul>
 <h2 id="deliberately-out-of-scope">Deliberately Out Of Scope</h2>
 <ul>
-<li>Full 3D ray tracing, multipath, diffraction, fading, and MIMO
-scheduling.</li>
+<li>Full 3D reflection-heavy ray tracing, multiple-obstacle diffraction,
+fading, and MIMO scheduling.</li>
 <li>Live network control, LTE/EPC integration, and 6G Core
 integration.</li>
 <li>Cloud accounts, multi-user collaboration, and hosted project

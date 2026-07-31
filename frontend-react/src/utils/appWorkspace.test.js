@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { combineNetworkSimulations, networkAzimuthMap, normalizeSimulationStats } from "./appWorkspace.js";
+import { combineNetworkSimulations, isCalibrationProfileCompatible, networkAzimuthMap, normalizeSimulationStats } from "./appWorkspace.js";
 
 describe("app workspace helpers", () => {
   it("combines network features and aggregate statistics deterministically", () => {
@@ -19,5 +19,19 @@ describe("app workspace helpers", () => {
 
   it("normalizes absent simulation evidence", () => {
     expect(normalizeSimulationStats(null, null)).toMatchObject({ avgPower: null, rayCount: 0 });
+  });
+
+  it("accepts spatial calibration profiles and rejects expired provenance", () => {
+    const settings = { frequencyGHz: 28 };
+    const meta = { model_version: "m1", dataset: { id: "d1", version: "1", sha256: {} } };
+    const profile = {
+      kind: "spatially_validated_robust_global_path_loss_bias",
+      technology: "5g",
+      frequencyGHz: 28,
+      modelVersion: "m1",
+      dataset: { id: "d1", version: "1", hashes: {} },
+    };
+    expect(isCalibrationProfileCompatible(profile, settings, meta)).toBe(true);
+    expect(isCalibrationProfileCompatible({ ...profile, expiresAt: "2000-01-01T00:00:00Z" }, settings, meta)).toBe(false);
   });
 });

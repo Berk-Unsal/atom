@@ -352,6 +352,28 @@ coverage</li>
 <li><strong>No Color</strong>: Below sensitivity threshold; no usable
 signal</li>
 </ol>
+<h3 id="analytical-surface-layer">Analytical Surface Layer</h3>
+<p>The Surfaces tool replaces dense point markers with a regular
+received-power raster drawn below operational markers. Adjust opacity to
+compare it with the basemap and select a display floor to hide weaker
+cells. Contours are unsmoothed marching-square line segments at the
+selected dBm thresholds; they are deterministic grid evidence, not
+kriged measurement isolines.</p>
+<p>The raster uses the fast sector FSPL/antenna/wall model. It does not
+inherit optional terrain, gas, rain, vegetation, or diffraction settings
+from a point-to-point profile.</p>
+<p>Enable <strong>Viewport buildings</strong> in Layers at zoom 12 or
+closer to request only the visible building footprints. Fill hue
+reflects normalized material when known and opacity increases modestly
+with inferred height; it is contextual geometry, not a surveyed 3D
+mesh.</p>
+<h3 id="vertical-path-profile">Vertical Path Profile</h3>
+<p>The Propagation tool's path view shows ground, building tops,
+endpoint elevations, the direct LOS line, 60% Fresnel clearance, and any
+dominant obstruction. The adjacent component table is the authoritative
+explanation of which optional losses were enabled. A red obstruction
+does not imply a complete multiple-edge diffraction or reflected-path
+solution.</p>
 <h3 id="interactive-exploration">Interactive Exploration</h3>
 <p>In the web interface, you can:</p>
 <ul>
@@ -368,8 +390,9 @@ estimates for scenario comparison, then validate deployment decisions
 with calibrated tools and field measurements.</p>
 <hr />
 <h2 id="export-and-integration">Export and Integration</h2>
-<p>All visualizations can be exported as <strong>GeoJSON</strong> for
-use in:</p>
+<p>Analytical surfaces can be exported as float32 EPSG:4326 GeoTIFF,
+contour GeoJSON, or grid-center CSV. Viewport building queries return
+GeoJSON or CSV/WKT. These can be used in:</p>
 <ul>
 <li>🗺️ <strong>ArcGIS</strong>: Professional GIS analysis</li>
 <li>🌍 <strong>Google Earth</strong>: 3D visualization</li>

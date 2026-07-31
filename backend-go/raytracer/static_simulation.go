@@ -83,6 +83,24 @@ type NetworkOptimizationRequest struct {
 	BeamWidthDeg        float64               `json:"beam_width"`
 	CalibrationOffsetDB float64               `json:"calibration_offset_db,omitempty"`
 	RFProfile           CellRFProfile         `json:"rf_profile"`
+	Optimization        OptimizationConfig    `json:"optimization"`
+}
+
+type OptimizationObjective struct {
+	ID     string  `json:"id"`
+	Weight float64 `json:"weight"`
+}
+
+type OptimizationConstraints struct {
+	MinCoverageScore              *float64 `json:"min_coverage_score,omitempty"`
+	MinUniqueDemandBuildings      *int     `json:"min_unique_demand_buildings,omitempty"`
+	MinUniqueResidentialBuildings *int     `json:"min_unique_residential_buildings,omitempty"`
+	MaxOverlapBuildings           *int     `json:"max_overlap_buildings,omitempty"`
+}
+
+type OptimizationConfig struct {
+	Objectives  []OptimizationObjective `json:"objectives"`
+	Constraints OptimizationConstraints `json:"constraints"`
 }
 
 type RayFeatureCollection struct {
@@ -133,6 +151,29 @@ type NetworkOptimizationStats struct {
 type NetworkOptimizationResponse struct {
 	OptimizedTowers []NetworkOptimizedTower  `json:"optimized_towers"`
 	Stats           NetworkOptimizationStats `json:"stats"`
+	Optimization    OptimizationOutcome      `json:"optimization"`
+	ParetoFrontier  []NetworkParetoSolution  `json:"pareto_frontier"`
+}
+
+type OptimizationOutcome struct {
+	Objectives           []OptimizationObjective `json:"objectives"`
+	Constraints          OptimizationConstraints `json:"constraints"`
+	ObjectiveScore       float64                 `json:"objective_score"`
+	ConstraintsSatisfied bool                    `json:"constraints_satisfied"`
+	Violations           []string                `json:"violations"`
+	AdjustedParameters   []string                `json:"adjusted_parameters"`
+}
+
+type ParetoTowerSetting struct {
+	ID         string  `json:"id"`
+	AzimuthDeg float64 `json:"azimuth_deg"`
+}
+
+type NetworkParetoSolution struct {
+	Towers         []ParetoTowerSetting     `json:"towers"`
+	Stats          NetworkOptimizationStats `json:"stats"`
+	ObjectiveScore float64                  `json:"objective_score"`
+	Explanation    string                   `json:"explanation"`
 }
 
 type CoverageGapResponse struct {
@@ -281,6 +322,7 @@ func NormalizeNetworkOptimizationRequest(req *NetworkOptimizationRequest) {
 			req.Towers[index].RFProfile = req.Towers[index].RFProfile.normalized()
 		}
 	}
+	req.Optimization = NormalizeOptimizationConfig(&req.Optimization)
 }
 
 func SimulateStaticRaysContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (StaticSimulationResponse, error) {
@@ -444,15 +486,18 @@ func OptimizeAzimuthContext(ctx context.Context, req StaticSimulationRequest, bu
 
 func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
 	NormalizeNetworkOptimizationRequest(&req)
+	config := req.Optimization
 	azimuths := make([]float64, len(req.Towers))
 	for index, tower := range req.Towers {
 		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
 	}
 
+	evaluated := make([]networkOptimizationCandidate, 0, len(req.Towers)*72+1)
 	for pass := 0; pass < 2; pass++ {
 		for towerIndex := range req.Towers {
 			bestAzimuth := azimuths[towerIndex]
 			bestScore := math.Inf(-1)
+			bestFeasible := false
 			for candidate := 0; candidate < 36; candidate++ {
 				if err := ctx.Err(); err != nil {
 					return NetworkOptimizationResponse{}, err
@@ -463,9 +508,13 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 				if err != nil {
 					return NetworkOptimizationResponse{}, err
 				}
-				if breakdown.NetworkScore > bestScore {
-					bestScore = breakdown.NetworkScore
+				evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), testAzimuths...), Stats: breakdown})
+				score := OptimizationObjectiveScore(breakdown, config)
+				feasible := len(OptimizationConstraintViolations(breakdown, config.Constraints)) == 0
+				if (feasible && (!bestFeasible || score > bestScore)) || (!bestFeasible && !feasible && score > bestScore) {
+					bestScore = score
 					bestAzimuth = testAzimuths[towerIndex]
+					bestFeasible = feasible
 				}
 			}
 			azimuths[towerIndex] = bestAzimuth
@@ -476,6 +525,7 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 	if err != nil {
 		return NetworkOptimizationResponse{}, err
 	}
+	evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), azimuths...), Stats: breakdown})
 	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
 	for index, tower := range req.Towers {
 		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
@@ -494,9 +544,17 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 
 	demandSummary := buildings.DemandSummary("")
 	breakdown.DataQuality = demandSummary.DataQuality
+	violations := OptimizationConstraintViolations(breakdown, config.Constraints)
 	return NetworkOptimizationResponse{
 		OptimizedTowers: optimized,
 		Stats:           breakdown.rounded(),
+		Optimization: OptimizationOutcome{
+			Objectives: config.Objectives, Constraints: config.Constraints,
+			ObjectiveScore:       math.Round(OptimizationObjectiveScore(breakdown, config)*10) / 10,
+			ConstraintsSatisfied: len(violations) == 0, Violations: violations,
+			AdjustedParameters: []string{"azimuth"},
+		},
+		ParetoFrontier: networkParetoFrontier(evaluated, req.Towers, config),
 	}, nil
 }
 
@@ -529,9 +587,19 @@ func EvaluateNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 
 	demandSummary := buildings.DemandSummary("")
 	breakdown.DataQuality = demandSummary.DataQuality
+	config := req.Optimization
+	violations := OptimizationConstraintViolations(breakdown, config.Constraints)
+	candidate := networkOptimizationCandidate{Azimuths: azimuths, Stats: breakdown}
 	return NetworkOptimizationResponse{
 		OptimizedTowers: optimized,
 		Stats:           breakdown.rounded(),
+		Optimization: OptimizationOutcome{
+			Objectives: config.Objectives, Constraints: config.Constraints,
+			ObjectiveScore:       math.Round(OptimizationObjectiveScore(breakdown, config)*10) / 10,
+			ConstraintsSatisfied: len(violations) == 0, Violations: violations,
+			AdjustedParameters: []string{},
+		},
+		ParetoFrontier: networkParetoFrontier([]networkOptimizationCandidate{candidate}, req.Towers, config),
 	}, nil
 }
 

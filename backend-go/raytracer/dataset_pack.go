@@ -87,6 +87,8 @@ type DatasetPack struct {
 	Towers        []TowerStation
 	BuildingIndex *BuildingIndex
 	BuildingStats BuildingIndexStats
+	Terrain       TerrainModel
+	TerrainMeta   TerrainMetadata
 }
 
 func LoadDatasetPack(root string) (*DatasetPack, error) {
@@ -150,6 +152,20 @@ func LoadDatasetPack(root string) (*DatasetPack, error) {
 	if buildingIndex.Len() == 0 {
 		return nil, errors.New("building dataset contains no valid Polygon features")
 	}
+	terrainMeta := TerrainMetadata{Available: false, Limitations: []string{"dataset pack does not include a terrain layer; elevations use a zero-metre local datum"}}
+	var terrain TerrainModel
+	if terrainPath := layerPaths["terrain"]; terrainPath != "" {
+		layer := manifest.Layers["terrain"]
+		format := strings.ToLower(strings.TrimSpace(layer.Format))
+		if format != "cog" && format != "cog-geotiff" && format != "geotiff" && format != "tiff" {
+			return nil, fmt.Errorf("terrain layer format %q is unsupported; use COG/GeoTIFF", layer.Format)
+		}
+		terrain, err = LoadGeoTIFFTerrain(terrainPath, layer.CRS)
+		if err != nil {
+			return nil, fmt.Errorf("load terrain: %w", err)
+		}
+		terrainMeta = terrain.Metadata()
+	}
 	return &DatasetPack{
 		Root:          root,
 		ManifestPath:  manifestPath,
@@ -160,6 +176,8 @@ func LoadDatasetPack(root string) (*DatasetPack, error) {
 		Towers:        towers,
 		BuildingIndex: buildingIndex,
 		BuildingStats: buildingStats,
+		Terrain:       terrain,
+		TerrainMeta:   terrainMeta,
 	}, nil
 }
 

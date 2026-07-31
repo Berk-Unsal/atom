@@ -93,15 +93,19 @@ The Gin service provides:
 | GET | `/api/towers` | Tower GeoJSON |
 | GET | `/api/buildings` | Building GeoJSON |
 | GET | `/api/buildings/summary` | Demand and data-quality summary |
+| GET | `/api/collections/buildings/items` | Bounded/paged building GeoJSON or CSV |
 | POST | `/api/analyze-sector` | Shared propagation and coverage-gap analysis for one sector |
 | POST | `/api/simulate` | Segmented directional propagation |
 | POST | `/api/coverage-gaps` | Demand-weighted underserved buildings |
+| POST | `/api/path-profile` | 2.5D terrain/building vertical profile and component losses |
+| POST | `/api/coverage-surface` | Regular received-power raster, isolines, and GIS exports |
 | POST | `/api/optimize-azimuth` | Single-sector demand-aware azimuth sweep |
 | POST | `/api/evaluate-network` | Score supplied selected-cell azimuths |
-| POST | `/api/optimize-network` | Optimize selected-cell azimuths with overlap penalty |
+| POST | `/api/optimize-network` | Optimize selected-cell azimuths with objectives, constraints, and Pareto evidence |
 | POST | `/api/interference` | RSRP, SINR, RSRQ, RSSI, and demand-quality analysis |
 | POST | `/api/recommend-sites` | Rank known candidate records inside a search polygon |
-| POST | `/api/measurements/evaluate` | RSRP residuals and holdout-checked global bias guidance |
+| POST | `/api/measurements/evaluate` | Spatially blocked RSRP residual validation and global bias guidance |
+| GET/POST/DELETE | `/api/processes/*`, `/api/jobs/*` | Bounded asynchronous batch experiment execution |
 | GET/POST | `/api/core/*` | Optional Core Lab proxy |
 
 ## Runtime Data and Spatial Index
@@ -178,7 +182,7 @@ These KPIs are deterministic planning estimates. They are not UE, drive-test, or
 
 ## Measurement Validation
 
-Measurement evaluation accepts up to 5,000 4G or 5G RSRP points. It applies the same radius, beam, FSPL, wall-intersection, resource-block, and serving-cell rules used by interference analysis, then returns per-point residuals plus MAE, RMSE, mean bias, median bias, and per-cell statistics. With at least 20 valid points, a deterministic 80/20 split estimates a robust median dB adjustment and reports holdout error before and after correction. The optional correction is a global path-loss offset, not full propagation calibration.
+Measurement evaluation accepts up to 5,000 4G or 5G RSRP points. It applies the same radius, beam, FSPL, wall-intersection, resource-block, and serving-cell rules used by interference analysis, then returns per-point residuals, aggregate uncertainty, per-cell/per-band statistics, distance/obstruction bins, and robust outliers. With at least 20 valid points and sufficient spatial diversity, five deterministic contiguous spatial blocks validate a robust median dB adjustment. The optional correction is a global path-loss offset, not full propagation calibration.
 
 ## Request Lifecycles
 

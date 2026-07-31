@@ -357,12 +357,14 @@ export function MapToolbar({
   const layerMenuRef = useRef(null);
   const layerTriggerRef = useRef(null);
   const layers = [
+    { id: "buildings", label: "Viewport buildings" },
     { id: "rays", label: "Propagation rays" },
     { id: "gaps", label: "Coverage gaps" },
     { id: "selectedCells", label: "Selected cells" },
     { id: "communicationPaths", label: "Communication paths" },
     { id: "interference", label: "Interference surface" },
     { id: "measurements", label: "Measurement residuals" },
+    { id: "surfaces", label: "Coverage raster + contours" },
   ].filter((layer) => availableLayers?.[layer.id] !== false);
 
   useEffect(() => {

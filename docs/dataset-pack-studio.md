@@ -62,7 +62,7 @@ Schema v2 retains the required identity, EPSG:4326 bounds, sources, licenses, co
 - Missing-field counts and requested/data coverage bounds.
 - Optional `terrain`, `clutter`, `building_heights`, and `materials` files.
 
-The current RF engine loads, validates, and exposes optional-layer metadata but does not yet apply terrain, clutter, material-specific attenuation, or a separate height layer to propagation. Their presence improves provenance and prepares a pack for later model versions; it must not be interpreted as evidence that those effects were simulated.
+The engine loads and validates optional-layer metadata. A supported north-up EPSG:4326 COG/GeoTIFF terrain layer is sampled by the 2.5D point-to-point path profiler. Fast sectors, interference, optimization, batch runs, and analytical surfaces remain terrain-independent. Clutter and separate height/material sidecar layers are not automatically joined; user-selected path-profile sensitivity inputs must not be interpreted as surveyed layer values.
 
 ## Validate And Install
 

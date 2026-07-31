@@ -117,11 +117,13 @@ estimates from the configured model and dataset. They are not UE,
 drive-test, channel-sounder, or PHY measurements.</p>
 <h3 id="which-propagation-model-is-used">Which propagation model is
 used?</h3>
-<p>The default model combines free-space path loss with antenna gain,
-beam/radius eligibility, exact building intersections, and cumulative
-frequency-dependent wall loss. It does not currently implement
-Okumura-Hata, diffraction, reflections, fading, terrain, sidelobes, MIMO
-scheduling, or uplink propagation.</p>
+<p>The default sector model combines free-space path loss with antenna
+gain, beam/radius eligibility, exact building intersections, and
+cumulative frequency-dependent wall loss. It does not implement
+Okumura-Hata, reflections, fading, MIMO scheduling, or uplink
+propagation. A separate point-to-point profile can add optional
+COG/GeoTIFF terrain, building height, LOS/Fresnel evidence, material
+sensitivity, and a selected single knife-edge approximation.</p>
 <h3 id="why-can-sinr-be-close-to-0-db">Why can SINR be close to 0
 dB?</h3>
 <p>When the serving cell and strongest co-channel interferer arrive at
@@ -139,10 +141,10 @@ available.</p>
 <h3 id="does-measurement-import-calibrate-the-complete-model">Does
 measurement import calibrate the complete model?</h3>
 <p>No. A.T.O.M compares measured and predicted RSRP and may suggest one
-robust global path-loss bias when at least 20 valid samples exist. A
-deterministic holdout reports whether that correction improves unseen
-samples. It does not fit separate wall, clutter, terrain, or fading
-parameters.</p>
+robust global path-loss bias when at least 20 valid, spatially diverse
+samples exist. Five deterministic spatial blocks report whether that
+correction generalizes to held-out areas. It does not automatically fit
+separate wall, clutter, terrain, or fading parameters.</p>
 <h3 id="what-is-the-6g-mode">What is the 6G mode?</h3>
 <p>The 140 GHz mode is an exploratory Sub-THz propagation overlay.
 Interference analysis, measurement validation, recommendations, and 5G

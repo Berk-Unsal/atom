@@ -246,10 +246,37 @@ identity</td>
 <td>Per-client fresh building-dataset transfer budget per process</td>
 </tr>
 <tr>
+<td><code>MAX_CONCURRENT_BUILDING_FEATURE_QUERIES</code></td>
+<td><code>4</code></td>
+<td>Process-wide admission limit for bounded building viewport
+queries</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_BUILDING_FEATURE_QUERIES_PER_CLIENT</code></td>
+<td><code>2</code></td>
+<td>Maximum simultaneous bounded building queries from one client
+identity</td>
+</tr>
+<tr>
+<td><code>BUILDING_FEATURE_QUERIES_PER_MINUTE</code></td>
+<td><code>120</code></td>
+<td>Per-client bounded building-query budget per process</td>
+</tr>
+<tr>
 <td><code>BUILDINGS_API_KEY</code></td>
 <td>unset</td>
-<td>Require this key on the full building-dataset route when
+<td>Require this key on full and bounded building-data routes when
 configured</td>
+</tr>
+<tr>
+<td><code>EXPERIMENT_WORKERS</code></td>
+<td><code>1</code></td>
+<td>Concurrent batch-experiment workers</td>
+</tr>
+<tr>
+<td><code>EXPERIMENT_QUEUE_SIZE</code></td>
+<td><code>16</code></td>
+<td>Accepted asynchronous experiment jobs waiting for a worker</td>
 </tr>
 <tr>
 <td><code>TRUSTED_PROXIES</code></td>

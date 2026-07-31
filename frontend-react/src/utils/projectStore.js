@@ -10,7 +10,7 @@ const MAX_PROJECT_ARRAY_ITEMS = 25_000;
 const MAX_PROJECT_STRING_BYTES = 1 * 1024 * 1024;
 
 /** @typedef {{ kind: string, resultsView: string, avgRxDBm: number|null, gapPct: number|null, networkScore: number|null, overlapBuildings: number|null, avgSINRDB: number|null, serviceablePct: number|null, affectedDemand: number|null, calibrationOffsetDB: number }} ScenarioSummary */
-/** @typedef {{ kind: "robust_global_path_loss_bias", offsetDb: number, technology: "4g"|"5g", frequencyGHz: number, modelVersion: string, dataset: {id: string, version: string, hashes: object}, validation: object }} CalibrationProfile */
+/** @typedef {{ kind: "robust_global_path_loss_bias"|"spatially_validated_robust_global_path_loss_bias", offsetDb: number, technology: "4g"|"5g", frequencyGHz: number, modelVersion: string, dataset: {id: string, version: string, hashes: object}, provenance?: object, expiresAt?: string, validation: object }} CalibrationProfile */
 /** @typedef {{ id: string, name: string, createdAt: string, updatedAt: string, plan: object, request: object|null, meta: object|null, summary: ScenarioSummary, artifacts: object|null, calibrationProfile: CalibrationProfile|null, requiresRerun: boolean }} ScenarioSnapshot */
 /** @typedef {{ id: string, name: string, datasetRef: object|null, createdAt: string, updatedAt: string, activeScenarioId: string|null, draft: object|null, scenarios: ScenarioSnapshot[] }} ProjectV2 */
 /** @typedef {{ revision: number, committedAt: string|null }} WorkspacePersistence */

@@ -23,7 +23,23 @@ Where:
 - $L_{path}$ = Free-space path loss (FSPL equation)
 - $L_{walls}$ = Cumulative building penetration loss
 
-The current model does not include diffraction, reflection, fast fading, terrain, or multipath.
+The fast sector model does not include terrain, diffraction, reflection, fast fading, or multipath. The separate 2.5D path profiler samples optional COG/GeoTIFF terrain, building height, LOS/Fresnel clearance, and one explicitly selected dominant knife-edge approximation; it is not a full replacement for the sector engine or a complete ITU-R method.
+
+## 2.5D Point-To-Point Profiles
+
+For a selected transmitter and receiver, the engine samples a geodesic path at a bounded spacing. Each sample contains ground elevation plus any intersecting building height. Antenna and receiver elevations are their local ground elevations plus configured height above ground.
+
+The result reports direct line-of-sight clearance and a 60% first-Fresnel-zone clearance check:
+
+```text
+r1 = sqrt(lambda * d1 * d2 / (d1 + d2))
+```
+
+When selected, the dominant obstruction is converted to the usual dimensionless knife-edge parameter and the positive-loss approximation is applied. Only the dominant edge is used; Deygout/multiple-edge, reflection, and terrain-clutter coupling are not implemented.
+
+The inspectable loss budget keeps FSPL, horizontal/vertical antenna attenuation, system loss, wall penetration, diffraction, clutter, vegetation, gas, rain, and calibration as separate signed components. Shadow sigma produces sensitivity bounds and is not injected as a random field, preserving determinism.
+
+The `terrain-profile` and `urban-short-range` labels enforce the published frequency ranges of [ITU-R P.1812-8](https://www.itu.int/rec/R-REC-P.1812-8-202509-I/en) and [ITU-R P.1411-9](https://www.itu.int/rec/R-REC-P.1411-9-201706-I/en). The knife-edge, material, gas, and rain controls are informed by [P.526](https://www.itu.int/rec/R-REC-P.526/en), [P.2040](https://www.itu.int/rec/r-rec-p.2040/en), [P.676](https://www.itu.int/rec/R-REC-P.676/en), and [P.838](https://www.itu.int/rec/R-REC-P.838/en); A.T.O.M does not claim full Recommendation conformance.
 
 ### Frequency Dependence
 

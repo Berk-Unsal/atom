@@ -19,4 +19,4 @@ The current source version is [`0.4.0`](../VERSION). User-visible changes are pu
 
 ## Model Boundary
 
-Results are deterministic planning estimates based on static OSM/OpenCellID-derived dataset packs, FSPL, configured antenna gain, beam eligibility, and frequency-dependent wall loss. They are not drive-test, UE, PHY, or live-network measurements. See [modeling limits](modeling-limits.html) before using outputs for engineering decisions.
+Results are deterministic planning estimates based on static dataset packs, FSPL, configured antenna behavior, beam eligibility, and building loss. The separate 2.5D path profiler can also use optional COG/GeoTIFF terrain, building height, LOS/Fresnel geometry, and selected sensitivity components. None of these outputs are drive-test, UE, PHY, or live-network measurements. See [modeling limits](modeling-limits.html) before using outputs for engineering decisions.

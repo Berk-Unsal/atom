@@ -44,7 +44,12 @@ The Go server does not persist projects, jobs, reports, or measurements. Multipl
 | `MAX_CONCURRENT_BUILDING_DOWNLOADS` | `2` | Process-wide admission limit for fresh full-dataset transfers |
 | `MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT` | `1` | Maximum simultaneous full-dataset transfers from one client identity |
 | `BUILDING_DOWNLOADS_PER_MINUTE` | `2` | Per-client fresh building-dataset transfer budget per process |
-| `BUILDINGS_API_KEY` | unset | Require this key on the full building-dataset route when configured |
+| `MAX_CONCURRENT_BUILDING_FEATURE_QUERIES` | `4` | Process-wide admission limit for bounded building viewport queries |
+| `MAX_CONCURRENT_BUILDING_FEATURE_QUERIES_PER_CLIENT` | `2` | Maximum simultaneous bounded building queries from one client identity |
+| `BUILDING_FEATURE_QUERIES_PER_MINUTE` | `120` | Per-client bounded building-query budget per process |
+| `BUILDINGS_API_KEY` | unset | Require this key on full and bounded building-data routes when configured |
+| `EXPERIMENT_WORKERS` | `1` | Concurrent batch-experiment workers |
+| `EXPERIMENT_QUEUE_SIZE` | `16` | Accepted asynchronous experiment jobs waiting for a worker |
 | `TRUSTED_PROXIES` | unset | Comma-separated proxy CIDRs whose forwarded client-IP headers are trusted |
 | `REQUIRE_HTTPS` | `false` | Reject non-HTTPS requests with `426`; enable behind a TLS proxy that supplies `X-Forwarded-Proto` |
 | `CORE_LAB_ENABLED` | `false` | Enables backend proxy routes for the optional adapter |

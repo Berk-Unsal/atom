@@ -154,6 +154,18 @@ Each heatmap consists of thousands of **ray segments** (colored lines):
 3. **Red Zones**: Marginal; not recommended for primary coverage
 4. **No Color**: Below sensitivity threshold; no usable signal
 
+### Analytical Surface Layer
+
+The Surfaces tool replaces dense point markers with a regular received-power raster drawn below operational markers. Adjust opacity to compare it with the basemap and select a display floor to hide weaker cells. Contours are unsmoothed marching-square line segments at the selected dBm thresholds; they are deterministic grid evidence, not kriged measurement isolines.
+
+The raster uses the fast sector FSPL/antenna/wall model. It does not inherit optional terrain, gas, rain, vegetation, or diffraction settings from a point-to-point profile.
+
+Enable **Viewport buildings** in Layers at zoom 12 or closer to request only the visible building footprints. Fill hue reflects normalized material when known and opacity increases modestly with inferred height; it is contextual geometry, not a surveyed 3D mesh.
+
+### Vertical Path Profile
+
+The Propagation tool's path view shows ground, building tops, endpoint elevations, the direct LOS line, 60% Fresnel clearance, and any dominant obstruction. The adjacent component table is the authoritative explanation of which optional losses were enabled. A red obstruction does not imply a complete multiple-edge diffraction or reflected-path solution.
+
 ### Interactive Exploration
 
 In the web interface, you can:
@@ -173,7 +185,7 @@ A.T.O.M has not been calibrated against operator drive tests or UE measurements.
 
 ## Export and Integration
 
-All visualizations can be exported as **GeoJSON** for use in:
+Analytical surfaces can be exported as float32 EPSG:4326 GeoTIFF, contour GeoJSON, or grid-center CSV. Viewport building queries return GeoJSON or CSV/WKT. These can be used in:
 
 - 🗺️ **ArcGIS**: Professional GIS analysis
 - 🌍 **Google Earth**: 3D visualization

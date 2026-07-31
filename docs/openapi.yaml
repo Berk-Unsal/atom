@@ -74,6 +74,44 @@ paths:
       summary: Building and demand quality summary
       responses:
         "200": { description: Dataset summary }
+  /api/conformance:
+    get:
+      summary: Spatial-interface standards declaration
+      description: Returns an empty conformsTo list and identifies OGC API Features as a design reference; no complete conformance class is claimed.
+      responses:
+        "200": { description: Conformance URIs }
+  /api/collections:
+    get:
+      summary: List spatial feature collections
+      responses:
+        "200": { description: Available collections and links }
+  /api/collections/buildings:
+    get:
+      summary: Building feature collection metadata
+      responses:
+        "200": { description: CRS84 extent and representation links }
+  /api/collections/buildings/items:
+    get:
+      summary: Query bounded building footprints
+      description: OGC API Features-style viewport query. bbox is mandatory and its diagonal is capped at 50 km.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      parameters:
+        - name: bbox
+          in: query
+          required: true
+          schema: { type: string, pattern: "^-?[0-9.]+,-?[0-9.]+,-?[0-9.]+,-?[0-9.]+$" }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 5000, default: 1000 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+        - { name: f, in: query, schema: { type: string, enum: [csv] } }
+      responses:
+        "200":
+          description: Stable-ID building page
+          content:
+            application/geo+json: { schema: { $ref: "#/components/schemas/BuildingFeatureCollection" } }
+            text/csv: { schema: { type: string } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
   /api/analyze-sector:
     post:
       summary: Simulate one directional sector and find coverage gaps from shared ray profiles
@@ -109,6 +147,38 @@ paths:
         "200": { description: Gap GeoJSON and demand statistics }
         "400": { $ref: "#/components/responses/BadRequest" }
         "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/path-profile:
+    post:
+      summary: Analyze a 2.5D terrain and building path profile
+      description: Inspectable planning approximation with profile-specific applicability, LOS/Fresnel evidence, selected knife-edge diffraction, and explicit loss components.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/PathProfileRequest" } } } }
+      responses:
+        "200": { description: Vertical samples, classification, component loss budget, and uncertainty bounds }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/coverage-surface:
+    post:
+      summary: Generate a regular received-power raster and isolines
+      description: Defaults to compact JSON. f=geotiff exports float32 EPSG:4326 GeoTIFF, f=geojson exports contours, and f=csv exports valid grid centers.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      parameters:
+        - { name: f, in: query, schema: { type: string, enum: [geotiff, geojson, csv] } }
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CoverageSurfaceRequest" } } } }
+      responses:
+        "200":
+          description: Surface JSON or selected export representation
+          content:
+            application/json: { schema: { $ref: "#/components/schemas/CoverageSurfaceResponse" } }
+            application/geo+json: { schema: { $ref: "#/components/schemas/FeatureCollection" } }
+            image/tiff: { schema: { type: string, contentEncoding: binary } }
+            text/csv: { schema: { type: string } }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
@@ -178,15 +248,44 @@ paths:
     post:
       summary: Compare measured and modeled RSRP
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
-      description: Returns residuals and an optional holdout-checked global bias correction. This is not full propagation calibration.
+      description: Returns spatially blocked five-fold residual validation, subgroup/outlier/uncertainty diagnostics, and an optional global bias correction. This is not full propagation calibration.
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MeasurementRequest" } } } }
       responses:
-        "200": { description: Residual GeoJSON, aggregate/per-cell errors, and bias guidance }
+        "200": { description: Residual GeoJSON, aggregate/per-cell/per-band diagnostics, uncertainty, folds, provenance, and bias guidance }
         "400": { $ref: "#/components/responses/BadRequest" }
         "413": { $ref: "#/components/responses/TooLarge" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
+  /api/processes/batch-experiment:
+    get:
+      summary: Describe the batch experiment process
+      responses:
+        "200": { description: Process identifier, limits, accepted axes, and job links }
+  /api/processes/batch-experiment/execution:
+    post:
+      summary: Queue an asynchronous batch experiment
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentDefinition" } } } }
+      responses:
+        "202": { description: Accepted job, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentJob" } } } }
+        "200": { description: Cached completed job, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentJob" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+  /api/jobs/{jobID}:
+    parameters:
+      - { name: jobID, in: path, required: true, schema: { type: string } }
+    get:
+      summary: Poll an experiment job
+      responses:
+        "200": { description: Current job state and any result, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentJob" } } } }
+        "404": { description: Job does not exist }
+    delete:
+      summary: Cancel an accepted or running experiment job
+      responses:
+        "200": { description: Dismissed or terminal job state, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentJob" } } } }
+        "404": { description: Job does not exist }
   /api/core/status:
     get:
       summary: Optional 5G Core Lab status
@@ -424,6 +523,27 @@ components:
           required: [towers]
           properties:
             towers: { type: array, minItems: 2, maxItems: 6, items: { $ref: "#/components/schemas/Tower" } }
+            optimization: { $ref: "#/components/schemas/OptimizationConfig" }
+    OptimizationConfig:
+      type: object
+      properties:
+        objectives:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            type: object
+            required: [id, weight]
+            properties:
+              id: { type: string, enum: [demand, residential, coverage, overlap] }
+              weight: { type: number, exclusiveMinimum: 0, maximum: 100 }
+        constraints:
+          type: object
+          properties:
+            min_coverage_score: { type: number, minimum: 0 }
+            min_unique_demand_buildings: { type: integer, minimum: 0 }
+            min_unique_residential_buildings: { type: integer, minimum: 0 }
+            max_overlap_buildings: { type: integer, minimum: 0 }
     InterferenceRequest:
       allOf:
         - { $ref: "#/components/schemas/NetworkRequest" }
@@ -496,6 +616,13 @@ components:
           required: [samples]
           properties:
             towers: { type: array, minItems: 1, maxItems: 6, items: { $ref: "#/components/schemas/Tower" } }
+            calibration_provenance:
+              type: object
+              properties:
+                campaign_id: { type: string }
+                source: { type: string }
+                collected_at: { type: string, format: date-time }
+                expires_at: { type: string, format: date-time }
             samples:
               type: array
               minItems: 1
@@ -510,6 +637,99 @@ components:
                   technology: { type: string, enum: [4g, 5g] }
                   rsrp_dbm: { type: number, minimum: -180, maximum: -20 }
                   cell_id: { type: string }
+    PathProfileRequest:
+      type: object
+      required: [transmitter, receiver]
+      properties:
+        transmitter: { $ref: "#/components/schemas/LonLat" }
+        receiver: { $ref: "#/components/schemas/LonLat" }
+        sample_spacing_m: { type: number, minimum: 1, maximum: 250, default: 10 }
+        model_profile: { type: string, enum: [terrain-profile, urban-short-range, research-sub-thz] }
+        azimuth: { type: number }
+        calibration_offset_db: { type: number, minimum: -40, maximum: 40 }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
+        fidelity:
+          type: object
+          properties:
+            building_loss_mode: { type: string, enum: [screen-diffraction, penetration, none] }
+            diffraction_model: { type: string, enum: [single-knife-edge, none] }
+            default_wall_material: { type: string, enum: [concrete, brick, glass, wood, metal, unknown] }
+            clutter_specific_attenuation_db_per_km: { type: number, minimum: 0 }
+            vegetation_depth_m: { type: number, minimum: 0 }
+            vegetation_specific_attenuation_db_per_m: { type: number, minimum: 0 }
+            gas_specific_attenuation_db_per_km: { type: number, minimum: 0 }
+            rain_specific_attenuation_db_per_km: { type: number, minimum: 0 }
+            shadow_sigma_db: { type: number, minimum: 0 }
+    LonLat:
+      type: object
+      required: [lon, lat]
+      properties:
+        lon: { type: number, minimum: -180, maximum: 180 }
+        lat: { type: number, minimum: -90, maximum: 90 }
+    CoverageSurfaceRequest:
+      allOf:
+        - { $ref: "#/components/schemas/SectorRequest" }
+        - type: object
+          properties:
+            cell_size_m: { type: number, minimum: 10, maximum: 250, default: 25 }
+            thresholds_dbm: { type: array, minItems: 1, maxItems: 10, uniqueItems: true, items: { type: number, minimum: -180, maximum: 0 } }
+    CoverageSurfaceResponse:
+      type: object
+      required: [grid, contours, stats, model]
+      properties:
+        grid:
+          type: object
+          required: [crs, bounds, width, height, cell_size_m, nodata, row_order, values]
+          properties:
+            crs: { type: string, const: "OGC:CRS84" }
+            bounds: { type: array, minItems: 4, maxItems: 4, items: { type: number } }
+            width: { type: integer, minimum: 2 }
+            height: { type: integer, minimum: 2 }
+            cell_size_m: { type: number }
+            nodata: { type: number, const: -9999 }
+            row_order: { type: string, const: south-to-north }
+            values: { type: array, maxItems: 100000, items: { type: number } }
+        contours: { $ref: "#/components/schemas/FeatureCollection" }
+        stats: { type: object, additionalProperties: true }
+        model: { type: object, additionalProperties: true }
+    ExperimentDefinition:
+      type: object
+      required: [base]
+      properties:
+        name: { type: string, maxLength: 128 }
+        base: { $ref: "#/components/schemas/SectorRequest" }
+        matrix:
+          type: object
+          properties:
+            frequencies_ghz: { type: array, items: { type: number } }
+            tx_powers_dbm: { type: array, items: { type: number } }
+            beam_widths_deg: { type: array, items: { type: number } }
+            azimuths_deg: { type: array, items: { type: number } }
+            calibration_offsets_db: { type: array, items: { type: number } }
+    ExperimentJob:
+      type: object
+      required: [job_id, process_id, status, progress, total_runs, completed_runs, fingerprint]
+      properties:
+        job_id: { type: string }
+        process_id: { type: string, const: batch-experiment }
+        status: { type: string, enum: [accepted, running, succeeded, failed, dismissed] }
+        progress: { type: number, minimum: 0, maximum: 1 }
+        total_runs: { type: integer, minimum: 1, maximum: 64 }
+        completed_runs: { type: integer, minimum: 0, maximum: 64 }
+        fingerprint: { type: string }
+        cache_hit: { type: boolean }
+        result: { type: object, additionalProperties: true }
+        message: { type: string }
+    BuildingFeatureCollection:
+      allOf:
+        - { $ref: "#/components/schemas/FeatureCollection" }
+        - type: object
+          required: [numberMatched, numberReturned, limit, offset]
+          properties:
+            numberMatched: { type: integer, minimum: 0 }
+            numberReturned: { type: integer, minimum: 0, maximum: 5000 }
+            limit: { type: integer, minimum: 1, maximum: 5000 }
+            offset: { type: integer, minimum: 0 }
     FeatureCollection:
       type: object
       required: [type, features]

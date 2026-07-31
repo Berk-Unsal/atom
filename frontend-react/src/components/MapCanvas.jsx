@@ -1,7 +1,8 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { circleMarker, divIcon, latLngBounds } from "leaflet";
-import { CircleMarker, GeoJSON, MapContainer, Marker, Polygon, Polyline, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Polyline, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { rxPowerColor } from "../utils/geojson.js";
+import { getJSON } from "../utils/apiClient.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
@@ -38,6 +39,12 @@ export default function MapCanvas({
 	isPlacingCell,
 	onPlaceCell,
 	onMoveTower,
+  isSelectingPathEndpoint,
+  onSelectPathEndpoint,
+  pathProfile,
+  coverageSurface,
+  surfaceOpacity = 0.62,
+  surfaceDisplayThresholdDBm = -110,
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map" preferCanvas>
@@ -53,12 +60,23 @@ export default function MapCanvas({
         polygon={selectionPolygon}
       />
 		<CellPlacementLayer active={isPlacingCell} onPlace={onPlaceCell} />
+      <PathEndpointSelectionLayer active={isSelectingPathEndpoint} onSelect={onSelectPathEndpoint} />
       <FitSelectionLayer
         fitRequestVersion={fitRequestVersion}
         selectedNetworkTowerIds={selectedNetworkTowerIds}
         selectedTower={selectedTower}
         towers={towers}
       />
+
+      {layerVisibility?.buildings ? <ViewportBuildingLayer /> : null}
+
+      {layerVisibility?.surfaces === false ? null : (
+        <CoverageSurfaceLayer
+          displayThresholdDBm={surfaceDisplayThresholdDBm}
+          opacity={surfaceOpacity}
+          surface={coverageSurface}
+        />
+      )}
 
       {layerVisibility?.interference === false ? null : (
         <InterferenceLayer
@@ -192,8 +210,149 @@ export default function MapCanvas({
           selectedMapObject={selectedMapObject}
         />
       )}
+      <PathProfileMapLayer profile={pathProfile} />
     </MapContainer>
   );
+}
+
+function ViewportBuildingLayer() {
+  const map = useMap();
+  const [collection, setCollection] = useState({ type: "FeatureCollection", features: [] });
+  const [revision, setRevision] = useState(0);
+  useEffect(() => {
+    let controller = null;
+    let timeoutID;
+    let active = true;
+    const load = () => {
+      window.clearTimeout(timeoutID);
+      timeoutID = window.setTimeout(async () => {
+        const bounds = map.getBounds();
+        if (map.getZoom() < 12 || map.distance(bounds.getSouthWest(), bounds.getNorthEast()) > 48_000) {
+          if (active) setCollection({ type: "FeatureCollection", features: [] });
+          return;
+        }
+        controller?.abort();
+        controller = new AbortController();
+        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].map((value) => value.toFixed(7)).join(",");
+        try {
+          const payload = await getJSON(`/api/collections/buildings/items?bbox=${bbox}&limit=5000`, "Viewport buildings could not be loaded", controller.signal);
+          if (active && Array.isArray(payload?.features)) {
+            setCollection(payload);
+            setRevision((current) => current + 1);
+          }
+        } catch (error) {
+          if (active && error?.name !== "AbortError") setCollection({ type: "FeatureCollection", features: [] });
+        }
+      }, 220);
+    };
+    load();
+    map.on("moveend zoomend", load);
+    return () => {
+      active = false;
+      controller?.abort();
+      window.clearTimeout(timeoutID);
+      map.off("moveend zoomend", load);
+    };
+  }, [map]);
+  if (!collection.features.length) return null;
+  return (
+    <GeoJSON
+      key={revision}
+      data={collection}
+      interactive={false}
+      style={(feature) => buildingOverlayStyle(feature?.properties)}
+    />
+  );
+}
+
+function buildingOverlayStyle(properties = {}) {
+  const materialColors = {
+    brick: "#b45309",
+    concrete: "#64748b",
+    glass: "#0891b2",
+    metal: "#475569",
+    wood: "#a16207",
+    unknown: "#78716c",
+  };
+  const height = Number(properties.height_m);
+  return {
+    color: materialColors[properties.material] ?? materialColors.unknown,
+    fillColor: materialColors[properties.material] ?? materialColors.unknown,
+    fillOpacity: Math.min(0.38, 0.08 + Math.max(0, Number.isFinite(height) ? height : 0) / 120),
+    opacity: 0.52,
+    weight: 0.7,
+  };
+}
+
+function CoverageSurfaceLayer({ displayThresholdDBm, opacity, surface }) {
+  const grid = surface?.grid;
+  const imageURL = useMemo(() => coverageSurfaceImageURL(grid, displayThresholdDBm), [grid, displayThresholdDBm]);
+  if (!grid || !imageURL || !Array.isArray(grid.bounds) || grid.bounds.length !== 4) return null;
+  const contours = {
+    type: "FeatureCollection",
+    features: (surface?.contours?.features ?? []).filter((feature) => Number(feature.properties?.threshold_dbm) >= displayThresholdDBm),
+  };
+  return (
+    <>
+      <ImageOverlay
+        bounds={[[grid.bounds[1], grid.bounds[0]], [grid.bounds[3], grid.bounds[2]]]}
+        opacity={opacity}
+        url={imageURL}
+        zIndex={220}
+      />
+      <GeoJSON
+        key={`${displayThresholdDBm}-${contours.features.length}`}
+        data={contours}
+        interactive={false}
+        style={(feature) => ({ color: surfaceSignalColor(feature?.properties?.threshold_dbm), opacity: Math.min(1, opacity + 0.25), weight: 1.5 })}
+      />
+    </>
+  );
+}
+
+function coverageSurfaceImageURL(grid, displayThresholdDBm) {
+  if (!grid || !Array.isArray(grid.values) || !Number.isInteger(grid.width) || !Number.isInteger(grid.height)) return null;
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = grid.width;
+    canvas.height = grid.height;
+    const context = canvas.getContext("2d");
+    if (!context) return null;
+    const image = context.createImageData(grid.width, grid.height);
+    for (let sourceRow = 0; sourceRow < grid.height; sourceRow += 1) {
+      const targetRow = grid.height - sourceRow - 1;
+      for (let column = 0; column < grid.width; column += 1) {
+        const value = Number(grid.values[sourceRow * grid.width + column]);
+        const target = (targetRow * grid.width + column) * 4;
+        if (!Number.isFinite(value) || value === Number(grid.nodata) || value < displayThresholdDBm) {
+          image.data[target + 3] = 0;
+          continue;
+        }
+        const [red, green, blue] = surfaceSignalRGB(value);
+        image.data[target] = red;
+        image.data[target + 1] = green;
+        image.data[target + 2] = blue;
+        image.data[target + 3] = 220;
+      }
+    }
+    context.putImageData(image, 0, 0);
+    return canvas.toDataURL("image/png");
+  } catch {
+    return null;
+  }
+}
+
+function surfaceSignalRGB(value) {
+  if (value >= -80) return [5, 150, 105];
+  if (value >= -90) return [34, 197, 94];
+  if (value >= -100) return [245, 158, 11];
+  if (value >= -110) return [225, 29, 72];
+  return [126, 34, 206];
+}
+
+function surfaceSignalColor(value) {
+  const [red, green, blue] = surfaceSignalRGB(Number(value));
+  return `rgb(${red} ${green} ${blue})`;
 }
 
 function CellPlacementLayer({ active, onPlace }) {
@@ -203,6 +362,38 @@ function CellPlacementLayer({ active, onPlace }) {
 		},
 	});
 	return null;
+}
+
+function PathEndpointSelectionLayer({ active, onSelect }) {
+  const map = useMap();
+  useEffect(() => {
+    const container = map.getContainer();
+    const previous = container.style.cursor;
+    if (active) container.style.cursor = "crosshair";
+    return () => { container.style.cursor = previous; };
+  }, [active, map]);
+  useMapEvents({
+    click: (event) => {
+      if (active) onSelect?.([event.latlng.lng, event.latlng.lat]);
+    },
+  });
+  return null;
+}
+
+function PathProfileMapLayer({ profile }) {
+  const samples = profile?.samples ?? [];
+  if (samples.length < 2) return null;
+  const positions = samples.map((sample) => [sample.lat, sample.lon]);
+  const dominantDistance = Number(profile?.dominant_obstruction?.distance_m);
+  const dominant = Number.isFinite(dominantDistance)
+    ? samples.reduce((closest, sample) => Math.abs(Number(sample.distance_m) - dominantDistance) < Math.abs(Number(closest.distance_m) - dominantDistance) ? sample : closest, samples[0])
+    : null;
+  return (
+    <>
+      <Polyline positions={positions} pathOptions={{ color: "#0f766e", weight: 4, opacity: 0.9, dashArray: "8 6" }} interactive={false} />
+      {dominant ? <CircleMarker center={[dominant.lat, dominant.lon]} radius={7} pathOptions={{ color: "#881337", fillColor: "#fb7185", fillOpacity: 0.9, weight: 3 }} interactive={false} /> : null}
+    </>
+  );
 }
 
 function RecommendationLayer({ onSelectMapObject, recommendations, selectedMapObject }) {

@@ -128,44 +128,58 @@ func TestRecommendationValidationBoundsSearchPolygonComplexity(t *testing.T) {
 
 func TestMeasurementBiasCalibrationUsesHoldout(t *testing.T) {
 	origin := Point{Lon: 32.85, Lat: 39.92}
+	radio := InterferenceRequest{
+		NetworkTech:  "5g",
+		Towers:       []InterferenceTowerRequest{{ID: "cell-1", TowerLon: origin.Lon, TowerLat: origin.Lat, AzimuthDeg: 90}},
+		RadiusMeters: 400, FrequencyGHz: 28, TxPowerDBm: 30, BeamWidthDeg: 120,
+		BandwidthMHz: 100, LoadFactor: 1, ReuseFactor: 1, NoiseFigureDB: 7, SampleSpacingM: 40,
+	}
+	preset, err := interferencePresetFor("5g", 100)
+	if err != nil {
+		t.Fatalf("preset: %v", err)
+	}
 	samples := make([]MeasurementSample, 20)
 	for index := range samples {
-		point := DestinationPoint(origin, 90, 20+float64(index))
+		cluster := index / 4
+		point := DestinationPoint(origin, 90, 40+float64(cluster)*60+float64(index%4))
+		prediction := evaluateInterferencePoint(radio, preset, EmptyBuildingIndex(), point)
+		if prediction.RSRPDBm == nil {
+			t.Fatalf("sample %d has no predicted signal", index)
+		}
 		samples[index] = MeasurementSample{
 			ID:         fmt.Sprintf("sample-%02d", index),
 			Lon:        point.Lon,
 			Lat:        point.Lat,
 			Technology: "5g",
-			RSRPDBm:    -80,
+			RSRPDBm:    *prediction.RSRPDBm + 6,
 		}
 	}
-	response, err := EvaluateMeasurementsContext(context.Background(), MeasurementEvaluationRequest{
-		Radio: InterferenceRequest{
-			NetworkTech:    "5g",
-			Towers:         []InterferenceTowerRequest{{ID: "cell-1", TowerLon: origin.Lon, TowerLat: origin.Lat, AzimuthDeg: 90}},
-			RadiusMeters:   400,
-			FrequencyGHz:   28,
-			TxPowerDBm:     30,
-			BeamWidthDeg:   120,
-			BandwidthMHz:   100,
-			LoadFactor:     1,
-			ReuseFactor:    1,
-			NoiseFigureDB:  7,
-			SampleSpacingM: 40,
-		},
-		Samples: samples,
-	}, EmptyBuildingIndex())
+	response, err := EvaluateMeasurementsContext(context.Background(), MeasurementEvaluationRequest{Radio: radio, Samples: samples}, EmptyBuildingIndex())
 	if err != nil {
 		t.Fatalf("evaluate measurements: %v", err)
 	}
 	if !response.Calibration.Eligible {
 		t.Fatalf("calibration not eligible: %s", response.Calibration.Reason)
 	}
-	if response.Calibration.TrainingSampleCount != 16 || response.Calibration.HoldoutSampleCount != 4 {
-		t.Fatalf("split = %d/%d, want 16/4", response.Calibration.TrainingSampleCount, response.Calibration.HoldoutSampleCount)
+	if response.Calibration.TrainingSampleCount != 16 || response.Calibration.HoldoutSampleCount != 20 || response.Calibration.FoldCount != 5 {
+		t.Fatalf("spatial CV split = training %d/validation %d/folds %d, want 16/20/5", response.Calibration.TrainingSampleCount, response.Calibration.HoldoutSampleCount, response.Calibration.FoldCount)
 	}
 	if response.Calibration.HoldoutMAEAfterDB == nil || response.Calibration.HoldoutMAEBeforeDB == nil {
 		t.Fatal("holdout metrics are nil")
+	}
+}
+
+func TestMeasurementCalibrationRejectsInsufficientSpatialDiversity(t *testing.T) {
+	residuals := make([]measurementResidual, 20)
+	for index := range residuals {
+		residuals[index] = measurementResidual{sampleID: fmt.Sprintf("sample-%d", index), cellID: "1", lon: 32.85 + float64(index)*0.000001, lat: 39.92, residual: 4}
+	}
+	calibration := buildBiasCalibration(residuals, 0)
+	if calibration.Eligible || calibration.SpatialDiversitySufficient {
+		t.Fatal("calibration should reject samples from one small area")
+	}
+	if !strings.Contains(calibration.Reason, "Insufficient spatial diversity") {
+		t.Fatalf("reason = %q", calibration.Reason)
 	}
 }
 
@@ -258,9 +272,7 @@ func TestLoadDatasetPackSchemaV2ValidatesOptionalLayers(t *testing.T) {
 		}
 	}
 	terrainName := "terrain.tif"
-	if err := os.WriteFile(filepath.Join(root, terrainName), []byte("fixture terrain"), 0o600); err != nil {
-		t.Fatalf("write terrain: %v", err)
-	}
+	writeTestGeoTIFF(t, filepath.Join(root, terrainName))
 	hashes := make(map[string]string)
 	for _, name := range []string{"towers.geojson", "buildings.geojson", terrainName} {
 		hash, err := fileSHA256(filepath.Join(root, name))

@@ -34,6 +34,14 @@ class SupplyChainCheckTest(unittest.TestCase):
             path.write_text("FROM alpine:3.24\nUSER atom\nCMD [\"app\"]\n", encoding="utf-8")
             self.assertEqual([], CHECKER.runtime_user_errors(path))
 
+    def test_requires_every_go_source_in_adapter_build(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "Dockerfile"
+            path.write_text("FROM golang:1.26\nCOPY main.go policy_generated.go ./\n", encoding="utf-8")
+            self.assertEqual(1, len(CHECKER.go_source_copy_errors(path)))
+            path.write_text("FROM golang:1.26\nCOPY *.go ./\n", encoding="utf-8")
+            self.assertEqual([], CHECKER.go_source_copy_errors(path))
+
     def test_rejects_published_core_lab_adapter_port(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "docker-compose.core-lab.yml"

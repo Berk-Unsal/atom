@@ -38,6 +38,13 @@ def runtime_user_errors(path: Path) -> list[str]:
     return []
 
 
+def go_source_copy_errors(path: Path) -> list[str]:
+    content = path.read_text(encoding="utf-8")
+    if re.search(r"^COPY\s+\*\.go\s+\./\s*$", content, re.MULTILINE):
+        return []
+    return [f"{display_path(path)}: Go build stage must copy every Go source file"]
+
+
 def core_lab_compose_errors(path: Path) -> list[str]:
     content = path.read_text(encoding="utf-8")
     match = re.search(r"^  core-lab-adapter:\n(?P<body>.*?)(?=^  [^ \n][^:]*:|\Z)", content, re.MULTILINE | re.DOTALL)
@@ -136,6 +143,7 @@ def collect_errors(root: Path = ROOT) -> list[str]:
     for relative_path in ("Dockerfile", "core-lab-adapter/Dockerfile"):
         errors.extend(dockerfile_errors(root / relative_path))
         errors.extend(runtime_user_errors(root / relative_path))
+    errors.extend(go_source_copy_errors(root / "core-lab-adapter/Dockerfile"))
     errors.extend(core_lab_compose_errors(root / "docker-compose.core-lab.yml"))
     for relative_path in ("data-pipeline/Requirements.in", "docs/requirements.in"):
         errors.extend(input_requirement_errors(root / relative_path))

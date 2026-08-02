@@ -1,7 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { combineNetworkSimulations, isCalibrationProfileCompatible, networkAzimuthMap, normalizeSimulationStats } from "./appWorkspace.js";
+import {
+  combineNetworkSimulations,
+  formatCompactNumber,
+  formatMetric,
+  formatNumber,
+  isCalibrationProfileCompatible,
+  networkAzimuthMap,
+  normalizeSimulationStats,
+} from "./appWorkspace.js";
 
 describe("app workspace helpers", () => {
+  it("uses one UI contract for precision, units, and missing values", () => {
+    expect(formatNumber(12.34, 1)).toBe("12.3");
+    expect(formatNumber(null)).toBe("—");
+    expect(formatCompactNumber(undefined)).toBe("—");
+    expect(formatMetric(-92.44, "dBm")).toBe("-92.4 dBm");
+    expect(formatMetric(81.25, "%")).toBe("81.3%");
+  });
+
   it("combines network features and aggregate statistics deterministically", () => {
     const combined = combineNetworkSimulations([
       { geojson: { features: [{ properties: { ray: 1 } }] }, stats: { avg_rx_dbm: -80, blocked_pct: 10, min_range_m: 20, max_range_m: 100 } },

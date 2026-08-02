@@ -4,6 +4,7 @@ import {
   formatNumber,
   markdownValue,
   printTable,
+  UNAVAILABLE_VALUE,
 } from "./reportFormatting.js";
 
 export function renderMarkdownInterferenceSection(report) {
@@ -41,11 +42,11 @@ export function renderMarkdownInterferenceSection(report) {
 
 | Serving cell | Channel | Samples | Avg SINR | Avg RSRP | Avg RSRQ |
 |---|---|---:|---:|---:|---:|
-${cellRows.join("\n") || "| n/a | n/a | n/a | n/a | n/a | n/a |"}
+${cellRows.join("\n") || "| — | — | — | — | — | — |"}
 
 | Affected building | Serving cell | SINR | RSRP | Demand |
 |---|---|---:|---:|---:|
-${demandRows.join("\n") || "| n/a | n/a | n/a | n/a | n/a |"}
+${demandRows.join("\n") || "| — | — | — | — | — |"}
 
 Planning estimate only; values are not UE or protocol measurements.
 `;
@@ -76,7 +77,7 @@ export function renderPrintableInterferenceSection(report) {
           ["Affected demand", formatCompactNumber(stats.affected_demand)],
         ])}
         ${printTable("Model Assumptions", [
-          ["Measurement family", model.measurement_family ?? "n/a"],
+          ["Measurement family", model.measurement_family ?? UNAVAILABLE_VALUE],
           ["Bandwidth", `${formatNumber(model.bandwidth_mhz, 0)} MHz`],
           ["SCS / resource blocks", `${formatNumber(model.subcarrier_spacing_khz, 0)} kHz / ${formatNumber(model.resource_blocks, 0)}`],
           ["Noise figure", `${formatNumber(model.noise_figure_db, 1)} dB`],
@@ -84,7 +85,7 @@ export function renderPrintableInterferenceSection(report) {
           ["Effective grid", `${formatNumber(model.effective_sample_spacing_m, 1)} m`],
         ])}
       </div>
-      <table><thead><tr><th>Serving cell</th><th>Channel</th><th>Samples</th><th>Avg SINR</th><th>Avg RSRP</th><th>Avg RSRQ</th></tr></thead><tbody>${cellRows || "<tr><td colspan=\"6\">n/a</td></tr>"}</tbody></table>
+      <table><thead><tr><th>Serving cell</th><th>Channel</th><th>Samples</th><th>Avg SINR</th><th>Avg RSRP</th><th>Avg RSRQ</th></tr></thead><tbody>${cellRows || "<tr><td colspan=\"6\">—</td></tr>"}</tbody></table>
       <p>Deterministic planning estimate, not a UE or protocol measurement.</p>
     </section>`;
 }

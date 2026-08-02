@@ -120,6 +120,7 @@ describe("App planning workflow", () => {
 
     expect(api.postJSON).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Add 1 cell" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze workspace" }));
     expect(screen.getByRole("button", { name: "Interference" })).not.toBeDisabled();
   });
 
@@ -139,10 +140,35 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
+    fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     fireEvent.click(screen.getByRole("button", { name: "Data" }));
     expect(screen.getByRole("region", { name: "Propagation model assumptions" })).toBeInTheDocument();
     expect(screen.getByText("FSPL + wall loss")).toBeInTheDocument();
     expect(screen.getByText(/Fast fading, diffraction, sidelobes/)).toBeInTheDocument();
+  });
+
+  it("shows only the primary action relevant to the active workflow", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
+    expect(screen.queryByRole("button", { name: "Run Sector" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Plan workspace" }));
+    expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  });
+
+  it("restores a deleted inventory cell from the undo notice", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Inventory" }));
+    fireEvent.click(screen.getByRole("button", { name: "Delete 101" }));
+    expect(screen.getByText("Deleted cell 101.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Delete 101" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(screen.getByRole("button", { name: "Delete 101" })).toBeInTheDocument();
   });
 
   it("sends edited per-cell inventory profiles with RF requests", async () => {
@@ -189,6 +215,7 @@ describe("App planning workflow", () => {
 
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     fireEvent.click(screen.getByRole("button", { name: "Data" }));
     fireEvent.click(await screen.findByRole("button", { name: /Second pack.*Activate/i }));
 
@@ -245,6 +272,7 @@ describe("App planning workflow", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
     await waitFor(() => expect(screen.getByRole("button", { name: /Open Sector result results/i })).toBeInTheDocument());
 
+    fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     fireEvent.click(screen.getByRole("button", { name: "Data" }));
     const fileInput = screen.getByLabelText(/Import measurement CSV/i);
     const measurementCsv = "id,longitude,latitude,technology,rsrp_dbm\nm-1,32.85,39.92,5g,-80";

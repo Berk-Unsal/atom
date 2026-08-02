@@ -4,7 +4,7 @@
   --panel-strong: #ffffff;
   --ink: #14201c;
   --muted: #52615a;
-  --subtle: #728078;
+  --subtle: #64726b;
   --line: #d7e1dc;
   --line-strong: #b7c7c0;
   --teal: #0f766e;
@@ -20,6 +20,9 @@
   --slate-soft: #eef2f7;
   --focus: #155e75;
   --shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
+  --motion-fast: 150ms;
+  --motion-standard: 180ms;
+  --ease-out-state: cubic-bezier(0.22, 1, 0.36, 1);
   color: var(--ink);
   background: var(--bg);
   font-family:
@@ -50,9 +53,34 @@ button {
 
 button:focus-visible,
 input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
 a:focus-visible {
   outline: 3px solid rgba(21, 94, 117, 0.28);
   outline-offset: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1200;
+  padding: 9px 12px;
+  border-radius: 7px;
+  color: #ffffff;
+  background: var(--slate);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+}
+
+.skip-link:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .mini-datum span,
@@ -154,8 +182,8 @@ a:focus-visible {
   color: #34443e;
   line-height: 1.1;
   transition:
-    background-color 150ms ease,
-    color 150ms ease;
+    background-color var(--motion-fast) var(--ease-out-state),
+    color var(--motion-fast) var(--ease-out-state);
 }
 
 .segmented-control button:last-child {
@@ -361,8 +389,8 @@ a:focus-visible {
   background: var(--teal-soft);
   font-weight: 850;
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease;
+    background-color var(--motion-fast) var(--ease-out-state),
+    border-color var(--motion-fast) var(--ease-out-state);
 }
 
 .optimize-button:hover {
@@ -608,7 +636,8 @@ a:focus-visible {
 .optimization-violation {
   margin: 0;
   padding: 7px 9px;
-  border-left: 3px solid var(--rose);
+  border: 1px solid #fecaca;
+  border-radius: 6px;
   color: #7f1d1d;
   background: #fef2f2;
   font-size: 0.75rem;
@@ -1094,9 +1123,9 @@ a:focus-visible {
   cursor: pointer;
   font-weight: 850;
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease,
-    transform 150ms ease;
+    background-color var(--motion-fast) var(--ease-out-state),
+    border-color var(--motion-fast) var(--ease-out-state),
+    transform var(--motion-fast) var(--ease-out-state);
 }
 
 .report-button:hover {
@@ -1502,7 +1531,7 @@ a:focus-visible {
 .inventory-list small,
 .inventory-editor-heading small {
   color: var(--subtle);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
 }
 
 .inventory-list em {
@@ -1569,7 +1598,7 @@ a:focus-visible {
 
 .inventory-field-grid label small {
   color: var(--subtle);
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   font-weight: 650;
 }
 
@@ -1594,7 +1623,7 @@ a:focus-visible {
 
 .inventory-field-grid label em {
   color: #be123c;
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   font-style: normal;
   font-weight: 650;
 }
@@ -1602,7 +1631,7 @@ a:focus-visible {
 .field-help {
   margin: 0;
   color: var(--subtle);
-  font-size: 0.65rem;
+  font-size: 0.8125rem;
 }
 
 .path-profile-panel,
@@ -1763,7 +1792,7 @@ a:focus-visible {
 .path-profile-summary small,
 .loss-budget small {
   color: var(--subtle);
-  font-size: 0.63rem;
+  font-size: 0.75rem;
   line-height: 1.3;
 }
 
@@ -1809,7 +1838,7 @@ a:focus-visible {
 .path-profile-chart figcaption {
   margin-top: 6px;
   color: var(--subtle);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   line-height: 1.4;
 }
 
@@ -1927,7 +1956,7 @@ a:focus-visible {
 
 .surface-summary small {
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
 }
 
 .surface-summary strong {
@@ -1997,7 +2026,7 @@ a:focus-visible {
 
 .experiment-matrix-fields small {
   color: var(--subtle);
-  font-size: 0.62rem;
+  font-size: 0.75rem;
 }
 
 .experiment-actions {
@@ -2061,7 +2090,7 @@ a:focus-visible {
 .experiment-progress-heading small,
 .experiment-fingerprint {
   color: var(--subtle);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
 }
 
 .experiment-progress-heading b {
@@ -2081,7 +2110,7 @@ a:focus-visible {
 
 .experiment-fingerprint code {
   color: var(--slate);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
 }
 
 .experiment-pareto-chart {
@@ -2121,7 +2150,7 @@ a:focus-visible {
 .experiment-pareto-chart figcaption {
   margin-top: 6px;
   color: var(--subtle);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   line-height: 1.4;
 }
 
@@ -2134,7 +2163,7 @@ a:focus-visible {
 .experiment-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   white-space: nowrap;
 }
 
@@ -2209,7 +2238,7 @@ a:focus-visible {
 
 .dataset-pack-list button small {
   color: var(--subtle);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
 }
 
 .dataset-pack-list button em {
@@ -2248,7 +2277,7 @@ a:focus-visible {
   border-radius: 6px;
   color: #d8f3ea;
   background: #17342f;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   line-height: 1.5;
   white-space: pre-wrap;
 }
@@ -2405,8 +2434,78 @@ a:focus-visible {
 .project-warning {
   margin: 0;
   color: var(--muted);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   line-height: 1.4;
+}
+
+.project-delete-confirmation {
+  display: grid;
+  gap: 8px;
+  margin-top: 9px;
+  padding: 10px;
+  border: 1px solid #fda4af;
+  border-radius: 7px;
+  color: #881337;
+  background: #fff7f8;
+}
+
+.project-delete-confirmation p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.project-delete-confirmation > div {
+  display: flex;
+  gap: 7px;
+}
+
+.project-delete-confirmation button:first-child {
+  border-color: #be123c;
+  color: #ffffff;
+  background: #be123c;
+}
+
+.undo-toast {
+  position: fixed;
+  right: 16px;
+  bottom: 20px;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(440px, calc(100vw - 32px));
+  min-height: 48px;
+  padding: 8px 9px 8px 13px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--slate);
+  box-shadow: 0 6px 8px rgba(15, 23, 42, 0.22);
+  font-size: 0.8125rem;
+}
+
+.undo-toast span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.undo-toast button {
+  min-height: 34px;
+  padding: 0 9px;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  color: #ffffff;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.undo-toast .undo-dismiss {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  padding: 0;
+  border-color: transparent;
 }
 
 .project-warning {
@@ -2418,7 +2517,7 @@ a:focus-visible {
 
 .planning-estimate-link {
   color: var(--muted);
-  font-size: 0.67rem;
+  font-size: 0.75rem;
   font-weight: 750;
   text-decoration: underline;
   text-decoration-color: var(--line-strong);
@@ -2532,7 +2631,7 @@ a:focus-visible {
 .recommendation-row p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.8125rem;
   line-height: 1.45;
 }
 
@@ -2549,7 +2648,7 @@ a:focus-visible {
 
 .recommendation-row dt {
   color: var(--muted);
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
 }
 
@@ -2593,14 +2692,15 @@ a:focus-visible {
 .result-explanation {
   margin: 0;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
 .calibration-active,
 .result-explanation {
   padding: 8px;
-  border-left: 3px solid #0f766e;
+  border: 1px solid #99d8cb;
+  border-radius: 6px;
   background: #f0fdfa;
   color: #134e4a;
 }
@@ -2629,7 +2729,7 @@ a:focus-visible {
 
 .diagnostic-group > strong {
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -2641,7 +2741,7 @@ a:focus-visible {
   align-items: baseline;
   padding: 6px 0;
   border-bottom: 1px solid var(--line);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
 }
 
 .diagnostic-group span {
@@ -2749,7 +2849,7 @@ a:focus-visible {
 .command-brand small {
   overflow: hidden;
   color: var(--subtle);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 720;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2820,7 +2920,7 @@ a:focus-visible {
 .result-summary-button small {
   overflow: hidden;
   color: var(--subtle);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 760;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2873,6 +2973,16 @@ a:focus-visible {
   background: var(--rose);
 }
 
+.workspace-save-state {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.workspace-save-state.saving { color: #854d0e; }
+.workspace-save-state.error { color: #9f1239; }
+
 .command-run-button {
   display: inline-flex;
   align-items: center;
@@ -2904,7 +3014,7 @@ a:focus-visible {
 .global-error-banner {
   position: fixed;
   top: 64px;
-  left: 68px;
+  left: 100px;
   z-index: 920;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -2935,7 +3045,7 @@ a:focus-visible {
 .workspace-frame {
   position: relative;
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr);
+  grid-template-columns: 88px minmax(0, 1fr);
   min-width: 0;
   min-height: 0;
   overflow: hidden;
@@ -2947,36 +3057,47 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
   min-width: 0;
   min-height: 0;
-  padding: 8px 6px;
+  padding: 10px 6px;
   border-right: 1px solid var(--line-strong);
   background: #f7faf9;
 }
 
 .rail-item {
   position: relative;
-  width: 44px;
-}
-
-.rail-item-divider {
-  margin-top: 8px;
-  padding-top: 9px;
-  border-top: 1px solid var(--line-strong);
+  width: 76px;
 }
 
 .rail-item button {
   position: relative;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  width: 76px;
+  height: 48px;
+  padding: 4px 3px;
   border: 1px solid transparent;
   border-radius: 7px;
   color: #52615a;
   background: transparent;
   cursor: pointer;
+  transition:
+    background-color var(--motion-fast) var(--ease-out-state),
+    border-color var(--motion-fast) var(--ease-out-state),
+    color var(--motion-fast) var(--ease-out-state);
+}
+
+.rail-label {
+  min-width: 0;
+  font-size: 0.69rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .rail-item button:hover,
@@ -3017,7 +3138,7 @@ a:focus-visible {
 .rail-badge {
   position: absolute;
   top: 4px;
-  right: 4px;
+  right: 3px;
   display: grid;
   place-items: center;
   min-width: 14px;
@@ -3053,8 +3174,78 @@ a:focus-visible {
   opacity: 0;
   pointer-events: none;
   transform: translate(2px, -50%);
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity var(--motion-fast) var(--ease-out-state),
+    transform var(--motion-fast) var(--ease-out-state);
 }
+
+.tool-subnav {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  min-width: 0;
+  padding: 7px 10px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  background: #f4f7f6;
+  scrollbar-width: none;
+}
+
+.tool-subnav::-webkit-scrollbar {
+  display: none;
+}
+
+.tool-subnav button {
+  position: relative;
+  display: inline-flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: max-content;
+  min-height: 36px;
+  padding: 0 9px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 780;
+  transition:
+    background-color var(--motion-fast) var(--ease-out-state),
+    border-color var(--motion-fast) var(--ease-out-state),
+    color var(--motion-fast) var(--ease-out-state);
+}
+
+.tool-subnav button:hover,
+.tool-subnav button.active {
+  border-color: var(--line-strong);
+  color: var(--teal-dark);
+  background: #ffffff;
+}
+
+.tool-subnav button.unavailable {
+  color: #854d0e;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.tool-subnav-badge {
+  display: grid;
+  place-items: center;
+  min-width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: #64748b;
+  font-size: 0.52rem;
+  font-style: normal;
+  line-height: 1;
+}
+
+.tool-subnav-badge.success { background: var(--teal); }
+.tool-subnav-badge.warning { background: var(--amber); }
 
 .rail-item button:hover .rail-tooltip,
 .rail-item button:focus-visible .rail-tooltip {
@@ -3066,12 +3257,12 @@ a:focus-visible {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 56px;
+  left: 88px;
   z-index: 820;
   display: flex;
   flex-direction: column;
   width: clamp(320px, 27vw, 360px);
-  max-width: calc(100% - 56px);
+  max-width: calc(100% - 88px);
   height: auto;
   max-height: none;
   margin: 0;
@@ -3083,7 +3274,7 @@ a:focus-visible {
   color: var(--ink);
   background: rgba(247, 250, 249, 0.985);
   box-shadow: 4px 0 8px rgba(15, 23, 42, 0.1);
-  animation: drawer-enter 170ms ease-out;
+  animation: drawer-enter var(--motion-standard) var(--ease-out-state);
 }
 
 .tool-drawer::backdrop {
@@ -3092,6 +3283,7 @@ a:focus-visible {
 
 .tool-drawer-header {
   display: grid;
+  flex: 0 0 auto;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
@@ -3116,11 +3308,16 @@ a:focus-visible {
   outline: 0;
 }
 
+.tool-drawer-header h2:focus-visible {
+  outline: 3px solid rgba(21, 94, 117, 0.28);
+  outline-offset: 3px;
+}
+
 .tool-drawer-header p {
   margin: 3px 0 0;
   overflow: hidden;
   color: var(--subtle);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 650;
   line-height: 1.25;
   text-overflow: ellipsis;
@@ -3160,6 +3357,7 @@ a:focus-visible {
 
 .tool-drawer-body {
   display: grid;
+  flex: 1 1 auto;
   align-content: start;
   gap: 12px;
   min-width: 0;
@@ -3181,6 +3379,7 @@ a:focus-visible {
 }
 
 .tool-drawer-footer {
+  flex: 0 0 auto;
   padding: 10px 12px;
   border-top: 1px solid var(--line);
   background: #ffffff;
@@ -3215,7 +3414,7 @@ a:focus-visible {
 .tool-readiness-state p {
   margin: 0;
   color: #7c4a03;
-  font-size: 0.76rem;
+  font-size: 0.8125rem;
   line-height: 1.45;
 }
 
@@ -3272,7 +3471,7 @@ a:focus-visible {
 .analysis-empty-state p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   line-height: 1.45;
 }
 
@@ -3301,7 +3500,7 @@ a:focus-visible {
   justify-content: space-between;
   gap: 8px;
   pointer-events: none;
-  transition: left 170ms ease;
+  transition: left var(--motion-standard) var(--ease-out-state);
 }
 
 .workspace-frame.drawer-open .focused-map-toolbar {
@@ -3309,7 +3508,7 @@ a:focus-visible {
 }
 
 .workspace-frame .leaflet-left {
-  transition: transform 170ms ease;
+  transition: transform var(--motion-standard) var(--ease-out-state);
 }
 
 .workspace-frame.drawer-open .leaflet-left {
@@ -3359,6 +3558,10 @@ a:focus-visible {
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 850;
+  transition:
+    background-color var(--motion-fast) var(--ease-out-state),
+    border-color var(--motion-fast) var(--ease-out-state),
+    color var(--motion-fast) var(--ease-out-state);
 }
 
 .spatial-tools button:hover,
@@ -3401,6 +3604,8 @@ a:focus-visible {
   border-radius: 7px;
   background: #ffffff;
   box-shadow: 0 5px 8px rgba(15, 23, 42, 0.12);
+  transform-origin: top right;
+  animation: layer-menu-enter var(--motion-fast) var(--ease-out-state);
 }
 
 .layer-menu label {
@@ -3426,23 +3631,26 @@ a:focus-visible {
   accent-color: var(--teal);
 }
 
-.focused-interference-legend {
+.focused-map-legend {
   position: absolute;
   right: 12px;
   bottom: 24px;
   z-index: 700;
-  width: 142px;
+  width: 180px;
+  max-height: min(420px, calc(100% - 84px));
+  overflow: auto;
   border: 1px solid rgba(183, 199, 192, 0.94);
   border-radius: 7px;
   color: var(--slate);
   background: rgba(255, 255, 255, 0.96);
 }
 
-.focused-interference-legend.collapsed {
+.focused-map-legend.collapsed {
   width: 86px;
+  overflow: hidden;
 }
 
-.focused-interference-legend > button {
+.focused-map-legend > button {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3456,18 +3664,77 @@ a:focus-visible {
   font-size: 0.72rem;
 }
 
-.focused-interference-legend > div {
+.focused-map-legend > div {
   display: grid;
-  gap: 6px;
+  gap: 9px;
   padding: 2px 9px 9px;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
-.focused-interference-legend span {
+.focused-map-legend section {
+  display: grid;
+  gap: 5px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.focused-map-legend section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.focused-map-legend section > strong {
+  color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.focused-map-legend span {
   display: flex;
   align-items: center;
   gap: 7px;
 }
+
+.map-key-marker {
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+  border: 2px solid #1d4ed8;
+  border-radius: 999px;
+  background: #60a5fa;
+}
+
+.map-key-marker.active-cell {
+  border-color: var(--teal-dark);
+  background: #ffffff;
+}
+
+.map-key-marker.cluster-cell {
+  border-color: var(--amber);
+  background: #fef3c7;
+}
+
+.map-key-marker.weak-gap {
+  border-color: #b45309;
+  background: #f59e0b;
+}
+
+.map-key-marker.outage-gap {
+  border-color: #881337;
+  background: #e11d48;
+}
+
+.map-key-line {
+  width: 18px;
+  height: 4px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.map-key-line.strong-signal { background: #10b981; }
+.map-key-line.usable-signal { background: #f59e0b; }
+.map-key-line.weak-signal { background: #e11d48; }
 
 .map-plan-prompt {
   position: absolute;
@@ -3514,6 +3781,10 @@ a:focus-visible {
   cursor: pointer;
   font-size: 0.72rem;
   font-weight: 820;
+  transition:
+    background-color var(--motion-fast) var(--ease-out-state),
+    border-color var(--motion-fast) var(--ease-out-state),
+    color var(--motion-fast) var(--ease-out-state);
 }
 
 .result-view-tabs button.active {
@@ -3530,6 +3801,10 @@ a:focus-visible {
   display: grid;
   gap: 12px;
   min-width: 0;
+}
+
+.results-panel > :not(.result-view-tabs) {
+  animation: result-state-enter var(--motion-standard) var(--ease-out-state);
 }
 
 .core-toggle-row {
@@ -3573,6 +3848,16 @@ a:focus-visible {
   to { opacity: 1; transform: translateX(0); }
 }
 
+@keyframes layer-menu-enter {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes result-state-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes command-pulse {
   from { opacity: 0.45; }
   to { opacity: 1; }
@@ -3585,7 +3870,8 @@ a:focus-visible {
   }
 
   .command-brand small,
-  .plan-summary {
+  .plan-summary,
+  .workspace-save-state {
     display: none;
   }
 
@@ -3681,7 +3967,7 @@ a:focus-visible {
 
   .workspace-frame {
     display: block;
-    padding-bottom: 56px;
+    padding-bottom: 64px;
   }
 
   .workspace-frame .map-stage,
@@ -3697,19 +3983,22 @@ a:focus-visible {
     bottom: 0;
     left: 0;
     z-index: 860;
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
     gap: 0;
     width: 100%;
-    height: 56px;
-    padding: 5px 4px;
+    height: 64px;
+    padding: 4px;
+    overflow-x: hidden;
+    overflow-y: hidden;
     border-top: 1px solid var(--line-strong);
     border-right: 0;
     background: rgba(247, 250, 249, 0.99);
   }
 
-  .rail-item,
-  .rail-item-divider {
+  .rail-item {
+    flex: 1 1 25%;
     width: auto;
     margin: 0;
     padding: 0;
@@ -3717,8 +4006,15 @@ a:focus-visible {
   }
 
   .rail-item button {
+    flex-direction: column;
+    gap: 2px;
     width: 100%;
-    height: 46px;
+    height: 56px;
+    padding: 4px 2px;
+  }
+
+  .rail-label {
+    font-size: 0.66rem;
   }
 
   .rail-item button.active::before {
@@ -3739,7 +4035,7 @@ a:focus-visible {
     position: absolute;
     top: auto;
     right: 0;
-    bottom: 56px;
+    bottom: 64px;
     left: 0;
     width: 100%;
     max-width: none;
@@ -3759,6 +4055,10 @@ a:focus-visible {
   .drawer-icon-button {
     width: 44px;
     height: 44px;
+  }
+
+  .tool-subnav button {
+    min-height: 44px;
   }
 
   .focused-map-toolbar {
@@ -3796,7 +4096,14 @@ a:focus-visible {
   }
 
   .map-plan-prompt {
-    bottom: 68px;
+    bottom: 76px;
+  }
+
+  .undo-toast {
+    right: 10px;
+    bottom: 74px;
+    left: 10px;
+    max-width: none;
   }
 
   @keyframes sheet-enter {
@@ -3838,9 +4145,10 @@ a:focus-visible {
     width: min(220px, calc(100vw - 60px));
   }
 
-  .focused-interference-legend {
+  .focused-map-legend {
     right: 8px;
-    bottom: 70px;
+    bottom: 78px;
+    max-height: min(320px, calc(100% - 148px));
   }
 
   .tool-drawer-body {

@@ -4,8 +4,15 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Changed
+
+- Reorganize the frontend into four labeled workflow stages with contextual tool navigation and run actions, a unified map key, stronger text contrast and focus states, visible local-save status, and recoverable deletions.
+- Standardize RF unit and unavailable-value formatting, replace side-stripe status treatments, and align drawer, layer, and result transitions to one reduced-motion-safe timing system.
+
 ### Fixed
 
+- Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary.
+- Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport.
 - Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly.
 - Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image.
 

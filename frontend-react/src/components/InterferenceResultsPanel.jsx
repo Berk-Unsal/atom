@@ -1,4 +1,5 @@
 import { Activity } from "lucide-react";
+import { formatCompactNumber, formatMetric } from "../utils/appWorkspace.js";
 
 export default function InterferenceResultsPanel({ analysis }) {
   const stats = analysis?.stats;
@@ -20,8 +21,8 @@ export default function InterferenceResultsPanel({ analysis }) {
         <Datum label="Avg RSRQ" value={formatMetric(stats.avg_rsrq_db, "dB")} />
       </div>
       <div className="metric-list compact">
-        <Metric label="Serviceable surface" value={`${formatNumber(stats.serviceable_pct, 1)}%`} />
-        <Metric label="Interference-limited" value={`${formatNumber(stats.interference_limited_pct, 1)}%`} />
+        <Metric label="Serviceable surface" value={formatMetric(stats.serviceable_pct, "%")} />
+        <Metric label="Interference-limited" value={formatMetric(stats.interference_limited_pct, "%")} />
         <Metric label="No-signal samples" value={(stats.no_signal_count ?? 0).toLocaleString()} />
         <Metric label="Affected demand" value={formatCompactNumber(stats.affected_demand)} />
       </div>
@@ -55,24 +56,4 @@ function Datum({ label, value }) {
 
 function Metric({ label, value }) {
   return <div className="metric-row"><span>{label}</span><strong>{value}</strong></div>;
-}
-
-function formatMetric(value, unit) {
-  const formatted = formatNumber(value, 1);
-  return formatted === "n/a" ? formatted : `${formatted} ${unit}`;
-}
-
-function formatNumber(value, digits) {
-  if (value === null || value === undefined || value === "") {
-    return "n/a";
-  }
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric.toFixed(digits) : "n/a";
-}
-
-function formatCompactNumber(value) {
-  if (value === null || value === undefined || !Number.isFinite(Number(value))) {
-    return "n/a";
-  }
-  return Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(Number(value));
 }

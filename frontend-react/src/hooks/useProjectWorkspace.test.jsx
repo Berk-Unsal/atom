@@ -36,4 +36,25 @@ describe("useProjectWorkspace", () => {
       .toEqual(["First edit", "Second edit"]);
     expect(result.current.activeProject.name).toBe("Second edit");
   });
+
+  it("reports local persistence and restores an undone scenario in place", async () => {
+    const { result } = renderHook(() => useProjectWorkspace(null));
+    await waitFor(() => expect(result.current.loaded).toBe(true));
+
+    act(() => result.current.renameProject("Persistence check"));
+    expect(result.current.persistenceState).toBe("saving");
+    await waitFor(() => expect(result.current.persistenceState).toBe("saved"));
+
+    let scenario;
+    await act(async () => {
+      scenario = await result.current.saveScenario("Baseline", { plan: {}, summary: {} });
+    });
+    expect(result.current.activeProject.scenarios).toHaveLength(1);
+
+    act(() => result.current.deleteScenario(scenario.id));
+    expect(result.current.activeProject.scenarios).toHaveLength(0);
+    act(() => result.current.restoreScenario(scenario, 0, true));
+    expect(result.current.activeProject.scenarios[0].name).toBe("Baseline");
+    expect(result.current.activeProject.activeScenarioId).toBe(scenario.id);
+  });
 });

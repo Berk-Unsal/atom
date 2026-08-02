@@ -80,7 +80,7 @@ describe("planning report interference section", () => {
     });
     const markdown = renderMarkdownReport(report);
     expect(markdown).toContain("## Interference and Radio Quality");
-    expect(markdown).toContain("n/a / n/a dB");
+    expect(markdown).toContain("— / — dB");
     expect(markdown).toContain("Planning estimate only");
     expect(markdown).toContain("## Per-cell RF Profiles");
     expect(markdown).toContain("n257 / C-17");

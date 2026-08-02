@@ -3,6 +3,7 @@ import { circleMarker, divIcon, latLngBounds } from "leaflet";
 import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Polyline, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { rxPowerColor } from "../utils/geojson.js";
 import { getJSON } from "../utils/apiClient.js";
+import { formatNumber } from "../utils/appWorkspace.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
@@ -820,17 +821,6 @@ function interferenceMetricColor(metric, properties) {
     return "#2563eb";
   }
   return "#0f766e";
-}
-
-function formatNumber(value) {
-  if (value === null || value === undefined || value === "") {
-    return "n/a";
-  }
-  const number = Number(value);
-  if (!Number.isFinite(number)) {
-    return "n/a";
-  }
-  return number.toFixed(1);
 }
 
 function formatRouteType(value) {

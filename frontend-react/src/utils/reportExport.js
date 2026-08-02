@@ -9,6 +9,7 @@ import {
   formatNumber,
   markdownValue,
   printTable,
+  UNAVAILABLE_VALUE,
 } from "./reportFormatting.js";
 import { resolveRFProfile } from "./rfProfile.js";
 
@@ -124,8 +125,8 @@ Generated: ${generatedAt}
 | Active network | ${markdownValue(report.activeNetworkTech)} |
 | Tower longitude | ${formatNumber(towerCoordinates[0], 6)} |
 | Tower latitude | ${formatNumber(towerCoordinates[1], 6)} |
-| Azimuth | ${formatNumber(report.settings.azimuthDeg, 0)} deg |
-| Beam width | ${formatNumber(report.settings.beamWidthDeg, 0)} deg |
+| Azimuth | ${formatNumber(report.settings.azimuthDeg, 0)}° |
+| Beam width | ${formatNumber(report.settings.beamWidthDeg, 0)}° |
 | Radius | ${formatNumber(report.settings.radiusMeters, 0)} m |
 | Ray count | ${formatNumber(report.settings.rayCount, 0)} |
 | Tx power | ${formatNumber(report.settings.txPowerDbm, 1)} dBm |
@@ -136,7 +137,7 @@ Generated: ${generatedAt}
 
 | Cell | Technology | Band / channel | Frequency | Bandwidth | TX / gain / loss | Antenna | Patterns | Load / reuse | PCI | Receiver |
 |---|---|---|---:|---:|---:|---|---|---:|---:|---|
-${(report.rfProfiles ?? []).map((profile) => `| ${markdownValue(profile.cellId)} | ${markdownValue(profile.networkTech?.toUpperCase())} | ${markdownValue(`${profile.band} / ${profile.channelId}`)} | ${formatNumber(profile.frequencyGHz, 3)} GHz | ${formatNumber(profile.bandwidthMHz, 1)} MHz | ${formatNumber(profile.txPowerDbm, 1)} / ${formatNumber(profile.antennaGainDbi, 1)} / ${formatNumber(profile.systemLossDb, 1)} dB | ${formatNumber(profile.antennaHeightM, 1)} m; ${formatNumber(profile.mechanicalDowntiltDeg + profile.electricalDowntiltDeg, 1)}° tilt; ${formatNumber(profile.orientationDeg, 1)}° orient | ${markdownValue(`${profile.horizontalPatternId} / ${profile.verticalPatternId}`)} | ${formatNumber(profile.loadFactor * 100, 0)}% / ${formatNumber(profile.reuseFactor, 0)} | ${markdownValue(profile.pci)} | ${formatNumber(profile.receiverHeightM, 1)} m / ${formatNumber(profile.receiverSensitivityDbm, 1)} dBm |`).join("\n") || "| n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |"}
+${(report.rfProfiles ?? []).map((profile) => `| ${markdownValue(profile.cellId)} | ${markdownValue(profile.networkTech?.toUpperCase())} | ${markdownValue(`${profile.band} / ${profile.channelId}`)} | ${formatNumber(profile.frequencyGHz, 3)} GHz | ${formatNumber(profile.bandwidthMHz, 1)} MHz | ${formatNumber(profile.txPowerDbm, 1)} / ${formatNumber(profile.antennaGainDbi, 1)} / ${formatNumber(profile.systemLossDb, 1)} dB | ${formatNumber(profile.antennaHeightM, 1)} m; ${formatNumber(profile.mechanicalDowntiltDeg + profile.electricalDowntiltDeg, 1)}° tilt; ${formatNumber(profile.orientationDeg, 1)}° orient | ${markdownValue(`${profile.horizontalPatternId} / ${profile.verticalPatternId}`)} | ${formatNumber(profile.loadFactor * 100, 0)}% / ${formatNumber(profile.reuseFactor, 0)} | ${markdownValue(profile.pci)} | ${formatNumber(profile.receiverHeightM, 1)} m / ${formatNumber(profile.receiverSensitivityDbm, 1)} dBm |`).join("\n") || "| — | — | — | — | — | — | — | — | — | — | — |"}
 
 ## Simulation KPIs
 
@@ -191,7 +192,7 @@ ${renderMarkdownSavedScenarioSection(report)}
 | Licenses | ${markdownValue((report.appMeta?.dataset?.licenses ?? []).join(", "))} |
 | Confidence | ${markdownValue(report.appMeta?.dataset?.confidence)} |
 | Pack QA | ${markdownValue(report.appMeta?.dataset?.quality?.summary)} |
-| Requested coverage | ${report.appMeta?.dataset?.quality?.coverage?.coverage_ratio === undefined ? "n/a" : `${formatNumber(report.appMeta.dataset.quality.coverage.coverage_ratio * 100, 1)}%`} |
+| Requested coverage | ${report.appMeta?.dataset?.quality?.coverage?.coverage_ratio === undefined ? UNAVAILABLE_VALUE : `${formatNumber(report.appMeta.dataset.quality.coverage.coverage_ratio * 100, 1)}%`} |
 | Layers | ${markdownValue(Object.keys(report.appMeta?.dataset?.layers ?? {}).join(", "))} |
 | Hashed files | ${formatNumber(Object.keys(report.appMeta?.dataset?.sha256 ?? {}).length, 0)} |
 | Model version | ${markdownValue(report.appMeta?.model_version)} |
@@ -398,7 +399,7 @@ function renderPrintableReport(report) {
       <div class="meta">
         ${printMetric("Cell", report.selectedTower?.cellId)}
         ${printMetric("Network", report.activeNetworkTech)}
-        ${printMetric("Azimuth", `${formatNumber(report.settings.azimuthDeg, 0)} deg`)}
+        ${printMetric("Azimuth", `${formatNumber(report.settings.azimuthDeg, 0)}°`)}
         ${printMetric("Generated", report.generatedAt.toLocaleString())}
       </div>
     </header>
@@ -421,7 +422,7 @@ function renderPrintableReport(report) {
         ["Frequency", `${formatNumber(report.settings.frequencyGHz, 1)} GHz`],
         ["Tx power", `${formatNumber(report.settings.txPowerDbm, 1)} dBm`],
         ["Radius", `${formatNumber(report.settings.radiusMeters, 0)} m`],
-        ["Beam width", `${formatNumber(report.settings.beamWidthDeg, 0)} deg`],
+        ["Beam width", `${formatNumber(report.settings.beamWidthDeg, 0)}°`],
         ["Ray count", formatNumber(report.settings.rayCount, 0)],
         ["Calibration offset", `${formatNumber(report.settings.calibrationOffsetDb ?? 0, 1)} dB`],
       ])}
@@ -436,7 +437,7 @@ function renderPrintableReport(report) {
     </section>
     <section class="grid">
       ${printTable("Demand Hits", [
-        ["Data quality", report.diagnostics?.data_quality ?? report.buildingSummary?.data_quality ?? "n/a"],
+        ["Data quality", report.diagnostics?.data_quality ?? report.buildingSummary?.data_quality ?? UNAVAILABLE_VALUE],
         ["POI hits", formatNumber(report.diagnostics?.hit_demand_buildings, 0)],
         ["Residential hits", formatNumber(report.diagnostics?.hit_residential_buildings, 0)],
         ["Demand score", formatCompactNumber(report.diagnostics?.demand_score)],
@@ -449,17 +450,17 @@ function renderPrintableReport(report) {
         ["Residential demand buildings", formatNumber(report.buildingSummary?.residential_weighted_buildings, 0)],
         ["Worst Rx", `${formatNumber(report.gapStats?.worst_rx_dbm, 1)} dBm`],
         ["Unmet demand score", formatCompactNumber(report.gapStats?.total_gap_demand)],
-        ["Dataset", report.appMeta?.dataset?.name ?? "n/a"],
-        ["Dataset version", report.appMeta?.dataset?.version ?? "n/a"],
-        ["Manifest schema", report.appMeta?.dataset?.schema_version ?? "n/a"],
-        ["Sources", (report.appMeta?.dataset?.sources ?? []).join(", ") || "n/a"],
-        ["Licenses", (report.appMeta?.dataset?.licenses ?? []).join(", ") || "n/a"],
-        ["Confidence", report.appMeta?.dataset?.confidence ?? "n/a"],
-        ["Pack QA", report.appMeta?.dataset?.quality?.summary ?? "n/a"],
-        ["Requested coverage", report.appMeta?.dataset?.quality?.coverage?.coverage_ratio === undefined ? "n/a" : `${formatNumber(report.appMeta.dataset.quality.coverage.coverage_ratio * 100, 1)}%`],
-        ["Layers", Object.keys(report.appMeta?.dataset?.layers ?? {}).join(", ") || "n/a"],
+        ["Dataset", report.appMeta?.dataset?.name ?? UNAVAILABLE_VALUE],
+        ["Dataset version", report.appMeta?.dataset?.version ?? UNAVAILABLE_VALUE],
+        ["Manifest schema", report.appMeta?.dataset?.schema_version ?? UNAVAILABLE_VALUE],
+        ["Sources", (report.appMeta?.dataset?.sources ?? []).join(", ") || UNAVAILABLE_VALUE],
+        ["Licenses", (report.appMeta?.dataset?.licenses ?? []).join(", ") || UNAVAILABLE_VALUE],
+        ["Confidence", report.appMeta?.dataset?.confidence ?? UNAVAILABLE_VALUE],
+        ["Pack QA", report.appMeta?.dataset?.quality?.summary ?? UNAVAILABLE_VALUE],
+        ["Requested coverage", report.appMeta?.dataset?.quality?.coverage?.coverage_ratio === undefined ? UNAVAILABLE_VALUE : `${formatNumber(report.appMeta.dataset.quality.coverage.coverage_ratio * 100, 1)}%`],
+        ["Layers", Object.keys(report.appMeta?.dataset?.layers ?? {}).join(", ") || UNAVAILABLE_VALUE],
         ["Hashed files", formatNumber(Object.keys(report.appMeta?.dataset?.sha256 ?? {}).length, 0)],
-        ["Model version", report.appMeta?.model_version ?? "n/a"],
+        ["Model version", report.appMeta?.model_version ?? UNAVAILABLE_VALUE],
       ])}
     </section>
     <section>
@@ -483,7 +484,7 @@ function printRFProfileSection(report) {
         <td>${escapeHtml(`${profile.networkTech.toUpperCase()} · ${profile.band} · ${profile.channelId} · ${profile.duplexMode.toUpperCase()}`)}</td>
         <td>${escapeHtml(`${formatNumber(profile.frequencyGHz, 3)} GHz · ${formatNumber(profile.bandwidthMHz, 1)} MHz · ${formatNumber(profile.txPowerDbm, 1)} dBm TX · ${formatNumber(profile.antennaGainDbi, 1)} dBi · ${formatNumber(profile.systemLossDb, 1)} dB loss`)}</td>
         <td>${escapeHtml(`${formatNumber(profile.antennaHeightM, 1)} m · ${formatNumber(profile.mechanicalDowntiltDeg, 1)}° mechanical · ${formatNumber(profile.electricalDowntiltDeg, 1)}° electrical · ${formatNumber(profile.orientationDeg, 1)}° orientation · ${profile.horizontalPatternId}/${profile.verticalPatternId}`)}</td>
-        <td>${escapeHtml(`${formatNumber(profile.radiusMeters, 0)} m radius · ${formatNumber(profile.beamWidthDeg, 0)}° beam · ${formatNumber(profile.loadFactor * 100, 0)}% load · reuse ${profile.reuseFactor} · PCI ${profile.pci ?? "n/a"} · UE ${formatNumber(profile.receiverHeightM, 1)} m/${formatNumber(profile.receiverSensitivityDbm, 1)} dBm`)}</td>
+        <td>${escapeHtml(`${formatNumber(profile.radiusMeters, 0)} m radius · ${formatNumber(profile.beamWidthDeg, 0)}° beam · ${formatNumber(profile.loadFactor * 100, 0)}% load · reuse ${profile.reuseFactor} · PCI ${profile.pci ?? UNAVAILABLE_VALUE} · UE ${formatNumber(profile.receiverHeightM, 1)} m/${formatNumber(profile.receiverSensitivityDbm, 1)} dBm`)}</td>
       </tr>`).join("")}</tbody>
     </table>
   </section>`;
@@ -622,7 +623,7 @@ function getTopCoverageGaps(geojson) {
       const coordinates = feature.geometry?.coordinates ?? [];
       return {
         demand: Number(properties.total_demand ?? 0),
-        id: properties.building_id ?? "n/a",
+        id: properties.building_id ?? UNAVAILABLE_VALUE,
         lat: coordinates[1],
         lon: coordinates[0],
         reason: properties.reason ?? "demand",
@@ -915,7 +916,7 @@ function renderMarkdownNetworkSection(report) {
   const stats = optimization.stats;
   const towerRows = (optimization.optimized_towers ?? []).map(
     (tower) =>
-      `| ${markdownValue(tower.id)} | ${formatNumber(tower.optimal_azimuth, 0)} deg | ${formatCompactNumber(tower.score)} |`,
+      `| ${markdownValue(tower.id)} | ${formatNumber(tower.optimal_azimuth, 0)}° | ${formatCompactNumber(tower.score)} |`,
   );
   return `## Multi-Tower Network Optimization
 
@@ -946,7 +947,7 @@ function printNetworkSection(report) {
   const towerRows = (optimization.optimized_towers ?? [])
     .map(
       (tower) =>
-        `<tr><td>${escapeHtml(tower.id)}</td><td>${formatNumber(tower.optimal_azimuth, 0)} deg</td><td>${formatCompactNumber(tower.score)}</td></tr>`,
+        `<tr><td>${escapeHtml(tower.id)}</td><td>${formatNumber(tower.optimal_azimuth, 0)}°</td><td>${formatCompactNumber(tower.score)}</td></tr>`,
     )
     .join("");
   return `<section class="grid">
@@ -956,7 +957,7 @@ function printNetworkSection(report) {
         ["Unique residential buildings", formatNumber(stats.unique_residential_buildings, 0)],
         ["Overlap buildings", formatNumber(stats.overlap_buildings, 0)],
         ["Overlap penalty", formatCompactNumber(stats.overlap_penalty)],
-        ["Data quality", stats.data_quality ?? "n/a"],
+        ["Data quality", stats.data_quality ?? UNAVAILABLE_VALUE],
       ])}
       <div>
         <h2>Optimized Sectors</h2>
@@ -998,11 +999,11 @@ function renderMarkdownCoreLabSection(report) {
 
 | Function | Status | Latency | Load | Message |
 |---|---|---:|---:|---|
-${functionRows.join("\n") || "| n/a | n/a | n/a | n/a | n/a |"}
+${functionRows.join("\n") || "| — | — | — | — | — |"}
 
 | Stage | Severity | Source | Message |
 |---|---|---|---|
-${eventRows.join("\n") || "| n/a | n/a | n/a | n/a |"}
+${eventRows.join("\n") || "| — | — | — | — |"}
 `;
 }
 
@@ -1031,10 +1032,10 @@ function printCoreLabSection(report) {
       <h2>Communication Path</h2>
       <div class="grid">
         ${printTable("5G Communication Path", [
-          ["Mode", status.mode ?? "n/a"],
-          ["State", status.state ?? "n/a"],
-          ["Source", status.source ?? "n/a"],
-          ["Scenario", status.scenario ?? report.coreLab?.scenario ?? "n/a"],
+          ["Mode", status.mode ?? UNAVAILABLE_VALUE],
+          ["State", status.state ?? UNAVAILABLE_VALUE],
+          ["Source", status.source ?? UNAVAILABLE_VALUE],
+          ["Scenario", status.scenario ?? report.coreLab?.scenario ?? UNAVAILABLE_VALUE],
           ["Selected cells", pathSummary.selectedCells],
           ["Xn availability", pathSummary.xnAvailability],
           ["Fallback route", pathSummary.fallbackRoute],
@@ -1043,11 +1044,11 @@ function printCoreLabSection(report) {
         ])}
         <div>
           <h2>Core Functions</h2>
-          <table><thead><tr><th>Function</th><th>Status</th><th>Latency</th><th>Load</th></tr></thead><tbody>${functionRows || "<tr><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td></tr>"}</tbody></table>
+          <table><thead><tr><th>Function</th><th>Status</th><th>Latency</th><th>Load</th></tr></thead><tbody>${functionRows || "<tr><td>—</td><td>—</td><td>—</td><td>—</td></tr>"}</tbody></table>
         </div>
       </div>
       <h2 style="margin-top:16px">Recent Core Events</h2>
-      <table><thead><tr><th>Stage</th><th>Severity</th><th>Source</th><th>Message</th></tr></thead><tbody>${eventRows || "<tr><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td></tr>"}</tbody></table>
+      <table><thead><tr><th>Stage</th><th>Severity</th><th>Source</th><th>Message</th></tr></thead><tbody>${eventRows || "<tr><td>—</td><td>—</td><td>—</td><td>—</td></tr>"}</tbody></table>
     </section>`;
 }
 
@@ -1070,10 +1071,10 @@ function getCommunicationPathSummary(coreLab) {
   return {
     affectedInterfaces: affectedInterfaces || "none",
     fallbackRoute: fallbackRoutes.length > 0 ? "AMF/N2 fallback active" : "none",
-    selectedCells: selectedCells || "n/a",
+    selectedCells: selectedCells || UNAVAILABLE_VALUE,
     xnAvailability:
       routeDecisions.length === 0
-        ? "n/a"
+        ? UNAVAILABLE_VALUE
         : fallbackRoutes.length > 0
           ? `${fallbackRoutes.length} fallback, ${directRoutes.length} direct`
           : `${directRoutes.length} direct Xn`,
@@ -1154,7 +1155,7 @@ function renderMarkdownRecommendationSection(report) {
   const recommendations = report.recommendations?.recommendations ?? [];
   if (recommendations.length === 0) return "";
   const rows = recommendations.map((candidate, index) =>
-    `| ${index + 1} | ${markdownValue(candidate.cell_id)} | ${formatNumber(candidate.optimal_azimuth, 0)} deg | ${formatCompactNumber(candidate.marginal_network_score)} | ${markdownValue(candidate.reason)} |`,
+    `| ${index + 1} | ${markdownValue(candidate.cell_id)} | ${formatNumber(candidate.optimal_azimuth, 0)}° | ${formatCompactNumber(candidate.marginal_network_score)} | ${markdownValue(candidate.reason)} |`,
   ).join("\n");
   return `## Candidate Cell Recommendations
 
@@ -1208,7 +1209,7 @@ function printMeasurementSection(report) {
 function printRecommendationSection(report) {
   const recommendations = report.recommendations?.recommendations ?? [];
   if (recommendations.length === 0) return "";
-  const rows = recommendations.map((candidate, index) => `<tr><td>${index + 1}</td><td>${escapeHtml(candidate.cell_id)}</td><td>${formatNumber(candidate.optimal_azimuth, 0)} deg</td><td>${formatCompactNumber(candidate.marginal_network_score)}</td><td>${escapeHtml(candidate.reason)}</td></tr>`).join("");
+  const rows = recommendations.map((candidate, index) => `<tr><td>${index + 1}</td><td>${escapeHtml(candidate.cell_id)}</td><td>${formatNumber(candidate.optimal_azimuth, 0)}°</td><td>${formatCompactNumber(candidate.marginal_network_score)}</td><td>${escapeHtml(candidate.reason)}</td></tr>`).join("");
   return `<section><h2>Candidate Cell Recommendations</h2><table><thead><tr><th>Rank</th><th>Cell</th><th>Azimuth</th><th>Gain</th><th>Reason</th></tr></thead><tbody>${rows}</tbody></table><p>Candidates are known planning records, not approved deployment sites.</p></section>`;
 }
 
@@ -1230,7 +1231,7 @@ function printSavedScenarioSection(report) {
 }
 
 function printMetric(label, value) {
-  return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value ?? "n/a")}</strong></div>`;
+  return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value ?? UNAVAILABLE_VALUE)}</strong></div>`;
 }
 
 function printGapTable(gaps) {

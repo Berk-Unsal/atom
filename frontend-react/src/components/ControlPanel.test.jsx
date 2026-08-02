@@ -39,6 +39,12 @@ function renderPanel(overrides = {}) {
 }
 
 describe("ControlPanel interference controls", () => {
+  it("formats angular controls without a space before the degree symbol", () => {
+    renderPanel({ activeTool: "propagation", planningMode: "single" });
+    expect(screen.getByText("90°")).toBeInTheDocument();
+    expect(screen.getByText("120°")).toBeInTheDocument();
+  });
+
   it("disables analysis until two cells are selected", () => {
     renderPanel();
     expect(screen.getByRole("button", { name: /Analyze Interference/i })).toBeDisabled();

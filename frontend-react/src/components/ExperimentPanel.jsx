@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Download, FlaskConical, PlayCircle, Square } from "lucide-react";
 import { getJSON, postJSON, requestJSON } from "../utils/apiClient.js";
+import { formatNumber } from "../utils/appWorkspace.js";
 import { buildExperimentDefinition, EXPERIMENT_MATRIX_FIELDS, paretoGeometry } from "../utils/experimentMatrix.js";
 
 export default function ExperimentPanel({ selectedTower, settings }) {
@@ -125,6 +126,5 @@ function ExperimentResults({ runs }) {
   );
 }
 
-function formatNumber(value, digits) { const number = Number(value); return Number.isFinite(number) ? number.toFixed(digits) : "n/a"; }
 function formatLabel(value) { return String(value ?? "unknown").replaceAll("-", " "); }
 function slug(value) { return String(value || "experiment").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "experiment"; }

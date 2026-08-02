@@ -136,7 +136,7 @@ export default function ControlPanel({
         <RangeField
           icon={<Compass size={18} />}
           label="Azimuth"
-          suffix="deg"
+          suffix="°"
           min={0}
           max={360}
           step={1}
@@ -146,7 +146,7 @@ export default function ControlPanel({
         <RangeField
           icon={<SlidersHorizontal size={18} />}
           label="Beam width"
-          suffix="deg"
+          suffix="°"
           min={10}
           max={360}
           step={10}
@@ -342,7 +342,7 @@ function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {
 function RangeField({ icon, label, suffix, min, max, step, value, onChange }) {
   return (
     <label className="range-row">
-      <span className="input-label">{icon}{label}<strong>{value}{suffix ? ` ${suffix}` : ""}</strong></span>
+      <span className="input-label">{icon}{label}<strong>{formatValueWithSuffix(value, suffix)}</strong></span>
       <input
         type="range"
         min={min}
@@ -354,4 +354,9 @@ function RangeField({ icon, label, suffix, min, max, step, value, onChange }) {
       />
     </label>
   );
+}
+
+function formatValueWithSuffix(value, suffix) {
+  if (!suffix) return value;
+  return `${value}${suffix === "°" || suffix === "%" ? "" : " "}${suffix}`;
 }

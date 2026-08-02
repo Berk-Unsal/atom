@@ -17,8 +17,10 @@ export default function useProjectWorkspace(meta) {
   const [workspace, setWorkspace] = useState(() => createProjectWorkspace(datasetReference(meta)));
   const workspaceRef = useRef(workspace);
   const mountedRef = useRef(true);
+  const pendingSaveCountRef = useRef(0);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
+  const [persistenceState, setPersistenceState] = useState("saved");
 
   useEffect(() => {
     mountedRef.current = true;
@@ -47,12 +49,22 @@ export default function useProjectWorkspace(meta) {
     const { workspace: next, saved } = queueProjectWorkspaceSave(recipe(workspaceRef.current));
     workspaceRef.current = next;
     setWorkspace(next);
+    pendingSaveCountRef.current += 1;
+    setPersistenceState("saving");
     saved.then(
       () => {
-        if (mountedRef.current) setError("");
+        pendingSaveCountRef.current = Math.max(0, pendingSaveCountRef.current - 1);
+        if (mountedRef.current) {
+          setError("");
+          if (pendingSaveCountRef.current === 0) setPersistenceState("saved");
+        }
       },
       (saveError) => {
-        if (mountedRef.current) setError(saveError.message);
+        pendingSaveCountRef.current = Math.max(0, pendingSaveCountRef.current - 1);
+        if (mountedRef.current) {
+          setError(saveError.message);
+          setPersistenceState("error");
+        }
       },
     );
     return saved;
@@ -135,6 +147,19 @@ export default function useProjectWorkspace(meta) {
     }));
   }, [activeProject, updateProject]);
 
+  const restoreScenario = useCallback((scenario, index, activate = false) => {
+    if (!activeProject || !scenario || activeProject.scenarios.some((candidate) => candidate.id === scenario.id)) return;
+    updateProject(activeProject.id, (project) => {
+      const scenarios = [...project.scenarios];
+      scenarios.splice(Math.max(0, Math.min(Number(index) || 0, scenarios.length)), 0, scenario);
+      return {
+        ...project,
+        activeScenarioId: activate ? scenario.id : project.activeScenarioId,
+        scenarios,
+      };
+    });
+  }, [activeProject, updateProject]);
+
   const importProject = useCallback((text) => {
     const project = importProjectFile(text);
     commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }));
@@ -153,7 +178,9 @@ export default function useProjectWorkspace(meta) {
     exportActiveProject: () => exportProjectFile(activeProject),
     importProject,
     loaded,
+    persistenceState,
     renameProject,
+    restoreScenario,
     saveDraft,
     saveScenario,
     selectProject,

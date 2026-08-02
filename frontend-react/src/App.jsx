@@ -23,10 +23,12 @@ import PathProfilePanel from "./components/PathProfilePanel.jsx";
 import SurfacePanel from "./components/SurfacePanel.jsx";
 import {
   CommandBar,
-  InterferenceLegend,
+  MapLegend,
   MapToolbar,
   ProjectMenu,
   ToolDrawer,
+  ToolSubnav,
+  UndoToast,
   WorkflowRail,
 } from "./components/WorkspaceChrome.jsx";
 import { WORKSPACE_TOOLS } from "./components/workspaceTools.js";
@@ -55,6 +57,7 @@ import {
   isCalibrationProfileCompatible,
   networkAzimuthFor,
   networkAzimuthMap,
+  UNAVAILABLE_VALUE,
 } from "./utils/appWorkspace.js";
 import { CORE_LAB_SCENARIOS, DEFAULT_SIMULATION, NETWORK_TECH_OPTIONS, networkTechnologyForFrequency } from "./generated/policy.js";
 import {
@@ -171,6 +174,7 @@ export default function App() {
     topology: null,
   });
   const [error, setError] = useState("");
+  const [undoNotice, setUndoNotice] = useState(null);
   const restoredProjectRef = useRef(null);
   const requests = useRequestCoordinator();
   const projectWorkspace = useProjectWorkspace(appMeta);
@@ -187,6 +191,16 @@ export default function App() {
   const isEvaluatingMeasurements = activeRFTask === "measurements";
   const isAnalyzingPathProfile = activeRFTask === "path_profile";
   const isGeneratingSurface = activeRFTask === "coverage_surface";
+
+  const showUndoNotice = useCallback((message, onUndo) => {
+    setUndoNotice({ id: `${Date.now()}-${Math.random()}`, message, onUndo });
+  }, []);
+
+  useEffect(() => {
+    if (!undoNotice) return undefined;
+    const timeout = window.setTimeout(() => setUndoNotice(null), 6000);
+    return () => window.clearTimeout(timeout);
+  }, [undoNotice]);
 
   useEffect(() => {
     let isMounted = true;
@@ -1069,6 +1083,12 @@ export default function App() {
 	}, [invalidatePlanResults, towers]);
 
 	const deleteInventoryTower = useCallback((towerID) => {
+		const deletedTower = towers.find((tower) => tower.id === towerID);
+		if (!deletedTower) return;
+		const deletedIndex = towers.findIndex((tower) => tower.id === towerID);
+		const wasSelected = selectedTower?.id === towerID;
+		const wasInNetwork = selectedNetworkTowerIds.includes(towerID);
+		const deletedAzimuth = networkAzimuths[towerID];
 		invalidatePlanResults();
 		setTowers((current) => {
 			const next = current.filter((tower) => tower.id !== towerID);
@@ -1081,7 +1101,19 @@ export default function App() {
 			delete next[towerID];
 			return next;
 		});
-	}, [invalidatePlanResults]);
+		showUndoNotice(`Deleted cell ${deletedTower.cellId ?? deletedTower.id}.`, () => {
+			invalidatePlanResults();
+			setTowers((current) => {
+				if (current.some((tower) => tower.id === deletedTower.id)) return current;
+				const next = [...current];
+				next.splice(Math.max(0, Math.min(deletedIndex, next.length)), 0, deletedTower);
+				return next;
+			});
+			if (wasSelected) setSelectedTower(deletedTower);
+			if (wasInNetwork) setSelectedNetworkTowerIds((current) => [...new Set([...current, towerID])]);
+			if (deletedAzimuth !== undefined) setNetworkAzimuths((current) => ({ ...current, [towerID]: deletedAzimuth }));
+		});
+	}, [invalidatePlanResults, networkAzimuths, selectedNetworkTowerIds, selectedTower, showUndoNotice, towers]);
 
 	const importInventoryCells = useCallback((imported) => {
 		if (!imported.length) return;
@@ -1464,8 +1496,8 @@ export default function App() {
     if (lastAnalysisKind === "rf" && simulation?.stats) {
       return {
         label: "Sector result",
-        primary: stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`,
-        secondary: `${gapStats?.gap_buildings?.toLocaleString() ?? "n/a"} gaps`,
+        primary: stats.avgPower === null ? UNAVAILABLE_VALUE : `${stats.avgPower.toFixed(1)} dBm`,
+        secondary: `${gapStats?.gap_buildings?.toLocaleString() ?? UNAVAILABLE_VALUE} gaps`,
         view: "rf",
       };
     }
@@ -1514,7 +1546,7 @@ export default function App() {
   };
   const activeToolDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
   const cellsNeeded = Math.max(0, 2 - selectedCellCount);
-  const primaryActionLabel = isEvaluatingNetwork
+  const runPlanActionLabel = isEvaluatingNetwork
     ? "Evaluating..."
     : planningMode === "network"
       ? cellsNeeded > 0
@@ -1523,6 +1555,9 @@ export default function App() {
       : isLoading
         ? "Running..."
         : "Run Sector";
+  const primaryActionLabel = ["setup", "inventory", "propagation"].includes(activeTool)
+    ? runPlanActionLabel
+    : null;
   const mapPlanPrompt = planDirty
 		? invalidProfileCount > 0
 			? {
@@ -1618,6 +1653,18 @@ export default function App() {
     const label = lastAnalysisKind === "recommendation" ? "Candidate search" : lastAnalysisKind === "interference" ? "Interference" : planningMode === "network" ? "Network plan" : "Sector plan";
     return saveProjectScenario(`${label} ${count + 1}`, buildCurrentScenarioSnapshot());
   }, [activeProject?.scenarios?.length, buildCurrentScenarioSnapshot, lastAnalysisKind, planningMode, saveProjectScenario]);
+
+  const deleteScenarioWithUndo = useCallback((scenarioID) => {
+    const scenarios = activeProject?.scenarios ?? [];
+    const index = scenarios.findIndex((scenario) => scenario.id === scenarioID);
+    if (index < 0) return;
+    const scenario = scenarios[index];
+    const wasActive = activeProject?.activeScenarioId === scenarioID;
+    projectWorkspace.deleteScenario(scenarioID);
+    showUndoNotice(`Deleted scenario “${scenario.name}”.`, () => {
+      projectWorkspace.restoreScenario(scenario, index, wasActive);
+    });
+  }, [activeProject, projectWorkspace, showUndoNotice]);
 
   const openSavedScenario = useCallback((scenario) => {
     projectWorkspace.activateScenario(scenario.id);
@@ -1744,6 +1791,7 @@ export default function App() {
 
   return (
     <main className="focused-app-shell">
+      <a className="skip-link" href="#planning-map">Skip to planning map</a>
       <CommandBar
         appIconUrl={APP_ICON_URL}
         contextLabel={contextLabel}
@@ -1764,7 +1812,7 @@ export default function App() {
             exportContent={projectWorkspace.exportActiveProject}
             onAddProject={() => { restoredProjectRef.current = null; projectWorkspace.addProject(); }}
             onDeleteProject={() => { restoredProjectRef.current = null; projectWorkspace.deleteProject(); }}
-            onDeleteScenario={projectWorkspace.deleteScenario}
+            onDeleteScenario={deleteScenarioWithUndo}
             onDuplicateProject={() => { restoredProjectRef.current = null; projectWorkspace.duplicateProject(); }}
             onImportProject={(text) => { restoredProjectRef.current = null; return projectWorkspace.importProject(text); }}
             onOpenScenario={openSavedScenario}
@@ -1774,6 +1822,7 @@ export default function App() {
             projects={projectWorkspace.workspace.projects}
           />
         )}
+        persistenceState={projectWorkspace.persistenceState}
         primaryActionLabel={primaryActionLabel}
 		primaryDisabled={activeRFTask !== null || invalidProfileCount > 0 || (planningMode === "network" ? selectedCellCount < 2 : !selectedTower)}
         resultSummary={resultSummary}
@@ -1790,7 +1839,7 @@ export default function App() {
           toolState={toolState}
         />
 
-        <section className="map-stage" aria-label="Ankara propagation map">
+        <section id="planning-map" className="map-stage" aria-label="Ankara propagation map" tabIndex={-1}>
           <MapToolbar
             availableLayers={{
               communicationPaths: Boolean(coreLabApplicable && coreLabEnabled && coreLab.topology),
@@ -1864,13 +1913,15 @@ export default function App() {
               <span>{mapPlanPrompt.detail}</span>
             </div>
           ) : null}
-          {layerVisibility.interference && hasInterferenceData ? (
-            <InterferenceLegend
-              collapsed={legendCollapsed}
-              metric={interferenceMetric}
-              onToggle={() => setLegendCollapsed((current) => !current)}
-            />
-          ) : null}
+          <MapLegend
+            collapsed={legendCollapsed}
+            hasGaps={layerVisibility.gaps && Boolean(coverageGaps.geojson?.features?.length)}
+            hasInterferenceData={layerVisibility.interference && hasInterferenceData}
+            hasRays={layerVisibility.rays && Boolean(simulation.geojson?.features?.length)}
+            metric={interferenceMetric}
+            onToggle={() => setLegendCollapsed((current) => !current)}
+            planningMode={planningMode}
+          />
         </section>
 
         <ToolDrawer
@@ -1882,6 +1933,9 @@ export default function App() {
           onClose={() => closeDrawer(drawerMode === "inspector" ? "map" : "tool")}
           open={drawerOpen}
           subtitle={drawerMode === "inspector" ? formatScenario(selectedMapObject?.type ?? "selection") : drawerSubtitles[activeTool]}
+          subnav={drawerMode === "tool" ? (
+            <ToolSubnav activeTool={activeTool} onSelectTool={selectWorkspaceTool} toolState={toolState} />
+          ) : null}
           title={drawerMode === "inspector" ? "Map Inspector" : activeToolDefinition.label}
         >
           {drawerMode === "inspector" ? <MapInspector selectedMapObject={selectedMapObject} /> : null}
@@ -2033,6 +2087,14 @@ export default function App() {
           ) : null}
         </ToolDrawer>
       </section>
+      <UndoToast
+        message={undoNotice?.message}
+        onDismiss={() => setUndoNotice(null)}
+        onUndo={() => {
+          undoNotice?.onUndo?.();
+          setUndoNotice(null);
+        }}
+      />
     </main>
   );
 }
@@ -2060,8 +2122,8 @@ function TowerInspector({ payload }) {
   const coordinates = tower.coordinates ?? [];
   return (
     <div className="inspector-grid">
-      <MiniDatum label="Cell" value={tower.cellId ?? "n/a"} />
-      <MiniDatum label="Network" value={payload?.activeNetworkTech ?? "n/a"} />
+      <MiniDatum label="Cell" value={tower.cellId ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Network" value={payload?.activeNetworkTech ?? UNAVAILABLE_VALUE} />
       <MiniDatum label="Cluster" value={payload?.order ? `#${payload.order}` : payload?.isNetworkSelected ? "Selected" : "Not selected"} />
       <MiniDatum label="Longitude" value={formatNumber(coordinates[0], 5)} />
       <MiniDatum label="Latitude" value={formatNumber(coordinates[1], 5)} />
@@ -2089,8 +2151,8 @@ function PathInspector({ payload }) {
     <div className="inspector-grid">
       <MiniDatum label="Route" value={formatScenario(route.route_type ?? "direct_xn")} />
       <MiniDatum label="Status" value={route.status ?? "active"} />
-      <MiniDatum label="From" value={route.from ?? "n/a"} />
-      <MiniDatum label="To" value={route.to ?? "n/a"} />
+      <MiniDatum label="From" value={route.from ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="To" value={route.to ?? UNAVAILABLE_VALUE} />
       <p className="data-note">{route.reason ?? "Selected 5G neighbor path."}</p>
     </div>
   );
@@ -2102,7 +2164,7 @@ function InterferenceInspector({ payload }) {
   return (
     <div className="inspector-grid">
       <MiniDatum label="Serving cell" value={properties.serving_cell_id ?? "No signal"} />
-      <MiniDatum label="Channel" value={properties.channel_id ?? "n/a"} />
+      <MiniDatum label="Channel" value={properties.channel_id ?? UNAVAILABLE_VALUE} />
       <MiniDatum label="RSRP" value={formatMetric(properties.rsrp_dbm, "dBm")} />
       <MiniDatum label="SINR" value={formatMetric(properties.sinr_db, "dB")} />
       <MiniDatum label="RSRQ" value={formatMetric(properties.rsrq_db, "dB")} />
@@ -2127,7 +2189,7 @@ function MeasurementInspector({ payload }) {
   const properties = payload?.properties ?? {};
   return (
     <div className="inspector-grid">
-      <MiniDatum label="Sample" value={properties.id ?? "n/a"} />
+      <MiniDatum label="Sample" value={properties.id ?? UNAVAILABLE_VALUE} />
       <MiniDatum label="Serving cell" value={properties.serving_cell_id ?? "No signal"} />
       <MiniDatum label="Measured RSRP" value={formatMetric(properties.measured_rsrp_dbm, "dBm")} />
       <MiniDatum label="Predicted RSRP" value={formatMetric(properties.predicted_rsrp_dbm, "dBm")} />
@@ -2142,9 +2204,9 @@ function RecommendationInspector({ payload }) {
   const properties = payload?.properties ?? {};
   return (
     <div className="inspector-grid">
-      <MiniDatum label="Candidate cell" value={properties.cell_id ?? properties.id ?? "n/a"} />
+      <MiniDatum label="Candidate cell" value={properties.cell_id ?? properties.id ?? UNAVAILABLE_VALUE} />
       <MiniDatum label="Score gain" value={formatCompactNumber(properties.marginal_network_score)} />
-      <MiniDatum label="Azimuth" value={`${formatNumber(properties.optimal_azimuth, 0)} deg`} />
+      <MiniDatum label="Azimuth" value={`${formatNumber(properties.optimal_azimuth, 0)}°`} />
       <MiniDatum label="Overlap" value={(properties.stats?.overlap_buildings ?? 0).toLocaleString()} />
       <p className="result-explanation">{properties.reason ?? "Candidate scored from known planning records."}</p>
     </div>
@@ -2258,15 +2320,15 @@ function ResultsPanel({
               <MetricRow label="Blocked" value={`${stats.blockedRatio}%`} />
               <MetricRow
                 label="Average Rx"
-                value={stats.avgPower === null ? "n/a" : `${stats.avgPower.toFixed(1)} dBm`}
+                value={stats.avgPower === null ? UNAVAILABLE_VALUE : `${stats.avgPower.toFixed(1)} dBm`}
               />
               <MetricRow
                 label="Max range"
-                value={stats.maxRange === null ? "n/a" : `${stats.maxRange.toFixed(1)} m`}
+                value={stats.maxRange === null ? UNAVAILABLE_VALUE : `${stats.maxRange.toFixed(1)} m`}
               />
               <MetricRow
                 label="Min range"
-                value={stats.minRange === null ? "n/a" : `${stats.minRange.toFixed(1)} m`}
+                value={stats.minRange === null ? UNAVAILABLE_VALUE : `${stats.minRange.toFixed(1)} m`}
               />
             </div>
             <CoverageGapPanel stats={gapStats} />
@@ -2354,7 +2416,7 @@ function ScenarioComparisonPanel({ onOpenScenario, scenarios }) {
           const after = Number(second.summary?.[key]);
           if (!Number.isFinite(before) && !Number.isFinite(after)) return null;
           const delta = Number.isFinite(before) && Number.isFinite(after) ? after - before : null;
-          return <div key={key}><span>{label}</span><strong>{formatScenarioMetric(before, unit)}</strong><strong>{formatScenarioMetric(after, unit)}</strong><em>{delta === null ? "n/a" : `${delta >= 0 ? "+" : ""}${formatNumber(delta, 1)} ${unit}`}</em></div>;
+          return <div key={key}><span>{label}</span><strong>{formatScenarioMetric(before, unit)}</strong><strong>{formatScenarioMetric(after, unit)}</strong><em>{delta === null ? UNAVAILABLE_VALUE : `${delta >= 0 ? "+" : ""}${formatNumber(delta, 1)} ${unit}`}</em></div>;
         })}
       </div>
       <div className="scenario-map-switch"><button type="button" onClick={() => onOpenScenario(first)}>Show A</button><button type="button" onClick={() => onOpenScenario(second)}>Show B</button></div>
@@ -2375,7 +2437,7 @@ function RecommendationPanel({ disabled, loading, onApply, onRun, response }) {
         <article key={recommendation.id} className="recommendation-row">
           <div><span>#{index + 1} · Cell {recommendation.cell_id}</span><strong>+{formatCompactNumber(recommendation.marginal_network_score)}</strong></div>
           <p>{recommendation.reason}</p>
-          <dl><div><dt>Azimuth</dt><dd>{formatNumber(recommendation.optimal_azimuth, 0)} deg</dd></div><div><dt>Overlap</dt><dd>{recommendation.stats?.overlap_buildings ?? 0}</dd></div></dl>
+          <dl><div><dt>Azimuth</dt><dd>{formatNumber(recommendation.optimal_azimuth, 0)}°</dd></div><div><dt>Overlap</dt><dd>{recommendation.stats?.overlap_buildings ?? 0}</dd></div></dl>
           <button type="button" onClick={() => onApply(recommendation)}>Apply as scenario</button>
         </article>
       ))}
@@ -2385,7 +2447,7 @@ function RecommendationPanel({ disabled, loading, onApply, onRun, response }) {
 }
 
 function formatScenarioMetric(value, unit) {
-  return Number.isFinite(value) ? `${formatNumber(value, 1)}${unit ? ` ${unit}` : ""}` : "n/a";
+  return Number.isFinite(value) ? `${formatNumber(value, 1)}${unit ? ` ${unit}` : ""}` : UNAVAILABLE_VALUE;
 }
 
 function AnalysisEmptyState({ description, icon: Icon, title }) {
@@ -2438,7 +2500,7 @@ function NetworkOptimizationPanel({ optimization, kind }) {
       <div className="network-tower-list">
         {(optimization.optimized_towers ?? []).map((tower) => (
           <span key={tower.id}>
-            Cell {tower.id}: {Number(tower.optimal_azimuth ?? 0).toFixed(0)} deg
+            Cell {tower.id}: {Number(tower.optimal_azimuth ?? 0).toFixed(0)}°
           </span>
         ))}
       </div>
@@ -2604,9 +2666,9 @@ function CommunicationPathSummary({ routeDecisions, n3Edges, scenario }) {
   const n3Degraded = n3Edges.some((edge) => edge.status === "degraded" || edge.status === "down");
   return (
     <div className="communication-path-summary" aria-label="Communication path summary">
-      <MiniDatum label="Xn paths" value={hasRoutes ? directCount.toLocaleString() : "n/a"} />
-      <MiniDatum label="N2 fallback" value={hasRoutes ? fallbackCount.toLocaleString() : "n/a"} />
-      <MiniDatum label="N3 user plane" value={n3Degraded ? "Degraded" : n3Edges.length > 0 ? "Active" : "n/a"} />
+      <MiniDatum label="Xn paths" value={hasRoutes ? directCount.toLocaleString() : UNAVAILABLE_VALUE} />
+      <MiniDatum label="N2 fallback" value={hasRoutes ? fallbackCount.toLocaleString() : UNAVAILABLE_VALUE} />
+      <MiniDatum label="N3 user plane" value={n3Degraded ? "Degraded" : n3Edges.length > 0 ? "Active" : UNAVAILABLE_VALUE} />
       {routeDecisions.slice(0, 3).map((route) => (
         <div key={`${route.from}-${route.to}`} className={`path-route-row ${route.route_type}`}>
           <span>{route.interface ?? route.route_type}</span>
@@ -2655,16 +2717,16 @@ function DataPanel({
       <div className="dataset-grid">
         <MiniDatum
           label="Buildings"
-          value={totalBuildings === null ? "n/a" : totalBuildings.toLocaleString()}
+          value={totalBuildings === null ? UNAVAILABLE_VALUE : totalBuildings.toLocaleString()}
         />
-        <MiniDatum label="POI demand" value={demand === null ? "n/a" : demand.toLocaleString()} />
+        <MiniDatum label="POI demand" value={demand === null ? UNAVAILABLE_VALUE : demand.toLocaleString()} />
         <MiniDatum
           label="Residential"
-          value={residential === null ? "n/a" : residential.toLocaleString()}
+          value={residential === null ? UNAVAILABLE_VALUE : residential.toLocaleString()}
         />
         <MiniDatum label="Dataset" value={appMeta?.dataset?.name ?? "Unavailable"} />
-        <MiniDatum label="Dataset version" value={appMeta?.dataset?.version ?? "n/a"} />
-        <MiniDatum label="Model version" value={appMeta?.model_version ?? "n/a"} />
+        <MiniDatum label="Dataset version" value={appMeta?.dataset?.version ?? UNAVAILABLE_VALUE} />
+        <MiniDatum label="Model version" value={appMeta?.model_version ?? UNAVAILABLE_VALUE} />
         <MiniDatum label="Application" value={appMeta?.application_version ?? "dev"} />
       </div>
       <p className="data-note">
@@ -2690,8 +2752,8 @@ function DataPanel({
 					<p>{appMeta.dataset.quality.summary}</p>
 					<MiniDatum label="Coverage" value={`${formatNumber((appMeta.dataset.quality.coverage?.coverage_ratio ?? 0) * 100, 1)}%`} />
 					<MiniDatum label="Optional layers" value={Object.keys(appMeta.dataset.layers ?? {}).filter((key) => appMeta.dataset.layers[key]?.optional).join(", ") || "None"} />
-					<MiniDatum label="Sources" value={(appMeta.dataset.sources ?? []).join(", ") || "n/a"} />
-					<MiniDatum label="Licenses" value={(appMeta.dataset.licenses ?? []).join(", ") || "n/a"} />
+					<MiniDatum label="Sources" value={(appMeta.dataset.sources ?? []).join(", ") || UNAVAILABLE_VALUE} />
+					<MiniDatum label="Licenses" value={(appMeta.dataset.licenses ?? []).join(", ") || UNAVAILABLE_VALUE} />
 					<MiniDatum label="Hashed files" value={Object.keys(appMeta.dataset.sha256 ?? {}).length.toLocaleString()} />
 					<p>{appMeta.dataset.confidence}</p>
 				</div>
@@ -2722,7 +2784,7 @@ function DataPanel({
             <span>Radio Quality Model</span>
           </div>
           <div className="dataset-grid">
-            <MiniDatum label="Family" value={interferenceModel.measurement_family ?? "n/a"} />
+            <MiniDatum label="Family" value={interferenceModel.measurement_family ?? UNAVAILABLE_VALUE} />
             <MiniDatum label="Bandwidth" value={`${formatNumber(interferenceModel.bandwidth_mhz, 0)} MHz`} />
             <MiniDatum label="SCS" value={`${formatNumber(interferenceModel.subcarrier_spacing_khz, 0)} kHz`} />
             <MiniDatum label="Resource blocks" value={formatNumber(interferenceModel.resource_blocks, 0)} />
@@ -2860,27 +2922,27 @@ function CoverageGapPanel({ stats }) {
       <div className="gap-summary">
         <div>
           <span>Underserved buildings</span>
-          <strong>{gapCount === null ? "n/a" : gapCount.toLocaleString()}</strong>
+          <strong>{gapCount === null ? UNAVAILABLE_VALUE : gapCount.toLocaleString()}</strong>
         </div>
         <div>
           <span>Gap ratio</span>
-          <strong>{gapPct === null ? "n/a" : `${gapPct.toFixed(1)}%`}</strong>
+          <strong>{gapPct === null ? UNAVAILABLE_VALUE : `${gapPct.toFixed(1)}%`}</strong>
         </div>
       </div>
       <div className="dataset-grid">
         <MiniDatum
           label="Candidates"
-          value={candidateCount === null ? "n/a" : candidateCount.toLocaleString()}
+          value={candidateCount === null ? UNAVAILABLE_VALUE : candidateCount.toLocaleString()}
         />
         <MiniDatum
           label="Returned"
-          value={stats?.returned_gaps === undefined ? "n/a" : stats.returned_gaps.toLocaleString()}
+          value={stats?.returned_gaps === undefined ? UNAVAILABLE_VALUE : stats.returned_gaps.toLocaleString()}
         />
         <MiniDatum
           label="Unmet demand"
-          value={unmetDemand === null ? "n/a" : formatCompactNumber(unmetDemand)}
+          value={unmetDemand === null ? UNAVAILABLE_VALUE : formatCompactNumber(unmetDemand)}
         />
-        <MiniDatum label="Worst Rx" value={worstRx === null ? "n/a" : `${worstRx.toFixed(1)} dBm`} />
+        <MiniDatum label="Worst Rx" value={worstRx === null ? UNAVAILABLE_VALUE : `${worstRx.toFixed(1)} dBm`} />
       </div>
     </section>
   );

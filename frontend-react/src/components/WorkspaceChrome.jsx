@@ -18,7 +18,7 @@ import {
   Play,
   X,
 } from "lucide-react";
-import { WORKSPACE_TOOLS } from "./workspaceTools.js";
+import { WORKSPACE_STAGES, WORKSPACE_TOOLS } from "./workspaceTools.js";
 import { MAX_PROJECT_FILE_BYTES } from "../utils/projectStore.js";
 
 export function CommandBar({
@@ -30,6 +30,7 @@ export function CommandBar({
   onOpenResults,
   onRun,
   planSummary,
+  persistenceState = "saved",
   projectControl,
   primaryActionLabel,
   primaryDisabled,
@@ -82,15 +83,20 @@ export function CommandBar({
             <i aria-hidden="true" />
             {runState}
           </span>
-          <button
-            type="button"
-            className="command-run-button"
-            onClick={onRun}
-            disabled={primaryDisabled}
-          >
-            <Play size={15} fill="currentColor" />
-            <span>{primaryActionLabel}</span>
-          </button>
+          <span className={`workspace-save-state ${persistenceState}`} role="status" aria-live="polite">
+            {persistenceState === "saving" ? "Saving…" : persistenceState === "error" ? "Save failed" : "Saved locally"}
+          </span>
+          {primaryActionLabel ? (
+            <button
+              type="button"
+              className="command-run-button"
+              onClick={onRun}
+              disabled={primaryDisabled}
+            >
+              <Play size={15} fill="currentColor" />
+              <span>{primaryActionLabel}</span>
+            </button>
+          ) : null}
         </div>
       </header>
       {error ? (
@@ -125,6 +131,7 @@ export function ProjectMenu({
   const [name, setName] = useState(activeProject?.name ?? "");
   const [message, setMessage] = useState("");
   const [savingScenario, setSavingScenario] = useState(false);
+  const [confirmProjectDelete, setConfirmProjectDelete] = useState(false);
   const rootRef = useRef(null);
   const fileRef = useRef(null);
 
@@ -203,14 +210,23 @@ export function ProjectMenu({
           </label>
           <div className="project-rename-row">
             <input value={name} onChange={(event) => setName(event.target.value)} aria-label="Project name" />
-            <button type="button" onClick={() => onRenameProject(name)} title="Rename project"><Save size={15} /></button>
+            <button type="button" onClick={() => onRenameProject(name)} title="Rename project" aria-label="Save project name"><Save size={15} /></button>
           </div>
           {!compatible ? <p className="project-warning"><AlertTriangle size={14} /> Dataset differs from this project.</p> : null}
           <div className="project-menu-actions">
             <button type="button" onClick={onAddProject}><FilePlus2 size={14} /> New</button>
             <button type="button" onClick={onDuplicateProject}><Copy size={14} /> Duplicate</button>
-            <button type="button" onClick={onDeleteProject} disabled={projects.length < 2}><Trash2 size={14} /> Delete</button>
+            <button type="button" onClick={() => setConfirmProjectDelete(true)} disabled={projects.length < 2}><Trash2 size={14} /> Delete</button>
           </div>
+          {confirmProjectDelete ? (
+            <div className="project-delete-confirmation" role="group" aria-label="Confirm project deletion">
+              <p>Delete “{activeProject?.name}”? Its draft and saved scenarios will be removed.</p>
+              <div>
+                <button type="button" onClick={() => { onDeleteProject(); setConfirmProjectDelete(false); }}>Delete project</button>
+                <button type="button" onClick={() => setConfirmProjectDelete(false)}>Keep project</button>
+              </div>
+            </div>
+          ) : null}
           <div className="project-menu-actions">
             <button type="button" onClick={() => fileRef.current?.click()}><Upload size={14} /> Import</button>
             <button type="button" onClick={downloadProject}><Download size={14} /> Export</button>
@@ -245,33 +261,76 @@ function slug(value) {
 }
 
 export function WorkflowRail({ activeTool, drawerMode, drawerOpen, onSelectTool, toolState }) {
+  const activeButtonRef = useRef(null);
+  const activeDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
+
+  useEffect(() => {
+    if (drawerMode === "tool" && drawerOpen) {
+      activeButtonRef.current?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+    }
+  }, [activeTool, drawerMode, drawerOpen]);
+
   return (
-    <nav className="workflow-rail" aria-label="Workspace tools">
-      {WORKSPACE_TOOLS.map((tool, index) => {
-        const Icon = tool.icon;
-        const state = toolState?.[tool.id] ?? {};
-        const isActive = drawerMode === "tool" && drawerOpen && activeTool === tool.id;
-        const tooltipID = `workspace-tool-${tool.id}-tip`;
-        const showDivider = index > 0 && WORKSPACE_TOOLS[index - 1].group !== tool.group;
+    <nav className="workflow-rail" aria-label="Workspace stages">
+      {WORKSPACE_STAGES.map((stage) => {
+        const Icon = stage.icon;
+        const tools = WORKSPACE_TOOLS.filter((tool) => tool.stage === stage.id);
+        const target = tools.find((tool) => !toolState?.[tool.id]?.unavailable) ?? tools[0];
+        const isActive = drawerMode === "tool" && drawerOpen && activeDefinition.stage === stage.id;
+        const hasResult = tools.some((tool) => toolState?.[tool.id]?.tone === "success" && toolState?.[tool.id]?.badge);
+        const hasWarning = tools.some((tool) => toolState?.[tool.id]?.tone === "warning" && toolState?.[tool.id]?.badge);
+        const tooltipID = `workspace-stage-${stage.id}-tip`;
         return (
-          <div className={showDivider ? "rail-item rail-item-divider" : "rail-item"} key={tool.id}>
+          <div className="rail-item rail-stage" key={stage.id}>
             <button
-              id={`workspace-tool-${tool.id}`}
+              ref={isActive ? activeButtonRef : null}
+              id={`workspace-stage-${stage.id}`}
               type="button"
-              className={`${isActive ? "active" : ""} ${state.unavailable ? "unavailable" : ""}`.trim()}
-              onClick={() => { if (!state.unavailable) onSelectTool(tool.id); }}
-              aria-label={tool.label}
-              aria-disabled={state.unavailable || undefined}
+              className={isActive ? "active" : ""}
+              onClick={() => onSelectTool(isActive ? activeTool : target.id)}
+              aria-label={`${stage.label} workspace`}
               aria-current={isActive ? "page" : undefined}
               aria-describedby={tooltipID}
               aria-expanded={isActive}
-              title={state.reason ?? tool.label}
+              title={stage.label}
             >
               <Icon size={19} />
-              {state.badge ? <span className={`rail-badge ${state.tone ?? "neutral"}`}>{state.badge}</span> : null}
-              <span id={tooltipID} className="rail-tooltip" role="tooltip">{state.reason ?? tool.label}</span>
+              <span className="rail-label">{stage.label}</span>
+              {hasResult || hasWarning ? <span className={`rail-badge ${hasWarning ? "warning" : "success"}`}>{hasWarning ? "!" : "•"}</span> : null}
+              <span id={tooltipID} className="rail-tooltip" role="tooltip">{stage.label}</span>
             </button>
           </div>
+        );
+      })}
+    </nav>
+  );
+}
+
+export function ToolSubnav({ activeTool, onSelectTool, toolState }) {
+  const activeDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
+  const tools = WORKSPACE_TOOLS.filter((tool) => tool.stage === activeDefinition.stage);
+
+  return (
+    <nav className="tool-subnav" aria-label={`${WORKSPACE_STAGES.find((stage) => stage.id === activeDefinition.stage)?.label ?? "Workspace"} tools`}>
+      {tools.map((tool) => {
+        const Icon = tool.icon;
+        const state = toolState?.[tool.id] ?? {};
+        const isActive = tool.id === activeTool;
+        return (
+          <button
+            key={tool.id}
+            id={`workspace-tool-${tool.id}`}
+            type="button"
+            className={`${isActive ? "active" : ""} ${state.unavailable ? "unavailable" : ""}`.trim()}
+            onClick={() => { if (!isActive && !state.unavailable) onSelectTool(tool.id); }}
+            aria-current={isActive ? "page" : undefined}
+            aria-disabled={state.unavailable || undefined}
+            title={state.reason ?? tool.label}
+          >
+            <Icon size={15} aria-hidden="true" />
+            <span>{tool.label}</span>
+            {state.badge ? <i className={`tool-subnav-badge ${state.tone ?? "neutral"}`} aria-hidden="true">{state.badge}</i> : null}
+          </button>
         );
       })}
     </nav>
@@ -289,6 +348,7 @@ export function ToolDrawer({
   onClose,
   open,
   subtitle,
+  subnav,
   title,
 }) {
   const headingRef = useRef(null);
@@ -326,12 +386,24 @@ export function ToolDrawer({
           <X size={18} />
         </button>
       </header>
+      {subnav}
       <div className="tool-drawer-body">
         {error ? <div className="drawer-error" role="alert">{error}</div> : null}
         {children}
       </div>
       {footer ? <footer className="tool-drawer-footer">{footer}</footer> : null}
     </dialog>
+  );
+}
+
+export function UndoToast({ message, onDismiss, onUndo }) {
+  if (!message) return null;
+  return (
+    <div className="undo-toast" role="status" aria-live="polite">
+      <span>{message}</span>
+      <button type="button" onClick={onUndo}>Undo</button>
+      <button type="button" className="undo-dismiss" onClick={onDismiss} aria-label="Dismiss notification"><X size={15} /></button>
+    </div>
   );
 }
 
@@ -479,27 +551,53 @@ export function MapToolbar({
   );
 }
 
-export function InterferenceLegend({ collapsed, metric, onToggle }) {
+export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, metric, onToggle, planningMode }) {
   const legends = {
     sinr: ["< 0", "0–13", "13–20", "≥ 20 dB"],
     rsrp: ["< -100", "-100–-90", "-90–-80", "≥ -80 dBm"],
     rsrq: ["< -20", "-20–-15", "-15–-10", "≥ -10 dB"],
   };
   return (
-    <div className={`focused-interference-legend ${collapsed ? "collapsed" : ""}`} aria-label={`${metric.toUpperCase()} quality legend`}>
+    <div className={`focused-map-legend ${collapsed ? "collapsed" : ""}`} aria-label="Map legend">
       <button type="button" onClick={onToggle} aria-expanded={!collapsed}>
-        <strong>{metric.toUpperCase()}</strong>
+        <strong>Map key</strong>
         {collapsed ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </button>
       {collapsed ? null : (
         <div>
-          {(legends[metric] ?? legends.sinr).map((label, index) => (
-            <span key={label}>
-              <i className={`quality-swatch quality-${index}`} aria-hidden="true" />
-              {label}
-            </span>
-          ))}
-          <span><i className="quality-swatch no-signal" aria-hidden="true" />No signal</span>
+          <section aria-label="Cell markers">
+            <strong>Cells</strong>
+            <span><i className="map-key-marker active-cell" aria-hidden="true" />Active cell</span>
+            {planningMode === "network" ? <span><i className="map-key-marker cluster-cell" aria-hidden="true" />Selected cluster</span> : null}
+            <span><i className="map-key-marker available-cell" aria-hidden="true" />Available cell</span>
+          </section>
+          {hasRays ? (
+            <section aria-label="Received power">
+              <strong>Received power</strong>
+              <span><i className="map-key-line strong-signal" aria-hidden="true" />Strong ≥ −85 dBm</span>
+              <span><i className="map-key-line usable-signal" aria-hidden="true" />Usable −105 to −85</span>
+              <span><i className="map-key-line weak-signal" aria-hidden="true" />Weak &lt; −105 dBm</span>
+            </section>
+          ) : null}
+          {hasGaps ? (
+            <section aria-label="Coverage gaps">
+              <strong>Coverage gaps</strong>
+              <span><i className="map-key-marker weak-gap" aria-hidden="true" />Weak service</span>
+              <span><i className="map-key-marker outage-gap" aria-hidden="true" />Outage</span>
+            </section>
+          ) : null}
+          {hasInterferenceData ? (
+            <section aria-label={`${metric.toUpperCase()} quality`}>
+              <strong>{metric.toUpperCase()} quality</strong>
+              {(legends[metric] ?? legends.sinr).map((label, index) => (
+                <span key={label}>
+                  <i className={`quality-swatch quality-${index}`} aria-hidden="true" />
+                  {label}
+                </span>
+              ))}
+              <span><i className="quality-swatch no-signal" aria-hidden="true" />No signal</span>
+            </section>
+          ) : null}
         </div>
       )}
     </div>

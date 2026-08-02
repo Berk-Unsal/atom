@@ -108,9 +108,9 @@ export default function InventoryPanel({
           <div className="inventory-editor-heading">
             <span><strong>{selectedTower.cellId ?? selectedTower.id}</strong><small>{selectedTower.inventorySource ?? "dataset"}</small></span>
             <div>
-              <button type="button" onClick={() => onDuplicateCell(selectedTower)} title="Duplicate cell"><Copy size={14} /></button>
-              <button type="button" onClick={() => onResetProfile(selectedTower.id)} title="Use plan defaults"><RotateCcw size={14} /></button>
-              <button type="button" onClick={() => onDeleteCell(selectedTower.id)} title="Delete cell"><Trash2 size={14} /></button>
+              <button type="button" onClick={() => onDuplicateCell(selectedTower)} title="Duplicate cell" aria-label={`Duplicate ${selectedTower.cellId ?? selectedTower.id}`}><Copy size={14} /></button>
+              <button type="button" onClick={() => onResetProfile(selectedTower.id)} title="Use plan defaults" aria-label={`Reset ${selectedTower.cellId ?? selectedTower.id} to plan defaults`}><RotateCcw size={14} /></button>
+              <button type="button" onClick={() => onDeleteCell(selectedTower.id)} title="Delete cell" aria-label={`Delete ${selectedTower.cellId ?? selectedTower.id}`}><Trash2 size={14} /></button>
             </div>
           </div>
           <fieldset>

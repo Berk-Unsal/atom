@@ -1,10 +1,11 @@
 import { buildSimulationPayload } from "./requestPayloads.js";
+import { formatNumber } from "./appWorkspace.js";
 
 export const EXPERIMENT_MATRIX_FIELDS = [
   ["frequencies_ghz", "Frequency", "GHz"],
   ["tx_powers_dbm", "Power", "dBm"],
-  ["beam_widths_deg", "Beam width", "deg"],
-  ["azimuths_deg", "Azimuth", "deg"],
+  ["beam_widths_deg", "Beam width", "°"],
+  ["azimuths_deg", "Azimuth", "°"],
   ["calibration_offsets_db", "Calibration", "dB"],
 ];
 
@@ -35,5 +36,3 @@ function parseNumberList(value, label) {
   if (values.some((item) => !Number.isFinite(item))) throw new Error(`${label.replaceAll("_", " ")} contains an invalid number`);
   return [...new Set(values)];
 }
-
-function formatNumber(value, digits) { const number = Number(value); return Number.isFinite(number) ? number.toFixed(digits) : "n/a"; }

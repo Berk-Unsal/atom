@@ -70,13 +70,13 @@ test("runs a sector and preserves a named scenario", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
   await page.getByRole("button", { name: "Run Sector" }).click();
-  await page.getByRole("button", { name: "Results", exact: true }).click();
+  await page.getByRole("button", { name: "Review workspace" }).click();
   await expect(page.getByRole("dialog", { name: "Results" })).toContainText("-72.0 dBm");
 
   await page.getByRole("button", { name: "Open project menu" }).click();
   await page.getByRole("button", { name: "Save current" }).click();
   await expect(page.getByRole("dialog", { name: "Project and scenarios" })).toContainText("Sector plan 1");
-  await expect(page.getByRole("status")).toHaveText("Scenario saved");
+  await expect(page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("status")).toHaveText("Scenario saved");
 
   await page.reload();
   await page.getByRole("button", { name: "Open project menu" }).click();
@@ -87,27 +87,65 @@ test("keeps the focused workspace usable without horizontal overflow", async ({ 
   await page.goto("/");
   await expect(page.getByRole("region", { name: "Ankara propagation map" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Setup" })).toBeVisible();
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
   await expect(page.getByRole("button", { name: "Interference" })).toHaveAttribute("aria-disabled", "true");
   await expect(page.getByRole("button", { name: "5G Core" })).toBeEnabled();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
+test("keeps every workspace destination reachable in the mobile rail", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-390", "Mobile navigation regression");
+
+  await page.goto("/");
+  const navigation = page.getByRole("navigation", { name: "Workspace stages" });
+  const dimensions = await navigation.evaluate((element) => ({
+    clientHeight: element.clientHeight,
+    scrollHeight: element.scrollHeight,
+    scrollWidth: element.scrollWidth,
+  }));
+
+  expect(dimensions.scrollHeight).toBeLessThanOrEqual(dimensions.clientHeight + 1);
+  expect(dimensions.scrollWidth).toBeLessThanOrEqual(390);
+
+  for (const stage of ["Plan workspace", "Simulate workspace", "Analyze workspace", "Review workspace"]) {
+    await expect(page.getByRole("button", { name: stage })).toBeInViewport();
+  }
+
+  await page.getByRole("button", { name: "Review workspace" }).click();
+
+  for (const destination of ["Results", "Data", "Report"]) {
+    const button = page.getByRole("button", { name: destination, exact: true });
+    await expect(button).toBeInViewport();
+    if (destination !== "Results") await button.click();
+    await expect(page.getByRole("dialog", { name: destination })).toBeVisible();
+  }
+});
+
 test("keeps propagation actions clear of the vertical path profile", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Propagation" }).click();
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
 
+  const toolNavigation = page.getByRole("navigation", { name: "Simulate tools" });
+  const activeTool = page.getByRole("button", { name: "Propagation", exact: true });
   const optimizeButton = page.getByRole("button", { name: "Auto-Optimize Sector" });
   const pathProfile = page.getByRole("region", { name: "Vertical path profile" });
+  await expect(toolNavigation).toBeVisible();
+  await expect(activeTool).toBeVisible();
   await expect(optimizeButton).toBeVisible();
   await expect(pathProfile).toBeVisible();
 
-  const [optimizeBox, pathProfileBox] = await Promise.all([
+  const [navigationBox, activeToolBox, optimizeBox, pathProfileBox] = await Promise.all([
+    toolNavigation.boundingBox(),
+    activeTool.boundingBox(),
     optimizeButton.boundingBox(),
     pathProfile.boundingBox(),
   ]);
+  expect(navigationBox).not.toBeNull();
+  expect(activeToolBox).not.toBeNull();
   expect(optimizeBox).not.toBeNull();
   expect(pathProfileBox).not.toBeNull();
+  expect((navigationBox.y + navigationBox.height) - (activeToolBox.y + activeToolBox.height)).toBeGreaterThanOrEqual(6);
   expect(pathProfileBox.y - (optimizeBox.y + optimizeBox.height)).toBeGreaterThanOrEqual(8);
 });
 

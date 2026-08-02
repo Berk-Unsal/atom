@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Crosshair, Mountain, PlayCircle, X } from "lucide-react";
+import { formatNumber } from "../utils/appWorkspace.js";
 import { defaultPathModelProfile } from "../utils/requestPayloads.js";
 import { profileChartGeometry } from "../utils/pathProfileChart.js";
 
@@ -128,11 +129,6 @@ export function PathProfileResult({ profile }) {
       </p>
     </section>
   );
-}
-
-function formatNumber(value, digits) {
-  const number = Number(value);
-  return Number.isFinite(number) ? number.toLocaleString(undefined, { maximumFractionDigits: digits, minimumFractionDigits: digits }) : "n/a";
 }
 
 function formatLabel(value) {

@@ -17,8 +17,8 @@ describe("InterferenceResultsPanel", () => {
         per_serving_cell: [],
       },
     }} />);
-    expect(screen.getByText("Avg SINR").nextElementSibling).toHaveTextContent("n/a");
-    expect(screen.getByText("P10 SINR").nextElementSibling).toHaveTextContent("n/a");
+    expect(screen.getByText("Avg SINR").nextElementSibling).toHaveTextContent("—");
+    expect(screen.getByText("P10 SINR").nextElementSibling).toHaveTextContent("—");
     expect(screen.getByText("24")).toBeInTheDocument();
   });
 });

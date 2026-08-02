@@ -1,22 +1,28 @@
 import { networkTechnologyForFrequency } from "../generated/policy.js";
 import { isDatasetCompatible } from "./projectStore.js";
 
+export const UNAVAILABLE_VALUE = "—";
+
 export function formatCompactNumber(value) {
+  if (value === null || value === undefined || value === "") return UNAVAILABLE_VALUE;
   const number = Number(value);
-  if (!Number.isFinite(number)) return "n/a";
+  if (!Number.isFinite(number)) return UNAVAILABLE_VALUE;
   return Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(number);
 }
 
 export function formatNumber(value, digits = 1) {
+  if (value === null || value === undefined || value === "") return UNAVAILABLE_VALUE;
   const number = Number(value);
-  if (!Number.isFinite(number)) return "n/a";
+  if (!Number.isFinite(number)) return UNAVAILABLE_VALUE;
   return number.toLocaleString("en", { maximumFractionDigits: digits, minimumFractionDigits: digits });
 }
 
 export function formatMetric(value, unit) {
-  if (value === null || value === undefined) return "n/a";
+  if (value === null || value === undefined) return UNAVAILABLE_VALUE;
   const number = Number(value);
-  return Number.isFinite(number) ? `${number.toFixed(1)} ${unit}` : "n/a";
+  if (!Number.isFinite(number)) return UNAVAILABLE_VALUE;
+  const separator = unit === "%" || unit === "°" ? "" : " ";
+  return `${number.toFixed(1)}${separator}${unit}`;
 }
 
 export function formatCoreLabState(state) {

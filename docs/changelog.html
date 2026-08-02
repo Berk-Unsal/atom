@@ -75,6 +75,8 @@ changelog." />
       <strong>On this page</strong>
       <ul>
       <li><a href="#unreleased" id="toc-unreleased">Unreleased</a></li>
+      <li><a href="#060---2026-08-02" id="toc-060---2026-08-02">0.6.0 -
+      2026-08-02</a></li>
       <li><a href="#050---2026-07-31" id="toc-050---2026-07-31">0.5.0 -
       2026-07-31</a></li>
       <li><a href="#040---2026-07-30" id="toc-040---2026-07-30">0.4.0 -
@@ -106,9 +108,31 @@ milestones generated from the canonical project changelog.</p>
 and this file follows <a
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 <h2 id="unreleased"><a
-href="https://github.com/Berk-Unsal/atom/compare/v0.5.0...HEAD">Unreleased</a></h2>
+href="https://github.com/Berk-Unsal/atom/compare/v0.6.0...HEAD">Unreleased</a></h2>
+<h2 id="060---2026-08-02"><a
+href="https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0">0.6.0</a>
+- 2026-08-02</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li>Add a unified map key, visible local-save status, and recoverable
+deletion controls.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Reorganize the frontend into four labeled workflow stages with
+contextual tool navigation and run actions, stronger text contrast, and
+clearer focus states.</li>
+<li>Standardize RF unit and unavailable-value formatting, replace
+side-stripe status treatments, and align drawer, layer, and result
+transitions to one reduced-motion-safe timing system.</li>
+</ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li>Keep drawer headers and tool tabs fixed while long tool bodies
+scroll, preventing active-tab borders from being clipped by the content
+boundary.</li>
+<li>Keep every workspace destination reachable in a single mobile
+navigation row without pushing tools below the viewport.</li>
 <li>Pin documentation generation to Pandoc 3.10 so CI reproduces the
 committed reference pages exactly.</li>
 <li>Copy every Core Lab adapter Go source into the container build so
@@ -117,7 +141,7 @@ lifecycle helpers are linked into the release image.</li>
 <h2 id="050---2026-07-31"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.4.0...v0.5.0">0.5.0</a>
 - 2026-07-31</h2>
-<h3 id="added">Added</h3>
+<h3 id="added-1">Added</h3>
 <ul>
 <li>Add an inspectable 2.5D point-to-point path profiler with optional
 COG/GeoTIFF terrain, building heights, LOS/Fresnel classification,
@@ -195,7 +219,7 @@ cannot escape the configured dataset directory.</li>
 <li>Remove duplicate root copies of propagation screenshots and keep the
 documentation asset paths canonical.</li>
 </ul>
-<h3 id="changed">Changed</h3>
+<h3 id="changed-1">Changed</h3>
 <ul>
 <li>Upgrade project files and dataset manifests to schema v2 with
 backward-compatible v1 import/loading migrations.</li>
@@ -272,7 +296,7 @@ deep-loop cancellation.</li>
 <h2 id="020---2026-07-24"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.1.0...v0.2.0">0.2.0</a>
 - 2026-07-24</h2>
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 <ul>
 <li>Add keyboard-accessible full-site search to the static documentation
 website.</li>
@@ -314,7 +338,7 @@ saved scenarios, and recommendation application.</li>
 <li>Align the Markdown documentation entry point with the maintained
 static docs hub, current version, and model limitations.</li>
 </ul>
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed-2">Changed</h3>
 <ul>
 <li>Establish a canonical <code>VERSION</code> file, automated version
 checks, release-note generation, and tag-driven GitHub Releases.</li>
@@ -324,7 +348,7 @@ releases, never prerelease tags.</li>
 <h2 id="010---2026-07-17"><a
 href="https://github.com/Berk-Unsal/atom/releases/tag/v0.1.0">0.1.0</a>
 - 2026-07-17</h2>
-<h3 id="added-2">Added</h3>
+<h3 id="added-3">Added</h3>
 <ul>
 <li>Deterministic sector, network, optimization, interference,
 recommendation, and measurement-validation workflows.</li>

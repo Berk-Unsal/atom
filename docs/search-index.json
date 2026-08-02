@@ -729,9 +729,27 @@
     },
     {
       "page": "Changelog",
+      "title": "0.6.0 - 2026-08-02",
+      "url": "./changelog.html#060---2026-08-02",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
+      "title": "Added",
+      "url": "./changelog.html#added",
+      "text": "Add a unified map key, visible local-save status, and recoverable deletion controls."
+    },
+    {
+      "page": "Changelog",
+      "title": "Changed",
+      "url": "./changelog.html#changed",
+      "text": "Reorganize the frontend into four labeled workflow stages with contextual tool navigation and run actions, stronger text contrast, and clearer focus states. Standardize RF unit and unavailable-value formatting, replace side-stripe status treatments, and align drawer, layer, and result transitions to one reduced-motion-safe timing system."
+    },
+    {
+      "page": "Changelog",
       "title": "Fixed",
       "url": "./changelog.html#fixed",
-      "text": "Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly. Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image."
+      "text": "Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary. Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport. Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly. Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image."
     },
     {
       "page": "Changelog",
@@ -742,7 +760,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added",
+      "url": "./changelog.html#added-1",
       "text": "Add an inspectable 2.5D point-to-point path profiler with optional COG/GeoTIFF terrain, building heights, LOS/Fresnel classification, single knife-edge diffraction, material-aware penetration, environmental sensitivity terms, uncertainty ranges, and an interactive vertical cross section. Add asynchronous batch experiment matrices with cancellation, deterministic dataset/model fingerprints, bounded caching, a headless CLI, progress UI, scenario tables, and Pareto evidence. Add configurable network objectives, weights, hard constraints, feasibility evidence, and non-dominated azimuth solutions while keeping unsupported tilt, power, candidate-site, cost, fiber, and permitting inputs explicit. Add spatially blocked five-fold calibration validation, spatial-diversity rejection, per-cell/per-band and distance/obstruction residual summaries, robust outlier flags, uncertainty quantiles, confidence intervals, and campaign provenance/expiration support. Add regular-grid analytical coverage surfaces, marching-square isolines, opacity and display-threshold controls, plus GeoTIFF, contour GeoJSON, and CSV exports. Add OGC API Features-style, viewport-bounded building queries with pagination and GeoJSON/CSV representations so clients need not transfer the full building dataset. Add a persistent cell Inventory workspace with manual map placement, dragging, duplication, deletion, bounded CSV/GeoJSON import, search, validation, and independent per-cell RF profiles across propagation, network, interference, recommendation, measurement, and report workflows. Add Dataset Pack Studio for arbitrary-region source inspection, geometry repair, reprojection/cropping, schema-v2 manifests, hashes, provenance/licenses/confidence, QA evidence, and optional terrain, clutter, building-height, and material layers. Add a local installed-dataset catalog and atomic manifest-ID switching that retains the active immutable pack on validation failure, with optional administration-key protection."
     },
     {
@@ -760,7 +778,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed",
+      "url": "./changelog.html#changed-1",
       "text": "Upgrade project files and dataset manifests to schema v2 with backward-compatible v1 import/loading migrations. Include resolved per-cell RF profiles and dataset QA/provenance in reproducibility outputs and planning reports. Extract frontend workspace formatting/state helpers and backend RF/segment geometry math from the application and simulation monoliths into focused, tested modules. Refresh Open5GS reachability outside the adapter cache mutex, serve stale probe state during refresh, and treat HTTP client/server failures as disconnected. Remove redundant RF convenience APIs that created background contexts and silently discarded computation errors. Drain in-flight backend and Core Lab adapter requests on interrupt or termination signals with a bounded graceful-shutdown window. Consolidate report escaping, numeric/Markdown formatting, and printable table construction behind one tested utility."
     },
     {
@@ -808,7 +826,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-1",
+      "url": "./changelog.html#added-2",
       "text": "Add keyboard-accessible full-site search to the static documentation website. Publish the canonical project changelog as a searchable documentation page."
     },
     {
@@ -826,7 +844,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-1",
+      "url": "./changelog.html#changed-2",
       "text": "Establish a canonical VERSION file, automated version checks, release-note generation, and tag-driven GitHub Releases. Publish the latest container tag only for stable releases, never prerelease tags."
     },
     {
@@ -838,7 +856,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-2",
+      "url": "./changelog.html#added-3",
       "text": "Deterministic sector, network, optimization, interference, recommendation, and measurement-validation workflows. Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths. Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing."
     },
     {

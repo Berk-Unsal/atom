@@ -4,9 +4,15 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-02
+
+### Added
+
+- Add a unified map key, visible local-save status, and recoverable deletion controls.
+
 ### Changed
 
-- Reorganize the frontend into four labeled workflow stages with contextual tool navigation and run actions, a unified map key, stronger text contrast and focus states, visible local-save status, and recoverable deletions.
+- Reorganize the frontend into four labeled workflow stages with contextual tool navigation and run actions, stronger text contrast, and clearer focus states.
 - Standardize RF unit and unavailable-value formatting, replace side-stripe status treatments, and align drawer, layer, and result transitions to one reduced-motion-safe timing system.
 
 ### Fixed
@@ -129,7 +135,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Berk-Unsal/atom/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Berk-Unsal/atom/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Berk-Unsal/atom/compare/v0.2.0...v0.3.0

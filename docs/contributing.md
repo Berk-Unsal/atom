@@ -379,8 +379,8 @@ cd ../frontend-react && npm test
 
 - **GitHub Issues**: Bug reports, feature requests
 - **GitHub Discussions**: Questions, brainstorming
-- **Email**: [berk@berkunsal.com](mailto:berk@berkunsal.com)
-- **LinkedIn**: [Berk Ünsal](https://linkedin.com/in/berkunsal)
+- **Email**: [info@berkunsal.com](mailto:info@berkunsal.com)
+- **LinkedIn**: [Berk Ünsal](https://linkedin.com/in/berkunsaltr)
 
 ### Code of Conduct
 
@@ -440,7 +440,7 @@ If you'd like to support A.T.O.M financially:
 
 - ⭐ Star the repository (recognition counts!)
 - 🔗 Share with others in your network
-- 💼 Consider consulting: [berk@berkunsal.com](mailto:berk@berkunsal.com)
+- 💼 Consider consulting: [info@berkunsal.com](mailto:info@berkunsal.com)
 - 🤝 Contribute code or documentation (priceless!)
 
 ---
@@ -475,4 +475,4 @@ Thank you for contributing to A.T.O.M! Together, we're building the future of RF
 
 ---
 
-**Questions?** Open an issue or email [berk@berkunsal.com](mailto:berk@berkunsal.com)
+**Questions?** Open an issue or email [info@berkunsal.com](mailto:info@berkunsal.com)

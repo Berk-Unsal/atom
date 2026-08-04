@@ -1,1872 +1,304 @@
-
 <!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
-      
-      
-        <meta name="author" content="Berk Ünsal">
-      
-      
-        <link rel="canonical" href="https://docs.atom.berkunsal.com/contributing.html">
-      
-      
-        <link rel="prev" href="faq.html">
-      
-      
-      
-        
-      
-      
-      <link rel="icon" href="../icon/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
-    
-    
-      
-        <title>Contributing - A.T.O.M Documentation</title>
-      
-    
-    
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
-      
-      
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Repository structure, development
+setup, testing expectations, and contribution workflow for A.T.O.M." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Contributing | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
-
-    
-    
-      
-        <script src="https://unpkg.com/iframe-worker/shim"></script>
-      
-    
-    
-      
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
-    
-    
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-    
-      
-
-    
-    
-  </head>
-  
-  
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#contributing" class="md-skip">
-          Skip to content
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-    
-      
-
-<header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            A.T.O.M Documentation
-          </span>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
         </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              Contributing
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
-    
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
-    
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-</form>
-      
-    
-    
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
-    
-    
-    
-      
-      
-        <label class="md-header__button md-icon" for="__search">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-        <div class="md-search__suggest" data-md-component="search-suggest"></div>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
           </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
         </div>
       </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
     </div>
-  </div>
-</div>
-      
-    
-    
-  </nav>
-  
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="index.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Home
+  </header>
 
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="overview.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Overview
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="features.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Features
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="architecture.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="visualization.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Propagation Visualization
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="algorithms.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Algorithms & Physics
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="api.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  API Reference
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="getting-started.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Getting Started
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="deployment.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Deployment
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="faq.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  FAQ
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    
-  
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="contributing.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Contributing
-
-      </a>
-    </li>
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    A.T.O.M Documentation
-  </label>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="index.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="overview.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="features.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Features
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="visualization.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Propagation Visualization
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="algorithms.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Algorithms & Physics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="getting-started.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Getting Started
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="deployment.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="faq.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="contributing.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-contribute" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to Contribute
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="How to Contribute">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reporting-bugs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reporting Bugs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#suggesting-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Suggesting Features
-      
-    </span>
-  </a>
-  
-</li>
-        
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Contributing page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#how-to-contribute" id="toc-how-to-contribute">How to
+      Contribute</a></li>
+      <li><a href="#contributing-code"
+      id="toc-contributing-code">Contributing Code</a></li>
+      <li><a href="#documentation-contributions"
+      id="toc-documentation-contributions">Documentation
+      Contributions</a></li>
+      <li><a href="#priority-areas-for-contributions"
+      id="toc-priority-areas-for-contributions">Priority Areas for
+      Contributions</a></li>
+      <li><a href="#project-structure"
+      id="toc-project-structure">Project Structure</a></li>
+      <li><a href="#deployment--release-process"
+      id="toc-deployment--release-process">Deployment &amp; Release
+      Process</a></li>
+      <li><a href="#communication"
+      id="toc-communication">Communication</a></li>
+      <li><a href="#contributor-recognition"
+      id="toc-contributor-recognition">Contributor Recognition</a></li>
+      <li><a href="#development-tools"
+      id="toc-development-tools">Development Tools</a></li>
+      <li><a href="#financial-contributions"
+      id="toc-financial-contributions">Financial Contributions</a></li>
+      <li><a href="#getting-help" id="toc-getting-help">Getting
+      Help</a></li>
+      <li><a href="#checklist-for-prs"
+      id="toc-checklist-for-prs">Checklist for PRs</a></li>
       </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributing Code
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Contributing Code">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#setup-development-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setup Development Environment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#making-changes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Making Changes
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Making Changes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#code-style" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Code Style
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#git-workflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Git Workflow
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#testing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Testing
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Testing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#go-backend-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Go Backend Tests
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#react-frontend-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        React Frontend Tests
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#code-review-checklist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Code Review Checklist
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-contributions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation Contributions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Documentation Contributions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#improving-docs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Improving Docs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#adding-examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adding Examples
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#priority-areas-for-contributions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Priority Areas for Contributions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Priority Areas for Contributions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#high-priority" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        High Priority
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#medium-priority" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Medium Priority
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#low-priority" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Low Priority
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Project Structure
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Project Structure">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#key-files-to-know" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Key Files to Know
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deployment-release-process" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deployment &amp; Release Process
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deployment &amp; Release Process">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#local-testing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Local Testing
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#creating-a-release" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Creating a Release
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#communication" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Communication
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Communication">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#where-to-ask-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Where to Ask Questions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#code-of-conduct" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Code of Conduct
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributor-recognition" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributor Recognition
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#development-tools" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Development Tools
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Development Tools">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#recommended-extensions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Recommended Extensions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#useful-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Useful Commands
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#financial-contributions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Financial Contributions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-help" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting Help
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#checklist-for-prs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Checklist for PRs
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
+    </aside>
 
-    
-  </ul>
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Contributor guide</span>
+        <h1>Contributing</h1>
+        <p>Repository structure, development setup, testing
+expectations, and contribution workflow for A.T.O.M.</p>
+        <div class="hero-actions">
+          <a class="button" href="./contributing.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-contribute" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to Contribute
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="How to Contribute">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reporting-bugs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reporting Bugs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#suggesting-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Suggesting Features
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributing Code
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Contributing Code">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#setup-development-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setup Development Environment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#making-changes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Making Changes
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Making Changes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#code-style" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Code Style
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#git-workflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Git Workflow
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#testing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Testing
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Testing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#go-backend-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Go Backend Tests
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#react-frontend-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        React Frontend Tests
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#code-review-checklist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Code Review Checklist
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-contributions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation Contributions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Documentation Contributions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#improving-docs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Improving Docs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#adding-examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adding Examples
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#priority-areas-for-contributions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Priority Areas for Contributions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Priority Areas for Contributions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#high-priority" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        High Priority
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#medium-priority" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Medium Priority
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#low-priority" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Low Priority
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Project Structure
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Project Structure">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#key-files-to-know" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Key Files to Know
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deployment-release-process" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deployment &amp; Release Process
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deployment &amp; Release Process">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#local-testing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Local Testing
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#creating-a-release" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Creating a Release
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#communication" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Communication
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Communication">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#where-to-ask-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Where to Ask Questions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#code-of-conduct" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Code of Conduct
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributor-recognition" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributor Recognition
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#development-tools" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Development Tools
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Development Tools">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#recommended-extensions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Recommended Extensions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#useful-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Useful Commands
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#financial-contributions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Financial Contributions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-help" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting Help
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#checklist-for-prs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Checklist for PRs
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          
-            <div class="md-content" data-md-component="content">
-              
-              <article class="md-content__inner md-typeset">
-                
-                  
-
-
-
-<h1 id="contributing">Contributing</h1>
-<p>A.T.O.M is an open-source project, and we welcome contributions from the community!</p>
+      <div class="prose">
+<p>A.T.O.M is an open-source project, and we welcome contributions from
+the community!</p>
 <h2 id="how-to-contribute">How to Contribute</h2>
 <h3 id="reporting-bugs">Reporting Bugs</h3>
 <p>Found a bug? Please report it!</p>
-<ol>
-<li><strong>Check existing issues</strong> first: <a href="https://github.com/your-org/A.T.O.M/issues">GitHub Issues</a></li>
+<ol type="1">
+<li><strong>Check existing issues</strong> first: <a
+href="https://github.com/Berk-Unsal/urban-ray-tracer/issues">GitHub
+Issues</a></li>
 <li><strong>Create new issue</strong> if not already reported</li>
-<li><strong>Include</strong>:</li>
+<li><strong>Include</strong>:
+<ul>
 <li>OS and Docker version</li>
 <li>Steps to reproduce</li>
 <li>Expected vs actual behavior</li>
 <li>Error logs/screenshots</li>
+</ul></li>
 </ol>
 <p><strong>Example bug report</strong>:</p>
-<p><div class="highlight"><pre><span></span><code><span class="gu">## Bug: Simulation returns 500 error</span>
-
-<span class="gu">### Environment</span>
-<span class="k">-</span><span class="w"> </span>Docker version: 24.0.0
-<span class="k">-</span><span class="w"> </span>OS: macOS 14.0
-
-<span class="gu">### Steps to Reproduce</span>
-<span class="k">1.</span> Run <span class="sb">`docker run -p 8080:8080 atom-simulator`</span>
-<span class="k">2.</span> POST to <span class="sb">`/api/simulate`</span> with tower_id=&quot;ankara_999&quot;
-<span class="k">3.</span> Receive 500 error
-
-<span class="gu">### Expected</span>
-<span class="k">-</span><span class="w"> </span>Graceful error message like &quot;tower_id not found&quot;
-
-<span class="gu">### Actual</span>
-<span class="k">-</span><span class="w"> </span>500 Internal Server Error with no error message
-
-<span class="gu">### Logs</span>
-</code></pre></div>
-Server error: index out of bounds
-<div class="highlight"><pre><span></span><code>
-</code></pre></div></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Bug: Simulation returns 500 error</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">### Environment</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Docker version: 24.0.0</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>OS: macOS 14.0</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">### Steps to Reproduce</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Run <span class="in">`docker run -p 8080:8080 atom-simulator`</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>POST to <span class="in">`/api/simulate`</span> with an out-of-range payload</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Receive 500 error</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">### Expected</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Graceful validation error that explains which request field is invalid</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### Actual</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>500 Internal Server Error with no error message</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">### Logs</span></span></code></pre></div>
+<p>Server error: index out of bounds</p>
+<pre><code></code></pre>
 <h3 id="suggesting-features">Suggesting Features</h3>
 <p>Want to suggest an improvement?</p>
-<ol>
-<li><strong>Check existing proposals</strong>: <a href="https://github.com/your-org/A.T.O.M/discussions">Discussions</a></li>
-<li><strong>Start a discussion</strong> or open an issue labeled <code>enhancement</code></li>
-<li><strong>Describe</strong>:</li>
+<ol type="1">
+<li><strong>Check existing proposals</strong>: <a
+href="https://github.com/Berk-Unsal/urban-ray-tracer/discussions">Discussions</a></li>
+<li><strong>Start a discussion</strong> or open an issue labeled
+<code>enhancement</code></li>
+<li><strong>Describe</strong>:
+<ul>
 <li>What problem it solves</li>
 <li>Why it's valuable</li>
 <li>Rough implementation approach (optional)</li>
+</ul></li>
 </ol>
 <p><strong>Example feature request</strong>:</p>
-<div class="highlight"><pre><span></span><code><span class="gu">## Feature: Support for terrain elevation models</span>
-
-<span class="gu">### Problem</span>
-RF propagation is affected by hills and valleys, but A.T.O.M currently ignores terrain.
-
-<span class="gu">### Proposal</span>
-<span class="k">-</span><span class="w"> </span>Add support for GeoTIFF elevation data
-<span class="k">-</span><span class="w"> </span>Apply path loss adjustment based on elevation difference
-<span class="k">-</span><span class="w"> </span>Include elevation visualization on map
-
-<span class="gu">### Benefits</span>
-<span class="k">-</span><span class="w"> </span>More accurate coverage prediction in mountainous regions
-<span class="k">-</span><span class="w"> </span>Better antenna placement decisions
-
-<span class="gu">### Implementation hint</span>
-<span class="k">-</span><span class="w"> </span>Use open-source GDAL library for GeoTIFF reading
-<span class="k">-</span><span class="w"> </span>Modify FSPL calculation in raytracer/geometry.go
-</code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Feature: Support for terrain elevation models</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">### Problem</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>RF propagation is affected by hills and valleys, but A.T.O.M currently ignores terrain.</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">### Proposal</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Add support for GeoTIFF elevation data</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Apply path loss adjustment based on elevation difference</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Include elevation visualization on map</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### Benefits</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>More accurate coverage prediction in mountainous regions</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Better antenna placement decisions</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### Implementation hint</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Use open-source GDAL library for GeoTIFF reading</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Modify FSPL calculation in raytracer/geometry.go</span></code></pre></div>
 <hr />
 <h2 id="contributing-code">Contributing Code</h2>
-<h3 id="setup-development-environment">Setup Development Environment</h3>
+<h3 id="setup-development-environment">Setup Development
+Environment</h3>
 <p><strong>Backend</strong>:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Install Go 1.21+</span>
-<span class="nb">cd</span><span class="w"> </span>backend-go
-go<span class="w"> </span>mod<span class="w"> </span>download
-go<span class="w"> </span>run<span class="w"> </span>.
-</code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install Go 1.26.5+</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> mod download</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run .</span></code></pre></div>
 <p><strong>Frontend</strong>:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Install Node.js 18+</span>
-<span class="nb">cd</span><span class="w"> </span>frontend-react
-npm<span class="w"> </span>install
-npm<span class="w"> </span>run<span class="w"> </span>dev
-</code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install Node.js 24+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> frontend-react</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span></code></pre></div>
+<p><strong>Python tooling</strong>:</p>
+<p>Python dependencies are split into exactly pinned direct inputs and
+fully resolved, SHA-256-hashed lockfiles. Install the locks without
+allowing source distributions or dependency re-resolution:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">--require-hashes</span> <span class="at">--only-binary</span><span class="op">=</span>:all: <span class="at">-r</span> data-pipeline/Requirements.txt</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">--require-hashes</span> <span class="at">--only-binary</span><span class="op">=</span>:all: <span class="at">-r</span> docs/requirements.txt</span></code></pre></div>
+<p>After deliberately changing either <code>.in</code> file, install
+<code>uv==0.12.0</code> and regenerate the corresponding lock using the
+command recorded at the top of that file. Commit the input and generated
+lock together. CI verifies exact pins and hashes and installs both
+lockfiles.</p>
 <p><strong>Both together</strong>:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Terminal 1</span>
-<span class="nb">cd</span><span class="w"> </span>backend-go<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>go<span class="w"> </span>run<span class="w"> </span>.
-
-<span class="c1"># Terminal 2</span>
-<span class="nb">cd</span><span class="w"> </span>frontend-react<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>dev
-
-<span class="c1"># Open http://localhost:5173</span>
-</code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 1</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go <span class="kw">&amp;&amp;</span> <span class="ex">go</span> run .</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 2</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> frontend-react <span class="kw">&amp;&amp;</span> <span class="ex">npm</span> run dev</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Open http://localhost:5173</span></span></code></pre></div>
 <h3 id="making-changes">Making Changes</h3>
 <h4 id="code-style">Code Style</h4>
 <p>Follow standard Go and JavaScript conventions:</p>
-<p><strong>Go</strong>:
-<div class="highlight"><pre><span></span><code><span class="c1">// Use camelCase for functions/variables</span>
-<span class="kd">func</span><span class="w"> </span><span class="nx">calculatePathLoss</span><span class="p">(</span><span class="nx">distance</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// Clear, concise comments</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">math</span><span class="p">.</span><span class="nx">Log10</span><span class="p">(</span><span class="nx">distance</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">27.55</span>
-<span class="p">}</span>
-</code></pre></div></p>
-<p><strong>JavaScript</strong>:
-<div class="highlight"><pre><span></span><code><span class="c1">// Use arrow functions, const/let</span>
-<span class="kd">const</span><span class="w"> </span><span class="nx">calculateSignalStrength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">rxPower</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">rxPower</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">-</span><span class="mf">70</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">&quot;excellent&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;poor&quot;</span><span class="p">;</span>
-<span class="p">};</span>
-</code></pre></div></p>
+<p><strong>Go</strong>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Use camelCase for functions/variables</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> calculatePathLoss<span class="op">(</span>distance <span class="dt">float64</span><span class="op">)</span> <span class="dt">float64</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Clear, concise comments</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">20</span> <span class="op">*</span> math<span class="op">.</span>Log10<span class="op">(</span>distance<span class="op">)</span> <span class="op">-</span> <span class="fl">27.55</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>JavaScript</strong>:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Use arrow functions, const/let</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> calculateSignalStrength <span class="op">=</span> (rxPower) <span class="kw">=&gt;</span> {</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> rxPower <span class="op">&gt;</span> <span class="op">-</span><span class="dv">70</span> <span class="op">?</span> <span class="st">&quot;excellent&quot;</span> <span class="op">:</span> <span class="st">&quot;poor&quot;</span><span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
 <h4 id="git-workflow">Git Workflow</h4>
-<ol>
+<ol type="1">
 <li><strong>Fork</strong> repository</li>
-<li><strong>Create feature branch</strong>: <code>git checkout -b feature/new-feature</code></li>
+<li><strong>Create feature branch</strong>:
+<code>git checkout -b feature/new-feature</code></li>
 <li><strong>Make changes</strong> (keep commits small and focused)</li>
 <li><strong>Test</strong> locally</li>
 <li><strong>Push</strong> to your fork</li>
 <li><strong>Create Pull Request</strong> with description</li>
 </ol>
 <p><strong>Commit messages</strong> (conventional format):</p>
-<div class="highlight"><pre><span></span><code>feat: add terrain elevation support
+<pre><code>feat: add terrain elevation support
 fix: correct FSPL calculation for 6G
 docs: update API documentation
 test: add raytracing unit tests
-refactor: simplify optimization algorithm
-</code></pre></div>
+refactor: simplify optimization algorithm</code></pre>
 <h3 id="testing">Testing</h3>
 <h4 id="go-backend-tests">Go Backend Tests</h4>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>backend-go
-go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>./...
-go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-cover<span class="w"> </span>./...
-</code></pre></div>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> vet ./...</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">govulncheck</span> ./...</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test <span class="at">-race</span> ./...</span></code></pre></div>
 <p><strong>Add tests</strong> for new features:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">TestCalculatePathLoss</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">distance</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">1000.0</span>
-<span class="w">    </span><span class="nx">frequency</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s">&quot;5G&quot;</span>
-
-<span class="w">    </span><span class="nx">result</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">CalculatePathLoss</span><span class="p">(</span><span class="nx">distance</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">)</span>
-
-<span class="w">    </span><span class="c1">// 5G at 1 km should be ~84 dB</span>
-<span class="w">    </span><span class="nx">expected</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">84.0</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">math</span><span class="p">.</span><span class="nx">Abs</span><span class="p">(</span><span class="nx">result</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">expected</span><span class="p">)</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">t</span><span class="p">.</span><span class="nx">Fatalf</span><span class="p">(</span><span class="s">&quot;Expected %f, got %f&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">expected</span><span class="p">,</span><span class="w"> </span><span class="nx">result</span><span class="p">)</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode go"><code class="sourceCode go"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> TestCalculatePathLoss<span class="op">(</span>t <span class="op">*</span>testing<span class="op">.</span>T<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    distance <span class="op">:=</span> <span class="fl">1000.0</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    frequency <span class="op">:=</span> <span class="st">&quot;5G&quot;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    result <span class="op">:=</span> CalculatePathLoss<span class="op">(</span>distance<span class="op">,</span> frequency<span class="op">)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 5G at 1 km should be ~84 dB</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    expected <span class="op">:=</span> <span class="fl">84.0</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> math<span class="op">.</span>Abs<span class="op">(</span>result <span class="op">-</span> expected<span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1.0</span> <span class="op">{</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        t<span class="op">.</span>Fatalf<span class="op">(</span><span class="st">&quot;Expected %f, got %f&quot;</span><span class="op">,</span> expected<span class="op">,</span> result<span class="op">)</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="react-frontend-tests">React Frontend Tests</h4>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>frontend-react
-npm<span class="w"> </span><span class="nb">test</span>
-</code></pre></div>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> frontend-react</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test</span></code></pre></div>
 <p><strong>Add tests</strong> using Jest/React Testing Library:</p>
-<div class="highlight"><pre><span></span><code><span class="nx">test</span><span class="p">(</span><span class="s1">&#39;Azimuth slider updates coverage&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">ControlPanel</span><span class="w"> </span><span class="o">/&gt;</span><span class="p">);</span>
-<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">slider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">screen</span><span class="p">.</span><span class="nx">getByRole</span><span class="p">(</span><span class="s1">&#39;slider&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="sr">/azimuth/i</span><span class="p">});</span>
-
-<span class="w">  </span><span class="nx">fireEvent</span><span class="p">.</span><span class="nx">change</span><span class="p">(</span><span class="nx">slider</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">target</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="mf">90</span><span class="p">}});</span>
-
-<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">slider</span><span class="p">.</span><span class="nx">value</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="s1">&#39;90&#39;</span><span class="p">);</span>
-<span class="p">});</span>
-</code></pre></div>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test</span>(<span class="st">&#39;Azimuth slider updates coverage&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">render</span>(<span class="op">&lt;</span>ControlPanel <span class="op">/&gt;</span>)<span class="op">;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> slider <span class="op">=</span> <span class="bu">screen</span><span class="op">.</span><span class="fu">getByRole</span>(<span class="st">&#39;slider&#39;</span><span class="op">,</span> {<span class="dt">name</span><span class="op">:</span> <span class="ss">/azimuth/i</span>})<span class="op">;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  fireEvent<span class="op">.</span><span class="fu">change</span>(slider<span class="op">,</span> {<span class="dt">target</span><span class="op">:</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">90</span>}})<span class="op">;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect</span>(slider<span class="op">.</span><span class="at">value</span>)<span class="op">.</span><span class="fu">toBe</span>(<span class="st">&#39;90&#39;</span>)<span class="op">;</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
 <h3 id="code-review-checklist">Code Review Checklist</h3>
 <p>Before submitting PR, verify:</p>
 <ul>
 <li>✅ Code follows project style</li>
-<li>✅ Tests pass: <code>go test ./...</code></li>
+<li>✅ Backend vulnerability scan passes:
+<code>govulncheck ./...</code></li>
+<li>✅ Tests pass: <code>go test -race ./...</code></li>
 <li>✅ No lint errors: <code>golint ./...</code></li>
 <li>✅ Comments explain "why", not "what"</li>
 <li>✅ Commit messages are clear</li>
@@ -1877,77 +309,89 @@ npm<span class="w"> </span><span class="nb">test</span>
 <h2 id="documentation-contributions">Documentation Contributions</h2>
 <h3 id="improving-docs">Improving Docs</h3>
 <p>Found a typo or unclear section? Help us improve!</p>
-<ol>
-<li><strong>Edit markdown file</strong> in <code>docs/</code> folder</li>
-<li><strong>Verify rendering</strong>: Run <code>mkdocs serve</code> (if installed)</li>
+<ol type="1">
+<li><strong>Edit markdown or HTML files</strong> in the
+<code>docs/</code> folder</li>
+<li><strong>Verify rendering</strong>: Run
+<code>python3 -m http.server 9000 --directory docs</code></li>
 <li><strong>Submit PR</strong> with changes</li>
 </ol>
 <h3 id="adding-examples">Adding Examples</h3>
 <p><strong>Backend example</strong> (Go):</p>
-<div class="highlight"><pre><span></span><code><span class="c1">// In backend-go/examples/</span>
-<span class="kn">package</span><span class="w"> </span><span class="nx">main</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;fmt&quot;</span>
-<span class="w">    </span><span class="nx">raytracer</span><span class="w"> </span><span class="s">&quot;./raytracer&quot;</span>
-<span class="p">)</span>
-
-<span class="kd">func</span><span class="w"> </span><span class="nx">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// Example: Calculate path loss for 5G at 1 km</span>
-<span class="w">    </span><span class="nx">loss</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">raytracer</span><span class="p">.</span><span class="nx">CalculatePathLoss</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;5G&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Path loss: %.2f dB\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">loss</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode go"><code class="sourceCode go"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">// In backend-go/examples/</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span> main</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="op">(</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;fmt&quot;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    raytracer <span class="st">&quot;./raytracer&quot;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Example: Calculate path loss for 5G at 1 km</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">:=</span> raytracer<span class="op">.</span>CalculatePathLoss<span class="op">(</span><span class="dv">1000</span><span class="op">,</span> <span class="st">&quot;5G&quot;</span><span class="op">)</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    fmt<span class="op">.</span>Printf<span class="op">(</span><span class="st">&quot;Path loss: %.2f dB</span><span class="ch">\n</span><span class="st">&quot;</span><span class="op">,</span> loss<span class="op">)</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><strong>Frontend example</strong> (React):</p>
-<div class="highlight"><pre><span></span><code><span class="c1">// In frontend-react/examples/</span>
-<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useSimulation</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;../hooks/useSimulation&#39;</span><span class="p">;</span>
-
-<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">SimpleVisualization</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">simulate</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useSimulation</span><span class="p">();</span>
-
-<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleSimulate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">simulate</span><span class="p">({</span>
-<span class="w">      </span><span class="nx">tower_id</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;ankara_001&#39;</span><span class="p">,</span>
-<span class="w">      </span><span class="nx">frequency</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;5G&#39;</span><span class="p">,</span>
-<span class="w">      </span><span class="nx">azimuth</span><span class="o">:</span><span class="w"> </span><span class="mf">45</span><span class="p">,</span>
-<span class="w">      </span><span class="nx">beam_width</span><span class="o">:</span><span class="w"> </span><span class="mf">65</span>
-<span class="w">    </span><span class="p">});</span>
-<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Coverage:&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">result</span><span class="p">);</span>
-<span class="w">  </span><span class="p">};</span>
-
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">button</span><span class="w"> </span><span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSimulate</span><span class="p">}</span><span class="o">&gt;</span><span class="nx">Simulate</span><span class="o">&lt;</span><span class="err">/button&gt;;</span>
-<span class="p">}</span>
-</code></pre></div>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// In frontend-react/examples/</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { useSimulation } <span class="im">from</span> <span class="st">&#39;../hooks/useSimulation&#39;</span><span class="op">;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">function</span> <span class="fu">SimpleVisualization</span>() {</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> { simulate } <span class="op">=</span> <span class="fu">useSimulation</span>()<span class="op">;</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> handleSimulate <span class="op">=</span> <span class="kw">async</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> result <span class="op">=</span> <span class="cf">await</span> <span class="fu">simulate</span>({</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">tower_lon</span><span class="op">:</span> <span class="fl">32.8541</span><span class="op">,</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">tower_lat</span><span class="op">:</span> <span class="fl">39.9208</span><span class="op">,</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">rays</span><span class="op">:</span> <span class="dv">120</span><span class="op">,</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">radius_m</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">frequency_ghz</span><span class="op">:</span> <span class="dv">28</span><span class="op">,</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">tx_power_dbm</span><span class="op">:</span> <span class="dv">30</span><span class="op">,</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">azimuth</span><span class="op">:</span> <span class="dv">45</span><span class="op">,</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">beam_width</span><span class="op">:</span> <span class="dv">120</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Coverage:&#39;</span><span class="op">,</span> result)<span class="op">;</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  }<span class="op">;</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="op">&lt;</span>button onClick<span class="op">=</span>{handleSimulate}<span class="op">&gt;</span>Simulate<span class="op">&lt;/</span>button<span class="op">&gt;;</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <hr />
-<h2 id="priority-areas-for-contributions">Priority Areas for Contributions</h2>
+<h2 id="priority-areas-for-contributions">Priority Areas for
+Contributions</h2>
 <h3 id="high-priority">High Priority</h3>
 <ul>
-<li>🔴 <strong>Terrain elevation support</strong>: Add GeoTIFF support</li>
+<li>🔴 <strong>Terrain elevation support</strong>: Add GeoTIFF
+support</li>
 <li>🔴 <strong>Multipath modeling</strong>: Include reflections</li>
-<li>🔴 <strong>Performance optimization</strong>: Faster ray intersection testing</li>
+<li>🔴 <strong>Performance optimization</strong>: Faster ray
+intersection testing</li>
 <li>🔴 <strong>Documentation</strong>: More examples and tutorials</li>
 </ul>
 <h3 id="medium-priority">Medium Priority</h3>
 <ul>
-<li>🟡 <strong>Custom frequency bands</strong>: User-defined frequencies</li>
+<li>🟡 <strong>Custom frequency bands</strong>: User-defined
+frequencies</li>
 <li>🟡 <strong>Batch optimization</strong>: Multi-site optimization</li>
 <li>🟡 <strong>Export formats</strong>: Support more GIS formats</li>
 <li>🟡 <strong>Visualization enhancements</strong>: 3D map view</li>
 </ul>
 <h3 id="low-priority">Low Priority</h3>
 <ul>
-<li>🟢 <strong>UI polish</strong>: Theme improvements, responsive design</li>
-<li>🟢 <strong>Internationalization</strong>: Support other languages</li>
+<li>🟢 <strong>UI polish</strong>: Theme improvements, responsive
+design</li>
+<li>🟢 <strong>Internationalization</strong>: Support other
+languages</li>
 <li>🟢 <strong>Mobile app</strong>: React Native version</li>
-<li>🟢 <strong>Advanced analytics</strong>: Statistical analysis tools</li>
+<li>🟢 <strong>Advanced analytics</strong>: Statistical analysis
+tools</li>
 </ul>
 <hr />
 <h2 id="project-structure">Project Structure</h2>
-<div class="highlight"><pre><span></span><code>urban-ray-tracer/
+<pre><code>urban-ray-tracer/
 ├── backend-go/          # Go backend (API, raytracing)
 │   ├── main.go
-│   ├── handlers/        # HTTP endpoint handlers
-│   ├── raytracer/       # RF propagation simulation
+│   ├── raytracer/       # RF propagation, spatial index, optimization
 │   └── go.mod
 ├── frontend-react/      # React frontend (UI, visualization)
 │   ├── src/
@@ -1956,12 +400,13 @@ npm<span class="w"> </span><span class="nb">test</span>
 │   └── package.json
 ├── data-pipeline/       # Data processing scripts
 │   ├── extract_ankara.py
+│   ├── fetch_buildings.py
+│   ├── export_ankara_buildings.py
 │   └── export_tower_geojson.py
-└── docs/                # MkDocs documentation
-    ├── index.md
-    ├── architecture.md
-    └── ...
-</code></pre></div>
+└── docs/                # Static GitHub Pages documentation
+    ├── index.html
+    ├── changelog.html   # Generated from the root CHANGELOG.md
+    └── ...</code></pre>
 <h3 id="key-files-to-know">Key Files to Know</h3>
 <table>
 <thead>
@@ -1998,24 +443,28 @@ npm<span class="w"> </span><span class="nb">test</span>
 </tbody>
 </table>
 <hr />
-<h2 id="deployment-release-process">Deployment &amp; Release Process</h2>
+<h2 id="deployment--release-process">Deployment &amp; Release
+Process</h2>
 <h3 id="local-testing">Local Testing</h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Build and test locally</span>
-docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>atom-simulator<span class="w"> </span>.
-docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span>atom-simulator
-
-<span class="c1"># Run tests</span>
-<span class="nb">cd</span><span class="w"> </span>backend-go<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>./...
-<span class="nb">cd</span><span class="w"> </span>../frontend-react<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span><span class="nb">test</span>
-</code></pre></div>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build and test locally</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> atom-simulator .</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-p</span> 8080:8080 atom-simulator</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Run tests</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go <span class="kw">&amp;&amp;</span> <span class="ex">go</span> test ./...</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../frontend-react <span class="kw">&amp;&amp;</span> <span class="ex">npm</span> test</span></code></pre></div>
 <h3 id="creating-a-release">Creating a Release</h3>
-<ol>
-<li><strong>Update version</strong>: Edit version string in <code>main.go</code></li>
+<ol type="1">
+<li><strong>Update version</strong>: Edit version string in
+<code>main.go</code></li>
 <li><strong>Update CHANGELOG</strong>: Document changes</li>
 <li><strong>Create Git tag</strong>: <code>git tag v1.1.0</code></li>
 <li><strong>Push tag</strong>: <code>git push origin v1.1.0</code></li>
-<li><strong>Build release</strong>: <code>docker build -t atom-simulator:1.1.0 .</code></li>
-<li><strong>Push to registry</strong>: <code>docker push your-registry/atom-simulator:1.1.0</code></li>
+<li><strong>Build release</strong>:
+<code>docker build -t atom-simulator:1.1.0 .</code></li>
+<li><strong>Push to registry</strong>:
+<code>docker push your-registry/atom-simulator:1.1.0</code></li>
 </ol>
 <hr />
 <h2 id="communication">Communication</h2>
@@ -2023,146 +472,114 @@ docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </sp
 <ul>
 <li><strong>GitHub Issues</strong>: Bug reports, feature requests</li>
 <li><strong>GitHub Discussions</strong>: Questions, brainstorming</li>
-<li><strong>Email</strong>: <a href="mailto:berk@berkunsal.com">berk@berkunsal.com</a></li>
-<li><strong>LinkedIn</strong>: <a href="https://linkedin.com/in/berkunsal">Berk Ünsal</a></li>
+<li><strong>Email</strong>: <a
+href="mailto:info@berkunsal.com"><span>info@berkunsal.com</span></a></li>
+<li><strong>LinkedIn</strong>: <a
+href="https://linkedin.com/in/berkunsaltr">Berk Ünsal</a></li>
 </ul>
 <h3 id="code-of-conduct">Code of Conduct</h3>
-<p>We're committed to providing a welcoming and inspiring community for all. Please read our <a href="CODE_OF_CONDUCT.md">Code of Conduct</a> (or establish community guidelines).</p>
-<p><strong>TL;DR</strong>: Be respectful, inclusive, and constructive.</p>
+<p>We're committed to providing a welcoming and inspiring community for
+all. Please read our Code of Conduct (or establish community
+guidelines).</p>
+<p><strong>TL;DR</strong>: Be respectful, inclusive, and
+constructive.</p>
 <hr />
 <h2 id="contributor-recognition">Contributor Recognition</h2>
 <p>All contributors will be:</p>
 <ul>
-<li>✅ Added to <a href="CONTRIBUTORS.md">CONTRIBUTORS.md</a></li>
+<li>✅ Added to CONTRIBUTORS.md</li>
 <li>✅ Credited in release notes</li>
 <li>✅ Mentioned in documentation</li>
-<li>✅ Eligible for maintainer status (after consistent contributions)</li>
+<li>✅ Eligible for maintainer status (after consistent
+contributions)</li>
 </ul>
 <hr />
 <h2 id="development-tools">Development Tools</h2>
 <h3 id="recommended-extensions">Recommended Extensions</h3>
-<p><strong>VS Code</strong>:
-- Go (golang.go)
-- ES7+ React/Redux/React-Native snippets
-- Docker
-- GitLens
-- Prettier</p>
+<p><strong>VS Code</strong>:</p>
+<ul>
+<li>Go (golang.go)</li>
+<li>ES7+ React/Redux/React-Native snippets</li>
+<li>Docker</li>
+<li>GitLens</li>
+<li>Prettier</li>
+</ul>
 <h3 id="useful-commands">Useful Commands</h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Go formatting and linting</span>
-go<span class="w"> </span>fmt<span class="w"> </span>./...
-go<span class="w"> </span>vet<span class="w"> </span>./...
-golint<span class="w"> </span>./...
-
-<span class="c1"># Go benchmarking</span>
-go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-bench<span class="o">=</span>.<span class="w"> </span>-benchmem<span class="w"> </span>./...
-
-<span class="c1"># React development</span>
-npm<span class="w"> </span>run<span class="w"> </span>build
-npm<span class="w"> </span>run<span class="w"> </span>preview
-npm<span class="w"> </span>run<span class="w"> </span>lint
-
-<span class="c1"># Docker cleanup</span>
-docker<span class="w"> </span>system<span class="w"> </span>prune<span class="w"> </span>-a
-</code></pre></div>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Go formatting and linting</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> fmt ./...</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> vet ./...</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="ex">golint</span> ./...</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Go benchmarking</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test <span class="at">-bench</span><span class="op">=</span>. <span class="at">-benchmem</span> ./...</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co"># React development</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run preview</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run lint</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Docker cleanup</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> system prune <span class="at">-a</span></span></code></pre></div>
 <hr />
 <h2 id="financial-contributions">Financial Contributions</h2>
 <p>If you'd like to support A.T.O.M financially:</p>
 <ul>
 <li>⭐ Star the repository (recognition counts!)</li>
 <li>🔗 Share with others in your network</li>
-<li>💼 Consider consulting: <a href="mailto:berk@berkunsal.com">berk@berkunsal.com</a></li>
+<li>💼 Consider consulting: <a
+href="mailto:info@berkunsal.com"><span>info@berkunsal.com</span></a></li>
 <li>🤝 Contribute code or documentation (priceless!)</li>
 </ul>
 <hr />
 <h2 id="getting-help">Getting Help</h2>
 <p><strong>Stuck? Need guidance?</strong></p>
-<ol>
-<li>Check <a href="faq.html">FAQ</a></li>
-<li>Search existing <a href="https://github.com/your-org/A.T.O.M/issues">GitHub Issues</a></li>
-<li>Review <a href="architecture.html">Architecture</a> for system overview</li>
+<ol type="1">
+<li>Check <a href="./faq.html">FAQ</a></li>
+<li>Search existing <a
+href="https://github.com/Berk-Unsal/urban-ray-tracer/issues">GitHub
+Issues</a></li>
+<li>Review <a href="./architecture.html">Architecture</a> for system
+overview</li>
 <li>Ask in GitHub Discussions</li>
 <li>Reach out to maintainers</li>
 </ol>
 <hr />
 <h2 id="checklist-for-prs">Checklist for PRs</h2>
 <p>Before submitting:</p>
-<ul>
-<li>[ ] I've read <a href="CONTRIBUTING.md">CONTRIBUTING.md</a></li>
-<li>[ ] I've tested my changes locally</li>
-<li>[ ] I've added/updated documentation</li>
-<li>[ ] I've added tests for new features</li>
-<li>[ ] My code follows project style guidelines</li>
-<li>[ ] I've verified no breaking changes</li>
-<li>[ ] I've updated the CHANGELOG</li>
+<ul class="task-list">
+<li><label><input type="checkbox" />I've read <a
+href="./contributing.html">CONTRIBUTING.md</a></label></li>
+<li><label><input type="checkbox" />I've tested my changes
+locally</label></li>
+<li><label><input type="checkbox" />I've added/updated
+documentation</label></li>
+<li><label><input type="checkbox" />I've added tests for new
+features</label></li>
+<li><label><input type="checkbox" />My code follows project style
+guidelines</label></li>
+<li><label><input type="checkbox" />I've verified no breaking
+changes</label></li>
+<li><label><input type="checkbox" />I've updated the
+CHANGELOG</label></li>
 </ul>
 <hr />
-<p>Thank you for contributing to A.T.O.M! Together, we're building the future of RF simulation. 🚀</p>
+<p>Thank you for contributing to A.T.O.M! Together, we're building the
+future of RF simulation. 🚀</p>
 <hr />
-<p><strong>Questions?</strong> Open an issue or email <a href="mailto:berk@berkunsal.com">berk@berkunsal.com</a></p>
+<p><strong>Questions?</strong> Open an issue or email <a
+href="mailto:info@berkunsal.com"><span>info@berkunsal.com</span></a></p>
+      </div>
+    </article>
+  </main>
 
-
-
-
-
-
-
-
-
-
-
-
-                
-              </article>
-            </div>
-          
-          
-  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
-
-<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
-        </div>
-        
-          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
-</button>
-        
-      </main>
-      
-        <footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
-  
-</div>
-      
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
     </div>
-  </div>
-</footer>
-      
-    </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    
-    
-    
-      
-      
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-    
-    
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
-      
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-      
-    
-  </body>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
 </html>

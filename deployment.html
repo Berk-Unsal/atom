@@ -1,2584 +1,503 @@
-
 <!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
-      
-      
-        <meta name="author" content="Berk Ünsal">
-      
-      
-        <link rel="canonical" href="https://docs.atom.berkunsal.com/deployment.html">
-      
-      
-        <link rel="prev" href="getting-started.html">
-      
-      
-        <link rel="next" href="faq.html">
-      
-      
-        
-      
-      
-      <link rel="icon" href="../icon/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
-    
-    
-      
-        <title>Deployment - A.T.O.M Documentation</title>
-      
-    
-    
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
-      
-      
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Container, reverse-proxy, readiness,
+capacity, scaling, and production-hardening guidance for A.T.O.M." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Deployment | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
-
-    
-    
-      
-        <script src="https://unpkg.com/iframe-worker/shim"></script>
-      
-    
-    
-      
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
-    
-    
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-    
-      
-
-    
-    
-  </head>
-  
-  
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#deployment" class="md-skip">
-          Skip to content
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-    
-      
-
-<header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            A.T.O.M Documentation
-          </span>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
         </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              Deployment
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
-    
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
-    
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-</form>
-      
-    
-    
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
-    
-    
-    
-      
-      
-        <label class="md-header__button md-icon" for="__search">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-        <div class="md-search__suggest" data-md-component="search-suggest"></div>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
           </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
         </div>
       </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
     </div>
-  </div>
-</div>
-      
-    
-    
-  </nav>
-  
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="index.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Home
+  </header>
 
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="overview.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Overview
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="features.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Features
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="architecture.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="visualization.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Propagation Visualization
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="algorithms.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Algorithms & Physics
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="api.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  API Reference
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="getting-started.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Getting Started
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    
-  
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="deployment.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Deployment
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="faq.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  FAQ
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="contributing.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Contributing
-
-      </a>
-    </li>
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    A.T.O.M Documentation
-  </label>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="index.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="overview.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="features.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Features
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="visualization.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Propagation Visualization
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="algorithms.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Algorithms & Physics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="getting-started.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Getting Started
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="deployment.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#deployment-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deployment Options
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deployment Options">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-1-docker-container-recommended" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 1: Docker Container (Recommended)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Option 1: Docker Container (Recommended)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#single-container" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Single Container
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docker-compose" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docker Compose
-      
-    </span>
-  </a>
-  
-</li>
-        
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Deployment page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#recommended-local-deployment"
+      id="toc-recommended-local-deployment">Recommended Local
+      Deployment</a></li>
+      <li><a href="#runtime-topology" id="toc-runtime-topology">Runtime
+      Topology</a></li>
+      <li><a href="#configuration"
+      id="toc-configuration">Configuration</a></li>
+      <li><a href="#dataset-mounts" id="toc-dataset-mounts">Dataset
+      Mounts</a></li>
+      <li><a href="#health-and-capacity"
+      id="toc-health-and-capacity">Health And Capacity</a></li>
+      <li><a href="#reverse-proxy-boundary"
+      id="toc-reverse-proxy-boundary">Reverse Proxy Boundary</a></li>
+      <li><a href="#optional-5g-core-lab"
+      id="toc-optional-5g-core-lab">Optional 5G Core Lab</a></li>
+      <li><a href="#tagged-multi-architecture-images"
+      id="toc-tagged-multi-architecture-images">Tagged
+      Multi-Architecture Images</a></li>
+      <li><a href="#upgrade-and-rollback"
+      id="toc-upgrade-and-rollback">Upgrade And Rollback</a></li>
+      <li><a href="#verification-checklist"
+      id="toc-verification-checklist">Verification Checklist</a></li>
       </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-2-kubernetes-enterprise" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 2: Kubernetes (Enterprise)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Option 2: Kubernetes (Enterprise)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#deployment-manifest" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deployment Manifest
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-3-cloud-platforms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 3: Cloud Platforms
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Option 3: Cloud Platforms">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aws-ecs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        AWS ECS
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#google-cloud-run" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Google Cloud Run
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#azure-container-instances" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Azure Container Instances
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#production-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Production Configuration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Production Configuration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reverse-proxy-nginx" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reverse Proxy (nginx)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#resource-allocation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Resource Allocation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Resource Allocation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#minimum-development" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Minimum (Development)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#recommended-production" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Recommended (Production)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#high-traffic-enterprise" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        High Traffic (Enterprise)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#monitoring-observability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Monitoring &amp; Observability
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Monitoring &amp; Observability">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#health-checks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Health Checks
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#logs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Logs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#metrics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Metrics
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#alerting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alerting
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scaling" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Scaling
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Scaling">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#horizontal-scaling-multiple-instances" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Horizontal Scaling (Multiple Instances)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#vertical-scaling-larger-machines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Vertical Scaling (Larger Machines)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#caching" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Caching
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disaster-recovery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Disaster Recovery
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Disaster Recovery">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#backup-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Backup Strategy
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#high-availability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        High Availability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#rollback-procedure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rollback Procedure
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Security">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#network-security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network Security
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#application-security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Application Security
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#container-security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Container Security
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-tuning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Tuning
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Tuning">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#go-runtime-tuning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Go Runtime Tuning
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#os-tuning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OS Tuning
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cost-optimization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cost Optimization
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-github-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation: GitHub Pages
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Documentation: GitHub Pages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#setup-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setup Steps
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Setup Steps">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-enable-github-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Enable GitHub Pages
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-configure-mkdocs-already-done" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Configure MkDocs (Already Done!)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-automatic-deployment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Automatic Deployment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-custom-domain-optional" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Custom Domain (Optional)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#manual-build-deploy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Manual Build &amp; Deploy
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#view-live-documentation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        View Live Documentation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
+    </aside>
 
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="faq.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Operations guide</span>
+        <h1>Deployment</h1>
+        <p>Container, reverse-proxy, readiness, capacity, scaling, and
+production-hardening guidance for A.T.O.M.</p>
+        <div class="hero-actions">
+          <a class="button" href="./deployment.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
 
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="contributing.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#deployment-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deployment Options
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deployment Options">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-1-docker-container-recommended" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 1: Docker Container (Recommended)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Option 1: Docker Container (Recommended)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#single-container" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Single Container
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docker-compose" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docker Compose
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-2-kubernetes-enterprise" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 2: Kubernetes (Enterprise)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Option 2: Kubernetes (Enterprise)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#deployment-manifest" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deployment Manifest
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-3-cloud-platforms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 3: Cloud Platforms
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Option 3: Cloud Platforms">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aws-ecs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        AWS ECS
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#google-cloud-run" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Google Cloud Run
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#azure-container-instances" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Azure Container Instances
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#production-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Production Configuration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Production Configuration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reverse-proxy-nginx" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reverse Proxy (nginx)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#resource-allocation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Resource Allocation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Resource Allocation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#minimum-development" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Minimum (Development)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#recommended-production" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Recommended (Production)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#high-traffic-enterprise" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        High Traffic (Enterprise)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#monitoring-observability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Monitoring &amp; Observability
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Monitoring &amp; Observability">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#health-checks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Health Checks
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#logs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Logs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#metrics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Metrics
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#alerting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alerting
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scaling" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Scaling
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Scaling">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#horizontal-scaling-multiple-instances" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Horizontal Scaling (Multiple Instances)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#vertical-scaling-larger-machines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Vertical Scaling (Larger Machines)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#caching" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Caching
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disaster-recovery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Disaster Recovery
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Disaster Recovery">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#backup-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Backup Strategy
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#high-availability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        High Availability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#rollback-procedure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rollback Procedure
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Security">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#network-security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network Security
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#application-security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Application Security
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#container-security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Container Security
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-tuning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Tuning
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Tuning">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#go-runtime-tuning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Go Runtime Tuning
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#os-tuning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OS Tuning
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cost-optimization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cost Optimization
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-github-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation: GitHub Pages
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Documentation: GitHub Pages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#setup-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setup Steps
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Setup Steps">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-enable-github-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Enable GitHub Pages
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-configure-mkdocs-already-done" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Configure MkDocs (Already Done!)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-automatic-deployment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Automatic Deployment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-custom-domain-optional" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Custom Domain (Optional)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#manual-build-deploy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Manual Build &amp; Deploy
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#view-live-documentation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        View Live Documentation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          
-            <div class="md-content" data-md-component="content">
-              
-              <article class="md-content__inner md-typeset">
-                
-                  
-
-
-
-<h1 id="deployment">Deployment</h1>
-<p>Deploy A.T.O.M to production environments with confidence.</p>
-<h2 id="deployment-options">Deployment Options</h2>
-<h3 id="option-1-docker-container-recommended">Option 1: Docker Container (Recommended)</h3>
-<p><strong>Best for</strong>: Most deployments, cloud platforms, Kubernetes</p>
-<h4 id="single-container">Single Container</h4>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--name<span class="w"> </span>atom-api<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-e<span class="w"> </span><span class="nv">PORT</span><span class="o">=</span><span class="m">8080</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--memory<span class="o">=</span>1g<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--cpus<span class="o">=</span><span class="m">2</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>atom-simulator
-</code></pre></div>
-<h4 id="docker-compose">Docker Compose</h4>
-<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.8&#39;</span>
-
-<span class="nt">services</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">atom-api</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom-simulator:latest</span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom-api</span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8080:8080&quot;</span>
-<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
-<span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">limits</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">cpus</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2&#39;</span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1G</span>
-<span class="w">      </span><span class="nt">reservations</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">cpus</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512M</span>
-<span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CMD&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;curl&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;-f&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;http://localhost:8080/api/health&quot;</span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30s</span>
-<span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
-<span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
-<span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40s</span>
-<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
-</code></pre></div>
-<p><strong>Run</strong>:</p>
-<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up<span class="w"> </span>-d
-</code></pre></div>
-<hr />
-<h3 id="option-2-kubernetes-enterprise">Option 2: Kubernetes (Enterprise)</h3>
-<h4 id="deployment-manifest">Deployment Manifest</h4>
-<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
-<span class="nt">metadata</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom-api</span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom</span>
-<span class="nt">spec</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom</span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom</span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom</span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom-simulator:1.0.0</span>
-<span class="w">        </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
-<span class="w">        </span><span class="nt">env</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PORT</span>
-<span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;8080&quot;</span>
-<span class="w">        </span><span class="nt">resources</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">requests</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;512Mi&quot;</span>
-<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
-<span class="w">          </span><span class="nt">limits</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1Gi&quot;</span>
-<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1000m&quot;</span>
-<span class="w">        </span><span class="nt">livenessProbe</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">httpGet</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/api/health</span>
-<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
-<span class="w">          </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
-<span class="w">          </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">        </span><span class="nt">readinessProbe</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">httpGet</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/api/health</span>
-<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
-<span class="w">          </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="w">          </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="nn">---</span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
-<span class="nt">metadata</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom-service</span>
-<span class="nt">spec</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom</span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
-<span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LoadBalancer</span>
-</code></pre></div>
-<p><strong>Deploy</strong>:</p>
-<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>deployment.yaml
-
-<span class="c1"># Verify</span>
-kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-l<span class="w"> </span><span class="nv">app</span><span class="o">=</span>atom
-kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>atom-service
-</code></pre></div>
-<hr />
-<h3 id="option-3-cloud-platforms">Option 3: Cloud Platforms</h3>
-<h4 id="aws-ecs">AWS ECS</h4>
-<div class="highlight"><pre><span></span><code><span class="c1"># Create ECR repository</span>
-aws<span class="w"> </span>ecr<span class="w"> </span>create-repository<span class="w"> </span>--repository-name<span class="w"> </span>atom-simulator
-
-<span class="c1"># Push image</span>
-docker<span class="w"> </span>tag<span class="w"> </span>atom-simulator:latest<span class="w"> </span><span class="o">[</span>AWS_ACCOUNT<span class="o">]</span>.dkr.ecr.<span class="o">[</span>REGION<span class="o">]</span>.amazonaws.com/atom-simulator:latest
-docker<span class="w"> </span>push<span class="w"> </span><span class="o">[</span>AWS_ACCOUNT<span class="o">]</span>.dkr.ecr.<span class="o">[</span>REGION<span class="o">]</span>.amazonaws.com/atom-simulator:latest
-
-<span class="c1"># Create ECS task definition (JSON)</span>
-<span class="c1"># Then deploy via AWS Console or CLI</span>
-</code></pre></div>
-<h4 id="google-cloud-run">Google Cloud Run</h4>
-<div class="highlight"><pre><span></span><code><span class="c1"># Build and push to Google Container Registry</span>
-gcloud<span class="w"> </span>builds<span class="w"> </span>submit<span class="w"> </span>--tag<span class="w"> </span>gcr.io/<span class="o">[</span>PROJECT<span class="o">]</span>/atom-simulator
-
-<span class="c1"># Deploy</span>
-gcloud<span class="w"> </span>run<span class="w"> </span>deploy<span class="w"> </span>atom-api<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--image<span class="w"> </span>gcr.io/<span class="o">[</span>PROJECT<span class="o">]</span>/atom-simulator<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--platform<span class="w"> </span>managed<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--region<span class="w"> </span>us-central1<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--memory<span class="w"> </span>1Gi<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--cpu<span class="w"> </span><span class="m">2</span>
-</code></pre></div>
-<h4 id="azure-container-instances">Azure Container Instances</h4>
-<div class="highlight"><pre><span></span><code><span class="c1"># Push to Azure Container Registry</span>
-az<span class="w"> </span>acr<span class="w"> </span>build<span class="w"> </span>--registry<span class="w"> </span>myregistry<span class="w"> </span>--image<span class="w"> </span>atom-simulator:1.0<span class="w"> </span>.
-
-<span class="c1"># Deploy</span>
-az<span class="w"> </span>container<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--resource-group<span class="w"> </span>mygroup<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--name<span class="w"> </span>atom-api<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--image<span class="w"> </span>myregistry.azurecr.io/atom-simulator:1.0<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--cpu<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--memory<span class="w"> </span><span class="m">1</span>
-</code></pre></div>
-<hr />
-<h2 id="production-configuration">Production Configuration</h2>
-<h3 id="reverse-proxy-nginx">Reverse Proxy (nginx)</h3>
-<div class="highlight"><pre><span></span><code><span class="k">upstream</span><span class="w"> </span><span class="s">atom_backend</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">server</span><span class="w"> </span><span class="n">atom-api</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">api.atom.example.com</span><span class="p">;</span>
-
-<span class="w">    </span><span class="c1"># Redirect HTTP to HTTPS</span>
-<span class="w">    </span><span class="kn">return</span><span class="w"> </span><span class="mi">301</span><span class="w"> </span><span class="s">https://</span><span class="nv">$server_name$request_uri</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">443</span><span class="w"> </span><span class="s">ssl</span><span class="w"> </span><span class="s">http2</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">api.atom.example.com</span><span class="p">;</span>
-
-<span class="w">    </span><span class="kn">ssl_certificate</span><span class="w"> </span><span class="s">/etc/ssl/certs/cert.pem</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">ssl_certificate_key</span><span class="w"> </span><span class="s">/etc/ssl/private/key.pem</span><span class="p">;</span>
-
-<span class="w">    </span><span class="c1"># Security headers</span>
-<span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Strict-Transport-Security</span><span class="w"> </span><span class="s">&quot;max-age=31536000</span><span class="p">;</span><span class="w"> </span><span class="kn">includeSubDomains&quot;</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">X-Content-Type-Options</span><span class="w"> </span><span class="s">&quot;nosniff&quot;</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">X-Frame-Options</span><span class="w"> </span><span class="s">&quot;DENY&quot;</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
-
-<span class="w">    </span><span class="c1"># Rate limiting</span>
-<span class="w">    </span><span class="kn">limit_req_zone</span><span class="w"> </span><span class="nv">$binary_remote_addr</span><span class="w"> </span><span class="s">zone=api_limit:10m</span><span class="w"> </span><span class="s">rate=10r/s</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">limit_req</span><span class="w"> </span><span class="s">zone=api_limit</span><span class="w"> </span><span class="s">burst=20</span><span class="w"> </span><span class="s">nodelay</span><span class="p">;</span>
-
-<span class="w">    </span><span class="c1"># CORS headers</span>
-<span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Access-Control-Allow-Origin</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Access-Control-Allow-Methods</span><span class="w"> </span><span class="s">&quot;GET,</span><span class="w"> </span><span class="s">POST,</span><span class="w"> </span><span class="s">OPTIONS&quot;</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
-
-<span class="w">    </span><span class="c1"># Proxy to backend</span>
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/api/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://atom_backend</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_http_version</span><span class="w"> </span><span class="mi">1</span><span class="s">.1</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Upgrade</span><span class="w"> </span><span class="nv">$http_upgrade</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Connection</span><span class="w"> </span><span class="s">&#39;upgrade&#39;</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w"> </span><span class="nv">$host</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_cache_bypass</span><span class="w"> </span><span class="nv">$http_upgrade</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Real-IP</span><span class="w"> </span><span class="nv">$remote_addr</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-For</span><span class="w"> </span><span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-Proto</span><span class="w"> </span><span class="nv">$scheme</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_connect_timeout</span><span class="w"> </span><span class="s">60s</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_send_timeout</span><span class="w"> </span><span class="s">60s</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_read_timeout</span><span class="w"> </span><span class="s">60s</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1"># Static frontend</span>
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://atom_backend</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w"> </span><span class="nv">$host</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1"># Health check endpoint (doesn&#39;t count toward rate limit)</span>
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/api/health</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">access_log</span><span class="w"> </span><span class="no">off</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://atom_backend</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="resource-allocation">Resource Allocation</h3>
-<h4 id="minimum-development">Minimum (Development)</h4>
-<div class="highlight"><pre><span></span><code>CPU: 1 core
-Memory: 512 MB
-Storage: 2 GB (container image + cache)
-</code></pre></div>
-<h4 id="recommended-production">Recommended (Production)</h4>
-<div class="highlight"><pre><span></span><code>CPU: 2-4 cores (depends on request volume)
-Memory: 1-2 GB
-Storage: 10 GB (includes backups)
-Bandwidth: 10 Mbps egress
-</code></pre></div>
-<h4 id="high-traffic-enterprise">High Traffic (Enterprise)</h4>
-<div class="highlight"><pre><span></span><code>CPU: 4-8 cores per instance (multiple replicas)
-Memory: 2-4 GB per instance
-Storage: 50+ GB (includes logs, monitoring)
-Bandwidth: 100+ Mbps egress
-Load Balancer: Yes (round-robin across instances)
-</code></pre></div>
-<hr />
-<h2 id="monitoring-observability">Monitoring &amp; Observability</h2>
-<h3 id="health-checks">Health Checks</h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Check every 30 seconds</span>
-curl<span class="w"> </span>http://localhost:8080/api/health
-
-<span class="c1"># Expected response</span>
-<span class="o">{</span>
-<span class="w">  </span><span class="s2">&quot;success&quot;</span>:<span class="w"> </span>true,
-<span class="w">  </span><span class="s2">&quot;data&quot;</span>:<span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="s2">&quot;healthy&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;buildings_loaded&quot;</span>:<span class="w"> </span><span class="m">12047</span>,
-<span class="w">    </span><span class="s2">&quot;towers_loaded&quot;</span>:<span class="w"> </span><span class="m">287</span>,
-<span class="w">    </span><span class="s2">&quot;version&quot;</span>:<span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span>
-<span class="w">  </span><span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div>
-<h3 id="logs">Logs</h3>
-<p><strong>Docker</strong>:
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>atom-api
-</code></pre></div></p>
-<p><strong>Kubernetes</strong>:
-<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>deployment/atom-api
-</code></pre></div></p>
-<p><strong>Application Logs</strong>:
-- All requests logged with timestamp, method, path, status, latency
-- Errors logged with full stack trace
-- Startup events (data loading, server start)</p>
-<h3 id="metrics">Metrics</h3>
-<p>Recommended Prometheus metrics to expose:</p>
-<div class="highlight"><pre><span></span><code>atom_simulate_duration_seconds    # Request latency
-atom_optimize_duration_seconds    # Optimization latency
-atom_buildings_loaded              # Count of loaded buildings
-atom_towers_loaded                 # Count of loaded towers
-atom_rtree_query_time_seconds      # R-Tree lookup time
-http_requests_total                # Total HTTP requests
-http_request_duration_seconds      # HTTP latency histogram
-</code></pre></div>
-<h3 id="alerting">Alerting</h3>
-<p>Set alerts for:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">alerts</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">APIDown</span>
-<span class="w">    </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health_check_failed for 5 minutes</span>
-<span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Page on-call engineer</span>
-
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HighLatency</span>
-<span class="w">    </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">p99_latency &gt; 5 seconds for 10 minutes</span>
-<span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Alert Slack channel</span>
-
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HighErrorRate</span>
-<span class="w">    </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error_rate &gt; 1% for 5 minutes</span>
-<span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Alert team</span>
-
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HighMemory</span>
-<span class="w">    </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memory_usage &gt; 90% for 5 minutes</span>
-<span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Auto-scale up</span>
-</code></pre></div>
-<hr />
-<h2 id="scaling">Scaling</h2>
-<h3 id="horizontal-scaling-multiple-instances">Horizontal Scaling (Multiple Instances)</h3>
-<p>A.T.O.M is <strong>stateless</strong> and scales horizontally:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Kubernetes: Scale to 5 replicas</span>
-<span class="l l-Scalar l-Scalar-Plain">kubectl scale deployment atom-api --replicas=5</span>
-
-<span class="l l-Scalar l-Scalar-Plain"># Docker Compose</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Use multiple services</span>
-<span class="nt">atom-api-1</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom-simulator</span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;8081:8080&quot;</span><span class="p p-Indicator">]</span>
-
-<span class="nt">atom-api-2</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atom-simulator</span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;8082:8080&quot;</span><span class="p p-Indicator">]</span>
-
-<span class="nt">load-balancer</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:latest</span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;80:80&quot;</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">atom-api-1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">atom-api-2</span><span class="p p-Indicator">]</span>
-</code></pre></div>
-<h3 id="vertical-scaling-larger-machines">Vertical Scaling (Larger Machines)</h3>
-<p>Go automatically uses all available CPU cores:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># 2-core machine: 2x faster than 1-core</span>
-<span class="c1"># 8-core machine: ~8x faster than 1-core</span>
-
-<span class="c1"># Example: Optimize request on 8-core vs 2-core</span>
-<span class="c1"># 2-core: 250 ms</span>
-<span class="c1"># 8-core: 60 ms (4x faster)</span>
-</code></pre></div>
-<h3 id="caching">Caching</h3>
-<p>Consider caching simulation results:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Cache GET /api/towers (changes infrequently)</span>
-<span class="k">location</span><span class="w"> </span><span class="s">/api/towers</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">proxy_cache_valid</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="s">1d</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://atom_backend</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="c1"># Don&#39;t cache POST /api/simulate (results vary)</span>
-<span class="k">location</span><span class="w"> </span><span class="s">/api/simulate</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">proxy_cache_bypass</span><span class="w"> </span><span class="nv">$request_method</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://atom_backend</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div>
-<hr />
-<h2 id="disaster-recovery">Disaster Recovery</h2>
-<h3 id="backup-strategy">Backup Strategy</h3>
-<ol>
-<li><strong>Data Files</strong>: Version control GeoJSON in Git</li>
-<li><strong>Configuration</strong>: Store environment variables in secrets manager</li>
-<li><strong>Container Images</strong>: Tag and push to registry with version</li>
-</ol>
-<h3 id="high-availability">High Availability</h3>
-<ol>
-<li><strong>Multiple Replicas</strong>: Always run ≥3 instances</li>
-<li><strong>Load Balancer</strong>: Distribute requests across replicas</li>
-<li><strong>Health Checks</strong>: Automatic restart of failed instances</li>
-<li><strong>Data Redundancy</strong>: GeoJSON baked into image (no external DB)</li>
-</ol>
-<h3 id="rollback-procedure">Rollback Procedure</h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># If new version has issues, rollback:</span>
-kubectl<span class="w"> </span><span class="nb">set</span><span class="w"> </span>image<span class="w"> </span>deployment/atom-api<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>atom-api<span class="o">=</span>atom-simulator:previous-version
-
-<span class="c1"># Or with Docker Compose:</span>
-docker-compose<span class="w"> </span>pull<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>docker-compose<span class="w"> </span>up<span class="w"> </span>-d
-</code></pre></div>
-<hr />
-<h2 id="security">Security</h2>
-<h3 id="network-security">Network Security</h3>
-<ul>
-<li>✅ Use HTTPS only (TLS 1.2+)</li>
-<li>✅ Enable CORS restrictions</li>
-<li>✅ Implement rate limiting</li>
-<li>✅ Run behind reverse proxy (nginx/HAProxy)</li>
-<li>✅ Use private subnets for backend</li>
-<li>✅ Firewall rules: limit ingress to necessary ports</li>
-</ul>
-<h3 id="application-security">Application Security</h3>
-<ul>
-<li>✅ Validate all inputs</li>
-<li>✅ No hardcoded secrets</li>
-<li>✅ Use environment variables for sensitive config</li>
-<li>✅ Regular dependency updates</li>
-<li>✅ Security scanning in CI/CD</li>
-</ul>
-<h3 id="container-security">Container Security</h3>
-<ul>
-<li>✅ Run as non-root user</li>
-<li>✅ Use read-only filesystem where possible</li>
-<li>✅ Regular base image updates (Alpine)</li>
-<li>✅ No privileged containers</li>
-</ul>
-<hr />
-<h2 id="performance-tuning">Performance Tuning</h2>
-<h3 id="go-runtime-tuning">Go Runtime Tuning</h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Set max goroutines per request</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">GOMAXPROCS</span><span class="o">=</span><span class="m">4</span>
-
-<span class="c1"># Enable memory profiling</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">GODEBUG</span><span class="o">=</span><span class="nv">gctrace</span><span class="o">=</span><span class="m">1</span>
-
-<span class="c1"># Start with profiling</span>
-go<span class="w"> </span>run<span class="w"> </span>.<span class="w"> </span>-cpuprofile<span class="o">=</span>cpu.prof
-</code></pre></div>
-<h3 id="os-tuning">OS Tuning</h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Increase file descriptor limit</span>
-<span class="nb">ulimit</span><span class="w"> </span>-n<span class="w"> </span><span class="m">65536</span>
-
-<span class="c1"># Tune network buffer</span>
-sysctl<span class="w"> </span>-w<span class="w"> </span>net.core.rmem_max<span class="o">=</span><span class="m">134217728</span>
-sysctl<span class="w"> </span>-w<span class="w"> </span>net.core.wmem_max<span class="o">=</span><span class="m">134217728</span>
-</code></pre></div>
-<hr />
-<h2 id="cost-optimization">Cost Optimization</h2>
+      <div class="prose">
+<p>A.T.O.M is local-first and stateless on the server. The production
+image serves the compiled React workspace, Go API, and an immutable
+active dataset-pack snapshot from a single non-root container.</p>
+<h2 id="recommended-local-deployment">Recommended Local Deployment</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs install</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Berk-Unsal/urban-ray-tracer.git</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> urban-ray-tracer</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://localhost:8080/readyz</span></code></pre></div>
+<p>Open <code>http://localhost:8080</code>. Stop the service with
+<code>docker compose down</code>.</p>
+<h2 id="runtime-topology">Runtime Topology</h2>
 <table>
 <thead>
 <tr>
-<th>Platform</th>
-<th>Instance Type</th>
-<th>Monthly Cost</th>
+<th>Component</th>
+<th>Default</th>
+<th>Responsibility</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>AWS</strong></td>
-<td>t3.large</td>
-<td>~$60</td>
+<td><code>atom</code> container</td>
+<td>Required</td>
+<td>Static frontend, REST API, RF engines, spatial index, active dataset
+pack</td>
 </tr>
 <tr>
-<td><strong>Google Cloud</strong></td>
-<td>n1-standard-2</td>
-<td>~$50</td>
+<td>Browser IndexedDB</td>
+<td>Required for projects</td>
+<td>Local project/scenario history; not shared across users</td>
 </tr>
 <tr>
-<td><strong>Azure</strong></td>
-<td>Standard_B2s</td>
-<td>~$40</td>
+<td>OpenStreetMap tiles</td>
+<td>External by default</td>
+<td>Visual basemap only; RF computation remains local</td>
 </tr>
 <tr>
-<td><strong>Bare Metal</strong></td>
-<td>2-core 4GB RAM</td>
-<td>~$20</td>
+<td><code>core-lab-adapter</code></td>
+<td>Optional profile</td>
+<td>Deterministic 5G path state and optional Open5GS probes</td>
 </tr>
 </tbody>
 </table>
-<hr />
-<h2 id="documentation-github-pages">Documentation: GitHub Pages</h2>
-<p>Host A.T.O.M's MkDocs documentation for free on GitHub Pages.</p>
-<h3 id="setup-steps">Setup Steps</h3>
-<h4 id="1-enable-github-pages">1. Enable GitHub Pages</h4>
-<ol>
-<li>Go to your repository settings</li>
-<li>Navigate to <strong>Settings → Pages</strong></li>
-<li><strong>Source</strong>: Select "GitHub Actions" (or "Deploy from branch")</li>
-<li><strong>Branch</strong>: Select <code>gh-pages</code> branch (auto-created by workflow)</li>
-</ol>
-<h4 id="2-configure-mkdocs-already-done">2. Configure MkDocs (Already Done!)</h4>
-<p>Your <code>mkdocs.yml</code> is ready. For custom domain, edit:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">site_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A.T.O.M Documentation</span>
-<span class="nt">site_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://your-domain.com/docs/</span><span class="w">  </span><span class="c1"># Update this</span>
-</code></pre></div>
-<h4 id="3-automatic-deployment">3. Automatic Deployment</h4>
-<p>A GitHub Actions workflow is included (<code>.github/workflows/deploy-docs.yml</code>).</p>
-<p><strong>How it works</strong>:
-- On push to <code>main</code> branch
-- Workflow builds MkDocs
-- Deploys to <code>gh-pages</code> branch
-- Available at <code>https://your-org.github.io/urban-ray-tracer/</code></p>
-<h4 id="4-custom-domain-optional">4. Custom Domain (Optional)</h4>
-<p>If you have a custom domain:</p>
-<ol>
-<li>
-<p>Create <code>docs/CNAME</code> file:
-<div class="highlight"><pre><span></span><code>docs.atom.berkunsal.com
-</code></pre></div></p>
-</li>
-<li>
-<p>Update DNS records:</p>
-</li>
-<li>Add CNAME record pointing to <code>your-org.github.io</code></li>
-<li>
-<p>Or use Apex domain with A records (GitHub's IP addresses)</p>
-</li>
-<li>
-<p>Enable HTTPS in repository settings</p>
-</li>
-</ol>
-<h3 id="manual-build-deploy">Manual Build &amp; Deploy</h3>
-<p>If you prefer manual deployment:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Install mkdocs</span>
-pip<span class="w"> </span>install<span class="w"> </span>mkdocs<span class="w"> </span>mkdocs-material<span class="w"> </span>pymdown-extensions
-
-<span class="c1"># Build docs</span>
-mkdocs<span class="w"> </span>build
-
-<span class="c1"># Deploy to gh-pages branch</span>
-mkdocs<span class="w"> </span>gh-deploy
-</code></pre></div>
-<h3 id="view-live-documentation">View Live Documentation</h3>
+<p>The Go server does not persist projects, jobs, reports, or
+measurements. Multiple API replicas can serve independent requests, but
+browser projects do not become collaborative storage.</p>
+<h2 id="configuration">Configuration</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BIND_ADDRESS</code></td>
+<td><code>127.0.0.1</code> (<code>0.0.0.0</code> in container)</td>
+<td>HTTP listener address; Compose publishes it on loopback by
+default</td>
+</tr>
+<tr>
+<td><code>PORT</code></td>
+<td><code>8080</code></td>
+<td>Public HTTP listener inside the container</td>
+</tr>
+<tr>
+<td><code>FRONTEND_DIST_PATH</code></td>
+<td><code>/app/dist</code></td>
+<td>Compiled frontend bundle</td>
+</tr>
+<tr>
+<td><code>ATOM_DATASET_DIR</code></td>
+<td><code>/app/data-pipeline</code></td>
+<td>Directory containing <code>manifest.json</code> and referenced data
+files</td>
+</tr>
+<tr>
+<td><code>ATOM_DATASETS_ROOT</code></td>
+<td>unset</td>
+<td>Local directory whose own pack and immediate child pack directories
+are listed for safe runtime switching</td>
+</tr>
+<tr>
+<td><code>DATASET_ADMIN_API_KEY</code></td>
+<td>unset</td>
+<td>Require this key to activate an installed dataset pack by ID</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_RF_REQUESTS</code></td>
+<td><code>2</code></td>
+<td>Process-wide expensive RF admission limit</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT</code></td>
+<td><code>1</code></td>
+<td>Maximum simultaneous expensive jobs from one client identity</td>
+</tr>
+<tr>
+<td><code>RF_REQUESTS_PER_MINUTE</code></td>
+<td><code>20</code></td>
+<td>Per-client expensive-route request budget per process</td>
+</tr>
+<tr>
+<td><code>RF_REQUEST_TIMEOUT_SECONDS</code></td>
+<td><code>60</code></td>
+<td>Hard computation deadline for each expensive RF request</td>
+</tr>
+<tr>
+<td><code>RF_API_KEY</code></td>
+<td>unset</td>
+<td>Require this key on expensive RF routes as a bearer token or
+<code>X-API-Key</code> when configured</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_BUILDING_DOWNLOADS</code></td>
+<td><code>2</code></td>
+<td>Process-wide admission limit for fresh full-dataset transfers</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT</code></td>
+<td><code>1</code></td>
+<td>Maximum simultaneous full-dataset transfers from one client
+identity</td>
+</tr>
+<tr>
+<td><code>BUILDING_DOWNLOADS_PER_MINUTE</code></td>
+<td><code>2</code></td>
+<td>Per-client fresh building-dataset transfer budget per process</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_BUILDING_FEATURE_QUERIES</code></td>
+<td><code>4</code></td>
+<td>Process-wide admission limit for bounded building viewport
+queries</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_BUILDING_FEATURE_QUERIES_PER_CLIENT</code></td>
+<td><code>2</code></td>
+<td>Maximum simultaneous bounded building queries from one client
+identity</td>
+</tr>
+<tr>
+<td><code>BUILDING_FEATURE_QUERIES_PER_MINUTE</code></td>
+<td><code>120</code></td>
+<td>Per-client bounded building-query budget per process</td>
+</tr>
+<tr>
+<td><code>BUILDINGS_API_KEY</code></td>
+<td>unset</td>
+<td>Require this key on full and bounded building-data routes when
+configured</td>
+</tr>
+<tr>
+<td><code>EXPERIMENT_WORKERS</code></td>
+<td><code>1</code></td>
+<td>Concurrent batch-experiment workers</td>
+</tr>
+<tr>
+<td><code>EXPERIMENT_QUEUE_SIZE</code></td>
+<td><code>16</code></td>
+<td>Accepted asynchronous experiment jobs waiting for a worker</td>
+</tr>
+<tr>
+<td><code>TRUSTED_PROXIES</code></td>
+<td>unset</td>
+<td>Comma-separated proxy CIDRs whose forwarded client-IP headers are
+trusted</td>
+</tr>
+<tr>
+<td><code>REQUIRE_HTTPS</code></td>
+<td><code>false</code></td>
+<td>Reject non-HTTPS requests with <code>426</code>; enable behind a TLS
+proxy that supplies <code>X-Forwarded-Proto</code></td>
+</tr>
+<tr>
+<td><code>CORE_LAB_ENABLED</code></td>
+<td><code>false</code></td>
+<td>Enables backend proxy routes for the optional adapter</td>
+</tr>
+<tr>
+<td><code>CORE_LAB_ADAPTER_URL</code></td>
+<td><code>http://localhost:8090</code></td>
+<td>Internal adapter URL when Core Lab is enabled</td>
+</tr>
+<tr>
+<td><code>CORE_LAB_API_KEY</code></td>
+<td>unset</td>
+<td>Required shared key for Core Lab scenario mutation when Core Lab is
+enabled</td>
+</tr>
+</tbody>
+</table>
+<p>The manifest-driven dataset directory is the authoritative data
+boundary; individual building and tower paths are not configured
+independently. <code>ATOM_DATASETS_ROOT</code> expands that boundary
+only to installed child packs and never permits client-supplied
+paths.</p>
+<h2 id="dataset-mounts">Dataset Mounts</h2>
+<p>Validate a pack before deployment:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run ./cmd/validate-dataset /absolute/path/to/dataset</span></code></pre></div>
+<p>Mount one pack read-only and set <code>ATOM_DATASET_DIR</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">atom</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">build</span><span class="kw">:</span><span class="at"> .</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;8080:8080&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ATOM_DATASET_DIR</span><span class="kw">:</span><span class="at"> /datasets/region</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> /absolute/path/to/dataset:/datasets/region:ro</span></span></code></pre></div>
+<p>For a local catalog, make the initial pack a child of the mounted
+root and set both variables:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">atom</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ATOM_DATASET_DIR</span><span class="kw">:</span><span class="at"> /datasets/ankara</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ATOM_DATASETS_ROOT</span><span class="kw">:</span><span class="at"> /datasets</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">DATASET_ADMIN_API_KEY</span><span class="kw">:</span><span class="at"> ${DATASET_ADMIN_API_KEY}</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> /absolute/path/to/installed-packs:/datasets:ro</span></span></code></pre></div>
+<p>The Data tool and <code>GET /api/datasets</code> list unique valid
+manifests. Activation submits only a manifest ID. The backend resolves
+entries beneath the configured root, validates every referenced hash
+plus tower/building usability, and atomically replaces the pack after
+success; ongoing requests retain their captured old snapshot. Failed
+candidates, duplicate IDs, and symlink escapes do not change the active
+pack. When <code>DATASET_ADMIN_API_KEY</code> is configured, a
+same-origin gateway must inject it because the browser does not store
+administration credentials.</p>
+<p>Missing files, hash mismatches, invalid EPSG:4326 bounds, duplicate
+tower IDs, or unusable geometry keep initial readiness at
+<code>503</code>. See <a href="dataset-pack-studio.html">Dataset Pack
+Studio</a> to build and validate arbitrary-region schema-v2 packs.</p>
+<h2 id="health-and-capacity">Health And Capacity</h2>
 <ul>
-<li><strong>Default</strong>: <code>https://your-org.github.io/urban-ray-tracer/</code></li>
-<li><strong>Custom domain</strong>: <code>https://docs.atom.berkunsal.com/</code></li>
+<li><code>GET /healthz</code> is process liveness and can succeed before
+the application is ready.</li>
+<li><code>GET /readyz</code> requires valid data, loaded tower/building
+indexes, and the frontend bundle.</li>
+<li>Request bodies are limited to 1 MiB; oversized requests return
+<code>413</code>.</li>
+<li>Two RF jobs are admitted globally, but one client can run only one
+at a time by default. Each client also receives 20 expensive-route
+attempts per minute. Rejection returns <code>429</code>,
+<code>Retry-After</code>, and rate-budget headers.</li>
+<li>Fresh full-building-dataset responses are limited to two globally,
+one concurrently per client, and two per minute per client. A strong
+content-hash <code>ETag</code> and one-hour browser/shared-cache
+lifetime avoid retransferring the approximately 117 MB file; matching
+revalidations return <code>304</code> before download admission.</li>
+<li>Each expensive job has a 60-second computation deadline and uses no
+more than four workers. Ray, geometry, grid, measurement, and
+recommendation loops observe cancellation.</li>
+<li>Segmented-ray requests must satisfy
+<code>rays × ceil(radius_m / 25) ≤ 25,000</code>; a shared worker budget
+also prevents building-intersection splits from collecting or
+serializing more than 25,000 response features.</li>
+<li>HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120
+seconds for writes, and 60 seconds idle.</li>
 </ul>
-<h3 id="troubleshooting">Troubleshooting</h3>
-<p><strong>Docs not showing up?</strong>
-1. Check branch is <code>gh-pages</code> (Settings → Pages)
-2. Wait 1-2 minutes for deployment
-3. Check Actions tab for workflow errors</p>
-<p><strong>Workflow failing?</strong>
-1. View error in Actions tab
-2. Ensure <code>.github/workflows/deploy-docs.yml</code> exists
-3. Check mkdocs.yml syntax: <code>mkdocs serve</code> locally first</p>
-<p><strong>Custom domain not working?</strong>
-1. Verify CNAME file in docs/
-2. Check DNS records: <code>nslookup docs.atom.berkunsal.com</code>
-3. Wait 24 hours for DNS propagation</p>
-<hr />
-<p><strong>Next</strong>: See <a href="faq.html">FAQ</a> for common questions or <a href="api.html">API Reference</a> for integration.</p>
+<p>Raise <code>MAX_CONCURRENT_RF_REQUESTS</code> or its per-client
+counterpart only after measuring CPU, memory, and tail latency with
+representative two-to-six-cell requests. Admission and request budgets
+are process-local; use a gateway for a shared multi-replica budget.</p>
+<h2 id="reverse-proxy-boundary">Reverse Proxy Boundary</h2>
+<p>Compose binds the application to <code>127.0.0.1</code> by default.
+Set <code>ATOM_BIND_ADDRESS</code> only when another interface must
+accept traffic. For an internet-facing deployment, set strong
+<code>RF_API_KEY</code>, <code>BUILDINGS_API_KEY</code>, and
+<code>DATASET_ADMIN_API_KEY</code> values as applicable and place a
+trusted proxy or gateway in front of port 8080 for:</p>
+<ul>
+<li>TLS termination and authentication.</li>
+<li>Request-rate and source policy.</li>
+<li>Access logging and security headers.</li>
+<li>A response timeout longer than the backend's 120-second RF write
+window.</li>
+</ul>
+<p>Authenticated clients send either
+<code>Authorization: Bearer &lt;key&gt;</code> or
+<code>X-API-Key: &lt;key&gt;</code>. The bundled browser UI does not
+store API keys, so deployments that enable either backend key should
+terminate user authentication at a same-origin gateway and inject the
+appropriate key there. Keep <code>TRUSTED_PROXIES</code> unset unless
+the server is actually behind those proxies; otherwise forwarded IP
+headers are ignored for per-client budgets.</p>
+<p>The backend emits CSP, frame-ancestor, MIME-sniffing, referrer,
+permissions, and opener-policy headers on every response. HSTS is
+emitted for TLS requests. The container intentionally serves HTTP on its
+internal port; terminate TLS at the gateway and set
+<code>REQUIRE_HTTPS=true</code> after the gateway is configured to
+supply <code>X-Forwarded-Proto: https</code>.</p>
+<p>The Core Lab overlay keeps the adapter private to the service
+network, runs it as a non-root user with a read-only filesystem, drops
+all Linux capabilities, and prevents privilege escalation. Use an
+explicit, separately reviewed override if direct host access is required
+for diagnostics.</p>
+<h2 id="optional-5g-core-lab">Optional 5G Core Lab</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CORE_LAB_API_KEY</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">openssl</span> rand <span class="at">-hex</span> 32<span class="va">)</span><span class="st">&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.yml <span class="at">-f</span> docker-compose.core-lab.yml <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--profile</span> core-lab up <span class="at">--build</span></span></code></pre></div>
+<p>The adapter does not deploy a complete Open5GS core. Without
+configured Open5GS endpoints it returns a deterministic
+<code>simulated_overlay</code>; with endpoints it briefly probes
+external health/metrics while preserving the same
+<code>/api/core/*</code> contracts. Both the backend mutation route and
+the adapter require <code>CORE_LAB_API_KEY</code>; the backend forwards
+its configured credential on the private adapter hop. Browser
+deployments should inject the key at a same-origin gateway rather than
+store it in frontend code.</p>
+<h2 id="tagged-multi-architecture-images">Tagged Multi-Architecture
+Images</h2>
+<p>Pushing a <code>v*</code> Git tag triggers
+<code>.github/workflows/release.yml</code>. The workflow:</p>
+<ol type="1">
+<li>Pulls Git LFS data.</li>
+<li>Builds Linux AMD64 and ARM64 images.</li>
+<li>Embeds the tag and commit into <code>/api/meta</code> using Go
+linker values.</li>
+<li>Publishes semantic-version tags to
+<code>ghcr.io/&lt;repository-owner&gt;/atom</code> with SPDX SBOM and
+provenance attestations.</li>
+</ol>
+<p>Every external action used by the quality and release workflows is
+pinned to a full commit SHA, with its release version retained in a
+comment for review. Container build stages retain readable version tags
+but are also pinned to immutable multi-architecture image digests. CI
+rejects mutable build inputs, reviews dependency changes on pull
+requests, builds the production and Core Lab adapter images, stores SPDX
+JSON SBOMs, and fails on fixable high or critical vulnerabilities.
+Checkout does not persist its Git credential, and weekly Dependabot
+updates keep reviewed action, module, Python, and container pins
+current.</p>
+<p>Use immutable version tags in deployments. The running application
+exposes its version, commit, model version, and dataset identity in Data
+and <code>/api/meta</code>.</p>
+<h2 id="upgrade-and-rollback">Upgrade And Rollback</h2>
+<p>Before an upgrade, export important <code>.atom-project.json</code>
+files. Then:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://localhost:8080/readyz</span></code></pre></div>
+<p>Imported projects include a schema version and dataset reference. A
+mismatch is surfaced rather than silently treating previous results as
+current. Roll back by deploying the previous immutable image/source tag
+and its matching dataset pack.</p>
+<h2 id="verification-checklist">Verification Checklist</h2>
+<ul>
+<li><code>/healthz</code>, <code>/readyz</code>, and
+<code>/api/meta</code> return expected process, version, model, and
+dataset details.</li>
+<li>The Data tool shows the intended pack provenance and hashes.</li>
+<li>A single sector run completes and report metadata matches
+<code>/api/meta</code>.</li>
+<li>A concurrent-capacity test returns bounded <code>429</code> behavior
+instead of unbounded CPU growth.</li>
+<li>Project export/import works in a clean browser profile.</li>
+<li>Public deployments enforce TLS and user authentication at the
+gateway and set <code>RF_API_KEY</code> plus
+<code>BUILDINGS_API_KEY</code> on the backend hop.</li>
+</ul>
+<p>See <a href="download.html">Download and Use</a>, <a
+href="architecture.html">System Architecture</a>, and the <a
+href="openapi.yaml">OpenAPI contract</a>.</p>
+      </div>
+    </article>
+  </main>
 
-
-
-
-
-
-
-
-
-
-
-
-                
-              </article>
-            </div>
-          
-          
-  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
-
-<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
-        </div>
-        
-          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
-</button>
-        
-      </main>
-      
-        <footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
-  
-</div>
-      
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
     </div>
-  </div>
-</footer>
-      
-    </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    
-    
-    
-      
-      
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-    
-    
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
-      
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-      
-    
-  </body>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
 </html>

@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="User-visible additions, changes,
+fixes, and release milestones generated from the canonical project
+changelog." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Changelog | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html" aria-current="page">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Changelog page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#unreleased" id="toc-unreleased">Unreleased</a></li>
+      <li><a href="#060---2026-08-02" id="toc-060---2026-08-02">0.6.0 -
+      2026-08-02</a></li>
+      <li><a href="#050---2026-07-31" id="toc-050---2026-07-31">0.5.0 -
+      2026-07-31</a></li>
+      <li><a href="#040---2026-07-30" id="toc-040---2026-07-30">0.4.0 -
+      2026-07-30</a></li>
+      <li><a href="#030---2026-07-26" id="toc-030---2026-07-26">0.3.0 -
+      2026-07-26</a></li>
+      <li><a href="#020---2026-07-24" id="toc-020---2026-07-24">0.2.0 -
+      2026-07-24</a></li>
+      <li><a href="#010---2026-07-17" id="toc-010---2026-07-17">0.1.0 -
+      2026-07-17</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Release history</span>
+        <h1>Changelog</h1>
+        <p>User-visible additions, changes, fixes, and release
+milestones generated from the canonical project changelog.</p>
+        <div class="hero-actions">
+          <a class="button" href="https://github.com/Berk-Unsal/urban-ray-tracer/blob/main/CHANGELOG.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>All notable changes to A.T.O.M are recorded here. The project follows
+<a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>
+and this file follows <a
+href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
+<h2 id="unreleased"><a
+href="https://github.com/Berk-Unsal/atom/compare/v0.6.0...HEAD">Unreleased</a></h2>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Restore automatic GitHub Pages deployment from the current static
+documentation so changelog updates on <code>main</code> reach the
+published site.</li>
+</ul>
+<h2 id="060---2026-08-02"><a
+href="https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0">0.6.0</a>
+- 2026-08-02</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li>Add a unified map key, visible local-save status, and recoverable
+deletion controls.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Reorganize the frontend into four labeled workflow stages with
+contextual tool navigation and run actions, stronger text contrast, and
+clearer focus states.</li>
+<li>Standardize RF unit and unavailable-value formatting, replace
+side-stripe status treatments, and align drawer, layer, and result
+transitions to one reduced-motion-safe timing system.</li>
+</ul>
+<h3 id="fixed-1">Fixed</h3>
+<ul>
+<li>Keep drawer headers and tool tabs fixed while long tool bodies
+scroll, preventing active-tab borders from being clipped by the content
+boundary.</li>
+<li>Keep every workspace destination reachable in a single mobile
+navigation row without pushing tools below the viewport.</li>
+<li>Pin documentation generation to Pandoc 3.10 so CI reproduces the
+committed reference pages exactly.</li>
+<li>Copy every Core Lab adapter Go source into the container build so
+lifecycle helpers are linked into the release image.</li>
+</ul>
+<h2 id="050---2026-07-31"><a
+href="https://github.com/Berk-Unsal/atom/compare/v0.4.0...v0.5.0">0.5.0</a>
+- 2026-07-31</h2>
+<h3 id="added-1">Added</h3>
+<ul>
+<li>Add an inspectable 2.5D point-to-point path profiler with optional
+COG/GeoTIFF terrain, building heights, LOS/Fresnel classification,
+single knife-edge diffraction, material-aware penetration, environmental
+sensitivity terms, uncertainty ranges, and an interactive vertical cross
+section.</li>
+<li>Add asynchronous batch experiment matrices with cancellation,
+deterministic dataset/model fingerprints, bounded caching, a headless
+CLI, progress UI, scenario tables, and Pareto evidence.</li>
+<li>Add configurable network objectives, weights, hard constraints,
+feasibility evidence, and non-dominated azimuth solutions while keeping
+unsupported tilt, power, candidate-site, cost, fiber, and permitting
+inputs explicit.</li>
+<li>Add spatially blocked five-fold calibration validation,
+spatial-diversity rejection, per-cell/per-band and distance/obstruction
+residual summaries, robust outlier flags, uncertainty quantiles,
+confidence intervals, and campaign provenance/expiration support.</li>
+<li>Add regular-grid analytical coverage surfaces, marching-square
+isolines, opacity and display-threshold controls, plus GeoTIFF, contour
+GeoJSON, and CSV exports.</li>
+<li>Add OGC API Features-style, viewport-bounded building queries with
+pagination and GeoJSON/CSV representations so clients need not transfer
+the full building dataset.</li>
+<li>Add a persistent cell Inventory workspace with manual map placement,
+dragging, duplication, deletion, bounded CSV/GeoJSON import, search,
+validation, and independent per-cell RF profiles across propagation,
+network, interference, recommendation, measurement, and report
+workflows.</li>
+<li>Add Dataset Pack Studio for arbitrary-region source inspection,
+geometry repair, reprojection/cropping, schema-v2 manifests, hashes,
+provenance/licenses/confidence, QA evidence, and optional terrain,
+clutter, building-height, and material layers.</li>
+<li>Add a local installed-dataset catalog and atomic manifest-ID
+switching that retains the active immutable pack on validation failure,
+with optional administration-key protection.</li>
+</ul>
+<h3 id="security">Security</h3>
+<ul>
+<li>Upgrade <code>brace-expansion</code> to 5.0.8, require Go 1.26.5 for
+both services, and align container builder tags with the patched
+toolchain.</li>
+<li>Reject measurement CSV files above 2 MiB before reading them into
+browser memory while retaining the independent 5,000-sample limit.</li>
+<li>Add weekly npm dependency updates, a high-severity frontend advisory
+gate, and matching <code>govulncheck</code> coverage for the Core Lab
+adapter.</li>
+<li>Require constant-time API-key authorization for Core Lab scenario
+mutation at both the public backend route and the private adapter
+hop.</li>
+<li>Run the Core Lab adapter as a non-root user with a read-only
+filesystem, no Linux capabilities, no privilege escalation, and no
+host-published port.</li>
+<li>Bound imported project files to 16 MiB and deeply validate scenario
+counts, nesting, collection sizes, strings, and nested snapshot types
+before persistence.</li>
+<li>Limit recommendation search polygons to 256 coordinates before
+candidate point-in-polygon evaluation.</li>
+<li>Add restrictive browser security headers, HTTPS-aware HSTS, and an
+opt-in transport requirement for deployments behind a TLS gateway.</li>
+<li>Keep adapter response bodies, dataset filesystem paths, and detailed
+load failures in server logs instead of returning them to API
+clients.</li>
+<li>Reject unknown or trailing JSON input across backend RF routes and
+Core Lab scenario mutation without exposing parser diagnostics.</li>
+<li>Bound frontend JSON response parsing to 32 MiB using both
+<code>Content-Length</code> checks and streaming byte accounting.</li>
+<li>Stream building GeoJSON features into the spatial index instead of
+retaining the full encoded file and decoded collection together, with
+explicit manifest, tower, and building file ceilings.</li>
+<li>Resolve dataset file symlinks before containment checks so manifests
+cannot escape the configured dataset directory.</li>
+</ul>
+<h3 id="removed">Removed</h3>
+<ul>
+<li>Remove duplicate root copies of propagation screenshots and keep the
+documentation asset paths canonical.</li>
+</ul>
+<h3 id="changed-1">Changed</h3>
+<ul>
+<li>Upgrade project files and dataset manifests to schema v2 with
+backward-compatible v1 import/loading migrations.</li>
+<li>Include resolved per-cell RF profiles and dataset QA/provenance in
+reproducibility outputs and planning reports.</li>
+<li>Extract frontend workspace formatting/state helpers and backend
+RF/segment geometry math from the application and simulation monoliths
+into focused, tested modules.</li>
+<li>Refresh Open5GS reachability outside the adapter cache mutex, serve
+stale probe state during refresh, and treat HTTP client/server failures
+as disconnected.</li>
+<li>Remove redundant RF convenience APIs that created background
+contexts and silently discarded computation errors.</li>
+<li>Drain in-flight backend and Core Lab adapter requests on interrupt
+or termination signals with a bounded graceful-shutdown window.</li>
+<li>Consolidate report escaping, numeric/Markdown formatting, and
+printable table construction behind one tested utility.</li>
+</ul>
+<h3 id="fixed-2">Fixed</h3>
+<ul>
+<li>Keep focused-drawer actions in normal layout flow so the propagation
+optimizer cannot overlap the vertical path-profile panel.</li>
+</ul>
+<h2 id="040---2026-07-30"><a
+href="https://github.com/Berk-Unsal/atom/compare/v0.3.0...v0.4.0">0.4.0</a>
+- 2026-07-30</h2>
+<h3 id="security-1">Security</h3>
+<ul>
+<li>Pin container base images by digest, lock Python dependencies and
+hashes, review pull-request dependency changes, scan production images,
+and publish release SBOM and provenance attestations.</li>
+<li>Upgrade backend and adapter builds to Go 1.26, frontend and CI
+builds to Node.js 24 LTS, and runtime containers to Alpine 3.24 so
+maintained toolchains provide current security fixes.</li>
+<li>Protect the full building-dataset response with strong ETag caching,
+conditional <code>304</code> responses, separate global and per-client
+transfer budgets, and optional origin API-key authentication.</li>
+<li>Bound segmented simulations to 25,000 estimated and actual GeoJSON
+features, reject oversized ray/radius combinations before allocation,
+and cancel parallel ray workers if building splits exhaust the shared
+feature budget.</li>
+<li>Pin every external GitHub Action to an immutable commit SHA, stop
+checkout from persisting release credentials, and enforce pinned
+workflow dependencies in CI.</li>
+<li>Upgrade <code>golang.org/x/net</code> to v0.57.0 and its
+security-sensitive transitive modules, add <code>govulncheck</code> to
+backend CI, and enable weekly Go module updates.</li>
+</ul>
+<h3 id="fixed-3">Fixed</h3>
+<ul>
+<li>Serialize browser workspace commits, arbitrate IndexedDB and
+fallback copies by persistence revision, and reserve local storage for
+failed primary writes instead of duplicating every payload.</li>
+<li>Store recommendation details once in the canonical response array
+and reference them from GeoJSON features by stable feature ID, including
+compaction of legacy scenario artifacts.</li>
+<li>Generate backend, Core Lab adapter, and frontend scenario/RF policy
+bindings from one canonical source, and share one tower input type
+across RF endpoints.</li>
+</ul>
+<h2 id="030---2026-07-26"><a
+href="https://github.com/Berk-Unsal/atom/compare/v0.2.0...v0.3.0">0.3.0</a>
+- 2026-07-26</h2>
+<h3 id="fixed-4">Fixed</h3>
+<ul>
+<li>Compute sector propagation and coverage gaps from one shared
+ray-profile pass instead of launching duplicate frontend requests.</li>
+<li>Remove the tracked OSMnx response cache and exclude regenerated
+pipeline caches from Git and Docker build contexts.</li>
+<li>Protect expensive RF routes with per-client concurrency and request
+budgets, optional API-key authentication, computation deadlines, and
+deep-loop cancellation.</li>
+</ul>
+<h2 id="020---2026-07-24"><a
+href="https://github.com/Berk-Unsal/atom/compare/v0.1.0...v0.2.0">0.2.0</a>
+- 2026-07-24</h2>
+<h3 id="added-2">Added</h3>
+<ul>
+<li>Add keyboard-accessible full-site search to the static documentation
+website.</li>
+<li>Publish the canonical project changelog as a searchable
+documentation page.</li>
+</ul>
+<h3 id="removed-1">Removed</h3>
+<ul>
+<li>Remove the academic report PDF and its documentation-only source and
+build assets.</li>
+</ul>
+<h3 id="fixed-5">Fixed</h3>
+<ul>
+<li>Bound Core Lab cluster identifiers and scenario bodies to prevent
+topology, session, and event fan-out exhaustion.</li>
+<li>Bound RF tower identifiers to prevent small measurement and
+interference requests from amplifying into multi-gigabyte JSON
+responses.</li>
+<li>Persist the saved scenario a user opens, and detach the draft from
+that baseline when its planning inputs change.</li>
+<li>Prevent stale map layers from being stored with changed inputs or
+input-only recommendation scenarios.</li>
+<li>Assign new nested scenario IDs when projects are duplicated or
+imported so cache entries cannot collide.</li>
+<li>Restore the local-storage backup when IndexedDB is available but
+does not contain a workspace record.</li>
+<li>Mirror successful workspace saves to local storage so the fallback
+does not silently age behind IndexedDB.</li>
+<li>Compare dataset hash maps independently of JSON object key
+order.</li>
+<li>Score candidate recommendations from the active optimized per-cell
+azimuths instead of reverting to the global baseline azimuth.</li>
+<li>Invalidate old RF and residual layers when applying a
+measurement-derived calibration offset.</li>
+<li>Include dataset hashes in calibration compatibility checks so
+changed dataset content invalidates an old profile.</li>
+<li>Preserve per-cell azimuths through network evaluation, optimization,
+saved scenarios, and recommendation application.</li>
+<li>Align the Markdown documentation entry point with the maintained
+static docs hub, current version, and model limitations.</li>
+</ul>
+<h3 id="changed-2">Changed</h3>
+<ul>
+<li>Establish a canonical <code>VERSION</code> file, automated version
+checks, release-note generation, and tag-driven GitHub Releases.</li>
+<li>Publish the <code>latest</code> container tag only for stable
+releases, never prerelease tags.</li>
+</ul>
+<h2 id="010---2026-07-17"><a
+href="https://github.com/Berk-Unsal/atom/releases/tag/v0.1.0">0.1.0</a>
+- 2026-07-17</h2>
+<h3 id="added-3">Added</h3>
+<ul>
+<li>Deterministic sector, network, optimization, interference,
+recommendation, and measurement-validation workflows.</li>
+<li>Focused map workspace with projects, saved scenarios, comparison,
+reports, dataset metadata, and optional 5G Core communication
+paths.</li>
+<li>Go API resource controls, validated dataset packs, OpenAPI
+documentation, responsive browser tests, and multi-architecture
+container publishing.</li>
+</ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

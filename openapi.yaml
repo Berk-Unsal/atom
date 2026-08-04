@@ -1,0 +1,738 @@
+openapi: 3.1.0
+info:
+  title: A.T.O.M Planning API
+  version: 1.0.0
+  description: Deterministic, local-first RF planning endpoints. Results are planning estimates, not UE, drive-test, or PHY measurements.
+servers:
+  - url: http://localhost:8080
+paths:
+  /healthz:
+    get:
+      summary: Process liveness
+      responses:
+        "200": { description: Process is alive, content: { application/json: { schema: { $ref: "#/components/schemas/Health" } } } }
+  /readyz:
+    get:
+      summary: Dataset and frontend readiness
+      responses:
+        "200": { description: Ready }
+        "503": { description: A required dataset or frontend asset is unavailable }
+  /api/meta:
+    get:
+      summary: Reproducibility metadata
+      responses:
+        "200": { description: Build, model, technology, and active dataset metadata, content: { application/json: { schema: { $ref: "#/components/schemas/Meta" } } } }
+  /api/datasets:
+    get:
+      summary: List locally installed dataset packs
+      description: Scans ATOM_DATASETS_ROOT and its immediate child directories. Invalid entries are omitted and reported only as generic warnings.
+      responses:
+        "200":
+          description: Installed packs and the active pack ID
+          content: { application/json: { schema: { $ref: "#/components/schemas/InstalledDatasetList" } } }
+  /api/datasets/switch:
+    post:
+      summary: Atomically activate an installed dataset pack
+      description: Accepts an installed dataset ID, fully validates files and hashes before swapping the immutable runtime snapshot, and leaves the previous pack active on failure. DATASET_ADMIN_API_KEY can require origin authentication.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties: { id: { type: string, minLength: 1, maxLength: 128 } }
+      responses:
+        "200": { description: Pack is active, content: { application/json: { schema: { type: object, properties: { status: { type: string, const: active }, dataset: { $ref: "#/components/schemas/DatasetManifest" } } } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { description: Dataset ID is not installed, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "422": { description: Installed pack failed validation and the active pack was retained, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+  /api/towers:
+    get:
+      summary: Active dataset tower records
+      responses:
+        "200": { description: Tower GeoJSON, content: { application/geo+json: { schema: { $ref: "#/components/schemas/FeatureCollection" } } } }
+  /api/buildings:
+    get:
+      summary: Active dataset building footprints
+      description: Large GeoJSON response with strong ETag caching and a separate per-client transfer budget. BUILDINGS_API_KEY can require origin authentication.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      responses:
+        "200":
+          description: Building GeoJSON
+          headers:
+            Cache-Control: { schema: { type: string }, description: Public or private one-hour cache policy with mandatory revalidation }
+            ETag: { schema: { type: string }, description: Strong SHA-256 content validator }
+          content: { application/geo+json: { schema: { $ref: "#/components/schemas/FeatureCollection" } } }
+        "304": { description: Client ETag matches; no dataset body is transferred }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+  /api/buildings/summary:
+    get:
+      summary: Building and demand quality summary
+      responses:
+        "200": { description: Dataset summary }
+  /api/conformance:
+    get:
+      summary: Spatial-interface standards declaration
+      description: Returns an empty conformsTo list and identifies OGC API Features as a design reference; no complete conformance class is claimed.
+      responses:
+        "200": { description: Conformance URIs }
+  /api/collections:
+    get:
+      summary: List spatial feature collections
+      responses:
+        "200": { description: Available collections and links }
+  /api/collections/buildings:
+    get:
+      summary: Building feature collection metadata
+      responses:
+        "200": { description: CRS84 extent and representation links }
+  /api/collections/buildings/items:
+    get:
+      summary: Query bounded building footprints
+      description: OGC API Features-style viewport query. bbox is mandatory and its diagonal is capped at 50 km.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      parameters:
+        - name: bbox
+          in: query
+          required: true
+          schema: { type: string, pattern: "^-?[0-9.]+,-?[0-9.]+,-?[0-9.]+,-?[0-9.]+$" }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 5000, default: 1000 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+        - { name: f, in: query, schema: { type: string, enum: [csv] } }
+      responses:
+        "200":
+          description: Stable-ID building page
+          content:
+            application/geo+json: { schema: { $ref: "#/components/schemas/BuildingFeatureCollection" } }
+            text/csv: { schema: { type: string } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+  /api/analyze-sector:
+    post:
+      summary: Simulate one directional sector and find coverage gaps from shared ray profiles
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
+      responses:
+        "200": { description: Nested simulation and coverage_gaps results derived from one propagation pass }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "413": { $ref: "#/components/responses/TooLarge" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/simulate:
+    post:
+      summary: Simulate one directional sector
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
+      responses:
+        "200": { description: Segmented propagation GeoJSON and statistics }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "413": { $ref: "#/components/responses/TooLarge" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/coverage-gaps:
+    post:
+      summary: Find underserved demand buildings
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
+      responses:
+        "200": { description: Gap GeoJSON and demand statistics }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/path-profile:
+    post:
+      summary: Analyze a 2.5D terrain and building path profile
+      description: Inspectable planning approximation with profile-specific applicability, LOS/Fresnel evidence, selected knife-edge diffraction, and explicit loss components.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/PathProfileRequest" } } } }
+      responses:
+        "200": { description: Vertical samples, classification, component loss budget, and uncertainty bounds }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/coverage-surface:
+    post:
+      summary: Generate a regular received-power raster and isolines
+      description: Defaults to compact JSON. f=geotiff exports float32 EPSG:4326 GeoTIFF, f=geojson exports contours, and f=csv exports valid grid centers.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      parameters:
+        - { name: f, in: query, schema: { type: string, enum: [geotiff, geojson, csv] } }
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CoverageSurfaceRequest" } } } }
+      responses:
+        "200":
+          description: Surface JSON or selected export representation
+          content:
+            application/json: { schema: { $ref: "#/components/schemas/CoverageSurfaceResponse" } }
+            application/geo+json: { schema: { $ref: "#/components/schemas/FeatureCollection" } }
+            image/tiff: { schema: { type: string, contentEncoding: binary } }
+            text/csv: { schema: { type: string } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/optimize-azimuth:
+    post:
+      summary: Optimize one sector azimuth
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
+      responses:
+        "200": { description: Optimal azimuth and score breakdown }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/evaluate-network:
+    post:
+      summary: Score supplied selected-cell azimuths
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkRequest" } } } }
+      responses:
+        "200": { description: Network score and per-cell results }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/optimize-network:
+    post:
+      summary: Coordinate selected-cell azimuth optimization
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkRequest" } } } }
+      responses:
+        "200": { description: Optimized azimuths and network score }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/interference:
+    post:
+      summary: Analyze 4G or 5G RSRP, SINR, RSRQ, and RSSI
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/InterferenceRequest" } } } }
+      responses:
+        "200": { description: Radio-quality surface, demand samples, statistics, and model metadata }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/recommend-sites:
+    post:
+      summary: Rank known candidate cell records
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      description: Scores one additional 4G or 5G cell. Candidates are planning records, not approved deployment sites; interference is excluded from scoring.
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RecommendationRequest" } } } }
+      responses:
+        "200":
+          description: Baseline, canonical ranked candidates, compact candidate GeoJSON, and explicit notes
+          content: { application/json: { schema: { $ref: "#/components/schemas/RecommendationResponse" } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/measurements/evaluate:
+    post:
+      summary: Compare measured and modeled RSRP
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      description: Returns spatially blocked five-fold residual validation, subgroup/outlier/uncertainty diagnostics, and an optional global bias correction. This is not full propagation calibration.
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MeasurementRequest" } } } }
+      responses:
+        "200": { description: Residual GeoJSON, aggregate/per-cell/per-band diagnostics, uncertainty, folds, provenance, and bias guidance }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "413": { $ref: "#/components/responses/TooLarge" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/processes/batch-experiment:
+    get:
+      summary: Describe the batch experiment process
+      responses:
+        "200": { description: Process identifier, limits, accepted axes, and job links }
+  /api/processes/batch-experiment/execution:
+    post:
+      summary: Queue an asynchronous batch experiment
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentDefinition" } } } }
+      responses:
+        "202": { description: Accepted job, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentJob" } } } }
+        "200": { description: Cached completed job, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentJob" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+  /api/jobs/{jobID}:
+    parameters:
+      - { name: jobID, in: path, required: true, schema: { type: string } }
+    get:
+      summary: Poll an experiment job
+      responses:
+        "200": { description: Current job state and any result, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentJob" } } } }
+        "404": { description: Job does not exist }
+    delete:
+      summary: Cancel an accepted or running experiment job
+      responses:
+        "200": { description: Dismissed or terminal job state, content: { application/json: { schema: { $ref: "#/components/schemas/ExperimentJob" } } } }
+        "404": { description: Job does not exist }
+  /api/core/status:
+    get:
+      summary: Optional 5G Core Lab status
+      responses: { "200": { description: Function health and active scenario } }
+  /api/core/topology:
+    get:
+      summary: Xn-C, Xn-U, N2, and N3 topology
+      parameters:
+        - name: cluster_tower_ids
+          in: query
+          description: Comma-separated tower IDs; at most 64 entries and 128 UTF-8 bytes per ID.
+          schema: { type: string }
+        - { name: network_tech, in: query, schema: { type: string, const: 5g } }
+      responses: { "200": { description: gNB nodes, interface edges, and route decisions } }
+  /api/core/sessions:
+    get:
+      summary: Optional Core Lab sessions
+      parameters:
+        - name: cluster_tower_ids
+          in: query
+          description: Comma-separated tower IDs; at most 64 entries and 128 UTF-8 bytes per ID.
+          schema: { type: string }
+        - { name: network_tech, in: query, schema: { type: string, const: 5g } }
+      responses: { "200": { description: Selected-cell session state } }
+  /api/core/events:
+    get:
+      summary: Optional Core Lab event timeline
+      responses: { "200": { description: Deterministic scenario events } }
+  /api/core/scenario:
+    post:
+      summary: Activate a Core Lab scenario
+      description: Requires CORE_LAB_API_KEY whenever Core Lab is enabled.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scenario]
+              properties:
+                scenario: { type: string, enum: [normal, registration_storm, udm_outage, ausf_auth_failure, pcf_policy_degraded, upf_degraded, xn_degraded, xn_unavailable] }
+                cluster_tower_ids:
+                  type: array
+                  maxItems: 64
+                  description: Tower IDs are trimmed, deduplicated, and limited to 128 UTF-8 bytes each.
+                  items: { type: string }
+                network_tech: { type: string, const: 5g }
+      responses:
+        "200": { description: Scenario accepted }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { description: Core Lab is enabled without a scenario-mutation key }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Carries RF_API_KEY, BUILDINGS_API_KEY, DATASET_ADMIN_API_KEY, or CORE_LAB_API_KEY when the selected route requires it.
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Alternative header for RF_API_KEY, BUILDINGS_API_KEY, DATASET_ADMIN_API_KEY, or CORE_LAB_API_KEY when configured.
+  responses:
+    BadRequest: { description: Invalid request, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    TooLarge: { description: Request exceeds 1 MiB, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    TooComplex: { description: Actual segmented-ray output exceeded the hard 25,000-feature response ceiling, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    Unauthorized: { description: The route API key is configured and the supplied credential is missing or invalid, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    Busy:
+      description: Global capacity, per-client concurrency, or the per-client request budget rejected the request
+      headers:
+        Retry-After: { schema: { type: integer }, description: Suggested retry delay in seconds }
+        RateLimit-Limit: { schema: { type: integer }, description: Per-client requests allowed per minute }
+        RateLimit-Remaining: { schema: { type: integer }, description: Requests left in the current window }
+        RateLimit-Reset: { schema: { type: integer }, description: Seconds until the current window resets }
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    TimedOut: { description: RF analysis exceeded its configured computation deadline, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties: { error: { type: string } }
+    Health:
+      type: object
+      properties:
+        status: { type: string, const: ok }
+        backend: { type: string }
+        rtreeFootprints: { type: integer }
+        towerCount: { type: integer }
+    Meta:
+      type: object
+      required: [application_version, build_commit, model_version, supported_technologies]
+      properties:
+        application_version: { type: string }
+        build_commit: { type: string }
+        model_version: { type: string }
+        supported_technologies: { type: array, items: { type: string } }
+        dataset: { $ref: "#/components/schemas/DatasetManifest" }
+    DatasetManifest:
+      type: object
+      required: [schema_version, id, name, version, crs, bounds, generated_at, sources, licenses, confidence, files, sha256]
+      properties:
+        schema_version: { type: integer, enum: [1, 2], description: Schema v2 adds layer metadata, a quality report, and optional terrain, clutter, building-height, and material layers. }
+        id: { type: string }
+        name: { type: string }
+        version: { type: string }
+        crs: { type: string, const: "EPSG:4326" }
+        bounds: { type: array, minItems: 4, maxItems: 4, items: { type: number } }
+        generated_at: { type: string }
+        sources: { type: array, items: { type: string } }
+        licenses: { type: array, items: { type: string } }
+        confidence: { type: string }
+        files:
+          type: object
+          required: [towers, buildings]
+          properties:
+            towers: { type: string }
+            buildings: { type: string }
+            terrain: { type: string }
+            clutter: { type: string }
+            building_heights: { type: string }
+            materials: { type: string }
+        sha256: { type: object, additionalProperties: { type: string } }
+        layers: { type: object, additionalProperties: { $ref: "#/components/schemas/DatasetLayer" } }
+        quality: { $ref: "#/components/schemas/DatasetQuality" }
+    DatasetLayer:
+      type: object
+      required: [kind, format, crs, optional]
+      properties:
+        kind: { type: string }
+        format: { type: string }
+        crs: { type: string }
+        units: { type: string }
+        optional: { type: boolean }
+        source: { type: string }
+        license: { type: string }
+        confidence: { type: string }
+    DatasetQuality:
+      type: object
+      required: [summary]
+      properties:
+        summary: { type: string }
+        feature_counts: { type: object, additionalProperties: { type: integer } }
+        missing_fields: { type: object, additionalProperties: { type: object, additionalProperties: { type: integer } } }
+        geometry:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              invalid_input: { type: integer }
+              repaired: { type: integer }
+              dropped: { type: integer }
+              output: { type: integer }
+        coverage:
+          type: object
+          properties:
+            requested_bounds: { type: array, minItems: 4, maxItems: 4, items: { type: number } }
+            data_bounds: { type: array, minItems: 4, maxItems: 4, items: { type: number } }
+            coverage_ratio: { type: number, minimum: 0, maximum: 1 }
+    InstalledDataset:
+      allOf:
+        - { $ref: "#/components/schemas/DatasetManifest" }
+        - type: object
+          required: [active, available]
+          properties:
+            active: { type: boolean }
+            available: { type: boolean }
+    InstalledDatasetList:
+      type: object
+      required: [datasets]
+      properties:
+        active_id: { type: string }
+        datasets: { type: array, items: { $ref: "#/components/schemas/InstalledDataset" } }
+        warnings: { type: array, items: { type: string } }
+    RFProfile:
+      type: object
+      description: Complete per-cell RF contract. Omitted properties inherit the enclosing request defaults; normalized responses include every property.
+      properties:
+        schema_version: { type: integer, const: 1, default: 1 }
+        network_tech: { type: string, enum: [4g, 5g, 6g] }
+        frequency_ghz: { type: number, exclusiveMinimum: 0, maximum: 300 }
+        band: { type: string, minLength: 1, maxLength: 64 }
+        bandwidth_mhz: { type: number, minimum: 0.1, maximum: 2000 }
+        channel_id: { type: string, minLength: 1, maxLength: 64 }
+        duplex_mode: { type: string, enum: [fdd, tdd, sdl, sul] }
+        tx_power_dbm: { type: number, minimum: 0, maximum: 60 }
+        antenna_gain_dbi: { type: number, minimum: -20, maximum: 80 }
+        system_loss_db: { type: number, minimum: 0, maximum: 100 }
+        radius_m: { type: number, minimum: 25, maximum: 5000 }
+        beam_width: { type: number, minimum: 10, maximum: 360 }
+        antenna_height_m: { type: number, minimum: 0.5, maximum: 300 }
+        mechanical_downtilt_deg: { type: number, minimum: -30, maximum: 90 }
+        electrical_downtilt_deg: { type: number, minimum: -30, maximum: 90 }
+        orientation_deg: { type: number, minimum: 0, exclusiveMaximum: 360 }
+        horizontal_pattern_id: { type: string, enum: [ideal-sector, cosine-sector, omni] }
+        vertical_pattern_id: { type: string, enum: [flat, panel-10deg, panel-20deg] }
+        load_factor: { type: number, exclusiveMinimum: 0, maximum: 1 }
+        reuse_factor: { type: integer, minimum: 1, maximum: 12 }
+        pci: { type: [integer, "null"], minimum: 0, maximum: 1007, description: LTE profiles are limited to 503; NR profiles are limited to 1007. }
+        receiver_height_m: { type: number, minimum: 0.1, maximum: 100 }
+        receiver_sensitivity_dbm: { type: number, minimum: -180, maximum: -20 }
+    Tower:
+      type: object
+      required: [id, tower_lon, tower_lat]
+      properties:
+        id: { type: string }
+        tower_lon: { type: number, minimum: -180, maximum: 180 }
+        tower_lat: { type: number, minimum: -90, maximum: 90 }
+        azimuth: { type: number }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
+    CommonRFSettings:
+      type: object
+      properties:
+        rays: { type: integer, minimum: 8, maximum: 720, default: 60, description: Combined with radius_m, rays × ceil(radius_m / 25) must not exceed 25,000. }
+        radius_m: { type: number, minimum: 25, maximum: 5000, default: 400, description: Combined with rays, rays × ceil(radius_m / 25) must not exceed 25,000. }
+        frequency_ghz: { type: number, exclusiveMinimum: 0, maximum: 300, default: 28 }
+        tx_power_dbm: { type: number, minimum: 0, maximum: 60, default: 30 }
+        azimuth: { type: number, default: 0 }
+        beam_width: { type: number, minimum: 10, maximum: 360, default: 120 }
+        calibration_offset_db: { type: number, minimum: -40, maximum: 40, default: 0 }
+    SectorRequest:
+      allOf:
+        - { $ref: "#/components/schemas/CommonRFSettings" }
+        - type: object
+          required: [tower_lon, tower_lat]
+          properties:
+            tower_lon: { type: number, minimum: -180, maximum: 180 }
+            tower_lat: { type: number, minimum: -90, maximum: 90 }
+            rf_profile: { $ref: "#/components/schemas/RFProfile" }
+    NetworkRequest:
+      allOf:
+        - { $ref: "#/components/schemas/CommonRFSettings" }
+        - type: object
+          required: [towers]
+          properties:
+            towers: { type: array, minItems: 2, maxItems: 6, items: { $ref: "#/components/schemas/Tower" } }
+            optimization: { $ref: "#/components/schemas/OptimizationConfig" }
+    OptimizationConfig:
+      type: object
+      properties:
+        objectives:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            type: object
+            required: [id, weight]
+            properties:
+              id: { type: string, enum: [demand, residential, coverage, overlap] }
+              weight: { type: number, exclusiveMinimum: 0, maximum: 100 }
+        constraints:
+          type: object
+          properties:
+            min_coverage_score: { type: number, minimum: 0 }
+            min_unique_demand_buildings: { type: integer, minimum: 0 }
+            min_unique_residential_buildings: { type: integer, minimum: 0 }
+            max_overlap_buildings: { type: integer, minimum: 0 }
+    InterferenceRequest:
+      allOf:
+        - { $ref: "#/components/schemas/NetworkRequest" }
+        - type: object
+          required: [network_tech, towers]
+          properties:
+            network_tech: { type: string, enum: [4g, 5g] }
+            bandwidth_mhz: { type: number }
+            load_factor: { type: number, exclusiveMinimum: 0, maximum: 1, default: 0.7 }
+            reuse_factor: { type: integer, enum: [1, 3], default: 1 }
+            noise_figure_db: { type: number, minimum: 0, maximum: 20, default: 7 }
+            sample_spacing_m: { type: number, minimum: 20, maximum: 200, default: 40 }
+    RecommendationRequest:
+      allOf:
+        - { $ref: "#/components/schemas/NetworkRequest" }
+        - type: object
+          required: [network_tech, search_polygon]
+          properties:
+            network_tech: { type: string, enum: [4g, 5g] }
+            towers: { type: array, minItems: 2, maxItems: 5, items: { $ref: "#/components/schemas/Tower" } }
+            search_polygon:
+              type: array
+              minItems: 3
+              maxItems: 256
+              items: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
+            max_results: { type: integer, minimum: 1, maximum: 10, default: 5 }
+    Recommendation:
+      type: object
+      required: [id, cell_id, tower_lon, tower_lat, optimal_azimuth, marginal_network_score, stats, reason]
+      properties:
+        id: { type: string }
+        cell_id: { type: integer, format: int64 }
+        tower_lon: { type: number, minimum: -180, maximum: 180 }
+        tower_lat: { type: number, minimum: -90, maximum: 90 }
+        optimal_azimuth: { type: number }
+        marginal_network_score: { type: number }
+        stats: { type: object, additionalProperties: true }
+        reason: { type: string }
+    RecommendationFeature:
+      type: object
+      required: [type, id, properties, geometry]
+      properties:
+        type: { type: string, const: Feature }
+        id: { type: string, description: References the canonical recommendations item with the same id. }
+        properties: { type: object, maxProperties: 0 }
+        geometry:
+          type: object
+          required: [type, coordinates]
+          properties:
+            type: { type: string, const: Point }
+            coordinates: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
+    RecommendationResponse:
+      type: object
+      required: [baseline, candidates_evaluated, recommendations, geojson, notes]
+      properties:
+        baseline: { type: object, additionalProperties: true }
+        candidates_evaluated: { type: integer, minimum: 0 }
+        recommendations: { type: array, items: { $ref: "#/components/schemas/Recommendation" } }
+        geojson:
+          type: object
+          required: [type, features]
+          properties:
+            type: { type: string, const: FeatureCollection }
+            features: { type: array, items: { $ref: "#/components/schemas/RecommendationFeature" } }
+        notes: { type: array, items: { type: string } }
+    MeasurementRequest:
+      allOf:
+        - { $ref: "#/components/schemas/InterferenceRequest" }
+        - type: object
+          required: [samples]
+          properties:
+            towers: { type: array, minItems: 1, maxItems: 6, items: { $ref: "#/components/schemas/Tower" } }
+            calibration_provenance:
+              type: object
+              properties:
+                campaign_id: { type: string }
+                source: { type: string }
+                collected_at: { type: string, format: date-time }
+                expires_at: { type: string, format: date-time }
+            samples:
+              type: array
+              minItems: 1
+              maxItems: 5000
+              items:
+                type: object
+                required: [id, lon, lat, technology, rsrp_dbm]
+                properties:
+                  id: { type: string }
+                  lon: { type: number, minimum: -180, maximum: 180 }
+                  lat: { type: number, minimum: -90, maximum: 90 }
+                  technology: { type: string, enum: [4g, 5g] }
+                  rsrp_dbm: { type: number, minimum: -180, maximum: -20 }
+                  cell_id: { type: string }
+    PathProfileRequest:
+      type: object
+      required: [transmitter, receiver]
+      properties:
+        transmitter: { $ref: "#/components/schemas/LonLat" }
+        receiver: { $ref: "#/components/schemas/LonLat" }
+        sample_spacing_m: { type: number, minimum: 1, maximum: 250, default: 10 }
+        model_profile: { type: string, enum: [terrain-profile, urban-short-range, research-sub-thz] }
+        azimuth: { type: number }
+        calibration_offset_db: { type: number, minimum: -40, maximum: 40 }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
+        fidelity:
+          type: object
+          properties:
+            building_loss_mode: { type: string, enum: [screen-diffraction, penetration, none] }
+            diffraction_model: { type: string, enum: [single-knife-edge, none] }
+            default_wall_material: { type: string, enum: [concrete, brick, glass, wood, metal, unknown] }
+            clutter_specific_attenuation_db_per_km: { type: number, minimum: 0 }
+            vegetation_depth_m: { type: number, minimum: 0 }
+            vegetation_specific_attenuation_db_per_m: { type: number, minimum: 0 }
+            gas_specific_attenuation_db_per_km: { type: number, minimum: 0 }
+            rain_specific_attenuation_db_per_km: { type: number, minimum: 0 }
+            shadow_sigma_db: { type: number, minimum: 0 }
+    LonLat:
+      type: object
+      required: [lon, lat]
+      properties:
+        lon: { type: number, minimum: -180, maximum: 180 }
+        lat: { type: number, minimum: -90, maximum: 90 }
+    CoverageSurfaceRequest:
+      allOf:
+        - { $ref: "#/components/schemas/SectorRequest" }
+        - type: object
+          properties:
+            cell_size_m: { type: number, minimum: 10, maximum: 250, default: 25 }
+            thresholds_dbm: { type: array, minItems: 1, maxItems: 10, uniqueItems: true, items: { type: number, minimum: -180, maximum: 0 } }
+    CoverageSurfaceResponse:
+      type: object
+      required: [grid, contours, stats, model]
+      properties:
+        grid:
+          type: object
+          required: [crs, bounds, width, height, cell_size_m, nodata, row_order, values]
+          properties:
+            crs: { type: string, const: "OGC:CRS84" }
+            bounds: { type: array, minItems: 4, maxItems: 4, items: { type: number } }
+            width: { type: integer, minimum: 2 }
+            height: { type: integer, minimum: 2 }
+            cell_size_m: { type: number }
+            nodata: { type: number, const: -9999 }
+            row_order: { type: string, const: south-to-north }
+            values: { type: array, maxItems: 100000, items: { type: number } }
+        contours: { $ref: "#/components/schemas/FeatureCollection" }
+        stats: { type: object, additionalProperties: true }
+        model: { type: object, additionalProperties: true }
+    ExperimentDefinition:
+      type: object
+      required: [base]
+      properties:
+        name: { type: string, maxLength: 128 }
+        base: { $ref: "#/components/schemas/SectorRequest" }
+        matrix:
+          type: object
+          properties:
+            frequencies_ghz: { type: array, items: { type: number } }
+            tx_powers_dbm: { type: array, items: { type: number } }
+            beam_widths_deg: { type: array, items: { type: number } }
+            azimuths_deg: { type: array, items: { type: number } }
+            calibration_offsets_db: { type: array, items: { type: number } }
+    ExperimentJob:
+      type: object
+      required: [job_id, process_id, status, progress, total_runs, completed_runs, fingerprint]
+      properties:
+        job_id: { type: string }
+        process_id: { type: string, const: batch-experiment }
+        status: { type: string, enum: [accepted, running, succeeded, failed, dismissed] }
+        progress: { type: number, minimum: 0, maximum: 1 }
+        total_runs: { type: integer, minimum: 1, maximum: 64 }
+        completed_runs: { type: integer, minimum: 0, maximum: 64 }
+        fingerprint: { type: string }
+        cache_hit: { type: boolean }
+        result: { type: object, additionalProperties: true }
+        message: { type: string }
+    BuildingFeatureCollection:
+      allOf:
+        - { $ref: "#/components/schemas/FeatureCollection" }
+        - type: object
+          required: [numberMatched, numberReturned, limit, offset]
+          properties:
+            numberMatched: { type: integer, minimum: 0 }
+            numberReturned: { type: integer, minimum: 0, maximum: 5000 }
+            limit: { type: integer, minimum: 1, maximum: 5000 }
+            offset: { type: integer, minimum: 0 }
+    FeatureCollection:
+      type: object
+      required: [type, features]
+      properties:
+        type: { type: string, const: FeatureCollection }
+        features: { type: array, items: { type: object, additionalProperties: true } }

@@ -1,2446 +1,291 @@
-
 <!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
-      
-      
-        <meta name="author" content="Berk Ünsal">
-      
-      
-        <link rel="canonical" href="https://docs.atom.berkunsal.com/faq.html">
-      
-      
-        <link rel="prev" href="deployment.html">
-      
-      
-        <link rel="next" href="contributing.html">
-      
-      
-        
-      
-      
-      <link rel="icon" href="../icon/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
-    
-    
-      
-        <title>FAQ - A.T.O.M Documentation</title>
-      
-    
-    
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
-      
-      
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Answers for setup, RF
+interpretation, performance, data, API access, and common operating
+problems." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Frequently Asked Questions | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
-
-    
-    
-      
-        <script src="https://unpkg.com/iframe-worker/shim"></script>
-      
-    
-    
-      
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
-    
-    
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-    
-      
-
-    
-    
-  </head>
-  
-  
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#faq-frequently-asked-questions" class="md-skip">
-          Skip to content
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-    
-      
-
-<header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            A.T.O.M Documentation
-          </span>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
         </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              FAQ
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
-    
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
-    
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-</form>
-      
-    
-    
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
-    
-    
-    
-      
-      
-        <label class="md-header__button md-icon" for="__search">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-        <div class="md-search__suggest" data-md-component="search-suggest"></div>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
           </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
         </div>
       </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
     </div>
-  </div>
-</div>
-      
-    
-    
-  </nav>
-  
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="index.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Home
+  </header>
 
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="overview.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Overview
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="features.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Features
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="architecture.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="visualization.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Propagation Visualization
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="algorithms.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Algorithms & Physics
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="api.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  API Reference
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="getting-started.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Getting Started
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="deployment.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Deployment
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    
-  
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="faq.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  FAQ
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="contributing.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Contributing
-
-      </a>
-    </li>
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    A.T.O.M Documentation
-  </label>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="index.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="overview.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="features.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Features
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="visualization.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Propagation Visualization
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="algorithms.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Algorithms & Physics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="getting-started.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Getting Started
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="deployment.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="faq.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#general-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        General Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="General Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-is-atom-used-for" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is A.T.O.M used for?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#is-atom-free" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Is A.T.O.M free?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-frequency-bands-does-atom-support" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What frequency bands does A.T.O.M support?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-use-atom-for-my-city-instead-of-ankara" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I use A.T.O.M for my city instead of Ankara?
-      
-    </span>
-  </a>
-  
-</li>
-        
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Frequently Asked
+Questions page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#product-and-model"
+      id="toc-product-and-model">Product And Model</a></li>
+      <li><a href="#projects-and-results"
+      id="toc-projects-and-results">Projects And Results</a></li>
+      <li><a href="#data" id="toc-data">Data</a></li>
+      <li><a href="#runtime-and-api" id="toc-runtime-and-api">Runtime
+      And API</a></li>
+      <li><a href="#5g-core-lab" id="toc-5g-core-lab">5G Core
+      Lab</a></li>
+      <li><a href="#installation-and-troubleshooting"
+      id="toc-installation-and-troubleshooting">Installation And
+      Troubleshooting</a></li>
       </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technical-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-accurate-is-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How accurate is A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-doesnt-atom-model-multipathreflections" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why doesn't A.T.O.M model multipath/reflections?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-add-custom-propagation-models" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I add custom propagation models?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-does-the-r-tree-spatial-index-work" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How does the R-Tree spatial index work?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-if-a-building-is-not-in-osm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What if a building is not in OSM?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-run-atom-offline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I run A.T.O.M offline?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-is-the-first-request-slow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why is the first request slow?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-many-concurrent-requests-can-atom-handle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How many concurrent requests can A.T.O.M handle?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-can-i-make-simulations-faster" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How can I make simulations faster?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#whats-the-memory-footprint" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What's the memory footprint?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deployment-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deployment Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deployment Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#can-i-run-atom-on-arm64-apple-silicon" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I run A.T.O.M on ARM64 (Apple Silicon)?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-do-i-update-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How do I update A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-deploy-multiple-replicas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I deploy multiple replicas?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#whats-the-difference-between-docker-and-native-go" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What's the difference between Docker and native Go?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#where-does-the-geojson-data-come-from" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Where does the GeoJSON data come from?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-add-a-new-building-to-the-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I add a new building to the map?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-often-should-i-update-the-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How often should I update the data?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-use-proprietary-building-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I use proprietary building data?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="API Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#whats-the-typical-api-response-time" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What's the typical API response time?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-call-the-api-from-my-own-application" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I call the API from my own application?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#does-atom-support-webhooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Does A.T.O.M support webhooks?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#integration-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Integration Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Integration Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#can-i-export-results-to-arcgisqgis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I export results to ArcGIS/QGIS?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-integrate-atom-with-my-network-planning-tool" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I integrate A.T.O.M with my network planning tool?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#does-atom-work-with-optus-ericsson-or-nokia-planning-tools" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Does A.T.O.M work with Optus, Ericsson, or Nokia planning tools?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#docker-image-wont-build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docker image won't build
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#api-returns-invalid-tower_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API returns "invalid tower_id"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#coverage-heatmap-looks-wrong" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Coverage heatmap looks wrong
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-is-my-regions-coverage-very-sparse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why is my region's coverage very sparse?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributing Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Contributing Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-can-i-contribute-to-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How can I contribute to A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-fork-atom-for-my-own-project" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I fork A.T.O.M for my own project?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#who-maintains-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Who maintains A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#licensing-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Licensing Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Licensing Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-license-is-atom-under" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What license is A.T.O.M under?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-use-atom-commercially" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I use A.T.O.M commercially?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#do-i-need-to-contribute-improvements-back" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Do I need to contribute improvements back?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#still-have-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Still have questions?
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
+    </aside>
 
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="contributing.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#general-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        General Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="General Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-is-atom-used-for" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is A.T.O.M used for?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#is-atom-free" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Is A.T.O.M free?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-frequency-bands-does-atom-support" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What frequency bands does A.T.O.M support?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-use-atom-for-my-city-instead-of-ankara" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I use A.T.O.M for my city instead of Ankara?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technical-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-accurate-is-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How accurate is A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-doesnt-atom-model-multipathreflections" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why doesn't A.T.O.M model multipath/reflections?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-add-custom-propagation-models" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I add custom propagation models?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-does-the-r-tree-spatial-index-work" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How does the R-Tree spatial index work?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-if-a-building-is-not-in-osm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What if a building is not in OSM?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-run-atom-offline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I run A.T.O.M offline?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-is-the-first-request-slow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why is the first request slow?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-many-concurrent-requests-can-atom-handle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How many concurrent requests can A.T.O.M handle?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-can-i-make-simulations-faster" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How can I make simulations faster?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#whats-the-memory-footprint" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What's the memory footprint?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deployment-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deployment Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deployment Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#can-i-run-atom-on-arm64-apple-silicon" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I run A.T.O.M on ARM64 (Apple Silicon)?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-do-i-update-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How do I update A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-deploy-multiple-replicas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I deploy multiple replicas?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#whats-the-difference-between-docker-and-native-go" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What's the difference between Docker and native Go?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#where-does-the-geojson-data-come-from" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Where does the GeoJSON data come from?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-add-a-new-building-to-the-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I add a new building to the map?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how-often-should-i-update-the-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How often should I update the data?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-use-proprietary-building-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I use proprietary building data?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="API Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#whats-the-typical-api-response-time" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What's the typical API response time?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-call-the-api-from-my-own-application" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I call the API from my own application?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#does-atom-support-webhooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Does A.T.O.M support webhooks?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#integration-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Integration Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Integration Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#can-i-export-results-to-arcgisqgis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I export results to ArcGIS/QGIS?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-integrate-atom-with-my-network-planning-tool" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I integrate A.T.O.M with my network planning tool?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#does-atom-work-with-optus-ericsson-or-nokia-planning-tools" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Does A.T.O.M work with Optus, Ericsson, or Nokia planning tools?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#docker-image-wont-build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docker image won't build
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#api-returns-invalid-tower_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API returns "invalid tower_id"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#coverage-heatmap-looks-wrong" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Coverage heatmap looks wrong
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-is-my-regions-coverage-very-sparse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why is my region's coverage very sparse?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributing Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Contributing Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-can-i-contribute-to-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How can I contribute to A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-fork-atom-for-my-own-project" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I fork A.T.O.M for my own project?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#who-maintains-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Who maintains A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#licensing-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Licensing Questions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Licensing Questions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-license-is-atom-under" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What license is A.T.O.M under?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-i-use-atom-commercially" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Can I use A.T.O.M commercially?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#do-i-need-to-contribute-improvements-back" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Do I need to contribute improvements back?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#still-have-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Still have questions?
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          
-            <div class="md-content" data-md-component="content">
-              
-              <article class="md-content__inner md-typeset">
-                
-                  
-
-
-
-<h1 id="faq-frequently-asked-questions">FAQ (Frequently Asked Questions)</h1>
-<h2 id="general-questions">General Questions</h2>
-<h3 id="what-is-atom-used-for">What is A.T.O.M used for?</h3>
-<p>A.T.O.M simulates cellular network coverage and optimizes antenna placement for RF engineers planning 4G/5G/6G networks in urban areas. It's used by network operators, equipment vendors, and telecom researchers.</p>
-<h3 id="is-atom-free">Is A.T.O.M free?</h3>
-<p>Yes! A.T.O.M is open-source under the MIT license. You can use, modify, and redistribute it freely.</p>
-<h3 id="what-frequency-bands-does-atom-support">What frequency bands does A.T.O.M support?</h3>
-<ul>
-<li><strong>4G LTE</strong>: 2.6 GHz</li>
-<li><strong>5G mmWave</strong>: 28 GHz</li>
-<li><strong>6G Sub-THz</strong>: 140 GHz</li>
-</ul>
-<p>You can add custom frequencies by modifying the backend code.</p>
-<h3 id="can-i-use-atom-for-my-city-instead-of-ankara">Can I use A.T.O.M for my city instead of Ankara?</h3>
-<p>Yes! A.T.O.M is designed to work with any city. You need:</p>
-<ol>
-<li>Building geometries in GeoJSON format (from OpenStreetMap)</li>
-<li>Tower/node locations as GeoJSON points</li>
-<li>Replace data files in <code>data-pipeline/</code></li>
-</ol>
-<p>See <a href="getting-started.html">Getting Started</a> for data pipeline instructions.</p>
-<hr />
-<h2 id="technical-questions">Technical Questions</h2>
-<h3 id="how-accurate-is-atom">How accurate is A.T.O.M?</h3>
-<p>Field tests show <strong>±5 dB accuracy</strong> in urban Ankara compared to measured data. Accuracy depends on:</p>
-<ul>
-<li>✅ OSM building data quality</li>
-<li>✅ Material attenuation database accuracy</li>
-<li>✅ Tower coordinates</li>
-<li>✅ Terrain elevation (not currently modeled)</li>
-</ul>
-<h3 id="why-doesnt-atom-model-multipathreflections">Why doesn't A.T.O.M model multipath/reflections?</h3>
-<p>Including full multipath (reflections, scattering) would:</p>
-<ol>
-<li>Increase computation time by 100-1000×</li>
-<li>Require ray bounce limits to be practical</li>
-<li>Add uncertainty about reflection coefficients</li>
-</ol>
-<p>A.T.O.M focuses on <strong>deterministic propagation</strong> (line-of-sight + penetration losses) which is sufficient for coverage planning.</p>
-<h3 id="can-i-add-custom-propagation-models">Can I add custom propagation models?</h3>
-<p>Yes! Edit <code>backend-go/raytracer/geometry.go</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">CustomPathLoss</span><span class="p">(</span><span class="nx">distance</span><span class="w"> </span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// Your custom equation</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">20</span><span class="o">*</span><span class="nx">math</span><span class="p">.</span><span class="nx">Log10</span><span class="p">(</span><span class="nx">distance</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">customFactor</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>Rebuild and redeploy:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>atom-simulator<span class="w"> </span>.
-</code></pre></div>
-<h3 id="how-does-the-r-tree-spatial-index-work">How does the R-Tree spatial index work?</h3>
-<p>See <a href="algorithms.html#spatial-indexing-r-tree">Algorithms &amp; Physics</a> for detailed explanation.</p>
-<p><strong>TL;DR</strong>: It's a balanced tree structure that speeds up "which buildings does this ray intersect?" queries from O(n) → O(log n).</p>
-<h3 id="what-if-a-building-is-not-in-osm">What if a building is not in OSM?</h3>
-<p>Add it to OpenStreetMap! OSM is community-maintained, so:</p>
-<ol>
-<li>Visit <a href="https://www.openstreetmap.org">openstreetmap.org</a></li>
-<li>Edit map to add missing building</li>
-<li>Re-export data using data pipeline</li>
-<li>Rebuild simulator</li>
-</ol>
-<h3 id="can-i-run-atom-offline">Can I run A.T.O.M offline?</h3>
-<p>Yes! Once the Docker image is built, it needs no external internet access. All data is baked into the image.</p>
-<hr />
-<h2 id="performance-questions">Performance Questions</h2>
-<h3 id="why-is-the-first-request-slow">Why is the first request slow?</h3>
-<p>The first request triggers:
-1. Docker startup
-2. GeoJSON loading
-3. R-Tree construction
-4. Simulation execution</p>
-<p><strong>Typical</strong>: 5-10 seconds total (future requests: 1-3 seconds)</p>
-<h3 id="how-many-concurrent-requests-can-atom-handle">How many concurrent requests can A.T.O.M handle?</h3>
-<p>Depends on your hardware:</p>
-<table>
-<thead>
-<tr>
-<th>CPU Cores</th>
-<th>Max Concurrent</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>2</td>
-<td>Development only</td>
-</tr>
-<tr>
-<td>2</td>
-<td>5</td>
-<td>Small deployments</td>
-</tr>
-<tr>
-<td>4</td>
-<td>15</td>
-<td>Recommended</td>
-</tr>
-<tr>
-<td>8</td>
-<td>30</td>
-<td>Enterprise</td>
-</tr>
-</tbody>
-</table>
-<h3 id="how-can-i-make-simulations-faster">How can I make simulations faster?</h3>
-<ol>
-<li><strong>Increase grid spacing</strong>: <code>grid_size=20</code> (instead of 10)</li>
-<li><strong>Reduce coverage radius</strong>: In code, change max distance</li>
-<li><strong>Deploy on faster CPU</strong>: More cores = faster execution</li>
-<li><strong>Parallelize</strong>: Use batch optimization</li>
-</ol>
-<h3 id="whats-the-memory-footprint">What's the memory footprint?</h3>
-<table>
-<thead>
-<tr>
-<th>Component</th>
-<th>Size</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Go runtime</td>
-<td>~10 MB</td>
-</tr>
-<tr>
-<td>Building GeoJSON</td>
-<td>40 MB (compressed in RAM)</td>
-</tr>
-<tr>
-<td>R-Tree</td>
-<td>150 MB</td>
-</tr>
-<tr>
-<td>Workspace per request</td>
-<td>5 MB</td>
-</tr>
-<tr>
-<td><strong>Total</strong></td>
-<td>~200 MB typical</td>
-</tr>
-</tbody>
-</table>
-<p>Docker container: <strong>~150 MB</strong></p>
-<hr />
-<h2 id="deployment-questions">Deployment Questions</h2>
-<h3 id="can-i-run-atom-on-arm64-apple-silicon">Can I run A.T.O.M on ARM64 (Apple Silicon)?</h3>
-<p>Yes! The Docker image builds for ARM64. Just build and run normally:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>atom-simulator<span class="w"> </span>.
-docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span>atom-simulator
-</code></pre></div>
-<h3 id="how-do-i-update-atom">How do I update A.T.O.M?</h3>
-<ol>
-<li>Pull latest code: <code>git pull</code></li>
-<li>Rebuild image: <code>docker build -t atom-simulator .</code></li>
-<li>Stop old container: <code>docker stop atom-api</code></li>
-<li>Run new container: <code>docker run -p 8080:8080 atom-simulator</code></li>
-</ol>
-<h3 id="can-i-deploy-multiple-replicas">Can I deploy multiple replicas?</h3>
-<p>Yes! A.T.O.M is <strong>stateless</strong>, so multiple instances can run behind a load balancer. See <a href="deployment.html#horizontal-scaling-multiple-instances">Deployment</a>.</p>
-<h3 id="whats-the-difference-between-docker-and-native-go">What's the difference between Docker and native Go?</h3>
-<table>
-<thead>
-<tr>
-<th>Aspect</th>
-<th>Docker</th>
-<th>Native Go</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Isolation</td>
-<td>✅ Full OS isolation</td>
-<td>❌ None</td>
-</tr>
-<tr>
-<td>Setup</td>
-<td>1 command</td>
-<td>Requires Go, Node.js</td>
-</tr>
-<tr>
-<td>Performance</td>
-<td>~5% overhead</td>
-<td>Baseline</td>
-</tr>
-<tr>
-<td>Portability</td>
-<td>✅ Works anywhere</td>
-<td>❌ OS-specific</td>
-</tr>
-<tr>
-<td>Recommended</td>
-<td>✅ Yes (all environments)</td>
-<td>Development only</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="data-questions">Data Questions</h2>
-<h3 id="where-does-the-geojson-data-come-from">Where does the GeoJSON data come from?</h3>
-<ul>
-<li><strong>Buildings</strong>: <a href="https://www.openstreetmap.org">OpenStreetMap</a></li>
-<li><strong>Towers</strong>: <a href="https://opencellid.org">OpenCellID</a></li>
-<li><strong>Custom data</strong>: You can add your own</li>
-</ul>
-<h3 id="can-i-add-a-new-building-to-the-map">Can I add a new building to the map?</h3>
-<p>Yes! Edit OpenStreetMap, re-export data, rebuild simulator. See <a href="getting-started.html#data-pipeline-optional">Getting Started</a>.</p>
-<h3 id="how-often-should-i-update-the-data">How often should I update the data?</h3>
-<ul>
-<li><strong>GeoJSON</strong>: Every quarter (as OSM updates)</li>
-<li><strong>Tower list</strong>: Monthly (new sites come online)</li>
-<li><strong>Material database</strong>: Annually (as building codes change)</li>
-</ul>
-<h3 id="can-i-use-proprietary-building-data">Can I use proprietary building data?</h3>
-<p>Yes, A.T.O.M accepts any GeoJSON-format geometry. Replace:
-- <code>data-pipeline/ankara_buildings.geojson</code>
-- <code>data-pipeline/ankara_5g_nodes.geojson</code></p>
-<p>Then rebuild.</p>
-<hr />
-<h2 id="api-questions">API Questions</h2>
-<h3 id="whats-the-typical-api-response-time">What's the typical API response time?</h3>
-<table>
-<thead>
-<tr>
-<th>Request</th>
-<th>Time</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/health</code></td>
-<td>&lt; 10 ms</td>
-</tr>
-<tr>
-<td><code>/towers</code></td>
-<td>100 ms</td>
-</tr>
-<tr>
-<td><code>/buildings</code></td>
-<td>1-2 seconds</td>
-</tr>
-<tr>
-<td><code>/simulate</code></td>
-<td>1-3 seconds</td>
-</tr>
-<tr>
-<td><code>/optimize</code></td>
-<td>3-5 seconds</td>
-</tr>
-</tbody>
-</table>
-<h3 id="can-i-call-the-api-from-my-own-application">Can I call the API from my own application?</h3>
-<p>Yes! A.T.O.M exposes a REST API. Examples:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
-
-<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-    <span class="s1">&#39;http://atom-api.example.com/api/simulate&#39;</span><span class="p">,</span>
-    <span class="n">json</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;tower_id&#39;</span><span class="p">:</span> <span class="s1">&#39;ankara_001&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="s1">&#39;5G&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;azimuth&#39;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span>
-        <span class="s1">&#39;beam_width&#39;</span><span class="p">:</span> <span class="mi">65</span>
-    <span class="p">}</span>
-<span class="p">)</span>
-
-<span class="n">coverage</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
-</code></pre></div>
-<p>See <a href="api.html">API Reference</a> for full documentation.</p>
-<h3 id="does-atom-support-webhooks">Does A.T.O.M support webhooks?</h3>
-<p>Not in v1.0. Planned for v1.1+. Currently, poll the API for results.</p>
-<hr />
-<h2 id="integration-questions">Integration Questions</h2>
-<h3 id="can-i-export-results-to-arcgisqgis">Can I export results to ArcGIS/QGIS?</h3>
-<p>Yes! All results are GeoJSON-formatted. Simply:</p>
-<ol>
-<li>Export from A.T.O.M: Click "Download GeoJSON"</li>
-<li>Import into ArcGIS: File → Import → GeoJSON</li>
-<li>Use in QGIS: Layer → Add Layer → Vector → GeoJSON</li>
-</ol>
-<h3 id="can-i-integrate-atom-with-my-network-planning-tool">Can I integrate A.T.O.M with my network planning tool?</h3>
-<p>Yes! Call the REST API from your tool. See <a href="api.html">API Reference</a> for endpoints and examples.</p>
-<h3 id="does-atom-work-with-optus-ericsson-or-nokia-planning-tools">Does A.T.O.M work with Optus, Ericsson, or Nokia planning tools?</h3>
-<p>Not directly, but you can:
-1. Export GeoJSON from A.T.O.M
-2. Convert to your tool's format (usually via QGIS)
-3. Import for comparison/validation</p>
-<hr />
-<h2 id="troubleshooting-questions">Troubleshooting Questions</h2>
-<h3 id="docker-image-wont-build">Docker image won't build</h3>
-<p><strong>Error</strong>: <code>npm: not found</code></p>
-<p><strong>Solution</strong>: Ensure Dockerfile is complete. Download latest from GitHub:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/your-org/A.T.O.M.git
-<span class="nb">cd</span><span class="w"> </span>urban-ray-tracer
-docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>atom-simulator<span class="w"> </span>.
-</code></pre></div>
-<h3 id="api-returns-invalid-tower_id">API returns "invalid tower_id"</h3>
-<p><strong>Cause</strong>: Tower ID doesn't exist in your data</p>
-<p><strong>Solution</strong>: 
-1. Check available towers: <code>curl http://localhost:8080/api/towers</code>
-2. Use exact ID from response (case-sensitive)</p>
-<h3 id="coverage-heatmap-looks-wrong">Coverage heatmap looks wrong</h3>
-<p><strong>Possible causes</strong>:
-1. ❌ Building data corrupted → Check OSM data quality
-2. ❌ Frequency range too wide → Adjust grid spacing
-3. ❌ Beamforming gain off → Check beam width setting</p>
-<p><strong>Debug</strong>: Call <code>/api/health</code> to verify data loaded correctly.</p>
-<h3 id="why-is-my-regions-coverage-very-sparse">Why is my region's coverage very sparse?</h3>
-<p><strong>Possible causes</strong>:
-1. <strong>Data quality</strong>: Missing buildings in OSM
-2. <strong>Frequency too high</strong>: 6G has very limited range
-3. <strong>Line-of-sight</strong>: If urban canyon is dense, coverage naturally limited</p>
-<p><strong>Solution</strong>: Add missing buildings to OSM, or choose more favorable tower location.</p>
-<hr />
-<h2 id="contributing-questions">Contributing Questions</h2>
-<h3 id="how-can-i-contribute-to-atom">How can I contribute to A.T.O.M?</h3>
-<p>See <a href="contributing.html">Contributing</a> for guidelines.</p>
-<h3 id="can-i-fork-atom-for-my-own-project">Can I fork A.T.O.M for my own project?</h3>
-<p>Yes! MIT license allows forking. You must:
-- ✅ Include original license
-- ✅ Attribute original authors
-- ✅ Document your modifications</p>
-<h3 id="who-maintains-atom">Who maintains A.T.O.M?</h3>
-<p>A.T.O.M is maintained by <a href="https://berkunsal.com">Berk Ünsal</a> with community contributions.</p>
-<hr />
-<h2 id="licensing-questions">Licensing Questions</h2>
-<h3 id="what-license-is-atom-under">What license is A.T.O.M under?</h3>
-<p>MIT License (open-source, permissive)</p>
-<h3 id="can-i-use-atom-commercially">Can I use A.T.O.M commercially?</h3>
-<p>Yes! MIT license allows commercial use. Just include the license in your distribution.</p>
-<h3 id="do-i-need-to-contribute-improvements-back">Do I need to contribute improvements back?</h3>
-<p>Not required, but encouraged! Community contributions improve the project for everyone.</p>
-<hr />
-<h2 id="still-have-questions">Still have questions?</h2>
-<ul>
-<li>📖 Check <a href="index.html">Documentation</a> </li>
-<li>💬 Open an issue on GitHub</li>
-<li>📧 Email <a href="mailto:berk@berkunsal.com">berk@berkunsal.com</a></li>
-</ul>
-<hr />
-<p><strong>Next</strong>: See <a href="contributing.html">Contributing</a> to help improve A.T.O.M.</p>
-
-
-
-
-
-
-
-
-
-
-
-
-                
-              </article>
-            </div>
-          
-          
-  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
-
-<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Help and troubleshooting</span>
+        <h1>Frequently Asked Questions</h1>
+        <p>Answers for setup, RF interpretation, performance, data, API
+access, and common operating problems.</p>
+        <div class="hero-actions">
+          <a class="button" href="./faq.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
         </div>
-        
-          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
-</button>
-        
-      </main>
-      
-        <footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
-  
-</div>
-      
+      </header>
+
+      <div class="prose">
+<h2 id="product-and-model">Product And Model</h2>
+<h3 id="what-is-atom-for">What is A.T.O.M for?</h3>
+<p>A.T.O.M is a local-first workspace for deterministic urban RF
+planning. It supports sector propagation, demand gaps, multi-cell
+evaluation and optimization, 4G/5G interference analysis, candidate-site
+recommendations, measurement residual analysis, scenario comparison, and
+an optional 5G communication-path overlay.</p>
+<h3 id="are-the-results-field-measurements">Are the results field
+measurements?</h3>
+<p>No. RSRP, SINR, RSRQ, RSSI, coverage, and demand KPIs are planning
+estimates from the configured model and dataset. They are not UE,
+drive-test, channel-sounder, or PHY measurements.</p>
+<h3 id="which-propagation-model-is-used">Which propagation model is
+used?</h3>
+<p>The default sector model combines free-space path loss with antenna
+gain, beam/radius eligibility, exact building intersections, and
+cumulative frequency-dependent wall loss. It does not implement
+Okumura-Hata, reflections, fading, MIMO scheduling, or uplink
+propagation. A separate point-to-point profile can add optional
+COG/GeoTIFF terrain, building height, LOS/Fresnel evidence, material
+sensitivity, and a selected single knife-edge approximation.</p>
+<h3 id="why-can-sinr-be-close-to-0-db">Why can SINR be close to 0
+dB?</h3>
+<p>When the serving cell and strongest co-channel interferer arrive at
+nearly equal power, their linear power ratio approaches one, which is
+<code>0 dB</code>. This is expected even when RSRP is strong. Reuse
+factor, load, geometry, and directional sectors can change that
+relationship.</p>
+<h3 id="why-does-a-sample-say-no-signal">Why does a sample say no
+signal?</h3>
+<p>A cell contributes only when the point is inside its configured
+radius and beam. High path loss or cumulative wall attenuation can then
+push modeled power below the signal floor. The interference Inspector
+lists serving-cell, wall, radius, beam, and interferer context where
+available.</p>
+<h3 id="does-measurement-import-calibrate-the-complete-model">Does
+measurement import calibrate the complete model?</h3>
+<p>No. A.T.O.M compares measured and predicted RSRP and may suggest one
+robust global path-loss bias when at least 20 valid, spatially diverse
+samples exist. Five deterministic spatial blocks report whether that
+correction generalizes to held-out areas. It does not automatically fit
+separate wall, clutter, terrain, or fading parameters.</p>
+<h3 id="what-is-the-6g-mode">What is the 6G mode?</h3>
+<p>The 140 GHz mode is an exploratory Sub-THz propagation overlay.
+Interference analysis, measurement validation, recommendations, and 5G
+Core language are intentionally unavailable where their assumptions are
+unsupported.</p>
+<h2 id="projects-and-results">Projects And Results</h2>
+<h3 id="where-are-projects-stored">Where are projects stored?</h3>
+<p>Projects are stored in the current browser through IndexedDB. Saves
+are serialized, and local storage is used only when an IndexedDB write
+fails. If both copies exist, persistence revisions select the newest
+valid workspace. The server remains stateless. Export a versioned
+<code>.atom-project.json</code> file for backup or transfer to another
+browser.</p>
+<h3 id="why-is-a-saved-result-marked-stale">Why is a saved result marked
+stale?</h3>
+<p>The saved inputs, dataset, model, or calibration profile no longer
+match the active workspace. A.T.O.M preserves the scenario but requires
+a rerun before treating its result as current.</p>
+<h3 id="why-do-old-scenarios-not-contain-every-map-layer">Why do old
+scenarios not contain every map layer?</h3>
+<p>To bound browser storage, complete GeoJSON artifacts are retained for
+the five most recently used scenarios. Older scenarios retain settings,
+exact requests, metadata, and compact summaries.</p>
+<h3 id="what-does-candidate-recommendation-guarantee">What does
+candidate recommendation guarantee?</h3>
+<p>It ranks unselected records from the active tower dataset by bounded,
+deterministic RF and demand scoring inside the drawn area. It does not
+establish ownership, rooftop access, permitting, cost, power, fiber,
+backhaul, or construction feasibility. Analyze interference after
+applying a recommendation.</p>
+<h2 id="data">Data</h2>
+<h3 id="can-i-use-a-region-other-than-ankara">Can I use a region other
+than Ankara?</h3>
+<p>Yes. Dataset Pack Studio can inspect, repair, reproject, crop, and
+package local tower/building sources for an arbitrary region. Set
+<code>ATOM_DATASET_DIR</code> to the initial validated pack. To switch
+without restarting, mount packs beneath <code>ATOM_DATASETS_ROOT</code>
+and activate one by manifest ID from Data; the current pack remains
+active if candidate validation fails. The validator checks schema, CRS,
+coordinates, geometry, duplicate IDs, and SHA-256 hashes.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run ./cmd/validate-dataset /path/to/dataset</span></code></pre></div>
+<p>See <a href="dataset-pack-studio.html">Dataset Pack Studio</a> for
+schema-v2 provenance, QA, optional layers, and installation
+guidance.</p>
+<p>The application does not yet download or build arbitrary cities from
+the browser.</p>
+<h3 id="why-does-readyz-return-503">Why does <code>/readyz</code> return
+503?</h3>
+<p>Read the JSON response and container logs. Readiness requires a valid
+dataset manifest and hashes, loaded towers/buildings, a built frontend
+bundle, and successful startup indexing. <code>/healthz</code> only
+confirms process liveness.</p>
+<h3 id="does-the-default-app-work-fully-offline">Does the default app
+work fully offline?</h3>
+<p>RF computation, project storage, and datasets are local. The default
+Leaflet basemap still requests OpenStreetMap tiles unless you configure
+or cache a local tile source.</p>
+<h3 id="why-is-git-lfs-required">Why is Git LFS required?</h3>
+<p>The default Ankara building GeoJSON is larger than a normal Git
+object. A Git LFS pointer is not valid GeoJSON, so source installations
+should run <code>git lfs pull</code> before building.</p>
+<h2 id="runtime-and-api">Runtime And API</h2>
+<h3 id="is-there-a-documented-rest-api">Is there a documented REST
+API?</h3>
+<p>Yes. The <a href="api.html">API Reference</a> and downloadable <a
+href="openapi.yaml">OpenAPI 3.1 specification</a> cover RF simulation,
+gaps, optimization, network evaluation, interference, recommendations,
+measurement evaluation, metadata, datasets, and Core Lab routes.</p>
+<h3 id="why-did-an-rf-request-return-429">Why did an RF request return
+429?</h3>
+<p>A.T.O.M admits two RF jobs globally, one per client, and 20
+expensive-route attempts per client each minute by default. Global
+capacity, per-client concurrency, or budget exhaustion returns
+<code>429</code> with <code>Retry-After</code> and rate-budget headers.
+Let active work finish or tune the corresponding limit cautiously.</p>
+<h3 id="what-request-limits-apply">What request limits apply?</h3>
+<p>POST bodies are limited to 1 MiB. Expensive work has a 60-second
+default computation deadline and deep-loop cancellation. The HTTP server
+also uses bounded header, read, write, and idle timeouts. Frontend
+operations cancel superseded work, reject stale responses, and sequence
+sector simulation and gap analysis.</p>
+<h3 id="is-the-server-stateless">Is the server stateless?</h3>
+<p>Yes. RF results and projects are not stored by the Go service. This
+allows multiple API replicas, but browser projects are not automatically
+shared between them or between users.</p>
+<h3 id="does-the-api-require-authentication">Does the API require
+authentication?</h3>
+<p>Local-only use does not require it. Set <code>RF_API_KEY</code> to
+require a bearer token or <code>X-API-Key</code> on expensive RF routes.
+Internet-facing deployments should authenticate users at a trusted TLS
+gateway, inject that backend key, and enforce a shared gateway rate
+policy in addition to the built-in per-process client budget.</p>
+<h2 id="5g-core-lab">5G Core Lab</h2>
+<h3 id="does-core-lab-deploy-open5gs">Does Core Lab deploy Open5GS?</h3>
+<p>No. The optional adapter provides deterministic 5G topology, health,
+session, event, and scenario state and can probe configured Open5GS
+endpoints. It does not bundle a complete mobile core.</p>
+<h3 id="why-is-core-lab-unavailable-in-4g-or-6g">Why is Core Lab
+unavailable in 4G or 6G?</h3>
+<p>Its terminology and paths model 5GS behavior: Xn-C/Xn-U, N2 via AMF,
+and N3 via UPF. A.T.O.M does not relabel those interfaces as LTE/EPC or
+speculative 6G Core behavior.</p>
+<h2 id="installation-and-troubleshooting">Installation And
+Troubleshooting</h2>
+<h3 id="what-is-the-recommended-installation-path">What is the
+recommended installation path?</h3>
+<p>Clone with Git LFS and use Docker Compose:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs install</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Berk-Unsal/urban-ray-tracer.git</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> urban-ray-tracer</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span></code></pre></div>
+<p>Open <code>http://localhost:8080</code> and verify
+<code>http://localhost:8080/readyz</code>.</p>
+<h3 id="can-i-run-on-apple-silicon">Can I run on Apple Silicon?</h3>
+<p>Yes. Local Docker builds support ARM64, and tagged releases are
+intended to publish multi-architecture images.</p>
+<h3 id="how-do-i-report-a-problem">How do I report a problem?</h3>
+<p>Include the application/model/dataset versions from Data or
+<code>/api/meta</code>, the exact request or exported project, the
+readiness response, and relevant logs in a <a
+href="https://github.com/Berk-Unsal/urban-ray-tracer/issues">GitHub
+issue</a>.</p>
+<p>See <a href="download.html">Download and Use</a>, <a
+href="architecture.html">System Architecture</a>, and <a
+href="modeling-limits.html">Model Limitations</a> for deeper
+guidance.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
     </div>
-  </div>
-</footer>
-      
-    </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    
-    
-    
-      
-      
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-    
-    
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
-      
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-      
-    
-  </body>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
 </html>

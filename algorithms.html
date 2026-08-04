@@ -1,1763 +1,307 @@
-
 <!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
-      
-      
-        <meta name="author" content="Berk Ünsal">
-      
-      
-        <link rel="canonical" href="https://docs.atom.berkunsal.com/algorithms.html">
-      
-      
-        <link rel="prev" href="visualization.html">
-      
-      
-        <link rel="next" href="api.html">
-      
-      
-        
-      
-      
-      <link rel="icon" href="../icon/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
-    
-    
-      
-        <title>Algorithms & Physics - A.T.O.M Documentation</title>
-      
-    
-    
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
-      
-      
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="The deterministic propagation,
+geometry, optimization, and radio-quality methods behind A.T.O.M
+results." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Algorithms and RF Physics | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
-
-    
-    
-      
-        <script src="https://unpkg.com/iframe-worker/shim"></script>
-      
-    
-    
-      
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
-    
-    
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-    
-      
-
-    
-    
-  </head>
-  
-  
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#algorithms-physics" class="md-skip">
-          Skip to content
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-    
-      
-
-<header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            A.T.O.M Documentation
-          </span>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
         </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              Algorithms & Physics
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
-    
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
-    
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-</form>
-      
-    
-    
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
-    
-    
-    
-      
-      
-        <label class="md-header__button md-icon" for="__search">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-        <div class="md-search__suggest" data-md-component="search-suggest"></div>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
           </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
         </div>
       </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
     </div>
-  </div>
-</div>
-      
-    
-    
-  </nav>
-  
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="index.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Home
+  </header>
 
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="overview.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Overview
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="features.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Features
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="architecture.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="visualization.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Propagation Visualization
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    
-  
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="algorithms.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Algorithms & Physics
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="api.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  API Reference
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="getting-started.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Getting Started
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="deployment.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Deployment
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="faq.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  FAQ
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="contributing.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Contributing
-
-      </a>
-    </li>
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    A.T.O.M Documentation
-  </label>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="index.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="overview.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="features.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Features
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="visualization.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Propagation Visualization
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Algorithms & Physics
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="algorithms.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Algorithms & Physics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#radio-frequency-physics-foundation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Radio Frequency Physics Foundation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Radio Frequency Physics Foundation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#free-space-path-loss-fspl" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Free-Space Path Loss (FSPL)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#received-power-calculation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Received Power Calculation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#frequency-dependence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Frequency Dependence
-      
-    </span>
-  </a>
-  
-</li>
-        
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Algorithms and RF
+Physics page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#radio-frequency-physics-foundation"
+      id="toc-radio-frequency-physics-foundation">Radio Frequency
+      Physics Foundation</a></li>
+      <li><a href="#25d-point-to-point-profiles"
+      id="toc-25d-point-to-point-profiles">2.5D Point-To-Point
+      Profiles</a></li>
+      <li><a href="#building-penetration-model"
+      id="toc-building-penetration-model">Building Penetration
+      Model</a></li>
+      <li><a href="#raytracing-algorithm"
+      id="toc-raytracing-algorithm">Raytracing Algorithm</a></li>
+      <li><a href="#spatial-indexing-r-tree"
+      id="toc-spatial-indexing-r-tree">Spatial Indexing: R-Tree</a></li>
+      <li><a href="#sector-eligibility"
+      id="toc-sector-eligibility">Sector Eligibility</a></li>
+      <li><a href="#deterministic-optimization-sweep--score-algorithm"
+      id="toc-deterministic-optimization-sweep--score-algorithm">Deterministic
+      Optimization: Sweep &amp; Score Algorithm</a></li>
+      <li><a href="#performance-characteristics"
+      id="toc-performance-characteristics">Performance
+      Characteristics</a></li>
+      <li><a href="#validation--limitations"
+      id="toc-validation--limitations">Validation &amp;
+      Limitations</a></li>
       </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#building-penetration-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Building Penetration Model
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Building Penetration Model">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#material-attenuation-by-frequency" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Material Attenuation by Frequency
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cumulative-wall-loss" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cumulative Wall Loss
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#raytracing-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Raytracing Algorithm
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Raytracing Algorithm">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pseudocode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pseudocode
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#computational-geometry-polygon-intersection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Computational Geometry: Polygon Intersection
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#spatial-indexing-r-tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Spatial Indexing: R-Tree
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Spatial Indexing: R-Tree">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-r-tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why R-Tree?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#r-tree-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        R-Tree Structure
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#query-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Query Algorithm
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beamforming-and-antenna-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Beamforming and Antenna Patterns
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Beamforming and Antenna Patterns">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#sector-antenna-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Sector Antenna Model
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#gain-function" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Gain Function
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#impact-on-coverage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Impact on Coverage
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ai-optimization-sweep-score-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        AI Optimization: Sweep &amp; Score Algorithm
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="AI Optimization: Sweep &amp; Score Algorithm">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#problem-statement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Problem Statement
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Algorithm
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#complexity-analysis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Complexity Analysis
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#parallelization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Parallelization
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-characteristics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Characteristics
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Characteristics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#benchmarks-ankara-dataset" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Benchmarks (Ankara Dataset)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#memory-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Memory Usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#accuracy-limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Accuracy &amp; Limitations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Accuracy &amp; Limitations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#accuracy-levels" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Accuracy Levels
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#model-limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Model Limitations
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#when-to-use-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        When to Use A.T.O.M
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
+    </aside>
 
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Model reference</span>
+        <h1>Algorithms and RF Physics</h1>
+        <p>The deterministic propagation, geometry, optimization, and
+radio-quality methods behind A.T.O.M results.</p>
+        <div class="hero-actions">
+          <a class="button" href="./algorithms.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
 
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="getting-started.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Getting Started
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="deployment.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="faq.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="contributing.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#radio-frequency-physics-foundation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Radio Frequency Physics Foundation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Radio Frequency Physics Foundation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#free-space-path-loss-fspl" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Free-Space Path Loss (FSPL)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#received-power-calculation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Received Power Calculation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#frequency-dependence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Frequency Dependence
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#building-penetration-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Building Penetration Model
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Building Penetration Model">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#material-attenuation-by-frequency" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Material Attenuation by Frequency
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cumulative-wall-loss" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cumulative Wall Loss
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#raytracing-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Raytracing Algorithm
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Raytracing Algorithm">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pseudocode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pseudocode
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#computational-geometry-polygon-intersection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Computational Geometry: Polygon Intersection
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#spatial-indexing-r-tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Spatial Indexing: R-Tree
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Spatial Indexing: R-Tree">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-r-tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why R-Tree?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#r-tree-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        R-Tree Structure
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#query-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Query Algorithm
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beamforming-and-antenna-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Beamforming and Antenna Patterns
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Beamforming and Antenna Patterns">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#sector-antenna-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Sector Antenna Model
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#gain-function" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Gain Function
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#impact-on-coverage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Impact on Coverage
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ai-optimization-sweep-score-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        AI Optimization: Sweep &amp; Score Algorithm
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="AI Optimization: Sweep &amp; Score Algorithm">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#problem-statement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Problem Statement
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Algorithm
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#complexity-analysis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Complexity Analysis
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#parallelization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Parallelization
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-characteristics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Characteristics
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Characteristics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#benchmarks-ankara-dataset" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Benchmarks (Ankara Dataset)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#memory-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Memory Usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#accuracy-limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Accuracy &amp; Limitations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Accuracy &amp; Limitations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#accuracy-levels" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Accuracy Levels
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#model-limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Model Limitations
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#when-to-use-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        When to Use A.T.O.M
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          
-            <div class="md-content" data-md-component="content">
-              
-              <article class="md-content__inner md-typeset">
-                
-                  
-
-
-
-<h1 id="algorithms-physics">Algorithms &amp; Physics</h1>
-<p>A.T.O.M combines rigorous physics models with advanced computational geometry to deliver production-grade RF simulations.</p>
-<h2 id="radio-frequency-physics-foundation">Radio Frequency Physics Foundation</h2>
+      <div class="prose">
+<p>A.T.O.M combines deterministic planning equations with computational
+geometry to produce inspectable RF estimates. It is not a calibrated
+propagation solver or a substitute for field measurements.</p>
+<h2 id="radio-frequency-physics-foundation">Radio Frequency Physics
+Foundation</h2>
 <h3 id="free-space-path-loss-fspl">Free-Space Path Loss (FSPL)</h3>
 <p>The fundamental equation for all propagation calculations:</p>
-<div class="arithmatex">\[L = 20 \log_{10}(d) + 20 \log_{10}(f) + 20 \log_{10}\left(\frac{4\pi}{c}\right)\]</div>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="prefix">[</mo><mi>m</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">[</mo><mi>G</mi><mi>H</mi><mi>z</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>32.45</mn></mrow><annotation encoding="application/x-tex">L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45</annotation></semantics></math></p>
 <p><strong>Simplification</strong> (practical form):</p>
-<div class="arithmatex">\[L[dB] = 20 \log_{10}(d[m]) + 20 \log_{10}(f[Hz]) - 147.55\]</div>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo stretchy="false" form="prefix">[</mo><mi>d</mi><mi>B</mi><mo stretchy="false" form="postfix">]</mo><mo>=</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="prefix">[</mo><mi>m</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">[</mo><mi>G</mi><mi>H</mi><mi>z</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>32.45</mn></mrow><annotation encoding="application/x-tex">L[dB] = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45</annotation></semantics></math></p>
 <h3 id="received-power-calculation">Received Power Calculation</h3>
-<div class="arithmatex">\[P_{rx}[dBm] = P_{tx}[dBm] - L_{path} - L_{walls} - L_{diffraction}\]</div>
-<p>Where:
-- <span class="arithmatex">\(P_{tx}\)</span> = Transmitter power (typically 40 dBm)
-- <span class="arithmatex">\(L_{path}\)</span> = Free-space path loss (FSPL equation)
-- <span class="arithmatex">\(L_{walls}\)</span> = Cumulative building penetration loss
-- <span class="arithmatex">\(L_{diffraction}\)</span> = Edge diffraction losses (simplified)</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>r</mi><mi>x</mi></mrow></msub><mo stretchy="false" form="prefix">[</mo><mi>d</mi><mi>B</mi><mi>m</mi><mo stretchy="false" form="postfix">]</mo><mo>=</mo><mi>E</mi><mi>I</mi><mi>R</mi><msub><mi>P</mi><mrow><mi>d</mi><mi>B</mi><mi>m</mi></mrow></msub><mo>−</mo><msub><mi>L</mi><mrow><mi>p</mi><mi>a</mi><mi>t</mi><mi>h</mi></mrow></msub><mo>−</mo><msub><mi>L</mi><mrow><mi>w</mi><mi>a</mi><mi>l</mi><mi>l</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">P_{rx}[dBm] = EIRP_{dBm} - L_{path} - L_{walls}</annotation></semantics></math></p>
+<p>Where:</p>
+<ul>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>I</mi><mi>R</mi><mi>P</mi></mrow><annotation encoding="application/x-tex">EIRP</annotation></semantics></math>
+= Transmit power plus antenna gain</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mrow><mi>p</mi><mi>a</mi><mi>t</mi><mi>h</mi></mrow></msub><annotation encoding="application/x-tex">L_{path}</annotation></semantics></math>
+= Free-space path loss (FSPL equation)</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mrow><mi>w</mi><mi>a</mi><mi>l</mi><mi>l</mi><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">L_{walls}</annotation></semantics></math>
+= Cumulative building penetration loss</li>
+</ul>
+<p>The fast sector model does not include terrain, diffraction,
+reflection, fast fading, or multipath. The separate 2.5D path profiler
+samples optional COG/GeoTIFF terrain, building height, LOS/Fresnel
+clearance, and one explicitly selected dominant knife-edge
+approximation; it is not a full replacement for the sector engine or a
+complete ITU-R method.</p>
+<h2 id="25d-point-to-point-profiles">2.5D Point-To-Point Profiles</h2>
+<p>For a selected transmitter and receiver, the engine samples a
+geodesic path at a bounded spacing. Each sample contains ground
+elevation plus any intersecting building height. Antenna and receiver
+elevations are their local ground elevations plus configured height
+above ground.</p>
+<p>The result reports direct line-of-sight clearance and a 60%
+first-Fresnel-zone clearance check:</p>
+<pre class="text"><code>r1 = sqrt(lambda * d1 * d2 / (d1 + d2))</code></pre>
+<p>When selected, the dominant obstruction is converted to the usual
+dimensionless knife-edge parameter and the positive-loss approximation
+is applied. Only the dominant edge is used; Deygout/multiple-edge,
+reflection, and terrain-clutter coupling are not implemented.</p>
+<p>The inspectable loss budget keeps FSPL, horizontal/vertical antenna
+attenuation, system loss, wall penetration, diffraction, clutter,
+vegetation, gas, rain, and calibration as separate signed components.
+Shadow sigma produces sensitivity bounds and is not injected as a random
+field, preserving determinism.</p>
+<p>The <code>terrain-profile</code> and <code>urban-short-range</code>
+labels enforce the published frequency ranges of <a
+href="https://www.itu.int/rec/R-REC-P.1812-8-202509-I/en">ITU-R
+P.1812-8</a> and <a
+href="https://www.itu.int/rec/R-REC-P.1411-9-201706-I/en">ITU-R
+P.1411-9</a>. The knife-edge, material, gas, and rain controls are
+informed by <a href="https://www.itu.int/rec/R-REC-P.526/en">P.526</a>,
+<a href="https://www.itu.int/rec/r-rec-p.2040/en">P.2040</a>, <a
+href="https://www.itu.int/rec/R-REC-P.676/en">P.676</a>, and <a
+href="https://www.itu.int/rec/R-REC-P.838/en">P.838</a>; A.T.O.M does
+not claim full Recommendation conformance.</p>
 <h3 id="frequency-dependence">Frequency Dependence</h3>
 <p>FSPL increases with frequency squared:</p>
-<div class="arithmatex">\[L \propto f^2\]</div>
-<p><strong>Consequence</strong>: Same distance results in:
-- 4G (2.6 GHz): ~69 dB loss at 1 km
-- 5G (28 GHz): ~84 dB loss at 1 km (15 dB more)
-- 6G (140 GHz): ~100 dB loss at 1 km (31 dB more than 4G)</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>∝</mo><msup><mi>f</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">L \propto f^2</annotation></semantics></math></p>
+<p><strong>Consequence</strong>: Same distance results in substantially
+higher loss as frequency rises, which is why mmWave and Sub-THz coverage
+shrink quickly in urban settings.</p>
 <hr />
 <h2 id="building-penetration-model">Building Penetration Model</h2>
-<h3 id="material-attenuation-by-frequency">Material Attenuation by Frequency</h3>
-<p>A.T.O.M queries OSM building tags to determine material type and applies frequency-dependent loss:</p>
-<div class="highlight"><pre><span></span><code>if building == &quot;concrete&quot;:
-    loss_4g = 35 dB
-    loss_5g = 25 dB
-    loss_6g = 40 dB
-elif building == &quot;office&quot;:
-    loss_4g = 20 dB
-    loss_5g = 15 dB
-    loss_6g = 30 dB
-elif material == &quot;glass&quot;:
-    loss_4g = 15 dB
-    loss_5g = 18 dB
-    loss_6g = 32 dB
+<h3 id="generation-specific-wall-loss">Generation-Specific Wall
+Loss</h3>
+<p>A.T.O.M uses the selected network generation to apply a fixed loss
+each time a ray crosses a building boundary. OSM building tags are still
+used for demand scoring and diagnostics, but wall penetration is
+intentionally frequency-driven in the current runtime:</p>
+<pre><code>if frequency_ghz &lt;= 3:
+    loss_4g = 8 dB
+elif frequency_ghz &lt;= 40:
+    loss_5g = 30 dB
 else:
-    loss_4g = 12 dB  # Default
-    loss_5g = 20 dB
-    loss_6g = 35 dB
-</code></pre></div>
+    loss_6g = 80 dB</code></pre>
 <h3 id="cumulative-wall-loss">Cumulative Wall Loss</h3>
-<p>If a ray intersects multiple buildings, losses are <strong>cumulative</strong>:</p>
-<div class="arithmatex">\[L_{total\_walls} = \sum_{i=1}^{n} L_i(f)\]</div>
-<p><strong>Example</strong>: Ray through 2 concrete buildings at 5G frequency:
-- Building 1: +25 dB
-- Building 2: +25 dB
-- <strong>Total</strong>: +50 dB additional loss</p>
+<p>If a ray intersects multiple buildings, losses are
+<strong>cumulative</strong>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>L</mi><mrow><mi>t</mi><mi>o</mi><mi>t</mi><mi>a</mi><mi>l</mi><mi>_</mi><mi>w</mi><mi>a</mi><mi>l</mi><mi>l</mi><mi>s</mi></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>L</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">L_{total\_walls} = \sum_{i=1}^{n} L_i(f)</annotation></semantics></math></p>
+<p><strong>Example</strong>: Ray through two building boundaries at 5G
+frequency:</p>
+<ul>
+<li>Building 1: +30 dB</li>
+<li>Building 2: +30 dB</li>
+<li><strong>Total</strong>: +60 dB additional loss</li>
+</ul>
 <hr />
 <h2 id="raytracing-algorithm">Raytracing Algorithm</h2>
 <h3 id="overview">Overview</h3>
-<p>A.T.O.M uses a <strong>deterministic grid-based raytracer</strong>:</p>
-<ol>
-<li>Define coverage area (typically 5 km radius)</li>
-<li>Create grid points (10 m spacing = ~90,000 points)</li>
-<li>Cast ray from transmitter to each grid point</li>
-<li>Determine building intersections</li>
-<li>Calculate final received power</li>
-<li>Color ray based on signal strength</li>
-<li>Serialize as GeoJSON</li>
+<p>A.T.O.M uses a <strong>deterministic segmented sector
+raytracer</strong>:</p>
+<ol type="1">
+<li>Define the antenna azimuth and beam width</li>
+<li>Split the selected sector into configurable rays</li>
+<li>Split each ray into short segments</li>
+<li>Query the R-Tree for buildings intersecting each segment</li>
+<li>Apply cumulative wall loss and receiver sensitivity
+thresholding</li>
+<li>Color each segment by received power</li>
+<li>Serialize the segments as GeoJSON</li>
 </ol>
 <h3 id="pseudocode">Pseudocode</h3>
-<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">TraceRays</span><span class="p">(</span><span class="nx">tx</span><span class="w"> </span><span class="nx">Location</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">grid</span><span class="w"> </span><span class="p">[]</span><span class="nx">Point</span><span class="p">)</span><span class="w"> </span><span class="nx">GeoJSON</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">result</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">GeoJSON</span><span class="p">{}</span>
-
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">point</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">grid</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="c1">// Step 1: Calculate free-space path loss</span>
-<span class="w">        </span><span class="nx">distance</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">euclidean_distance</span><span class="p">(</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">point</span><span class="p">)</span>
-<span class="w">        </span><span class="nx">fspl</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">20</span><span class="o">*</span><span class="nx">log10</span><span class="p">(</span><span class="nx">distance</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">20</span><span class="o">*</span><span class="nx">log10</span><span class="p">(</span><span class="nx">freq_hz</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">147.55</span>
-
-<span class="w">        </span><span class="c1">// Step 2: Find intersecting buildings</span>
-<span class="w">        </span><span class="nx">ray</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">LineSegment</span><span class="p">{</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">point</span><span class="p">}</span>
-<span class="w">        </span><span class="nx">buildings</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">rtree</span><span class="p">.</span><span class="nx">Query</span><span class="p">(</span><span class="nx">ray</span><span class="p">)</span>
-
-<span class="w">        </span><span class="c1">// Step 3: Calculate cumulative wall loss</span>
-<span class="w">        </span><span class="nx">wallLoss</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">0.0</span>
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="nx">building</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">buildings</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nx">material</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">building</span><span class="p">.</span><span class="nx">Properties</span><span class="p">[</span><span class="s">&quot;building&quot;</span><span class="p">]</span>
-<span class="w">            </span><span class="nx">wallLoss</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">material_attenuation</span><span class="p">(</span><span class="nx">material</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">)</span>
-<span class="w">        </span><span class="p">}</span>
-
-<span class="w">        </span><span class="c1">// Step 4: Calculate received power</span>
-<span class="w">        </span><span class="nx">rxPower</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">TX_POWER_DBM</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">fspl</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">wallLoss</span>
-
-<span class="w">        </span><span class="c1">// Step 5: Color ray</span>
-<span class="w">        </span><span class="nx">color</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">rx_to_color</span><span class="p">(</span><span class="nx">rxPower</span><span class="p">)</span>
-
-<span class="w">        </span><span class="c1">// Step 6: Append to output</span>
-<span class="w">        </span><span class="nx">feature</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">Feature</span><span class="p">{</span>
-<span class="w">            </span><span class="nx">Geometry</span><span class="p">:</span><span class="w"> </span><span class="nx">LineString</span><span class="p">{</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">point</span><span class="p">},</span>
-<span class="w">            </span><span class="nx">Properties</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nx">rxPower</span><span class="p">,</span><span class="w"> </span><span class="nx">color</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">},</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">result</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="computational-geometry-polygon-intersection">Computational Geometry: Polygon Intersection</h3>
-<p><strong>Problem</strong>: Does a ray (line segment) intersect a building (polygon)?</p>
-<p><strong>Solution</strong>: Use <strong>separating axis theorem</strong> (SAT):</p>
-<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">SegmentIntersectsPolygon</span><span class="p">(</span><span class="nx">segment</span><span class="w"> </span><span class="nx">Line</span><span class="p">,</span><span class="w"> </span><span class="nx">polygon</span><span class="w"> </span><span class="nx">Polygon</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// Test segment against all polygon edges</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">polygon</span><span class="p">.</span><span class="nx">Edges</span><span class="p">);</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">edge</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">polygon</span><span class="p">.</span><span class="nx">Edges</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">SegmentIntersectsSegment</span><span class="p">(</span><span class="nx">segment</span><span class="p">,</span><span class="w"> </span><span class="nx">edge</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1">// Test if segment start/end inside polygon</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">PointInPolygon</span><span class="p">(</span><span class="nx">segment</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">polygon</span><span class="p">)</span><span class="w"> </span><span class="o">||</span>
-<span class="w">           </span><span class="nx">PointInPolygon</span><span class="p">(</span><span class="nx">segment</span><span class="p">.</span><span class="nx">End</span><span class="p">,</span><span class="w"> </span><span class="nx">polygon</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="kd">func</span><span class="w"> </span><span class="nx">SegmentIntersectsSegment</span><span class="p">(</span><span class="nx">s1</span><span class="p">,</span><span class="w"> </span><span class="nx">s2</span><span class="w"> </span><span class="nx">Line</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// Standard 2D line intersection test</span>
-<span class="w">    </span><span class="c1">// (Cross product method)</span>
-<span class="w">    </span><span class="nx">d1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cross_product</span><span class="p">(</span><span class="nx">s2</span><span class="p">.</span><span class="nx">Start</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">s1</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">s1</span><span class="p">.</span><span class="nx">Dir</span><span class="p">)</span>
-<span class="w">    </span><span class="nx">d2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cross_product</span><span class="p">(</span><span class="nx">s2</span><span class="p">.</span><span class="nx">End</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">s1</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">s1</span><span class="p">.</span><span class="nx">Dir</span><span class="p">)</span>
-<span class="w">    </span><span class="nx">d3</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cross_product</span><span class="p">(</span><span class="nx">s1</span><span class="p">.</span><span class="nx">Start</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">s2</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">s2</span><span class="p">.</span><span class="nx">Dir</span><span class="p">)</span>
-<span class="w">    </span><span class="nx">d4</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cross_product</span><span class="p">(</span><span class="nx">s1</span><span class="p">.</span><span class="nx">End</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">s2</span><span class="p">.</span><span class="nx">Start</span><span class="p">,</span><span class="w"> </span><span class="nx">s2</span><span class="p">.</span><span class="nx">Dir</span><span class="p">)</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">((</span><span class="nx">d1</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">d2</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="nx">d1</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">d2</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">           </span><span class="p">((</span><span class="nx">d3</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">d4</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="nx">d3</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">d4</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
-<span class="p">}</span>
-</code></pre></div>
-<p><strong>Complexity</strong>: O(log n) per ray thanks to R-Tree spatial indexing.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> TraceSector<span class="op">(</span>tx Location<span class="op">,</span> req SimulationRequest<span class="op">)</span> GeoJSON <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    result <span class="op">:=</span> GeoJSON<span class="op">{}</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> req<span class="op">.</span>rays <span class="op">*</span> ceil<span class="op">(</span>req<span class="op">.</span>radius_m <span class="op">/</span> <span class="dv">25</span><span class="op">)</span> <span class="op">&gt;</span> <span class="dv">25_000</span> <span class="op">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dt">error</span><span class="op">(</span><span class="st">&quot;simulation response feature limit exceeded&quot;</span><span class="op">)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    maxDistance <span class="op">:=</span> min<span class="op">(</span>req<span class="op">.</span>radius_m<span class="op">,</span> sensitivityLimitedDistance<span class="op">(</span>req<span class="op">))</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> angle in sector_angles<span class="op">(</span>req<span class="op">.</span>azimuth<span class="op">,</span> req<span class="op">.</span>beam_width<span class="op">,</span> req<span class="op">.</span>rays<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        current <span class="op">:=</span> tx</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        wallLoss <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> segmentEnd in stepped_points<span class="op">(</span>tx<span class="op">,</span> angle<span class="op">,</span> maxDistance<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            segment <span class="op">:=</span> LineSegment<span class="op">{</span>current<span class="op">,</span> segmentEnd<span class="op">}</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            intersections <span class="op">:=</span> rtree<span class="op">.</span>Query<span class="op">(</span>segment<span class="op">.</span>Bounds<span class="op">())</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> building in intersections <span class="op">{</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> segment_intersects_polygon<span class="op">(</span>segment<span class="op">,</span> building<span class="op">.</span>Polygon<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                    wallLoss <span class="op">+=</span> penetration_loss<span class="op">(</span>req<span class="op">.</span>frequency_ghz<span class="op">)</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            distance <span class="op">:=</span> haversine_distance<span class="op">(</span>tx<span class="op">,</span> segmentEnd<span class="op">)</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>            fspl <span class="op">:=</span> <span class="dv">20</span><span class="op">*</span>log10<span class="op">(</span>distance<span class="op">)</span> <span class="op">+</span> <span class="dv">20</span><span class="op">*</span>log10<span class="op">(</span>req<span class="op">.</span>frequency_ghz<span class="op">)</span> <span class="op">+</span> <span class="fl">32.45</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>            rxPower <span class="op">:=</span> EIRP_DBM <span class="op">-</span> fspl <span class="op">-</span> wallLoss</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> rxPower <span class="op">&lt;</span> ReceiverSensitivityDBm <span class="op">{</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>            result<span class="op">.</span>Add<span class="op">(</span>LineString<span class="op">{</span>current<span class="op">,</span> segmentEnd<span class="op">},</span> rxPower<span class="op">)</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>            current <span class="op">=</span> segmentEnd</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="computational-geometry-polygon-intersection">Computational
+Geometry: Polygon Intersection</h3>
+<p><strong>Problem</strong>: Does a ray (line segment) intersect a
+building (polygon)?</p>
+<p><strong>Solution</strong>: Use <strong>separating axis
+theorem</strong> (SAT):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> SegmentIntersectsPolygon<span class="op">(</span>segment Line<span class="op">,</span> polygon Polygon<span class="op">)</span> <span class="dt">bool</span> <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Test segment against all polygon edges</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="bu">len</span><span class="op">(</span>polygon<span class="op">.</span>Edges<span class="op">);</span> i<span class="op">++</span> <span class="op">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        edge <span class="op">:=</span> polygon<span class="op">.</span>Edges<span class="op">[</span>i<span class="op">]</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> SegmentIntersectsSegment<span class="op">(</span>segment<span class="op">,</span> edge<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="ot">true</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Test if segment start/end inside polygon</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> PointInPolygon<span class="op">(</span>segment<span class="op">.</span>Start<span class="op">,</span> polygon<span class="op">)</span> <span class="op">||</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>           PointInPolygon<span class="op">(</span>segment<span class="op">.</span>End<span class="op">,</span> polygon<span class="op">)</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> SegmentIntersectsSegment<span class="op">(</span>s1<span class="op">,</span> s2 Line<span class="op">)</span> <span class="dt">bool</span> <span class="op">{</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Standard 2D line intersection test</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">// (Cross product method)</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">:=</span> cross_product<span class="op">(</span>s2<span class="op">.</span>Start <span class="op">-</span> s1<span class="op">.</span>Start<span class="op">,</span> s1<span class="op">.</span>Dir<span class="op">)</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">:=</span> cross_product<span class="op">(</span>s2<span class="op">.</span>End <span class="op">-</span> s1<span class="op">.</span>Start<span class="op">,</span> s1<span class="op">.</span>Dir<span class="op">)</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    d3 <span class="op">:=</span> cross_product<span class="op">(</span>s1<span class="op">.</span>Start <span class="op">-</span> s2<span class="op">.</span>Start<span class="op">,</span> s2<span class="op">.</span>Dir<span class="op">)</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    d4 <span class="op">:=</span> cross_product<span class="op">(</span>s1<span class="op">.</span>End <span class="op">-</span> s2<span class="op">.</span>Start<span class="op">,</span> s2<span class="op">.</span>Dir<span class="op">)</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">((</span>d1 <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d2 <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span>d1 <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d2 <span class="op">&gt;</span> <span class="dv">0</span><span class="op">))</span> <span class="op">&amp;&amp;</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>           <span class="op">((</span>d3 <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d4 <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span>d3 <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d4 <span class="op">&gt;</span> <span class="dv">0</span><span class="op">))</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Complexity</strong>: O(log n) per ray thanks to R-Tree
+spatial indexing.</p>
 <hr />
 <h2 id="spatial-indexing-r-tree">Spatial Indexing: R-Tree</h2>
 <h3 id="why-r-tree">Why R-Tree?</h3>
-<p>RF simulations require millions of queries:
-- <strong>Naive approach</strong> (linear scan): O(n) per query × 90,000 rays = 1+ billion operations
-- <strong>R-Tree approach</strong> (spatial index): O(log n) per query × 90,000 rays = 1+ million operations
-- <strong>Speedup</strong>: 1000× faster</p>
+<p>RF simulations require millions of queries:</p>
+<ul>
+<li><strong>Naive approach</strong> (linear scan): O(n) per query ×
+90,000 rays = 1+ billion operations</li>
+<li><strong>R-Tree approach</strong> (spatial index): O(log n) per query
+× 90,000 rays = 1+ million operations</li>
+<li><strong>Speedup</strong>: 1000× faster</li>
+</ul>
 <h3 id="r-tree-structure">R-Tree Structure</h3>
-<p>An R-Tree organizes rectangles (bounding boxes) in a balanced tree:</p>
-<div class="highlight"><pre><span></span><code>Root
+<p>An R-Tree organizes rectangles (bounding boxes) in a balanced
+tree:</p>
+<pre><code>Root
 ├─ Node A (covers buildings 1-5)
 │  ├─ Building 1 bbox
 │  ├─ Building 2 bbox
@@ -1766,35 +310,35 @@ else:
 │  ├─ Building 6 bbox
 │  └─ Building 7 bbox
 └─ Node C (covers buildings 11-15)
-   └─ Building 11 bbox
-</code></pre></div>
+   └─ Building 11 bbox</code></pre>
 <h3 id="query-algorithm">Query Algorithm</h3>
-<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">RTtree</span><span class="p">.</span><span class="nx">Query</span><span class="p">(</span><span class="nx">ray</span><span class="w"> </span><span class="nx">LineSegment</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="nx">Building</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">candidates</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="nx">Building</span><span class="p">{}</span>
-
-<span class="w">    </span><span class="c1">// Recursively check which nodes overlap with ray</span>
-<span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nx">traverse</span><span class="p">(</span><span class="nx">node</span><span class="w"> </span><span class="o">*</span><span class="nx">RNode</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">node</span><span class="p">.</span><span class="nx">bbox</span><span class="p">.</span><span class="nx">Intersects</span><span class="p">(</span><span class="nx">ray</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">node</span><span class="p">.</span><span class="nx">IsLeaf</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nx">candidates</span><span class="p">.</span><span class="nb">append</span><span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">buildings</span><span class="p">)</span>
-<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="nx">child</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">node</span><span class="p">.</span><span class="nx">Children</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="nx">traverse</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span>
-<span class="w">                </span><span class="p">}</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="nx">traverse</span><span class="p">(</span><span class="nx">rtree</span><span class="p">.</span><span class="nx">Root</span><span class="p">)</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">candidates</span>
-<span class="p">}</span>
-</code></pre></div>
-<p><strong>Result</strong>: Typically 5-20 building candidates per ray (vs 12,000 total buildings).</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> RTtree<span class="op">.</span>Query<span class="op">(</span>ray LineSegment<span class="op">)</span> <span class="op">[]</span>Building <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    candidates <span class="op">:=</span> <span class="op">[]</span>Building<span class="op">{}</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Recursively check which nodes overlap with ray</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">func</span> traverse<span class="op">(</span>node <span class="op">*</span>RNode<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> node<span class="op">.</span>bbox<span class="op">.</span>Intersects<span class="op">(</span>ray<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> node<span class="op">.</span>IsLeaf<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                candidates<span class="op">.</span><span class="bu">append</span><span class="op">(</span>node<span class="op">.</span>buildings<span class="op">)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> child in node<span class="op">.</span>Children <span class="op">{</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                    traverse<span class="op">(</span>child<span class="op">)</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    traverse<span class="op">(</span>rtree<span class="op">.</span>Root<span class="op">)</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> candidates</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Result</strong>: Typically 5-20 building candidates per ray
+(vs 12,000 total buildings).</p>
 <hr />
-<h2 id="beamforming-and-antenna-patterns">Beamforming and Antenna Patterns</h2>
-<h3 id="sector-antenna-model">Sector Antenna Model</h3>
-<p>A.T.O.M simulates realistic <strong>sector antennas</strong>:</p>
-<div class="highlight"><pre><span></span><code>Azimuth = 45°, Beam Width = 65°
+<h2 id="sector-eligibility">Sector Eligibility</h2>
+<h3 id="hard-sector-model">Hard Sector Model</h3>
+<p>A.T.O.M uses the configured azimuth and beam width as a hard
+geometric eligibility boundary:</p>
+<pre><code>Azimuth = 45°, Beam Width = 65°
 Coverage: 12.5° to 77.5°
 
               ↑ 0°
@@ -1805,113 +349,113 @@ Coverage: 12.5° to 77.5°
       |   (Gain = 0 dBi)  |
        \               /
         \─────────────/
-             θ = 65°
-</code></pre></div>
-<h3 id="gain-function">Gain Function</h3>
-<p>Power gain (or loss) as function of azimuth offset from main lobe:</p>
-<div class="arithmatex">\[G(\theta) = -12 \left(\frac{\theta}{\text{Beam Width}}\right)^2 \quad \text{for } |\theta| &lt; \text{BW}/2\]</div>
-<div class="arithmatex">\[G(\theta) = -24 \quad \text{for } |\theta| \geq \text{BW}/2 \text{ (sidelobe)}\]</div>
-<h3 id="impact-on-coverage">Impact on Coverage</h3>
-<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">ApplyBeamforming</span><span class="p">(</span><span class="nx">direction</span><span class="w"> </span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">antenna_azimuth</span><span class="w"> </span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span>
-<span class="w">                      </span><span class="nx">beam_width</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">offset</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">abs</span><span class="p">(</span><span class="nx">normalize_angle</span><span class="p">(</span><span class="nx">direction</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">antenna_azimuth</span><span class="p">))</span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">offset</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="nx">beam_width</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="c1">// Main lobe: parabolic gain</span>
-<span class="w">        </span><span class="nx">gain</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">-</span><span class="mi">12</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="nx">offset</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="nx">beam_width</span><span class="o">/</span><span class="mi">2</span><span class="p">))^</span><span class="mi">2</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="c1">// Sidelobe: flat suppression</span>
-<span class="w">        </span><span class="nx">gain</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="o">-</span><span class="mi">24</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">gain</span>
-<span class="p">}</span>
-</code></pre></div>
+             θ = 65°</code></pre>
+<h3 id="eligibility-function">Eligibility Function</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> IsInsideSector<span class="op">(</span>direction <span class="dt">float64</span><span class="op">,</span> antennaAzimuth <span class="dt">float64</span><span class="op">,</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                    beamWidth <span class="dt">float64</span><span class="op">)</span> <span class="dt">bool</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    offset <span class="op">:=</span> abs<span class="op">(</span>normalize_angle<span class="op">(</span>direction <span class="op">-</span> antennaAzimuth<span class="op">))</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> offset <span class="op">&lt;=</span> beamWidth <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Samples outside the configured sector or radius do not contribute.
+Version 1 does not model sidelobes or a continuous antenna gain
+pattern.</p>
 <hr />
-<h2 id="ai-optimization-sweep-score-algorithm">AI Optimization: Sweep &amp; Score Algorithm</h2>
+<h2 id="deterministic-optimization-sweep--score-algorithm">Deterministic
+Optimization: Sweep &amp; Score Algorithm</h2>
 <h3 id="problem-statement">Problem Statement</h3>
-<p><strong>Find</strong>: The antenna azimuth that maximizes coverage area</p>
-<p><strong>Constraints</strong>:
-- Distance range: 50 m to 5 km
-- Beam width: fixed (e.g., 65°)
-- Frequency: fixed (e.g., 5G)</p>
+<p><strong>Find</strong>: The antenna azimuth that best serves
+demand-weighted coverage</p>
+<p><strong>Constraints</strong>:</p>
+<ul>
+<li>Distance range: 50 m to 5 km</li>
+<li>Beam width: user configured</li>
+<li>Frequency: user selected</li>
+</ul>
 <h3 id="algorithm">Algorithm</h3>
-<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">OptimizeAzimuth</span><span class="p">(</span><span class="nx">tx</span><span class="w"> </span><span class="nx">Location</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">bestAzimuth</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">0.0</span>
-<span class="w">    </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">0.0</span>
-
-<span class="w">    </span><span class="c1">// Sweep all azimuths in 5° increments</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">360</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="c1">// Run simulation at this azimuth</span>
-<span class="w">        </span><span class="nx">rays</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">TraceRays</span><span class="p">(</span><span class="nx">tx</span><span class="p">,</span><span class="w"> </span><span class="nx">frequency</span><span class="p">,</span><span class="w"> </span><span class="nx">GetCoverageGrid</span><span class="p">())</span>
-
-<span class="w">        </span><span class="c1">// Apply beamforming gain</span>
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="nx">ray</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">rays</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nx">gain</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ApplyBeamforming</span><span class="p">(</span><span class="nx">ray</span><span class="p">.</span><span class="nx">direction</span><span class="p">,</span><span class="w"> </span><span class="nx">azimuth</span><span class="p">,</span><span class="w"> </span><span class="mi">65</span><span class="p">)</span>
-<span class="w">            </span><span class="nx">ray</span><span class="p">.</span><span class="nx">rxPower</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">gain</span>
-<span class="w">        </span><span class="p">}</span>
-
-<span class="w">        </span><span class="c1">// Calculate coverage area (sum of squared distances above threshold)</span>
-<span class="w">        </span><span class="nx">coverage</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mf">0.0</span>
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="nx">ray</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="nx">rays</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">ray</span><span class="p">.</span><span class="nx">rxPower</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nx">USABLE_THRESHOLD</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nx">coverage</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">ray</span><span class="p">.</span><span class="nx">distance</span><span class="p">^</span><span class="mi">2</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">}</span>
-
-<span class="w">        </span><span class="c1">// Track best</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">coverage</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">coverage</span>
-<span class="w">            </span><span class="nx">bestAzimuth</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">azimuth</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">bestAzimuth</span>
-<span class="p">}</span>
-</code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> OptimizeAzimuth<span class="op">(</span>tx Location<span class="op">,</span> request SimulationRequest<span class="op">)</span> <span class="dt">float64</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    bestAzimuth <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    bestScore <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Sweep all azimuths in 10° increments</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> azimuth <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> azimuth <span class="op">&lt;</span> <span class="dv">360</span><span class="op">;</span> azimuth <span class="op">+=</span> <span class="dv">10</span> <span class="op">{</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Run simulation at this azimuth</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        rays <span class="op">:=</span> TraceSector<span class="op">(</span>tx<span class="op">,</span> request<span class="op">.</span>withAzimuth<span class="op">(</span>azimuth<span class="op">))</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Track unique buildings reached by the sector</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        demandScore <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        residentialScore <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        hitBuildings <span class="op">:=</span> NewSet<span class="op">()</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> ray in rays <span class="op">{</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> building in ray<span class="op">.</span>hitBuildings <span class="op">{</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> hitBuildings<span class="op">.</span>add<span class="op">(</span>building<span class="op">.</span>id<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>                    demandScore <span class="op">+=</span> building<span class="op">.</span>demandWeight <span class="op">*</span> <span class="dv">10000</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>                    residentialScore <span class="op">+=</span> building<span class="op">.</span>residentialDemand <span class="op">*</span> <span class="dv">10000</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Coverage is capped and used as a tie-breaker</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        coverageTieBreaker <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> ray in rays <span class="op">{</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>            coverageTieBreaker <span class="op">+=</span> min<span class="op">(</span>ray<span class="op">.</span>distance<span class="op">,</span> <span class="dv">500</span><span class="op">)</span> <span class="op">/</span> <span class="dv">500</span> <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        score <span class="op">:=</span> demandScore <span class="op">+</span> residentialScore <span class="op">+</span> coverageTieBreaker</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Track best</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> score <span class="op">&gt;</span> bestScore <span class="op">{</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>            bestScore <span class="op">=</span> score</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>            bestAzimuth <span class="op">=</span> azimuth</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bestAzimuth</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3 id="complexity-analysis">Complexity Analysis</h3>
 <ul>
 <li><strong>Loop iterations</strong>: 360° / 5° = 72</li>
-<li><strong>Per iteration</strong>:</li>
+<li><strong>Per iteration</strong>:
+<ul>
 <li>Ray tracing: O(90,000 rays × log n intersections) ~1 second</li>
 <li>Coverage calculation: O(90,000)</li>
+</ul></li>
 <li><strong>Total time</strong>: ~72 seconds (naive)</li>
 <li><strong>Optimized time</strong>: ~250 ms (with parallelization)</li>
 </ul>
 <h3 id="parallelization">Parallelization</h3>
-<p>Go's Goroutines enable <strong>embarrassingly parallel</strong> optimization:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">// Create worker pool</span>
-<span class="kd">type</span><span class="w"> </span><span class="nx">Job</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">azimuth</span><span class="w"> </span><span class="kt">float64</span>
-<span class="p">}</span>
-
-<span class="kd">type</span><span class="w"> </span><span class="nx">Result</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">azimuth</span><span class="w"> </span><span class="kt">float64</span>
-<span class="w">    </span><span class="nx">coverage</span><span class="w"> </span><span class="kt">float64</span>
-<span class="p">}</span>
-
-<span class="c1">// Dispatch all azimuths to workers</span>
-<span class="nx">jobs</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">chan</span><span class="w"> </span><span class="nx">Job</span><span class="p">,</span><span class="w"> </span><span class="mi">72</span><span class="p">)</span>
-<span class="nx">results</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">chan</span><span class="w"> </span><span class="nx">Result</span><span class="p">,</span><span class="w"> </span><span class="mi">72</span><span class="p">)</span>
-
-<span class="c1">// 4 workers process in parallel</span>
-<span class="k">for</span><span class="w"> </span><span class="nx">w</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="nx">w</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="nx">w</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">go</span><span class="w"> </span><span class="nx">worker</span><span class="p">(</span><span class="nx">jobs</span><span class="p">,</span><span class="w"> </span><span class="nx">results</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="k">for</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">360</span><span class="p">;</span><span class="w"> </span><span class="nx">azimuth</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">jobs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nx">Job</span><span class="p">{</span><span class="nx">azimuth</span><span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// Collect results</span>
-<span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">72</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">result</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&lt;-</span><span class="nx">results</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">coverage</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">bestCoverage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">coverage</span>
-<span class="w">        </span><span class="nx">bestAzimuth</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">azimuth</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
+<p>Go's Goroutines enable <strong>embarrassingly parallel</strong>
+optimization:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode go"><code class="sourceCode go"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Create worker pool</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Job <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    azimuth <span class="dt">float64</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Result <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    azimuth <span class="dt">float64</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    coverage <span class="dt">float64</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Dispatch all azimuths to workers</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>jobs <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> Job<span class="op">,</span> <span class="dv">72</span><span class="op">)</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>results <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> Result<span class="op">,</span> <span class="dv">72</span><span class="op">)</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co">// 4 workers process in parallel</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> w <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> w <span class="op">&lt;=</span> <span class="dv">4</span><span class="op">;</span> w<span class="op">++</span> <span class="op">{</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">go</span> worker<span class="op">(</span>jobs<span class="op">,</span> results<span class="op">)</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> azimuth <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> azimuth <span class="op">&lt;</span> <span class="dv">360</span><span class="op">;</span> azimuth <span class="op">+=</span> <span class="dv">5</span> <span class="op">{</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    jobs <span class="op">&lt;-</span> Job<span class="op">{</span>azimuth<span class="op">}</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co">// Collect results</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;=</span> <span class="dv">72</span><span class="op">;</span> i<span class="op">++</span> <span class="op">{</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    result <span class="op">:=</span> <span class="op">&lt;-</span>results</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> result<span class="op">.</span>coverage <span class="op">&gt;</span> bestCoverage <span class="op">{</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        bestCoverage <span class="op">=</span> result<span class="op">.</span>coverage</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        bestAzimuth <span class="op">=</span> result<span class="op">.</span>azimuth</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><strong>Result</strong>: 4× speedup on quad-core machine.</p>
 <hr />
 <h2 id="performance-characteristics">Performance Characteristics</h2>
@@ -1941,8 +485,8 @@ Coverage: 12.5° to 77.5°
 <td>O(log n)</td>
 </tr>
 <tr>
-<td>90,000 rays</td>
-<td>~2 seconds</td>
+<td>Up to 25,000 returned ray features</td>
+<td>Bounded</td>
 <td>O(n log n) parallelized</td>
 </tr>
 <tr>
@@ -1979,8 +523,8 @@ Coverage: 12.5° to 77.5°
 <td>2 MB</td>
 </tr>
 <tr>
-<td>Working memory per request</td>
-<td>5 MB</td>
+<td>Returned ray features per request</td>
+<td>25,000 maximum</td>
 </tr>
 <tr>
 <td><strong>Total footprint</strong></td>
@@ -1989,125 +533,90 @@ Coverage: 12.5° to 77.5°
 </tbody>
 </table>
 <hr />
-<h2 id="accuracy-limitations">Accuracy &amp; Limitations</h2>
-<h3 id="accuracy-levels">Accuracy Levels</h3>
+<h2 id="validation--limitations">Validation &amp; Limitations</h2>
+<h3 id="response-complexity-bound">Response Complexity Bound</h3>
+<p>Before ray allocation, the API requires
+<code>rays × ceil(radius_m / 25) ≤ 25,000</code>. The same atomic budget
+is shared by all ray workers and counts additional features created when
+building intersections split a 25-meter base segment. If the actual
+count reaches the ceiling, workers cancel the request before response
+assembly and serialization. Response assembly independently checks the
+ceiling, sizes its flattened slice from the actual count, and releases
+the per-ray slices when the top-level operation finishes.</p>
+<h3 id="model-confidence">Model Confidence</h3>
 <table>
 <thead>
 <tr>
 <th>Aspect</th>
-<th>Accuracy</th>
+<th>Status</th>
 <th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>FSPL equation</td>
-<td>±0.1 dB</td>
-<td>Theoretical perfect</td>
+<td>Deterministic</td>
+<td>Standard free-space equation</td>
 </tr>
 <tr>
-<td>Material attenuation</td>
-<td>±3 dB</td>
-<td>Depends on OSM data quality</td>
+<td>Wall attenuation</td>
+<td>Approximation</td>
+<td>Fixed by selected frequency family</td>
 </tr>
 <tr>
 <td>Wall intersection</td>
-<td>±100%</td>
-<td>Binary: either blocks or doesn't</td>
+<td>Deterministic</td>
+<td>Binary geometric intersection against loaded footprints</td>
 </tr>
 <tr>
-<td>Real-world validation</td>
-<td>±5 dB</td>
-<td>Tested against field measurements</td>
+<td>Field calibration</td>
+<td>Not completed</td>
+<td>Validate estimates before deployment decisions</td>
 </tr>
 </tbody>
 </table>
 <h3 id="model-limitations">Model Limitations</h3>
-<ol>
-<li><strong>Flat Earth</strong>: No terrain elevation (can add with GeoTIFF)</li>
-<li><strong>No multipath</strong>: Doesn't model reflections/scattering</li>
-<li><strong>Ideal antennas</strong>: Assumes perfect omnidirectional at low freq</li>
-<li><strong>Static buildings</strong>: Doesn't model moving obstructions</li>
+<ol type="1">
+<li><strong>Flat Earth</strong>: No terrain elevation (can add with
+GeoTIFF)</li>
+<li><strong>No multipath</strong>: Doesn't model
+reflections/scattering</li>
+<li><strong>Ideal antennas</strong>: Assumes perfect omnidirectional at
+low freq</li>
+<li><strong>Static buildings</strong>: Doesn't model moving
+obstructions</li>
 <li><strong>Weather</strong>: No rain/weather fading</li>
 </ol>
 <h3 id="when-to-use-atom">When to Use A.T.O.M</h3>
-<p>✅ <strong>Good for</strong>:
-- Network planning and site selection
-- Quick feasibility studies
-- Education and training
-- Comparison between sites
-- Coverage mapping</p>
-<p>❌ <strong>Not suitable for</strong>:
-- Detailed link budget analysis
-- Precise handover prediction
-- Interference modeling
-- Non-stationary targets</p>
+<p>✅ <strong>Good for</strong>:</p>
+<ul>
+<li>Network planning and site selection</li>
+<li>Quick feasibility studies</li>
+<li>Education and training</li>
+<li>Comparison between sites</li>
+<li>Coverage mapping</li>
+</ul>
+<p>❌ <strong>Not suitable for</strong>:</p>
+<ul>
+<li>Detailed link budget analysis</li>
+<li>Precise handover prediction</li>
+<li>Interference modeling</li>
+<li>Non-stationary targets</li>
+</ul>
 <hr />
-<p><strong>Next</strong>: Explore the <a href="api.html">API Reference</a> to integrate A.T.O.M into your systems.</p>
+<p><strong>Next</strong>: Explore the <a href="./api.html">API
+Reference</a> to integrate A.T.O.M into your systems.</p>
+      </div>
+    </article>
+  </main>
 
-
-
-
-
-
-
-
-
-
-
-
-                
-              </article>
-            </div>
-          
-          
-  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
-
-<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
-        </div>
-        
-          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
-</button>
-        
-      </main>
-      
-        <footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
-  
-</div>
-      
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
     </div>
-  </div>
-</footer>
-      
-    </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    
-    
-    
-      
-      
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-    
-    
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
-      
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-      
-    
-  </body>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
 </html>

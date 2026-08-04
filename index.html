@@ -1,1093 +1,251 @@
-
 <!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
-      
-      
-        <meta name="author" content="Berk Ünsal">
-      
-      
-        <link rel="canonical" href="https://docs.atom.berkunsal.com/index.html">
-      
-      
-      
-        <link rel="next" href="overview.html">
-      
-      
-        
-      
-      
-      <link rel="icon" href="../icon/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
-    
-    
-      
-        <title>A.T.O.M Documentation</title>
-      
-    
-    
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
-      
-      
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Documentation for A.T.O.M, the Ankara Telecom Optimization Model." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
-
-    
-    
-      
-        <script src="https://unpkg.com/iframe-worker/shim"></script>
-      
-    
-    
-      
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
-    
-    
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-    
-      
-
-    
-    
-  </head>
-  
-  
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#welcome-to-atom" class="md-skip">
-          Skip to content
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-    
-      
-
-<header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            A.T.O.M Documentation
-          </span>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
         </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              Home
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
-    
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
-    
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-</form>
-      
-    
-    
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
-    
-    
-    
-      
-      
-        <label class="md-header__button md-icon" for="__search">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-        <div class="md-search__suggest" data-md-component="search-suggest"></div>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
           </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
         </div>
       </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html" aria-current="page">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
     </div>
-  </div>
-</div>
-      
-    
-    
-  </nav>
-  
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-    
-  
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="index.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Home
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="overview.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Overview
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="features.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Features
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="architecture.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="visualization.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Propagation Visualization
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="algorithms.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Algorithms & Physics
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="api.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  API Reference
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="getting-started.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Getting Started
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="deployment.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Deployment
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="faq.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  FAQ
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="contributing.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Contributing
-
-      </a>
-    </li>
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    A.T.O.M Documentation
-  </label>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="index.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#core-capabilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Capabilities
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-links" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Links
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-status" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Project Status
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#get-started-in-2-minutes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Get Started in 2 Minutes
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="overview.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="features.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Features
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="visualization.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Propagation Visualization
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="algorithms.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Algorithms & Physics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="getting-started.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Getting Started
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="deployment.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="faq.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="contributing.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-atom" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is A.T.O.M?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#core-capabilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Capabilities
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-links" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Links
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-status" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Project Status
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#get-started-in-2-minutes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Get Started in 2 Minutes
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          
-            <div class="md-content" data-md-component="content">
-              
-              <article class="md-content__inner md-typeset">
-                
-                  
-
-
-
-<h1 id="welcome-to-atom">Welcome to A.T.O.M</h1>
-<p><strong>Ankara Telecom Optimization Model</strong> is an enterprise-grade, AI-driven RF (Radio Frequency) propagation predictor and network planning simulation platform.</p>
-<p>Built with cutting-edge technologies in spatial algorithms, high-performance concurrency, and telecommunications physics, A.T.O.M enables telecommunications engineers to visualize, simulate, and optimize cellular networks across 4G LTE, 5G mmWave, and 6G Sub-THz frequency bands in complex urban environments.</p>
-<h2 id="what-is-atom">What is A.T.O.M?</h2>
-<p>A.T.O.M is a full-stack spatial simulation engine that:</p>
-<ul>
-<li><strong>Predicts signal coverage</strong> using physics-based RF propagation models</li>
-<li><strong>Optimizes antenna placement</strong> with AI-driven geometric algorithms</li>
-<li><strong>Visualizes networks</strong> with interactive GeoJSON heatmaps and Leaflet mapping</li>
-<li><strong>Scales efficiently</strong> through Go's Goroutine concurrency and in-memory spatial indexing</li>
-<li><strong>Leverages real-world data</strong> from OpenStreetMap (OSM) and OpenCellID networks</li>
-</ul>
-<h2 id="core-capabilities">Core Capabilities</h2>
-<table>
-<thead>
-<tr>
-<th>Capability</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Multi-Generation Physics</strong></td>
-<td>Accurate FSPL models for 4G (2.6 GHz), 5G (28 GHz), and 6G (140 GHz)</td>
-</tr>
-<tr>
-<td><strong>Raytracing Engine</strong></td>
-<td>Fast polygon intersection testing with real-time heatmap rendering</td>
-</tr>
-<tr>
-<td><strong>Building Penetration</strong></td>
-<td>Frequency-dependent material attenuation for concrete, office, and forest</td>
-</tr>
-<tr>
-<td><strong>Beamforming</strong></td>
-<td>Sector antenna simulation with adjustable azimuth and beam width</td>
-</tr>
-<tr>
-<td><strong>AI Optimization</strong></td>
-<td>Automatic coverage maximization and antenna positioning</td>
-</tr>
-<tr>
-<td><strong>GeoJSON Export</strong></td>
-<td>Native support for web-based visualization and GIS integration</td>
-</tr>
-</tbody>
-</table>
-<h2 id="quick-links">Quick Links</h2>
-<ul>
-<li><a href="overview.html">📖 Overview</a> - Project background and use cases</li>
-<li><a href="features.html">⚡ Features</a> - Detailed feature breakdown</li>
-<li><a href="architecture.html">🏗️ Architecture</a> - System design and tech stack</li>
-<li><a href="visualization.html">🎨 Visualization</a> - RF propagation examples</li>
-<li><a href="algorithms.html">📐 Algorithms</a> - Physics models and optimization methods</li>
-<li><a href="getting-started.html">🚀 Getting Started</a> - Installation and first run</li>
-<li><a href="api.html">🔌 API Reference</a> - REST API endpoints and parameters</li>
-<li><a href="deployment.html">🐳 Deployment</a> - Docker and production setup</li>
-</ul>
-<hr />
-<h2 id="project-status">Project Status</h2>
-<p><strong>Current Release</strong>: v1.0<br />
-<strong>Status</strong>: Production-Ready<br />
-<strong>License</strong>: MIT</p>
-<h2 id="get-started-in-2-minutes">Get Started in 2 Minutes</h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># Build the Docker image</span>
-docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>atom-simulator<span class="w"> </span>.
-
-<span class="c1"># Run the container</span>
-docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span>atom-simulator
-
-<span class="c1"># Open http://localhost:8080 in your browser</span>
-</code></pre></div>
-<p>For detailed setup instructions, see the <a href="getting-started.html">Getting Started</a> guide.</p>
-<hr />
-<p><strong>Built with precision. Optimized for scale. Ready for production.</strong></p>
-<p>Architected and developed by <a href="https://berkunsal.com">Berk Ünsal</a></p>
-
-
-
-
-
-
-
-
-
-
-
-
-                
-              </article>
-            </div>
-          
-          
-  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
-
-<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+  </header>
+
+  <main class="page-shell" id="main-content">
+    <section class="page-hero home-hero" aria-labelledby="home-title">
+      <div>
+        <span class="hero-label">Planning-grade RF documentation</span>
+        <h1 id="home-title">Understand the model. Run the system. Inspect every result.</h1>
+        <p>
+          A.T.O.M is a local-first telecom planning workspace for deterministic 4G LTE, 5G mmWave,
+          and 6G Sub-THz propagation analysis across Ankara. These docs explain how the focused
+          workspace, Go RF engines, spatial data, interference model, and optional 5G Core path fit together.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="./download.html">Run A.T.O.M locally</a>
+          <a class="button" href="./architecture.html">Explore the architecture</a>
         </div>
-        
-          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
-</button>
-        
-      </main>
-      
-        <footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
-  
-</div>
-      
+      </div>
+      <figure class="hero-preview">
+          <img src="./assets/focused-workspace.jpg" alt="The current A.T.O.M focused workspace showing the tool rail, overlay drawer, and Ankara map" />
+        <figcaption>Current workspace: compact command bar, focused tools, persistent map, and contextual results.</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-section" aria-labelledby="start-heading">
+      <div class="section-heading">
+        <h2 id="start-heading">Choose your starting point</h2>
+        <p>
+          The documentation is organized around two questions: how the system works internally,
+          and how to get from a fresh clone to a useful RF planning result.
+        </p>
+      </div>
+      <div class="task-links">
+        <a class="task-link" href="./architecture.html">
+          <span class="task-type">System design</span>
+          <h3>Trace data from the browser to the RF engines</h3>
+          <p>See component boundaries, request lifecycles, R-tree queries, worker limits, interference calculations, and 5G communication paths.</p>
+          <strong>Open architecture guide &rarr;</strong>
+        </a>
+        <a class="task-link" href="./download.html">
+          <span class="task-type">Installation and operation</span>
+          <h3>Download, start, and use the current application</h3>
+          <p>Clone the Git LFS dataset, run Docker Compose, verify readiness, and complete sector, network, interference, and report workflows.</p>
+          <strong>Open download guide &rarr;</strong>
+        </a>
+      </div>
+    </section>
+
+    <section class="content-section" id="capabilities" aria-labelledby="capabilities-heading">
+      <div class="section-heading">
+        <h2 id="capabilities-heading">What A.T.O.M evaluates</h2>
+        <p>
+          Each analysis is exposed as a distinct workflow so radio configuration, spatial evidence,
+          and output interpretation remain connected without filling the map with permanent controls.
+        </p>
+      </div>
+      <div class="feature-ledger">
+        <article class="feature-row">
+          <h3>Sector propagation</h3>
+          <p>Samples a directional beam with FSPL, antenna gain, building intersections, and frequency-dependent cumulative wall loss.</p>
+          <span class="feature-output">Rays, Rx power, range, gaps</span>
+        </article>
+        <article class="feature-row">
+          <h3>Demand optimization</h3>
+          <p>Sweeps sector azimuths or selected-cell plans against POI demand, residential-density demand, and an overlap-aware network score.</p>
+          <span class="feature-output">Before/after score and azimuths</span>
+        </article>
+        <article class="feature-row">
+          <h3>Interference quality</h3>
+          <p>Evaluates serving-cell selection and co-channel interference on an adaptive grid for modeled RSRP, SINR, RSRQ, and RSSI.</p>
+          <span class="feature-output">Quality surface and demand impact</span>
+        </article>
+        <article class="feature-row">
+          <h3>5G communication path</h3>
+          <p>Maps selected 5G cells to gNBs and distinguishes direct Xn coordination, AMF/N2 fallback, and UPF/N3 session traffic.</p>
+          <span class="feature-output">Routes, functions, sessions, events</span>
+        </article>
+        <article class="feature-row">
+          <h3>Planning reports</h3>
+          <p>Combines the active plan, RF evidence, interference assumptions, Core Lab state, comparisons, and map context for review.</p>
+          <span class="feature-output">Print/PDF and Markdown</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" id="workflow" aria-labelledby="workflow-heading">
+      <div class="section-heading">
+        <h2 id="workflow-heading">One planning loop</h2>
+        <p>
+          The application keeps the map stable while one focused tool is open. Configuration changes
+          invalidate stale analysis, and only the latest matching request is allowed to update the workspace.
+        </p>
+      </div>
+      <div class="flow-strip" aria-label="A.T.O.M planning workflow">
+        <div class="flow-step">
+          <span>01</span>
+          <strong>Set context</strong>
+          <small>Choose a project, mode, technology, transmit power, and cells.</small>
+        </div>
+        <div class="flow-step">
+          <span>02</span>
+          <strong>Shape propagation</strong>
+          <small>Set rays, radius, azimuth, and sector beam width.</small>
+        </div>
+        <div class="flow-step">
+          <span>03</span>
+          <strong>Run analysis</strong>
+          <small>Evaluate a sector, network plan, optimization, or interference surface.</small>
+        </div>
+        <div class="flow-step">
+          <span>04</span>
+          <strong>Inspect spatially</strong>
+          <small>Select towers, gaps, paths, and radio-quality samples on the map.</small>
+        </div>
+        <div class="flow-step">
+          <span>05</span>
+          <strong>Compare and export</strong>
+          <small>Save and compare scenarios, validate evidence, then export reproducible reports.</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" id="model-boundary" aria-labelledby="boundary-heading">
+      <div class="section-heading">
+        <h2 id="boundary-heading">Know the confidence boundary</h2>
+        <p>
+          A.T.O.M is intentionally deterministic and inspectable. Its results support planning,
+          education, and system evaluation; they do not replace calibrated propagation tools or field measurements.
+        </p>
+      </div>
+      <div class="split-content">
+        <div class="info-band">
+          <span class="info-icon" aria-hidden="true">RF</span>
+          <div>
+            <strong>Local computation, explicit inputs</strong>
+            <p>Validated dataset packs are loaded into memory. Projects preserve exact requests, model versions, and dataset identity for repeatable comparisons.</p>
+          </div>
+        </div>
+        <div class="info-band limit">
+          <span class="info-icon" aria-hidden="true">!</span>
+          <div>
+            <strong>Planning estimate, not a measurement</strong>
+            <p>Fast fading, reflection-heavy multipath, multiple-edge diffraction, MIMO scheduling, vendor antenna diagrams, and uplink interference remain outside the model; the 2.5D path tool is an inspectable planning approximation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" id="reference" aria-labelledby="reference-heading">
+      <div class="section-heading">
+        <h2 id="reference-heading">Reference library</h2>
+        <p>Use the focused guides above for orientation, then move into the detailed API, algorithms, deployment, and release history.</p>
+      </div>
+      <div class="reference-list">
+        <a href="./api.html"><span>REST API reference</span><span>Endpoints and contracts</span></a>
+        <a href="./algorithms.html"><span>Algorithms and RF physics</span><span>Equations and geometry</span></a>
+        <a href="./features.html"><span>Capability details</span><span>Supported workflows</span></a>
+        <a href="./visualization.html"><span>Reading propagation maps</span><span>Visual interpretation</span></a>
+        <a href="./deployment.html"><span>Production deployment</span><span>Operations guide</span></a>
+        <a href="./dataset-pack-studio.html"><span>Dataset Pack Studio</span><span>Build arbitrary-region packs</span></a>
+        <a href="./modeling-limits.html"><span>Modeling limits</span><span>Confidence boundary</span></a>
+        <a href="./faq.html"><span>FAQ and troubleshooting</span><span>Common questions</span></a>
+        <a href="./changelog.html"><span>Project changelog</span><span>Releases and updates</span></a>
+        <a href="./contributing.html"><span>Contributor guide</span><span>Development workflow</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>A.T.O.M documentation. Deterministic, inspectable, and explicit about model limits.</span>
+      <nav class="footer-links" aria-label="Footer links">
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer">GitHub</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./download.html">Download</a>
+        <a href="https://berkunsal.com">Berk Unsal</a>
+        <span>&copy; <span data-current-year>2026</span></span>
+      </nav>
     </div>
-  </div>
-</footer>
-      
-    </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    
-    
-    
-      
-      
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-    
-    
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
-      
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-      
-    
-  </body>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
 </html>

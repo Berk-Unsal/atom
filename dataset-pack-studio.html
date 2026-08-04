@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Inspect, repair, reproject, package,
+validate, install, and safely switch arbitrary-region A.T.O.M dataset
+packs." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Dataset Pack Studio | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Dataset Pack
+Studio page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#environment"
+      id="toc-environment">Environment</a></li>
+      <li><a href="#inspect-sources-before-building"
+      id="toc-inspect-sources-before-building">Inspect Sources Before
+      Building</a></li>
+      <li><a href="#build-a-schema-v2-pack"
+      id="toc-build-a-schema-v2-pack">Build A Schema-v2 Pack</a></li>
+      <li><a href="#manifest-schema-v2"
+      id="toc-manifest-schema-v2">Manifest Schema v2</a></li>
+      <li><a href="#validate-and-install"
+      id="toc-validate-and-install">Validate And Install</a></li>
+      <li><a href="#required-review" id="toc-required-review">Required
+      Review</a></li>
+      <li><a href="#related-references"
+      id="toc-related-references">Related References</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Local data tooling</span>
+        <h1>Dataset Pack Studio</h1>
+        <p>Inspect, repair, reproject, package, validate, install, and
+safely switch arbitrary-region A.T.O.M dataset packs.</p>
+        <div class="hero-actions">
+          <a class="button" href="./dataset-pack-studio.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Dataset Pack Studio builds portable, local A.T.O.M dataset packs for
+arbitrary regions. It inspects source coverage before build, repairs
+vector geometry, reprojects vectors to EPSG:4326, crops to an optional
+planning extent, writes deterministic GeoJSON, hashes every emitted
+layer, and produces a schema-v2 manifest with provenance and QA
+evidence.</p>
+<p>It does not download data from a browser or upload source data to a
+service. Input processing and runtime switching remain local.</p>
+<h2 id="environment">Environment</h2>
+<p>Install the hash-locked pipeline environment:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> venv data-pipeline/.venv</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">data-pipeline/.venv/bin/pip</span> install <span class="at">--require-hashes</span> <span class="at">-r</span> data-pipeline/Requirements.txt</span></code></pre></div>
+<p>The Studio directly uses GeoPandas, Shapely, and PyProj. Supported
+vector inputs are formats readable by GeoPandas, including GeoJSON and
+GeoPackage. Terrain is copied as a binary layer and must have truthful
+CRS and unit metadata.</p>
+<h2 id="inspect-sources-before-building">Inspect Sources Before
+Building</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">data-pipeline/.venv/bin/python</span> data-pipeline/pack_studio.py inspect <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--towers</span> /data/izmir/cells.gpkg <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--buildings</span> /data/izmir/buildings.gpkg <span class="dt">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--bounds</span> 26.80,38.30,27.35,38.65 <span class="dt">\</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--json</span></span></code></pre></div>
+<p>The preview reports source and output CRS,
+input/invalid/repaired/dropped/output geometry counts, per-field missing
+counts, output bounds, and requested-area coverage. Use
+<code>--towers-crs</code> or another <code>--&lt;layer&gt;-crs</code>
+override only when a source has no embedded CRS and the supplied value
+is authoritative.</p>
+<h2 id="build-a-schema-v2-pack">Build A Schema-v2 Pack</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">data-pipeline/.venv/bin/python</span> data-pipeline/pack_studio.py build <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--id</span> izmir-planning-2026 <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> <span class="st">&quot;Izmir Planning Dataset&quot;</span> <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--version</span> 2026.07 <span class="dt">\</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output</span> /datasets/izmir-planning-2026 <span class="dt">\</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--source</span> <span class="st">&quot;Municipal building inventory, 2026-06&quot;</span> <span class="dt">\</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--source</span> <span class="st">&quot;Operator-authorized planning export, 2026-07&quot;</span> <span class="dt">\</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--license</span> <span class="st">&quot;Municipal Open Data License&quot;</span> <span class="dt">\</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--license</span> <span class="st">&quot;Internal planning use only&quot;</span> <span class="dt">\</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--confidence</span> <span class="st">&quot;Planning-grade cells; heights are partially surveyed.&quot;</span> <span class="dt">\</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">--bounds</span> 26.80,38.30,27.35,38.65 <span class="dt">\</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">--towers</span> /data/izmir/cells.gpkg <span class="dt">\</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">--buildings</span> /data/izmir/buildings.gpkg <span class="dt">\</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--terrain</span> /data/izmir/elevation.tif <span class="dt">\</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">--terrain-crs</span> EPSG:32635 <span class="dt">\</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">--terrain-units</span> m <span class="dt">\</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">--clutter</span> /data/izmir/clutter.gpkg <span class="dt">\</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">--building-heights</span> /data/izmir/heights.gpkg <span class="dt">\</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">--materials</span> /data/izmir/materials.gpkg</span></code></pre></div>
+<p>The output directory must be absent or empty. The Studio stages the
+pack beside the destination and publishes it only after all layers and
+the manifest are complete. Required tower/building layers are normalized
+to <code>towers.geojson</code> and <code>buildings.geojson</code>;
+optional layers use stable filenames. Every referenced file receives a
+SHA-256 entry.</p>
+<h2 id="manifest-schema-v2">Manifest Schema v2</h2>
+<p>Schema v2 retains the required identity, EPSG:4326 bounds, sources,
+licenses, confidence note, files, and hashes from v1, and adds:</p>
+<ul>
+<li>Per-layer kind, format, CRS, optionality, source, license,
+confidence, and optional units.</li>
+<li>Geometry repair and output counts for each vector layer.</li>
+<li>Missing-field counts and requested/data coverage bounds.</li>
+<li>Optional <code>terrain</code>, <code>clutter</code>,
+<code>building_heights</code>, and <code>materials</code> files.</li>
+</ul>
+<p>The engine loads and validates optional-layer metadata. A supported
+north-up EPSG:4326 COG/GeoTIFF terrain layer is sampled by the 2.5D
+point-to-point path profiler. Fast sectors, interference, optimization,
+batch runs, and analytical surfaces remain terrain-independent. Clutter
+and separate height/material sidecar layers are not automatically
+joined; user-selected path-profile sensitivity inputs must not be
+interpreted as surveyed layer values.</p>
+<h2 id="validate-and-install">Validate And Install</h2>
+<p>Validate the finished pack with the same loader used by the
+server:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run ./cmd/validate-dataset /datasets/izmir-planning-2026</span></code></pre></div>
+<p>Set <code>ATOM_DATASET_DIR</code> to the initial pack. To enable the
+Data tool's installed-pack list and safe switching, set
+<code>ATOM_DATASETS_ROOT</code> to a directory that contains packs as
+immediate child directories:</p>
+<pre class="text"><code>/datasets/
+├── ankara-open-planning/manifest.json
+└── izmir-planning-2026/manifest.json</code></pre>
+<p>The runtime never accepts a filesystem path from the switch API.
+<code>POST /api/datasets/switch</code> accepts an installed manifest ID,
+resolves only entries beneath <code>ATOM_DATASETS_ROOT</code>, rejects
+duplicate IDs and symlink escapes, validates the candidate's geometry
+and hashes, then swaps the immutable in-memory pack. A failed load
+leaves the previous pack active. Configure
+<code>DATASET_ADMIN_API_KEY</code> at an origin gateway when dataset
+activation must be restricted.</p>
+<h2 id="required-review">Required Review</h2>
+<p>Before using a pack for a planning decision, review source authority,
+redistribution terms, missing RF fields, geometry repairs/drops,
+requested coverage ratio, coordinate reference systems, optional raster
+units, and whether confidence statements match the actual collection
+method. A successful hash or geometry validation proves integrity and
+structural usability, not operator accuracy.</p>
+<h2 id="related-references">Related References</h2>
+<ul>
+<li><a href="./deployment.html">Deployment</a></li>
+<li><a href="./api.html">REST API</a></li>
+<li><a href="./modeling-limits.html">Modeling limits</a></li>
+</ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

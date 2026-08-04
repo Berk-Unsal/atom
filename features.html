@@ -1,1937 +1,459 @@
-
 <!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-        <meta name="description" content="Ankara Telecom Optimization Model - AI-Driven RF Propagation Predictor">
-      
-      
-        <meta name="author" content="Berk Ünsal">
-      
-      
-        <link rel="canonical" href="https://docs.atom.berkunsal.com/features.html">
-      
-      
-        <link rel="prev" href="overview.html">
-      
-      
-        <link rel="next" href="architecture.html">
-      
-      
-        
-      
-      
-      <link rel="icon" href="../icon/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
-    
-    
-      
-        <title>Features - A.T.O.M Documentation</title>
-      
-    
-    
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
-      
-      
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="A structured inventory of planning
+modes, analyses, map evidence, reports, and supported radio
+technologies." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Capabilities | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
-
-    
-    
-      
-        <script src="https://unpkg.com/iframe-worker/shim"></script>
-      
-    
-    
-      
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
-    
-    
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-    
-      
-
-    
-    
-  </head>
-  
-  
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#features" class="md-skip">
-          Skip to content
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-    
-      
-
-<header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-header__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            A.T.O.M Documentation
-          </span>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
         </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              Features
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
-    
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
-    
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-</form>
-      
-    
-    
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
-    
-    
-    
-      
-      
-        <label class="md-header__button md-icon" for="__search">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-        <div class="md-search__suggest" data-md-component="search-suggest"></div>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
           </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
         </div>
       </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
     </div>
-  </div>
-</div>
-      
-    
-    
-  </nav>
-  
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="index.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Home
+  </header>
 
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="overview.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Overview
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    
-  
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="features.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Features
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="architecture.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="visualization.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Propagation Visualization
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="algorithms.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Algorithms & Physics
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="api.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  API Reference
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="getting-started.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Getting Started
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="deployment.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Deployment
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="faq.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  FAQ
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="contributing.html" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Contributing
-
-      </a>
-    </li>
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="index.html" title="A.T.O.M Documentation" class="md-nav__button md-logo" aria-label="A.T.O.M Documentation" data-md-component="logo">
-      
-  <img src="../icon/icon.svg" alt="logo">
-
-    </a>
-    A.T.O.M Documentation
-  </label>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="index.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="overview.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Features
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="features.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Features
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#multi-generation-physics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Multi-Generation Physics
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Multi-Generation Physics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#supported-frequency-bands" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Supported Frequency Bands
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#free-space-path-loss-fspl" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Free-Space Path Loss (FSPL)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#material-attenuation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Material Attenuation
-      
-    </span>
-  </a>
-  
-</li>
-        
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Capabilities page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#focused-planning-workspace"
+      id="toc-focused-planning-workspace">Focused Planning
+      Workspace</a></li>
+      <li><a href="#projects-and-scenarios"
+      id="toc-projects-and-scenarios">Projects And Scenarios</a></li>
+      <li><a href="#cell-inventory-and-rf-profiles"
+      id="toc-cell-inventory-and-rf-profiles">Cell Inventory And RF
+      Profiles</a></li>
+      <li><a href="#propagation-and-coverage"
+      id="toc-propagation-and-coverage">Propagation And
+      Coverage</a></li>
+      <li><a href="#demand-aware-planning"
+      id="toc-demand-aware-planning">Demand-Aware Planning</a></li>
+      <li><a href="#batch-experiments" id="toc-batch-experiments">Batch
+      Experiments</a></li>
+      <li><a href="#analytical-surfaces-and-gis-interchange"
+      id="toc-analytical-surfaces-and-gis-interchange">Analytical
+      Surfaces And GIS Interchange</a></li>
+      <li><a href="#interference-and-radio-quality"
+      id="toc-interference-and-radio-quality">Interference And Radio
+      Quality</a></li>
+      <li><a href="#candidate-site-recommendations"
+      id="toc-candidate-site-recommendations">Candidate Site
+      Recommendations</a></li>
+      <li><a href="#measurement-validation"
+      id="toc-measurement-validation">Measurement Validation</a></li>
+      <li><a href="#validated-dataset-packs"
+      id="toc-validated-dataset-packs">Validated Dataset Packs</a></li>
+      <li><a href="#5g-communication-paths"
+      id="toc-5g-communication-paths">5G Communication Paths</a></li>
+      <li><a href="#reproducibility-and-reports"
+      id="toc-reproducibility-and-reports">Reproducibility And
+      Reports</a></li>
+      <li><a href="#deliberately-out-of-scope"
+      id="toc-deliberately-out-of-scope">Deliberately Out Of
+      Scope</a></li>
       </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#segmented-heatmap-raytracing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Segmented Heatmap Raytracing
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Segmented Heatmap Raytracing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#color-coded-signal-strength" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Color-Coded Signal Strength
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ray-segmentation-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ray Segmentation Algorithm
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#frequency-dependent-penetration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Frequency-Dependent Penetration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Frequency-Dependent Penetration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#4g-propagation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4G Propagation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5g-mmwave-propagation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5G mmWave Propagation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6g-sub-thz-propagation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6G Sub-THz Propagation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#smart-beamforming" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Smart Beamforming
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Smart Beamforming">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#antenna-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Antenna Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sector-coverage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Sector Coverage
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ai-auto-optimization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        AI Auto-Optimization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="AI Auto-Optimization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#coverage-maximization-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Coverage Maximization Algorithm
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#interactive-visualization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Interactive Visualization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Interactive Visualization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#web-based-ui" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Web-Based UI
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#control-panel-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Control Panel Features
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#geojson-export" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GeoJSON Export
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="GeoJSON Export">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#benefits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Benefits
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-characteristics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Characteristics
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Characteristics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#scalability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Scalability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#concurrency" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Concurrency
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-sources" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Sources
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Sources">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#openstreetmap-osm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OpenStreetMap (OSM)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#opencellid" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OpenCellID
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#custom-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Custom Data
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
+    </aside>
 
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="visualization.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Propagation Visualization
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="algorithms.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Algorithms & Physics
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="getting-started.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Getting Started
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="deployment.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="faq.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="contributing.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#multi-generation-physics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Multi-Generation Physics
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Multi-Generation Physics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#supported-frequency-bands" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Supported Frequency Bands
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#free-space-path-loss-fspl" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Free-Space Path Loss (FSPL)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#material-attenuation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Material Attenuation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#segmented-heatmap-raytracing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Segmented Heatmap Raytracing
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Segmented Heatmap Raytracing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#color-coded-signal-strength" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Color-Coded Signal Strength
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ray-segmentation-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ray Segmentation Algorithm
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#frequency-dependent-penetration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Frequency-Dependent Penetration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Frequency-Dependent Penetration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#4g-propagation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4G Propagation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5g-mmwave-propagation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5G mmWave Propagation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6g-sub-thz-propagation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6G Sub-THz Propagation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#smart-beamforming" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Smart Beamforming
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Smart Beamforming">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#antenna-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Antenna Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sector-coverage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Sector Coverage
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ai-auto-optimization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        AI Auto-Optimization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="AI Auto-Optimization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#coverage-maximization-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Coverage Maximization Algorithm
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#interactive-visualization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Interactive Visualization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Interactive Visualization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#web-based-ui" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Web-Based UI
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#control-panel-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Control Panel Features
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#geojson-export" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GeoJSON Export
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="GeoJSON Export">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#benefits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Benefits
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-characteristics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Characteristics
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Characteristics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#scalability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Scalability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#concurrency" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Concurrency
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-sources" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Sources
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Sources">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#openstreetmap-osm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OpenStreetMap (OSM)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#opencellid" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OpenCellID
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#custom-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Custom Data
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          
-            <div class="md-content" data-md-component="content">
-              
-              <article class="md-content__inner md-typeset">
-                
-                  
-
-
-
-<h1 id="features">Features</h1>
-<p>A.T.O.M provides a comprehensive suite of RF simulation and optimization capabilities.</p>
-<h2 id="multi-generation-physics">Multi-Generation Physics</h2>
-<h3 id="supported-frequency-bands">Supported Frequency Bands</h3>
-<table>
-<thead>
-<tr>
-<th>Band</th>
-<th>Frequency</th>
-<th>Wavelength</th>
-<th>Primary Use Case</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>4G LTE</strong></td>
-<td>2.6 GHz</td>
-<td>11.5 cm</td>
-<td>Wide-area coverage</td>
-</tr>
-<tr>
-<td><strong>5G mmWave</strong></td>
-<td>28 GHz</td>
-<td>1.07 cm</td>
-<td>High-capacity urban</td>
-</tr>
-<tr>
-<td><strong>6G Sub-THz</strong></td>
-<td>140 GHz</td>
-<td>2.14 mm</td>
-<td>Ultra-high-capacity</td>
-</tr>
-</tbody>
-</table>
-<h3 id="free-space-path-loss-fspl">Free-Space Path Loss (FSPL)</h3>
-<p>All bands use the standard FSPL equation:</p>
-<div class="arithmatex">\[L = 20 \log_{10}(d) + 20 \log_{10}(f) + 20 \log_{10}\left(\frac{4\pi}{c}\right)\]</div>
-<p>Where:
-- <span class="arithmatex">\(d\)</span> = distance in meters
-- <span class="arithmatex">\(f\)</span> = frequency in Hz
-- <span class="arithmatex">\(c\)</span> = speed of light (3×10⁸ m/s)
-- <span class="arithmatex">\(L\)</span> = path loss in dB</p>
-<h3 id="material-attenuation">Material Attenuation</h3>
-<p>Building materials introduce frequency-dependent losses:</p>
-<table>
-<thead>
-<tr>
-<th>Material</th>
-<th>4G (2.6 GHz)</th>
-<th>5G (28 GHz)</th>
-<th>6G (140 GHz)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Concrete</td>
-<td>+35 dB</td>
-<td>+25 dB</td>
-<td>+40 dB</td>
-</tr>
-<tr>
-<td>Office/Glass</td>
-<td>+20 dB</td>
-<td>+15 dB</td>
-<td>+30 dB</td>
-</tr>
-<tr>
-<td>Forest/Foliage</td>
-<td>+8 dB</td>
-<td>+12 dB</td>
-<td>+20 dB</td>
-</tr>
-</tbody>
-</table>
-<h2 id="segmented-heatmap-raytracing">Segmented Heatmap Raytracing</h2>
-<h3 id="color-coded-signal-strength">Color-Coded Signal Strength</h3>
-<p>Rays are visualized with <strong>dynamic color gradients</strong> based on received signal strength (Rx dBm):</p>
-<ul>
-<li>🟢 <strong>Green</strong> (-50 to -70 dBm): Strong signal, excellent coverage</li>
-<li>🟡 <strong>Yellow</strong> (-70 to -90 dBm): Moderate signal, usable coverage</li>
-<li>🔴 <strong>Red</strong> (-90 to -110 dBm): Weak signal, marginal coverage</li>
-</ul>
-<h3 id="ray-segmentation-algorithm">Ray Segmentation Algorithm</h3>
-<p>Instead of single rays from TX to each point, A.T.O.M generates <strong>discrete segments</strong>:</p>
-<ol>
-<li>Start at transmitter antenna</li>
-<li>Cast ray toward target location</li>
-<li>Check polygon (building) intersections</li>
-<li>Apply cumulative wall loss</li>
-<li>Color segment based on final Rx dBm</li>
-<li>Export as GeoJSON linestring</li>
-</ol>
-<p>This enables:
-- Precise visualization of signal degradation
-- Identification of urban canyons and shadow areas
-- Intuitive understanding of frequency-band differences</p>
-<h2 id="frequency-dependent-penetration">Frequency-Dependent Penetration</h2>
-<h3 id="4g-propagation">4G Propagation</h3>
-<ul>
-<li><strong>Penetrates</strong> concrete buildings with cumulative losses</li>
-<li><strong>Diffracts</strong> over rooftops</li>
-<li><strong>Reaches</strong> interior locations with degradation</li>
-<li><strong>Result</strong>: Wide coverage area despite obstacles</li>
-</ul>
-<h3 id="5g-mmwave-propagation">5G mmWave Propagation</h3>
-<ul>
-<li><strong>Heavily attenuates</strong> through walls</li>
-<li><strong>Requires</strong> line-of-sight in many cases</li>
-<li><strong>Blocks</strong> at forest edges</li>
-<li><strong>Result</strong>: Tight, directional coverage in dense areas</li>
-</ul>
-<h3 id="6g-sub-thz-propagation">6G Sub-THz Propagation</h3>
-<ul>
-<li><strong>Nearly blocked</strong> by most building materials</li>
-<li><strong>Ultra-tight</strong> spatial requirements</li>
-<li><strong>Requires</strong> optimal beamforming angles</li>
-<li><strong>Result</strong>: Localized coverage with high spectral efficiency</li>
-</ul>
-<h2 id="smart-beamforming">Smart Beamforming</h2>
-<h3 id="antenna-parameters">Antenna Parameters</h3>
-<p>Each transmitter can be configured with:</p>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Range</th>
-<th>Effect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Azimuth</strong></td>
-<td>0° - 360°</td>
-<td>Horizontal direction of main lobe</td>
-</tr>
-<tr>
-<td><strong>Beam Width</strong></td>
-<td>5° - 180°</td>
-<td>Angular width of coverage sector</td>
-</tr>
-<tr>
-<td><strong>Tilt</strong></td>
-<td>-20° to +90°</td>
-<td>Vertical angle from horizontal</td>
-</tr>
-<tr>
-<td><strong>Power</strong></td>
-<td>0 - 50 dBm</td>
-<td>Transmit power level</td>
-</tr>
-</tbody>
-</table>
-<h3 id="sector-coverage">Sector Coverage</h3>
-<p>Beamforming creates <strong>directional sectors</strong> instead of omnidirectional patterns:</p>
-<ul>
-<li>Typical 3-sector setup: 120° coverage each</li>
-<li>Each sector independently optimizable</li>
-<li>Reduces interference between sectors</li>
-<li>Improves spectral efficiency</li>
-</ul>
-<h2 id="ai-auto-optimization">AI Auto-Optimization</h2>
-<h3 id="coverage-maximization-algorithm">Coverage Maximization Algorithm</h3>
-<p>A.T.O.M uses a <strong>sweep-and-score</strong> geometric optimization to find the optimal antenna azimuth:</p>
-<p><strong>Algorithm</strong>:</p>
-<ol>
-<li>Define candidate azimuth angles (5° intervals)</li>
-<li>For each azimuth:</li>
-<li>Cast rays to surrounding area</li>
-<li>Calculate coverage area: <span class="arithmatex">\(\sum r^2\)</span> (sum of squared ray distances)</li>
-<li>Apply frequency-specific attenuation</li>
-<li>Compute total coverage score</li>
-<li>Select azimuth with maximum coverage</li>
-<li>Automatically snap antenna to optimal angle</li>
-</ol>
-<p><strong>Result</strong>: Engineers don't manually guess antenna directions; A.T.O.M finds optimal placement in seconds.</p>
-<h3 id="performance">Performance</h3>
-<ul>
-<li>Typical optimization runtime: &lt; 500 ms for 360° sweep</li>
-<li>Tested on 12,000+ building geometries</li>
-<li>Supports batch multi-site optimization</li>
-</ul>
-<h2 id="interactive-visualization">Interactive Visualization</h2>
-<h3 id="web-based-ui">Web-Based UI</h3>
-<ul>
-<li><strong>Leaflet Maps</strong>: Standard web mapping library</li>
-<li><strong>GeoJSON Layers</strong>: Dynamic overlay of coverage heatmaps</li>
-<li><strong>Real-time Updates</strong>: Instant response to parameter changes</li>
-<li><strong>Responsive Design</strong>: Works on desktop and tablet</li>
-</ul>
-<h3 id="control-panel-features">Control Panel Features</h3>
-<ul>
-<li>Frequency band selector (4G/5G/6G)</li>
-<li>Azimuth angle adjustment (slider or numeric input)</li>
-<li>Beam width configuration</li>
-<li>Transmit power control</li>
-<li>Coverage area display</li>
-<li>Signal strength colorbar</li>
-</ul>
-<h2 id="geojson-export">GeoJSON Export</h2>
-<p>All visualization data is stored in <strong>GeoJSON format</strong>:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5G&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;azimuth&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;rx_dbm&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-75</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;signal_quality&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;good&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LineString&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="benefits">Benefits</h3>
-<ul>
-<li>📁 <strong>Portable</strong>: Import into ArcGIS, QGIS, Google Earth Pro</li>
-<li>🔄 <strong>Interoperable</strong>: Standard format supported by all GIS tools</li>
-<li>📊 <strong>Archivable</strong>: Version control your simulation outputs</li>
-<li>🔗 <strong>Shareable</strong>: Send results to team members instantly</li>
-</ul>
-<h2 id="performance-characteristics">Performance Characteristics</h2>
-<h3 id="scalability">Scalability</h3>
-<table>
-<thead>
-<tr>
-<th>Metric</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Building geometries</td>
-<td>Up to 50,000 per simulation</td>
-</tr>
-<tr>
-<td>Ray-polygon intersections</td>
-<td>Sub-millisecond per query (R-Tree)</td>
-</tr>
-<tr>
-<td>Heatmap generation</td>
-<td>&lt; 2 seconds for 10,000-point grid</td>
-</tr>
-<tr>
-<td>API response time</td>
-<td>&lt; 100 ms (p99)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="concurrency">Concurrency</h3>
-<ul>
-<li><strong>Go Goroutines</strong>: Each ray batch processes in parallel</li>
-<li><strong>Multi-core utilization</strong>: Automatic load balancing</li>
-<li><strong>Memory efficiency</strong>: In-memory R-Tree (typically &lt; 500 MB for Ankara)</li>
-<li><strong>No external processes</strong>: Self-contained in single container</li>
-</ul>
-<h2 id="data-sources">Data Sources</h2>
-<h3 id="openstreetmap-osm">OpenStreetMap (OSM)</h3>
-<ul>
-<li>Building footprints with material tags</li>
-<li>Street geometry and terrain features</li>
-<li>Vegetation layer for obstruction modeling</li>
-</ul>
-<h3 id="opencellid">OpenCellID</h3>
-<ul>
-<li>Real 5G tower locations</li>
-<li>Equipment specifications</li>
-<li>Historical coverage data</li>
-</ul>
-<h3 id="custom-data">Custom Data</h3>
-<p>Users can import:
-- Custom building geometries (Shapefile, GeoJSON)
-- Terrain elevation models (GeoTIFF)
-- Custom antenna specifications
-- Proprietary building material database</p>
-<hr />
-<p><strong>Next</strong>: Dive into <a href="architecture.html">Architecture</a> or see visual examples in <a href="visualization.html">Visualization</a>.</p>
-
-
-
-
-
-
-
-
-
-
-
-
-                
-              </article>
-            </div>
-          
-          
-  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
-
-<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Product reference</span>
+        <h1>Capabilities</h1>
+        <p>A structured inventory of planning modes, analyses, map
+evidence, reports, and supported radio technologies.</p>
+        <div class="hero-actions">
+          <a class="button" href="./features.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
         </div>
-        
-          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
-</button>
-        
-      </main>
-      
-        <footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
-  
-</div>
-      
+      </header>
+
+      <div class="prose">
+<p>A.T.O.M is a local-first, deterministic RF planning workspace for
+comparing urban 4G, 5G, and exploratory 6G sector plans. Its outputs are
+planning estimates, not UE or PHY measurements.</p>
+<h2 id="focused-planning-workspace">Focused Planning Workspace</h2>
+<ul>
+<li>Ten workflow tools in one rail: Setup, Inventory, Propagation,
+Experiments, Surfaces, Interference, 5G Core, Results, Data, and
+Report.</li>
+<li>A compact command bar keeps the current project, cell context,
+technology, RF summary, and primary run action visible.</li>
+<li>The map remains full size while tool and Inspector drawers overlay
+it.</li>
+<li>Contextual layers appear only when their results exist.</li>
+<li>Towers, gaps, communication paths, interference samples, candidate
+sites, and measurement residuals open persistent Inspector details.</li>
+</ul>
+<h2 id="projects-and-scenarios">Projects And Scenarios</h2>
+<ul>
+<li>Native browser IndexedDB persistence with automatic last-workspace
+restoration.</li>
+<li>Named scenarios preserve exact inputs, selected cells, RF settings,
+result summaries, model metadata, and recent GeoJSON layers.</li>
+<li>Rename, duplicate, delete, import, and export complete projects as
+versioned <code>.atom-project.json</code> files.</li>
+<li>Input changes mark saved results stale instead of presenting them as
+current.</li>
+<li>Compare exactly two scenarios using KPI deltas and an A/B map
+switch.</li>
+<li>Promote either comparison side to the active plan without modifying
+the source snapshot.</li>
+</ul>
+<p>Project history is local to the browser. A.T.O.M does not provide
+accounts, shared editing, or server-side project storage.</p>
+<h2 id="cell-inventory-and-rf-profiles">Cell Inventory And RF
+Profiles</h2>
+<ul>
+<li>Place cells manually on the map, drag editable cells, edit
+coordinates, duplicate or delete them, and import bounded CSV or GeoJSON
+inventories.</li>
+<li>Search the inventory and select cells without losing their per-cell
+overrides.</li>
+<li>Configure technology, band, frequency, bandwidth, channel, duplex
+mode, transmit power, antenna gain, system loss, radius, beam width,
+height, mechanical/electrical downtilt, orientation, horizontal/vertical
+pattern, load, reuse, PCI, receiver height, and receiver sensitivity
+independently for every cell.</li>
+<li>Validate technology/frequency compatibility and all numeric/text
+limits before RF execution.</li>
+<li>Persist the complete inventory and profile overrides in schema-v2
+project drafts and scenarios; schema-v1 files remain importable.</li>
+<li>Include resolved per-cell profiles in simulation, network,
+interference, recommendation, measurement, and planning-report
+contracts.</li>
+</ul>
+<p>Legacy top-level RF controls remain request defaults. A nested
+<code>rf_profile</code> overrides those defaults for its cell, so older
+API clients continue to work while heterogeneous networks can be modeled
+explicitly.</p>
+<h2 id="propagation-and-coverage">Propagation And Coverage</h2>
+<h3 id="supported-modes">Supported Modes</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th style="text-align: right;">Default frequency</th>
+<th>Intended use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4G LTE</td>
+<td style="text-align: right;">2.6 GHz</td>
+<td>Wider urban coverage planning</td>
+</tr>
+<tr>
+<td>5G NR mmWave</td>
+<td style="text-align: right;">28 GHz</td>
+<td>Directional high-capacity planning</td>
+</tr>
+<tr>
+<td>6G Sub-THz research overlay</td>
+<td style="text-align: right;">140 GHz</td>
+<td>Exploratory propagation comparison</td>
+</tr>
+</tbody>
+</table>
+<p>The backend uses free-space path loss with meter/GHz units:</p>
+<pre class="text"><code>FSPL(dB) = 32.45 + 20log10(distance_m) + 20log10(frequency_GHz)</code></pre>
+<p>It then applies configured transmit power, antenna gain, beam/radius
+eligibility, and cumulative frequency-dependent wall loss. Rays are
+segmented and returned as GeoJSON with modeled received power.</p>
+<p>The fast sector and surface models remain FSPL-plus-walls estimators.
+A separate 2.5D point-to-point workflow adds terrain/building profiles,
+LOS and Fresnel classification, material-specific wall planning losses,
+and an explicitly selected single knife-edge approximation. It does not
+claim full ITU-R Recommendation conformance or simulate reflection-heavy
+multipath, fast fading, MIMO scheduling, or uplink behavior.</p>
+<h3 id="25d-path-profiles-and-fidelity">2.5D Path Profiles And
+Fidelity</h3>
+<ul>
+<li>Loads an optional north-up EPSG:4326 COG/GeoTIFF terrain layer
+lazily by strip/tile and samples it bilinearly.</li>
+<li>Combines ground elevation, inferred or explicit building height,
+transmitter/receiver height above ground, direct LOS, 60% first-Fresnel
+clearance, and a dominant obstruction.</li>
+<li>Provides <code>terrain-profile</code> (30 MHz–6 GHz),
+<code>urban-short-range</code> (300 MHz–100 GHz), and explicitly
+out-of-range research profiles. These applicability labels follow the
+published ranges of <a
+href="https://www.itu.int/rec/R-REC-P.1812-8-202509-I/en">ITU-R
+P.1812-8</a> and <a
+href="https://www.itu.int/rec/R-REC-P.1411-9-201706-I/en">ITU-R
+P.1411-9</a>; the implementation is an inspectable planning
+approximation, not either complete method.</li>
+<li>Exposes free-space, antenna-pattern, system, wall, diffraction,
+clutter, vegetation, atmospheric-gas, rain, calibration, and
+shadow-sensitivity components rather than hiding them in one total.</li>
+<li>Uses an explicitly selected single knife-edge approximation informed
+by <a href="https://www.itu.int/rec/R-REC-P.526/en">ITU-R P.526</a>.
+Material, gas, and rain controls are planning inputs informed by <a
+href="https://www.itu.int/rec/r-rec-p.2040/en">ITU-R P.2040</a>, <a
+href="https://www.itu.int/rec/R-REC-P.676/en">ITU-R P.676</a>, and <a
+href="https://www.itu.int/rec/R-REC-P.838/en">ITU-R P.838</a>, not
+automatic weather or construction-data inference.</li>
+<li>Displays a vertical terrain/building/LOS/Fresnel cross section with
+the loss budget and P50/P90-style shadow-sensitivity bounds.</li>
+</ul>
+<h2 id="demand-aware-planning">Demand-Aware Planning</h2>
+<ul>
+<li>Coverage gaps identify demand-building centroids that are inside a
+sector but below the service threshold.</li>
+<li>Demand scoring distinguishes POI and residential signals from empty
+geometry.</li>
+<li>Single-sector optimization performs a deterministic azimuth
+sweep.</li>
+<li>Network evaluation scores two to six selected cells using coverage,
+unique demand, and overlap.</li>
+<li>Network optimization coordinates selected-cell azimuths using
+selected objectives/weights, optional minimum coverage/demand and
+maximum-overlap constraints, feasibility violations, and an explained
+Pareto frontier. Tilt, power, and site selection are not silently
+adjusted.</li>
+</ul>
+<h2 id="batch-experiments">Batch Experiments</h2>
+<ul>
+<li>Sweeps frequency, transmit power, beam width, azimuth, and
+calibration offset across at most 64 deterministic combinations.</li>
+<li>Executes through bounded asynchronous jobs with progress,
+cancellation, a dataset/model/request fingerprint, and a small result
+cache.</li>
+<li>Compares runs in a scenario table and Pareto view and exports the
+exact experiment definition.</li>
+<li>Runs headlessly through
+<code>go run ./cmd/run-experiment -definition experiment.json</code> or
+the process/job API.</li>
+<li>Follows the asynchronous execution shape of <a
+href="https://www.ogc.org/standards/ogcapi-processes/">OGC API
+Processes</a> without claiming a complete conformance class
+implementation.</li>
+</ul>
+<h2 id="analytical-surfaces-and-gis-interchange">Analytical Surfaces And
+GIS Interchange</h2>
+<ul>
+<li>Evaluates bounded regular received-power grids with a 100,000-cell
+ceiling and produces unsmoothed marching-square isolines.</li>
+<li>Renders the raster below the cell/measurement overlays with opacity
+and minimum-display-threshold controls.</li>
+<li>Exports the regular grid as float32 EPSG:4326 GeoTIFF, valid grid
+cells as CSV, and isolines as GeoJSON.</li>
+<li>Queries building footprints through mandatory viewport
+<code>bbox</code>, pagination, a 50 km diagonal ceiling, and a
+5,000-feature page ceiling; outputs GeoJSON or CSV/WKT.</li>
+<li>Provides an opt-in material/height-tinted map overlay at zoom 12 or
+closer; panning cancels stale requests and loads only the current
+bounded viewport.</li>
+<li>Uses OGC API Features-style collections and query parameters,
+informed by <a href="https://www.ogc.org/standards/ogcapi-features/">OGC
+API Features</a>. Vector tiles and GeoPackage export remain future work;
+<a href="https://www.ogc.org/standards/ogcapi-tiles/">OGC API Tiles</a>
+and <a href="https://www.ogc.org/standards/geopackage/">GeoPackage</a>
+are the intended interoperability references.</li>
+</ul>
+<h2 id="interference-and-radio-quality">Interference And Radio
+Quality</h2>
+<p>Planning-grade 4G and 5G interference analysis calculates:</p>
+<ul>
+<li>Serving-cell selection by strongest modeled RSRP.</li>
+<li>RSRP, SINR, RSRQ, RSSI, noise, strongest interferer, and
+contributing-cell count.</li>
+<li>Co-channel loading and reuse-factor behavior using linear power
+addition.</li>
+<li>Adaptive spatial sampling capped to keep requests bounded.</li>
+<li>Serviceable, interference-limited, and affected-demand
+statistics.</li>
+<li>SINR, RSRP, and RSRQ map surfaces with threshold-specific
+legends.</li>
+</ul>
+<p>Near-equal co-channel powers can correctly produce SINR near
+<code>0 dB</code>; the Inspector explains this and other no-signal or
+poor-quality states.</p>
+<h2 id="candidate-site-recommendations">Candidate Site
+Recommendations</h2>
+<ul>
+<li>Uses unselected towers from the active dataset as candidate
+records.</li>
+<li>Restricts candidates to the user-drawn planning area.</li>
+<li>Prefilters at most 50 records by proximity to unmet demand and
+evaluates a bounded subset.</li>
+<li>Keeps existing selected-cell azimuths fixed and optimizes only the
+candidate in v1.</li>
+<li>Returns up to five deterministic options with recommended azimuth,
+marginal KPIs, score components, and reasons.</li>
+<li>Applies a recommendation as a new scenario without overwriting the
+baseline.</li>
+</ul>
+<p>Recommendations are RF planning options, not claims of rooftop
+availability, ownership, permitting, cost, or deployment approval.
+Candidate scoring intentionally excludes interference; analyze it after
+applying an option.</p>
+<h2 id="measurement-validation">Measurement Validation</h2>
+<ul>
+<li>Imports up to 5,000 CSV records with ID, longitude, latitude,
+technology, measured RSRP, and optional cell ID.</li>
+<li>Predicts RSRP at each measurement location using the active selected
+cells and RF assumptions.</li>
+<li>Reports residual GeoJSON, MAE, RMSE, mean/median bias, no-signal
+count, and per-cell statistics.</li>
+<li>With at least 20 valid points, requires at least five distinct 50 m
+spatial areas spanning at least 100 m, then evaluates a robust global
+bias through deterministic spatially blocked five-fold validation.</li>
+<li>Reports per-cell and per-band residuals, residual-versus-distance
+and residual-versus-obstruction bins, robust MAD outliers, P50/P90
+errors, a median-adjustment confidence interval, fold evidence, and
+provenance/expiration state.</li>
+<li>Applies correction only after explicit user confirmation and stores
+the profile with the project.</li>
+<li>Invalidates calibration when technology, frequency, model version,
+or dataset changes.</li>
+</ul>
+<p>This is global path-loss bias correction, not full propagation
+calibration.</p>
+<h2 id="validated-dataset-packs">Validated Dataset Packs</h2>
+<ul>
+<li><code>ATOM_DATASET_DIR</code> selects the initial dataset directory;
+Ankara remains the default.</li>
+<li>Dataset Pack Studio previews source CRS, coverage, geometry
+repair/drop counts, and missing fields before building an
+arbitrary-region pack.</li>
+<li>Schema v2 records dataset identity, EPSG:4326 bounds, sources,
+licenses, confidence, generation date, filenames, SHA-256 hashes,
+per-layer metadata, and quality evidence.</li>
+<li>Optional terrain, clutter, building-height, and material layers can
+be packaged and validated for provenance and future model versions.</li>
+<li>The validator checks hashes, required properties, geometry,
+coordinate bounds, duplicate IDs, and building-index viability.</li>
+<li>Invalid packs keep <code>/readyz</code> unavailable with an
+explanatory error.</li>
+<li>Active dataset identity and provenance appear in Data, scenarios,
+reports, and <code>/api/meta</code>.</li>
+<li><code>ATOM_DATASETS_ROOT</code> enables a local installed-pack
+catalog. Switching accepts a manifest ID rather than a path, rejects
+root escapes and duplicate IDs, validates the whole candidate, and swaps
+the immutable runtime snapshot only after success.</li>
+</ul>
+<p>Schema-v1 packs remain loadable. The application does not perform
+arbitrary-city live ingestion or large browser uploads; building is an
+explicit local CLI workflow. The optional terrain layer is consumed only
+by the 2.5D point-to-point profile. Clutter and material controls can be
+selected explicitly, but raster clutter and separate height/material
+sidecar layers are not yet automatically joined into every RF
+workflow.</p>
+<h2 id="5g-communication-paths">5G Communication Paths</h2>
+<p>The optional 5G Core Lab applies only to 5G mmWave and remains
+independent from RF interference:</p>
+<ul>
+<li>Xn-C and Xn-U for eligible neighboring gNB coordination and
+forwarding.</li>
+<li>N2 fallback through AMF when Xn is degraded or unavailable.</li>
+<li>N3 session traffic through UPF.</li>
+<li>AMF, SMF, UPF, NRF, UDM/UDR, AUSF, PCF, and NSSF status.</li>
+<li>Deterministic health and Xn scenarios, sessions, and events.</li>
+<li>Optional probing of configured Open5GS status/metrics
+endpoints.</li>
+</ul>
+<p>It is a planning overlay, not an LTE/EPC model or a complete bundled
+Open5GS deployment.</p>
+<h2 id="reproducibility-and-reports">Reproducibility And Reports</h2>
+<ul>
+<li><code>/api/meta</code> exposes application version, build commit,
+model version, supported technologies, and active dataset identity.</li>
+<li>Scenarios and reports retain exact request inputs and runtime
+metadata.</li>
+<li>Markdown and printable PDF reports include RF assumptions, radio
+quality, communication paths, calibration evidence, recommendations, and
+scenario comparison where available.</li>
+<li>The downloadable OpenAPI 3.1 specification documents current REST
+routes and error envelopes.</li>
+<li>RF requests support cancellation, latest-response protection, a 1
+MiB body limit, bounded workers, and <code>429</code> overload
+behavior.</li>
+</ul>
+<h2 id="deliberately-out-of-scope">Deliberately Out Of Scope</h2>
+<ul>
+<li>Full 3D reflection-heavy ray tracing, multiple-obstacle diffraction,
+fading, and MIMO scheduling.</li>
+<li>Live network control, LTE/EPC integration, and 6G Core
+integration.</li>
+<li>Cloud accounts, multi-user collaboration, and hosted project
+storage.</li>
+<li>Guessed cost, fiber, equity, or emergency-priority scoring without
+authoritative data.</li>
+<li>Live OSM/OpenCellID ingestion from the browser.</li>
+</ul>
+<p>See <a href="architecture.html">System Architecture</a>, <a
+href="api.html">REST API</a>, <a href="algorithms.html">RF
+Algorithms</a>, and <a href="modeling-limits.html">Model
+Limitations</a>.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
     </div>
-  </div>
-</footer>
-      
-    </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    
-    
-    
-      
-      
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-    
-    
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
-      
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-      
-    
-  </body>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
 </html>

@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Prioritized confirmed defects, user
+impact, root causes, corrections, and regression evidence for A.T.O.M
+releases." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Bug-Fix Register | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Bug-Fix
+Register page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#priority-definitions"
+      id="toc-priority-definitions">Priority Definitions</a></li>
+      <li><a href="#resolved" id="toc-resolved">Resolved</a></li>
+      <li><a href="#open-audit-queue" id="toc-open-audit-queue">Open
+      Audit Queue</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Quality history</span>
+        <h1>Bug-Fix Register</h1>
+        <p>Prioritized confirmed defects, user impact, root causes,
+corrections, and regression evidence for A.T.O.M releases.</p>
+        <div class="hero-actions">
+          <a class="button" href="./bug-fixes.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>This register records confirmed A.T.O.M defects in priority order.
+Each resolved item includes its user impact, root cause, correction, and
+regression evidence. Planned features and model limitations are tracked
+elsewhere and are not mislabeled as bugs.</p>
+<h2 id="priority-definitions">Priority Definitions</h2>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Critical</td>
+<td>Data loss, remote compromise, or broadly unusable core workflows
+with no practical recovery.</td>
+</tr>
+<tr>
+<td>High</td>
+<td>Incorrect planning state or results that can mislead a user or
+invalidate a principal workflow.</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Material reliability, persistence, performance, or maintainability
+failure with a workaround.</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>Localized inconsistency or edge case with limited operational
+impact.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="resolved">Resolved</h2>
+<h3 id="atom-001-saved-scenario-selection-was-not-persistent">ATOM-001:
+Saved Scenario Selection Was Not Persistent</h3>
+<p><strong>Priority:</strong> High<br />
+<strong>Affected area:</strong> Frontend project lifecycle<br />
+<strong>Target release:</strong> Next release after 0.1.0</p>
+<p>Opening a named scenario restored its values in React state but never
+changed the project's persisted <code>activeScenarioId</code>. Reloading
+could therefore reopen an older scenario. Edits made from a saved
+scenario were also autosaved as a draft while the old active ID
+continued to take precedence.</p>
+<p>The project hook now persists explicit scenario activation. Draft
+autosave retains the active ID only while the draft plan still matches
+that scenario; the first changed planning input detaches the draft and
+marks it for rerun.</p>
+<p><strong>Regression evidence:</strong>
+<code>projectStore.test.js</code> verifies matching drafts retain their
+baseline and changed drafts detach from it.</p>
+<h3 id="atom-002-stale-layers-could-be-saved-with-new-inputs">ATOM-002:
+Stale Layers Could Be Saved With New Inputs</h3>
+<p><strong>Priority:</strong> High<br />
+<strong>Affected area:</strong> Scenario snapshots and
+recommendations<br />
+<strong>Target release:</strong> Next release after 0.1.0</p>
+<p>Changed RF inputs invalidated the visible results, but scenario
+assembly still copied the previous analysis artifacts. In addition,
+<code>overrides.artifacts ?? currentArtifacts</code> treated an
+intentional <code>null</code> as absent, so input-only recommendation
+scenarios inherited unrelated map layers.</p>
+<p>Scenario assembly now stores no artifacts while a plan is dirty and
+uses property-presence semantics so explicit <code>null</code> remains
+authoritative.</p>
+<p><strong>Regression evidence:</strong>
+<code>scenarioSnapshot.test.js</code> covers dirty plans, explicit null
+overrides, and fresh completed analyses.</p>
+<h3 id="atom-003-project-copies-reused-scenario-ids">ATOM-003: Project
+Copies Reused Scenario IDs</h3>
+<p><strong>Priority:</strong> Medium<br />
+<strong>Affected area:</strong> Project duplicate/import and result
+cache<br />
+<strong>Target release:</strong> Next release after 0.1.0</p>
+<p>Project duplication and import assigned a new project ID but retained
+every nested scenario ID. The five-scenario artifact cache keyed
+retained entries only by scenario ID, so copies could cause more than
+five artifacts to survive or make cache accounting ambiguous.</p>
+<p>Copies now receive new project and scenario IDs, remap the active
+scenario, and cache entries use a composite project/scenario key.</p>
+<p><strong>Regression evidence:</strong>
+<code>projectStore.test.js</code> verifies imported and duplicated
+scenario IDs are renewed and active selection is remapped.</p>
+<h3 id="atom-004-indexeddb-could-hide-the-workspace-backup">ATOM-004:
+IndexedDB Could Hide the Workspace Backup</h3>
+<p><strong>Priority:</strong> Medium<br />
+<strong>Affected area:</strong> Browser persistence fallback<br />
+<strong>Target release:</strong> Next release after 0.1.0</p>
+<p>When IndexedDB opened successfully but contained no workspace record,
+loading immediately created a blank project and ignored a valid
+local-storage backup. Successful IndexedDB saves also left any prior
+backup stale.</p>
+<p>Loading now consults the backup when IndexedDB is empty, and every
+successful save mirrors the normalized workspace to local storage.</p>
+<p><strong>Regression evidence:</strong> storage source resolution is
+covered by project-store unit tests; browser workflow coverage continues
+to exercise reload persistence.</p>
+<h3
+id="atom-005-dataset-hash-key-order-caused-false-staleness">ATOM-005:
+Dataset Hash Key Order Caused False Staleness</h3>
+<p><strong>Priority:</strong> Low<br />
+<strong>Affected area:</strong> Dataset compatibility<br />
+<strong>Target release:</strong> Next release after 0.1.0</p>
+<p>Hash maps were compared with raw <code>JSON.stringify</code>, making
+equivalent maps unequal when their keys were inserted in a different
+order.</p>
+<p>Compatibility now compares sorted key/value entries.</p>
+<p><strong>Regression evidence:</strong>
+<code>projectStore.test.js</code> verifies reversed hash-key order
+remains compatible while actual version or hash drift does not.</p>
+<h3
+id="atom-006-recommendations-ignored-optimized-cell-azimuths">ATOM-006:
+Recommendations Ignored Optimized Cell Azimuths</h3>
+<p><strong>Priority:</strong> High<br />
+<strong>Affected area:</strong> Candidate recommendation request
+assembly<br />
+<strong>Target release:</strong> Next release after 0.1.0</p>
+<p>After network optimization, interference and measurement analysis
+used each optimized cell azimuth, but candidate recommendation requests
+rebuilt every selected cell with the global baseline azimuth. Candidate
+scores could therefore describe a different network from the one visible
+on the map.</p>
+<p>Recommendation requests now merge optimized azimuths by stable cell
+ID and retain the baseline only for cells without an optimization
+result.</p>
+<p><strong>Regression evidence:</strong>
+<code>requestPayloads.test.js</code> verifies optimized per-cell
+azimuths are sent in selected-cell order.</p>
+<h3
+id="atom-007-applying-calibration-left-old-rf-evidence-visible">ATOM-007:
+Applying Calibration Left Old RF Evidence Visible</h3>
+<p><strong>Priority:</strong> High<br />
+<strong>Affected area:</strong> Measurement validation and result
+invalidation<br />
+<strong>Target release:</strong> Next release after 0.1.0</p>
+<p>Applying a measurement-derived dB correction changed the model input
+directly without using the normal result-invalidation path. Existing
+rays, network scores, interference surfaces, recommendations, and
+residuals could remain visible even though they were calculated without
+the new correction.</p>
+<p>Calibration application now cancels active RF work, clears
+incompatible evidence, marks the plan for rerun, and binds the profile
+to dataset hashes as well as dataset/model versions.</p>
+<p><strong>Regression evidence:</strong>
+<code>App.workflow.test.jsx</code> verifies a completed RF result and
+measurement result are both removed when calibration is applied.</p>
+<h3
+id="atom-008-network-plans-could-collapse-to-one-shared-azimuth">ATOM-008:
+Network Plans Could Collapse to One Shared Azimuth</h3>
+<p><strong>Priority:</strong> High<br />
+<strong>Affected area:</strong> Network evaluation, optimization, and
+recommendation application<br />
+<strong>Target release:</strong> Next release after 0.1.0</p>
+<p>The network plan stored a single global azimuth. Although optimized
+rays were drawn with per-cell values, later evaluation rebuilt every
+request from the global value. Applying a recommendation also changed
+that global value to the candidate azimuth, potentially steering all
+existing cells toward the candidate's direction.</p>
+<p>The plan now carries a compact per-cell azimuth map. Network
+operations, ray rendering, interference, measurement validation,
+recommendations, projects, and applied candidate scenarios use it.
+Changing the global azimuth intentionally clears the map and establishes
+a new shared baseline.</p>
+<p><strong>Regression evidence:</strong>
+<code>requestPayloads.test.js</code> verifies a later network request
+preserves distinct selected-cell azimuths; existing recommendation tests
+verify optimized values take precedence.</p>
+<h3
+id="atom-009-markdown-documentation-entry-point-described-an-obsolete-product">ATOM-009:
+Markdown Documentation Entry Point Described an Obsolete Product</h3>
+<p><strong>Priority:</strong> Medium<br />
+<strong>Affected area:</strong> Documentation source entry point<br />
+<strong>Target release:</strong> Next release after 0.1.0</p>
+<p><code>docs/index.md</code> still described an earlier product,
+including an unsupported release number, generic container commands, and
+language that conflicted with the maintained static documentation and
+current model boundary.</p>
+<p>The Markdown entry point now directs readers to the maintained
+documentation hub, current installation/API/model references, versioning
+process, and explicit planning-estimate limitation.</p>
+<p><strong>Regression evidence:</strong>
+<code>docs/validate_docs.py</code> verifies internal documentation
+targets after each documentation build.</p>
+<h3
+id="atom-010-workspace-copies-could-diverge-and-restore-stale-state">ATOM-010:
+Workspace Copies Could Diverge And Restore Stale State</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Browser persistence ordering and
+fallback storage</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Every commit launched an independent IndexedDB write and then
+duplicated the full workspace into local storage. Rapid edits could
+finish out of order, partial failures could leave divergent copies, and
+loading preferred IndexedDB even when the fallback contained a newer
+workspace.</p>
+<p>Commits now receive monotonic persistence revisions and run through
+one save queue. IndexedDB is the normal authoritative store; local
+storage is written only when the primary commit fails. Loads compare
+both valid copies by revision and commit time, with project-content
+timestamps providing arbitration for legacy records.</p>
+<p><strong>Regression evidence:</strong>
+<code>projectStore.test.js</code> covers revision and legacy
+arbitration, primary-only writes, fallback recovery, dual-backend
+failure, and strict rapid-save ordering.
+<code>useProjectWorkspace.test.jsx</code> verifies same-tick edits build
+on the latest synchronous workspace.</p>
+<h3
+id="atom-011-recommendation-details-were-duplicated-in-geojson">ATOM-011:
+Recommendation Details Were Duplicated In GeoJSON</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Recommendation responses and scenario
+persistence</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Each candidate was returned once in the ranked
+<code>recommendations</code> array and again as the complete
+<code>properties</code> object of its GeoJSON point. Network responses
+and saved scenario artifacts therefore stored the same scores,
+statistics, reasons, identifiers, and coordinates twice.</p>
+<p>Recommendation details now remain canonical in the ranked array.
+GeoJSON features carry only point geometry, an empty properties object,
+and a standard top-level feature ID that references the canonical
+record. The frontend joins records only for rendering and compacts
+legacy full-property features whenever a scenario is saved.</p>
+<p><strong>Regression evidence:</strong> Go response tests ensure
+recommendation-only fields occur once in serialized output. Frontend
+helper and project-store tests cover rendering joins and legacy artifact
+compaction.</p>
+<h3 id="atom-012-runtime-policy-copies-could-drift">ATOM-012: Runtime
+Policy Copies Could Drift</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Backend API, Core Lab adapter, and
+frontend request policy</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Core Lab scenario allowlists were independently maintained in three
+runtimes. RF defaults, technology thresholds, validation bounds,
+bandwidth choices, and structurally identical tower request types were
+also repeated across endpoint and frontend code. A change in one copy
+could silently create different accepted behavior or limits
+elsewhere.</p>
+<p>One versioned JSON policy now generates self-contained Go and
+JavaScript bindings. All three runtime layers consume those generated
+values, CI rejects stale bindings, and measurement, interference,
+optimization, and recommendation requests share one Go tower input
+type.</p>
+<p><strong>Regression evidence:</strong> generator tests verify scenario
+propagation and stale-file detection; Go and frontend tests verify the
+shared technology boundaries and generated UI defaults.</p>
+<h3
+id="atom-013-build-inputs-and-container-artifacts-were-not-reproducible">ATOM-013:
+Build Inputs And Container Artifacts Were Not Reproducible</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Container builds, Python tooling, and
+CI supply-chain controls</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Production and build stages selected container tags without immutable
+manifest digests, including a floating Alpine tag. Pipeline dependencies
+allowed broad ranges without a transitive lock or artifact hashes, while
+documentation CI installed an unconstrained PyYAML release. CI did not
+review dependency changes or inspect the resulting production image.</p>
+<p>All container stages now combine readable version tags with immutable
+multi-architecture digests. Python direct inputs are exact, and
+generated transitive locks include SHA-256 hashes enforced during
+installation. Pull requests receive dependency review; CI emits SPDX
+SBOMs for both application images and rejects fixable high or critical
+image vulnerabilities; released images include SBOM and provenance
+attestations. Weekly dependency automation covers each manifest
+family.</p>
+<p><strong>Regression evidence:</strong> the supply-chain checker and
+unit tests reject floating base images, ranged direct dependencies,
+unhashed lock entries, and missing workflow controls. CI also installs
+both Python locks and exercises the production container build.</p>
+<h2 id="open-audit-queue">Open Audit Queue</h2>
+<p>No Critical defect is currently confirmed. The next audit pass will
+focus on backend RF cancellation and timeout boundaries,
+calibration/dataset identity, map-layer lifecycle, report consistency,
+and release pipeline failure recovery. Items enter the resolved register
+only after they are reproduced and covered by a regression test.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

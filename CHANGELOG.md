@@ -4,6 +4,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Fixed
+
+- Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on `main` reach the published site.
+
 ## [0.6.0] - 2026-08-02
 
 ### Added

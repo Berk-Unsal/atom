@@ -5,6 +5,7 @@ import { rxPowerColor } from "../utils/geojson.js";
 import { getJSON } from "../utils/apiClient.js";
 import { formatNumber } from "../utils/appWorkspace.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
+import { fanOutSelectionOffset } from "../utils/networkSelection.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
 
@@ -105,94 +106,20 @@ export default function MapCanvas({
         selectedMapObject={selectedMapObject}
       />
 
-      {towers.map((tower) => {
-        const [lon, lat] = tower.coordinates;
-        const isSelected = selectedTower?.id === tower.id;
-        const isNetworkSelected = selectedNetworkTowerIds.includes(tower.id);
-        const isNetworkVisible = layerVisibility?.selectedCells !== false && isNetworkSelected;
-        const order = selectedTowerOrder?.get(tower.id);
-        const isInspectorSelected = selectedMapObject?.type === "tower" && selectedMapObject?.payload?.tower?.id === tower.id;
-        return (
-          <Fragment key={tower.id}>
-            <CircleMarker
-              center={[lat, lon]}
-              radius={isNetworkVisible || isSelected ? 8 : 5}
-              pathOptions={{
-                color: isInspectorSelected ? "#be123c" : isNetworkVisible ? "#b45309" : isSelected ? "#0b4f49" : "#1d4ed8",
-                fillColor: isNetworkVisible ? "#fef3c7" : isSelected ? "#ffffff" : "#60a5fa",
-                fillOpacity: isNetworkVisible || isSelected ? 1 : 0.82,
-                weight: isInspectorSelected ? 4 : isNetworkVisible || isSelected ? 3 : 2,
-              }}
-              eventHandlers={{
-                click: (event) => {
-                  if (isDrawingSelection) {
-                    return;
-                  }
-                  event.originalEvent?.stopPropagation();
-                  onSelectMapObject?.({
-                    type: "tower",
-                    payload: {
-                      tower,
-                      activeNetworkTech,
-                      isNetworkSelected: planningMode === "network" ? !isNetworkSelected : isNetworkSelected,
-                      order:
-                        planningMode === "network" && !isNetworkSelected
-                          ? order ?? selectedNetworkTowerIds.length + 1
-                          : planningMode === "network"
-                            ? null
-                            : order,
-                    },
-                  });
-                  onSelectTower(tower);
-                },
-              }}
-            >
-              <Popup>
-                <dl className="tower-popup">
-                  <div>
-                    <dt>Cell ID</dt>
-                    <dd>{tower.cellId}</dd>
-                  </div>
-                  <div>
-                    <dt>Active Node</dt>
-                    <dd>{activeNetworkTech}</dd>
-                  </div>
-                  {planningMode === "network" ? (
-                    <div>
-                      <dt>Cluster</dt>
-                      <dd>{isNetworkSelected ? "Selected" : "Click to add"}</dd>
-                    </div>
-                  ) : null}
-                </dl>
-              </Popup>
-            </CircleMarker>
-            {isNetworkVisible && order ? (
-              <Marker
-                position={[lat, lon]}
-                interactive={false}
-                icon={divIcon({
-                  className: "tower-order-badge",
-                  html: `<span>${order}</span>`,
-                  iconAnchor: [8, 22],
-                })}
-              />
-            ) : null}
-			{isSelected && tower.editable ? (
-				<Marker
-					position={[lat, lon]}
-					draggable
-					icon={divIcon({ className: "inventory-drag-marker", html: "<span></span>", iconAnchor: [12, 12] })}
-					eventHandlers={{
-						dragend: (event) => {
-							const position = event.target.getLatLng();
-							onMoveTower?.(tower.id, [position.lng, position.lat]);
-						},
-					}}
-				/>
-			) : null}
-          </Fragment>
-        );
-      })}
+      <TowerMarkersLayer
+        activeNetworkTech={activeNetworkTech}
+        isDrawingSelection={isDrawingSelection}
+        layerVisibility={layerVisibility}
+        onMoveTower={onMoveTower}
+        onSelectMapObject={onSelectMapObject}
+        onSelectTower={onSelectTower}
+        planningMode={planningMode}
+        selectedMapObject={selectedMapObject}
+        selectedNetworkTowerIds={selectedNetworkTowerIds}
+        selectedTower={selectedTower}
+        selectedTowerOrder={selectedTowerOrder}
+        towers={towers}
+      />
 
       {layerVisibility?.rays === false ? null : <RayGeoJSONLayer simulation={simulation} layerKey={rayLayerKey} />}
       {layerVisibility?.communicationPaths === false ? null : (
@@ -214,6 +141,165 @@ export default function MapCanvas({
       <PathProfileMapLayer profile={pathProfile} />
     </MapContainer>
   );
+}
+
+function TowerMarkersLayer({
+  activeNetworkTech,
+  isDrawingSelection,
+  layerVisibility,
+  onMoveTower,
+  onSelectMapObject,
+  onSelectTower,
+  planningMode,
+  selectedMapObject,
+  selectedNetworkTowerIds,
+  selectedTower,
+  selectedTowerOrder,
+  towers,
+}) {
+  const map = useMap();
+  const [, refreshOffsets] = useState(0);
+
+  useEffect(() => {
+    const handleViewportChange = () => refreshOffsets((current) => current + 1);
+    map.on("moveend zoomend resize", handleViewportChange);
+    return () => map.off("moveend zoomend resize", handleViewportChange);
+  }, [map]);
+
+  const selectionOffsets = buildSelectionMarkerOffsets(towers, selectedNetworkTowerIds, map);
+
+  return towers.map((tower) => {
+    const [lon, lat] = tower.coordinates;
+    const isSelected = selectedTower?.id === tower.id;
+    const isNetworkSelected = selectedNetworkTowerIds.includes(tower.id);
+    const isNetworkVisible = layerVisibility?.selectedCells !== false && isNetworkSelected;
+    const order = selectedTowerOrder?.get(tower.id);
+    const isInspectorSelected = selectedMapObject?.type === "tower" && selectedMapObject?.payload?.tower?.id === tower.id;
+    const badgeOffset = selectionOffsets.get(tower.id) ?? [0, 0];
+    return (
+      <Fragment key={tower.id}>
+        <CircleMarker
+          center={[lat, lon]}
+          radius={isNetworkVisible || isSelected ? 8 : 5}
+          pathOptions={{
+            color: isInspectorSelected ? "#be123c" : isNetworkVisible ? "#b45309" : isSelected ? "#0b4f49" : "#1d4ed8",
+            fillColor: isNetworkVisible ? "#fef3c7" : isSelected ? "#ffffff" : "#60a5fa",
+            fillOpacity: isNetworkVisible || isSelected ? 1 : 0.82,
+            weight: isInspectorSelected ? 4 : isNetworkVisible || isSelected ? 3 : 2,
+          }}
+          eventHandlers={{
+            click: (event) => {
+              if (isDrawingSelection) {
+                return;
+              }
+              event.originalEvent?.stopPropagation();
+              onSelectMapObject?.({
+                type: "tower",
+                payload: {
+                  tower,
+                  activeNetworkTech,
+                  isNetworkSelected: planningMode === "network" ? !isNetworkSelected : isNetworkSelected,
+                  order:
+                    planningMode === "network" && !isNetworkSelected
+                      ? order ?? selectedNetworkTowerIds.length + 1
+                      : planningMode === "network"
+                        ? null
+                        : order,
+                },
+              });
+              onSelectTower(tower);
+            },
+          }}
+        >
+          <Popup>
+            <dl className="tower-popup">
+              <div>
+                <dt>Cell ID</dt>
+                <dd>{tower.cellId}</dd>
+              </div>
+              <div>
+                <dt>Active Node</dt>
+                <dd>{activeNetworkTech}</dd>
+              </div>
+              {planningMode === "network" ? (
+                <div>
+                  <dt>Cluster</dt>
+                  <dd>{isNetworkSelected ? "Selected" : "Click to add"}</dd>
+                </div>
+              ) : null}
+            </dl>
+          </Popup>
+        </CircleMarker>
+        {isNetworkVisible && order ? (
+          <Marker
+            position={[lat, lon]}
+            interactive={false}
+            zIndexOffset={1000}
+            icon={divIcon({
+              className: "tower-order-badge",
+              html: `<span style="--badge-offset-x:${badgeOffset[0]}px;--badge-offset-y:${badgeOffset[1]}px">${order}</span>`,
+              iconAnchor: [8, 22],
+            })}
+          />
+        ) : null}
+        {isSelected && tower.editable ? (
+          <Marker
+            position={[lat, lon]}
+            draggable
+            icon={divIcon({ className: "inventory-drag-marker", html: "<span></span>", iconAnchor: [12, 12] })}
+            eventHandlers={{
+              dragend: (event) => {
+                const position = event.target.getLatLng();
+                onMoveTower?.(tower.id, [position.lng, position.lat]);
+              },
+            }}
+          />
+        ) : null}
+      </Fragment>
+    );
+  });
+}
+
+function buildSelectionMarkerOffsets(towers, selectedNetworkTowerIds, map) {
+  const selectedTowers = [];
+  const seen = new Set();
+  for (const towerID of selectedNetworkTowerIds) {
+    const tower = towers.find((candidate) => candidate.id === towerID);
+    if (!tower || seen.has(tower.id)) {
+      continue;
+    }
+    const [lon, lat] = tower.coordinates ?? [];
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
+      continue;
+    }
+    seen.add(tower.id);
+    selectedTowers.push({
+      point: map.latLngToLayerPoint([lat, lon]),
+      tower,
+    });
+  }
+
+  const groups = [];
+  selectedTowers.forEach((member) => {
+    const group = groups.find(({ members }) => members.some((candidate) => pointsAreClose(candidate.point, member.point)));
+    if (group) {
+      group.members.push(member);
+    } else {
+      groups.push({ members: [member] });
+    }
+  });
+
+  const offsets = new Map();
+  groups.forEach(({ members }) => {
+    members.forEach(({ tower }, index) => {
+      offsets.set(tower.id, fanOutSelectionOffset(index, members.length));
+    });
+  });
+  return offsets;
+}
+
+function pointsAreClose(left, right) {
+  return Math.hypot(left.x - right.x, left.y - right.y) <= 26;
 }
 
 function ViewportBuildingLayer() {

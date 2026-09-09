@@ -593,9 +593,10 @@ Network requests contain two to six `towers` and may add an `optimization` objec
   "frequency_ghz": 28,
   "optimization": {
     "objectives": [
-      { "id": "coverage", "weight": 2 },
-      { "id": "demand", "weight": 1 },
-      { "id": "overlap", "weight": 3 }
+      { "id": "coverage", "weight": 70 },
+      { "id": "demand", "weight": 80 },
+      { "id": "residential", "weight": 60 },
+      { "id": "overlap", "weight": 35 }
     ],
     "constraints": {
       "min_unique_demand_buildings": 10,
@@ -605,7 +606,15 @@ Network requests contain two to six `towers` and may add an `optimization` objec
 }
 ```
 
-Objective IDs are `coverage`, `demand`, `residential`, and `overlap`; each weight is greater than zero and at most 100. Constraints may set minimum coverage score, minimum unique demand/residential buildings, and maximum overlap buildings. Responses include the objective score, feasibility/violations, adjusted parameter list, and up to 25 feasible non-dominated evaluated azimuth sets with explanations. This version adjusts azimuth only.
+Objective IDs are `coverage`, `demand`, `residential`, and `overlap`; the legacy `coverage` ID represents **Propagation reach**, not spatial-area coverage. Each `weight` is a user-facing importance priority from 0 to 100. A zero priority removes that objective's influence on ranking, but all priorities cannot be zero. The backend preserves configured priorities and returns the effective available-objective weights as `optimization.normalized_weights` and `optimization.effective_weights`.
+
+The legacy constraint field `min_coverage_score` is also a minimum propagation-reach score, not a spatial-coverage constraint. Its mathematics and wire name remain unchanged for compatibility.
+
+Responses expose both stable normalized utilities and raw domain measurements. Every network request derives one deterministic `optimization_domain` from the logical union of maximum configured service-radius envelopes around the selected cells. The domain is fixed before candidate azimuth evaluation and is independent of antenna azimuth and simulated ray outcomes. The composite score is `100 * (demandWeight*demandUtility + residentialWeight*residentialUtility + coverageWeight*reachUtility + overlapWeight*overlapUtility)`, so it is always in the 0–100 range. Demand is served demand weight divided by relevant demand weight in the fixed domain; residential is covered residential footprints divided by relevant residential footprints intersecting that domain; propagation reach is the existing capped aggregate usable-ray-reach score divided by its configured reach maximum; and overlap utility is `1 - overlapRatio`, where overlap ratio is overlapping covered footprints divided by covered footprints. Utilities are clamped to `[0, 1]` and do not use candidate-set min/max values.
+
+If a domain has no relevant entities for an objective, that objective is reported as unavailable with `utility: null` and is excluded from effective weight normalization. Configured slider priorities are preserved separately from effective weights. If no positively weighted objective is available, scoring fails with a domain-scoping error. Hard constraints remain active independently; for example, a minimum residential-building constraint still fails when the domain contains no residential buildings.
+
+The response also includes `stats.objective_breakdown` for compatibility and `objective_status`, where each objective exposes availability, configured priority, effective weight, and nullable utility/contribution metadata. The contribution sum equals `stats.composite_score` within floating-point tolerance for available objectives. Existing feasibility constraints remain independent of priorities: an infeasible candidate is excluded from the Pareto frontier and cannot be returned as the optimized recommendation. The Pareto frontier is based on available objective utilities rather than weighted composite score; changing priorities can re-rank the stored feasible frontier without another RF evaluation when those metrics are available. Up to 25 feasible non-dominated evaluated azimuth sets are returned. This version adjusts azimuth only.
 
 ---
 

@@ -137,14 +137,21 @@ export function normalizeSimulationStats(simulation, coverageGaps) {
 
 export function normalizeNetworkStats(optimization) {
   const stats = optimization?.stats ?? {};
+  const raw = stats.raw_metrics ?? {};
   return {
     coverageScore: stats.coverage_score ?? null,
     demandScore: stats.demand_score ?? null,
-    networkScore: stats.network_score ?? null,
+    networkScore: stats.score ?? stats.network_score ?? null,
+    optimizationScore: stats.score ?? null,
     overlapBuildings: stats.overlap_buildings ?? null,
     overlapPenalty: stats.overlap_penalty ?? null,
     residentialScore: stats.residential_score ?? null,
     uniqueDemandBuildings: stats.unique_demand_buildings ?? null,
     uniqueResidentialBuildings: stats.unique_residential_buildings ?? null,
+    propagationReachScore: raw.propagation_reach_score ?? raw.coverage_reach_score ?? null,
+    propagationReachMaximum: raw.propagation_reach_maximum ?? raw.coverage_reach_maximum ?? null,
+    relevantDemandWeight: raw.relevant_demand_weight ?? raw.total_weighted_demand ?? null,
+    relevantResidentialTotal: raw.relevant_residential_total ?? raw.residential_total ?? null,
+    optimizationDomain: optimization?.optimization_domain ?? null,
   };
 }

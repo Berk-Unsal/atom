@@ -57,7 +57,12 @@ describe("interference request payload", () => {
 
     expect(payload.towers.map((tower) => tower.azimuth)).toEqual([45, 180]);
     expect(payload.optimization).toEqual({
-      objectives: [{ id: "coverage", weight: 2 }, { id: "overlap", weight: 4 }],
+      objectives: [
+        { id: "demand", weight: 0 },
+        { id: "residential", weight: 0 },
+        { id: "coverage", weight: 2 },
+        { id: "overlap", weight: 4 },
+      ],
       constraints: { max_overlap_buildings: 3 },
     });
   });

@@ -71,6 +71,27 @@ func TestNetworkInputPreservesStableTowerOrder(t *testing.T) {
 	if req.Towers[0].ID != "second" || req.Towers[1].ID != "first" {
 		t.Fatalf("tower order changed: %+v", req.Towers)
 	}
+	if len(req.Optimization.Objectives) != 4 || req.Optimization.Objectives[0].Weight != 50 {
+		t.Fatalf("default optimization priorities = %+v, want four 50-point priorities", req.Optimization.Objectives)
+	}
+}
+
+func TestNetworkInputRejectsAllZeroOptimizationPriorities(t *testing.T) {
+	lonA, latA := 32.85, 39.92
+	lonB, latB := 32.86, 39.93
+	input := NetworkOptimizationRequestInput{
+		Towers: []TowerRequestInput{
+			{ID: "a", TowerLon: &lonA, TowerLat: &latA},
+			{ID: "b", TowerLon: &lonB, TowerLat: &latB},
+		},
+		Optimization: &OptimizationConfig{Objectives: []OptimizationObjective{
+			{ID: "demand", Weight: 0}, {ID: "residential", Weight: 0},
+			{ID: "coverage", Weight: 0}, {ID: "overlap", Weight: 0},
+		}},
+	}
+	if validationError := ValidateOptimizationConfig(input.ToRequest().Optimization); validationError == "" {
+		t.Fatal("all-zero priorities passed request validation")
+	}
 }
 
 func TestNetworkInputAppliesRFProfilePerTower(t *testing.T) {

@@ -162,7 +162,7 @@ ${(report.rfProfiles ?? []).map((profile) => `| ${markdownValue(profile.cellId)}
 | Residential hits | ${formatNumber(report.diagnostics?.hit_residential_buildings, 0)} |
 | Demand score | ${formatCompactNumber(report.diagnostics?.demand_score)} |
 | Residential score | ${formatCompactNumber(report.diagnostics?.residential_score)} |
-| Coverage tie-break | ${formatCompactNumber(report.diagnostics?.coverage_score)} |
+| Propagation reach tie-break | ${formatCompactNumber(report.diagnostics?.coverage_score)} |
 
 ${renderMarkdownComparisonSection(report)}
 
@@ -442,7 +442,7 @@ function renderPrintableReport(report) {
         ["Residential hits", formatNumber(report.diagnostics?.hit_residential_buildings, 0)],
         ["Demand score", formatCompactNumber(report.diagnostics?.demand_score)],
         ["Residential score", formatCompactNumber(report.diagnostics?.residential_score)],
-        ["Coverage tie-break", formatCompactNumber(report.diagnostics?.coverage_score)],
+        ["Propagation reach tie-break", formatCompactNumber(report.diagnostics?.coverage_score)],
       ])}
       ${printTable("Dataset Context", [
         ["Total buildings", formatNumber(report.buildingSummary?.total_buildings, 0)],
@@ -666,7 +666,7 @@ export function getComparisonMetrics(comparison) {
         digits: 1,
         higherIsBetter: true,
         key: "networkScore",
-        label: "Network score",
+        label: "Optimization score",
         unit: "score",
       }),
       createComparisonMetric({
@@ -914,26 +914,28 @@ function renderMarkdownNetworkSection(report) {
     return "";
   }
   const stats = optimization.stats;
+  const raw = stats.raw_metrics ?? {};
+  const objectiveStatus = optimization.optimization?.objective_status ?? stats.objective_status ?? {};
+  const objectiveAvailable = (id) => objectiveStatus?.[id]?.available !== false;
   const towerRows = (optimization.optimized_towers ?? []).map(
     (tower) =>
-      `| ${markdownValue(tower.id)} | ${formatNumber(tower.optimal_azimuth, 0)}° | ${formatCompactNumber(tower.score)} |`,
+      `| ${markdownValue(tower.id)} | ${formatNumber(tower.optimal_azimuth, 0)}° |`,
   );
   return `## Multi-Tower Network Optimization
 
 | Metric | Value |
 |---|---:|
-| Network score | ${formatCompactNumber(stats.network_score)} |
-| Unique POI buildings | ${formatNumber(stats.unique_demand_buildings, 0)} |
-| Unique residential buildings | ${formatNumber(stats.unique_residential_buildings, 0)} |
+| Optimization score | ${formatNumber(stats.score, 1)} / 100 |
+| Served demand weight | ${objectiveAvailable("demand") ? `${formatNumber(raw.served_demand_weight ?? raw.served_weighted_demand, 1)} / ${formatNumber(raw.relevant_demand_weight ?? raw.total_weighted_demand, 1)}` : UNAVAILABLE_VALUE} |
+| Residential buildings | ${objectiveAvailable("residential") ? `${formatNumber(raw.residential_covered, 0)} / ${formatNumber(raw.relevant_residential_total ?? raw.residential_total, 0)}` : UNAVAILABLE_VALUE} |
+| Propagation reach | ${objectiveAvailable("coverage") ? `${formatNumber(raw.propagation_reach_score ?? raw.coverage_reach_score, 1)} / ${formatNumber(raw.propagation_reach_maximum ?? raw.coverage_reach_maximum, 1)}` : UNAVAILABLE_VALUE} |
+| Optimization domain | ${markdownValue(optimization.optimization_domain?.source)} (${formatNumber(optimization.optimization_domain?.selected_cell_count, 0)} cells) |
 | Overlap buildings | ${formatNumber(stats.overlap_buildings, 0)} |
-| Demand score | ${formatCompactNumber(stats.demand_score)} |
-| Residential score | ${formatCompactNumber(stats.residential_score)} |
-| Coverage score | ${formatCompactNumber(stats.coverage_score)} |
-| Overlap penalty | ${formatCompactNumber(stats.overlap_penalty)} |
+| Overlap ratio | ${formatNumber(Number(raw.overlap_ratio ?? 0) * 100, 1)}% |
 | Data quality | ${markdownValue(stats.data_quality)} |
 
-| Cell | Optimized azimuth | Network score |
-|---|---:|---:|
+| Cell | Optimized azimuth |
+|---|---:|
 ${towerRows.join("\n")}
 `;
 }
@@ -944,24 +946,29 @@ function printNetworkSection(report) {
     return "";
   }
   const stats = optimization.stats;
+  const raw = stats.raw_metrics ?? {};
+  const objectiveStatus = optimization.optimization?.objective_status ?? stats.objective_status ?? {};
+  const objectiveAvailable = (id) => objectiveStatus?.[id]?.available !== false;
   const towerRows = (optimization.optimized_towers ?? [])
     .map(
       (tower) =>
-        `<tr><td>${escapeHtml(tower.id)}</td><td>${formatNumber(tower.optimal_azimuth, 0)}°</td><td>${formatCompactNumber(tower.score)}</td></tr>`,
+        `<tr><td>${escapeHtml(tower.id)}</td><td>${formatNumber(tower.optimal_azimuth, 0)}°</td></tr>`,
     )
     .join("");
   return `<section class="grid">
       ${printTable("Network Optimization", [
-        ["Network score", formatCompactNumber(stats.network_score)],
-        ["Unique POI buildings", formatNumber(stats.unique_demand_buildings, 0)],
-        ["Unique residential buildings", formatNumber(stats.unique_residential_buildings, 0)],
+        ["Optimization score", `${formatNumber(stats.score, 1)} / 100`],
+        ["Served demand weight", objectiveAvailable("demand") ? `${formatNumber(raw.served_demand_weight ?? raw.served_weighted_demand, 1)} / ${formatNumber(raw.relevant_demand_weight ?? raw.total_weighted_demand, 1)}` : UNAVAILABLE_VALUE],
+        ["Residential buildings", objectiveAvailable("residential") ? `${formatNumber(raw.residential_covered, 0)} / ${formatNumber(raw.relevant_residential_total ?? raw.residential_total, 0)}` : UNAVAILABLE_VALUE],
+        ["Propagation reach", objectiveAvailable("coverage") ? `${formatNumber(raw.propagation_reach_score ?? raw.coverage_reach_score, 1)} / ${formatNumber(raw.propagation_reach_maximum ?? raw.coverage_reach_maximum, 1)}` : UNAVAILABLE_VALUE],
+        ["Optimization domain", `${optimization.optimization_domain?.source ?? UNAVAILABLE_VALUE} (${formatNumber(optimization.optimization_domain?.selected_cell_count, 0)} cells)`],
         ["Overlap buildings", formatNumber(stats.overlap_buildings, 0)],
-        ["Overlap penalty", formatCompactNumber(stats.overlap_penalty)],
+        ["Overlap ratio", `${formatNumber(Number(raw.overlap_ratio ?? 0) * 100, 1)}%`],
         ["Data quality", stats.data_quality ?? UNAVAILABLE_VALUE],
       ])}
       <div>
         <h2>Optimized Sectors</h2>
-        <table><thead><tr><th>Cell</th><th>Azimuth</th><th>Score</th></tr></thead><tbody>${towerRows}</tbody></table>
+        <table><thead><tr><th>Cell</th><th>Azimuth</th></tr></thead><tbody>${towerRows}</tbody></table>
       </div>
     </section>`;
 }
@@ -1176,7 +1183,7 @@ function renderMarkdownSavedScenarioSection(report) {
 |---|---:|---:|
 | Average Rx | ${formatNumber(first.summary?.avgRxDBm, 1)} dBm | ${formatNumber(second.summary?.avgRxDBm, 1)} dBm |
 | Gap ratio | ${formatNumber(first.summary?.gapPct, 1)}% | ${formatNumber(second.summary?.gapPct, 1)}% |
-| Network score | ${formatCompactNumber(first.summary?.networkScore)} | ${formatCompactNumber(second.summary?.networkScore)} |
+| Optimization score | ${formatCompactNumber(first.summary?.networkScore)} / 100 | ${formatCompactNumber(second.summary?.networkScore)} / 100 |
 | Average SINR | ${formatNumber(first.summary?.avgSINRDB, 1)} dB | ${formatNumber(second.summary?.avgSINRDB, 1)} dB |
 | Serviceable | ${formatNumber(first.summary?.serviceablePct, 1)}% | ${formatNumber(second.summary?.serviceablePct, 1)}% |`;
 }
@@ -1220,12 +1227,12 @@ function printSavedScenarioSection(report) {
   return `<section class="grid">${printTable(first.name, [
     ["Average Rx", `${formatNumber(first.summary?.avgRxDBm, 1)} dBm`],
     ["Gap ratio", `${formatNumber(first.summary?.gapPct, 1)}%`],
-    ["Network score", formatCompactNumber(first.summary?.networkScore)],
+    ["Optimization score", `${formatCompactNumber(first.summary?.networkScore)} / 100`],
     ["Average SINR", `${formatNumber(first.summary?.avgSINRDB, 1)} dB`],
   ])}${printTable(second.name, [
     ["Average Rx", `${formatNumber(second.summary?.avgRxDBm, 1)} dBm`],
     ["Gap ratio", `${formatNumber(second.summary?.gapPct, 1)}%`],
-    ["Network score", formatCompactNumber(second.summary?.networkScore)],
+    ["Optimization score", `${formatCompactNumber(second.summary?.networkScore)} / 100`],
     ["Average SINR", `${formatNumber(second.summary?.avgSINRDB, 1)} dB`],
   ])}</section>`;
 }

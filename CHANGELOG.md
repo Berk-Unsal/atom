@@ -4,8 +4,14 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Changed
+
+- Replace network optimization's arbitrary raw weighted score with stable 0–1 objective utilities, normalized importance priorities, a 0–100 composite score, raw metric preservation, contribution breakdowns, and preference-ranked feasible Pareto solutions.
+- Scope demand and residential normalization to a deterministic selected-cell radius-union domain, report unavailable objectives as N/A with effective weights, and present the legacy `coverage` objective as propagation reach.
+
 ### Fixed
 
+- Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows.
 - Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on `main` reach the published site.
 
 ## [0.6.0] - 2026-08-02

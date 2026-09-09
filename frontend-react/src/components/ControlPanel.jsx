@@ -1,5 +1,6 @@
 import { Activity, Compass, Gauge, MapPin, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
 import { NETWORK_TECH_OPTIONS } from "../utils/networkTech.js";
+import { MAX_NETWORK_CELLS } from "../utils/networkSelection.js";
 
 export default function ControlPanel({
   activeTool,
@@ -14,6 +15,7 @@ export default function ControlPanel({
   isOptimizing,
   isAnalyzingInterference,
   interferenceApplicable,
+  optimizationConfigValid = true,
   networkSelectionCount,
   planningMode,
   selectionNotice,
@@ -96,7 +98,7 @@ export default function ControlPanel({
           <div className="network-selection-tools">
             <div className="selection-summary-row">
               <span>Selected cluster</span>
-              <strong>{networkSelectionCount} / 6 cells</strong>
+              <strong>{networkSelectionCount} / {MAX_NETWORK_CELLS} cells</strong>
             </div>
             {selectionNotice ? <p className="selection-note">{selectionNotice}</p> : null}
             <p className="selection-note">Select cells directly on the map or use the area tool.</p>
@@ -170,7 +172,7 @@ export default function ControlPanel({
               type="button"
               className="optimize-button network"
               onClick={onOptimizeNetwork}
-              disabled={isLoading || isOptimizing || isAnalyzingInterference || networkSelectionCount < 2}
+              disabled={isLoading || isOptimizing || isAnalyzingInterference || networkSelectionCount < 2 || !optimizationConfigValid}
             >
               <Sparkles size={16} className={isOptimizing ? "spin" : ""} />
               <span>{isOptimizing ? "Optimizing..." : "Optimize Network"}</span>
@@ -184,6 +186,9 @@ export default function ControlPanel({
                 <span>Select cells on map</span>
               </button>
             </>
+          ) : null}
+          {planningMode === "network" && networkSelectionCount >= 2 && !optimizationConfigValid ? (
+            <p className="selection-note">Set an optimization priority above 0 before running.</p>
           ) : null}
         </div>
       </section>

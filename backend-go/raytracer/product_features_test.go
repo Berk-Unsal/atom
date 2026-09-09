@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -47,7 +48,7 @@ func TestRecommendSitesReturnsDeterministicCandidate(t *testing.T) {
 	if len(first.Recommendations) != 1 || len(second.Recommendations) != 1 {
 		t.Fatalf("recommendation counts = %d and %d, want 1", len(first.Recommendations), len(second.Recommendations))
 	}
-	if first.Recommendations[0] != second.Recommendations[0] {
+	if !reflect.DeepEqual(first.Recommendations[0], second.Recommendations[0]) {
 		t.Fatalf("recommendations differ: %#v vs %#v", first.Recommendations[0], second.Recommendations[0])
 	}
 	if len(first.GeoJSON.Features) != 1 || first.GeoJSON.Features[0].ID != first.Recommendations[0].ID {

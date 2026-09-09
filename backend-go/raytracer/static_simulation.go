@@ -137,31 +137,45 @@ type NetworkOptimizedTower struct {
 }
 
 type NetworkOptimizationStats struct {
-	NetworkScore               float64 `json:"network_score"`
-	UniqueDemandBuildings      int     `json:"unique_demand_buildings"`
-	UniqueResidentialBuildings int     `json:"unique_residential_buildings"`
-	OverlapBuildings           int     `json:"overlap_buildings"`
-	DemandScore                float64 `json:"demand_score"`
-	ResidentialScore           float64 `json:"residential_score"`
-	CoverageScore              float64 `json:"coverage_score"`
-	OverlapPenalty             float64 `json:"overlap_penalty"`
-	DataQuality                string  `json:"data_quality"`
+	NetworkScore               float64                        `json:"network_score"`
+	UniqueDemandBuildings      int                            `json:"unique_demand_buildings"`
+	UniqueResidentialBuildings int                            `json:"unique_residential_buildings"`
+	OverlapBuildings           int                            `json:"overlap_buildings"`
+	DemandScore                float64                        `json:"demand_score"`
+	ResidentialScore           float64                        `json:"residential_score"`
+	CoverageScore              float64                        `json:"coverage_score"`
+	OverlapPenalty             float64                        `json:"overlap_penalty"`
+	DataQuality                string                         `json:"data_quality"`
+	RawMetrics                 OptimizationRawMetrics         `json:"raw_metrics"`
+	Objectives                 OptimizationUtilities          `json:"objectives"`
+	CompositeScore             float64                        `json:"composite_score"`
+	Score                      float64                        `json:"score"`
+	ObjectiveBreakdown         OptimizationObjectiveBreakdown `json:"objective_breakdown"`
+	ObjectiveStatus            OptimizationObjectiveStatusMap `json:"objective_status,omitempty"`
 }
 
 type NetworkOptimizationResponse struct {
-	OptimizedTowers []NetworkOptimizedTower  `json:"optimized_towers"`
-	Stats           NetworkOptimizationStats `json:"stats"`
-	Optimization    OptimizationOutcome      `json:"optimization"`
-	ParetoFrontier  []NetworkParetoSolution  `json:"pareto_frontier"`
+	OptimizedTowers    []NetworkOptimizedTower    `json:"optimized_towers"`
+	Stats              NetworkOptimizationStats   `json:"stats"`
+	OptimizationDomain OptimizationDomainMetadata `json:"optimization_domain"`
+	Optimization       OptimizationOutcome        `json:"optimization"`
+	ParetoFrontier     []NetworkParetoSolution    `json:"pareto_frontier"`
 }
 
 type OptimizationOutcome struct {
-	Objectives           []OptimizationObjective `json:"objectives"`
-	Constraints          OptimizationConstraints `json:"constraints"`
-	ObjectiveScore       float64                 `json:"objective_score"`
-	ConstraintsSatisfied bool                    `json:"constraints_satisfied"`
-	Violations           []string                `json:"violations"`
-	AdjustedParameters   []string                `json:"adjusted_parameters"`
+	Objectives           []OptimizationObjective        `json:"objectives"`
+	ConfiguredPriorities map[string]float64             `json:"configured_priorities"`
+	NormalizedWeights    map[string]float64             `json:"normalized_weights"`
+	EffectiveWeights     map[string]float64             `json:"effective_weights"`
+	ObjectiveStatus      OptimizationObjectiveStatusMap `json:"objective_status"`
+	Constraints          OptimizationConstraints        `json:"constraints"`
+	ObjectiveScore       float64                        `json:"objective_score"`
+	CompositeScore       float64                        `json:"composite_score"`
+	Score                float64                        `json:"score"`
+	ConstraintsSatisfied bool                           `json:"constraints_satisfied"`
+	Recommended          bool                           `json:"recommended"`
+	Violations           []string                       `json:"violations"`
+	AdjustedParameters   []string                       `json:"adjusted_parameters"`
 }
 
 type ParetoTowerSetting struct {
@@ -173,6 +187,8 @@ type NetworkParetoSolution struct {
 	Towers         []ParetoTowerSetting     `json:"towers"`
 	Stats          NetworkOptimizationStats `json:"stats"`
 	ObjectiveScore float64                  `json:"objective_score"`
+	CompositeScore float64                  `json:"composite_score"`
+	Score          float64                  `json:"score"`
 	Explanation    string                   `json:"explanation"`
 }
 
@@ -487,12 +503,30 @@ func OptimizeAzimuthContext(ctx context.Context, req StaticSimulationRequest, bu
 func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
 	NormalizeNetworkOptimizationRequest(&req)
 	config := req.Optimization
+	if validationError := ValidateOptimizationConfig(config); validationError != "" {
+		return NetworkOptimizationResponse{}, fmt.Errorf("%s", validationError)
+	}
+	if buildings == nil {
+		buildings = EmptyBuildingIndex()
+	}
+	prepared, prepareErr := prepareNetworkOptimizationContext(ctx, req, buildings)
+	if prepareErr != nil {
+		return NetworkOptimizationResponse{}, prepareErr
+	}
+	if _, weightErr := NormalizeAvailableOptimizationPriorities(config.Objectives, prepared.ObjectiveAvailability); weightErr != nil {
+		return NetworkOptimizationResponse{}, weightErr
+	}
 	azimuths := make([]float64, len(req.Towers))
 	for index, tower := range req.Towers {
 		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
 	}
 
 	evaluated := make([]networkOptimizationCandidate, 0, len(req.Towers)*72+1)
+	baselineBreakdown, err := networkCoverageScoreBreakdownPreparedContext(ctx, req, azimuths, buildings, prepared)
+	if err != nil {
+		return NetworkOptimizationResponse{}, err
+	}
+	evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), azimuths...), Stats: baselineBreakdown})
 	for pass := 0; pass < 2; pass++ {
 		for towerIndex := range req.Towers {
 			bestAzimuth := azimuths[towerIndex]
@@ -504,12 +538,12 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 				}
 				testAzimuths := append([]float64(nil), azimuths...)
 				testAzimuths[towerIndex] = float64(candidate * 10)
-				breakdown, err := NetworkCoverageScoreBreakdownContext(ctx, req, testAzimuths, buildings)
+				breakdown, err := networkCoverageScoreBreakdownPreparedContext(ctx, req, testAzimuths, buildings, prepared)
 				if err != nil {
 					return NetworkOptimizationResponse{}, err
 				}
 				evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), testAzimuths...), Stats: breakdown})
-				score := OptimizationObjectiveScore(breakdown, config)
+				score := optimizationObjectiveScoreWithAvailability(breakdown, config, prepared.ObjectiveAvailability)
 				feasible := len(OptimizationConstraintViolations(breakdown, config.Constraints)) == 0
 				if (feasible && (!bestFeasible || score > bestScore)) || (!bestFeasible && !feasible && score > bestScore) {
 					bestScore = score
@@ -521,103 +555,181 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 		}
 	}
 
-	breakdown, err := NetworkCoverageScoreBreakdownContext(ctx, req, azimuths, buildings)
+	breakdown, err := networkCoverageScoreBreakdownPreparedContext(ctx, req, azimuths, buildings, prepared)
 	if err != nil {
 		return NetworkOptimizationResponse{}, err
 	}
 	evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), azimuths...), Stats: breakdown})
-	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
-	for index, tower := range req.Towers {
-		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
-		towerBreakdown, scoreErr := CoverageAreaScoreBreakdownContext(ctx, Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings)
-		if scoreErr != nil {
-			return NetworkOptimizationResponse{}, scoreErr
-		}
-		score := towerBreakdown.TotalScore
-		optimized = append(optimized, NetworkOptimizedTower{
-			ID:             tower.ID,
-			OptimalAzimuth: azimuths[index],
-			Score:          math.Round(score*10) / 10,
-			RFProfile:      tower.RFProfile,
-		})
+	finalStats, scoreErr := scoreNetworkOptimization(breakdown, config, prepared.ObjectiveAvailability)
+	if scoreErr != nil {
+		return NetworkOptimizationResponse{}, scoreErr
 	}
-
+	frontier := networkParetoFrontier(evaluated, req.Towers, config, prepared.ObjectiveAvailability)
+	recommendedAzimuths := []float64(nil)
+	recommendedStats := finalStats
+	recommended := len(frontier) > 0
+	if recommended {
+		recommendedAzimuths = azimuthsForParetoSolution(frontier[0], req.Towers)
+		if candidateStats, found := networkCandidateStats(evaluated, recommendedAzimuths); found {
+			recommendedStats, scoreErr = scoreNetworkOptimization(candidateStats, config, prepared.ObjectiveAvailability)
+			if scoreErr != nil {
+				return NetworkOptimizationResponse{}, scoreErr
+			}
+		}
+	}
 	demandSummary := buildings.DemandSummary("")
-	breakdown.DataQuality = demandSummary.DataQuality
-	violations := OptimizationConstraintViolations(breakdown, config.Constraints)
+	recommendedStats.DataQuality = demandSummary.DataQuality
+	violations := OptimizationConstraintViolations(recommendedStats, config.Constraints)
+	normalizedWeights, weightErr := NormalizeAvailableOptimizationPriorities(config.Objectives, prepared.ObjectiveAvailability)
+	if weightErr != nil {
+		return NetworkOptimizationResponse{}, weightErr
+	}
+	configuredPriorities := configuredOptimizationPriorities(config.Objectives)
+	optimized, optimizedErr := optimizedTowerResults(ctx, req, recommendedAzimuths, buildings)
+	if optimizedErr != nil {
+		return NetworkOptimizationResponse{}, optimizedErr
+	}
 	return NetworkOptimizationResponse{
-		OptimizedTowers: optimized,
-		Stats:           breakdown.rounded(),
+		OptimizedTowers:    optimized,
+		Stats:              recommendedStats.rounded(),
+		OptimizationDomain: prepared.DomainMetadata,
 		Optimization: OptimizationOutcome{
-			Objectives: config.Objectives, Constraints: config.Constraints,
-			ObjectiveScore:       math.Round(OptimizationObjectiveScore(breakdown, config)*10) / 10,
-			ConstraintsSatisfied: len(violations) == 0, Violations: violations,
+			Objectives: config.Objectives, ConfiguredPriorities: configuredPriorities, NormalizedWeights: normalizedWeights, EffectiveWeights: normalizedWeights,
+			ObjectiveStatus: recommendedStats.ObjectiveStatus, Constraints: config.Constraints,
+			ObjectiveScore: math.Round(LegacyOptimizationObjectiveScore(recommendedStats, config)*10) / 10,
+			CompositeScore: roundFloat(recommendedStats.CompositeScore, 6), Score: roundFloat(recommendedStats.Score, 4),
+			ConstraintsSatisfied: len(violations) == 0, Recommended: recommended, Violations: violations,
 			AdjustedParameters: []string{"azimuth"},
 		},
-		ParetoFrontier: networkParetoFrontier(evaluated, req.Towers, config),
+		ParetoFrontier: frontier,
 	}, nil
 }
 
 func EvaluateNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
 	NormalizeNetworkOptimizationRequest(&req)
+	config := req.Optimization
+	if validationError := ValidateOptimizationConfig(config); validationError != "" {
+		return NetworkOptimizationResponse{}, fmt.Errorf("%s", validationError)
+	}
+	if buildings == nil {
+		buildings = EmptyBuildingIndex()
+	}
+	prepared, prepareErr := prepareNetworkOptimizationContext(ctx, req, buildings)
+	if prepareErr != nil {
+		return NetworkOptimizationResponse{}, prepareErr
+	}
+	if _, weightErr := NormalizeAvailableOptimizationPriorities(config.Objectives, prepared.ObjectiveAvailability); weightErr != nil {
+		return NetworkOptimizationResponse{}, weightErr
+	}
 	azimuths := make([]float64, len(req.Towers))
 	for index, tower := range req.Towers {
 		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
 	}
 
-	breakdown, err := NetworkCoverageScoreBreakdownContext(ctx, req, azimuths, buildings)
+	breakdown, err := networkCoverageScoreBreakdownPreparedContext(ctx, req, azimuths, buildings, prepared)
 	if err != nil {
 		return NetworkOptimizationResponse{}, err
 	}
-	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
-	for index, tower := range req.Towers {
-		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
-		towerBreakdown, scoreErr := CoverageAreaScoreBreakdownContext(ctx, Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings)
-		if scoreErr != nil {
-			return NetworkOptimizationResponse{}, scoreErr
-		}
-		score := towerBreakdown.TotalScore
-		optimized = append(optimized, NetworkOptimizedTower{
-			ID:             tower.ID,
-			OptimalAzimuth: azimuths[index],
-			Score:          math.Round(score*10) / 10,
-			RFProfile:      tower.RFProfile,
-		})
+	scoredStats, scoreErr := scoreNetworkOptimization(breakdown, config, prepared.ObjectiveAvailability)
+	if scoreErr != nil {
+		return NetworkOptimizationResponse{}, scoreErr
 	}
-
 	demandSummary := buildings.DemandSummary("")
-	breakdown.DataQuality = demandSummary.DataQuality
-	config := req.Optimization
-	violations := OptimizationConstraintViolations(breakdown, config.Constraints)
+	scoredStats.DataQuality = demandSummary.DataQuality
+	violations := OptimizationConstraintViolations(scoredStats, config.Constraints)
 	candidate := networkOptimizationCandidate{Azimuths: azimuths, Stats: breakdown}
+	frontier := networkParetoFrontier([]networkOptimizationCandidate{candidate}, req.Towers, config, prepared.ObjectiveAvailability)
+	normalizedWeights, weightErr := NormalizeAvailableOptimizationPriorities(config.Objectives, prepared.ObjectiveAvailability)
+	if weightErr != nil {
+		return NetworkOptimizationResponse{}, weightErr
+	}
+	configuredPriorities := configuredOptimizationPriorities(config.Objectives)
+	optimized, optimizedErr := optimizedTowerResults(ctx, req, azimuths, buildings)
+	if optimizedErr != nil {
+		return NetworkOptimizationResponse{}, optimizedErr
+	}
 	return NetworkOptimizationResponse{
-		OptimizedTowers: optimized,
-		Stats:           breakdown.rounded(),
+		OptimizedTowers:    optimized,
+		Stats:              scoredStats.rounded(),
+		OptimizationDomain: prepared.DomainMetadata,
 		Optimization: OptimizationOutcome{
-			Objectives: config.Objectives, Constraints: config.Constraints,
-			ObjectiveScore:       math.Round(OptimizationObjectiveScore(breakdown, config)*10) / 10,
-			ConstraintsSatisfied: len(violations) == 0, Violations: violations,
+			Objectives: config.Objectives, ConfiguredPriorities: configuredPriorities, NormalizedWeights: normalizedWeights, EffectiveWeights: normalizedWeights,
+			ObjectiveStatus: scoredStats.ObjectiveStatus, Constraints: config.Constraints,
+			ObjectiveScore: math.Round(LegacyOptimizationObjectiveScore(scoredStats, config)*10) / 10,
+			CompositeScore: roundFloat(scoredStats.CompositeScore, 6), Score: roundFloat(scoredStats.Score, 4),
+			ConstraintsSatisfied: len(violations) == 0, Recommended: false, Violations: violations,
 			AdjustedParameters: []string{},
 		},
-		ParetoFrontier: networkParetoFrontier([]networkOptimizationCandidate{candidate}, req.Towers, config),
+		ParetoFrontier: frontier,
 	}, nil
 }
 
-func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) (NetworkOptimizationStats, error) {
-	stats := NetworkOptimizationStats{}
-	if buildings == nil {
-		return stats, nil
+func optimizedTowerResults(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) ([]NetworkOptimizedTower, error) {
+	if len(azimuths) == 0 {
+		return []NetworkOptimizedTower{}, nil
 	}
-	buildingByID := make(map[string]*BuildingFootprint, len(buildings.Footprints()))
-	for index, building := range buildings.Footprints() {
-		if index%64 == 0 {
-			if err := ctx.Err(); err != nil {
-				return NetworkOptimizationStats{}, err
-			}
+	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
+	for index, tower := range req.Towers {
+		if index >= len(azimuths) {
+			return []NetworkOptimizedTower{}, nil
 		}
-		if building != nil && building.ID != "" {
-			buildingByID[building.ID] = building
+		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
+		towerBreakdown, scoreErr := CoverageAreaScoreBreakdownContext(ctx, Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings)
+		if scoreErr != nil {
+			return nil, scoreErr
 		}
+		optimized = append(optimized, NetworkOptimizedTower{
+			ID:             tower.ID,
+			OptimalAzimuth: normalizeDegrees(azimuths[index]),
+			Score:          math.Round(towerBreakdown.TotalScore*10) / 10,
+			RFProfile:      tower.RFProfile,
+		})
+	}
+	return optimized, nil
+}
+
+func networkCandidateStats(candidates []networkOptimizationCandidate, azimuths []float64) (NetworkOptimizationStats, bool) {
+	key := azimuthKey(azimuths)
+	for _, candidate := range candidates {
+		if azimuthKey(candidate.Azimuths) == key {
+			return candidate.Stats, true
+		}
+	}
+	return NetworkOptimizationStats{}, false
+}
+
+func azimuthsForParetoSolution(solution NetworkParetoSolution, towers []NetworkTowerRequest) []float64 {
+	byID := make(map[string]float64, len(solution.Towers))
+	for _, setting := range solution.Towers {
+		byID[setting.ID] = setting.AzimuthDeg
+	}
+	azimuths := make([]float64, 0, len(towers))
+	for _, tower := range towers {
+		azimuth, ok := byID[tower.ID]
+		if !ok {
+			return nil
+		}
+		azimuths = append(azimuths, normalizeDegrees(azimuth))
+	}
+	return azimuths
+}
+
+func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) (NetworkOptimizationStats, error) {
+	NormalizeNetworkOptimizationRequest(&req)
+	if buildings == nil {
+		buildings = EmptyBuildingIndex()
+	}
+	prepared, err := prepareNetworkOptimizationContext(ctx, req, buildings)
+	if err != nil {
+		return NetworkOptimizationStats{}, err
+	}
+	return networkCoverageScoreBreakdownPreparedContext(ctx, req, azimuths, buildings, prepared)
+}
+
+func networkCoverageScoreBreakdownPreparedContext(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex, prepared *PreparedNetworkOptimizationContext) (NetworkOptimizationStats, error) {
+	stats := NetworkOptimizationStats{}
+	if prepared == nil {
+		return stats, nil
 	}
 
 	servedCounts := make(map[string]int)
@@ -652,6 +764,9 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 			if rx <= CoveredBuildingThresholdDBm {
 				continue
 			}
+			if _, relevant := prepared.RelevantBuildings[buildingID]; !relevant {
+				continue
+			}
 			servedCounts[buildingID]++
 			if existing, ok := bestRxByBuilding[buildingID]; !ok || rx > existing {
 				bestRxByBuilding[buildingID] = rx
@@ -659,23 +774,26 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 		}
 	}
 
-	buildingIndex := 0
+	coveredBuildingIDs := make([]string, 0, len(bestRxByBuilding))
 	for buildingID := range bestRxByBuilding {
+		coveredBuildingIDs = append(coveredBuildingIDs, buildingID)
+	}
+	sort.Strings(coveredBuildingIDs)
+	for buildingIndex, buildingID := range coveredBuildingIDs {
 		if buildingIndex%64 == 0 {
 			if err := ctx.Err(); err != nil {
 				return NetworkOptimizationStats{}, err
 			}
 		}
-		buildingIndex++
-		building := buildingByID[buildingID]
+		building := prepared.RelevantBuildings[buildingID]
 		if building == nil {
 			continue
 		}
-		if building.DemandWeight > 0 {
+		if _, relevant := prepared.RelevantDemandBuildings[buildingID]; relevant {
 			stats.UniqueDemandBuildings++
 			stats.DemandScore += building.DemandWeight * DemandScoreMultiplier
 		}
-		if building.ResidentialDemand > 0 {
+		if _, relevant := prepared.RelevantResidentialBuildings[buildingID]; relevant {
 			stats.UniqueResidentialBuildings++
 			stats.ResidentialScore += building.ResidentialDemand * ResidentialScoreMultiplier
 		}
@@ -685,6 +803,24 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 	}
 	stats.OverlapPenalty = float64(stats.OverlapBuildings) * NetworkOverlapPenaltyPerBuilding
 	stats.NetworkScore = stats.DemandScore + stats.ResidentialScore + stats.CoverageScore - stats.OverlapPenalty
+	coveredUnits := len(coveredBuildingIDs)
+	overlapRatio := ratio01(float64(stats.OverlapBuildings), float64(coveredUnits))
+	stats.RawMetrics = OptimizationRawMetrics{
+		ServedWeightedDemand:     stats.DemandScore / DemandScoreMultiplier,
+		ServedDemandWeight:       stats.DemandScore / DemandScoreMultiplier,
+		TotalWeightedDemand:      prepared.TotalRelevantDemandWeight,
+		RelevantDemandWeight:     prepared.TotalRelevantDemandWeight,
+		ResidentialCovered:       stats.UniqueResidentialBuildings,
+		ResidentialTotal:         prepared.TotalRelevantResidential,
+		RelevantResidentialTotal: prepared.TotalRelevantResidential,
+		CoverageReachScore:       stats.CoverageScore,
+		CoverageReachMaximum:     float64(len(req.Towers)*req.Rays) * CoverageTieBreakerPerRay,
+		PropagationReachScore:    stats.CoverageScore,
+		PropagationReachMaximum:  float64(len(req.Towers)*req.Rays) * CoverageTieBreakerPerRay,
+		CoveredUnits:             coveredUnits,
+		OverlapBuildings:         stats.OverlapBuildings,
+		OverlapRatio:             overlapRatio,
+	}
 	return stats, nil
 }
 
@@ -716,6 +852,23 @@ func (stats NetworkOptimizationStats) rounded() NetworkOptimizationStats {
 	stats.ResidentialScore = math.Round(stats.ResidentialScore*10) / 10
 	stats.CoverageScore = math.Round(stats.CoverageScore*10) / 10
 	stats.OverlapPenalty = math.Round(stats.OverlapPenalty*10) / 10
+	stats.RawMetrics.ServedWeightedDemand = roundFloat(stats.RawMetrics.ServedWeightedDemand, 4)
+	stats.RawMetrics.ServedDemandWeight = roundFloat(stats.RawMetrics.ServedDemandWeight, 4)
+	stats.RawMetrics.TotalWeightedDemand = roundFloat(stats.RawMetrics.TotalWeightedDemand, 4)
+	stats.RawMetrics.RelevantDemandWeight = roundFloat(stats.RawMetrics.RelevantDemandWeight, 4)
+	stats.RawMetrics.CoverageReachScore = roundFloat(stats.RawMetrics.CoverageReachScore, 4)
+	stats.RawMetrics.CoverageReachMaximum = roundFloat(stats.RawMetrics.CoverageReachMaximum, 4)
+	stats.RawMetrics.PropagationReachScore = roundFloat(stats.RawMetrics.PropagationReachScore, 4)
+	stats.RawMetrics.PropagationReachMaximum = roundFloat(stats.RawMetrics.PropagationReachMaximum, 4)
+	stats.RawMetrics.OverlapRatio = roundFloat(stats.RawMetrics.OverlapRatio, 6)
+	stats.CompositeScore = roundFloat(stats.CompositeScore, 6)
+	stats.Score = roundFloat(stats.Score, 4)
+	stats.Objectives.Demand = roundFloat(stats.Objectives.Demand, 6)
+	stats.Objectives.Residential = roundFloat(stats.Objectives.Residential, 6)
+	stats.Objectives.Coverage = roundFloat(stats.Objectives.Coverage, 6)
+	stats.Objectives.Overlap = roundFloat(stats.Objectives.Overlap, 6)
+	stats.ObjectiveBreakdown = roundObjectiveBreakdown(stats.ObjectiveBreakdown)
+	stats.ObjectiveStatus = roundObjectiveStatus(stats.ObjectiveStatus)
 	return stats
 }
 

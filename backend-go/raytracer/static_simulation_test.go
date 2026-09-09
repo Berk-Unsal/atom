@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -453,6 +454,9 @@ func TestNetworkCoverageCountsDuplicateDemandOnceAndPenalizesOverlap(t *testing.
 	if score.OverlapPenalty != NetworkOverlapPenaltyPerBuilding {
 		t.Fatalf("overlap penalty = %.1f, want %.1f", score.OverlapPenalty, NetworkOverlapPenaltyPerBuilding)
 	}
+	if score.RawMetrics.ServedWeightedDemand != 25 || score.RawMetrics.TotalWeightedDemand != 25 || score.RawMetrics.CoveredUnits != 1 || score.RawMetrics.OverlapRatio != 1 {
+		t.Fatalf("raw network metrics = %+v", score.RawMetrics)
+	}
 }
 
 func TestOptimizeNetworkImprovesOrEqualsBaselineClusterScore(t *testing.T) {
@@ -477,6 +481,13 @@ func TestOptimizeNetworkImprovesOrEqualsBaselineClusterScore(t *testing.T) {
 	}
 	if len(optimized.OptimizedTowers) != 2 {
 		t.Fatalf("optimized towers = %d, want 2", len(optimized.OptimizedTowers))
+	}
+	repeated := mustResult(OptimizeNetworkContext(context.Background(), req, buildings))
+	if !reflect.DeepEqual(optimized.Stats, repeated.Stats) ||
+		!reflect.DeepEqual(optimized.Optimization, repeated.Optimization) ||
+		!reflect.DeepEqual(optimized.OptimizedTowers, repeated.OptimizedTowers) ||
+		!reflect.DeepEqual(optimized.ParetoFrontier, repeated.ParetoFrontier) {
+		t.Fatal("identical optimization runs produced different outputs")
 	}
 }
 
@@ -508,6 +519,28 @@ func TestEvaluateNetworkUsesCurrentTowerAzimuths(t *testing.T) {
 	}
 	if evaluated.OptimizedTowers[0].OptimalAzimuth != 0 {
 		t.Fatalf("evaluated azimuth = %.1f, want current azimuth 0", evaluated.OptimizedTowers[0].OptimalAzimuth)
+	}
+}
+
+func TestOptimizeNetworkRejectsWhenAllPositiveObjectivesAreUnavailable(t *testing.T) {
+	minimumDemand := 1
+	req := NetworkOptimizationRequest{
+		Towers: []NetworkTowerRequest{
+			{ID: "a", TowerLon: 32, TowerLat: 39, AzimuthDeg: 0},
+			{ID: "b", TowerLon: 32.0001, TowerLat: 39, AzimuthDeg: 180},
+		},
+		Rays:         3,
+		RadiusMeters: 80,
+		FrequencyGHz: 2.6,
+		TxPowerDBm:   30,
+		BeamWidthDeg: 40,
+		Optimization: OptimizationConfig{
+			Objectives:  []OptimizationObjective{{ID: "demand", Weight: 100}},
+			Constraints: OptimizationConstraints{MinUniqueDemandBuildings: &minimumDemand},
+		},
+	}
+	if _, err := OptimizeNetworkContext(context.Background(), req, EmptyBuildingIndex()); err == nil || !strings.Contains(err.Error(), "no available positively weighted objectives") {
+		t.Fatalf("expected unavailable-objective scoring error, got %v", err)
 	}
 }
 

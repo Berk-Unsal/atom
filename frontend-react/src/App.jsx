@@ -38,10 +38,17 @@ import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { getJSON, isAbortError, postBlob, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
 import { runNetworkSimulationQueue } from "./utils/networkSimulationQueue.js";
-import { distanceToCentroid, pointInPolygon, polygonCentroid } from "./utils/polygonSelection.js";
+import { pointInPolygon, selectNearestTowers } from "./utils/polygonSelection.js";
+import { MAX_NETWORK_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from "./utils/networkSelection.js";
 import { readMeasurementCsvFile } from "./utils/measurementCsv.js";
 import { duplicateInventoryCell } from "./utils/inventoryImport.js";
-import { createDefaultOptimizationConfig, normalizeOptimizationConfig, OPTIMIZATION_OBJECTIVES } from "./utils/optimizationConfig.js";
+import {
+  createDefaultOptimizationConfig,
+  normalizeOptimizationConfig,
+  optimizationConfigValidationMessage,
+  rankOptimizationResponse,
+  OPTIMIZATION_OBJECTIVES,
+} from "./utils/optimizationConfig.js";
 import { resolveRFProfile, rfProfileOverrideFromProperties, validateRFProfile } from "./utils/rfProfile.js";
 import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
 import { compactRecommendationResponse } from "./utils/recommendations.js";
@@ -187,6 +194,10 @@ export default function App() {
   const isEvaluatingNetwork = activeRFTask === "network_evaluation";
   const isOptimizing = activeRFTask === "optimization";
   const isAnalyzingInterference = activeRFTask === "interference";
+  const displayedNetworkOptimization = useMemo(
+    () => rankOptimizationResponse(networkOptimization, optimizationConfig),
+    [networkOptimization, optimizationConfig],
+  );
   const isRecommendingSites = activeRFTask === "recommendation";
   const isEvaluatingMeasurements = activeRFTask === "measurements";
   const isAnalyzingPathProfile = activeRFTask === "path_profile";
@@ -277,6 +288,18 @@ export default function App() {
     };
 	}, [datasetRevision]);
 
+  useEffect(() => {
+    if (towers.length === 0) {
+      return;
+    }
+    setSelectedNetworkTowerIds((current) => {
+      const normalized = normalizeNetworkSelection(current, towers);
+      const isCanonical = normalized.length === current.length
+        && normalized.every((id, index) => id === current[index]);
+      return isCanonical ? current : normalized;
+    });
+  }, [towers]);
+
   const clearInterferenceAnalysis = useCallback(() => {
     setInterferenceAnalysis(EMPTY_INTERFERENCE_ANALYSIS);
     setInterferenceRevision((current) => current + 1);
@@ -298,14 +321,19 @@ export default function App() {
 		setSettings(restoredSettings);
     if (plan.planningMode) setPlanningMode(plan.planningMode);
     if (Array.isArray(plan.selectionPolygon)) setSelectionPolygon(plan.selectionPolygon);
-    if (Array.isArray(plan.selectedNetworkTowerIds)) {
-			setSelectedNetworkTowerIds(plan.selectedNetworkTowerIds.filter((id) => restoredInventory.some((tower) => tower.id === id)));
-    }
-    setNetworkAzimuths(plan.networkAzimuths ?? {});
+		const restoredNetworkTowerIds = normalizeNetworkSelection(plan.selectedNetworkTowerIds, restoredInventory);
+		setSelectedNetworkTowerIds(restoredNetworkTowerIds);
+		setNetworkAzimuths(Object.fromEntries(
+			Object.entries(plan.networkAzimuths ?? {})
+				.filter(([towerID]) => restoredNetworkTowerIds.includes(String(towerID))),
+		));
     setOptimizationConfig(normalizeOptimizationConfig(plan.optimizationConfig));
-    if (plan.selectedTowerId) {
-			setSelectedTower(restoredInventory.find((tower) => tower.id === plan.selectedTowerId) ?? restoredInventory[0] ?? null);
-    }
+		setSelectedTower(
+			restoredInventory.find((tower) => tower.id === String(plan.selectedTowerId))
+				?? restoredInventory.find((tower) => restoredNetworkTowerIds.includes(tower.id))
+				?? restoredInventory[0]
+				?? null,
+		);
     if (plan.layerVisibility) setLayerVisibility((current) => ({ ...current, ...plan.layerVisibility }));
     const artifacts = snapshot?.artifacts;
     setSimulation(artifacts?.simulation ?? EMPTY_SIMULATION);
@@ -358,7 +386,7 @@ export default function App() {
         plan: {
           layerVisibility,
           planningMode,
-          selectedNetworkTowerIds,
+          selectedNetworkTowerIds: normalizeNetworkSelection(selectedNetworkTowerIds, towers),
           networkAzimuths,
           optimizationConfig,
           selectedTowerId: selectedTower?.id ?? null,
@@ -585,7 +613,14 @@ export default function App() {
   ]);
 
   const optimizeNetwork = useCallback(async () => {
-    const selectedNetworkTowers = towers.filter((tower) => selectedNetworkTowerIds.includes(tower.id));
+    const priorityError = optimizationConfigValidationMessage(optimizationConfig);
+    if (priorityError) {
+      setError(priorityError);
+      return;
+    }
+    const selectedNetworkTowers = normalizeNetworkSelection(selectedNetworkTowerIds, towers)
+      .map((towerID) => towers.find((tower) => tower.id === towerID))
+      .filter(Boolean);
     if (selectedNetworkTowers.length < 2) {
       setError("Select at least 2 towers for network optimization");
       return;
@@ -666,7 +701,12 @@ export default function App() {
   }, [clearInterferenceAnalysis, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const evaluateNetwork = useCallback(async () => {
-    const selected = selectedNetworkTowerIds
+    const priorityError = optimizationConfigValidationMessage(optimizationConfig);
+    if (priorityError) {
+      setError(priorityError);
+      return;
+    }
+    const selected = normalizeNetworkSelection(selectedNetworkTowerIds, towers)
       .map((towerID) => towers.find((tower) => tower.id === towerID))
       .filter(Boolean);
     if (selected.length < 2) {
@@ -718,15 +758,18 @@ export default function App() {
   }, [clearInterferenceAnalysis, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const selectedNetworkTowers = useMemo(
-    () =>
-      selectedNetworkTowerIds
-        .map((towerID) => towers.find((tower) => tower.id === towerID))
-        .filter(Boolean),
+    () => normalizeNetworkSelection(selectedNetworkTowerIds, towers)
+      .map((towerID) => towers.find((tower) => tower.id === towerID))
+      .filter(Boolean),
     [selectedNetworkTowerIds, towers],
   );
+  const selectedNetworkSelectionIDs = useMemo(
+    () => selectedNetworkTowers.map((tower) => tower.id),
+    [selectedNetworkTowers],
+  );
   const selectedTowerOrder = useMemo(() => {
-    return new Map(selectedNetworkTowerIds.map((towerID, index) => [towerID, index + 1]));
-  }, [selectedNetworkTowerIds]);
+    return new Map(selectedNetworkSelectionIDs.map((towerID, index) => [towerID, index + 1]));
+  }, [selectedNetworkSelectionIDs]);
   const selectedNetworkProfileTechs = selectedNetworkTowers.map((tower, index) => resolveRFProfile(tower, settings, index).networkTech);
   const coreContextTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
   const coreLabApplicable = is5GCoreFrequency(settings.frequencyGHz)
@@ -974,32 +1017,44 @@ export default function App() {
   }, [invalidatePlanResults]);
 
   const updateOptimizationConfig = useCallback((nextConfig) => {
-    invalidatePlanResults();
-    setOptimizationConfig(normalizeOptimizationConfig(nextConfig));
-  }, [invalidatePlanResults]);
+    const normalized = normalizeOptimizationConfig(nextConfig);
+    const constraintsChanged = JSON.stringify(optimizationConfig.constraints ?? {}) !== JSON.stringify(normalized.constraints ?? {});
+    if (constraintsChanged) invalidatePlanResults();
+    const priorityError = optimizationConfigValidationMessage(normalized);
+    setError((current) => current.startsWith("Set at least one optimization priority") ? priorityError : current);
+    setOptimizationConfig(normalized);
+  }, [invalidatePlanResults, optimizationConfig]);
 
   const selectTower = useCallback((tower) => {
     if (planningMode === "network") {
-      const isSelected = selectedNetworkTowerIds.includes(tower.id);
-      if (!isSelected && selectedNetworkTowerIds.length >= 6) {
-        setError("Network planning supports up to 6 selected cells");
+      const currentSelection = normalizeNetworkSelection(selectedNetworkTowerIds, towers);
+      const isSelected = currentSelection.includes(tower.id);
+      if (!isSelected && currentSelection.length >= MAX_NETWORK_CELLS) {
+        setError(`Network planning supports up to ${MAX_NETWORK_CELLS} selected cells`);
         return;
       }
+      const nextSelection = toggleNetworkSelection(currentSelection, tower.id, MAX_NETWORK_CELLS);
       invalidatePlanResults();
       setSelectionNotice("");
-      setSelectedNetworkTowerIds((current) => {
-        if (current.includes(tower.id)) {
-          return current.filter((id) => id !== tower.id);
-        }
+      setSelectedNetworkTowerIds(nextSelection);
+      if (nextSelection.includes(tower.id)) {
         setError("");
-        return [...current, tower.id];
-      });
-      setSelectedTower(tower);
+        setSelectedTower(tower);
+      } else {
+        setNetworkAzimuths((current) => {
+          const next = { ...current };
+          delete next[tower.id];
+          return next;
+        });
+        setSelectedTower((current) => current?.id === tower.id
+          ? towers.find((candidate) => nextSelection.includes(candidate.id)) ?? null
+          : current);
+      }
       return;
     }
     invalidatePlanResults();
     setSelectedTower(tower);
-  }, [invalidatePlanResults, planningMode, selectedNetworkTowerIds]);
+  }, [invalidatePlanResults, planningMode, selectedNetworkTowerIds, towers]);
 
 	const selectInventoryCell = useCallback((tower) => {
 		setSelectedTower(tower);
@@ -1110,7 +1165,7 @@ export default function App() {
 				return next;
 			});
 			if (wasSelected) setSelectedTower(deletedTower);
-			if (wasInNetwork) setSelectedNetworkTowerIds((current) => [...new Set([...current, towerID])]);
+				if (wasInNetwork) setSelectedNetworkTowerIds((current) => toggleNetworkSelection(current, towerID, MAX_NETWORK_CELLS));
 			if (deletedAzimuth !== undefined) setNetworkAzimuths((current) => ({ ...current, [towerID]: deletedAzimuth }));
 		});
 	}, [invalidatePlanResults, networkAzimuths, selectedNetworkTowerIds, selectedTower, showUndoNotice, towers]);
@@ -1132,14 +1187,16 @@ export default function App() {
     setSelectionPolygon([]);
     setSelectionNotice("");
     if (mode === "network") {
-      setSelectedNetworkTowerIds((current) => {
-        if (current.length > 0) {
-          return current;
-        }
-        return selectedTower ? [selectedTower.id] : [];
-      });
+      const currentSelection = normalizeNetworkSelection(selectedNetworkTowerIds, towers);
+      setSelectedNetworkTowerIds(
+        currentSelection.length > 0
+          ? currentSelection
+          : selectedTower && towers.some((tower) => tower.id === selectedTower.id)
+            ? [selectedTower.id]
+            : [],
+      );
     }
-  }, [invalidatePlanResults, planningMode, selectedTower]);
+  }, [invalidatePlanResults, planningMode, selectedNetworkTowerIds, selectedTower, towers]);
 
   const startAreaSelection = useCallback(() => {
     if (planningMode !== "network") {
@@ -1181,18 +1238,21 @@ export default function App() {
       return;
     }
 
-    const centroid = polygonCentroid(finalPolygon);
-    const selected = [...inside]
-      .sort((left, right) => distanceToCentroid(left, centroid) - distanceToCentroid(right, centroid))
-      .slice(0, 6);
+    const selected = selectNearestTowers(inside, finalPolygon, MAX_NETWORK_CELLS);
+    const selectedIDs = selected.map((tower) => tower.id);
     invalidatePlanResults();
-    setSelectedNetworkTowerIds(selected.map((tower) => tower.id));
+    setSelectedNetworkTowerIds(selectedIDs);
+    setNetworkAzimuths((current) => Object.fromEntries(
+      selectedIDs
+        .filter((towerID) => current[towerID] !== undefined)
+        .map((towerID) => [towerID, current[towerID]]),
+    ));
     setSelectedTower((current) => selected[0] ?? current);
     setIsDrawingSelection(false);
     setSelectionPolygon(finalPolygon);
     setSelectionNotice(
-      inside.length > 6
-        ? `${inside.length} towers found, nearest 6 selected.`
+      inside.length > MAX_NETWORK_CELLS
+        ? `${inside.length} towers found, nearest ${MAX_NETWORK_CELLS} selected.`
         : `${selected.length} towers selected from drawn area.`,
     );
   }, [invalidatePlanResults, selectionPolygon, towers]);
@@ -1206,8 +1266,8 @@ export default function App() {
       setError("Candidate recommendations are available for 4G and 5G plans");
       return;
     }
-    if (selectedNetworkTowers.length < 2 || selectedNetworkTowers.length > 5) {
-      setError("Select between 2 and 5 cells before adding one candidate");
+    if (selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS) {
+      setError(`Select between 2 and ${MAX_NETWORK_CELLS - 1} cells before adding one candidate`);
       return;
     }
     if (selectionPolygon.length < 3) {
@@ -1485,11 +1545,11 @@ export default function App() {
         view: "recommendations",
       };
     }
-    if ((lastAnalysisKind === "network" || lastAnalysisKind === "optimization") && networkOptimization?.stats) {
+    if ((lastAnalysisKind === "network" || lastAnalysisKind === "optimization") && displayedNetworkOptimization?.stats) {
       return {
         label: networkResultKind === "evaluation" ? "Network plan" : "Optimization",
-        primary: formatCompactNumber(networkOptimization.stats.network_score),
-        secondary: `${(networkOptimization.stats.overlap_buildings ?? 0).toLocaleString()} overlap`,
+        primary: `${formatNumber(displayedNetworkOptimization.stats.score, 1)} / 100`,
+        secondary: `${(displayedNetworkOptimization.stats.overlap_buildings ?? 0).toLocaleString()} overlap`,
         view: "optimization",
       };
     }
@@ -1502,8 +1562,8 @@ export default function App() {
       };
     }
     return null;
-  }, [gapStats, interferenceAnalysis.stats, lastAnalysisKind, networkOptimization, networkResultKind, simulation?.stats, siteRecommendations, stats.avgPower]);
-  const selectedCellCount = selectedNetworkTowerIds.length;
+  }, [displayedNetworkOptimization, gapStats, interferenceAnalysis.stats, lastAnalysisKind, networkResultKind, simulation?.stats, siteRecommendations, stats.avgPower]);
+  const selectedCellCount = selectedNetworkSelectionIDs.length;
 	const activeProfileTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
 	const invalidProfileCount = activeProfileTowers.filter((tower, index) => (
 		Object.keys(validateRFProfile(resolveRFProfile(tower, settings, index))).length > 0
@@ -1523,7 +1583,7 @@ export default function App() {
         : null;
   const coreUnavailableReason = coreLabApplicable ? null : "5G Core requires 5G mmWave plan defaults and 5G profiles on the active cells";
   const toolState = {
-    setup: { badge: planningMode === "network" ? String(selectedNetworkTowerIds.length) : null },
+    setup: { badge: planningMode === "network" ? String(selectedCellCount) : null },
 		inventory: { badge: invalidProfileCount ? "!" : null, tone: invalidProfileCount ? "warning" : "success" },
     propagation: {},
     experiments: {},
@@ -1590,7 +1650,7 @@ export default function App() {
 		inventory: towers,
       planningMode,
       selectedTowerId: selectedTower?.id ?? null,
-        selectedNetworkTowerIds,
+        selectedNetworkTowerIds: selectedNetworkSelectionIDs,
         networkAzimuths,
         optimizationConfig,
       selectionPolygon,
@@ -1605,8 +1665,8 @@ export default function App() {
       resultsView: activeResultsView,
       avgRxDBm: simulation?.stats?.avg_rx_dbm ?? null,
       gapPct: coverageGaps?.stats?.gap_pct ?? null,
-      networkScore: networkOptimization?.stats?.network_score ?? null,
-      overlapBuildings: networkOptimization?.stats?.overlap_buildings ?? null,
+      networkScore: displayedNetworkOptimization?.stats?.score ?? null,
+      overlapBuildings: displayedNetworkOptimization?.stats?.overlap_buildings ?? null,
       avgSINRDB: interferenceAnalysis?.stats?.avg_sinr_db ?? null,
       serviceablePct: interferenceAnalysis?.stats?.serviceable_pct ?? null,
       affectedDemand: interferenceAnalysis?.stats?.affected_demand ?? null,
@@ -1617,7 +1677,7 @@ export default function App() {
       simulation,
       coverageGaps,
       interferenceAnalysis,
-      networkOptimization,
+      networkOptimization: displayedNetworkOptimization,
       optimizationDiagnostics,
       siteRecommendations,
       measurementAnalysis,
@@ -1634,11 +1694,11 @@ export default function App() {
     networkAzimuths,
     optimizationConfig,
     measurementAnalysis,
-    networkOptimization,
+    displayedNetworkOptimization,
     optimizationDiagnostics,
     planDirty,
     planningMode,
-    selectedNetworkTowerIds,
+    selectedNetworkSelectionIDs,
     selectedNetworkTowers,
     selectedTower,
     selectionPolygon,
@@ -1678,7 +1738,11 @@ export default function App() {
       setError("The recommended candidate is not present in the active dataset");
       return;
     }
-    const nextIDs = [...new Set([...selectedNetworkTowerIds, candidate.id])];
+    if (!selectedNetworkSelectionIDs.includes(candidate.id) && selectedNetworkSelectionIDs.length >= MAX_NETWORK_CELLS) {
+      setError(`Network planning supports up to ${MAX_NETWORK_CELLS} selected cells`);
+      return;
+    }
+    const nextIDs = [...new Set([...selectedNetworkSelectionIDs, candidate.id])];
     const nextAzimuths = {
       ...networkAzimuths,
       ...networkAzimuthMap(selectedNetworkTowers, networkOptimization, networkAzimuths),
@@ -1706,7 +1770,7 @@ export default function App() {
     networkOptimization,
     restorePlanningSnapshot,
     saveProjectScenario,
-    selectedNetworkTowerIds,
+    selectedNetworkSelectionIDs,
     selectedNetworkTowers,
     settings,
     towers,
@@ -1726,7 +1790,7 @@ export default function App() {
         interferenceAnalysis,
         measurementAnalysis,
         comparison,
-        networkOptimization,
+        networkOptimization: displayedNetworkOptimization,
         project: activeProject,
         recommendations: siteRecommendations,
         selectedTower,
@@ -1747,7 +1811,7 @@ export default function App() {
       coreLabEnabled,
       interferenceAnalysis,
       measurementAnalysis,
-      networkOptimization,
+      displayedNetworkOptimization,
       coverageGaps,
       optimizationDiagnostics,
 			planningMode,
@@ -1849,7 +1913,7 @@ export default function App() {
               measurements: Boolean(measurementAnalysis?.geojson?.features?.length),
               surfaces: Boolean(coverageSurface?.grid?.values?.length),
               rays: Boolean(simulation?.geojson?.features?.length),
-              selectedCells: selectedNetworkTowerIds.length > 0,
+              selectedCells: selectedCellCount > 0,
             }}
             isDrawingSelection={isDrawingSelection}
             layerMenuOpen={layerMenuOpen}
@@ -1866,12 +1930,12 @@ export default function App() {
             hasInterferenceData={hasInterferenceData}
             planningMode={planningMode}
             selectionCanFinish={selectionPolygon.length >= 3}
-            selectedCount={selectedNetworkTowerIds.length}
+            selectedCount={selectedCellCount}
           />
           <MapCanvas
             towers={towers}
             selectedTower={selectedTower}
-            selectedNetworkTowerIds={selectedNetworkTowerIds}
+            selectedNetworkTowerIds={selectedNetworkSelectionIDs}
             selectedTowerOrder={selectedTowerOrder}
             onSelectTower={selectTower}
             simulation={simulation.geojson}
@@ -1948,11 +2012,12 @@ export default function App() {
               onOptimizeAzimuth={optimizeAzimuth}
               isLoading={isLoading}
               isOptimizing={isOptimizing}
-              networkSelectionCount={selectedNetworkTowerIds.length}
+              networkSelectionCount={selectedCellCount}
               onOptimizeNetwork={optimizeNetwork}
               onAnalyzeInterference={analyzeInterference}
               onFocusMap={() => closeDrawer("map")}
               onPlanningModeChange={changePlanningMode}
+              optimizationConfigValid={!optimizationConfigValidationMessage(optimizationConfig)}
               selectionNotice={selectionNotice}
               planningMode={planningMode}
               interferenceApplicable={interferenceApplicable}
@@ -2043,7 +2108,7 @@ export default function App() {
               activeView={activeResultsView}
               comparison={comparison}
               diagnostics={optimizationDiagnostics}
-              networkOptimization={networkOptimization}
+              networkOptimization={displayedNetworkOptimization}
               networkResultKind={networkResultKind}
               interferenceAnalysis={interferenceAnalysis}
               gapStats={gapStats}
@@ -2055,7 +2120,7 @@ export default function App() {
               recommendations={siteRecommendations}
               recommending={isRecommendingSites}
               savedScenarios={projectWorkspace.activeProject?.scenarios ?? []}
-              recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length > 5 || selectionPolygon.length < 3 || !interferenceApplicable}
+              recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}
               stats={stats}
             />
           ) : null}
@@ -2398,7 +2463,7 @@ function ScenarioComparisonPanel({ onOpenScenario, scenarios }) {
   const metrics = [
     ["Average Rx", "avgRxDBm", "dBm"],
     ["Gap area", "gapPct", "%"],
-    ["Network score", "networkScore", ""],
+    ["Optimization score", "networkScore", "/ 100"],
     ["Overlap", "overlapBuildings", "buildings"],
     ["Average SINR", "avgSINRDB", "dB"],
     ["Serviceable", "serviceablePct", "%"],
@@ -2466,35 +2531,42 @@ function NetworkOptimizationPanel({ optimization, kind }) {
   }
   const stats = optimization.stats ?? {};
   const outcome = optimization.optimization ?? {};
-  const objectiveLabels = new Map(OPTIMIZATION_OBJECTIVES.map((objective) => [objective.id, objective]));
   const frontier = optimization.pareto_frontier ?? [];
+  const raw = stats.raw_metrics ?? {};
+  const objectiveStatus = outcome.objective_status ?? stats.objective_status ?? {};
+  const objectiveAvailable = (id) => objectiveStatus?.[id]?.available !== false;
+  const score = Number.isFinite(Number(stats.score)) ? `${formatNumber(stats.score, 1)} / 100` : UNAVAILABLE_VALUE;
+  const overlapRatio = objectiveAvailable("overlap") && Number.isFinite(Number(raw.overlap_ratio))
+    ? `${formatNumber(Number(raw.overlap_ratio) * 100, 1)}%`
+    : UNAVAILABLE_VALUE;
+  const stateLabel = outcome.constraints_satisfied === false
+    ? "Infeasible — not recommended"
+    : kind === "evaluation" || outcome.recommended === false
+      ? "Feasible evaluation"
+      : "Recommended solution";
   return (
     <section className="network-card" aria-label={`${kind === "evaluation" ? "Network evaluation" : "Network optimization"} summary`}>
       <div className="panel-title">
         <RadioTower size={16} />
         <span>{kind === "evaluation" ? "Network Evaluation" : "Network Optimization"}</span>
       </div>
+      <div className="optimization-score">
+        <span>Optimization Score</span>
+        <strong>{score}</strong>
+      </div>
       <div className="metric-list compact">
-        <MetricRow label="Network score" value={formatCompactNumber(stats.network_score)} />
-        <MetricRow label="Unique POI" value={(stats.unique_demand_buildings ?? 0).toLocaleString()} />
-        <MetricRow
-          label="Unique residential"
-          value={(stats.unique_residential_buildings ?? 0).toLocaleString()}
-        />
-        <MetricRow label="Overlap buildings" value={(stats.overlap_buildings ?? 0).toLocaleString()} />
-        <MetricRow label="Overlap penalty" value={formatCompactNumber(stats.overlap_penalty)} />
-        <MetricRow label="Objective score" value={formatCompactNumber(outcome.objective_score)} />
+        <MetricRow label="Served demand weight" value={objectiveAvailable("demand") ? `${formatNumber(raw.served_demand_weight ?? raw.served_weighted_demand, 1)} / ${formatNumber(raw.relevant_demand_weight ?? raw.total_weighted_demand, 1)}` : UNAVAILABLE_VALUE} />
+        <MetricRow label="Residential buildings" value={objectiveAvailable("residential") ? `${formatCount(raw.residential_covered)} / ${formatCount(raw.relevant_residential_total ?? raw.residential_total)}` : UNAVAILABLE_VALUE} />
+        <MetricRow label="Propagation reach" value={objectiveAvailable("coverage") ? `${formatNumber(raw.propagation_reach_score ?? raw.coverage_reach_score, 1)} / ${formatNumber(raw.propagation_reach_maximum ?? raw.coverage_reach_maximum, 1)}` : UNAVAILABLE_VALUE} />
+        <MetricRow label="Overlap ratio" value={overlapRatio} />
+        <MetricRow label="Covered units" value={formatCount(raw.covered_units)} />
+        <MetricRow label="Overlap buildings" value={objectiveAvailable("overlap") ? (stats.overlap_buildings ?? 0).toLocaleString() : UNAVAILABLE_VALUE} />
         <MetricRow label="Constraints" value={outcome.constraints_satisfied === false ? "Not satisfied" : "Satisfied"} />
       </div>
       <div className="optimization-result-summary">
         <span className={outcome.constraints_satisfied === false ? "constraint-state failed" : "constraint-state passed"}>
-          {outcome.constraints_satisfied === false ? "Infeasible best available" : "Feasible solution"}
+          {stateLabel}
         </span>
-        {(outcome.objectives ?? []).map((objective) => (
-          <span className="objective-chip" key={objective.id}>
-            {objectiveLabels.get(objective.id)?.label ?? objective.id} × {formatNumber(objective.weight, 2)}
-          </span>
-        ))}
       </div>
       {(outcome.violations ?? []).map((violation) => <p className="optimization-violation" key={violation}>{violation}</p>)}
       <div className="network-tower-list">
@@ -2507,11 +2579,11 @@ function NetworkOptimizationPanel({ optimization, kind }) {
       {frontier.length > 0 ? (
         <details className="pareto-frontier-list">
           <summary>{frontier.length} non-dominated evaluated solution{frontier.length === 1 ? "" : "s"}</summary>
-          <p className="data-note">Each row is feasible and is not worse on every selected objective than another evaluated azimuth set.</p>
+          <p className="data-note">Each row is feasible and non-dominated. Current priorities determine the order.</p>
           {frontier.slice(0, 12).map((solution, index) => (
-            <article key={`${solution.objective_score}-${index}`}>
-              <div><strong>#{index + 1} · {formatCompactNumber(solution.objective_score)}</strong><span>{(solution.towers ?? []).map((tower) => `${tower.id}: ${formatNumber(tower.azimuth_deg, 0)}°`).join(" · ")}</span></div>
-              <small>Demand {solution.stats?.unique_demand_buildings ?? 0} · Residential {solution.stats?.unique_residential_buildings ?? 0} · Overlap {solution.stats?.overlap_buildings ?? 0}</small>
+            <article key={`${solution.score ?? solution.objective_score}-${index}`}>
+              <div><strong>#{index + 1} · {formatNumber(solution.score, 1)} / 100</strong><span>{(solution.towers ?? []).map((tower) => `${tower.id}: ${formatNumber(tower.azimuth_deg, 0)}°`).join(" · ")}</span></div>
+              <small>Demand {formatObjectivePercent(solution.stats, "demand")} · Residential {formatObjectivePercent(solution.stats, "residential")} · Propagation reach {formatObjectivePercent(solution.stats, "coverage")} · Overlap utility {formatObjectivePercent(solution.stats, "overlap")}</small>
               <p>{solution.explanation}</p>
             </article>
           ))}
@@ -2522,6 +2594,19 @@ function NetworkOptimizationPanel({ optimization, kind }) {
       <p className="data-note">Adjusted parameters: {(outcome.adjusted_parameters ?? ["azimuth"]).join(", ")}. Tilt, power, candidate-site, cost, fiber, and permitting inputs are not synthesized by this optimizer.</p>
     </section>
   );
+}
+
+function formatCount(value) {
+  return Number.isFinite(Number(value)) ? Number(value).toLocaleString() : UNAVAILABLE_VALUE;
+}
+
+function formatPercent(value) {
+  return Number.isFinite(Number(value)) ? `${formatNumber(Number(value) * 100, 1)}%` : UNAVAILABLE_VALUE;
+}
+
+function formatObjectivePercent(stats, id) {
+  if (stats?.objective_status?.[id]?.available === false) return UNAVAILABLE_VALUE;
+  return formatPercent(stats?.objectives?.[id]);
 }
 
 function CoreLabTool({ applicable, coreLab, enabled, scenarios, startCommand, towerIDs, onRunScenario, onToggle, onUse5G }) {
@@ -2956,7 +3041,7 @@ function OptimizerBreakdown({ diagnostics }) {
           <SlidersHorizontal size={16} />
           <span>Optimizer</span>
         </div>
-        <p className="empty-note">Run Auto-Optimize to see demand, residential, and coverage scores.</p>
+    <p className="empty-note">Run Auto-Optimize to see demand, residential, and propagation reach scores.</p>
       </section>
     );
   }
@@ -2979,7 +3064,7 @@ function OptimizerBreakdown({ diagnostics }) {
           label="Residential score"
           value={formatCompactNumber(diagnostics.residential_score)}
         />
-        <MetricRow label="Coverage tie-break" value={formatCompactNumber(diagnostics.coverage_score)} />
+        <MetricRow label="Propagation reach tie-break" value={formatCompactNumber(diagnostics.coverage_score)} />
       </div>
     </section>
   );

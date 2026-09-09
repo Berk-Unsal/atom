@@ -909,24 +909,67 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb18-1"><a href=
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="dv">28</span><span class="fu">,</span></span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;optimization&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;objectives&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;coverage&quot;</span><span class="fu">,</span> <span class="dt">&quot;weight&quot;</span><span class="fu">:</span> <span class="dv">2</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;demand&quot;</span><span class="fu">,</span> <span class="dt">&quot;weight&quot;</span><span class="fu">:</span> <span class="dv">1</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;overlap&quot;</span><span class="fu">,</span> <span class="dt">&quot;weight&quot;</span><span class="fu">:</span> <span class="dv">3</span> <span class="fu">}</span></span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;constraints&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;min_unique_demand_buildings&quot;</span><span class="fu">:</span> <span class="dv">10</span><span class="fu">,</span></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;max_overlap_buildings&quot;</span><span class="fu">:</span> <span class="dv">25</span></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;coverage&quot;</span><span class="fu">,</span> <span class="dt">&quot;weight&quot;</span><span class="fu">:</span> <span class="dv">70</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;demand&quot;</span><span class="fu">,</span> <span class="dt">&quot;weight&quot;</span><span class="fu">:</span> <span class="dv">80</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;residential&quot;</span><span class="fu">,</span> <span class="dt">&quot;weight&quot;</span><span class="fu">:</span> <span class="dv">60</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;overlap&quot;</span><span class="fu">,</span> <span class="dt">&quot;weight&quot;</span><span class="fu">:</span> <span class="dv">35</span> <span class="fu">}</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;constraints&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;min_unique_demand_buildings&quot;</span><span class="fu">:</span> <span class="dv">10</span><span class="fu">,</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;max_overlap_buildings&quot;</span><span class="fu">:</span> <span class="dv">25</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>Objective IDs are <code>coverage</code>, <code>demand</code>,
-<code>residential</code>, and <code>overlap</code>; each weight is
-greater than zero and at most 100. Constraints may set minimum coverage
-score, minimum unique demand/residential buildings, and maximum overlap
-buildings. Responses include the objective score,
-feasibility/violations, adjusted parameter list, and up to 25 feasible
-non-dominated evaluated azimuth sets with explanations. This version
-adjusts azimuth only.</p>
+<code>residential</code>, and <code>overlap</code>; the legacy
+<code>coverage</code> ID represents <strong>Propagation reach</strong>,
+not spatial-area coverage. Each <code>weight</code> is a user-facing
+importance priority from 0 to 100. A zero priority removes that
+objective's influence on ranking, but all priorities cannot be zero. The
+backend preserves configured priorities and returns the effective
+available-objective weights as
+<code>optimization.normalized_weights</code> and
+<code>optimization.effective_weights</code>.</p>
+<p>The legacy constraint field <code>min_coverage_score</code> is also a
+minimum propagation-reach score, not a spatial-coverage constraint. Its
+mathematics and wire name remain unchanged for compatibility.</p>
+<p>Responses expose both stable normalized utilities and raw domain
+measurements. Every network request derives one deterministic
+<code>optimization_domain</code> from the logical union of maximum
+configured service-radius envelopes around the selected cells. The
+domain is fixed before candidate azimuth evaluation and is independent
+of antenna azimuth and simulated ray outcomes. The composite score is
+<code>100 * (demandWeight*demandUtility + residentialWeight*residentialUtility + coverageWeight*reachUtility + overlapWeight*overlapUtility)</code>,
+so it is always in the 0–100 range. Demand is served demand weight
+divided by relevant demand weight in the fixed domain; residential is
+covered residential footprints divided by relevant residential
+footprints intersecting that domain; propagation reach is the existing
+capped aggregate usable-ray-reach score divided by its configured reach
+maximum; and overlap utility is <code>1 - overlapRatio</code>, where
+overlap ratio is overlapping covered footprints divided by covered
+footprints. Utilities are clamped to <code>[0, 1]</code> and do not use
+candidate-set min/max values.</p>
+<p>If a domain has no relevant entities for an objective, that objective
+is reported as unavailable with <code>utility: null</code> and is
+excluded from effective weight normalization. Configured slider
+priorities are preserved separately from effective weights. If no
+positively weighted objective is available, scoring fails with a
+domain-scoping error. Hard constraints remain active independently; for
+example, a minimum residential-building constraint still fails when the
+domain contains no residential buildings.</p>
+<p>The response also includes <code>stats.objective_breakdown</code> for
+compatibility and <code>objective_status</code>, where each objective
+exposes availability, configured priority, effective weight, and
+nullable utility/contribution metadata. The contribution sum equals
+<code>stats.composite_score</code> within floating-point tolerance for
+available objectives. Existing feasibility constraints remain
+independent of priorities: an infeasible candidate is excluded from the
+Pareto frontier and cannot be returned as the optimized recommendation.
+The Pareto frontier is based on available objective utilities rather
+than weighted composite score; changing priorities can re-rank the
+stored feasible frontier without another RF evaluation when those
+metrics are available. Up to 25 feasible non-dominated evaluated azimuth
+sets are returned. This version adjusts azimuth only.</p>
 <hr />
 <h2 id="planning-product-endpoints">Planning Product Endpoints</h2>
 <h3 id="recommend-candidate-cells">Recommend Candidate Cells</h3>

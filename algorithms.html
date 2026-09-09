@@ -93,6 +93,8 @@ Physics page contents">
       <li><a href="#deterministic-optimization-sweep--score-algorithm"
       id="toc-deterministic-optimization-sweep--score-algorithm">Deterministic
       Optimization: Sweep &amp; Score Algorithm</a></li>
+      <li><a href="#network-objective-model"
+      id="toc-network-objective-model">Network Objective Model</a></li>
       <li><a href="#performance-characteristics"
       id="toc-performance-characteristics">Performance
       Characteristics</a></li>
@@ -457,6 +459,41 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb10-1"><a href="#cb
 <span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><strong>Result</strong>: 4× speedup on quad-core machine.</p>
+<h2 id="network-objective-model">Network Objective Model</h2>
+<p>Network azimuth optimization keeps the existing RF evaluation and
+hard feasibility checks separate from preference scoring. Each feasible
+evaluated configuration stores raw measurements and stable utilities.
+Demand and residential measurements use the same indexed
+<code>BuildingFootprint</code> unit for both numerator and denominator;
+multipart source geometries remain separate suffixed footprints because
+the RF engine has no stable logical-building ID to merge safely:</p>
+<ul>
+<li><strong>Demand</strong>: served relevant demand weight / relevant
+demand weight inside the fixed selected-cell radius-union domain. Demand
+relevance uses the existing building-centroid convention.</li>
+<li><strong>Residential</strong>: covered relevant residential
+footprints / residential footprints intersecting the fixed selected-cell
+radius-union domain.</li>
+<li><strong>Propagation reach</strong>: the existing capped aggregate
+usable-ray-reach score / <code>towers × rays × 100</code>, the stable
+maximum of that metric. The legacy objective ID remains
+<code>coverage</code> for compatibility; it does not mean spatial-area
+coverage.</li>
+<li><strong>Overlap</strong>:
+<code>1 - (overlapping covered buildings / covered buildings)</code>.</li>
+</ul>
+<p>Utilities are clamped to <code>[0, 1]</code>; they are not normalized
+against the current candidate set. The optimization domain is prepared
+once per request from the logical union of each selected cell's
+configured service-radius envelope and is independent of candidate
+azimuths. User priorities are 0–100 values; unavailable objectives are
+marked N/A and excluded from the effective-priority denominator without
+mutating their configured values. The composite score is the weighted
+utility sum over available objectives, exposed as
+<code>score = composite_score × 100</code>. Hard constraint violations
+exclude candidates from the feasible Pareto frontier; they are not
+converted into score penalties. The same stored frontier can therefore
+be re-ranked when priorities change without repeating RF evaluation.</p>
 <hr />
 <h2 id="performance-characteristics">Performance Characteristics</h2>
 <h3 id="benchmarks-ankara-dataset">Benchmarks (Ankara Dataset)</h3>
@@ -490,9 +527,11 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb10-1"><a href="#cb
 <td>O(n log n) parallelized</td>
 </tr>
 <tr>
-<td>Optimization (72 iterations)</td>
-<td>250 ms</td>
-<td>O(72 × n log n) with Goroutines</td>
+<td>Network optimization</td>
+<td>See <code>BenchmarkCanonicalAnkaraNetworkOptimization</code> in the
+repository</td>
+<td>Fixed-domain entity discovery is prepared once; candidate RF scoring
+remains the dominant work</td>
 </tr>
 <tr>
 <td>API response</td>

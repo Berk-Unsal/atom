@@ -153,6 +153,12 @@
     },
     {
       "page": "Algorithms and RF Physics",
+      "title": "Network Objective Model",
+      "url": "./algorithms.html#network-objective-model",
+      "text": "Network azimuth optimization keeps the existing RF evaluation and hard feasibility checks separate from preference scoring. Each feasible evaluated configuration stores raw measurements and stable utilities. Demand and residential measurements use the same indexed BuildingFootprint unit for both numerator and denominator; multipart source geometries remain separate suffixed footprints because the RF engine has no stable logical-building ID to merge safely: Demand : served relevant demand weight / relevant demand weight inside the fixed selected-cell radius-union domain. Demand relevance uses the existing building-centroid convention. Residential : covered relevant residential footprints / residential footprints intersecting the fixed selected-cell radius-union domain. Propagation reach : the existing capped aggregate usable-ray-reach score / towers × rays × 100 , the stable maximum of that metric. The legacy objective ID remains coverage for compatibility; it does not mean spatial-area coverage. Overlap : 1 - (overlapping covered buildings / covered buildings) . Utilities are clamped to [0, 1] ; they are not normalized against the current candidate set. The optimization domain is prepared once per request from the logical union of each selected cell's configured service-radius envelope and is independent of candidate azimuths. User priorities are 0–100 values; unavailable objectives are marked N/A and excluded from the effective-priority denominator without mutating their configured values. The composite score is the weighted utility sum over available objectives, exposed as score = composite_score × 100 . Hard constraint violations exclude candidates from the feasible Pareto frontier; they are not converted into score penalties. The same stored frontier can therefore be re-ranked when priorities change without repeating RF evaluation."
+    },
+    {
+      "page": "Algorithms and RF Physics",
       "title": "Performance Characteristics",
       "url": "./algorithms.html#performance-characteristics",
       "text": ""
@@ -161,7 +167,7 @@
       "page": "Algorithms and RF Physics",
       "title": "Benchmarks (Ankara Dataset)",
       "url": "./algorithms.html#benchmarks-ankara-dataset",
-      "text": "Operation Time Scaling Load GeoJSON 500 ms O(n) where n=12,000 buildings Build R-Tree 1 second O(n log n) Single ray trace < 1 μs O(log n) Up to 25,000 returned ray features Bounded O(n log n) parallelized Optimization (72 iterations) 250 ms O(72 × n log n) with Goroutines API response < 100 ms p99 Network + serialization"
+      "text": "Operation Time Scaling Load GeoJSON 500 ms O(n) where n=12,000 buildings Build R-Tree 1 second O(n log n) Single ray trace < 1 μs O(log n) Up to 25,000 returned ray features Bounded O(n log n) parallelized Network optimization See BenchmarkCanonicalAnkaraNetworkOptimization in the repository Fixed-domain entity discovery is prepared once; candidate RF scoring remains the dominant work API response < 100 ms p99 Network + serialization"
     },
     {
       "page": "Algorithms and RF Physics",
@@ -317,7 +323,7 @@
       "page": "API Reference",
       "title": "Evaluate Or Optimize A Network",
       "url": "./api.html#evaluate-or-optimize-a-network",
-      "text": "Endpoints : POST /api/evaluate-network and POST /api/optimize-network Network requests contain two to six towers and may add an optimization object: { \"towers\" : [ { \"id\" : \"101\" , \"tower_lon\" : 32.85 , \"tower_lat\" : 39.92 , \"azimuth\" : 90 } , { \"id\" : \"102\" , \"tower_lon\" : 32.86 , \"tower_lat\" : 39.93 , \"azimuth\" : 210 } ] , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"optimization\" : { \"objectives\" : [ { \"id\" : \"coverage\" , \"weight\" : 2 } , { \"id\" : \"demand\" , \"weight\" : 1 } , { \"id\" : \"overlap\" , \"weight\" : 3 } ] , \"constraints\" : { \"min_unique_demand_buildings\" : 10 , \"max_overlap_buildings\" : 25 } } } Objective IDs are coverage , demand , residential , and overlap ; each weight is greater than zero and at most 100. Constraints may set minimum coverage score, minimum unique demand/residential buildings, and maximum overlap buildings. Responses include the objective score, feasibility/violations, adjusted parameter list, and up to 25 feasible non-dominated evaluated azimuth sets with explanations. This version adjusts azimuth only."
+      "text": "Endpoints : POST /api/evaluate-network and POST /api/optimize-network Network requests contain two to six towers and may add an optimization object: { \"towers\" : [ { \"id\" : \"101\" , \"tower_lon\" : 32.85 , \"tower_lat\" : 39.92 , \"azimuth\" : 90 } , { \"id\" : \"102\" , \"tower_lon\" : 32.86 , \"tower_lat\" : 39.93 , \"azimuth\" : 210 } ] , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"optimization\" : { \"objectives\" : [ { \"id\" : \"coverage\" , \"weight\" : 70 } , { \"id\" : \"demand\" , \"weight\" : 80 } , { \"id\" : \"residential\" , \"weight\" : 60 } , { \"id\" : \"overlap\" , \"weight\" : 35 } ] , \"constraints\" : { \"min_unique_demand_buildings\" : 10 , \"max_overlap_buildings\" : 25 } } } Objective IDs are coverage , demand , residential , and overlap ; the legacy coverage ID represents Propagation reach , not spatial-area coverage. Each weight is a user-facing importance priority from 0 to 100. A zero priority removes that objective's influence on ranking, but all priorities cannot be zero. The backend preserves configured priorities and returns the effective available-objective weights as optimization.normalized_weights and optimization.effective_weights . The legacy constraint field min_coverage_score is also a minimum propagation-reach score, not a spatial-coverage constraint. Its mathematics and wire name remain unchanged for compatibility. Responses expose both stable normalized utilities and raw domain measurements. Every network request derives one deterministic optimization_domain from the logical union of maximum configured service-radius envelopes around the selected cells. The domain is fixed before candidate azimuth evaluation and is independent of antenna azimuth and simulated ray outcomes. The composite score is 100 * (demandWeight*demandUtility + residentialWeight*residentialUtility + coverageWeight*reachUtility + overlapWeight*overlapUtility) , so it is always in the 0–100 range. Demand is served demand weight divided by relevant demand weight in the fixed domain; residential is covered residential footprints divided by relevant residential footprints intersecting that domain; propagation reach is the existing capped aggregate usable-ray-reach score divided by its configured reach maximum; and overlap utility is 1 - overlapRatio , where overlap ratio is overlapping covered footprints divided by covered footprints. Utilities are clamped to [0, 1] and do not use candidate-set min/max"
     },
     {
       "page": "API Reference",
@@ -729,9 +735,15 @@
     },
     {
       "page": "Changelog",
+      "title": "Changed",
+      "url": "./changelog.html#changed",
+      "text": "Replace network optimization's arbitrary raw weighted score with stable 0–1 objective utilities, normalized importance priorities, a 0–100 composite score, raw metric preservation, contribution breakdowns, and preference-ranked feasible Pareto solutions. Scope demand and residential normalization to a deterministic selected-cell radius-union domain, report unavailable objectives as N/A with effective weights, and present the legacy coverage objective as propagation reach."
+    },
+    {
+      "page": "Changelog",
       "title": "Fixed",
       "url": "./changelog.html#fixed",
-      "text": "Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on main reach the published site."
+      "text": "Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows. Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on main reach the published site."
     },
     {
       "page": "Changelog",
@@ -748,7 +760,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed",
+      "url": "./changelog.html#changed-1",
       "text": "Reorganize the frontend into four labeled workflow stages with contextual tool navigation and run actions, stronger text contrast, and clearer focus states. Standardize RF unit and unavailable-value formatting, replace side-stripe status treatments, and align drawer, layer, and result transitions to one reduced-motion-safe timing system."
     },
     {
@@ -784,7 +796,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-1",
+      "url": "./changelog.html#changed-2",
       "text": "Upgrade project files and dataset manifests to schema v2 with backward-compatible v1 import/loading migrations. Include resolved per-cell RF profiles and dataset QA/provenance in reproducibility outputs and planning reports. Extract frontend workspace formatting/state helpers and backend RF/segment geometry math from the application and simulation monoliths into focused, tested modules. Refresh Open5GS reachability outside the adapter cache mutex, serve stale probe state during refresh, and treat HTTP client/server failures as disconnected. Remove redundant RF convenience APIs that created background contexts and silently discarded computation errors. Drain in-flight backend and Core Lab adapter requests on interrupt or termination signals with a bounded graceful-shutdown window. Consolidate report escaping, numeric/Markdown formatting, and printable table construction behind one tested utility."
     },
     {
@@ -850,7 +862,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-2",
+      "url": "./changelog.html#changed-3",
       "text": "Establish a canonical VERSION file, automated version checks, release-note generation, and tag-driven GitHub Releases. Publish the latest container tag only for stable releases, never prerelease tags."
     },
     {

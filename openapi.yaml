@@ -200,7 +200,9 @@ paths:
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkRequest" } } } }
       responses:
-        "200": { description: Network score and per-cell results }
+        "200":
+          description: Stable normalized network objectives and per-cell results
+          content: { application/json: { schema: { $ref: "#/components/schemas/NetworkOptimizationResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
@@ -212,7 +214,9 @@ paths:
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkRequest" } } } }
       responses:
-        "200": { description: Optimized azimuths and network score }
+        "200":
+          description: Optimized azimuths, stable normalized objectives, and Pareto solutions
+          content: { application/json: { schema: { $ref: "#/components/schemas/NetworkOptimizationResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
@@ -536,14 +540,136 @@ components:
             required: [id, weight]
             properties:
               id: { type: string, enum: [demand, residential, coverage, overlap] }
-              weight: { type: number, exclusiveMinimum: 0, maximum: 100 }
-        constraints:
-          type: object
-          properties:
-            min_coverage_score: { type: number, minimum: 0 }
-            min_unique_demand_buildings: { type: integer, minimum: 0 }
-            min_unique_residential_buildings: { type: integer, minimum: 0 }
-            max_overlap_buildings: { type: integer, minimum: 0 }
+              weight: { type: number, minimum: 0, maximum: 100, description: User-facing objective priority; normalized_weights in the response are used for scoring. }
+        constraints: { $ref: "#/components/schemas/OptimizationConstraints" }
+    OptimizationConstraints:
+      type: object
+      properties:
+        min_coverage_score: { type: number, minimum: 0, description: Legacy field name; minimum capped propagation-reach score, not spatial-area coverage. }
+        min_unique_demand_buildings: { type: integer, minimum: 0 }
+        min_unique_residential_buildings: { type: integer, minimum: 0 }
+        max_overlap_buildings: { type: integer, minimum: 0 }
+    NetworkOptimizationRawMetrics:
+      type: object
+      properties:
+        served_demand_weight: { type: number, minimum: 0, description: Canonical served demand weight; legacy served_weighted_demand remains supported. }
+        served_weighted_demand: { type: number, minimum: 0 }
+        relevant_demand_weight: { type: number, minimum: 0, description: Positive demand weight inside the fixed optimization domain. }
+        total_weighted_demand: { type: number, minimum: 0 }
+        residential_covered: { type: integer, minimum: 0 }
+        relevant_residential_total: { type: integer, minimum: 0, description: Residential indexed footprints intersecting the fixed optimization domain. }
+        residential_total: { type: integer, minimum: 0 }
+        propagation_reach_score: { type: number, minimum: 0, description: Canonical capped aggregate usable-ray-reach score; legacy coverage_reach_score remains supported. }
+        propagation_reach_maximum: { type: number, minimum: 0 }
+        coverage_reach_score: { type: number, minimum: 0 }
+        coverage_reach_maximum: { type: number, minimum: 0 }
+        covered_units: { type: integer, minimum: 0 }
+        overlap_buildings: { type: integer, minimum: 0 }
+        overlap_ratio: { type: number, minimum: 0, maximum: 1 }
+    NetworkOptimizationUtilities:
+      type: object
+      required: [demand, residential, coverage, overlap]
+      properties:
+        demand: { type: number, minimum: 0, maximum: 1 }
+        residential: { type: number, minimum: 0, maximum: 1 }
+        coverage: { type: number, minimum: 0, maximum: 1 }
+        overlap: { type: number, minimum: 0, maximum: 1, description: 1 minus the relevant overlap ratio. }
+    NetworkOptimizationContribution:
+      type: object
+      required: [utility, weight, contribution]
+      properties:
+        utility: { type: number, minimum: 0, maximum: 1 }
+        weight: { type: number, minimum: 0, maximum: 1 }
+        contribution: { type: number, minimum: 0, maximum: 1 }
+    NetworkOptimizationBreakdown:
+      type: object
+      required: [demand, residential, coverage, overlap]
+      properties:
+        demand: { $ref: "#/components/schemas/NetworkOptimizationContribution" }
+        residential: { $ref: "#/components/schemas/NetworkOptimizationContribution" }
+        coverage: { $ref: "#/components/schemas/NetworkOptimizationContribution" }
+        overlap: { $ref: "#/components/schemas/NetworkOptimizationContribution" }
+    OptimizationDomainMetadata:
+      type: object
+      required: [source, selected_cell_count, radius_policy, relevant_building_entities, relevant_demand_entities, relevant_residential_entities]
+      properties:
+        source: { type: string, enum: [selected_cell_radius_union] }
+        selected_cell_count: { type: integer, minimum: 0 }
+        radius_policy: { type: string }
+        envelope_radii_meters: { type: array, items: { type: number, minimum: 0 } }
+        relevant_building_entities: { type: integer, minimum: 0 }
+        relevant_demand_entities: { type: integer, minimum: 0 }
+        relevant_residential_entities: { type: integer, minimum: 0 }
+    OptimizationObjectiveStatus:
+      type: object
+      required: [available, configured_priority, effective_weight, utility, contribution]
+      properties:
+        available: { type: boolean }
+        reason: { type: string, description: N/A reason when the objective is unavailable. }
+        configured_priority: { type: number, minimum: 0, maximum: 100 }
+        effective_weight: { type: number, minimum: 0, maximum: 1 }
+        utility: { type: [number, "null"], minimum: 0, maximum: 1, description: Null when the objective is not applicable to the optimization domain. }
+        contribution: { type: [number, "null"], minimum: 0, maximum: 1 }
+    NetworkOptimizationStats:
+      type: object
+      required: [score, composite_score, raw_metrics, objectives, objective_breakdown]
+      properties:
+        network_score: { type: number, description: Deprecated legacy raw aggregate retained for compatibility; do not use for recommendation ranking. }
+        score: { type: number, minimum: 0, maximum: 100, description: Composite optimization score shown to users. }
+        composite_score: { type: number, minimum: 0, maximum: 1 }
+        unique_demand_buildings: { type: integer, minimum: 0 }
+        unique_residential_buildings: { type: integer, minimum: 0 }
+        overlap_buildings: { type: integer, minimum: 0 }
+        demand_score: { type: number, minimum: 0 }
+        residential_score: { type: number, minimum: 0 }
+        coverage_score: { type: number, minimum: 0 }
+        overlap_penalty: { type: number, minimum: 0 }
+        data_quality: { type: string }
+        raw_metrics: { $ref: "#/components/schemas/NetworkOptimizationRawMetrics" }
+        objectives: { $ref: "#/components/schemas/NetworkOptimizationUtilities" }
+        objective_breakdown: { $ref: "#/components/schemas/NetworkOptimizationBreakdown" }
+        objective_status: { type: object, additionalProperties: { $ref: "#/components/schemas/OptimizationObjectiveStatus" } }
+    OptimizationOutcome:
+      type: object
+      properties:
+        objectives: { type: array, items: { type: object, additionalProperties: true } }
+        configured_priorities: { type: object, additionalProperties: { type: number, minimum: 0, maximum: 100 } }
+        normalized_weights: { type: object, additionalProperties: { type: number, minimum: 0, maximum: 1 } }
+        effective_weights: { type: object, additionalProperties: { type: number, minimum: 0, maximum: 1 } }
+        objective_status: { type: object, additionalProperties: { $ref: "#/components/schemas/OptimizationObjectiveStatus" } }
+        constraints: { $ref: "#/components/schemas/OptimizationConstraints" }
+        objective_score: { type: number, description: Deprecated legacy aggregate retained for compatibility. }
+        composite_score: { type: number, minimum: 0, maximum: 1 }
+        score: { type: number, minimum: 0, maximum: 100 }
+        constraints_satisfied: { type: boolean }
+        recommended: { type: boolean }
+        violations: { type: array, items: { type: string } }
+        adjusted_parameters: { type: array, items: { type: string } }
+    NetworkOptimizedTower:
+      type: object
+      properties:
+        id: { type: string }
+        optimal_azimuth: { type: number }
+        score: { type: number, description: Legacy per-cell raw score retained for compatibility. }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
+    NetworkParetoSolution:
+      type: object
+      properties:
+        towers: { type: array, items: { type: object, required: [id, azimuth_deg], properties: { id: { type: string }, azimuth_deg: { type: number } } } }
+        stats: { $ref: "#/components/schemas/NetworkOptimizationStats" }
+        objective_score: { type: number, description: Deprecated legacy aggregate retained for compatibility. }
+        composite_score: { type: number, minimum: 0, maximum: 1 }
+        score: { type: number, minimum: 0, maximum: 100 }
+        explanation: { type: string }
+    NetworkOptimizationResponse:
+      type: object
+      required: [optimized_towers, stats, optimization_domain, optimization, pareto_frontier]
+      properties:
+        optimized_towers: { type: array, items: { $ref: "#/components/schemas/NetworkOptimizedTower" } }
+        stats: { $ref: "#/components/schemas/NetworkOptimizationStats" }
+        optimization_domain: { $ref: "#/components/schemas/OptimizationDomainMetadata" }
+        optimization: { $ref: "#/components/schemas/OptimizationOutcome" }
+        pareto_frontier: { type: array, items: { $ref: "#/components/schemas/NetworkParetoSolution" } }
     InterferenceRequest:
       allOf:
         - { $ref: "#/components/schemas/NetworkRequest" }

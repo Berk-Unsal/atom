@@ -364,6 +364,17 @@ for i := 1; i <= 72; i++ {
 
 **Result**: 4× speedup on quad-core machine.
 
+## Network Objective Model
+
+Network azimuth optimization keeps the existing RF evaluation and hard feasibility checks separate from preference scoring. Each feasible evaluated configuration stores raw measurements and stable utilities. Demand and residential measurements use the same indexed `BuildingFootprint` unit for both numerator and denominator; multipart source geometries remain separate suffixed footprints because the RF engine has no stable logical-building ID to merge safely:
+
+- **Demand**: served relevant demand weight / relevant demand weight inside the fixed selected-cell radius-union domain. Demand relevance uses the existing building-centroid convention.
+- **Residential**: covered relevant residential footprints / residential footprints intersecting the fixed selected-cell radius-union domain.
+- **Propagation reach**: the existing capped aggregate usable-ray-reach score / `towers × rays × 100`, the stable maximum of that metric. The legacy objective ID remains `coverage` for compatibility; it does not mean spatial-area coverage.
+- **Overlap**: `1 - (overlapping covered buildings / covered buildings)`.
+
+Utilities are clamped to `[0, 1]`; they are not normalized against the current candidate set. The optimization domain is prepared once per request from the logical union of each selected cell's configured service-radius envelope and is independent of candidate azimuths. User priorities are 0–100 values; unavailable objectives are marked N/A and excluded from the effective-priority denominator without mutating their configured values. The composite score is the weighted utility sum over available objectives, exposed as `score = composite_score × 100`. Hard constraint violations exclude candidates from the feasible Pareto frontier; they are not converted into score penalties. The same stored frontier can therefore be re-ranked when priorities change without repeating RF evaluation.
+
 ---
 
 ## Performance Characteristics
@@ -376,7 +387,7 @@ for i := 1; i <= 72; i++ {
 | Build R-Tree | 1 second | O(n log n) |
 | Single ray trace | < 1 μs | O(log n) |
 | Up to 25,000 returned ray features | Bounded | O(n log n) parallelized |
-| Optimization (72 iterations) | 250 ms | O(72 × n log n) with Goroutines |
+| Network optimization | See `BenchmarkCanonicalAnkaraNetworkOptimization` in the repository | Fixed-domain entity discovery is prepared once; candidate RF scoring remains the dominant work |
 | API response | < 100 ms p99 | Network + serialization |
 
 ### Memory Usage

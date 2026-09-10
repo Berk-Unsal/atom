@@ -6,8 +6,8 @@ A.T.O.M is local-first and stateless on the server. The production image serves 
 
 ```bash
 git lfs install
-git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
-cd urban-ray-tracer
+git clone https://github.com/Berk-Unsal/atom.git
+cd atom
 git lfs pull
 docker compose up --build -d atom
 curl --fail http://localhost:8080/readyz

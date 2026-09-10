@@ -130,8 +130,8 @@ The 111 MB Ankara building dataset is managed by Git LFS, so clone the repositor
 
 ```bash
 git lfs install
-git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
-cd urban-ray-tracer
+git clone https://github.com/Berk-Unsal/atom.git
+cd atom
 git lfs pull
 docker compose up --build -d atom
 ```

@@ -60,7 +60,7 @@ export function CommandBar({
         <div className="command-actions">
           <a
             className="planning-estimate-link"
-            href="https://github.com/Berk-Unsal/urban-ray-tracer/blob/main/docs/modeling-limits.md"
+            href="https://github.com/Berk-Unsal/atom/blob/main/docs/modeling-limits.md"
             target="_blank"
             rel="noreferrer"
             title="Open deterministic model limitations"

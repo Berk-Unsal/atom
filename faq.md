@@ -115,8 +115,8 @@ Clone with Git LFS and use Docker Compose:
 
 ```bash
 git lfs install
-git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
-cd urban-ray-tracer
+git clone https://github.com/Berk-Unsal/atom.git
+cd atom
 git lfs pull
 docker compose up --build -d atom
 ```
@@ -129,6 +129,6 @@ Yes. Local Docker builds support ARM64, and tagged releases are intended to publ
 
 ### How do I report a problem?
 
-Include the application/model/dataset versions from Data or `/api/meta`, the exact request or exported project, the readiness response, and relevant logs in a [GitHub issue](https://github.com/Berk-Unsal/urban-ray-tracer/issues).
+Include the application/model/dataset versions from Data or `/api/meta`, the exact request or exported project, the readiness response, and relevant logs in a [GitHub issue](https://github.com/Berk-Unsal/atom/issues).
 
 See [Download and Use](download.html), [System Architecture](architecture.html), and [Model Limitations](modeling-limits.html) for deeper guidance.

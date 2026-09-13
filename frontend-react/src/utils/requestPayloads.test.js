@@ -3,6 +3,7 @@ import {
   buildInterferencePayload,
   buildCoverageSurfacePayload,
   buildMeasurementPayload,
+  buildNetworkCellExplanationPayload,
   buildNetworkOptimizationPayload,
   buildPathProfilePayload,
   buildRecommendationPayload,
@@ -115,5 +116,26 @@ describe("interference request payload", () => {
       thresholdsDBm: [-105, -90],
     });
     expect(payload).toMatchObject({ tower_lon: 32.85, tower_lat: 39.92, cell_size_m: 50, thresholds_dbm: [-105, -90] });
+  });
+
+  it("serializes the retained baseline and selected solution for one-cell explanation", () => {
+    const payload = buildNetworkCellExplanationPayload({
+      baseline: { cell_configurations: [{ id: "1" }] },
+      cellID: "1",
+      optimization: { objectives: [{ id: "demand", weight: 100 }] },
+      optimizationDomain: { source: "selected_cell_radius_union" },
+      runID: "run-1",
+      solution: { id: "solution-1", towers: [{ id: "1", azimuth_deg: 90 }] },
+      solutionID: "solution-1",
+    });
+    expect(payload).toMatchObject({
+      run_id: "run-1",
+      solution_id: "solution-1",
+      cell_id: "1",
+      baseline: { cell_configurations: [{ id: "1" }] },
+      solution: { id: "solution-1" },
+      optimization_domain: { source: "selected_cell_radius_union" },
+    });
+    expect(payload.optimization.objectives).toHaveLength(4);
   });
 });

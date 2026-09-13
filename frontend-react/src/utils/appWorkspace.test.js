@@ -22,9 +22,11 @@ describe("app workspace helpers", () => {
     const combined = combineNetworkSimulations([
       { geojson: { features: [{ properties: { ray: 1 } }] }, stats: { avg_rx_dbm: -80, blocked_pct: 10, min_range_m: 20, max_range_m: 100 } },
       { geojson: { features: [{ properties: { ray: 2 } }] }, stats: { avg_rx_dbm: -60, blocked_pct: 30, min_range_m: 10, max_range_m: 120 } },
-    ]);
+    ], [{ id: "tower-a", cellId: "cell-a" }, { id: "tower-b", cellId: "cell-b" }]);
     expect(combined.stats).toEqual({ avg_rx_dbm: -70, blocked_pct: 20, min_range_m: 10, max_range_m: 120 });
     expect(combined.geojson.features[1].properties.network_tower_index).toBe(1);
+    expect(combined.geojson.features[0].properties.cell_id).toBe("cell-a");
+    expect(combined.geojson.features[1].properties.network_tower_id).toBe("cell-b");
   });
 
   it("maps optimized cell IDs without discarding existing azimuths", () => {

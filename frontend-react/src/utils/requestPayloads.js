@@ -76,6 +76,26 @@ export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings,
   };
 }
 
+export function buildNetworkCellExplanationPayload({
+  baseline,
+  cellID,
+  optimization,
+  optimizationDomain,
+  runID,
+  solution,
+  solutionID,
+}) {
+  return {
+    run_id: runID ?? "",
+    solution_id: String(solutionID ?? solution?.id ?? ""),
+    cell_id: String(cellID ?? ""),
+    baseline,
+    solution,
+    optimization: optimizationConfigToPayload(optimization),
+    ...(optimizationDomain ? { optimization_domain: optimizationDomain } : {}),
+  };
+}
+
 export function buildInterferencePayload(selectedNetworkTowers, settings, networkOptimization, networkAzimuths = {}) {
   const optimizedByID = new Map(
     (networkOptimization?.optimized_towers ?? []).map((tower) => [String(tower.id), tower]),

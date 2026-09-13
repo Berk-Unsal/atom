@@ -8,6 +8,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 - Replace network optimization's arbitrary raw weighted score with stable 0–1 objective utilities, normalized importance priorities, a 0–100 composite score, raw metric preservation, contribution breakdowns, and preference-ranked feasible Pareto solutions.
 - Scope demand and residential normalization to a deterministic selected-cell radius-union domain, report unavailable objectives as N/A with effective weights, and present the legacy `coverage` objective as propagation reach.
+- Add lazy per-cell Pareto explanations that compare a selected solution with a single baseline-reverted counterfactual in the same target domain, preserving raw metric deltas, direction-aware interpretation, feasibility evidence, and priority-only score re-ranking.
+- Redesign generated Markdown/HTML planning reports around network scope, authoritative recommendations, baseline/Pareto evidence, evaluated cell explanations, conditional interference summaries, and concise report-only maps.
+- Clarify report priorities as relative 0–100 values, distinguish unconfigured hard constraints, humanize optimization-domain labels, and omit universally unavailable PCI columns.
+- Add map-first RF display controls for received-power surfaces, scoped/hidden propagation rays, and independent selected-cell focus without launching new RF work.
 
 ### Fixed
 

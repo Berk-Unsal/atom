@@ -243,6 +243,19 @@ func main() {
 		payload, runErr := raytracer.OptimizeNetworkContext(c.Request.Context(), req, currentBuildingIndex(datasets))
 		writeRFResponse(c, payload, runErr)
 	})
+	router.POST("/api/explain-network-cell", func(c *gin.Context) {
+		var input raytracer.NetworkCellExplanationRequestInput
+		if !bindJSON(c, &input, "network cell explanation") {
+			return
+		}
+		request := input.ToRequest()
+		if validationError := raytracer.ValidateNetworkCellExplanationRequest(request); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		payload, runErr := raytracer.ExplainNetworkCellContext(c.Request.Context(), request, currentBuildingIndex(datasets))
+		writeRFResponse(c, payload, runErr)
+	})
 	router.POST("/api/evaluate-network", func(c *gin.Context) {
 		var input raytracer.NetworkOptimizationRequestInput
 		if !bindJSON(c, &input, "network evaluation") {
@@ -529,7 +542,7 @@ func registerFrontendRoutes(router *gin.Engine, distPath string, indexPath strin
 				"service": "A.T.O.M API",
 				"routes": []string{
 					"/healthz", "/readyz", "/api/meta", "/api/datasets", "/api/datasets/switch", "/api/towers", "/api/buildings", "/api/buildings/summary",
-					"/api/conformance", "/api/collections", "/api/collections/buildings", "/api/collections/buildings/items", "/api/path-profile", "/api/coverage-surface", "/api/processes/batch-experiment", "/api/processes/batch-experiment/execution", "/api/jobs/:jobID", "/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network",
+					"/api/conformance", "/api/collections", "/api/collections/buildings", "/api/collections/buildings/items", "/api/path-profile", "/api/coverage-surface", "/api/processes/batch-experiment", "/api/processes/batch-experiment/execution", "/api/jobs/:jobID", "/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network", "/api/explain-network-cell",
 					"/api/optimize-network", "/api/interference", "/api/recommend-sites", "/api/measurements/evaluate",
 					"/api/core/status", "/api/core/topology", "/api/core/sessions", "/api/core/events", "/api/core/scenario",
 				},
@@ -636,6 +649,11 @@ func writeRFResponse[T any](c *gin.Context, payload T, err error) {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"error": "simulation response exceeded the " + strconv.Itoa(raytracer.MaxSimulationResponseFeatures) + "-feature limit; reduce rays or radius_m",
 		})
+		return
+	}
+	var explanationValidationError *raytracer.NetworkCellExplanationValidationError
+	if errors.As(err, &explanationValidationError) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid network cell explanation"})
 		return
 	}
 	c.JSON(http.StatusInternalServerError, gin.H{"error": "RF analysis failed"})

@@ -6,6 +6,7 @@ import { getJSON } from "../utils/apiClient.js";
 import { formatNumber } from "../utils/appWorkspace.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
 import { fanOutSelectionOffset } from "../utils/networkSelection.js";
+import { filterRayFeatures, RAY_SCOPE_ALL } from "../utils/rfVisualization.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
 
@@ -13,8 +14,10 @@ export default function MapCanvas({
   towers,
   selectedTower,
   selectedNetworkTowerIds = [],
+  selectedMapCellId = null,
   selectedTowerOrder,
   onSelectTower,
+  onSelectMapCell,
   simulation,
   rayLayerKey,
   coverageGaps,
@@ -47,6 +50,8 @@ export default function MapCanvas({
   coverageSurface,
   surfaceOpacity = 0.62,
   surfaceDisplayThresholdDBm = -110,
+  rayScope = RAY_SCOPE_ALL,
+  rayCellIDs = [],
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map" preferCanvas>
@@ -70,8 +75,6 @@ export default function MapCanvas({
         towers={towers}
       />
 
-      {layerVisibility?.buildings ? <ViewportBuildingLayer /> : null}
-
       {layerVisibility?.surfaces === false ? null : (
         <CoverageSurfaceLayer
           displayThresholdDBm={surfaceDisplayThresholdDBm}
@@ -79,6 +82,8 @@ export default function MapCanvas({
           surface={coverageSurface}
         />
       )}
+
+      {layerVisibility?.buildings ? <ViewportBuildingLayer /> : null}
 
       {layerVisibility?.interference === false ? null : (
         <InterferenceLayer
@@ -111,17 +116,28 @@ export default function MapCanvas({
         isDrawingSelection={isDrawingSelection}
         layerVisibility={layerVisibility}
         onMoveTower={onMoveTower}
+        onSelectMapCell={onSelectMapCell}
         onSelectMapObject={onSelectMapObject}
         onSelectTower={onSelectTower}
         planningMode={planningMode}
         selectedMapObject={selectedMapObject}
+        selectedMapCellId={selectedMapCellId}
         selectedNetworkTowerIds={selectedNetworkTowerIds}
         selectedTower={selectedTower}
         selectedTowerOrder={selectedTowerOrder}
         towers={towers}
       />
 
-      {layerVisibility?.rays === false ? null : <RayGeoJSONLayer simulation={simulation} layerKey={rayLayerKey} />}
+      {layerVisibility?.rays === false ? null : (
+        <RayGeoJSONLayer
+          cellIDsByIndex={rayCellIDs}
+          defaultCellId={planningMode === "single" ? rayCellIDs[0] ?? null : null}
+          rayScope={rayScope}
+          selectedCellId={selectedMapCellId}
+          simulation={simulation}
+          layerKey={rayLayerKey}
+        />
+      )}
       {layerVisibility?.communicationPaths === false ? null : (
         <CommunicationPathLayer
           onSelectMapObject={onSelectMapObject}
@@ -148,10 +164,12 @@ function TowerMarkersLayer({
   isDrawingSelection,
   layerVisibility,
   onMoveTower,
+  onSelectMapCell,
   onSelectMapObject,
   onSelectTower,
   planningMode,
   selectedMapObject,
+  selectedMapCellId,
   selectedNetworkTowerIds,
   selectedTower,
   selectedTowerOrder,
@@ -171,6 +189,8 @@ function TowerMarkersLayer({
   return towers.map((tower) => {
     const [lon, lat] = tower.coordinates;
     const isSelected = selectedTower?.id === tower.id;
+    const mapCellID = tower.cellId ?? tower.id;
+    const isMapFocused = selectedMapCellId !== null && String(selectedMapCellId) === String(mapCellID);
     const isNetworkSelected = selectedNetworkTowerIds.includes(tower.id);
     const isNetworkVisible = layerVisibility?.selectedCells !== false && isNetworkSelected;
     const order = selectedTowerOrder?.get(tower.id);
@@ -180,12 +200,12 @@ function TowerMarkersLayer({
       <Fragment key={tower.id}>
         <CircleMarker
           center={[lat, lon]}
-          radius={isNetworkVisible || isSelected ? 8 : 5}
+          radius={isNetworkVisible || isSelected || isMapFocused ? 8 : 5}
           pathOptions={{
-            color: isInspectorSelected ? "#be123c" : isNetworkVisible ? "#b45309" : isSelected ? "#0b4f49" : "#1d4ed8",
-            fillColor: isNetworkVisible ? "#fef3c7" : isSelected ? "#ffffff" : "#60a5fa",
-            fillOpacity: isNetworkVisible || isSelected ? 1 : 0.82,
-            weight: isInspectorSelected ? 4 : isNetworkVisible || isSelected ? 3 : 2,
+            color: isInspectorSelected ? "#be123c" : isMapFocused ? "#6d28d9" : isNetworkVisible ? "#b45309" : isSelected ? "#0b4f49" : "#1d4ed8",
+            fillColor: isNetworkVisible ? "#fef3c7" : isSelected ? "#ffffff" : isMapFocused ? "#ede9fe" : "#60a5fa",
+            fillOpacity: isNetworkVisible || isSelected || isMapFocused ? 1 : 0.82,
+            weight: isInspectorSelected ? 4 : isMapFocused ? 4 : isNetworkVisible || isSelected ? 3 : 2,
           }}
           eventHandlers={{
             click: (event) => {
@@ -193,6 +213,7 @@ function TowerMarkersLayer({
                 return;
               }
               event.originalEvent?.stopPropagation();
+              onSelectMapCell?.(tower);
               onSelectMapObject?.({
                 type: "tower",
                 payload: {
@@ -723,16 +744,19 @@ function SelectionPolygonLayer({ isDrawing, onAddPoint, onCancel, onFinish, poly
   );
 }
 
-function RayGeoJSONLayer({ simulation, layerKey }) {
-  const features = simulation?.features ?? [];
+function RayGeoJSONLayer({ cellIDsByIndex = [], defaultCellId = null, rayScope = RAY_SCOPE_ALL, selectedCellId = null, simulation, layerKey }) {
+  const features = useMemo(
+    () => filterRayFeatures(simulation?.features ?? [], { cellIDsByIndex, defaultCellId, scope: rayScope, selectedCellId }),
+    [cellIDsByIndex, defaultCellId, rayScope, selectedCellId, simulation],
+  );
   if (features.length === 0) {
     return null;
   }
 
   return (
     <GeoJSON
-      key={layerKey}
-      data={simulation}
+      key={`${layerKey}-${rayScope}-${selectedCellId ?? "none"}`}
+      data={{ ...simulation, features }}
       style={(feature) => ({
         color: rxPowerColor(Number(feature?.properties?.signal_dbm ?? -120)),
         opacity: 0.8,

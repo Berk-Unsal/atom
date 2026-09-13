@@ -30,6 +30,7 @@ var expensiveRFRoutes = map[string]struct{}{
 	"/api/optimize-azimuth":                     {},
 	"/api/evaluate-network":                     {},
 	"/api/optimize-network":                     {},
+	"/api/explain-network-cell":                 {},
 	"/api/interference":                         {},
 	"/api/recommend-sites":                      {},
 	"/api/measurements/evaluate":                {},

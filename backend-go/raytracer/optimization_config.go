@@ -494,14 +494,16 @@ func networkParetoFrontier(candidates []networkOptimizationCandidate, towers []N
 				settings = append(settings, ParetoTowerSetting{ID: tower.ID, AzimuthDeg: normalizeDegrees(candidate.candidate.Azimuths[towerIndex])})
 			}
 		}
-		frontier = append(frontier, NetworkParetoSolution{
+		solution := NetworkParetoSolution{
+			ID:             azimuthKey(candidate.candidate.Azimuths),
 			Towers:         settings,
 			Stats:          candidate.stats.rounded(),
 			ObjectiveScore: math.Round(LegacyOptimizationObjectiveScore(candidate.stats, config)*10) / 10,
 			CompositeScore: roundFloat(candidate.stats.CompositeScore, 6),
 			Score:          roundFloat(candidate.stats.Score, 4),
 			Explanation:    "Feasible non-dominated solution: no evaluated feasible azimuth set improves every normalized objective and strictly improves at least one.",
-		})
+		}
+		frontier = append(frontier, solution)
 	}
 	sort.SliceStable(frontier, func(i, j int) bool {
 		if frontier[i].Score == frontier[j].Score {

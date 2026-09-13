@@ -93,12 +93,21 @@ export function buildNetworkComparisonSnapshot({ label, optimization, settings, 
   };
 }
 
-export function combineNetworkSimulations(simulations) {
-  const features = simulations.flatMap((payload, simulationIndex) =>
-    (payload?.geojson?.features ?? []).map((feature) => ({
+export function combineNetworkSimulations(simulations, towers = []) {
+  const features = simulations.flatMap((payload, simulationIndex) => {
+    const tower = towers[simulationIndex];
+    const cellID = tower?.cellId ?? tower?.id;
+    return (payload?.geojson?.features ?? []).map((feature) => ({
       ...feature,
-      properties: { ...(feature.properties ?? {}), network_tower_index: simulationIndex },
-    })));
+      properties: {
+        ...(feature.properties ?? {}),
+        network_tower_index: simulationIndex,
+        ...(cellID === null || cellID === undefined || cellID === ""
+          ? {}
+          : { cell_id: String(cellID), network_tower_id: String(cellID) }),
+      },
+    }));
+  });
   const stats = simulations.map((payload) => payload?.stats).filter(Boolean);
   return {
     geojson: { type: "FeatureCollection", features },

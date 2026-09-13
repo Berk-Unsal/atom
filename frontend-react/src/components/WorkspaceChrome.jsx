@@ -409,6 +409,8 @@ export function UndoToast({ message, onDismiss, onUndo }) {
 
 export function MapToolbar({
   availableLayers,
+  hasRays = false,
+  hasSignalSurface = false,
   hasInterferenceData,
   interferenceMetric,
   isDrawingSelection,
@@ -422,21 +424,24 @@ export function MapToolbar({
   onInterferenceMetricChange,
   onLayerMenuToggle,
   onToggleLayer,
+  onRayScopeChange,
+  onSelectedMapCellChange,
   planningMode,
+  rayCellOptions = [],
+  rayScope = "all",
   selectionCanFinish,
+  selectedMapCellId = null,
   selectedCount,
 }) {
   const layerMenuRef = useRef(null);
   const layerTriggerRef = useRef(null);
   const layers = [
     { id: "buildings", label: "Viewport buildings" },
-    { id: "rays", label: "Propagation rays" },
     { id: "gaps", label: "Coverage gaps" },
     { id: "selectedCells", label: "Selected cells" },
     { id: "communicationPaths", label: "Communication paths" },
     { id: "interference", label: "Interference surface" },
     { id: "measurements", label: "Measurement residuals" },
-    { id: "surfaces", label: "Coverage raster + contours" },
   ].filter((layer) => availableLayers?.[layer.id] !== false);
 
   useEffect(() => {
@@ -515,8 +520,58 @@ export function MapToolbar({
                 {metric.toUpperCase()}
               </button>
             ))}
-          </div>
+            </div>
         ) : null}
+        <div className="rf-display-tools" aria-label="RF map display">
+          <span className="rf-display-label">RF</span>
+          <button
+            type="button"
+            className={layerVisibility?.surfaces && hasSignalSurface ? "active" : ""}
+            aria-pressed={Boolean(layerVisibility?.surfaces && hasSignalSurface)}
+            aria-label="Toggle received signal surface"
+            disabled={!hasSignalSurface}
+            title={hasSignalSurface ? "Toggle received signal surface" : "Generate a received signal surface first"}
+            onClick={() => onToggleLayer("surfaces")}
+          >
+            Signal
+          </button>
+          <button
+            type="button"
+            className={layerVisibility?.rays && hasRays && rayScope !== "hidden" ? "active" : ""}
+            aria-pressed={Boolean(layerVisibility?.rays && hasRays && rayScope !== "hidden")}
+            aria-label="Toggle propagation rays"
+            disabled={!hasRays}
+            title={hasRays ? "Toggle propagation rays" : "Run a sector or network analysis first"}
+            onClick={() => onToggleLayer("rays")}
+          >
+            Rays
+          </button>
+          <label className="rf-display-select">
+            <span>Scope</span>
+            <select
+              aria-label="Ray scope"
+              value={rayScope}
+              disabled={!hasRays}
+              onChange={(event) => onRayScopeChange?.(event.target.value)}
+            >
+              <option value="all">All cells</option>
+              <option value="selected">Selected cell</option>
+              <option value="hidden">Hidden</option>
+            </select>
+          </label>
+          <label className="rf-display-select">
+            <span>Focus</span>
+            <select
+              aria-label="Map focus cell"
+              value={selectedMapCellId ?? ""}
+              disabled={rayCellOptions.length === 0}
+              onChange={(event) => onSelectedMapCellChange?.(event.target.value)}
+            >
+              {rayCellOptions.length === 0 ? <option value="">No cell</option> : null}
+              {rayCellOptions.map((cell) => <option key={cell.id} value={cell.id}>{cell.label}</option>)}
+            </select>
+          </label>
+        </div>
         <div className="layer-menu-wrap" ref={layerMenuRef} onKeyDown={handleLayerMenuKeyDown}>
           <button
             ref={layerTriggerRef}
@@ -551,7 +606,7 @@ export function MapToolbar({
   );
 }
 
-export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, metric, onToggle, planningMode }) {
+export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, hasSignalSurface, metric, onToggle, planningMode, surface, surfaceCellId, surfaceDisplayThresholdDBm = -110 }) {
   const legends = {
     sinr: ["< 0", "0–13", "13–20", "≥ 20 dB"],
     rsrp: ["< -100", "-100–-90", "-90–-80", "≥ -80 dBm"],
@@ -579,6 +634,30 @@ export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, me
               <span><i className="map-key-line weak-signal" aria-hidden="true" />Weak &lt; −105 dBm</span>
             </section>
           ) : null}
+          {hasSignalSurface ? (
+            <section aria-label="Received signal surface">
+              <strong>Received signal surface</strong>
+              <div
+                className="signal-surface-scale"
+                role="img"
+                aria-label={`Received power from ${formatLegendPower(surface?.stats?.min_dbm)} to ${formatLegendPower(surface?.stats?.max_dbm)}`}
+              >
+                <i className="surface-signal-weak" aria-hidden="true" />
+                <i className="surface-signal-low" aria-hidden="true" />
+                <i className="surface-signal-medium" aria-hidden="true" />
+                <i className="surface-signal-good" aria-hidden="true" />
+                <i className="surface-signal-strong" aria-hidden="true" />
+              </div>
+              <div className="signal-surface-scale-labels">
+                <span>{formatLegendPower(surface?.stats?.min_dbm)}</span>
+                <span>{formatLegendPower(surface?.stats?.max_dbm)}</span>
+              </div>
+              {Array.isArray(surface?.stats?.thresholds_dbm) && surface.stats.thresholds_dbm.length > 0 ? (
+                <span>Contours {surface.stats.thresholds_dbm.map((threshold) => formatLegendPower(threshold)).join(" · ")}</span>
+              ) : null}
+              <span>Visible ≥ {formatLegendPower(surfaceDisplayThresholdDBm)} · Cell {surfaceCellId ?? "selected"}</span>
+            </section>
+          ) : null}
           {hasGaps ? (
             <section aria-label="Coverage gaps">
               <strong>Coverage gaps</strong>
@@ -602,4 +681,10 @@ export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, me
       )}
     </div>
   );
+}
+
+function formatLegendPower(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return "—";
+  return `${numeric.toFixed(0).replace("-", "−")} dBm`;
 }

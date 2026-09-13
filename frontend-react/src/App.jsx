@@ -43,10 +43,17 @@ import { MAX_NETWORK_CELLS, normalizeNetworkSelection, toggleNetworkSelection } 
 import { readMeasurementCsvFile } from "./utils/measurementCsv.js";
 import { duplicateInventoryCell } from "./utils/inventoryImport.js";
 import {
+  buildCellExplanationCacheKey,
+  buildCellMarginalEffectView,
+  buildNetworkOptimizationComparison,
+  buildParetoCellConfigurations,
+  buildParetoSolutionComparison,
   createDefaultOptimizationConfig,
+  getOptimizationRunKey,
   normalizeOptimizationConfig,
   optimizationConfigValidationMessage,
   rankOptimizationResponse,
+  resolveSelectedParetoSolutionId,
   OPTIMIZATION_OBJECTIVES,
 } from "./utils/optimizationConfig.js";
 import { resolveRFProfile, rfProfileOverrideFromProperties, validateRFProfile } from "./utils/rfProfile.js";
@@ -54,7 +61,6 @@ import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
 import { compactRecommendationResponse } from "./utils/recommendations.js";
 import {
   buildComparisonSnapshot,
-  buildNetworkComparisonSnapshot,
   combineNetworkSimulations,
   formatCompactNumber,
   formatCoreLabState,
@@ -66,11 +72,13 @@ import {
   networkAzimuthMap,
   UNAVAILABLE_VALUE,
 } from "./utils/appWorkspace.js";
+import { cellIDForTower, filterRayFeatures, RAY_SCOPE_ALL, RAY_SCOPE_HIDDEN, RAY_SCOPE_SELECTED } from "./utils/rfVisualization.js";
 import { CORE_LAB_SCENARIOS, DEFAULT_SIMULATION, NETWORK_TECH_OPTIONS, networkTechnologyForFrequency } from "./generated/policy.js";
 import {
   buildInterferencePayload,
   buildCoverageSurfacePayload,
   buildMeasurementPayload,
+  buildNetworkCellExplanationPayload,
   buildNetworkOptimizationPayload,
   buildPathProfilePayload,
   buildRecommendationPayload,
@@ -105,6 +113,15 @@ const EMPTY_COVERAGE_GAPS = {
   stats: null,
 };
 
+const EMPTY_CELL_EXPLANATION_STATE = {
+  key: null,
+  solutionID: null,
+  cellID: null,
+  loading: false,
+  result: null,
+  error: "",
+};
+
 const DEFAULT_LAYER_VISIBILITY = {
   rays: true,
   gaps: true,
@@ -132,6 +149,8 @@ export default function App() {
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
   const [legendCollapsed, setLegendCollapsed] = useState(false);
   const [selectedMapObject, setSelectedMapObject] = useState(null);
+  const [selectedMapCellId, setSelectedMapCellId] = useState(null);
+  const [rayScope, setRayScope] = useState(RAY_SCOPE_ALL);
   const [fitRequestVersion, setFitRequestVersion] = useState(0);
   const [settings, setSettings] = useState(DEFAULT_SIMULATION);
   const [planDirty, setPlanDirty] = useState(false);
@@ -142,6 +161,7 @@ export default function App() {
   const [pathProfile, setPathProfile] = useState(null);
   const [coverageSurface, setCoverageSurface] = useState(null);
   const [coverageSurfaceRequest, setCoverageSurfaceRequest] = useState(null);
+  const [coverageSurfaceCellId, setCoverageSurfaceCellId] = useState(null);
   const [surfaceOptions, setSurfaceOptions] = useState({ cellSizeMeters: 25, thresholdsDBm: [-110, -100, -90, -80], opacity: 0.62, displayThresholdDBm: -110 });
   const [selectedTower, setSelectedTower] = useState(null);
   const [selectedNetworkTowerIds, setSelectedNetworkTowerIds] = useState([]);
@@ -169,6 +189,8 @@ export default function App() {
   const [activeRFTask, setActiveRFTask] = useState(null);
   const [optimizationDiagnostics, setOptimizationDiagnostics] = useState(null);
   const [networkOptimization, setNetworkOptimization] = useState(null);
+  const [selectedParetoSolutionId, setSelectedParetoSolutionId] = useState(null);
+  const [cellExplanationState, setCellExplanationState] = useState(EMPTY_CELL_EXPLANATION_STATE);
   const [comparison, setComparison] = useState({ before: null, after: null });
   const [coreLabEnabled, setCoreLabEnabled] = useState(false);
   const [coreLab, setCoreLab] = useState({
@@ -183,6 +205,11 @@ export default function App() {
   const [error, setError] = useState("");
   const [undoNotice, setUndoNotice] = useState(null);
   const restoredProjectRef = useRef(null);
+  const cellExplanationCacheRef = useRef(new Map());
+  const clearCellExplanation = useCallback(() => {
+    cellExplanationCacheRef.current.clear();
+    setCellExplanationState(EMPTY_CELL_EXPLANATION_STATE);
+  }, []);
   const requests = useRequestCoordinator();
   const projectWorkspace = useProjectWorkspace(appMeta);
   const activeProject = projectWorkspace.activeProject;
@@ -198,6 +225,49 @@ export default function App() {
     () => rankOptimizationResponse(networkOptimization, optimizationConfig),
     [networkOptimization, optimizationConfig],
   );
+  const optimizationRunKey = useMemo(
+    () => getOptimizationRunKey(displayedNetworkOptimization),
+    [displayedNetworkOptimization],
+  );
+  const cellExplanationView = useMemo(
+    () => buildCellMarginalEffectView(cellExplanationState.result, optimizationConfig),
+    [cellExplanationState.result, optimizationConfig],
+  );
+  const cellExplanation = useMemo(
+    () => ({ ...cellExplanationState, view: cellExplanationView }),
+    [cellExplanationState, cellExplanationView],
+  );
+  const networkComparison = useMemo(
+    () => buildNetworkOptimizationComparison(displayedNetworkOptimization, optimizationConfig),
+    [displayedNetworkOptimization, optimizationConfig],
+  );
+  const rankedParetoSolutions = useMemo(
+    () => displayedNetworkOptimization?.pareto_frontier ?? [],
+    [displayedNetworkOptimization],
+  );
+  const recommendedSolutionId = useMemo(() => {
+    const responseID = displayedNetworkOptimization?.optimization?.recommended_solution_id;
+    return rankedParetoSolutions.find((solution) => String(solution.id) === String(responseID))?.id
+      ?? rankedParetoSolutions[0]?.id
+      ?? null;
+  }, [displayedNetworkOptimization, rankedParetoSolutions]);
+  const selectedSolutionId = useMemo(
+    () => resolveSelectedParetoSolutionId(rankedParetoSolutions, recommendedSolutionId, selectedParetoSolutionId),
+    [rankedParetoSolutions, recommendedSolutionId, selectedParetoSolutionId],
+  );
+  const selectedParetoSolution = rankedParetoSolutions.find((solution) => String(solution.id) === String(selectedSolutionId)) ?? null;
+  const recommendedParetoSolution = rankedParetoSolutions.find((solution) => String(solution.id) === String(recommendedSolutionId)) ?? null;
+  const selectedParetoComparison = useMemo(
+    () => buildParetoSolutionComparison(selectedParetoSolution, recommendedParetoSolution, optimizationConfig),
+    [optimizationConfig, recommendedParetoSolution, selectedParetoSolution],
+  );
+  const isParetoOptimizationResult = Boolean(
+    rankedParetoSolutions.length > 0
+      && displayedNetworkOptimization?.optimization?.recommended !== false
+      && rankedParetoSolutions.every(hasParetoSolutionData)
+      && (networkResultKind === "optimization" || displayedNetworkOptimization?.optimization?.recommended === true || displayedNetworkOptimization?.baseline),
+  );
+  const activeComparison = lastAnalysisKind === "network" ? networkComparison : comparison;
   const isRecommendingSites = activeRFTask === "recommendation";
   const isEvaluatingMeasurements = activeRFTask === "measurements";
   const isAnalyzingPathProfile = activeRFTask === "path_profile";
@@ -311,6 +381,7 @@ export default function App() {
   const restorePlanningSnapshot = useCallback((snapshot) => {
     const plan = snapshot?.plan ?? snapshot;
     if (!plan) return;
+    clearCellExplanation();
     const restoredSettings = { ...DEFAULT_SIMULATION, ...plan.settings };
     const calibrationCompatible = isCalibrationProfileCompatible(snapshot?.calibrationProfile, restoredSettings, appMeta);
     if (!calibrationCompatible) restoredSettings.calibrationOffsetDb = 0;
@@ -328,18 +399,27 @@ export default function App() {
 				.filter(([towerID]) => restoredNetworkTowerIds.includes(String(towerID))),
 		));
     setOptimizationConfig(normalizeOptimizationConfig(plan.optimizationConfig));
-		setSelectedTower(
-			restoredInventory.find((tower) => tower.id === String(plan.selectedTowerId))
-				?? restoredInventory.find((tower) => restoredNetworkTowerIds.includes(tower.id))
-				?? restoredInventory[0]
-				?? null,
-		);
+    if ([RAY_SCOPE_ALL, RAY_SCOPE_SELECTED, RAY_SCOPE_HIDDEN].includes(plan.rayScope)) setRayScope(plan.rayScope);
+    else if (plan.layerVisibility?.rays === false) setRayScope(RAY_SCOPE_HIDDEN);
+    setSelectedTower(
+														restoredInventory.find((tower) => tower.id === String(plan.selectedTowerId))
+														?? restoredInventory.find((tower) => restoredNetworkTowerIds.includes(tower.id))
+														?? restoredInventory[0]
+														?? null,
+												);
+    if (plan.selectedMapCellId !== null && plan.selectedMapCellId !== undefined) {
+      setSelectedMapCellId(String(plan.selectedMapCellId));
+    }
     if (plan.layerVisibility) setLayerVisibility((current) => ({ ...current, ...plan.layerVisibility }));
     const artifacts = snapshot?.artifacts;
     setSimulation(artifacts?.simulation ?? EMPTY_SIMULATION);
     setCoverageGaps(artifacts?.coverageGaps ?? EMPTY_COVERAGE_GAPS);
     setInterferenceAnalysis(artifacts?.interferenceAnalysis ?? EMPTY_INTERFERENCE_ANALYSIS);
     setNetworkOptimization(artifacts?.networkOptimization ?? null);
+    setCoverageSurface(null);
+    setCoverageSurfaceRequest(null);
+    setCoverageSurfaceCellId(null);
+    setSelectedParetoSolutionId(null);
     setOptimizationDiagnostics(artifacts?.optimizationDiagnostics ?? null);
     setSiteRecommendations(compactRecommendationResponse(artifacts?.siteRecommendations) ?? null);
     setMeasurementAnalysis(artifacts?.measurementAnalysis ?? null);
@@ -352,7 +432,7 @@ export default function App() {
     setSimulationRevision((current) => current + 1);
     setCoverageGapRevision((current) => current + 1);
     setInterferenceRevision((current) => current + 1);
-  }, [appMeta, towers]);
+  }, [appMeta, clearCellExplanation, towers]);
 
   useEffect(() => {
     if (!appMeta) return;
@@ -474,7 +554,8 @@ export default function App() {
       if (!request.isCurrent()) return;
       setCoverageSurface(payload);
       setCoverageSurfaceRequest(requestPayload);
-      setLayerVisibility((current) => ({ ...current, surfaces: true }));
+      setCoverageSurfaceCellId(cellIDForTower(selectedTower));
+      setLayerVisibility((current) => ({ ...current, rays: false, surfaces: true }));
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
     } finally {
@@ -484,6 +565,12 @@ export default function App() {
       }
     }
   }, [requests, selectedTower, settings]);
+
+  const clearCoverageSurface = useCallback(() => {
+    setCoverageSurface(null);
+    setCoverageSurfaceRequest(null);
+    setCoverageSurfaceCellId(null);
+  }, []);
 
   const exportCoverageSurface = useCallback(async (format) => {
     if (!coverageSurfaceRequest) return;
@@ -522,6 +609,7 @@ export default function App() {
       setSimulation(simulationPayload);
       setCoverageGaps(gapPayload);
       setNetworkOptimization(null);
+      setSelectedParetoSolutionId(null);
       setNetworkResultKind(null);
       setSimulationRevision((current) => current + 1);
       setCoverageGapRevision((current) => current + 1);
@@ -547,6 +635,7 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    clearCoverageSurface();
     setActiveRFTask("optimization");
     setError("");
     try {
@@ -603,6 +692,7 @@ export default function App() {
       }
     }
   }, [
+    clearCoverageSurface,
     coverageGaps,
     optimizationDiagnostics,
     selectedTower,
@@ -627,17 +717,13 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    clearCoverageSurface();
     setActiveRFTask("optimization");
     setError("");
+    clearCellExplanation();
     clearInterferenceAnalysis();
     try {
       const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig);
-      const baselinePayload = await postJSON(
-        "/api/evaluate-network",
-        networkRequest,
-        "Network baseline request failed",
-        request.signal,
-      );
       const payload = await postJSON(
         "/api/optimize-network",
         networkRequest,
@@ -664,24 +750,13 @@ export default function App() {
       if (!request.isCurrent()) {
         return;
       }
-      const beforeSnapshot = buildNetworkComparisonSnapshot({
-        label: "Before",
-        optimization: baselinePayload,
-        settings,
-        towers: selectedNetworkTowers,
-      });
-      const afterSnapshot = buildNetworkComparisonSnapshot({
-        label: "After",
-        optimization: payload,
-        settings,
-        towers: selectedNetworkTowers,
-      });
       setNetworkOptimization(payload);
+      setSelectedParetoSolutionId(null);
       setNetworkAzimuths(networkAzimuthMap(selectedNetworkTowers, payload, networkAzimuths));
       setNetworkResultKind("optimization");
       setOptimizationDiagnostics(null);
-      setComparison({ kind: "network", before: beforeSnapshot, after: afterSnapshot });
-      setSimulation(combineNetworkSimulations(simulations));
+      setComparison({ before: null, after: null });
+      setSimulation(combineNetworkSimulations(simulations, selectedNetworkTowers));
       setCoverageGaps({ geojson: { type: "FeatureCollection", features: [] }, stats: null });
       setSimulationRevision((current) => current + 1);
       setCoverageGapRevision((current) => current + 1);
@@ -698,7 +773,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [clearInterferenceAnalysis, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const evaluateNetwork = useCallback(async () => {
     const priorityError = optimizationConfigValidationMessage(optimizationConfig);
@@ -715,8 +790,10 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    clearCoverageSurface();
     setActiveRFTask("network_evaluation");
     setError("");
+    clearCellExplanation();
     clearInterferenceAnalysis();
     try {
       const networkRequest = buildNetworkOptimizationPayload(selected, settings, networkAzimuths, optimizationConfig);
@@ -735,10 +812,11 @@ export default function App() {
         return;
       }
       setNetworkOptimization(payload);
+      setSelectedParetoSolutionId(null);
       setNetworkResultKind("evaluation");
       setOptimizationDiagnostics(null);
       setComparison({ before: null, after: null });
-      setSimulation(combineNetworkSimulations(simulations));
+      setSimulation(combineNetworkSimulations(simulations, selected));
       setCoverageGaps({ geojson: { type: "FeatureCollection", features: [] }, stats: null });
       setSimulationRevision((current) => current + 1);
       setCoverageGapRevision((current) => current + 1);
@@ -755,7 +833,67 @@ export default function App() {
         request.finish();
       }
     }
-  }, [clearInterferenceAnalysis, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+
+  const explainNetworkCell = useCallback(async (solutionID, cellID) => {
+    const response = displayedNetworkOptimization;
+    const baseline = response?.baseline;
+    const solution = rankedParetoSolutions.find((candidate) => String(candidate.id) === String(solutionID));
+    const key = optimizationRunKey
+      ? buildCellExplanationCacheKey(response, solutionID, cellID)
+      : null;
+    if (!baseline || !solution || !key) {
+      setCellExplanationState({
+        ...EMPTY_CELL_EXPLANATION_STATE,
+        solutionID: solutionID ?? null,
+        cellID: cellID ?? null,
+        error: "Per-cell explanation is unavailable for this saved result because baseline metadata was not retained.",
+      });
+      return;
+    }
+    const cellConfiguration = buildParetoCellConfigurations(baseline, solution)
+      .find((configuration) => String(configuration.id) === String(cellID));
+    if (!cellConfiguration?.available || !cellConfiguration.changed) {
+      return;
+    }
+    const cached = cellExplanationCacheRef.current.get(key);
+    if (cached) {
+      setCellExplanationState({ key, solutionID: String(solutionID), cellID: String(cellID), loading: false, result: cached, error: "" });
+      return;
+    }
+
+    const request = requests.begin("rf");
+    setCellExplanationState({ key, solutionID: String(solutionID), cellID: String(cellID), loading: true, result: null, error: "" });
+    try {
+      const payload = await postJSON(
+        "/api/explain-network-cell",
+        buildNetworkCellExplanationPayload({
+          baseline,
+          cellID,
+          optimization: optimizationConfig,
+          optimizationDomain: response.optimization_domain,
+          runID: optimizationRunKey,
+          solution,
+          solutionID,
+        }),
+        "Cell explanation request failed",
+        request.signal,
+      );
+      if (!request.isCurrent()) {
+        return;
+      }
+      cellExplanationCacheRef.current.set(key, payload);
+      setCellExplanationState({ key, solutionID: String(solutionID), cellID: String(cellID), loading: false, result: payload, error: "" });
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) {
+        setCellExplanationState({ key, solutionID: String(solutionID), cellID: String(cellID), loading: false, result: null, error: requestError.message });
+      }
+    } finally {
+      if (request.isCurrent()) {
+        request.finish();
+      }
+    }
+  }, [displayedNetworkOptimization, optimizationConfig, optimizationRunKey, rankedParetoSolutions, requests]);
 
   const selectedNetworkTowers = useMemo(
     () => normalizeNetworkSelection(selectedNetworkTowerIds, towers)
@@ -770,6 +908,26 @@ export default function App() {
   const selectedTowerOrder = useMemo(() => {
     return new Map(selectedNetworkSelectionIDs.map((towerID, index) => [towerID, index + 1]));
   }, [selectedNetworkSelectionIDs]);
+  const rayCellIDs = useMemo(() => {
+    const candidates = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
+    return candidates.map(cellIDForTower).filter(Boolean);
+  }, [planningMode, selectedNetworkTowers, selectedTower]);
+  const rayCellOptions = useMemo(
+    () => rayCellIDs.map((cellID) => ({ id: cellID, label: `Cell ${cellID}` })),
+    [rayCellIDs],
+  );
+  useEffect(() => {
+    setSelectedMapCellId((current) => rayCellIDs.includes(String(current)) ? current : rayCellIDs[0] ?? null);
+  }, [rayCellIDs]);
+  const visibleRayFeatures = useMemo(
+    () => filterRayFeatures(simulation.geojson?.features ?? [], {
+      cellIDsByIndex: rayCellIDs,
+      defaultCellId: planningMode === "single" ? rayCellIDs[0] ?? null : null,
+      scope: rayScope,
+      selectedCellId: selectedMapCellId,
+    }),
+    [planningMode, rayCellIDs, rayScope, selectedMapCellId, simulation.geojson],
+  );
   const selectedNetworkProfileTechs = selectedNetworkTowers.map((tower, index) => resolveRFProfile(tower, settings, index).networkTech);
   const coreContextTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
   const coreLabApplicable = is5GCoreFrequency(settings.frequencyGHz)
@@ -942,12 +1100,14 @@ export default function App() {
 
   const resetNetworkArtifacts = useCallback(() => {
     setNetworkOptimization(null);
+    setSelectedParetoSolutionId(null);
+    clearCellExplanation();
     setNetworkResultKind(null);
     setComparison({ before: null, after: null });
     clearInterferenceAnalysis();
     setSiteRecommendations(null);
     setMeasurementAnalysis(null);
-  }, [clearInterferenceAnalysis]);
+  }, [clearCellExplanation, clearInterferenceAnalysis]);
 
   const clearRenderedAnalysis = useCallback(() => {
     setSimulation(EMPTY_SIMULATION);
@@ -955,9 +1115,8 @@ export default function App() {
     setSimulationRevision((current) => current + 1);
     setCoverageGapRevision((current) => current + 1);
     setSelectedMapObject((current) => current?.type === "tower" ? current : null);
-    setCoverageSurface(null);
-    setCoverageSurfaceRequest(null);
-  }, []);
+    clearCoverageSurface();
+  }, [clearCoverageSurface]);
 
   const invalidatePlanResults = useCallback(() => {
     requests.cancel("rf");
@@ -1026,6 +1185,7 @@ export default function App() {
   }, [invalidatePlanResults, optimizationConfig]);
 
   const selectTower = useCallback((tower) => {
+    setSelectedMapCellId(cellIDForTower(tower));
     if (planningMode === "network") {
       const currentSelection = normalizeNetworkSelection(selectedNetworkTowerIds, towers);
       const isSelected = currentSelection.includes(tower.id);
@@ -1058,6 +1218,7 @@ export default function App() {
 
 	const selectInventoryCell = useCallback((tower) => {
 		setSelectedTower(tower);
+		setSelectedMapCellId(cellIDForTower(tower));
 		setSelectedMapObject(null);
 	}, []);
 
@@ -1380,11 +1541,38 @@ export default function App() {
   }, [appMeta, invalidatePlanResults, measurementAnalysis, settings.frequencyGHz]);
 
   const toggleLayerVisibility = useCallback((layer) => {
+    if (layer === "rays") {
+      const nextVisible = !layerVisibility.rays;
+      setLayerVisibility((current) => ({ ...current, rays: nextVisible }));
+      setRayScope(nextVisible ? (rayScope === RAY_SCOPE_HIDDEN ? RAY_SCOPE_ALL : rayScope) : RAY_SCOPE_HIDDEN);
+      return;
+    }
     setLayerVisibility((current) => ({
       ...current,
       [layer]: !current[layer],
     }));
+  }, [layerVisibility.rays, rayScope]);
+
+  const selectMapCell = useCallback((tower) => {
+    const cellID = cellIDForTower(tower);
+    if (!cellID) return;
+    if (planningMode === "network"
+      && !selectedNetworkSelectionIDs.includes(tower.id)
+      && selectedNetworkSelectionIDs.length >= MAX_NETWORK_CELLS) {
+      return;
+    }
+    setSelectedMapCellId(cellID);
+  }, [planningMode, selectedNetworkSelectionIDs]);
+
+  const changeRayScope = useCallback((scope) => {
+    const nextScope = [RAY_SCOPE_ALL, RAY_SCOPE_SELECTED, RAY_SCOPE_HIDDEN].includes(scope) ? scope : RAY_SCOPE_ALL;
+    setRayScope(nextScope);
+    setLayerVisibility((current) => ({ ...current, rays: nextScope !== RAY_SCOPE_HIDDEN }));
   }, []);
+
+  const changeMapCellFocus = useCallback((cellID) => {
+    if (rayCellIDs.includes(String(cellID))) setSelectedMapCellId(String(cellID));
+  }, [rayCellIDs]);
 
   const fitSelectedCells = useCallback(() => {
     setFitRequestVersion((current) => current + 1);
@@ -1650,6 +1838,8 @@ export default function App() {
 		inventory: towers,
       planningMode,
       selectedTowerId: selectedTower?.id ?? null,
+        selectedMapCellId,
+        rayScope,
         selectedNetworkTowerIds: selectedNetworkSelectionIDs,
         networkAzimuths,
         optimizationConfig,
@@ -1698,8 +1888,10 @@ export default function App() {
     optimizationDiagnostics,
     planDirty,
     planningMode,
+    rayScope,
     selectedNetworkSelectionIDs,
     selectedNetworkTowers,
+    selectedMapCellId,
     selectedTower,
     selectionPolygon,
     settings,
@@ -1782,6 +1974,10 @@ export default function App() {
         appMeta,
         buildingSummary,
         calibrationProfile,
+        cellExplanations: [
+          ...cellExplanationCacheRef.current.values(),
+          ...(cellExplanationState.result ? [cellExplanationState.result] : []),
+        ],
         coreLab,
         coreLabApplicable,
         coreLabEnabled,
@@ -1789,8 +1985,11 @@ export default function App() {
         diagnostics: optimizationDiagnostics,
         interferenceAnalysis,
         measurementAnalysis,
-        comparison,
+        comparison: activeComparison,
         networkOptimization: displayedNetworkOptimization,
+        networkResultKind,
+        optimizationConfig,
+        planningMode,
         project: activeProject,
         recommendations: siteRecommendations,
         selectedTower,
@@ -1805,13 +2004,16 @@ export default function App() {
       appMeta,
       buildingSummary,
       calibrationProfile,
-      comparison,
+      activeComparison,
       coreLab,
       coreLabApplicable,
       coreLabEnabled,
+      cellExplanationState.result,
       interferenceAnalysis,
       measurementAnalysis,
       displayedNetworkOptimization,
+      networkResultKind,
+      optimizationConfig,
       coverageGaps,
       optimizationDiagnostics,
 			planningMode,
@@ -1845,7 +2047,7 @@ export default function App() {
 		inventory: "Local cells, map placement, imports, and per-cell RF profiles",
     propagation: "Ray geometry, coverage radius, and optimization",
     experiments: "Queued parameter sweeps, fingerprints, and Pareto comparison",
-    surfaces: "Continuous coverage raster, contours, and GIS exports",
+    surfaces: "Received signal surface, contours, and GIS exports",
     interference: "Co-channel load and radio-quality assumptions",
     core: "Xn, N2, N3, sessions, and lab scenarios",
     results: "Focused analysis from the latest RF operation",
@@ -1915,6 +2117,8 @@ export default function App() {
               rays: Boolean(simulation?.geojson?.features?.length),
               selectedCells: selectedCellCount > 0,
             }}
+            hasRays={Boolean(simulation?.geojson?.features?.length)}
+            hasSignalSurface={Boolean(coverageSurface?.grid?.values?.length)}
             isDrawingSelection={isDrawingSelection}
             layerMenuOpen={layerMenuOpen}
             layerVisibility={layerVisibility}
@@ -1925,11 +2129,16 @@ export default function App() {
             onFitSelectedCells={fitSelectedCells}
             onLayerMenuToggle={setLayerMenuOpen}
             onToggleLayer={toggleLayerVisibility}
+            onRayScopeChange={changeRayScope}
+            onSelectedMapCellChange={changeMapCellFocus}
             interferenceMetric={interferenceMetric}
             onInterferenceMetricChange={setInterferenceMetric}
             hasInterferenceData={hasInterferenceData}
             planningMode={planningMode}
+            rayCellOptions={rayCellOptions}
+            rayScope={rayScope}
             selectionCanFinish={selectionPolygon.length >= 3}
+            selectedMapCellId={selectedMapCellId}
             selectedCount={selectedCellCount}
           />
           <MapCanvas
@@ -1937,7 +2146,9 @@ export default function App() {
             selectedTower={selectedTower}
             selectedNetworkTowerIds={selectedNetworkSelectionIDs}
             selectedTowerOrder={selectedTowerOrder}
+            selectedMapCellId={selectedMapCellId}
             onSelectTower={selectTower}
+            onSelectMapCell={selectMapCell}
             simulation={simulation.geojson}
             rayLayerKey={simulationRevision}
             coverageGaps={coverageGaps.geojson}
@@ -1970,6 +2181,8 @@ export default function App() {
             coverageSurface={coverageSurface}
             surfaceOpacity={surfaceOptions.opacity}
             surfaceDisplayThresholdDBm={surfaceOptions.displayThresholdDBm}
+            rayCellIDs={rayCellIDs}
+            rayScope={rayScope}
           />
           {mapPlanPrompt && activeRFTask === null ? (
             <div className="map-plan-prompt" role="status">
@@ -1981,7 +2194,11 @@ export default function App() {
             collapsed={legendCollapsed}
             hasGaps={layerVisibility.gaps && Boolean(coverageGaps.geojson?.features?.length)}
             hasInterferenceData={layerVisibility.interference && hasInterferenceData}
-            hasRays={layerVisibility.rays && Boolean(simulation.geojson?.features?.length)}
+            hasRays={layerVisibility.rays && visibleRayFeatures.length > 0}
+            hasSignalSurface={layerVisibility.surfaces && Boolean(coverageSurface?.grid?.values?.length)}
+            surface={coverageSurface}
+            surfaceCellId={coverageSurfaceCellId}
+            surfaceDisplayThresholdDBm={surfaceOptions.displayThresholdDBm}
             metric={interferenceMetric}
             onToggle={() => setLegendCollapsed((current) => !current)}
             planningMode={planningMode}
@@ -2058,6 +2275,7 @@ export default function App() {
               onRun={analyzeCoverageSurface}
               options={surfaceOptions}
               surface={coverageSurface}
+              surfaceCellId={coverageSurfaceCellId}
             />
           ) : null}
 
@@ -2106,17 +2324,27 @@ export default function App() {
           {drawerMode === "tool" && activeTool === "results" ? (
             <ResultsPanel
               activeView={activeResultsView}
-              comparison={comparison}
+              comparison={activeComparison}
               diagnostics={optimizationDiagnostics}
-              networkOptimization={displayedNetworkOptimization}
-              networkResultKind={networkResultKind}
+              isNetworkResult={lastAnalysisKind === "network"}
+              isParetoOptimizationResult={isParetoOptimizationResult}
+	              networkOptimization={displayedNetworkOptimization}
+	              networkResultKind={networkResultKind}
+	              cellExplanation={cellExplanation}
+	              onExplainCell={explainNetworkCell}
+	              paretoComparison={selectedParetoComparison}
+              paretoSolutions={rankedParetoSolutions}
+              recommendedSolutionId={recommendedSolutionId}
+              selectedSolutionId={selectedSolutionId}
               interferenceAnalysis={interferenceAnalysis}
               gapStats={gapStats}
               hasRFResults={Boolean(simulation?.stats)}
+              constraintsConfigured={Object.keys(optimizationConfig.constraints ?? {}).length > 0}
               onViewChange={setActiveResultsView}
               onApplyRecommendation={applyRecommendation}
               onOpenScenario={openSavedScenario}
               onRecommendSites={recommendSites}
+              onSelectParetoSolution={setSelectedParetoSolutionId}
               recommendations={siteRecommendations}
               recommending={isRecommendingSites}
               savedScenarios={projectWorkspace.activeProject?.scenarios ?? []}
@@ -2333,21 +2561,31 @@ function buildCoreLabQuery(towerIDs, selectedNetworkTowers, selectedTower) {
 
 function ResultsPanel({
   activeView,
+  cellExplanation,
   comparison,
+  constraintsConfigured,
   diagnostics,
   gapStats,
   hasRFResults,
   interferenceAnalysis,
+  isNetworkResult,
+  isParetoOptimizationResult,
   networkOptimization,
   networkResultKind,
+  onExplainCell,
   onApplyRecommendation,
   onOpenScenario,
   onRecommendSites,
+  onSelectParetoSolution,
   onViewChange,
+  paretoComparison,
+  paretoSolutions,
+  recommendedSolutionId,
   recommendationDisabled,
   recommendations,
   recommending,
   savedScenarios,
+  selectedSolutionId,
   stats,
 }) {
   const views = [
@@ -2355,7 +2593,7 @@ function ResultsPanel({
     { id: "optimization", label: "Optimization" },
     { id: "interference", label: "Interference" },
     { id: "compare", label: "Compare" },
-    { id: "recommendations", label: "Candidates" },
+    { id: "recommendations", label: isParetoOptimizationResult ? "Solutions" : "Candidates" },
   ];
   const hasOptimizationResults = Boolean(
     networkOptimization || diagnostics || getComparisonMetrics(comparison).length > 0,
@@ -2410,9 +2648,15 @@ function ResultsPanel({
       {activeView === "optimization" ? (
         hasOptimizationResults ? (
           <>
-            <NetworkOptimizationPanel optimization={networkOptimization} kind={networkResultKind} />
+            <NetworkOptimizationPanel
+              comparison={comparison}
+              kind={networkResultKind}
+              onViewComparison={() => onViewChange("compare")}
+              onViewSolutions={() => onViewChange("recommendations")}
+              optimization={networkOptimization}
+            />
             {!networkOptimization ? <OptimizerBreakdown diagnostics={diagnostics} /> : null}
-            <ComparisonPanel comparison={comparison} />
+            {!networkOptimization ? <ComparisonPanel comparison={comparison} /> : null}
           </>
         ) : (
           <AnalysisEmptyState
@@ -2436,17 +2680,33 @@ function ResultsPanel({
       ) : null}
 
       {activeView === "compare" ? (
-        <ScenarioComparisonPanel onOpenScenario={onOpenScenario} scenarios={savedScenarios} />
+        isNetworkResult
+          ? <NetworkOptimizationComparisonPanel comparison={comparison} />
+          : <ScenarioComparisonPanel onOpenScenario={onOpenScenario} scenarios={savedScenarios} />
       ) : null}
 
       {activeView === "recommendations" ? (
-        <RecommendationPanel
-          disabled={recommendationDisabled}
-          loading={recommending}
-          onApply={onApplyRecommendation}
-          onRun={onRecommendSites}
-          response={recommendations}
-        />
+        isParetoOptimizationResult ? (
+          <ParetoSolutionsPanel
+            baseline={networkOptimization?.baseline}
+            cellExplanation={cellExplanation}
+            constraintsConfigured={constraintsConfigured}
+            onExplainCell={onExplainCell}
+            onSelectSolution={onSelectParetoSolution}
+            paretoComparison={paretoComparison}
+            recommendedSolutionId={recommendedSolutionId}
+            selectedSolutionId={selectedSolutionId}
+            solutions={paretoSolutions}
+          />
+        ) : (
+          <RecommendationPanel
+            disabled={recommendationDisabled}
+            loading={recommending}
+            onApply={onApplyRecommendation}
+            onRun={onRecommendSites}
+            response={recommendations}
+          />
+        )
       ) : null}
     </section>
   );
@@ -2525,7 +2785,467 @@ function AnalysisEmptyState({ description, icon: Icon, title }) {
   );
 }
 
-function NetworkOptimizationPanel({ optimization, kind }) {
+function OptimizationImpact({ comparison, onViewComparison }) {
+  const items = [
+    { key: "demand", label: "Demand served" },
+    { key: "residential", label: "Residential" },
+    { key: "propagation_reach", label: "Propagation reach" },
+    { key: "overlap", label: "Overlap" },
+  ];
+  return (
+    <section className="optimization-impact" aria-label="Optimization impact">
+      <div className="optimization-impact-heading">
+        <strong>Optimization impact</strong>
+        <button type="button" onClick={onViewComparison}>View comparison</button>
+      </div>
+      <div className="optimization-impact-grid">
+        {items.map(({ key, label }) => {
+          const metric = comparison.metrics?.[key];
+          return (
+            <div className={`optimization-impact-item ${metric?.outcome ?? "informational"}`} key={key}>
+              <span>{label}</span>
+              <strong>{formatImpactDelta(metric, key)}</strong>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function NetworkOptimizationComparisonPanel({ comparison }) {
+  if (!comparison) {
+    return (
+      <section className="comparison-card" aria-label="Baseline versus optimized comparison">
+        <div className="panel-title">
+          <BarChart3 size={16} />
+          <span>Baseline vs Recommended</span>
+        </div>
+        <p className="empty-note">
+          Detailed comparison is unavailable for this saved result because it predates retained baseline metadata,
+          or no feasible recommendation was returned.
+        </p>
+      </section>
+    );
+  }
+
+  const rows = [
+    { key: "demand", label: "Demand served" },
+    { key: "residential", label: "Residential" },
+    { key: "propagation_reach", label: "Propagation reach" },
+    { key: "overlap", label: "Overlap ratio" },
+    { key: "overlap_buildings", label: "Overlap buildings" },
+    { key: "covered_units", label: "Covered units" },
+    { key: "score", label: "Optimization score" },
+    { key: "constraints", label: "Constraints" },
+  ];
+  return (
+    <section className="comparison-card network-comparison-card" aria-label="Baseline versus optimized comparison">
+      <div className="panel-title">
+        <BarChart3 size={16} />
+        <span>Baseline vs Recommended</span>
+      </div>
+      <p className="data-note">
+        Baseline is the selected network entering this optimization run. Recommended is the current feasible Pareto
+        recommendation. Domain denominators and propagation maximum are shared.
+      </p>
+      <div className="network-comparison-list">
+        {rows.map(({ key, label }) => {
+          const metric = comparison.metrics?.[key];
+          return (
+            <article className={`network-comparison-row ${metric?.outcome ?? "informational"}`} key={key}>
+              <div className="network-comparison-label">
+                <strong>{label}</strong>
+                <span>{formatOutcomeLabel(metric?.outcome)}</span>
+              </div>
+              <div className="network-comparison-values">
+                <div>
+                  <span>Baseline</span>
+                  <strong>{formatNetworkComparisonValue(metric, key, "baseline")}</strong>
+                </div>
+                <div>
+                  <span>Optimized</span>
+                  <strong>{formatNetworkComparisonValue(metric, key, "optimized")}</strong>
+                </div>
+                <div>
+                  <span>Change</span>
+                  <strong>{formatNetworkComparisonChange(metric, key)}</strong>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      <p className="data-note">Both scores use the active effective weights; unavailable objectives remain excluded.</p>
+    </section>
+  );
+}
+
+function formatImpactDelta(metric, key) {
+  if (!metric?.available || !Number.isFinite(Number(metric.absolute_delta))) return UNAVAILABLE_VALUE;
+  if (key === "propagation_reach" || key === "overlap") {
+    return `${formatSignedNumber(Number(metric.absolute_delta) * 100, 1)} pp`;
+  }
+  return formatSignedNumber(Number(metric.absolute_delta), key === "demand" ? 0 : 0);
+}
+
+function formatNetworkComparisonValue(metric, key, side) {
+  if (!metric?.available) return UNAVAILABLE_VALUE;
+  if (key === "constraints") {
+    if (metric.configured === false) return "Not configured";
+    return metric[side] === true ? "Satisfied" : metric[side] === false ? "Not satisfied" : UNAVAILABLE_VALUE;
+  }
+  const value = Number(metric[side]);
+  if (!Number.isFinite(value)) return UNAVAILABLE_VALUE;
+  if (key === "demand") return `${formatNumber(value, 1)} / ${formatNumber(metric.denominator, 1)}`;
+  if (key === "residential") return `${formatCount(value)} / ${formatCount(metric.denominator)}`;
+  if (key === "propagation_reach" || key === "overlap") return `${formatNumber(value * 100, 1)}%`;
+  if (key === "score") return formatNumber(value, 1);
+  return formatCount(value);
+}
+
+function formatNetworkComparisonChange(metric, key) {
+  if (!metric?.available) return UNAVAILABLE_VALUE;
+  if (key === "constraints") return metric.configured === false ? "Not configured" : formatOutcomeLabel(metric.outcome);
+  if (!Number.isFinite(Number(metric.absolute_delta))) return UNAVAILABLE_VALUE;
+  if (key === "propagation_reach" || key === "overlap") {
+    return `${formatSignedNumber(Number(metric.absolute_delta) * 100, 1)} pp`;
+  }
+  if (key === "score") return `${formatSignedNumber(Number(metric.absolute_delta), 1)} points`;
+  const digits = key === "demand" ? 1 : 0;
+  const absolute = formatSignedNumber(Number(metric.absolute_delta), digits);
+  if (key === "demand" && Number.isFinite(Number(metric.relative_delta))) {
+    return `${absolute} (${formatSignedNumber(Number(metric.relative_delta) * 100, 1)}%)`;
+  }
+  return absolute;
+}
+
+function formatOutcomeLabel(outcome) {
+  return ({
+    improved: "Improved",
+    worsened: "Worsened",
+    unchanged: "Unchanged",
+    informational: "Informational",
+  })[outcome] ?? "Unavailable";
+}
+
+function formatSignedNumber(value, digits = 0) {
+  if (!Number.isFinite(Number(value))) return UNAVAILABLE_VALUE;
+  const numeric = Number(value);
+  const prefix = numeric > 0 ? "+" : "";
+  return `${prefix}${formatNumber(numeric, digits)}`;
+}
+
+function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured, onExplainCell, onSelectSolution, paretoComparison, recommendedSolutionId, selectedSolutionId, solutions }) {
+  if (!solutions?.length) {
+    return (
+      <AnalysisEmptyState
+        icon={BarChart3}
+        title="No Pareto solutions"
+        description="Run a network optimization with at least one available priority to retain feasible non-dominated alternatives."
+      />
+    );
+  }
+
+  const selectedIndex = Math.max(
+    0,
+    solutions.findIndex((solution) => String(solution.id) === String(selectedSolutionId)),
+  );
+  const selectedSolution = solutions[selectedIndex];
+  return (
+    <section className="pareto-explorer" aria-label="Pareto alternative solutions">
+      <div className="pareto-explorer-heading">
+        <div>
+          <div className="panel-title">
+            <BarChart3 size={16} />
+            <span>Alternative solutions</span>
+          </div>
+          <p className="pareto-explorer-count">
+            {solutions.length} feasible · non-dominated solution{solutions.length === 1 ? "" : "s"}
+          </p>
+        </div>
+        <span className="pareto-explorer-priority-note">Ranked by current priorities</span>
+      </div>
+      <p className="data-note">
+        Non-dominated solutions represent different valid trade-offs. The highest score for the current priorities is recommended.
+      </p>
+      <ParetoSolutionDetail
+        baseline={baseline}
+        cellExplanation={cellExplanation}
+        comparison={paretoComparison}
+        constraintsConfigured={constraintsConfigured}
+        isRecommended={String(selectedSolution.id) === String(recommendedSolutionId)}
+        onExplainCell={onExplainCell}
+        rank={selectedIndex + 1}
+        solution={selectedSolution}
+      />
+      <div className="pareto-solution-list" aria-label="Retained Pareto solutions">
+        {solutions.map((solution, index) => {
+          const solutionID = String(solution.id);
+          const isSelected = solutionID === String(selectedSolutionId);
+          const isRecommended = solutionID === String(recommendedSolutionId);
+          return (
+            <article
+              className={`pareto-solution-card${isSelected ? " selected" : ""}${isRecommended ? " recommended" : ""}`}
+              key={solutionID || `solution-${index}`}
+            >
+              <button
+                type="button"
+                className="pareto-solution-button"
+                aria-label={`Inspect Pareto solution ${index + 1}${isRecommended ? ", recommended" : ""}`}
+                aria-pressed={isSelected}
+                onClick={() => onSelectSolution(solutionID)}
+              >
+                <span className="pareto-solution-header">
+                  <span className="pareto-solution-rank-group">
+                    <strong>#{index + 1}</strong>
+                    {isRecommended ? <span className="pareto-badge recommended">Recommended</span> : null}
+                    {isSelected ? <span className="pareto-badge selected">Selected</span> : null}
+                  </span>
+                  <span className="pareto-solution-score">{formatParetoScore(solution)} / 100</span>
+                </span>
+                <span className="pareto-solution-metrics">
+                  <span className="pareto-solution-metric"><small>Demand</small><strong>{formatParetoObjectivePercent(solution.stats, "demand")}</strong></span>
+                  <span className="pareto-solution-metric"><small>Residential</small><strong>{formatParetoObjectivePercent(solution.stats, "residential")}</strong></span>
+                  <span className="pareto-solution-metric"><small>Propagation reach</small><strong>{formatParetoObjectivePercent(solution.stats, "propagation_reach")}</strong></span>
+                  <span className="pareto-solution-metric"><small>Overlap</small><strong>{formatParetoObjectivePercent(solution.stats, "overlap")}</strong></span>
+                </span>
+                <span className="pareto-solution-action">Inspect solution</span>
+              </button>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function ParetoSolutionDetail({ baseline, cellExplanation, comparison, constraintsConfigured, isRecommended, onExplainCell, rank, solution }) {
+  const objectiveRows = [
+    { id: "demand", label: "Demand", rawLabel: "served / relevant demand" },
+    { id: "residential", label: "Residential", rawLabel: "covered / relevant buildings" },
+    { id: "propagation_reach", label: "Propagation reach", rawLabel: "score / maximum" },
+    { id: "overlap", label: "Overlap", rawLabel: "overlap buildings / covered units" },
+  ];
+  const constraintsLabel = !constraintsConfigured
+    ? "Not configured"
+    : solution.constraints_satisfied === true
+      ? "Satisfied"
+      : solution.constraints_satisfied === false
+        ? "Not satisfied"
+        : UNAVAILABLE_VALUE;
+  const cellConfigurations = buildParetoCellConfigurations(baseline, solution);
+  const explanationMatches = String(cellExplanation?.solutionID ?? "") === String(solution.id)
+    && Boolean(cellExplanation?.cellID);
+  return (
+    <section className="pareto-solution-detail" aria-labelledby="pareto-selected-solution-title">
+      <div className="pareto-detail-heading">
+        <div>
+          <span className="pareto-detail-kicker">Solution #{rank}</span>
+          <h3 id="pareto-selected-solution-title">Inspected solution</h3>
+        </div>
+        <div className="pareto-detail-badges">
+          <span className="pareto-badge selected">Selected</span>
+          {isRecommended ? <span className="pareto-badge recommended">Recommended</span> : null}
+        </div>
+      </div>
+      <div className="pareto-detail-score">
+        <span>Optimization score</span>
+        <strong>{formatParetoScore(solution)} / 100</strong>
+      </div>
+      <div className="pareto-detail-section">
+        <span className="pareto-detail-section-title">Objective performance</span>
+        <div className="pareto-objective-detail-grid">
+          {objectiveRows.map(({ id, label, rawLabel }) => (
+            <div className="pareto-objective-detail" key={id}>
+              <span>{label}</span>
+              <strong>{formatParetoObjectivePercent(solution.stats, id)}</strong>
+              <small aria-label={`${label} ${rawLabel}`}>{formatParetoRawMetricPair(solution.stats, id)}</small>
+            </div>
+          ))}
+        </div>
+        <div className="pareto-constraint-line">
+          <span>Constraints</span>
+          <strong className={!constraintsConfigured ? "not-configured" : solution.constraints_satisfied === true ? "satisfied" : solution.constraints_satisfied === false ? "not-satisfied" : "not-available"}>
+            {constraintsLabel}
+          </strong>
+        </div>
+      </div>
+      <div className="pareto-detail-section">
+        <span className="pareto-detail-section-title">Cell configuration</span>
+        <div className="pareto-cell-list">
+          {cellConfigurations.map((configuration) => {
+            const cellID = String(configuration.id);
+            const isExplainedCell = explanationMatches && String(cellExplanation.cellID) === cellID;
+            const canExplain = configuration.available && configuration.changed;
+            return (
+              <div className={`pareto-cell-row${configuration.changed ? " changed" : ""}`} key={cellID}>
+                <div className="pareto-cell-change">
+                  <strong>Cell {cellID}</strong>
+                  {configuration.available ? (
+                    <span>
+                      {formatNumber(configuration.baseline_azimuth_deg, 0)}° baseline → {formatNumber(configuration.selected_azimuth_deg, 0)}° selected
+                    </span>
+                  ) : (
+                    <span>Saved cell configuration metadata unavailable</span>
+                  )}
+                </div>
+                <div className="pareto-cell-action">
+                  {canExplain ? (
+                    <button
+                      type="button"
+                      className="pareto-cell-explain"
+                      aria-label={`Explain Cell ${cellID} marginal effect`}
+                      disabled={cellExplanation?.loading && isExplainedCell}
+                      onClick={() => onExplainCell?.(solution.id, configuration.id)}
+                    >
+                      {cellExplanation?.loading && isExplainedCell ? "Explaining…" : "Explain"}
+                    </button>
+                  ) : configuration.available ? (
+                    <span className="pareto-cell-unchanged">Unchanged from baseline</span>
+                  ) : null}
+                </div>
+                {isExplainedCell ? <CellMarginalEffectPanel explanation={cellExplanation} /> : null}
+              </div>
+            );
+          })}
+        </div>
+        {!baseline?.cell_configurations?.length ? (
+          <p className="data-note">Per-cell marginal effects are unavailable for this saved result because baseline configuration metadata was not retained.</p>
+        ) : null}
+      </div>
+      {comparison ? <ParetoTradeoffComparison comparison={comparison} /> : null}
+      <p className="data-note pareto-map-note">
+        Inspection does not change the recommendation. RF map rays remain from the last simulation and are not re-simulated for this solution.
+      </p>
+    </section>
+  );
+}
+
+function CellMarginalEffectPanel({ explanation }) {
+  if (explanation?.loading) {
+    return <p className="cell-marginal-effect-status" role="status" aria-live="polite">Evaluating one counterfactual for this cell…</p>;
+  }
+  if (explanation?.error) {
+    return <p className="cell-marginal-effect-status error" role="alert">{explanation.error}</p>;
+  }
+  const effect = explanation?.view;
+  if (!effect) return null;
+  const cellID = effect.cell?.id ?? explanation.cellID ?? UNAVAILABLE_VALUE;
+  const rows = [
+    { key: "demand", label: "Demand served" },
+    { key: "residential", label: "Residential" },
+    { key: "propagation_reach", label: "Propagation reach" },
+    { key: "overlap_buildings", label: "Overlap buildings" },
+    { key: "overlap", label: "Overlap ratio" },
+    { key: "covered_units", label: "Covered units" },
+    { key: "score", label: "Optimization score" },
+  ];
+  return (
+    <section className="cell-marginal-effect" aria-label={`Marginal effect for Cell ${cellID}`} aria-live="polite">
+      <div className="cell-marginal-effect-heading">
+        <div>
+          <strong>Marginal effect</strong>
+          <span>Selected solution − cell reverted to baseline</span>
+        </div>
+        {effect.unchanged ? <span className="pareto-cell-unchanged">Unchanged</span> : null}
+      </div>
+      <p className="cell-marginal-effect-explanation">
+        Measured by restoring only Cell {cellID} to its baseline configuration while keeping every other cell in this solution unchanged.
+      </p>
+      <div className="cell-marginal-grid">
+        {rows.map(({ key, label }) => {
+          const metric = effect.metrics?.[key];
+          return (
+            <article className={`cell-marginal-row ${metric?.outcome ?? "informational"}`} key={key}>
+              <div className="cell-marginal-label">
+                <strong>{label}</strong>
+                <span>{formatOutcomeLabel(metric?.outcome)}</span>
+              </div>
+              <div className="cell-marginal-values">
+                <span><small>Selected</small><strong>{formatCellMarginalValue(metric, key, "actual")}</strong></span>
+                <span><small>Cell reverted</small><strong>{formatCellMarginalValue(metric, key, "counterfactual")}</strong></span>
+                <span><small>Δ</small><strong>{formatCellMarginalDelta(metric, key)}</strong></span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      <div className={`cell-marginal-constraints ${effect.metrics?.constraints?.outcome ?? "unchanged"}`}>
+        <div className="cell-marginal-constraint-heading">
+          <strong>Feasibility</strong>
+          <span>{formatOutcomeLabel(effect.metrics?.constraints?.outcome)}</span>
+        </div>
+        <div className="cell-marginal-constraint-values">
+          <span>Selected: <strong>{effect.metrics?.constraints?.actual ? "Satisfied" : "Not satisfied"}</strong></span>
+          <span>Cell reverted: <strong>{effect.metrics?.constraints?.counterfactual ? "Satisfied" : "Not satisfied"}</strong></span>
+        </div>
+        {effect.metrics?.constraints?.counterfactual_violations?.length ? (
+          <p className="data-note">Counterfactual violations: {effect.metrics.constraints.counterfactual_violations.join("; ")}</p>
+        ) : null}
+      </div>
+      <div className="cell-marginal-limitations">
+        {(effect.limitations ?? []).map((limitation) => <p className="data-note" key={limitation}>{limitation}</p>)}
+      </div>
+    </section>
+  );
+}
+
+function formatCellMarginalValue(metric, key, side) {
+  if (!metric?.available) return UNAVAILABLE_VALUE;
+  const value = Number(metric[side]);
+  if (!Number.isFinite(value)) return UNAVAILABLE_VALUE;
+  if (key === "demand") return `${formatNumber(value, 1)} / ${formatNumber(metric.denominator, 1)}`;
+  if (key === "residential") return `${formatCount(value)} / ${formatCount(metric.denominator)}`;
+  if (key === "propagation_reach" || key === "overlap") return `${formatNumber(value * 100, 1)}%`;
+  if (key === "score") return formatNumber(value, 1);
+  return formatCount(value);
+}
+
+function formatCellMarginalDelta(metric, key) {
+  if (!metric?.available || !Number.isFinite(Number(metric.absolute_delta))) return UNAVAILABLE_VALUE;
+  const delta = Number(metric.absolute_delta);
+  if (key === "propagation_reach" || key === "overlap") return `${formatSignedNumber(delta * 100, 1)} pp`;
+  if (key === "score") return `${formatSignedNumber(delta, 1)} points`;
+  return formatSignedNumber(delta, key === "demand" ? 1 : 0);
+}
+
+function ParetoTradeoffComparison({ comparison }) {
+  const rows = [
+    { key: "demand", label: "Demand" },
+    { key: "residential", label: "Residential" },
+    { key: "propagation_reach", label: "Propagation reach" },
+    { key: "overlap", label: "Overlap" },
+    { key: "score", label: "Score" },
+  ];
+  return (
+    <section className="pareto-tradeoff" aria-label="Selected solution compared with recommended">
+      <div className="pareto-tradeoff-heading">
+        <strong>Compared with recommended</strong>
+        <span>Recommended → selected · selected − recommended</span>
+      </div>
+      <div className="pareto-tradeoff-list">
+        {rows.map(({ key, label }) => {
+          const metric = comparison.metrics?.[key];
+          return (
+            <div className={`pareto-tradeoff-row ${metric?.outcome ?? "informational"}`} key={key}>
+              <div>
+                <strong>{label}</strong>
+                <small>{formatParetoTradeoffValues(metric, key)}</small>
+              </div>
+              <div>
+                <strong>{formatParetoTradeoffDelta(metric, key)}</strong>
+                <span>{formatOutcomeLabel(metric?.outcome)}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function NetworkOptimizationPanel({ comparison, kind, onViewComparison, onViewSolutions, optimization }) {
   if (!optimization) {
     return null;
   }
@@ -2535,11 +3255,19 @@ function NetworkOptimizationPanel({ optimization, kind }) {
   const raw = stats.raw_metrics ?? {};
   const objectiveStatus = outcome.objective_status ?? stats.objective_status ?? {};
   const objectiveAvailable = (id) => objectiveStatus?.[id]?.available !== false;
+  const constraintsConfigured = Object.keys(outcome.constraints ?? {}).length > 0;
+  const constraintsLabel = !constraintsConfigured
+    ? "Not configured"
+    : outcome.constraints_satisfied === true
+      ? "Satisfied"
+      : outcome.constraints_satisfied === false
+        ? "Not satisfied"
+        : UNAVAILABLE_VALUE;
   const score = Number.isFinite(Number(stats.score)) ? `${formatNumber(stats.score, 1)} / 100` : UNAVAILABLE_VALUE;
   const overlapRatio = objectiveAvailable("overlap") && Number.isFinite(Number(raw.overlap_ratio))
     ? `${formatNumber(Number(raw.overlap_ratio) * 100, 1)}%`
     : UNAVAILABLE_VALUE;
-  const stateLabel = outcome.constraints_satisfied === false
+  const stateLabel = constraintsConfigured && outcome.constraints_satisfied === false
     ? "Infeasible — not recommended"
     : kind === "evaluation" || outcome.recommended === false
       ? "Feasible evaluation"
@@ -2554,6 +3282,12 @@ function NetworkOptimizationPanel({ optimization, kind }) {
         <span>Optimization Score</span>
         <strong>{score}</strong>
       </div>
+      {kind !== "evaluation" && comparison ? (
+        <OptimizationImpact comparison={comparison} onViewComparison={onViewComparison} />
+      ) : null}
+      {kind !== "evaluation" && optimization.baseline && !comparison ? (
+        <p className="data-note">No feasible recommended solution is available for a baseline comparison under the current constraints.</p>
+      ) : null}
       <div className="metric-list compact">
         <MetricRow label="Served demand weight" value={objectiveAvailable("demand") ? `${formatNumber(raw.served_demand_weight ?? raw.served_weighted_demand, 1)} / ${formatNumber(raw.relevant_demand_weight ?? raw.total_weighted_demand, 1)}` : UNAVAILABLE_VALUE} />
         <MetricRow label="Residential buildings" value={objectiveAvailable("residential") ? `${formatCount(raw.residential_covered)} / ${formatCount(raw.relevant_residential_total ?? raw.residential_total)}` : UNAVAILABLE_VALUE} />
@@ -2561,10 +3295,10 @@ function NetworkOptimizationPanel({ optimization, kind }) {
         <MetricRow label="Overlap ratio" value={overlapRatio} />
         <MetricRow label="Covered units" value={formatCount(raw.covered_units)} />
         <MetricRow label="Overlap buildings" value={objectiveAvailable("overlap") ? (stats.overlap_buildings ?? 0).toLocaleString() : UNAVAILABLE_VALUE} />
-        <MetricRow label="Constraints" value={outcome.constraints_satisfied === false ? "Not satisfied" : "Satisfied"} />
+        <MetricRow label="Constraints" value={constraintsLabel} />
       </div>
       <div className="optimization-result-summary">
-        <span className={outcome.constraints_satisfied === false ? "constraint-state failed" : "constraint-state passed"}>
+        <span className={!constraintsConfigured ? "constraint-state not-configured" : outcome.constraints_satisfied === false ? "constraint-state failed" : "constraint-state passed"}>
           {stateLabel}
         </span>
       </div>
@@ -2576,18 +3310,16 @@ function NetworkOptimizationPanel({ optimization, kind }) {
           </span>
         ))}
       </div>
-      {frontier.length > 0 ? (
-        <details className="pareto-frontier-list">
-          <summary>{frontier.length} non-dominated evaluated solution{frontier.length === 1 ? "" : "s"}</summary>
-          <p className="data-note">Each row is feasible and non-dominated. Current priorities determine the order.</p>
-          {frontier.slice(0, 12).map((solution, index) => (
-            <article key={`${solution.score ?? solution.objective_score}-${index}`}>
-              <div><strong>#{index + 1} · {formatNumber(solution.score, 1)} / 100</strong><span>{(solution.towers ?? []).map((tower) => `${tower.id}: ${formatNumber(tower.azimuth_deg, 0)}°`).join(" · ")}</span></div>
-              <small>Demand {formatObjectivePercent(solution.stats, "demand")} · Residential {formatObjectivePercent(solution.stats, "residential")} · Propagation reach {formatObjectivePercent(solution.stats, "coverage")} · Overlap utility {formatObjectivePercent(solution.stats, "overlap")}</small>
-              <p>{solution.explanation}</p>
-            </article>
-          ))}
-        </details>
+      {frontier.length > 0 && kind !== "evaluation" ? (
+        <div className="pareto-summary">
+          <div>
+            <strong>{frontier.length} feasible non-dominated solution{frontier.length === 1 ? "" : "s"}</strong>
+            <span>Current priorities determine the recommendation order.</span>
+          </div>
+          <button type="button" onClick={onViewSolutions}>Explore solutions</button>
+        </div>
+      ) : frontier.length > 0 ? (
+        <p className="data-note">This evaluation is a single configuration. Run network optimization to inspect Pareto alternatives.</p>
       ) : (
         <p className="data-note">No feasible non-dominated set was found under the active constraints.</p>
       )}
@@ -2604,9 +3336,134 @@ function formatPercent(value) {
   return Number.isFinite(Number(value)) ? `${formatNumber(Number(value) * 100, 1)}%` : UNAVAILABLE_VALUE;
 }
 
-function formatObjectivePercent(stats, id) {
-  if (stats?.objective_status?.[id]?.available === false) return UNAVAILABLE_VALUE;
-  return formatPercent(stats?.objectives?.[id]);
+function formatParetoObjectivePercent(stats, id) {
+  const objectiveID = id === "propagation_reach" ? "coverage" : id;
+  const objectiveStatus = stats?.objective_status ?? stats?.objectiveStatus ?? {};
+  if (objectiveStatus?.[objectiveID]?.available === false) return UNAVAILABLE_VALUE;
+  const utilities = stats?.objectives ?? stats?.objectives_normalized ?? {};
+  const raw = stats?.raw_metrics ?? stats?.rawMetrics ?? {};
+  if (id === "overlap") {
+    const rawRatio = readOptimizationRawMetric(raw, "overlap_ratio", "overlapRatio");
+    if (rawRatio !== undefined) return formatPercent(rawRatio);
+    const utilityValue = utilities.overlap;
+    if (utilityValue === null || utilityValue === undefined || utilityValue === "") return UNAVAILABLE_VALUE;
+    const utility = Number(utilityValue);
+    return Number.isFinite(utility) ? formatPercent(1 - utility) : UNAVAILABLE_VALUE;
+  }
+  const utilityValue = utilities[objectiveID];
+  if (utilityValue === null || utilityValue === undefined || utilityValue === "") return UNAVAILABLE_VALUE;
+  return formatPercent(utilityValue);
+}
+
+function hasParetoSolutionData(solution) {
+  const stats = solution?.stats ?? {};
+  const raw = stats.raw_metrics ?? stats.rawMetrics;
+  const utilities = stats.objectives ?? stats.objectives_normalized;
+  const objectiveStatus = stats.objective_status ?? stats.objectiveStatus ?? {};
+  const objectiveIDs = ["demand", "residential", "coverage", "overlap"];
+  const hasObjectiveData = objectiveIDs.every((id) => (
+    objectiveStatus?.[id]?.available === false
+      || hasFiniteParetoUtility(utilities?.[id])
+      || hasParetoRawMetric(raw, id)
+  ));
+  const hasUsableMetric = objectiveIDs.some((id) => (
+    objectiveStatus?.[id]?.available !== false
+      && (hasFiniteParetoUtility(utilities?.[id]) || hasParetoRawMetric(raw, id))
+  ));
+  return Array.isArray(solution?.towers)
+    && solution.towers.length > 0
+    && hasObjectiveData
+    && hasUsableMetric;
+}
+
+function hasParetoRawMetric(raw, id) {
+  if (!raw || typeof raw !== "object") return false;
+  if (id === "demand") {
+    return readOptimizationRawMetric(raw, "served_demand_weight", "servedDemandWeight", "served_weighted_demand", "servedWeightedDemand") !== undefined
+      && readOptimizationRawMetric(raw, "relevant_demand_weight", "relevantDemandWeight", "total_weighted_demand", "totalWeightedDemand") !== undefined;
+  }
+  if (id === "residential") {
+    return readOptimizationRawMetric(raw, "residential_covered", "residentialCovered") !== undefined
+      && readOptimizationRawMetric(raw, "relevant_residential_total", "relevantResidentialTotal", "residential_total", "residentialTotal") !== undefined;
+  }
+  if (id === "coverage") {
+    return readOptimizationRawMetric(raw, "propagation_reach_score", "propagationReachScore", "coverage_reach_score", "coverageReachScore") !== undefined
+      && readOptimizationRawMetric(raw, "propagation_reach_maximum", "propagationReachMaximum", "coverage_reach_maximum", "coverageReachMaximum") !== undefined;
+  }
+  return readOptimizationRawMetric(raw, "overlap_ratio", "overlapRatio") !== undefined
+    || (
+      readOptimizationRawMetric(raw, "overlap_buildings", "overlapBuildings") !== undefined
+      && readOptimizationRawMetric(raw, "covered_units", "coveredUnits") !== undefined
+    );
+}
+
+function hasFiniteParetoUtility(value) {
+  return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
+}
+
+function formatParetoRawMetricPair(stats, id) {
+  const objectiveID = id === "propagation_reach" ? "coverage" : id;
+  const objectiveStatus = stats?.objective_status ?? stats?.objectiveStatus ?? {};
+  if (objectiveStatus?.[objectiveID]?.available === false) return UNAVAILABLE_VALUE;
+  const raw = stats?.raw_metrics ?? stats?.rawMetrics ?? {};
+  if (id === "demand") {
+    const served = readOptimizationRawMetric(raw, "served_demand_weight", "servedDemandWeight", "served_weighted_demand", "servedWeightedDemand");
+    const relevant = readOptimizationRawMetric(raw, "relevant_demand_weight", "relevantDemandWeight", "total_weighted_demand", "totalWeightedDemand");
+    return formatPair(served, relevant, (value) => formatNumber(value, 1));
+  }
+  if (id === "residential") {
+    const covered = readOptimizationRawMetric(raw, "residential_covered", "residentialCovered");
+    const relevant = readOptimizationRawMetric(raw, "relevant_residential_total", "relevantResidentialTotal", "residential_total", "residentialTotal");
+    return formatPair(covered, relevant, formatCount);
+  }
+  if (id === "propagation_reach") {
+    const score = readOptimizationRawMetric(raw, "propagation_reach_score", "propagationReachScore", "coverage_reach_score", "coverageReachScore");
+    const maximum = readOptimizationRawMetric(raw, "propagation_reach_maximum", "propagationReachMaximum", "coverage_reach_maximum", "coverageReachMaximum");
+    return formatPair(score, maximum, (value) => formatNumber(value, 1));
+  }
+  if (id === "overlap") {
+    const buildings = readOptimizationRawMetric(raw, "overlap_buildings", "overlapBuildings")
+      ?? readOptimizationRawMetric(stats, "overlap_buildings", "overlapBuildings");
+    const units = readOptimizationRawMetric(raw, "covered_units", "coveredUnits");
+    return formatPair(buildings, units, formatCount);
+  }
+  return UNAVAILABLE_VALUE;
+}
+
+function formatPair(left, right, formatter) {
+  if (left === undefined || right === undefined) return UNAVAILABLE_VALUE;
+  return `${formatter(left)} / ${formatter(right)}`;
+}
+
+function formatParetoScore(solution) {
+  const score = Number(solution?.stats?.score ?? solution?.score ?? Number(solution?.stats?.composite_score) * 100);
+  return Number.isFinite(score) ? formatNumber(score, 1) : UNAVAILABLE_VALUE;
+}
+
+function formatParetoTradeoffValues(metric, key) {
+  if (!metric?.available || !Number.isFinite(Number(metric.recommended)) || !Number.isFinite(Number(metric.selected))) {
+    return UNAVAILABLE_VALUE;
+  }
+  if (key === "score") {
+    return `${formatNumber(metric.recommended, 1)} → ${formatNumber(metric.selected, 1)}`;
+  }
+  return `${formatNumber(metric.recommended * 100, 1)}% → ${formatNumber(metric.selected * 100, 1)}%`;
+}
+
+function formatParetoTradeoffDelta(metric, key) {
+  if (!metric?.available || !Number.isFinite(Number(metric.absolute_delta))) return UNAVAILABLE_VALUE;
+  if (key === "score") return `${formatSignedNumber(metric.absolute_delta, 1)} points`;
+  return `${formatSignedNumber(metric.absolute_delta * 100, 1)} pp`;
+}
+
+function readOptimizationRawMetric(raw, ...keys) {
+  for (const key of keys) {
+    const value = raw?.[key];
+    if (value === null || value === undefined || value === "") continue;
+    const numeric = Number(value);
+    if (Number.isFinite(numeric)) return numeric;
+  }
+  return undefined;
 }
 
 function CoreLabTool({ applicable, coreLab, enabled, scenarios, startCommand, towerIDs, onRunScenario, onToggle, onUse5G }) {

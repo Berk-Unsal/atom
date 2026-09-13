@@ -2,16 +2,17 @@ import { Download, Layers3, PlayCircle } from "lucide-react";
 
 const THRESHOLDS = [-120, -110, -100, -90, -80, -70];
 
-export default function SurfacePanel({ disabled, isLoading, onExport, onOptionsChange, onRun, options, surface }) {
+export default function SurfacePanel({ disabled, isLoading, onExport, onOptionsChange, onRun, options, surface, surfaceCellId }) {
   const toggleThreshold = (threshold) => {
     const current = options.thresholdsDBm ?? [];
     const next = current.includes(threshold) ? current.filter((value) => value !== threshold) : [...current, threshold].sort((a, b) => a - b);
     if (next.length > 0) onOptionsChange({ ...options, thresholdsDBm: next });
   };
   return (
-    <section className="surface-panel" aria-label="Analytical coverage surfaces">
-      <div className="panel-title"><Layers3 size={16} /><span>Coverage surface</span></div>
-      <p className="data-note">Generate a compact regular raster and unsmoothed isolines from the selected cell. The grid uses the current deterministic FSPL, antenna, calibration, and wall model.</p>
+    <section className="surface-panel" aria-label="Received signal surface">
+      <div className="panel-title"><Layers3 size={16} /><span>Received signal surface</span></div>
+      <p className="data-note">Generate a compact regular raster and unsmoothed isolines of received power from the selected cell. It is a planning surface, not aggregate network coverage; the grid uses the current deterministic FSPL, antenna, calibration, and wall model.</p>
+      {surface ? <p className="surface-source-note">Rendered from Cell {surfaceCellId ?? "selected"}. Changing RF inputs clears this surface.</p> : null}
       <label className="input-row select-row">
         <span className="input-label">Raster cell size</span>
         <span className="number-wrap"><select value={options.cellSizeMeters} onChange={(event) => onOptionsChange({ ...options, cellSizeMeters: Number(event.target.value) })}>{[10, 25, 50, 100, 250].map((value) => <option key={value} value={value}>{value} m</option>)}</select></span>
@@ -31,7 +32,7 @@ export default function SurfacePanel({ disabled, isLoading, onExport, onOptionsC
         <div className="surface-summary">
           <span><small>Grid</small><strong>{surface.grid?.width} × {surface.grid?.height}</strong></span>
           <span><small>Valid cells</small><strong>{surface.stats.valid_cell_count?.toLocaleString()}</strong></span>
-          <span><small>Range</small><strong>{Number(surface.stats.minimum_dbm).toFixed(0)}–{Number(surface.stats.maximum_dbm).toFixed(0)} dBm</strong></span>
+          <span><small>Range</small><strong>{formatSurfacePower(surface.stats.min_dbm ?? surface.stats.minimum_dbm)}–{formatSurfacePower(surface.stats.max_dbm ?? surface.stats.maximum_dbm)} dBm</strong></span>
           <span><small>Isolines</small><strong>{surface.contours?.features?.length?.toLocaleString() ?? 0}</strong></span>
         </div>
       ) : null}
@@ -43,4 +44,9 @@ export default function SurfacePanel({ disabled, isLoading, onExport, onOptionsC
       {surface?.model?.assumptions?.map((assumption) => <p className="data-note" key={assumption}>{assumption}</p>)}
     </section>
   );
+}
+
+function formatSurfacePower(value) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric.toFixed(0).replace("-", "−") : "—";
 }

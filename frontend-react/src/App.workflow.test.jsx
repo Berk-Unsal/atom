@@ -13,7 +13,23 @@ vi.mock("./utils/apiClient.js", () => ({
 }));
 
 vi.mock("./components/MapCanvas.jsx", () => ({
-  default: () => <div data-testid="map-canvas" />,
+  default: ({ onSelectMapCell, onSelectTower, towers = [] }) => (
+    <div data-testid="map-canvas">
+      {towers.map((tower) => (
+        <button
+          key={tower.id}
+          type="button"
+          aria-label={`Select map tower ${tower.cellId ?? tower.id}`}
+          onClick={() => {
+            onSelectMapCell?.(tower);
+            onSelectTower(tower);
+          }}
+        >
+          {tower.cellId ?? tower.id}
+        </button>
+      ))}
+    </div>
+  ),
 }));
 
 import App from "./App.jsx";
@@ -30,6 +46,112 @@ const towerGeoJSON = {
   ],
 };
 
+const networkTowerGeoJSON = {
+  type: "FeatureCollection",
+  features: [
+    point("tower-1", "101", 32.85, 39.92),
+    point("tower-2", "102", 32.854, 39.922),
+    point("tower-3", "103", 32.858, 39.924),
+  ],
+};
+
+const objectiveStatus = {
+  demand: { available: true },
+  residential: { available: true },
+  coverage: { available: true },
+  overlap: { available: true },
+};
+
+const networkOptimizationPayload = {
+  optimized_towers: [
+    { id: "101", optimal_azimuth: 20, rf_profile: {} },
+    { id: "102", optimal_azimuth: 140, rf_profile: {} },
+  ],
+  stats: {
+    raw_metrics: {
+      served_demand_weight: 600,
+      relevant_demand_weight: 1000,
+      residential_covered: 15,
+      relevant_residential_total: 30,
+      propagation_reach_score: 60,
+      propagation_reach_maximum: 100,
+      covered_units: 30,
+      overlap_buildings: 2,
+      overlap_ratio: 0.08,
+    },
+    objective_status: objectiveStatus,
+  },
+  baseline: {
+    cell_configurations: [
+      { id: "101", tower_lon: 32.85, tower_lat: 39.92, azimuth_deg: 0, rf_profile: {} },
+      { id: "102", tower_lon: 32.854, tower_lat: 39.922, azimuth_deg: 90, rf_profile: {} },
+    ],
+    parameters: { rays: 72, radius_m: 400, frequency_ghz: 28, tx_power_dbm: 30, beam_width: 120 },
+    stats: {
+      raw_metrics: {
+        served_demand_weight: 400,
+        relevant_demand_weight: 1000,
+        residential_covered: 10,
+        relevant_residential_total: 30,
+        propagation_reach_score: 50,
+        propagation_reach_maximum: 100,
+        covered_units: 24,
+        overlap_buildings: 5,
+        overlap_ratio: 0.2,
+      },
+      objective_status: objectiveStatus,
+    },
+    constraints_satisfied: false,
+  },
+  optimization: {
+    recommended: true,
+    constraints_satisfied: true,
+    objective_status: objectiveStatus,
+    recommended_solution_id: "solution-a",
+    violations: [],
+  },
+  pareto_frontier: [
+    {
+      id: "solution-a",
+      towers: [{ id: "101", azimuth_deg: 20 }, { id: "102", azimuth_deg: 140 }],
+      stats: {
+        raw_metrics: {
+          served_demand_weight: 600,
+          relevant_demand_weight: 1000,
+          residential_covered: 15,
+          relevant_residential_total: 30,
+          propagation_reach_score: 60,
+          propagation_reach_maximum: 100,
+          covered_units: 30,
+          overlap_buildings: 2,
+          overlap_ratio: 0.08,
+        },
+        objective_status: objectiveStatus,
+      },
+    },
+    {
+      id: "solution-b",
+      towers: [{ id: "101", azimuth_deg: 30 }, { id: "102", azimuth_deg: 150 }],
+      stats: {
+        raw_metrics: {
+          served_demand_weight: 500,
+          relevant_demand_weight: 1000,
+          residential_covered: 22,
+          relevant_residential_total: 30,
+          propagation_reach_score: 52,
+          propagation_reach_maximum: 100,
+          covered_units: 28,
+          overlap_buildings: 4,
+          overlap_ratio: 0.14,
+        },
+        objective_status: objectiveStatus,
+      },
+    },
+  ],
+};
+
+let useNetworkFixture = false;
+
 const simulationPayload = {
   geojson: {
     type: "FeatureCollection",
@@ -43,13 +165,56 @@ const gapPayload = {
   stats: { gap_buildings: 4, gap_pct: 2, returned_gaps: 0 },
 };
 
+const cellExplanationPayload = {
+  available: true,
+  unchanged: false,
+  run_id: "legacy-run",
+  solution_id: "solution-a",
+  cell: { id: "101", baseline_azimuth_deg: 0, selected_azimuth_deg: 20 },
+  actual: {
+    raw_metrics: {
+      served_demand_weight: 600,
+      relevant_demand_weight: 1000,
+      residential_covered: 15,
+      relevant_residential_total: 30,
+      propagation_reach_score: 60,
+      propagation_reach_maximum: 100,
+      covered_units: 30,
+      overlap_buildings: 2,
+      overlap_ratio: 0.08,
+    },
+    constraints_satisfied: true,
+    violations: [],
+  },
+  counterfactual: {
+    raw_metrics: {
+      served_demand_weight: 400,
+      relevant_demand_weight: 1000,
+      residential_covered: 10,
+      relevant_residential_total: 30,
+      propagation_reach_score: 50,
+      propagation_reach_maximum: 100,
+      covered_units: 24,
+      overlap_buildings: 5,
+      overlap_ratio: 0.2,
+    },
+    constraints_satisfied: false,
+    violations: ["minimum demand buildings"],
+  },
+  objective_status: objectiveStatus,
+  limitations: [
+    "Conditional marginal comparison: selected configuration versus the same network with this cell reverted to baseline.",
+    "This is not causal attribution, an independent cell contribution, or an additive decomposition; cell interactions remain.",
+  ],
+};
+
 describe("App planning workflow", () => {
   beforeEach(() => {
     api.getJSON.mockReset();
     api.postJSON.mockReset();
     api.getJSON.mockImplementation((path) => {
       if (path === "/api/towers") {
-        return Promise.resolve(towerGeoJSON);
+        return Promise.resolve(useNetworkFixture ? networkTowerGeoJSON : towerGeoJSON);
       }
       if (path === "/api/buildings/summary") {
         return Promise.resolve({ total_buildings: 100, data_quality: "good" });
@@ -60,8 +225,15 @@ describe("App planning workflow", () => {
       if (path === "/api/analyze-sector") {
         return Promise.resolve({ simulation: simulationPayload, coverage_gaps: gapPayload });
       }
+      if (path === "/api/optimize-network") {
+        return Promise.resolve(networkOptimizationPayload);
+      }
+      if (path === "/api/explain-network-cell") {
+        return Promise.resolve(cellExplanationPayload);
+      }
       return Promise.resolve(simulationPayload);
     });
+    useNetworkFixture = false;
   });
 
   it("invalidates results without launching RF work until Run is pressed", async () => {
@@ -111,6 +283,24 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(1);
   });
 
+  it("changes RF map presentation without launching another RF request", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "true");
+
+    const rfRequestCount = api.postJSON.mock.calls.length;
+    fireEvent.click(screen.getByRole("button", { name: "Toggle propagation rays" }));
+    fireEvent.change(screen.getByRole("combobox", { name: "Ray scope" }), { target: { value: "selected" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Map focus cell" }), { target: { value: "101" } });
+
+    expect(screen.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("combobox", { name: "Ray scope" })).toHaveValue("selected");
+    expect(api.postJSON).toHaveBeenCalledTimes(rfRequestCount);
+  });
+
   it("does not launch a sector request when switching into network planning", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
@@ -122,6 +312,86 @@ describe("App planning workflow", () => {
     expect(screen.getByRole("button", { name: "Add 1 cell" })).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "Analyze workspace" }));
     expect(screen.getByRole("button", { name: "Interference" })).not.toBeDisabled();
+  });
+
+  it("explores Pareto solutions without changing the recommendation or rerunning RF", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Select map tower 101" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 1 selected" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Select map tower 102" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 2 selected" })).toHaveAttribute("aria-pressed", "true"));
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Optimize Network" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(api.postJSON).toHaveBeenCalledWith(
+      "/api/optimize-network",
+      expect.any(Object),
+      "Network optimization request failed",
+      expect.any(AbortSignal),
+    ));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
+    expect(screen.getByRole("region", { name: "Pareto alternative solutions" })).toBeInTheDocument();
+    expect(screen.getByText("2 feasible · non-dominated solutions")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Inspect Pareto solution 1, recommended/i })).toBeInTheDocument();
+
+    const rfRequestCount = api.postJSON.mock.calls.filter(([path]) => path === "/api/optimize-network" || path === "/api/simulate").length;
+    const alternate = screen.getByRole("button", { name: /Inspect Pareto solution 2/i });
+    fireEvent.click(alternate);
+    expect(alternate).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("Compared with recommended")).toBeInTheDocument();
+    expect(screen.getByText("Recommended → selected · selected − recommended")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: "Compare" }));
+    expect(screen.getByText("Baseline vs Recommended")).toBeInTheDocument();
+    expect(screen.queryByText("Compared with recommended")).not.toBeInTheDocument();
+    expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/optimize-network" || path === "/api/simulate").length).toBe(rfRequestCount);
+  });
+
+  it("lazily explains the inspected cell and reuses the raw result after priority changes", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Select map tower 101" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 1 selected" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Select map tower 102" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 2 selected" })).toHaveAttribute("aria-pressed", "true"));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Optimize Network" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
+    const explainButton = screen.getByRole("button", { name: "Explain Cell 101 marginal effect" });
+    fireEvent.click(explainButton);
+    await waitFor(() => expect(screen.getByRole("region", { name: "Marginal effect for Cell 101" })).toBeInTheDocument());
+    expect(screen.getByText(/restoring only Cell 101 to its baseline configuration/i)).toBeInTheDocument();
+    expect(api.postJSON).toHaveBeenCalledWith(
+      "/api/explain-network-cell",
+      expect.objectContaining({ solution_id: "solution-a", cell_id: "101" }),
+      "Cell explanation request failed",
+      expect.any(AbortSignal),
+    );
+    const explanationCalls = api.postJSON.mock.calls.filter(([path]) => path === "/api/explain-network-cell");
+    expect(explanationCalls).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
+    fireEvent.click(screen.getByRole("button", { name: "Propagation" }));
+    fireEvent.change(screen.getByRole("slider", { name: "Demand importance" }), { target: { value: "100" } });
+    await act(async () => Promise.resolve());
+    fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
+    fireEvent.click(screen.getByRole("button", { name: "Explain Cell 101 marginal effect" }));
+    expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/explain-network-cell")).toHaveLength(1);
+    expect(screen.getByText("Selected solution − cell reverted to baseline")).toBeInTheDocument();
   });
 
   it("cancels map area selection with Escape", async () => {
@@ -291,3 +561,12 @@ describe("App planning workflow", () => {
     expect(screen.getByText("Plan changed", { selector: ".run-state" })).toBeInTheDocument();
   });
 });
+
+function point(id, cellID, longitude, latitude) {
+  return {
+    type: "Feature",
+    id,
+    geometry: { type: "Point", coordinates: [longitude, latitude] },
+    properties: { cell_id: cellID, radio_type: "NR" },
+  };
+}

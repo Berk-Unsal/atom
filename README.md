@@ -95,7 +95,7 @@ Runtime policy bindings are generated from `policy/rf-policy.json`. After changi
 
 ![A.T.O.M focused map workspace](./docs/assets/focused-workspace.jpg)
 
-The current interface uses a compact command bar, workflow rail, overlay tool drawer, contextual result summary, independent map layers, and persistent inspectors. Radio-parameter edits mark existing results as stale without submitting hidden requests, while **Run Sector**, **Evaluate Network**, and tool-specific analysis actions keep execution visible.
+The current interface uses a compact command bar, workflow rail, overlay tool drawer, contextual result summary, independent map layers, and persistent inspectors. The map's RF controls separate the received-power surface from diagnostic rays, with explicit all/selected/hidden ray scope and a map-focus cell that is independent from Pareto solution inspection. Radio-parameter edits mark existing results as stale without submitting hidden requests, while **Run Sector**, **Evaluate Network**, and tool-specific analysis actions keep execution visible.
 
 ---
 

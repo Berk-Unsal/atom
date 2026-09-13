@@ -9,6 +9,144 @@ const towers = {
   ],
 };
 
+const optimizationObjectiveStatus = {
+  demand: { available: true },
+  residential: { available: true },
+  coverage: { available: true },
+  overlap: { available: true },
+};
+
+const networkOptimization = {
+  optimization_run_id: "e2e-network-run",
+  optimized_towers: [
+    { id: "cell-1", optimal_azimuth: 20, rf_profile: {} },
+    { id: "cell-2", optimal_azimuth: 140, rf_profile: {} },
+  ],
+  stats: {
+    raw_metrics: {
+      served_demand_weight: 600,
+      relevant_demand_weight: 1000,
+      residential_covered: 15,
+      relevant_residential_total: 30,
+      propagation_reach_score: 60,
+      propagation_reach_maximum: 100,
+      covered_units: 30,
+      overlap_buildings: 2,
+      overlap_ratio: 0.08,
+    },
+    objective_status: optimizationObjectiveStatus,
+  },
+  baseline: {
+    cell_configurations: [
+      { id: "cell-1", tower_lon: 32.85, tower_lat: 39.92, azimuth_deg: 0, rf_profile: {} },
+      { id: "cell-2", tower_lon: 32.854, tower_lat: 39.922, azimuth_deg: 90, rf_profile: {} },
+    ],
+    parameters: { rays: 72, radius_m: 400, frequency_ghz: 28, tx_power_dbm: 30, beam_width: 120 },
+    stats: {
+      raw_metrics: {
+        served_demand_weight: 400,
+        relevant_demand_weight: 1000,
+        residential_covered: 10,
+        relevant_residential_total: 30,
+        propagation_reach_score: 50,
+        propagation_reach_maximum: 100,
+        covered_units: 24,
+        overlap_buildings: 5,
+        overlap_ratio: 0.2,
+      },
+      objective_status: optimizationObjectiveStatus,
+    },
+    constraints_satisfied: false,
+  },
+  optimization: {
+    recommended: true,
+    constraints_satisfied: true,
+    objective_status: optimizationObjectiveStatus,
+    recommended_solution_id: "solution-a",
+    violations: [],
+  },
+  pareto_frontier: [
+    {
+      id: "solution-a",
+      towers: [{ id: "cell-1", azimuth_deg: 20 }, { id: "cell-2", azimuth_deg: 140 }],
+      stats: {
+        raw_metrics: {
+          served_demand_weight: 600,
+          relevant_demand_weight: 1000,
+          residential_covered: 15,
+          relevant_residential_total: 30,
+          propagation_reach_score: 60,
+          propagation_reach_maximum: 100,
+          covered_units: 30,
+          overlap_buildings: 2,
+          overlap_ratio: 0.08,
+        },
+        objective_status: optimizationObjectiveStatus,
+      },
+    },
+    {
+      id: "solution-b",
+      towers: [{ id: "cell-1", azimuth_deg: 30 }, { id: "cell-2", azimuth_deg: 150 }],
+      stats: {
+        raw_metrics: {
+          served_demand_weight: 500,
+          relevant_demand_weight: 1000,
+          residential_covered: 22,
+          relevant_residential_total: 30,
+          propagation_reach_score: 52,
+          propagation_reach_maximum: 100,
+          covered_units: 28,
+          overlap_buildings: 4,
+          overlap_ratio: 0.14,
+        },
+        objective_status: optimizationObjectiveStatus,
+      },
+    },
+  ],
+};
+
+const cellExplanation = {
+  available: true,
+  unchanged: false,
+  run_id: "e2e-network-run",
+  solution_id: "solution-a",
+  cell: { id: "cell-1", baseline_azimuth_deg: 0, selected_azimuth_deg: 20 },
+  actual: {
+    raw_metrics: {
+      served_demand_weight: 600,
+      relevant_demand_weight: 1000,
+      residential_covered: 15,
+      relevant_residential_total: 30,
+      propagation_reach_score: 60,
+      propagation_reach_maximum: 100,
+      covered_units: 30,
+      overlap_buildings: 2,
+      overlap_ratio: 0.08,
+    },
+    constraints_satisfied: true,
+  },
+  counterfactual: {
+    raw_metrics: {
+      served_demand_weight: 400,
+      relevant_demand_weight: 1000,
+      residential_covered: 10,
+      relevant_residential_total: 30,
+      propagation_reach_score: 50,
+      propagation_reach_maximum: 100,
+      covered_units: 24,
+      overlap_buildings: 5,
+      overlap_ratio: 0.2,
+    },
+    constraints_satisfied: false,
+    violations: ["minimum propagation reach"],
+  },
+  objective_status: optimizationObjectiveStatus,
+  limitations: [
+    "Conditional marginal comparison: selected configuration versus the same network with this cell reverted to baseline.",
+    "This is not causal attribution, an independent cell contribution, or an additive decomposition; cell interactions remain.",
+  ],
+};
+
 test.beforeEach(async ({ page }) => {
   await page.route("**/tile.openstreetmap.org/**", (route) => route.abort());
   await page.route("**/api/**", async (route) => {
@@ -55,7 +193,25 @@ test.beforeEach(async ({ page }) => {
         geojson: { type: "FeatureCollection", features: [] },
         stats: { gap_pct: 0, gap_buildings: 0, candidate_buildings: 8 },
       },
+      "/api/optimize-network": networkOptimization,
     };
+    if (url.pathname === "/api/explain-network-cell") {
+      const requestBody = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ...cellExplanation,
+          solution_id: requestBody.solution_id,
+          cell: {
+            ...cellExplanation.cell,
+            id: requestBody.cell_id,
+            selected_azimuth_deg: requestBody.solution?.towers?.find((tower) => String(tower.id) === String(requestBody.cell_id))?.azimuth_deg ?? cellExplanation.cell.selected_azimuth_deg,
+          },
+        }),
+      });
+      return;
+    }
     const body = payloads[url.pathname];
     if (!body) {
       await route.fulfill({ status: 404, contentType: "application/json", body: JSON.stringify({ error: "not mocked" }) });
@@ -149,6 +305,97 @@ test("keeps propagation actions clear of the vertical path profile", async ({ pa
   expect(pathProfileBox.y - (optimizeBox.y + optimizeBox.height)).toBeGreaterThanOrEqual(8);
 });
 
+test("explores a retained Pareto alternative without another RF request", async ({ page }) => {
+  const rfRequests = [];
+  page.on("request", (request) => {
+    if (["/api/optimize-network", "/api/simulate"].some((path) => request.url().includes(path))) {
+      rfRequests.push(request.url());
+    }
+  });
+
+  await page.goto("/");
+  await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
+  await expect(page.getByRole("button", { name: "Network mode, 1 selected" })).toBeVisible();
+  const closeToolDrawer = page.getByRole("button", { name: "Close tool drawer" });
+  if (await closeToolDrawer.isVisible()) await closeToolDrawer.click();
+  const mapBox = await page.locator(".leaflet-container").boundingBox();
+  expect(mapBox).not.toBeNull();
+  const target = projectMapPoint(32.854, 39.922, 12);
+  const center = projectMapPoint(32.8541, 39.9208, 12);
+  await page.locator(".leaflet-container").click({
+    position: {
+      x: mapBox.width / 2 + target.x - center.x,
+      y: mapBox.height / 2 + target.y - center.y,
+    },
+  });
+  await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
+
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Optimize Network" }).click();
+  await expect(page.getByRole("button", { name: "Optimize Network" })).toBeEnabled();
+  await expect.poll(() => rfRequests.filter((url) => url.includes("/api/optimize-network")).length).toBe(1);
+
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("tab", { name: "Solutions" }).click();
+  await expect(page.getByRole("region", { name: "Pareto alternative solutions" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Inspect Pareto solution 1, recommended/i })).toBeVisible();
+  const requestCount = rfRequests.length;
+  await page.getByRole("button", { name: /Inspect Pareto solution 2/i }).click();
+  await expect(page.getByText("Compared with recommended")).toBeVisible();
+  expect(rfRequests).toHaveLength(requestCount);
+});
+
+test("lazily explains a selected cell and reuses it after priority-only changes", async ({ page }) => {
+  const explanationRequests = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/api/explain-network-cell")) explanationRequests.push(request);
+  });
+
+  await page.goto("/");
+  await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
+  await expect(page.getByRole("button", { name: "Network mode, 1 selected" })).toBeVisible();
+  const closeToolDrawer = page.getByRole("button", { name: "Close tool drawer" });
+  if (await closeToolDrawer.isVisible()) await closeToolDrawer.click();
+  const mapBox = await page.locator(".leaflet-container").boundingBox();
+  expect(mapBox).not.toBeNull();
+  const target = projectMapPoint(32.854, 39.922, 12);
+  const center = projectMapPoint(32.8541, 39.9208, 12);
+  await page.locator(".leaflet-container").click({
+    position: {
+      x: mapBox.width / 2 + target.x - center.x,
+      y: mapBox.height / 2 + target.y - center.y,
+    },
+  });
+  await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
+
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Optimize Network" }).click();
+  await expect(page.getByRole("button", { name: "Optimize Network" })).toBeEnabled();
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("tab", { name: "Solutions" }).click();
+
+  await page.getByRole("button", { name: "Explain Cell cell-1 marginal effect" }).click();
+  await expect(page.getByRole("region", { name: "Marginal effect for Cell cell-1" })).toBeVisible();
+  await expect(page.getByText("Selected solution − cell reverted to baseline")).toBeVisible();
+  expect(explanationRequests).toHaveLength(1);
+  expect(explanationRequests[0].postDataJSON()).toMatchObject({ solution_id: "solution-a", cell_id: "cell-1" });
+
+  await page.getByRole("button", { name: /Inspect Pareto solution 2/i }).click();
+  await expect(page.getByText("Compared with recommended")).toBeVisible();
+  await page.getByRole("button", { name: "Explain Cell cell-1 marginal effect" }).click();
+  await expect(page.getByRole("region", { name: "Marginal effect for Cell cell-1" })).toBeVisible();
+  expect(explanationRequests).toHaveLength(2);
+  expect(explanationRequests[1].postDataJSON()).toMatchObject({ solution_id: "solution-b", cell_id: "cell-1" });
+
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await page.getByRole("slider", { name: "Demand importance" }).fill("100");
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("tab", { name: "Solutions" }).click();
+  await page.getByRole("button", { name: "Explain Cell cell-1 marginal effect" }).click();
+  expect(explanationRequests).toHaveLength(2);
+});
+
 function point(id, cellID, longitude, latitude) {
   return {
     type: "Feature",
@@ -156,4 +403,12 @@ function point(id, cellID, longitude, latitude) {
     properties: { cell_id: cellID, radio_type: "5G", is_simulated: false },
     geometry: { type: "Point", coordinates: [longitude, latitude] },
   };
+}
+
+function projectMapPoint(longitude, latitude, zoom) {
+  const scale = 256 * 2 ** zoom;
+  const x = ((longitude + 180) / 360) * scale;
+  const latitudeRadians = (latitude * Math.PI) / 180;
+  const y = ((1 - Math.log(Math.tan(latitudeRadians) + 1 / Math.cos(latitudeRadians)) / Math.PI) / 2) * scale;
+  return { x, y };
 }

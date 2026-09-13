@@ -119,6 +119,21 @@ and preference-ranked feasible Pareto solutions.</li>
 selected-cell radius-union domain, report unavailable objectives as N/A
 with effective weights, and present the legacy <code>coverage</code>
 objective as propagation reach.</li>
+<li>Add lazy per-cell Pareto explanations that compare a selected
+solution with a single baseline-reverted counterfactual in the same
+target domain, preserving raw metric deltas, direction-aware
+interpretation, feasibility evidence, and priority-only score
+re-ranking.</li>
+<li>Redesign generated Markdown/HTML planning reports around network
+scope, authoritative recommendations, baseline/Pareto evidence,
+evaluated cell explanations, conditional interference summaries, and
+concise report-only maps.</li>
+<li>Clarify report priorities as relative 0–100 values, distinguish
+unconfigured hard constraints, humanize optimization-domain labels, and
+omit universally unavailable PCI columns.</li>
+<li>Add map-first RF display controls for received-power surfaces,
+scoped/hidden propagation rays, and independent selected-cell focus
+without launching new RF work.</li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>

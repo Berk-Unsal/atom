@@ -156,7 +156,17 @@ Each heatmap consists of thousands of **ray segments** (colored lines):
 
 ### Analytical Surface Layer
 
-The Surfaces tool replaces dense point markers with a regular received-power raster drawn below operational markers. Adjust opacity to compare it with the basemap and select a display floor to hide weaker cells. Contours are unsmoothed marching-square line segments at the selected dBm thresholds; they are deterministic grid evidence, not kriged measurement isolines.
+The Signal surface tool replaces dense point markers with a regular received-power raster drawn below operational markers. Adjust opacity to compare it with the basemap and select a display floor to hide weaker cells. Contours are unsmoothed marching-square line segments at the selected dBm thresholds; they are deterministic grid evidence, not kriged measurement isolines. The surface is calculated for one selected cell, so it is not an aggregate network-coverage claim.
+
+### RF Map Display Controls
+
+The compact RF control group keeps the two evidence types independent:
+
+- **Signal** toggles the received-power surface when one has been generated.
+- **Rays** toggles the segmented propagation paths without issuing another RF request.
+- **All cells**, **Selected cell**, and **Hidden** control which network ray paths are rendered. The Selected cell choice uses the separate **Focus** cell selector; it does not change the Pareto solution selected in Results.
+
+Until a surface is generated, rays are the visible RF fallback. Generating a received-power surface switches the map to a surface-first view and hides rays; rays can be enabled again for diagnostic inspection. Presentation-only changes are local browser state. RF settings, cell selection, or a new optimization/evaluation clear incompatible rendered evidence and require the normal explicit analysis action.
 
 The raster uses the fast sector FSPL/antenna/wall model. It does not inherit optional terrain, gas, rain, vegetation, or diffraction settings from a point-to-point profile.
 
@@ -172,6 +182,8 @@ In the web interface, you can:
 
 - 🔄 Adjust antenna azimuth and watch coverage rotate
 - 📊 Switch between frequency bands and compare
+- 🧭 Focus a selected network cell while keeping the planning selection unchanged
+- 🗺️ Switch between the received-power surface and diagnostic ray evidence
 - 🎯 Toggle beamforming on/off to see impact
 - 📍 Click points to see exact signal strength (Rx dBm)
 

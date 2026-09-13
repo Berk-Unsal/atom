@@ -327,6 +327,12 @@
     },
     {
       "page": "API Reference",
+      "title": "Explain One Pareto Cell",
+      "url": "./api.html#explain-one-pareto-cell",
+      "text": "Endpoint : POST /api/explain-network-cell The endpoint is a lazy, one-cell follow-up to POST /api/optimize-network . Send the retained baseline , the currently inspected solution , its solution_id , the changed cell_id , and the current optimization priorities/constraints. run_id and optimization_domain should be copied from the optimization response when available: { \"run_id\" : \"network-opt-7d6e3b1f0a2c\" , \"solution_id\" : \"90.0,0.0\" , \"cell_id\" : \"101\" , \"baseline\" : { \"cell_configurations\" : [] , \"parameters\" : {}, \"stats\" : {}, \"constraints_satisfied\" : true }, \"solution\" : { \"id\" : \"90.0,0.0\" , \"towers\" : [ { \"id\" : \"101\" , \"azimuth_deg\" : 90 } , { \"id\" : \"102\" , \"azimuth_deg\" : 0 } ] , \"stats\" : {} }, \"optimization\" : { \"objectives\" : [ { \"id\" : \"demand\" , \"weight\" : 80 } , { \"id\" : \"overlap\" , \"weight\" : 40 } ] , \"constraints\" : {} }, \"optimization_domain\" : { \"source\" : \"selected_cell_radius_union\" , \"selected_cell_count\" : 2 , \"radius_policy\" : \"cell_rf_profile_radius_m_else_request_radius_m\" , \"relevant_building_entities\" : 0 , \"relevant_demand_entities\" : 0 , \"relevant_residential_entities\" : 0 } } This is an illustrative shape, not a runnable payload: the abbreviated objects stand for the complete baseline and solution snapshots returned by optimize-network . The backend evaluates the selected solution's stored raw metrics as actual , then evaluates exactly one network with only the requested cell restored to its baseline azimuth as counterfactual . Every other cell, ray count, RF profile, denominator, target domain, and hard-constraint rule remains unchanged. It does not rerun optimization or rebuild a Pareto frontier. The response returns the cell ID and both azimuths, raw actual/counterfactual metrics, selected-minus-counterfactual deltas for served demand, residential coverage, propagation reach, overlap buildings, overlap ratio, and covered units, plus feasibility and any counterfactual violations. An infeasible counterfactual remains inspectable; infeasibility is not represented as a zero preference score. Propagation reach and score are higher-is-better. Overlap buildings and overlap ratio are lower-is-better, so a positive overlap delta is a regression. Covered units are informational unless a separate product rule gives them preference semantics. The frontend caches raw explanations by optimization run, solution ID, and cell ID. Priority-"
+    },
+    {
+      "page": "API Reference",
       "title": "Planning Product Endpoints",
       "url": "./api.html#planning-product-endpoints",
       "text": ""
@@ -737,7 +743,7 @@
       "page": "Changelog",
       "title": "Changed",
       "url": "./changelog.html#changed",
-      "text": "Replace network optimization's arbitrary raw weighted score with stable 0–1 objective utilities, normalized importance priorities, a 0–100 composite score, raw metric preservation, contribution breakdowns, and preference-ranked feasible Pareto solutions. Scope demand and residential normalization to a deterministic selected-cell radius-union domain, report unavailable objectives as N/A with effective weights, and present the legacy coverage objective as propagation reach."
+      "text": "Replace network optimization's arbitrary raw weighted score with stable 0–1 objective utilities, normalized importance priorities, a 0–100 composite score, raw metric preservation, contribution breakdowns, and preference-ranked feasible Pareto solutions. Scope demand and residential normalization to a deterministic selected-cell radius-union domain, report unavailable objectives as N/A with effective weights, and present the legacy coverage objective as propagation reach. Add lazy per-cell Pareto explanations that compare a selected solution with a single baseline-reverted counterfactual in the same target domain, preserving raw metric deltas, direction-aware interpretation, feasibility evidence, and priority-only score re-ranking. Redesign generated Markdown/HTML planning reports around network scope, authoritative recommendations, baseline/Pareto evidence, evaluated cell explanations, conditional interference summaries, and concise report-only maps. Clarify report priorities as relative 0–100 values, distinguish unconfigured hard constraints, humanize optimization-domain labels, and omit universally unavailable PCI columns. Add map-first RF display controls for received-power surfaces, scoped/hidden propagation rays, and independent selected-cell focus without launching new RF work."
     },
     {
       "page": "Changelog",
@@ -1865,7 +1871,13 @@
       "page": "Reading Propagation Maps",
       "title": "Analytical Surface Layer",
       "url": "./visualization.html#analytical-surface-layer",
-      "text": "The Surfaces tool replaces dense point markers with a regular received-power raster drawn below operational markers. Adjust opacity to compare it with the basemap and select a display floor to hide weaker cells. Contours are unsmoothed marching-square line segments at the selected dBm thresholds; they are deterministic grid evidence, not kriged measurement isolines. The raster uses the fast sector FSPL/antenna/wall model. It does not inherit optional terrain, gas, rain, vegetation, or diffraction settings from a point-to-point profile. Enable Viewport buildings in Layers at zoom 12 or closer to request only the visible building footprints. Fill hue reflects normalized material when known and opacity increases modestly with inferred height; it is contextual geometry, not a surveyed 3D mesh."
+      "text": "The Signal surface tool replaces dense point markers with a regular received-power raster drawn below operational markers. Adjust opacity to compare it with the basemap and select a display floor to hide weaker cells. Contours are unsmoothed marching-square line segments at the selected dBm thresholds; they are deterministic grid evidence, not kriged measurement isolines. The surface is calculated for one selected cell, so it is not an aggregate network-coverage claim."
+    },
+    {
+      "page": "Reading Propagation Maps",
+      "title": "RF Map Display Controls",
+      "url": "./visualization.html#rf-map-display-controls",
+      "text": "The compact RF control group keeps the two evidence types independent: Signal toggles the received-power surface when one has been generated. Rays toggles the segmented propagation paths without issuing another RF request. All cells , Selected cell , and Hidden control which network ray paths are rendered. The Selected cell choice uses the separate Focus cell selector; it does not change the Pareto solution selected in Results. Until a surface is generated, rays are the visible RF fallback. Generating a received-power surface switches the map to a surface-first view and hides rays; rays can be enabled again for diagnostic inspection. Presentation-only changes are local browser state. RF settings, cell selection, or a new optimization/evaluation clear incompatible rendered evidence and require the normal explicit analysis action. The raster uses the fast sector FSPL/antenna/wall model. It does not inherit optional terrain, gas, rain, vegetation, or diffraction settings from a point-to-point profile. Enable Viewport buildings in Layers at zoom 12 or closer to request only the visible building footprints. Fill hue reflects normalized material when known and opacity increases modestly with inferred height; it is contextual geometry, not a surveyed 3D mesh."
     },
     {
       "page": "Reading Propagation Maps",
@@ -1877,7 +1889,7 @@
       "page": "Reading Propagation Maps",
       "title": "Interactive Exploration",
       "url": "./visualization.html#interactive-exploration",
-      "text": "In the web interface, you can: 🔄 Adjust antenna azimuth and watch coverage rotate 📊 Switch between frequency bands and compare 🎯 Toggle beamforming on/off to see impact 📍 Click points to see exact signal strength (Rx dBm)"
+      "text": "In the web interface, you can: 🔄 Adjust antenna azimuth and watch coverage rotate 📊 Switch between frequency bands and compare 🧭 Focus a selected network cell while keeping the planning selection unchanged 🗺️ Switch between the received-power surface and diagnostic ray evidence 🎯 Toggle beamforming on/off to see impact 📍 Click points to see exact signal strength (Rx dBm)"
     },
     {
       "page": "Reading Propagation Maps",

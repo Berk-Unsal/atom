@@ -44,7 +44,7 @@ The React application is organized around a map-first focused workspace:
 - **Project menu**: local projects, autosaved drafts, versioned import/export, and named scenario snapshots.
 - **Workflow rail**: Setup, Propagation, Interference, 5G Core, Results, Data, and Report.
 - **Overlay drawer**: opens one focused tool without resizing or recentering the map.
-- **MapCanvas**: renders towers, rays, coverage gaps, selection geometry, interference samples, measurement residuals, candidate records, and 5G communication paths.
+- **MapCanvas**: renders towers, the selected-cell received-power surface, scoped rays, coverage gaps, selection geometry, interference samples, measurement residuals, candidate records, and 5G communication paths.
 - **Inspector**: persistent details for towers, gaps, communication paths, and interference samples.
 - **Report assembly**: creates Markdown and printable HTML from current client state.
 
@@ -57,6 +57,8 @@ RF operations share one coordinated request channel:
 3. Results are committed only if the request remains current.
 4. RF-setting changes clear incompatible interference and optimization state.
 5. Per-cell network ray rendering runs sequentially to stay inside backend RF capacity.
+
+Map display controls are presentation-only: Signal/Rays visibility, All/Selected/Hidden ray scope, and map-focus cell selection filter already retained GeoJSON or toggle Leaflet layers; they do not start RF requests. Network simulations annotate each retained feature with its stable cell ID so selected-cell filtering cannot mix rays from different cells. Pareto solution inspection remains separate and never reassigns the map RF evidence.
 
 This prevents slow responses from replacing results produced by newer settings.
 
@@ -102,6 +104,7 @@ The Gin service provides:
 | POST | `/api/optimize-azimuth` | Single-sector demand-aware azimuth sweep |
 | POST | `/api/evaluate-network` | Score supplied selected-cell azimuths |
 | POST | `/api/optimize-network` | Optimize selected-cell azimuths with objectives, constraints, and Pareto evidence |
+| POST | `/api/explain-network-cell` | Lazily compare one inspected Pareto cell with its baseline-reverted counterfactual |
 | POST | `/api/interference` | RSRP, SINR, RSRQ, RSSI, and demand-quality analysis |
 | POST | `/api/recommend-sites` | Rank known candidate records inside a search polygon |
 | POST | `/api/measurements/evaluate` | Spatially blocked RSRP residual validation and global bias guidance |
@@ -196,7 +199,11 @@ The browser captures a Before snapshot, requests `/api/optimize-azimuth`, reruns
 
 ### Evaluate or Optimize Network
 
-The backend first returns network scoring. The browser then simulates selected cells sequentially and merges their ray collections for map rendering.
+The backend evaluates network scoring in the prepared selected-cell domain. `optimize-network` retains the exact entering configuration and its baseline stats in the response, then returns the feasible Pareto frontier; the browser simulates the displayed optimized cells sequentially and merges their ray collections for map rendering. Priority changes re-rank the stored frontier locally.
+
+### Explain One Network Cell
+
+Per-cell explanation is a lazy follow-up to an optimization result. The browser sends the retained baseline, the currently inspected Pareto solution, and the selected cell only after the user clicks `Explain`. The backend reuses the stored actual metrics, prepares the same fixed target domain and denominators, then performs one counterfactual RF evaluation with only that cell restored to baseline. Raw results are cached by optimization run, solution, and cell; priority-only changes recompute score interpretation locally, while RF-affecting configuration, domain, selection, and hard-constraint changes clear the explanation cache. No all-cell batch or Pareto rerun is performed.
 
 ### Analyze Interference
 

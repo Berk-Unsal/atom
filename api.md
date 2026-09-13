@@ -616,6 +616,34 @@ If a domain has no relevant entities for an objective, that objective is reporte
 
 The response also includes `stats.objective_breakdown` for compatibility and `objective_status`, where each objective exposes availability, configured priority, effective weight, and nullable utility/contribution metadata. The contribution sum equals `stats.composite_score` within floating-point tolerance for available objectives. Existing feasibility constraints remain independent of priorities: an infeasible candidate is excluded from the Pareto frontier and cannot be returned as the optimized recommendation. The Pareto frontier is based on available objective utilities rather than weighted composite score; changing priorities can re-rank the stored feasible frontier without another RF evaluation when those metrics are available. Up to 25 feasible non-dominated evaluated azimuth sets are returned. This version adjusts azimuth only.
 
+`POST /api/optimize-network` additionally returns `baseline`, an authoritative compact snapshot of the exact normalized selected-cell configuration that entered that optimization execution. It includes each cell's coordinates, original azimuth, resolved RF profile, request-level RF parameters, prepared-domain raw metrics/utilities, and baseline constraint status. It also returns `optimization_run_id`, a stable identity for RF-affecting state that excludes objective priorities. Baseline and Pareto statistics are evaluated through the same prepared domain, so their demand denominator, residential denominator, propagation-reach maximum, overlap semantics, and objective availability are directly comparable. The frontend can re-score both sides with new effective priorities from the stored frontier without repeating RF evaluation. `POST /api/evaluate-network` does not claim an optimization baseline.
+
+### Explain One Pareto Cell
+
+**Endpoint**: `POST /api/explain-network-cell`
+
+The endpoint is a lazy, one-cell follow-up to `POST /api/optimize-network`. Send the retained `baseline`, the currently inspected `solution`, its `solution_id`, the changed `cell_id`, and the current `optimization` priorities/constraints. `run_id` and `optimization_domain` should be copied from the optimization response when available:
+
+```json
+{
+  "run_id": "network-opt-7d6e3b1f0a2c",
+  "solution_id": "90.0,0.0",
+  "cell_id": "101",
+  "baseline": { "cell_configurations": [], "parameters": {}, "stats": {}, "constraints_satisfied": true },
+  "solution": { "id": "90.0,0.0", "towers": [{ "id": "101", "azimuth_deg": 90 }, { "id": "102", "azimuth_deg": 0 }], "stats": {} },
+  "optimization": { "objectives": [{ "id": "demand", "weight": 80 }, { "id": "overlap", "weight": 40 }], "constraints": {} },
+  "optimization_domain": { "source": "selected_cell_radius_union", "selected_cell_count": 2, "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m", "relevant_building_entities": 0, "relevant_demand_entities": 0, "relevant_residential_entities": 0 }
+}
+```
+
+This is an illustrative shape, not a runnable payload: the abbreviated objects stand for the complete baseline and solution snapshots returned by `optimize-network`. The backend evaluates the selected solution's stored raw metrics as `actual`, then evaluates exactly one network with only the requested cell restored to its baseline azimuth as `counterfactual`. Every other cell, ray count, RF profile, denominator, target domain, and hard-constraint rule remains unchanged. It does not rerun optimization or rebuild a Pareto frontier.
+
+The response returns the cell ID and both azimuths, raw actual/counterfactual metrics, selected-minus-counterfactual deltas for served demand, residential coverage, propagation reach, overlap buildings, overlap ratio, and covered units, plus feasibility and any counterfactual violations. An infeasible counterfactual remains inspectable; infeasibility is not represented as a zero preference score. Propagation reach and score are higher-is-better. Overlap buildings and overlap ratio are lower-is-better, so a positive overlap delta is a regression. Covered units are informational unless a separate product rule gives them preference semantics.
+
+The frontend caches raw explanations by optimization run, solution ID, and cell ID. Priority-only changes reuse that RF result and recompute the composite score under the new effective weights locally. RF-affecting changes—including cell or baseline configuration, technology/frequency, power, radius, beam width, ray count, propagation settings, target domain, network selection, or hard constraints—clear the explanation state/cache. Explanations are requested only after the user clicks `Explain`; unchanged cells are labeled `Unchanged from baseline` and do not issue a counterfactual request.
+
+This is a conditional marginal comparison, not causal attribution, an independent cell contribution, or an additive decomposition. Cell interactions remain, and the comparison does not explain why a particular azimuth was chosen over nearby alternatives.
+
 ---
 
 ## Planning Product Endpoints

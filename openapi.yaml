@@ -222,6 +222,21 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
+  /api/explain-network-cell:
+    post:
+      summary: Explain one selected Pareto cell with a baseline counterfactual
+      description: Reuses the retained selected-solution metrics and evaluates exactly one counterfactual network in which only the requested cell is restored to its optimization baseline. The fixed optimization domain, denominators, RF settings, and hard-constraint semantics are preserved; objective priorities affect score interpretation but do not trigger another RF evaluation.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkCellExplanationRequest" } } } }
+      responses:
+        "200":
+          description: Selected and baseline-reverted raw metrics, deltas, direction-aware score, and feasibility evidence for one cell
+          content: { application/json: { schema: { $ref: "#/components/schemas/NetworkCellExplanationResponse" } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/interference:
     post:
       summary: Analyze 4G or 5G RSRP, SINR, RSRQ, and RSSI
@@ -629,6 +644,34 @@ components:
         objectives: { $ref: "#/components/schemas/NetworkOptimizationUtilities" }
         objective_breakdown: { $ref: "#/components/schemas/NetworkOptimizationBreakdown" }
         objective_status: { type: object, additionalProperties: { $ref: "#/components/schemas/OptimizationObjectiveStatus" } }
+    NetworkOptimizationCellConfiguration:
+      type: object
+      required: [id, tower_lon, tower_lat, azimuth_deg, rf_profile]
+      properties:
+        id: { type: string }
+        tower_lon: { type: number, minimum: -180, maximum: 180 }
+        tower_lat: { type: number, minimum: -90, maximum: 90 }
+        azimuth_deg: { type: number, minimum: 0, maximum: 360 }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
+    NetworkOptimizationParameters:
+      type: object
+      required: [rays, radius_m, frequency_ghz, tx_power_dbm, beam_width]
+      properties:
+        rays: { type: integer, minimum: 0 }
+        radius_m: { type: number, minimum: 0 }
+        frequency_ghz: { type: number, minimum: 0 }
+        tx_power_dbm: { type: number, minimum: 0 }
+        beam_width: { type: number, minimum: 0 }
+        calibration_offset_db: { type: number }
+    NetworkOptimizationSolution:
+      type: object
+      required: [cell_configurations, parameters, stats, constraints_satisfied]
+      properties:
+        cell_configurations: { type: array, items: { $ref: "#/components/schemas/NetworkOptimizationCellConfiguration" } }
+        parameters: { $ref: "#/components/schemas/NetworkOptimizationParameters" }
+        stats: { $ref: "#/components/schemas/NetworkOptimizationStats" }
+        constraints_satisfied: { type: boolean }
+        violations: { type: array, items: { type: string } }
     OptimizationOutcome:
       type: object
       properties:
@@ -641,6 +684,7 @@ components:
         objective_score: { type: number, description: Deprecated legacy aggregate retained for compatibility. }
         composite_score: { type: number, minimum: 0, maximum: 1 }
         score: { type: number, minimum: 0, maximum: 100 }
+        recommended_solution_id: { type: string, description: Stable ID of the current top-ranked Pareto solution. }
         constraints_satisfied: { type: boolean }
         recommended: { type: boolean }
         violations: { type: array, items: { type: string } }
@@ -655,6 +699,7 @@ components:
     NetworkParetoSolution:
       type: object
       properties:
+        id: { type: string, description: Stable deterministic ID derived from the cell azimuth set. }
         towers: { type: array, items: { type: object, required: [id, azimuth_deg], properties: { id: { type: string }, azimuth_deg: { type: number } } } }
         stats: { $ref: "#/components/schemas/NetworkOptimizationStats" }
         objective_score: { type: number, description: Deprecated legacy aggregate retained for compatibility. }
@@ -667,9 +712,71 @@ components:
       properties:
         optimized_towers: { type: array, items: { $ref: "#/components/schemas/NetworkOptimizedTower" } }
         stats: { $ref: "#/components/schemas/NetworkOptimizationStats" }
+        optimization_run_id: { type: string, description: Stable identity for RF-affecting optimization state; objective priorities are excluded so raw explanations can survive priority-only re-ranking. }
         optimization_domain: { $ref: "#/components/schemas/OptimizationDomainMetadata" }
         optimization: { $ref: "#/components/schemas/OptimizationOutcome" }
         pareto_frontier: { type: array, items: { $ref: "#/components/schemas/NetworkParetoSolution" } }
+        baseline: { $ref: "#/components/schemas/NetworkOptimizationSolution", description: Exact selected-cell configuration and prepared-domain metrics entering optimize-network. }
+    NetworkCellExplanationRequest:
+      type: object
+      required: [solution_id, cell_id, baseline, solution]
+      properties:
+        run_id: { type: string, description: Optimization run identity returned by optimize-network. }
+        solution_id: { type: string, description: Stable ID of the currently inspected Pareto solution. }
+        cell_id: { type: string, description: ID of the one changed cell to restore to baseline. }
+        baseline: { $ref: "#/components/schemas/NetworkOptimizationSolution", description: Authoritative baseline snapshot from the same optimize-network response. }
+        solution: { $ref: "#/components/schemas/NetworkParetoSolution", description: Currently inspected selected Pareto solution; it is not silently replaced by the recommended solution. }
+        optimization: { $ref: "#/components/schemas/OptimizationConfig", description: Current objective priorities and hard constraints used to interpret the explanation. }
+        optimization_domain: { $ref: "#/components/schemas/OptimizationDomainMetadata", description: Retained domain metadata. When supplied, it must match the reconstructed baseline context. }
+    NetworkCellExplanationCell:
+      type: object
+      required: [id, baseline_azimuth_deg, selected_azimuth_deg]
+      properties:
+        id: { type: string }
+        baseline_azimuth_deg: { type: number, minimum: 0, maximum: 360 }
+        selected_azimuth_deg: { type: number, minimum: 0, maximum: 360 }
+    NetworkCellExplanationSide:
+      type: object
+      required: [raw_metrics, constraints_satisfied]
+      properties:
+        raw_metrics: { $ref: "#/components/schemas/NetworkOptimizationRawMetrics" }
+        constraints_satisfied: { type: boolean }
+        violations: { type: array, items: { type: string } }
+    NetworkCellExplanationDelta:
+      type: object
+      required: [served_demand_weight, residential_covered, propagation_reach_score, propagation_reach_ratio, overlap_buildings, overlap_ratio, covered_units]
+      properties:
+        served_demand_weight: { type: number, description: Selected raw metric minus the baseline-reverted raw metric. }
+        residential_covered: { type: integer, description: Selected raw metric minus the baseline-reverted raw metric. }
+        propagation_reach_score: { type: number, description: Selected raw metric minus the baseline-reverted raw metric. }
+        propagation_reach_ratio: { type: number, description: Selected utility minus the baseline-reverted utility; present as percentage points in the UI. }
+        overlap_buildings: { type: integer, description: Selected raw metric minus the baseline-reverted raw metric; lower is preferred. }
+        overlap_ratio: { type: number, description: Selected raw metric minus the baseline-reverted raw metric; lower is preferred and positive values are worse. }
+        covered_units: { type: integer, description: Selected raw metric minus the baseline-reverted raw metric; informational only. }
+    NetworkCellExplanationScore:
+      type: object
+      required: [actual, counterfactual, delta, effective_weights]
+      properties:
+        actual: { type: number, minimum: 0, maximum: 100, description: Composite score under the supplied priorities. }
+        counterfactual: { type: number, minimum: 0, maximum: 100, description: Composite score under the supplied priorities; feasibility is reported separately. }
+        delta: { type: number, description: Actual minus counterfactual composite score. }
+        effective_weights: { type: object, additionalProperties: { type: number, minimum: 0, maximum: 1 } }
+    NetworkCellExplanationResponse:
+      type: object
+      required: [available, unchanged, run_id, solution_id, cell, actual, counterfactual, delta, score, objective_status, optimization_domain, limitations]
+      properties:
+        available: { type: boolean }
+        unchanged: { type: boolean, description: True when the selected cell already matches its baseline azimuth; no RF counterfactual is evaluated. }
+        run_id: { type: string }
+        solution_id: { type: string }
+        cell: { $ref: "#/components/schemas/NetworkCellExplanationCell" }
+        actual: { $ref: "#/components/schemas/NetworkCellExplanationSide", description: Stored raw metrics for the inspected selected solution. }
+        counterfactual: { $ref: "#/components/schemas/NetworkCellExplanationSide", description: One evaluation with only the requested cell restored to baseline; it remains inspectable when infeasible. }
+        delta: { $ref: "#/components/schemas/NetworkCellExplanationDelta" }
+        score: { $ref: "#/components/schemas/NetworkCellExplanationScore" }
+        objective_status: { type: object, additionalProperties: { $ref: "#/components/schemas/OptimizationObjectiveStatus" } }
+        optimization_domain: { $ref: "#/components/schemas/OptimizationDomainMetadata" }
+        limitations: { type: array, items: { type: string }, description: Explicit conditional-comparison limitations; this is not causal attribution or an additive decomposition. }
     InterferenceRequest:
       allOf:
         - { $ref: "#/components/schemas/NetworkRequest" }

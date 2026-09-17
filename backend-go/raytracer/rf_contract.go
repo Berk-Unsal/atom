@@ -205,15 +205,22 @@ func diagnosticRFContract(profile *CellRFProfile, calibrationOffsetDB float64) R
 	contract := canonicalRFContract(profile, calibrationOffsetDB)
 	contract.ModelID = DiagnosticPathModelID
 	contract.ModelDescription = CanonicalPathProfileScope
+	contract.ModelFamily = "P.526-aligned single-edge diffraction diagnostic"
+	contract.Scenario = "point-to-point known-obstruction comparison"
+	contract.ModelStatus = "diagnostic only"
+	contract.Reference = P526SingleEdgeReference
+	contract.Applicability = "known explicit/levels-derived obstruction geometry, valid single-edge distances, and frequency above the P.526 single-edge lower reference scope; 140 GHz is research-only"
+	contract.FallbackModelID = ""
+	contract.FallbackPolicy = "unavailable diagnostic geometry is reported explicitly; no canonical propagation fallback is applied"
 	contract.PropagationDimensions = "point-to-point vertical terrain/building profile"
 	contract.UsesTerrain = true
 	contract.UsesBuildingHeight = true
 	contract.UsesDiffraction = true
 	contract.WallModel = "user-selected diagnostic material/screen or penetration sensitivity"
-	contract.LinkBudgetEquation = "P_rx = P_tx + G_tx - L_profile (FSPL + pattern + system + selected diagnostic/environment terms + signed calibration)"
+	contract.LinkBudgetEquation = "diagnostic P_rx = configured link terms - (FSPL + explicit P.526-aligned single-edge loss); canonical UMa is evaluated separately"
 	contract.AbsoluteTerms = []string{"transmit power", "antenna gain"}
 	contract.RelativeAttenuationTerms = []string{"horizontal/vertical pattern", "system loss", "selected wall, clutter, vegetation, gas, rain, and shadow terms"}
-	contract.PropagationTerms = []string{"FSPL", "optional terrain/building profile", "optional single-knife-edge diagnostic term"}
+	contract.PropagationTerms = []string{"FSPL baseline", "known-height terrain/building obstruction ledger", "P.526-16 §4.1 equation (26) v parameter", "equation (31) single-edge loss approximation"}
 	contract.PropagationReachDefinition = "not used by the point-to-point diagnostic workflow"
 	contract.SurfaceDefinition = "not used by the point-to-point diagnostic workflow"
 	contract.EndpointScope = "advanced point-to-point diagnostic workflow; does not alter canonical network RF"

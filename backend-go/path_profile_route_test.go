@@ -28,7 +28,7 @@ func TestPathProfileRouteReturnsInspectableProfile(t *testing.T) {
 	if response.Code != http.StatusOK {
 		t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
 	}
-	for _, expected := range [][]byte{[]byte(`"classification"`), []byte(`"loss_budget"`), []byte(`"applicability"`), []byte(`"samples"`)} {
+	for _, expected := range [][]byte{[]byte(`"classification"`), []byte(`"loss_budget"`), []byte(`"applicability"`), []byte(`"samples"`), []byte(`"obstruction_ledger"`), []byte(`"diffraction_diagnostic"`), []byte(`"canonical_comparison"`)} {
 		if !bytes.Contains(response.Body.Bytes(), expected) {
 			t.Fatalf("body missing %s: %s", expected, response.Body.String())
 		}

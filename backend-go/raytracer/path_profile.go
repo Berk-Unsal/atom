@@ -90,6 +90,8 @@ type PathObstruction struct {
 	HeightAboveLOSM float64 `json:"height_above_los_m"`
 	BuildingID      string  `json:"building_id,omitempty"`
 	Material        string  `json:"material,omitempty"`
+	HeightSource    string  `json:"height_source,omitempty"`
+	TerrainStatus   string  `json:"terrain_status,omitempty"`
 }
 
 type LossComponent struct {
@@ -123,18 +125,23 @@ type ModelApplicability struct {
 }
 
 type PathProfileResponse struct {
-	DistanceM           float64             `json:"distance_m"`
-	Classification      string              `json:"classification"`
-	MinimumClearanceM   float64             `json:"minimum_clearance_m"`
-	MinimumFresnelRatio float64             `json:"minimum_fresnel_ratio"`
-	DominantObstruction *PathObstruction    `json:"dominant_obstruction,omitempty"`
-	Samples             []PathProfileSample `json:"samples"`
-	Terrain             TerrainMetadata     `json:"terrain"`
-	LossBudget          PathLossBudget      `json:"loss_budget"`
-	Applicability       ModelApplicability  `json:"applicability"`
-	RFProfile           CellRFProfile       `json:"rf_profile"`
-	Fidelity            PropagationFidelity `json:"fidelity"`
-	RFContract          RFContractMetadata  `json:"rf_contract"`
+	DistanceM             float64                       `json:"distance_m"`
+	Classification        string                        `json:"classification"`
+	GeometricLOS          bool                          `json:"geometric_los"`
+	MinimumClearanceM     float64                       `json:"minimum_clearance_m"`
+	MinimumFresnelRatio   float64                       `json:"minimum_fresnel_ratio"`
+	FresnelClearance      FresnelClearanceDiagnostics   `json:"fresnel_clearance"`
+	DominantObstruction   *PathObstruction              `json:"dominant_obstruction,omitempty"`
+	ObstructionLedger     []DiffractionEdgeCandidate    `json:"obstruction_ledger"`
+	DiffractionDiagnostic DiffractionDiagnostic         `json:"diffraction_diagnostic"`
+	CanonicalComparison   CanonicalDiagnosticComparison `json:"canonical_comparison"`
+	Samples               []PathProfileSample           `json:"samples"`
+	Terrain               TerrainMetadata               `json:"terrain"`
+	LossBudget            PathLossBudget                `json:"loss_budget"`
+	Applicability         ModelApplicability            `json:"applicability"`
+	RFProfile             CellRFProfile                 `json:"rf_profile"`
+	Fidelity              PropagationFidelity           `json:"fidelity"`
+	RFContract            RFContractMetadata            `json:"rf_contract"`
 }
 
 func (input PathProfileRequestInput) ToRequest() PathProfileRequest {
@@ -291,11 +298,12 @@ func AnalyzePathProfileContext(ctx context.Context, request PathProfileRequest, 
 			heightAboveLOS := -clearance
 			if heightAboveLOS > maxHeightAboveLOS {
 				kind := "terrain"
-				obstruction := &PathObstruction{Kind: kind, DistanceM: round1(distanceM), ClearanceM: round1(clearance), HeightAboveLOSM: round1(math.Max(heightAboveLOS, 0))}
+				obstruction := &PathObstruction{Kind: kind, DistanceM: round1(distanceM), ClearanceM: round1(clearance), HeightAboveLOSM: round1(math.Max(heightAboveLOS, 0)), HeightSource: "terrain_provider", TerrainStatus: terrainMeta.Status}
 				if building != nil {
 					obstruction.Kind = "building"
 					obstruction.BuildingID = building.ID
 					obstruction.Material = building.Material
+					obstruction.HeightSource = heightSourceForBuilding(building)
 				}
 				dominant = obstruction
 				maxHeightAboveLOS = heightAboveLOS
@@ -321,26 +329,44 @@ func AnalyzePathProfileContext(ctx context.Context, request PathProfileRequest, 
 	if math.IsInf(minimumFresnelRatio, 1) {
 		minimumFresnelRatio = 1
 	}
-	classification := "line-of-sight"
-	if maxHeightAboveLOS > 0 && dominant != nil {
-		classification = dominant.Kind + "-obstructed"
-	} else if minimumFresnelRatio < 0.6 {
-		classification = "fresnel-zone-obstructed"
-	}
-	lossBudget := pathLossBudget(request, distance, bearing, dominant, obstructingBuildings)
-	if dominant != nil && dominant.HeightAboveLOSM <= 0 && classification == "line-of-sight" {
-		dominant = nil
-	}
 	if terrain == nil {
 		txTerrainAvailable, rxTerrainAvailable = false, false
 	}
 	if !txTerrainAvailable || !rxTerrainAvailable {
 		terrainMeta.Limitations = appendUniqueString(terrainMeta.Limitations, "one or both endpoints fall outside valid terrain pixels; missing terrain remains unavailable and the relative profile reference is not measured elevation")
 	}
+	pathGeometry, err := buildPropagationPathGeometryContextWithOptions(ctx, request.Transmitter, request.Receiver, buildings, propagationPathGeometryOptions{
+		Terrain: terrain, TxHeightM: txElevation, RxHeightM: rxElevation,
+	})
+	if err != nil {
+		return PathProfileResponse{}, err
+	}
+	if dominant != nil && dominant.HeightAboveLOSM <= 0 {
+		dominant = nil
+	}
+	geometricLOS := !(maxHeightAboveLOS > 0 && dominant != nil)
+	classification := "line-of-sight"
+	if !geometricLOS && dominant != nil {
+		classification = dominant.Kind + "-obstructed"
+	}
+	diffractionDiagnostic := buildDiffractionDiagnostic(request, request.ModelProfile, terrain, terrainMeta, buildings, pathGeometry, samples, txElevation, rxElevation, distance, bearing)
+	canonicalComparison := canonicalDiagnosticComparison(request, buildings, distance, bearing, &diffractionDiagnostic)
+	lossBudget := pathLossBudget(request, distance, bearing, dominant, obstructingBuildings, &diffractionDiagnostic)
+	fresnelStatus := "clear"
+	if minimumFresnelRatio < 0.6 {
+		fresnelStatus = "concern"
+	}
 	return PathProfileResponse{
-		DistanceM: round1(distance), Classification: classification,
+		DistanceM: round1(distance), Classification: classification, GeometricLOS: geometricLOS,
 		MinimumClearanceM: round1(minimumClearance), MinimumFresnelRatio: round2(minimumFresnelRatio),
-		DominantObstruction: dominant, Samples: samples, Terrain: terrainMeta, LossBudget: lossBudget,
+		FresnelClearance: FresnelClearanceDiagnostics{
+			MinimumRatio: round2(minimumFresnelRatio), ThresholdRatio: 0.6, Status: fresnelStatus,
+			ClassificationIndependent: true,
+			Note:                      "Fresnel clearance is a geometry diagnostic and does not change geometric LOS/NLOS classification or canonical UMa selection.",
+		},
+		DominantObstruction: dominant, ObstructionLedger: diffractionDiagnostic.Geometry.Candidates,
+		DiffractionDiagnostic: diffractionDiagnostic, CanonicalComparison: canonicalComparison,
+		Samples: samples, Terrain: terrainMeta, LossBudget: lossBudget,
 		Applicability: PathModelApplicability(request.ModelProfile, request.RFProfile.FrequencyGHz), RFProfile: request.RFProfile, Fidelity: request.Fidelity,
 		RFContract: diagnosticRFContract(&request.RFProfile, request.CalibrationOffsetDB),
 	}, nil
@@ -365,14 +391,16 @@ func PathModelApplicability(profile string, frequencyGHz float64) ModelApplicabi
 	return result
 }
 
-func pathLossBudget(request PathProfileRequest, distance, bearing float64, dominant *PathObstruction, buildings map[string]*BuildingFootprint) PathLossBudget {
+func pathLossBudget(request PathProfileRequest, distance, bearing float64, dominant *PathObstruction, buildings map[string]*BuildingFootprint, diagnostic *DiffractionDiagnostic) PathLossBudget {
 	profile := request.RFProfile
 	horizontalOffset := smallestAngleDifference(bearing, profile.EffectiveAzimuth(request.AzimuthDeg))
 	freeSpace := FreeSpacePathLossMetersGHz(profile.SlantDistanceMeters(distance), profile.FrequencyGHz)
 	pattern := profile.PatternAttenuationDB(distance, horizontalOffset)
 	diffraction := 0.0
-	if request.Fidelity.DiffractionModel == "single-knife-edge" && request.Fidelity.BuildingLossMode != "penetration" && dominant != nil {
-		diffraction = KnifeEdgeLossDB(dominant.HeightAboveLOSM, dominant.DistanceM, distance-dominant.DistanceM, profile.FrequencyGHz)
+	diffractionEnabled := false
+	if diagnostic != nil && diagnostic.Available && diagnostic.DiffractionLossDB != nil {
+		diffraction = *diagnostic.DiffractionLossDB
+		diffractionEnabled = true
 	}
 	wallLoss := 0.0
 	materials := make([]string, 0, len(buildings))
@@ -402,7 +430,7 @@ func pathLossBudget(request PathProfileRequest, distance, bearing float64, domin
 		{ID: "antenna-pattern", Label: "Antenna pattern", LossDB: round2(pattern), Enabled: pattern != 0, Method: profile.HorizontalPatternID + " + " + profile.VerticalPatternID},
 		{ID: "system", Label: "System loss", LossDB: round2(profile.SystemLossDB), Enabled: profile.SystemLossDB != 0, Method: "per-cell RF profile"},
 		{ID: "wall-penetration", Label: "Material penetration", LossDB: round2(wallLoss), Enabled: request.Fidelity.BuildingLossMode == "penetration" && len(buildings) > 0, Method: "planning material multiplier", Reference: "ITU-R P.2040", Note: strings.Join(materials, ", ")},
-		{ID: "diffraction", Label: "Knife-edge diffraction", LossDB: round2(diffraction), Enabled: request.Fidelity.DiffractionModel == "single-knife-edge" && diffraction > 0, Method: "single dominant edge", Reference: "ITU-R P.526"},
+		{ID: "diffraction", Label: "Knife-edge diffraction", LossDB: round2(diffraction), Enabled: diffractionEnabled, Method: "P.526-aligned selected edge", Reference: P526SingleEdgeReference, Note: "diagnostic only; never summed with canonical UMa NLOS"},
 		{ID: "clutter", Label: "Clutter", LossDB: round2(clutter), Enabled: request.Fidelity.ClutterSpecificAttenuationDBPerKM > 0, Method: "user-supplied dB/km sensitivity"},
 		{ID: "vegetation", Label: "Vegetation", LossDB: round2(vegetation), Enabled: request.Fidelity.VegetationDepthM > 0 && request.Fidelity.VegetationSpecificAttenuationDBPerM > 0, Method: "user-supplied depth × dB/m sensitivity"},
 		{ID: "atmospheric-gas", Label: "Atmospheric gas", LossDB: round2(gas), Enabled: request.Fidelity.GasSpecificAttenuationDBPerKM > 0, Method: "user-supplied specific attenuation", Reference: "ITU-R P.676"},
@@ -415,20 +443,8 @@ func pathLossBudget(request PathProfileRequest, distance, bearing float64, domin
 	return PathLossBudget{
 		Components: components, TotalMedianLossDB: round2(total), RxDBmP50: round2(rxP50),
 		RxDBmP90Reliability: round2(rxP50 - margin), RxDBmUpper90: round2(rxP50 + margin), ShadowSigmaDB: round2(request.Fidelity.ShadowSigmaDB),
-		Definition: "P50 is the median planning estimate; p90_reliability is the one-sided 90% lower received-power bound under the selected zero-mean Gaussian shadow sigma.",
+		Definition: "P50 is the isolated path-profile planning estimate; this budget is diagnostic only and never canonical network RF.",
 	}
-}
-
-func KnifeEdgeLossDB(heightAboveLOS, distanceFromTx, distanceToRx, frequencyGHz float64) float64 {
-	if heightAboveLOS <= 0 || distanceFromTx <= 0 || distanceToRx <= 0 || frequencyGHz <= 0 {
-		return 0
-	}
-	wavelength := 0.299792458 / frequencyGHz
-	v := heightAboveLOS * math.Sqrt(2*(distanceFromTx+distanceToRx)/(wavelength*distanceFromTx*distanceToRx))
-	if v <= -0.78 {
-		return 0
-	}
-	return math.Max(0, 6.9+20*math.Log10(math.Sqrt(math.Pow(v-0.1, 2)+1)+v-0.1))
 }
 
 func MaterialPenetrationLossDB(material string, frequencyGHz float64) float64 {

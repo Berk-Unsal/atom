@@ -2889,6 +2889,148 @@ a:focus-visible {
   line-height: 1.4;
 }
 
+.diffraction-diagnostic {
+  display: grid;
+  gap: 9px;
+  padding: 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background: #f8fbfa;
+}
+
+.diffraction-diagnostic.unavailable {
+  border-color: #f0c4c4;
+  background: #fffafa;
+}
+
+.diagnostic-section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 5px 10px;
+  color: var(--teal-dark);
+  font-size: 0.69rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.diagnostic-section-heading small {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.diagnostic-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.diagnostic-metrics span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 7px;
+  border-bottom: 1px solid var(--line);
+}
+
+.diagnostic-metrics span:nth-child(odd) {
+  border-right: 1px solid var(--line);
+}
+
+.diagnostic-metrics span:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.diagnostic-metrics small,
+.diagnostic-limitations,
+.diffraction-ledger small {
+  color: var(--subtle);
+  font-size: 0.68rem;
+  line-height: 1.3;
+}
+
+.diagnostic-metrics strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 0.74rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diagnostic-limitations {
+  margin: 0;
+}
+
+.diffraction-ledger,
+.profile-loss-details {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.diffraction-ledger summary,
+.profile-loss-details summary {
+  color: var(--teal-dark);
+  cursor: pointer;
+  font-size: 0.71rem;
+  font-weight: 820;
+}
+
+.diffraction-ledger[open] summary,
+.profile-loss-details[open] summary {
+  margin-bottom: 7px;
+}
+
+.diffraction-ledger-table {
+  display: grid;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.diffraction-ledger-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 1.2fr) minmax(92px, 1fr) minmax(72px, 0.8fr) minmax(54px, 0.6fr);
+  gap: 7px;
+  min-width: 360px;
+  padding: 7px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.diffraction-ledger-row:last-child {
+  border-bottom: 0;
+}
+
+.diffraction-ledger-row.heading {
+  color: var(--subtle);
+  background: #f8fbfa;
+  font-size: 0.62rem;
+  font-weight: 820;
+  text-transform: uppercase;
+}
+
+.diffraction-ledger-row span {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.diffraction-ledger-row strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 0.69rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .loss-budget {
   display: grid;
   border-top: 1px solid var(--line);

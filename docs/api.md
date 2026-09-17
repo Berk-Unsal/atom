@@ -35,7 +35,7 @@ Most responses are **JSON**. Explicit GIS export representations use GeoJSON, CS
 - `GET /api/buildings` and `GET /api/towers` return raw GeoJSON; bounded clients should prefer `/api/collections/buildings/items`
 - `GET /api/collections/buildings/items` returns viewport-bounded building GeoJSON or CSV
 - `POST /api/analyze-sector` returns `{ simulation, coverage_gaps }` from one shared ray-profile computation
-- `POST /api/path-profile` returns an inspectable 2.5D vertical profile and component loss budget
+- `POST /api/path-profile` returns an inspectable 2.5D vertical profile, geometric/Fresnel evidence, an obstruction ledger, a P.526-aligned diffraction diagnostic, and an alternative canonical UMa comparison
 - `POST /api/coverage-surface` returns a compact regular raster, isolines, statistics, and model assumptions, or an export representation
 - `POST /api/simulate` returns `{ geojson, stats, rf_profile, rf_contract }`
 - `POST /api/coverage-gaps` returns `{ geojson, stats, rf_contract }`
@@ -310,7 +310,7 @@ The standalone `/api/simulate` and `/api/coverage-gaps` endpoints remain availab
 }
 ```
 
-The response contains sampled terrain/building elevations, endpoint height above ground, direct LOS and 60% Fresnel classification, the dominant obstruction, one selected knife-edge approximation, component losses, P50 and shadow-sensitivity bounds, and an applicability statement. It carries `rf_contract.model_id: "path-profile-diagnostic-v1"` to make the diagnostic scope explicit; it does not alter canonical network RF. `terrain-profile` accepts 0.03–6 GHz, `urban-short-range` accepts 0.3–100 GHz, and `research-sub-thz` is explicitly outside those ITU-R profile ranges.
+The response contains sampled terrain/building elevations, endpoint height above ground, geometric LOS, separate 60% Fresnel evidence, a complete entry/exit obstruction ledger, the P.526-aligned `p526-single-edge-v1` diagnostic, canonical UMa comparison where applicable, component losses, P50 and shadow-sensitivity bounds, and an applicability statement. The diagnostic requires explicit or levels-derived obstruction height; generic fallback-height candidates return `obstruction_height_unavailable`. It carries `rf_contract.model_id: "path-profile-diagnostic-v1"` to make the isolated scope explicit; canonical UMa NLOS and FSPL plus explicit diffraction are alternative calculations and are never summed. It does not alter canonical network RF. `terrain-profile` accepts 0.03–6 GHz, `urban-short-range` accepts 0.3–100 GHz, and `research-sub-thz` is explicitly outside those ITU-R profile ranges; a 140 GHz knife-edge result is mathematical research diagnostic only.
 
 COG/GeoTIFF support is limited to north-up EPSG:4326, one-band integer/float samples, none/DEFLATE compression, and supported integer predictors. The response lists these limitations.
 

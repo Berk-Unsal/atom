@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="P.526-aligned single-edge
+diffraction reference math, obstruction ledgers, known-height
+applicability, canonical comparison, and diagnostic boundaries." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4F.2 Diffraction
+Diagnostic | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4F.2
+Diffraction Diagnostic page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#reference-basis" id="toc-reference-basis">Reference
+      basis</a></li>
+      <li><a href="#geometry-contract"
+      id="toc-geometry-contract">Geometry contract</a></li>
+      <li><a href="#height-and-terrain-semantics"
+      id="toc-height-and-terrain-semantics">Height and terrain
+      semantics</a></li>
+      <li><a href="#diagnostic-result-and-canonical-comparison"
+      id="toc-diagnostic-result-and-canonical-comparison">Diagnostic
+      result and canonical comparison</a></li>
+      <li><a href="#controlled-and-ankara-evidence"
+      id="toc-controlled-and-ankara-evidence">Controlled and Ankara
+      evidence</a></li>
+      <li><a href="#integration-boundaries"
+      id="toc-integration-boundaries">Integration boundaries</a></li>
+      <li><a href="#deferred-work-and-limitations"
+      id="toc-deferred-work-and-limitations">Deferred work and
+      limitations</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Model reference</span>
+        <h1>Concept 4F.2 Diffraction Diagnostic</h1>
+        <p>P.526-aligned single-edge diffraction reference math,
+obstruction ledgers, known-height applicability, canonical comparison,
+and diagnostic boundaries.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4f2-diffraction-diagnostic.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Concept 4F.2 adds an isolated point-to-point diffraction diagnostic.
+It answers a deliberately narrow question:</p>
+<blockquote>
+<p>If this link were represented as free-space propagation plus explicit
+diffraction, what loss would the known obstruction geometry imply?</p>
+</blockquote>
+<p>The result is comparative evidence, not a new network propagation
+branch. It does not modify <code>urban_short_range</code>, network
+optimization, received-signal surfaces, interference, or building-entry
+analysis.</p>
+<h2 id="reference-basis">Reference basis</h2>
+<p>The implementation is a declared subset aligned with <a
+href="https://www.itu.int/rec/R-REC-P.526-16-202511-I/en">ITU-R P.526-16
+(11/2025)</a>, section 4.1, Single knife-edge obstacle:</p>
+<ul>
+<li><p>Equation (26) supplies the signed knife-edge parameter:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo>=</mo><mi>h</mi><msqrt><mfrac><mrow><mn>2</mn><mo stretchy="false" form="prefix">(</mo><msub><mi>d</mi><mn>1</mn></msub><mo>+</mo><msub><mi>d</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mi>λ</mi><msub><mi>d</mi><mn>1</mn></msub><msub><mi>d</mi><mn>2</mn></msub></mrow></mfrac></msqrt></mrow><annotation encoding="application/x-tex">v = h\sqrt{\frac{2(d_1+d_2)}{\lambda d_1d_2}}</annotation></semantics></math></p>
+<p><code>h</code> is the obstruction-top height above the straight Tx–Rx
+line. It is negative when the top is below that line. <code>d1</code>
+and <code>d2</code> are the distances from the edge to the two
+endpoints, and all quantities use self-consistent units.</p></li>
+<li><p>Equation (30) is the Fresnel-integral loss definition.</p></li>
+<li><p>Equation (31) is the implemented approximation for
+<code>v &gt; -0.78</code>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>J</mi><mo stretchy="false" form="prefix">(</mo><mi>v</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>6.9</mn><mo>+</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><mrow><mo stretchy="false" form="prefix">(</mo><mi>v</mi><mo>−</mo><mn>0.1</mn><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mo>+</mo><mn>1</mn></mrow></msqrt><mo>+</mo><mi>v</mi><mo>−</mo><mn>0.1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.222em"></mspace><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">B</mi></mrow></mrow><annotation encoding="application/x-tex">J(v) = 6.9 + 20\log_{10}\left(\sqrt{(v-0.1)^2+1}+v-0.1\right)\ \mathrm{dB}</annotation></semantics></math></p>
+<p>At <code>v &lt;= -0.78</code>, the diagnostic reports zero loss.
+A.T.O.M. records the exact equation as the reference basis but does not
+claim a full Fresnel-integral implementation.</p></li>
+</ul>
+<p>The stable diagnostic identity is <code>p526-single-edge-v1</code>;
+the surrounding response remains under the isolated
+<code>path-profile-diagnostic-v1</code> RF contract. The preferred
+description is “P.526-aligned single-edge diagnostic,” not “P.526
+propagation model.” P.526-16 states that the single-edge data are mainly
+for frequencies above 30 MHz; A.T.O.M. permits a mathematical 140 GHz
+research diagnostic but marks it research-only.</p>
+<h2 id="geometry-contract">Geometry contract</h2>
+<p>The response exposes a complete geometry ledger rather than only a
+final loss:</p>
+<ul>
+<li>Tx/Rx coordinates and configured Tx/Rx heights above ground</li>
+<li>absolute endpoint elevations, horizontal and slant distance</li>
+<li>terrain status and the missing-terrain assumption</li>
+<li>obstruction ID, logical ID, type, material, and height
+provenance</li>
+<li>absolute and relative obstruction height, along-path fraction and
+distance</li>
+<li>LOS-line height, <code>d1</code>, <code>d2</code>, clearance,
+first-Fresnel radius, and clearance ratio</li>
+<li>signed <code>v</code>, edge loss, edge availability, and
+selected-edge status</li>
+</ul>
+<p>A flat-roof footprint is represented by its path interval boundaries.
+The entry and exit roof edges are separate deterministic knife-edge
+candidates; a zero-length tangent/contact is one contact candidate. The
+flat roof is not collapsed into an arbitrary center screen.</p>
+<p>For multiple candidates, the current rule is:</p>
+<ol type="1">
+<li>retain every entry/exit candidate in path order;</li>
+<li>discard candidates whose geometry is invalid or whose P.526
+zero-loss guard applies;</li>
+<li>select the available candidate with maximum <code>v</code>;</li>
+<li>break exact ties by path distance, obstruction ID, then edge
+position.</li>
+</ol>
+<p>This is a single-dominant-edge diagnostic. A production multi-edge
+calculation is deferred.</p>
+<h2 id="height-and-terrain-semantics">Height and terrain semantics</h2>
+<p>Explicit diffraction requires evidence-backed obstruction geometry.
+<code>height</code> tags are <code>observed_tag</code>;
+<code>building:levels</code> is <code>derived_from_levels</code> using
+the existing 3 m-per-level conversion. The generic
+<code>default-3-storey</code>/9 m display fallback is
+<code>unavailable</code> evidence and never enters the <code>v</code>
+calculation. If an intersected footprint has only that fallback, the
+diagnostic is unavailable with
+<code>obstruction_height_unavailable</code>, even when canonical UMa
+remains conservatively NLOS.</p>
+<p>When terrain is unavailable, known building edges can still be
+evaluated on the documented flat-ground relative-height datum. Missing
+terrain is never changed into measured zero elevation. Terrain-backed
+profile samples can produce terrain point candidates; a building
+candidate with invalid or missing terrain still carries the explicit
+terrain limitation.</p>
+<p>Fresnel clearance remains geometry-only. <code>geometric_los</code>,
+<code>fresnel_clearance</code>, and <code>diffraction_diagnostic</code>
+are separate response concepts. A link can be geometric LOS while its
+60% first-Fresnel clearance is a concern; that concern does not silently
+become canonical NLOS.</p>
+<h2 id="diagnostic-result-and-canonical-comparison">Diagnostic result
+and canonical comparison</h2>
+<p>The diagnostic uses free-space path loss as its declared
+baseline:</p>
+<pre class="text"><code>diagnostic propagation loss = FSPL + explicit single-edge loss
+diagnostic Rx = configured Tx/gain/system/calibration/pattern terms
+               − diagnostic propagation loss</code></pre>
+<p>The response exposes <code>fspl_db</code>,
+<code>diffraction_loss_db</code>,
+<code>diagnostic_total_path_loss_db</code>, and
+<code>diagnostic_rx_dbm</code>. If known geometry is unavailable, the
+loss and Rx fields are null rather than fake precision.</p>
+<p>For an applicable 2.6 or 28 GHz outdoor link, the response also
+evaluates the canonical <code>urban_short_range</code> UMa result
+independently and exposes its path loss, Rx, and
+<code>diagnostic_minus_canonical_db</code>. These are two alternative
+modeling views:</p>
+<pre class="text"><code>canonical:            UMa LOS/NLOS path loss
+diagnostic:           FSPL + explicit P.526-aligned single-edge loss</code></pre>
+<p><code>UMa NLOS + P.526 diffraction</code> is never calculated as the
+canonical result. A difference is not labeled “better” or “more
+accurate” without measurement evidence.</p>
+<h2 id="controlled-and-ankara-evidence">Controlled and Ankara
+evidence</h2>
+<p>The independent reference corpus covers strongly negative
+<code>v</code>, the <code>-0.78</code> transition, <code>v = 0</code>,
+moderate and strong positive <code>v</code>, asymmetric geometry, 2.6
+GHz, 28 GHz, and a 140 GHz research-only mathematical case. Controlled
+path fixtures cover below-line, roof contact, positive roof, near-Tx,
+near-Rx, midpoint, wide-roof entry/exit, multiple candidates, and
+unknown-height behavior through the backend diagnostic tests. The
+rounded fixture output is preserved in <a
+href="concept-4f2-controlled-fixtures.json"><code>concept-4f2-controlled-fixtures.json</code></a>.</p>
+<p>For the same 100 m flat-ground geometry with a 10 m signed
+obstruction height at the 45 m edge, the diagnostic gives
+<code>v = 8.3715</code> and <code>31.30 dB</code> at 2.6 GHz versus
+<code>v = 27.4724</code> and <code>41.67 dB</code> at 28 GHz. The
+<code>v</code> ratio is <code>sqrt(28 / 2.6) = 3.2817</code>; this is
+the expected wavelength scaling, not a claim about measured channel
+loss.</p>
+<p>The canonical Ankara six-cell/432-path audit currently reports:</p>
+<table>
+<thead>
+<tr>
+<th>Audit item</th>
+<th style="text-align: right;">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Diagnostic-eligible paths</td>
+<td style="text-align: right;">29</td>
+</tr>
+<tr>
+<td>Ineligible due to unknown height</td>
+<td style="text-align: right;">403</td>
+</tr>
+<tr>
+<td>One known candidate edge</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Multiple known candidate edges</td>
+<td style="text-align: right;">153</td>
+</tr>
+<tr>
+<td>Geometric LOS paths</td>
+<td style="text-align: right;">29</td>
+</tr>
+<tr>
+<td>Paths blocked only by unknown-height footprints</td>
+<td style="text-align: right;">338</td>
+</tr>
+</tbody>
+</table>
+<p>This means the current Ankara pack has no real known-height blocking
+link that can produce an available explicit diffraction result in that
+audited sample. The available paths are clear/no-footprint paths;
+controlled fixtures are therefore required to demonstrate known-height
+blocking and dominant-edge behavior. Height evidence remains 0.68%
+explicit, 3.07% levels-derived, and 96.25% fallback-only.</p>
+<p>The full audit counts and representative eligible/unknown obstruction
+ledgers are preserved in <a
+href="concept-4f2-canonical-audit.json"><code>concept-4f2-canonical-audit.json</code></a>.
+Paths with multiple known candidates are reported as audit evidence
+only; they do not trigger a multi-edge sum.</p>
+<h2 id="integration-boundaries">Integration boundaries</h2>
+<p>The Path Profile panel presents the diagnostic reference,
+availability, selected edge, <code>v</code>, loss, diagnostic Rx,
+canonical UMa Rx, difference, and expandable obstruction ledger. It
+labels the result “Diagnostic only — not applied to network simulation.”
+The normal network-planning report does not include these fields.</p>
+<p>Concept 4F.2 does not couple diffraction to:</p>
+<ul>
+<li>demand, residential, propagation reach, overlap, normalized scores,
+Pareto solutions, or recommended azimuths;</li>
+<li>canonical received-signal surfaces;</li>
+<li>canonical received powers used by SINR/RSRP/RSRQ interference;</li>
+<li>Concept 4E outdoor facade-entry power;</li>
+<li><code>research_sub_thz</code> propagation at 140 GHz.</li>
+</ul>
+<p>The diagnostic is sparse and on-demand through
+<code>/api/path-profile</code>; no network-wide diffraction
+precomputation is performed.</p>
+<h2 id="deferred-work-and-limitations">Deferred work and
+limitations</h2>
+<p>P.526 section 4.3 double isolated edges and the broader multiple-edge
+methods are not promoted into production behavior. The current response
+records <code>multiple_edge_status: multi-edge deferred</code> and
+exposes all single-edge candidates so a later review can compare a
+sourced multi-edge method without inventing coefficients. Rounded
+obstacles, roof reflection, multipath, fading, DEM ingestion, indoor
+diffraction, and empirical rooftop-to-street replacement remain outside
+this concept.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

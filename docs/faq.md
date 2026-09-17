@@ -6,6 +6,10 @@
 
 A.T.O.M is a local-first workspace for deterministic urban RF planning. It supports sector propagation, demand gaps, multi-cell evaluation and optimization, 4G/5G interference analysis, candidate-site recommendations, measurement residual analysis, scenario comparison, and an optional 5G communication-path overlay.
 
+### What does the diffraction diagnostic mean?
+
+The Path Profile panel exposes a separate `p526-single-edge-v1` diagnostic: free-space path loss plus a P.526-16-aligned single knife-edge loss calculated from known obstruction geometry. It shows the obstruction ledger, `v`, loss, diagnostic Rx, and canonical UMa comparison. It is not summed with UMa NLOS and does not change optimization, surfaces, interference, building entry, or the research 140 GHz propagation profile. Unknown-height footprints make the explicit diagnostic unavailable rather than turning the generic 9 m fallback into evidence. See the [Concept 4F.2 design note](concept-4f2-diffraction-diagnostic.md).
+
 ### Are the results field measurements?
 
 No. RSRP, SINR, RSRQ, RSSI, coverage, and demand KPIs are planning estimates from the configured model and dataset. They are not UE, drive-test, channel-sounder, or PHY measurements.

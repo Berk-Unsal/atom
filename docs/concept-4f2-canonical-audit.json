@@ -1,0 +1,66 @@
+{
+  "concept": "4F.2",
+  "artifact": "canonical-ankara-diffraction-diagnostic-audit",
+  "source_test": "backend-go/raytracer/diffraction_canonical_audit_test.go",
+  "dataset": "data-pipeline canonical Ankara pack",
+  "height_evidence_audit": {
+    "total_footprints": 161784,
+    "explicit_height_count": 1108,
+    "explicit_height_pct": 0.68,
+    "levels_derived_height_count": 4966,
+    "levels_derived_height_pct": 3.07,
+    "fallback_only_count": 155710,
+    "fallback_only_pct": 96.25,
+    "unavailable_height_count": 0,
+    "unavailable_height_pct": 0
+  },
+  "path_audit": {
+    "paths": 432,
+    "diagnostic_eligible": 29,
+    "unknown_height_ineligible": 403,
+    "one_known_candidate_edge": 0,
+    "multiple_known_candidate_edges": 153,
+    "geometric_los": 29,
+    "blocked_only_by_unknown_height": 338,
+    "interpretation": "multiple_known_candidate_edges counts paths with more than one known roof-edge candidate, including paths that also contain unknown-height candidates; multi-edge propagation remains deferred and no candidates are summed"
+  },
+  "representative_ledgers": {
+    "eligible_no_footprint_intersection": {
+      "tower": "LTE-35084",
+      "ray": 47,
+      "transmitter": {"lon": 32.8477, "lat": 39.9113},
+      "receiver": {"lon": 32.84917523729545, "lat": 39.91471468832815},
+      "classification": "los",
+      "classification_basis": "no_footprint_intersection",
+      "diagnostic_available": true,
+      "diagnostic_reason": "no_candidate_above_p526_zero_loss_threshold",
+      "candidates": []
+    },
+    "unknown_height_ineligible": {
+      "tower": "LTE-35084",
+      "ray": 0,
+      "transmitter": {"lon": 32.8477, "lat": 39.9113},
+      "receiver": {"lon": 32.84363837504927, "lat": 39.91309857236455},
+      "classification": "nlos",
+      "classification_basis": "conservative_2d_unknown_height",
+      "diagnostic_available": false,
+      "diagnostic_reason": "obstruction_height_unavailable",
+      "candidates": [
+        {"id": "feature-37919:entry:0", "obstruction_id": "feature-37919", "edge_position": "entry", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 23.4, "d1_m": 23.4, "d2_m": 377, "los_line_height_m": 23.6, "clearance_m": null, "first_fresnel_radius_m": 0.49, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-37919:exit:0", "obstruction_id": "feature-37919", "edge_position": "exit", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 66.7, "d1_m": 66.7, "d2_m": 333.8, "los_line_height_m": 21.1, "clearance_m": null, "first_fresnel_radius_m": 0.77, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-37920:entry:0", "obstruction_id": "feature-37920", "edge_position": "entry", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 71.1, "d1_m": 71.1, "d2_m": 329.4, "los_line_height_m": 20.8, "clearance_m": null, "first_fresnel_radius_m": 0.79, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-37920:exit:0", "obstruction_id": "feature-37920", "edge_position": "exit", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 89.5, "d1_m": 89.5, "d2_m": 310.9, "los_line_height_m": 19.7, "clearance_m": null, "first_fresnel_radius_m": 0.86, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-37904:entry:0", "obstruction_id": "feature-37904", "edge_position": "entry", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 120.6, "d1_m": 120.6, "d2_m": 279.9, "los_line_height_m": 17.9, "clearance_m": null, "first_fresnel_radius_m": 0.95, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-37904:exit:0", "obstruction_id": "feature-37904", "edge_position": "exit", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 150.2, "d1_m": 150.2, "d2_m": 250.2, "los_line_height_m": 16.2, "clearance_m": null, "first_fresnel_radius_m": 1, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-37903:entry:0", "obstruction_id": "feature-37903", "edge_position": "entry", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 196.9, "d1_m": 196.9, "d2_m": 203.6, "los_line_height_m": 13.4, "clearance_m": null, "first_fresnel_radius_m": 1.04, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-37903:exit:0", "obstruction_id": "feature-37903", "edge_position": "exit", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 202.3, "d1_m": 202.3, "d2_m": 198.2, "los_line_height_m": 13.1, "clearance_m": null, "first_fresnel_radius_m": 1.04, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-37903:entry:1", "obstruction_id": "feature-37903", "edge_position": "entry", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 207.2, "d1_m": 207.2, "d2_m": 193.3, "los_line_height_m": 12.8, "clearance_m": null, "first_fresnel_radius_m": 1.03, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-37903:exit:1", "obstruction_id": "feature-37903", "edge_position": "exit", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 209.7, "d1_m": 209.7, "d2_m": 190.8, "los_line_height_m": 12.7, "clearance_m": null, "first_fresnel_radius_m": 1.03, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-38430:entry:0", "obstruction_id": "feature-38430", "edge_position": "entry", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 314.1, "d1_m": 314.1, "d2_m": 86.4, "los_line_height_m": 6.6, "clearance_m": null, "first_fresnel_radius_m": 0.85, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-38430:exit:0", "obstruction_id": "feature-38430", "edge_position": "exit", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 326.3, "d1_m": 326.3, "d2_m": 74.2, "los_line_height_m": 5.9, "clearance_m": null, "first_fresnel_radius_m": 0.8, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-38454:entry:0", "obstruction_id": "feature-38454", "edge_position": "entry", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 366.2, "d1_m": 366.2, "d2_m": 34.3, "los_line_height_m": 3.5, "clearance_m": null, "first_fresnel_radius_m": 0.58, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"},
+        {"id": "feature-38454:exit:0", "obstruction_id": "feature-38454", "edge_position": "exit", "height_source": "unavailable", "height_available": false, "along_path_distance_m": 369.2, "d1_m": 369.2, "d2_m": 31.3, "los_line_height_m": 3.3, "clearance_m": null, "first_fresnel_radius_m": 0.56, "v": null, "diffraction_loss_db": null, "available": false, "unavailable_reason": "obstruction_height_unavailable"}
+      ]
+    }
+  }
+}

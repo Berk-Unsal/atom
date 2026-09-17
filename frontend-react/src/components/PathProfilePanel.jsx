@@ -92,13 +92,19 @@ export function PathProfileResult({ profile }) {
   const chart = useMemo(() => profileChartGeometry(profile?.samples ?? []), [profile]);
   const activeComponents = profile?.loss_budget?.components ?? [];
   const applicability = profile?.applicability ?? {};
+  const diagnostic = profile?.diffraction_diagnostic ?? {};
+  const geometry = diagnostic.geometry ?? {};
+  const canonical = profile?.canonical_comparison ?? {};
+  const candidates = geometry.candidates ?? profile?.obstruction_ledger ?? [];
+  const selectedEdge = diagnostic.selected_edge;
+  const diagnosticAvailable = diagnostic.available === true;
   return (
     <section className="path-profile-result" aria-live="polite">
       <div className="path-profile-summary">
-        <span><small>Classification</small><strong>{formatLabel(profile.classification)}</strong></span>
+        <span><small>Geometric LOS</small><strong>{profile.geometric_los ? "Yes" : "No"}</strong></span>
         <span><small>Path</small><strong>{formatNumber(profile.distance_m, 0)} m</strong></span>
-        <span><small>P50</small><strong>{formatNumber(profile.loss_budget?.rx_dbm_p50, 1)} dBm</strong></span>
-        <span><small>P90 reliability</small><strong>{formatNumber(profile.loss_budget?.rx_dbm_p90_reliability, 1)} dBm</strong></span>
+        <span><small>Fresnel ≥ 60%</small><strong>{profile.fresnel_clearance?.status === "concern" ? "Concern" : "Clear"}</strong></span>
+        <span><small>Profile P50</small><strong>{formatNumber(profile.loss_budget?.rx_dbm_p50, 1)} dBm</strong></span>
       </div>
       <figure className="path-profile-chart">
         <svg viewBox="0 0 720 230" role="img" aria-labelledby="path-profile-chart-title path-profile-chart-desc">
@@ -112,10 +118,47 @@ export function PathProfileResult({ profile }) {
           <line className="profile-axis" x1="42" y1="202" x2="704" y2="202" />
           <text x="42" y="222">0 m</text><text x="704" y="222" textAnchor="end">{formatNumber(profile.distance_m, 0)} m</text>
         </svg>
-        <figcaption>Terrain {profile.terrain?.available ? `from ${profile.terrain.source}` : "unavailable · local zero datum"}. Heights with a “default-3-storey” source are planning assumptions.</figcaption>
+        <figcaption>Classification: {formatLabel(profile.classification)}. Terrain {profile.terrain?.available ? `from ${profile.terrain.source}` : "unavailable · local zero datum"}. Heights with a “default-3-storey” source are planning assumptions only and are never diffraction evidence.</figcaption>
       </figure>
 
-      <div className="loss-budget" role="table" aria-label="Propagation loss budget">
+      <section className={`diffraction-diagnostic ${diagnosticAvailable ? "available" : "unavailable"}`} aria-label="Diffraction diagnostic">
+        <div className="diagnostic-section-heading">
+          <span>DIFFRACTION DIAGNOSTIC</span>
+          <small>Diagnostic only — not applied to network simulation</small>
+        </div>
+        <p className="data-note">{diagnostic.method ?? "P.526-aligned single-edge diagnostic"}. Canonical UMa and FSPL plus explicit diffraction are alternative calculations; they are never summed.</p>
+        <div className="diagnostic-metrics">
+          <span><small>Reference</small><strong>{diagnostic.reference ?? "ITU-R P.526-16 §4.1"}</strong></span>
+          <span><small>Availability</small><strong>{diagnosticAvailable ? "Available" : `Unavailable · ${formatLabel(diagnostic.reason)}`}</strong></span>
+          <span><small>Selected edge</small><strong>{selectedEdge ? `${selectedEdge.obstruction_id} · ${formatLabel(selectedEdge.edge_position)}` : "None"}</strong></span>
+          <span><small>v</small><strong>{formatNumber(selectedEdge?.v, 4)}</strong></span>
+          <span><small>Explicit diffraction loss</small><strong>{formatNumber(diagnostic.diffraction_loss_db, 2)} dB</strong></span>
+          <span><small>Diagnostic Rx</small><strong>{formatNumber(diagnostic.diagnostic_rx_dbm, 1)} dBm</strong></span>
+          <span><small>Canonical UMa Rx</small><strong>{formatNumber(canonical.canonical_rx_dbm, 1)} dBm</strong></span>
+          <span><small>Diagnostic − canonical</small><strong>{formatNumber(canonical.diagnostic_minus_canonical_db, 1)} dB</strong></span>
+        </div>
+        <p className="diagnostic-limitations">{(diagnostic.limitations ?? []).join(" · ")}</p>
+        {candidates.length > 0 ? (
+          <details className="diffraction-ledger">
+            <summary>Inspect obstruction ledger ({candidates.length} edge{candidates.length === 1 ? "" : "s"})</summary>
+            <div className="diffraction-ledger-table" role="table" aria-label="Diffraction obstruction ledger">
+              <div className="diffraction-ledger-row heading" role="row"><span>Edge</span><span>Height source</span><span>Clearance</span><span>v / loss</span></div>
+              {candidates.map((candidate) => (
+                <div className="diffraction-ledger-row" role="row" key={candidate.id}>
+                  <span><strong>{candidate.obstruction_id}</strong><small>{formatLabel(candidate.edge_position)}{candidate.selected_dominant_edge ? " · selected" : ""}</small></span>
+                  <span>{formatLabel(candidate.height_source)}{candidate.height_available ? "" : " · unavailable"}</span>
+                  <span>{formatNumber(candidate.clearance_m, 1)} m<small>{formatNumber(candidate.fresnel_clearance_ratio, 2)} F1</small></span>
+                  <span>{formatNumber(candidate.v, 4)}<small>{formatNumber(candidate.diffraction_loss_db, 2)} dB</small></span>
+                </div>
+              ))}
+            </div>
+          </details>
+        ) : null}
+      </section>
+
+      <details className="profile-loss-details">
+        <summary>Supplemental path-profile loss budget</summary>
+        <div className="loss-budget" role="table" aria-label="Supplemental propagation loss budget">
         {activeComponents.map((component) => (
           <div key={component.id} className={!component.enabled ? "disabled" : ""} role="row">
             <span role="cell"><strong>{component.label}</strong><small>{component.method}{component.reference ? ` · ${component.reference}` : ""}</small></span>
@@ -123,7 +166,8 @@ export function PathProfileResult({ profile }) {
           </div>
         ))}
         <div className="loss-total" role="row"><span role="cell"><strong>Total median loss</strong></span><b role="cell">{formatNumber(profile.loss_budget?.total_median_loss_db, 2)} dB</b></div>
-      </div>
+        </div>
+      </details>
       <p className={`path-applicability ${applicability.frequency_applicable ? "valid" : "warning"}`}>
         <strong>{applicability.reference}</strong> · {applicability.implementation}
       </p>
@@ -133,5 +177,5 @@ export function PathProfileResult({ profile }) {
 }
 
 function formatLabel(value) {
-  return String(value ?? "unknown").replaceAll("-", " ");
+  return String(value ?? "unknown").replaceAll(/[-_]+/g, " ");
 }

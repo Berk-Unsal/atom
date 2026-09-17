@@ -7,6 +7,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 ### Added
 
 - Add Concept 4F.1 deterministic height-aware `urban_short_range` centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts.
+- Add Concept 4F.2 `p526-single-edge-v1` diffraction diagnostics with independent P.526-16 reference fixtures, known-height obstruction ledgers, deterministic roof-edge selection, canonical UMa comparison, Fresnel separation, restrained Path Profile UI, and no network/optimizer/surface/interference/building-entry coupling.
 
 ## [0.7.0] - 2026-09-17
 

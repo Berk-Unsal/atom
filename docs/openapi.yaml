@@ -1310,11 +1310,121 @@ components:
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
     PathProfileResponse:
       type: object
-      required: [rf_contract]
+      required: [rf_contract, geometric_los, fresnel_clearance, obstruction_ledger, diffraction_diagnostic, canonical_comparison]
       properties:
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
         terrain: { $ref: "#/components/schemas/TerrainMetadata" }
+        distance_m: { type: number }
+        classification: { type: string, description: "Geometric obstruction classification only; Fresnel concern does not change this value." }
+        geometric_los: { type: boolean }
+        minimum_clearance_m: { type: number }
+        minimum_fresnel_ratio: { type: number }
+        fresnel_clearance: { $ref: "#/components/schemas/FresnelClearanceDiagnostics" }
+        obstruction_ledger: { type: array, items: { $ref: "#/components/schemas/DiffractionEdgeCandidate" } }
+        diffraction_diagnostic: { $ref: "#/components/schemas/DiffractionDiagnostic" }
+        canonical_comparison: { $ref: "#/components/schemas/CanonicalDiagnosticComparison" }
+        samples: { type: array, items: { type: object, additionalProperties: true } }
+        loss_budget: { type: object, additionalProperties: true, description: "Supplemental isolated path-profile budget; not canonical network RF." }
+        applicability: { type: object, additionalProperties: true }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
+        fidelity: { type: object, additionalProperties: true }
       additionalProperties: true
+    FresnelClearanceDiagnostics:
+      type: object
+      required: [minimum_ratio, threshold_ratio, status, classification_independent, note]
+      properties:
+        minimum_ratio: { type: number }
+        threshold_ratio: { type: number, const: 0.6 }
+        status: { type: string, enum: [clear, concern] }
+        classification_independent: { type: boolean, const: true }
+        note: { type: string }
+    DiffractionEdgeCandidate:
+      type: object
+      required: [id, obstruction_id, obstruction_type, edge_position, height_source, height_available, along_path_fraction, along_path_distance_m, d1_m, d2_m, los_line_height_m, first_fresnel_radius_m, available]
+      properties:
+        id: { type: string }
+        obstruction_id: { type: string }
+        logical_obstruction_id: { type: string }
+        obstruction_type: { type: string, enum: [building_roof_edge, terrain_profile_sample] }
+        edge_position: { type: string, enum: [entry, exit, contact, profile-sample] }
+        material: { type: string }
+        height_source: { type: string, description: "observed_tag, derived_from_levels, unavailable, or terrain_provider" }
+        height_tag: { type: string }
+        height_available: { type: boolean }
+        building_height_m: { type: [number, "null"] }
+        terrain_elevation_m: { type: [number, "null"] }
+        absolute_height_m: { type: [number, "null"] }
+        relative_height_above_los_m: { type: [number, "null"] }
+        along_path_fraction: { type: number }
+        along_path_distance_m: { type: number }
+        d1_m: { type: number }
+        d2_m: { type: number }
+        los_line_height_m: { type: number }
+        clearance_m: { type: [number, "null"] }
+        first_fresnel_radius_m: { type: number }
+        fresnel_clearance_ratio: { type: [number, "null"] }
+        v: { type: [number, "null"] }
+        diffraction_loss_db: { type: [number, "null"] }
+        selected_dominant_edge: { type: boolean }
+        available: { type: boolean }
+        unavailable_reason: { type: string }
+    DiffractionGeometry:
+      type: object
+      required: [transmitter, receiver, tx_height_m, rx_height_m, horizontal_distance_m, slant_distance_m, terrain_status, terrain_assumption, known_height_requirement, edge_selection_rule, roof_edge_rule, candidates]
+      properties:
+        transmitter: { $ref: "#/components/schemas/LonLat" }
+        receiver: { $ref: "#/components/schemas/LonLat" }
+        tx_height_m: { type: number }
+        rx_height_m: { type: number }
+        tx_absolute_elevation_m: { type: number }
+        rx_absolute_elevation_m: { type: number }
+        horizontal_distance_m: { type: number }
+        slant_distance_m: { type: number }
+        terrain_status: { type: string, enum: [terrain_available, terrain_unavailable] }
+        terrain_assumption: { type: string }
+        known_height_requirement: { type: string }
+        edge_selection_rule: { type: string }
+        roof_edge_rule: { type: string }
+        candidates: { type: array, items: { $ref: "#/components/schemas/DiffractionEdgeCandidate" } }
+        selected_edge_id: { type: string }
+    DiffractionDiagnostic:
+      type: object
+      required: [id, available, reason, reference, method, baseline_model, baseline_reference, geometry, fspl_db, applicability, multiple_edge_status, limitations]
+      properties:
+        id: { type: string, const: p526-single-edge-v1 }
+        available: { type: boolean }
+        reason: { type: string, description: "Unavailable reasons include obstruction_height_unavailable, building_data_unavailable, diffraction_disabled_by_fidelity, and frequency_out_of_range." }
+        reference: { type: string, const: "ITU-R P.526-16 §4.1, equations (26) and (31)" }
+        method: { type: string, const: "P.526-aligned single-edge diagnostic" }
+        baseline_model: { type: string, const: free_space }
+        baseline_reference: { type: string }
+        geometry: { $ref: "#/components/schemas/DiffractionGeometry" }
+        selected_edge: { allOf: [{ $ref: "#/components/schemas/DiffractionEdgeCandidate" }], nullable: true }
+        fspl_db: { type: number }
+        diffraction_loss_db: { type: [number, "null"] }
+        diagnostic_total_path_loss_db: { type: [number, "null"] }
+        diagnostic_rx_dbm: { type: [number, "null"] }
+        applied_pattern_loss_db: { type: number }
+        applied_system_loss_db: { type: number }
+        applied_calibration_offset_db: { type: number }
+        applicability: { type: string, enum: [standards_aligned_subset, research_only, unavailable] }
+        multiple_edge_status: { type: string, const: multi-edge deferred }
+        limitations: { type: array, items: { type: string } }
+    CanonicalDiagnosticComparison:
+      type: object
+      required: [available, reason, canonical_model, canonical_reference, canonical_path_loss_db, canonical_rx_dbm, diagnostic_rx_dbm, diagnostic_minus_canonical_db, note]
+      properties:
+        available: { type: boolean }
+        reason: { type: string }
+        canonical_model: { type: string, const: urban_short_range }
+        canonical_reference: { type: string }
+        canonical_los_state: { type: string, enum: [los, nlos, unknown] }
+        canonical_classification_basis: { type: string }
+        canonical_path_loss_db: { type: [number, "null"] }
+        canonical_rx_dbm: { type: [number, "null"] }
+        diagnostic_rx_dbm: { type: [number, "null"] }
+        diagnostic_minus_canonical_db: { type: [number, "null"] }
+        note: { type: string }
     InterferenceModel:
       type: object
       required: [request_defaults, effective_cell_profiles, rf_contract, rsrp_threshold_dbm, sinr_threshold_db, rsrq_threshold_db, serviceability_rule]

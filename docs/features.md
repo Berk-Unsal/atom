@@ -55,10 +55,10 @@ The selected `urban_short_range` model uses deterministic height-aware footprint
 ### 2.5D Path Profiles And Fidelity
 
 - Loads an optional north-up EPSG:4326 COG/GeoTIFF terrain layer lazily by strip/tile and samples it bilinearly.
-- Combines ground elevation, inferred or explicit building height, transmitter/receiver height above ground, direct LOS, 60% first-Fresnel clearance, and a dominant obstruction.
+- Combines ground elevation, inferred or explicit building height, transmitter/receiver height above ground, direct geometric LOS, 60% first-Fresnel clearance, and a dominant obstruction. Fresnel concern never changes geometric LOS/NLOS.
 - Provides `terrain-profile` (30 MHz–6 GHz), `urban-short-range` (300 MHz–100 GHz), and explicitly out-of-range research profiles. These applicability labels are tracked against [ITU-R P.1812-8 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf) and [ITU-R P.1411-13 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf); the implementation is an inspectable planning approximation, not either complete method.
 - Exposes free-space, antenna-pattern, system, wall, diffraction, clutter, vegetation, atmospheric-gas, rain, calibration, and shadow-sensitivity components rather than hiding them in one total.
-- Uses an explicitly selected single knife-edge approximation informed by [ITU-R P.526](https://www.itu.int/rec/R-REC-P.526/en). Material, gas, and rain controls are planning inputs informed by [ITU-R P.2040](https://www.itu.int/rec/r-rec-p.2040/en), [ITU-R P.676](https://www.itu.int/rec/R-REC-P.676/en), and [ITU-R P.838](https://www.itu.int/rec/R-REC-P.838/en), not automatic weather or construction-data inference.
+- Uses the isolated [Concept 4F.2 P.526-16 single-edge diagnostic](concept-4f2-diffraction-diagnostic.md) only when explicit or levels-derived roof evidence is available. Generic fallback heights are unavailable for diffraction; the diagnostic is never added to canonical UMa NLOS. Material, gas, and rain controls are planning inputs informed by [ITU-R P.2040](https://www.itu.int/rec/r-rec-p.2040/en), [ITU-R P.676](https://www.itu.int/rec/R-REC-P.676/en), and [ITU-R P.838](https://www.itu.int/rec/R-REC-P.838/en), not automatic weather or construction-data inference.
 - Displays a vertical terrain/building/LOS/Fresnel cross section with the loss budget and P50/P90-style shadow-sensitivity bounds.
 
 ## Demand-Aware Planning

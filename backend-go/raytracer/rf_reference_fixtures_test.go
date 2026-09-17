@@ -197,7 +197,7 @@ func independentReferenceFresnel(frequencyGHz, distanceM, d1M float64) float64 {
 }
 
 func independentReferenceKnifeEdge(heightAboveLOSM, distanceFromTxM, distanceToRxM, frequencyGHz float64) float64 {
-	if heightAboveLOSM <= 0 || distanceFromTxM <= 0 || distanceToRxM <= 0 || frequencyGHz <= 0 {
+	if distanceFromTxM <= 0 || distanceToRxM <= 0 || frequencyGHz <= 0 {
 		return 0
 	}
 	wavelengthM := 0.299792458 / frequencyGHz

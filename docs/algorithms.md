@@ -56,13 +56,13 @@ This compatibility mode uses horizontal building-footprint geometry and height-a
 
 For a selected transmitter and receiver, the engine samples a geodesic path at a bounded spacing. Each sample contains ground elevation plus any intersecting building height. Antenna and receiver elevations are their local ground elevations plus configured height above ground.
 
-The result reports direct line-of-sight clearance and a 60% first-Fresnel-zone clearance check:
+The result reports direct geometric line-of-sight clearance and a 60% first-Fresnel-zone clearance check. Fresnel concern is a separate geometry diagnostic and does not change LOS/NLOS classification:
 
 ```text
 r1 = sqrt(lambda * d1 * d2 / (d1 + d2))
 ```
 
-When selected, the dominant obstruction is converted to the usual dimensionless knife-edge parameter and the positive-loss approximation is applied. Only the dominant edge is used; Deygout/multiple-edge, reflection, and terrain-clutter coupling are not implemented.
+The isolated Concept 4F.2 workflow represents each known flat-roof footprint by deterministic entry and exit roof-edge candidates. It exposes the signed P.526-16 equation (26) parameter and applies equation (31) for `v > -0.78`; the candidate with maximum applicable `v` is selected. Generic fallback heights are unavailable evidence. The diagnostic compares FSPL plus explicit single-edge loss against canonical UMa; it never adds diffraction to UMa NLOS. Deygout/multiple-edge, reflection, and terrain-clutter coupling are not implemented.
 
 The inspectable loss budget keeps FSPL, horizontal/vertical antenna attenuation, system loss, wall penetration, diffraction, clutter, vegetation, gas, rain, and calibration as separate signed components. Shadow sigma produces sensitivity bounds and is not injected as a random field, preserving determinism.
 

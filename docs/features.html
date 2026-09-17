@@ -246,8 +246,9 @@ Fidelity</h3>
 <li>Loads an optional north-up EPSG:4326 COG/GeoTIFF terrain layer
 lazily by strip/tile and samples it bilinearly.</li>
 <li>Combines ground elevation, inferred or explicit building height,
-transmitter/receiver height above ground, direct LOS, 60% first-Fresnel
-clearance, and a dominant obstruction.</li>
+transmitter/receiver height above ground, direct geometric LOS, 60%
+first-Fresnel clearance, and a dominant obstruction. Fresnel concern
+never changes geometric LOS/NLOS.</li>
 <li>Provides <code>terrain-profile</code> (30 MHz–6 GHz),
 <code>urban-short-range</code> (300 MHz–100 GHz), and explicitly
 out-of-range research profiles. These applicability labels are tracked
@@ -260,9 +261,11 @@ approximation, not either complete method.</li>
 <li>Exposes free-space, antenna-pattern, system, wall, diffraction,
 clutter, vegetation, atmospheric-gas, rain, calibration, and
 shadow-sensitivity components rather than hiding them in one total.</li>
-<li>Uses an explicitly selected single knife-edge approximation informed
-by <a href="https://www.itu.int/rec/R-REC-P.526/en">ITU-R P.526</a>.
-Material, gas, and rain controls are planning inputs informed by <a
+<li>Uses the isolated Concept 4F.2 P.526-16 single-edge diagnostic only
+when explicit or levels-derived roof evidence is available. Generic
+fallback heights are unavailable for diffraction; the diagnostic is
+never added to canonical UMa NLOS. Material, gas, and rain controls are
+planning inputs informed by <a
 href="https://www.itu.int/rec/r-rec-p.2040/en">ITU-R P.2040</a>, <a
 href="https://www.itu.int/rec/R-REC-P.676/en">ITU-R P.676</a>, and <a
 href="https://www.itu.int/rec/R-REC-P.838/en">ITU-R P.838</a>, not

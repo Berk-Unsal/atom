@@ -40,7 +40,7 @@ func TestAnalyzePathProfileClassifiesBuildingAndExposesLossBudget(t *testing.T) 
 	if !diffraction.Enabled || diffraction.LossDB <= 0 {
 		t.Fatalf("diffraction component = %+v", diffraction)
 	}
-	if len(response.Samples) < 20 || !response.Terrain.Available {
+	if len(response.Samples) < 20 || !response.Terrain.Available || response.Terrain.Status != TerrainStatusAvailable {
 		t.Fatalf("profile samples/terrain = %d, %+v", len(response.Samples), response.Terrain)
 	}
 }

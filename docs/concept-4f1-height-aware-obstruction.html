@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Deterministic centerline roof
+obstruction, height provenance, conservative unknown-height behavior,
+terrain metadata, and canonical audit." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4F.1 Height-Aware
+Obstruction | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4F.1
+Height-Aware Obstruction page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#scope-and-model-boundary"
+      id="toc-scope-and-model-boundary">Scope and model
+      boundary</a></li>
+      <li><a href="#height-evidence-contract"
+      id="toc-height-evidence-contract">Height evidence
+      contract</a></li>
+      <li><a href="#centerline-rule" id="toc-centerline-rule">Centerline
+      rule</a></li>
+      <li><a href="#shared-engine-integration"
+      id="toc-shared-engine-integration">Shared engine
+      integration</a></li>
+      <li><a href="#canonical-ankara-audit"
+      id="toc-canonical-ankara-audit">Canonical Ankara audit</a></li>
+      <li><a href="#limitations"
+      id="toc-limitations">Limitations</a></li>
+      <li><a href="#operational-references"
+      id="toc-operational-references">Operational references</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Model reference</span>
+        <h1>Concept 4F.1 Height-Aware Obstruction</h1>
+        <p>Deterministic centerline roof obstruction, height provenance,
+conservative unknown-height behavior, terrain metadata, and canonical
+audit.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4f1-height-aware-obstruction.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Concept 4F.1 upgrades the <code>urban_short_range</code> LOS/NLOS
+branch from a footprint-boundary event to a deterministic geometric
+Tx-to-Rx centerline test. The path-loss equations, 3GPP UMa
+applicability envelope, legacy wall model, 140 GHz research profile,
+Fresnel diagnostics, diffraction work, terrain import, and optimizer
+objective definitions are unchanged.</p>
+<p>The measured pre-change urban baseline is preserved in <a
+href="concept-4f1-pre-change-baseline.json"><code>concept-4f1-pre-change-baseline.json</code></a>.
+The post-change transition, height-evidence, optimization, and
+performance ledger is <a
+href="concept-4f1-canonical-audit.json"><code>concept-4f1-canonical-audit.json</code></a>.
+The earlier Concept 4D comparison remains the source for the controlled
+RF links.</p>
+<h2 id="scope-and-model-boundary">Scope and model boundary</h2>
+<p>The height-aware classifier applies only when the requested model is
+<code>urban_short_range</code> at the supported planning frequencies 2.6
+GHz and 28 GHz. <code>legacy_fspl_walls</code> keeps its historical 2D
+wall-event behavior, and <code>research_sub_thz</code> keeps its
+research-only behavior. The production branch does not add Fresnel
+clearance, diffraction, reflection, DEM/DSM fusion, or sampled vertical
+profiles.</p>
+<p>The current Ankara dataset has no terrain layer. Every height-aware
+network result therefore reports
+<code>terrain_status: "terrain_unavailable"</code> and compares building
+roofs against flat-ground relative Tx/Rx heights. This is explicit
+metadata, not a measured zero-elevation claim. A future terrain provider
+must declare whether its heights are DTM or DSM before terrain and
+building heights are fused; DSM heights must not be added to building
+roof heights a second time.</p>
+<h2 id="height-evidence-contract">Height evidence contract</h2>
+<p>Building loading preserves the display height used by existing APIs
+while adding separate roof-evidence provenance:</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th style="text-align: right;">Display height</th>
+<th>Roof evidence</th>
+<th>Evidence source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reliable OSM <code>height</code></td>
+<td style="text-align: right;">parsed metres</td>
+<td>usable</td>
+<td><code>observed_tag</code></td>
+</tr>
+<tr>
+<td><code>building:levels</code></td>
+<td style="text-align: right;">levels × 3 m</td>
+<td>usable</td>
+<td><code>derived_from_levels</code></td>
+</tr>
+<tr>
+<td>no reliable height</td>
+<td style="text-align: right;">existing 9 m fallback</td>
+<td>unavailable</td>
+<td><code>unavailable</code></td>
+</tr>
+</tbody>
+</table>
+<p>The generic 9 m <code>default-3-storey</code> value remains available
+for display and legacy behavior, but it is never treated as a roof
+measurement. <code>BuildingDemandSummary</code> and
+<code>AuditBuildingHeightEvidence</code> expose counts and percentages
+for observed, levels-derived, fallback-only, and unavailable footprints.
+Building feature responses expose <code>height_evidence_m</code>,
+<code>height_evidence_source</code>, <code>height_evidence_tag</code>,
+and <code>logical_building_id</code>.</p>
+<h2 id="centerline-rule">Centerline rule</h2>
+<p>For every footprint interval <code>[t_entry, t_exit]</code> along the
+complete Tx-to-Rx path, the classifier uses the flat-ground line</p>
+<pre class="text"><code>h_los(t) = h_tx + (h_rx - h_tx) t,    0 &lt;= t &lt;= 1</code></pre>
+<p>The known roof blocks when it reaches or exceeds the line anywhere in
+the interval. In the implementation this is equivalent to testing the
+minimum endpoint line height for the linear height function, with a tiny
+deterministic geometric epsilon only for equality. Exact roof touch is
+therefore NLOS; there is no Fresnel margin. A known roof below the line
+throughout the interval is recorded as cleared and does not force
+NLOS.</p>
+<p>The shared result identifies the classifier as
+<code>footprint-height-los-v1</code> and carries:</p>
+<ul>
+<li><code>state</code>, <code>endpoint_case</code>,
+<code>classification_basis</code>, and <code>terrain_status</code>;</li>
+<li>blocking, cleared, and unknown-height building evidence;</li>
+<li><code>t_entry</code>, <code>t_exit</code>, LOS heights, roof height,
+minimum clearance, and logical/part IDs for each reported
+obstruction.</li>
+</ul>
+<p>Unknown-height intersections are conservative NLOS with
+<code>classification_basis: "conservative_2d_unknown_height"</code>. A
+path containing both a known blocker and an unknown-height intersection
+reports <code>known_obstruction_with_unknown_height_conservative</code>.
+No-footprint and known-cleared paths remain LOS. Indoor
+transmitter/receiver and unavailable building-data cases remain explicit
+non-outdoor endpoint/applicability cases.</p>
+<p>The interval construction retains multiple crossings,
+concave/multipart crossings, zero-length grazing contacts, and
+endpoint-inside behavior. When the source feature supplies a logical
+identity, multipart rings are grouped into one physical-building
+evidence record with multiple intervals; a building-entry target
+excludes all of its logical parts from the outdoor leg. Sources without
+logical identity use the footprint ID as their physical identity.</p>
+<h2 id="shared-engine-integration">Shared engine integration</h2>
+<p>The same classifier and <code>PropagationResult</code> metadata are
+used by:</p>
+<ul>
+<li>segmented direct rays and their GeoJSON ray properties;</li>
+<li>coverage-surface grid centers and surface model metadata;</li>
+<li>interference carrier powers and serving-cell properties;</li>
+<li>network coverage/reach/overlap scoring and optimizer
+evaluations;</li>
+<li>building-entry outdoor legs, with the target facade excluded from
+the outdoor obstruction search.</li>
+</ul>
+<p>Ray segmentation remains representational: each endpoint is evaluated
+from its physical path distance, and splitting a path cannot add
+propagation loss. The height-aware result is diagnostic/classificatory
+only; the existing <code>urban_short_range</code> LOS/NLOS formulas are
+unchanged. Optimizer objectives and weights are unchanged, so any score
+movement is measured shared-RF classification impact.</p>
+<h2 id="canonical-ankara-audit">Canonical Ankara audit</h2>
+<p>The gated test
+<code>TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled</code>
+runs the six-cell, 28 GHz, 400 m, 72-ray Ankara scenario against the
+real 161,784-footprint dataset. The current height-evidence audit
+is:</p>
+<pre class="text"><code>observed_tag:          1,108 (0.68%)
+derived_from_levels:   4,966 (3.07%)
+fallback-only:       155,710 (96.25%)
+unavailable:               0 (0.00%)</code></pre>
+<p>The 432 audited paths are deterministic: 29 <code>los → los</code>,
+248 <code>nlos → nlos</code>, and 155 <code>unknown → unknown</code>,
+with no canonical <code>nlos → los</code> or <code>los → nlos</code>
+transition because the intersected Ankara paths are dominated by
+fallback-only evidence and mixed known/unknown cases. The representative
+bases include no-footprint LOS, conservative unknown-height NLOS, known
+obstruction plus unknown-height conservative NLOS, transmitter/receiver
+indoor cases, and unchanged old/new state pairs. Controlled ledgers
+cover known roof blocking, known roof clearing, exact roof touch,
+tangent contact, multipart grouping, target-facade exclusion, legacy
+numerical invariance, and direct/surface/interference consistency.</p>
+<p>The urban optimizer remains the same six-cell objective workload. In
+the post-change ledger, baseline/optimized network scores are
+<code>13,509,330.8</code>/<code>32,568,641.1</code>, composite scores
+are <code>0.391373</code>/<code>0.489145</code>, propagation reach is
+<code>18,330.7658</code>/<code>22,141.1276</code>, and overlap buildings
+are <code>10</code>/<code>0</code>; the optimized azimuths are
+<code>[150, 300, 110, 300, 290, 100]</code>. The height-aware optimizer
+timer is 18.484 s versus the preserved 17.78 s pre-change reference. The
+measurements use different harness boundaries (full canonical wall time
+versus optimizer-only timer), so they are a bounded ledger rather than a
+strict apples-to-apples percentage.</p>
+<h2 id="limitations">Limitations</h2>
+<p>This is a deterministic centerline visibility branch, not a full 3D
+ray tracer. It does not model roof-edge diffraction, Fresnel clearance,
+reflections, materials, terrain occlusion, foliage, clutter, or interior
+room/floor paths. Unknown building heights intentionally bias toward
+NLOS. A future DTM/DSM-aware extension must publish its vertical
+reference and validation evidence before changing this contract.</p>
+<h2 id="operational-references">Operational references</h2>
+<ul>
+<li><a href="concept-4f1-pre-change-baseline.json">Concept 4F.1
+pre-change baseline</a></li>
+<li>Concept 4D urban propagation reference</li>
+<li><a href="./api.html">API reference</a></li>
+<li><a href="./modeling-limits.html">Modeling limits</a></li>
+</ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

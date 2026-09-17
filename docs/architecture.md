@@ -135,7 +135,7 @@ For each sampled angle inside the active per-cell beam/pattern, the propagation 
 1. Converts the requested geographic radius into ray segments.
 2. Queries candidate building bounds from the R-tree.
 3. Performs exact segment/polygon intersection tests.
-4. Classifies the physical endpoint path as LOS, NLOS, indoor, or unknown using shared 2D footprint geometry.
+4. Classifies the physical endpoint path as LOS, NLOS, indoor, or unknown using shared `footprint-height-los-v1` geometry, Tx/Rx heights, and explicit building-height evidence; unknown heights are conservative NLOS.
 5. Dispatches `urban_short_range`, `legacy_fspl_walls`, or `research_sub_thz` through the shared evaluator and records applicability/fallback metadata.
 6. Applies the selected model's decomposed link budget using slant distance, per-cell RF values, and relative analytic pattern attenuation.
 7. Emits signal-colored GeoJSON line segments and aggregate range/power statistics.

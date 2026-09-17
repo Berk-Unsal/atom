@@ -316,35 +316,39 @@ type BuildingEntryGeometry struct {
 }
 
 type BuildingEntryEstimate struct {
-	BuildingID                  string                        `json:"building_id"`
-	BuildingType                string                        `json:"building_type,omitempty"`
-	Residential                 bool                          `json:"residential"`
-	DemandWeight                float64                       `json:"demand_weight,omitempty"`
-	ResidentialDemand           float64                       `json:"residential_demand,omitempty"`
-	RepresentativePoint         *Point                        `json:"representative_point,omitempty"`
-	FacadeEntryPoint            *Point                        `json:"facade_entry_point,omitempty"`
-	ServingCellID               string                        `json:"serving_cell_id,omitempty"`
-	FrequencyGHz                float64                       `json:"frequency_ghz,omitempty"`
-	PropagationModel            string                        `json:"propagation_model,omitempty"`
-	OutdoorLOSState             string                        `json:"outdoor_los_state,omitempty"`
-	OutdoorDistanceM            float64                       `json:"outdoor_distance_m,omitempty"`
-	OutdoorRxAtFacadeDBm        *float64                      `json:"outdoor_rx_at_facade_dbm,omitempty"`
-	OutdoorPathLossDB           *float64                      `json:"outdoor_path_loss_db,omitempty"`
-	OutdoorWallLossDB           float64                       `json:"outdoor_wall_loss_db"`
-	OutdoorServiceable          bool                          `json:"outdoor_serviceable"`
-	LowLossEntryLossDB          *float64                      `json:"low_loss_entry_loss_db,omitempty"`
-	LowLossRxJustInsideDBm      *float64                      `json:"low_loss_rx_just_inside_dbm,omitempty"`
-	LowLossServiceable          *bool                         `json:"low_loss_serviceable,omitempty"`
-	HighLossEntryLossDB         *float64                      `json:"high_loss_entry_loss_db,omitempty"`
-	HighLossRxJustInsideDBm     *float64                      `json:"high_loss_rx_just_inside_dbm,omitempty"`
-	HighLossServiceable         *bool                         `json:"high_loss_serviceable,omitempty"`
-	ReceiverSensitivityDBm      *float64                      `json:"receiver_sensitivity_dbm,omitempty"`
-	BuildingServiceThresholdDBm float64                       `json:"building_service_threshold_dbm"`
-	MaterialEvidence            BuildingEntryMaterialEvidence `json:"material_evidence"`
-	SelectedEntryProfile        string                        `json:"selected_entry_profile"`
-	Applicability               BuildingEntryApplicability    `json:"applicability"`
-	EntryGeometry               BuildingEntryGeometry         `json:"entry_geometry"`
-	Limitations                 []string                      `json:"limitations"`
+	BuildingID                    string                        `json:"building_id"`
+	BuildingType                  string                        `json:"building_type,omitempty"`
+	Residential                   bool                          `json:"residential"`
+	DemandWeight                  float64                       `json:"demand_weight,omitempty"`
+	ResidentialDemand             float64                       `json:"residential_demand,omitempty"`
+	RepresentativePoint           *Point                        `json:"representative_point,omitempty"`
+	FacadeEntryPoint              *Point                        `json:"facade_entry_point,omitempty"`
+	ServingCellID                 string                        `json:"serving_cell_id,omitempty"`
+	FrequencyGHz                  float64                       `json:"frequency_ghz,omitempty"`
+	PropagationModel              string                        `json:"propagation_model,omitempty"`
+	OutdoorLOSState               string                        `json:"outdoor_los_state,omitempty"`
+	OutdoorLOSClassifierID        string                        `json:"outdoor_los_classifier_id,omitempty"`
+	OutdoorLOSClassificationBasis string                        `json:"outdoor_los_classification_basis,omitempty"`
+	OutdoorTerrainStatus          string                        `json:"outdoor_terrain_status,omitempty"`
+	OutdoorLOSClassification      *LOSClassification            `json:"outdoor_los_classification,omitempty"`
+	OutdoorDistanceM              float64                       `json:"outdoor_distance_m,omitempty"`
+	OutdoorRxAtFacadeDBm          *float64                      `json:"outdoor_rx_at_facade_dbm,omitempty"`
+	OutdoorPathLossDB             *float64                      `json:"outdoor_path_loss_db,omitempty"`
+	OutdoorWallLossDB             float64                       `json:"outdoor_wall_loss_db"`
+	OutdoorServiceable            bool                          `json:"outdoor_serviceable"`
+	LowLossEntryLossDB            *float64                      `json:"low_loss_entry_loss_db,omitempty"`
+	LowLossRxJustInsideDBm        *float64                      `json:"low_loss_rx_just_inside_dbm,omitempty"`
+	LowLossServiceable            *bool                         `json:"low_loss_serviceable,omitempty"`
+	HighLossEntryLossDB           *float64                      `json:"high_loss_entry_loss_db,omitempty"`
+	HighLossRxJustInsideDBm       *float64                      `json:"high_loss_rx_just_inside_dbm,omitempty"`
+	HighLossServiceable           *bool                         `json:"high_loss_serviceable,omitempty"`
+	ReceiverSensitivityDBm        *float64                      `json:"receiver_sensitivity_dbm,omitempty"`
+	BuildingServiceThresholdDBm   float64                       `json:"building_service_threshold_dbm"`
+	MaterialEvidence              BuildingEntryMaterialEvidence `json:"material_evidence"`
+	SelectedEntryProfile          string                        `json:"selected_entry_profile"`
+	Applicability                 BuildingEntryApplicability    `json:"applicability"`
+	EntryGeometry                 BuildingEntryGeometry         `json:"entry_geometry"`
+	Limitations                   []string                      `json:"limitations"`
 }
 
 type BuildingEntryCellSummary struct {
@@ -708,13 +712,27 @@ func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysis
 		if summary := cellSummaries[tower.ID]; summary != nil {
 			summary.CandidateBuildings++
 		}
-		losState := buildingEntryOutdoorLOS(ctx, towerPoint, entryPoint, building.ID, buildings)
+		pathGeometry, geometryErr := buildPropagationPathGeometryContextWithOptions(ctx, towerPoint, entryPoint, buildings, propagationPathGeometryOptions{
+			ExcludedBuildingIDs:        map[string]struct{}{building.ID: {}},
+			ExcludedLogicalBuildingIDs: map[string]struct{}{logicalBuildingID(building): {}},
+			TxHeightM:                  profile.AntennaHeightM,
+			RxHeightM:                  profile.ReceiverHeightM,
+		})
+		if geometryErr != nil {
+			return result, metrics
+		}
+		classification := pathGeometry.classifyHeightAware(entryPoint, entryDistance)
+		losState := classification.State
+		if losState != PropagationLOSState(PropagationLOS) && losState != PropagationLOSState(PropagationNLOS) {
+			continue
+		}
 		linkContext := PropagationLinkContext{
 			Profile:               profile,
 			GroundDistanceM:       entryDistance,
 			HorizontalOffsetDeg:   signedBearingOffset(bearing, effectiveAzimuth),
 			CalibrationOffsetDB:   req.Network.CalibrationOffsetDB,
 			LOSState:              losState,
+			LOSClassification:     &classification,
 			EndpointCase:          PropagationEndpointOutdoorO2O,
 			BuildingDataAvailable: true,
 			WallEventCount:        0,
@@ -723,6 +741,10 @@ func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysis
 		if !applicable.Applicable {
 			continue
 		}
+		result.OutdoorLOSClassifierID = baseline.LOSClassifierID
+		result.OutdoorLOSClassificationBasis = baseline.ClassificationBasis
+		result.OutdoorTerrainStatus = baseline.TerrainStatus
+		result.OutdoorLOSClassification = baseline.LOSClassification
 		lowLoss, lowOK := BuildingEntryLossDB(profile.FrequencyGHz, BuildingEntryLowLossProfile)
 		highLoss, highOK := BuildingEntryLossDB(profile.FrequencyGHz, BuildingEntryHighLossProfile)
 		if !lowOK || !highOK {
@@ -811,36 +833,6 @@ func evaluateBuildingEntryOutdoorBaseline(ctx PropagationLinkContext) (Propagati
 	result.ApplicabilityReason = applicability.Reason
 	result.ApplicabilityDetail = applicability.Detail
 	return result, applicability
-}
-
-func buildingEntryOutdoorLOS(ctx context.Context, origin, facade Point, targetID string, buildings *BuildingIndex) PropagationLOSState {
-	if buildings == nil || buildings.Len() == 0 {
-		return PropagationLOSState(PropagationLOSUnknown)
-	}
-	targetDistance := ApproxDistanceMeters(origin, facade)
-	for index, candidate := range buildings.SearchRay(origin, facade) {
-		if index%32 == 0 && ctx.Err() != nil {
-			return PropagationLOSState(PropagationLOSUnknown)
-		}
-		if candidate == nil || candidate.ID == targetID || len(candidate.Vertices) < 3 {
-			continue
-		}
-		if PointInPolygon(origin, candidate.Vertices) {
-			return PropagationLOSState(PropagationNLOS)
-		}
-		for _, intersection := range SegmentPolygonIntersections(origin, facade, candidate.Vertices) {
-			distance := ApproxDistanceMeters(origin, intersection)
-			if distance <= 0.5 || distance >= targetDistance-0.5 {
-				continue
-			}
-			before := interpolateSegmentPoint(origin, facade, math.Max(0, distance-0.2)/targetDistance)
-			after := interpolateSegmentPoint(origin, facade, math.Min(targetDistance, distance+0.2)/targetDistance)
-			if !PointInPolygon(before, candidate.Vertices) && PointInPolygon(after, candidate.Vertices) {
-				return PropagationLOSState(PropagationNLOS)
-			}
-		}
-	}
-	return PropagationLOSState(PropagationLOS)
 }
 
 func representativeBuildingPoint(building *BuildingFootprint) (Point, string, bool) {

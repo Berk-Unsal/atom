@@ -206,14 +206,28 @@ that every cell used that value.</p>
 The default is <code>urban_short_range</code> at 2.6/28 GHz and
 <code>research_sub_thz</code> at 140 GHz. Positive calibration dB raises
 predicted received power. The urban model reports its 3GPP UMa formula
-and deterministic footprint LOS/NLOS rule in <code>rf_contract</code>;
-it does not add legacy wall loss to empirical NLOS. Receiver sensitivity
-is per-cell ray termination, building service is
-<code>raw P_rx &gt; -100 dBm</code>, and interference serviceability is
-<code>RSRP &gt;= -110 dBm</code> plus <code>SINR &gt;= 0 dB</code> plus
-<code>RSRQ &gt;= -20 dB</code>. See the Concept 4D design note for the
-applicability envelope and fallback policy, and the Concept 4E
-building-entry note for facade-entry estimation.</p>
+and <code>footprint-height-los-v1</code> centerline LOS/NLOS rule in
+<code>rf_contract</code>; it does not add legacy wall loss to empirical
+NLOS. Receiver sensitivity is per-cell ray termination, building service
+is <code>raw P_rx &gt; -100 dBm</code>, and interference serviceability
+is <code>RSRP &gt;= -110 dBm</code> plus <code>SINR &gt;= 0 dB</code>
+plus <code>RSRQ &gt;= -20 dB</code>. See the Concept 4F.1 design note
+for height evidence, terrain status, and classification metadata; the
+Concept 4D design note remains the applicability and equation reference;
+and the Concept 4E building-entry note covers facade-entry
+estimation.</p>
+<p>For <code>urban_short_range</code>, explicit OSM <code>height</code>
+is reported as <code>observed_tag</code>, <code>building:levels</code>
+is derived at 3 m per level as <code>derived_from_levels</code>, and the
+existing generic 9 m display fallback is <code>unavailable</code> roof
+evidence. An intersected unknown-height footprint is conservatively
+NLOS. Ray GeoJSON properties expose <code>los_classifier_id</code>,
+<code>los_classification_basis</code>, and <code>terrain_status</code>;
+interference and building-entry responses expose the same
+serving/outdoor metadata, while coverage-surface model metadata
+identifies the shared classifier. The current Ankara pack reports
+<code>terrain_unavailable</code>; no zero terrain value is treated as
+measured obstruction evidence.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tower_lon&quot;</span><span class="fu">:</span> <span class="fl">32.8541</span><span class="fu">,</span></span>
@@ -424,13 +438,14 @@ sorted by stable building ID and report <code>numberMatched</code>,
 header with <code>rel="next"</code>.</p>
 <p>The default representation is <code>application/geo+json</code>. Send
 <code>f=csv</code> or <code>Accept: text/csv</code> for CSV containing
-WKT polygon geometry, inferred height/source, normalized material, and
-demand fields. Discover the collection at
-<code>GET /api/collections</code>, inspect metadata at
-<code>GET /api/collections/buildings</code>, and inspect the standards
-declaration at <code>GET /api/conformance</code>. Its
-<code>conformsTo</code> list is deliberately empty because this project
-does not claim a complete OGC conformance class.</p>
+WKT polygon geometry, display height/source, height-evidence provenance
+(<code>height_evidence_m</code>, <code>height_evidence_source</code>,
+<code>height_evidence_tag</code>), normalized material, and demand
+fields. Discover the collection at <code>GET /api/collections</code>,
+inspect metadata at <code>GET /api/collections/buildings</code>, and
+inspect the standards declaration at <code>GET /api/conformance</code>.
+Its <code>conformsTo</code> list is deliberately empty because this
+project does not claim a complete OGC conformance class.</p>
 <p>This interface follows OGC API Features collection and bounding-box
 concepts. It is not a vector-tile endpoint.</p>
 <p>The bounded query shares the <code>BUILDINGS_API_KEY</code> policy
@@ -525,7 +540,11 @@ regular grid is capped at 100,000 cells.</p>
 <p>The default JSON response contains a CRS84 row-major raster
 (<code>grid</code>), marching-square line segments
 (<code>contours</code>), bounds/statistics, and explicit model
-assumptions. Export the same request using:</p>
+assumptions. For <code>urban_short_range</code>,
+<code>model.los_classifier_id</code> is
+<code>footprint-height-los-v1</code> and
+<code>model.terrain_status</code> is <code>terrain_unavailable</code>
+for the current Ankara pack. Export the same request using:</p>
 <ul>
 <li><code>?f=geotiff</code> for an uncompressed float32 EPSG:4326
 GeoTIFF with <code>-9999</code> nodata</li>
@@ -533,9 +552,12 @@ GeoTIFF with <code>-9999</code> nodata</li>
 <li><code>?f=csv</code> for valid grid-center longitude, latitude, and
 received power</li>
 </ul>
-<p>The surface uses the canonical FSPL, antenna-pattern, calibration,
-and frequency wall-loss model. It is a raw single-cell received-power
-surface: valid below-sensitivity values remain numeric,
+<p>The surface uses the selected propagation model, antenna-pattern, and
+calibration terms. For <code>urban_short_range</code>, known roof
+heights can clear footprint intersections and unknown heights remain
+conservative NLOS; no legacy wall-event dB is added to the empirical
+NLOS formula. It is a raw single-cell received-power surface: valid
+below-sensitivity values remain numeric,
 <code>uses_sensitivity_mask</code> is false, and NoData means only
 radius/beam geometry exclusion. It does not apply the terrain-profile or
 environmental sensitivity components.</p>
@@ -735,7 +757,11 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb13-1"><a href=
 <code>summary</code>, <code>results[]</code>, per-cell summaries,
 effective profiles, <code>rf_contract</code>, and diagnostics. Each
 result carries the representative and facade points, outdoor LOS/NLOS
-baseline, <code>outdoor_rx_at_facade_dbm</code>,
+baseline, the shared <code>outdoor_los_classifier_id</code>,
+<code>outdoor_los_classification_basis</code>,
+<code>outdoor_terrain_status</code>, and detailed
+<code>outdoor_los_classification</code> evidence; the target building is
+excluded from the outdoor leg, <code>outdoor_rx_at_facade_dbm</code>,
 <code>outdoor_wall_loss_db: 0</code>, both entry losses, both
 just-inside powers, separate receiver-sensitivity and building-service
 thresholds, and material evidence.

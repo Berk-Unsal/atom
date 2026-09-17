@@ -32,7 +32,7 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 - **Segmented Heatmap Raytracing**: Generates GeoJSON ray segments that change color based on modeled signal strength (Rx dBm), providing interactive visual feedback on coverage quality.
 
-- **Explainable Propagation Modes**: Shared model dispatch, applicability checks, deterministic footprint LOS/NLOS classification, explicit legacy fallback, and per-response model identity keep urban NLOS path loss separate from legacy wall-event loss.
+- **Explainable Propagation Modes**: Shared model dispatch, applicability checks, deterministic height-aware footprint LOS/NLOS classification with explicit height provenance, conservative unknown-height handling, terrain status, explicit legacy fallback, and per-response model identity keep urban NLOS path loss separate from legacy wall-event loss.
 
 - **Sector Planning**: Fast sector simulation with adjustable azimuth and beam width. The sector engine uses analytic antenna presets and does not model reflection-heavy multipath, fading, multiple-edge diffraction, or MIMO scheduling.
 - **2.5D Path Profiles**: Optional COG/GeoTIFF terrain, building-height obstruction, LOS/Fresnel evidence, selected single knife-edge diffraction, inspectable fidelity components, and a vertical cross section.

@@ -63,6 +63,8 @@ type CoverageSurfaceModel struct {
 	ValueSemantics      string   `json:"value_semantics"`
 	NoDataMeaning       string   `json:"nodata_meaning"`
 	UsesSensitivityMask bool     `json:"uses_sensitivity_mask"`
+	LOSClassifierID     string   `json:"los_classifier_id,omitempty"`
+	TerrainStatus       string   `json:"terrain_status,omitempty"`
 	Assumptions         []string `json:"assumptions"`
 }
 
@@ -155,16 +157,20 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 			if profile.HorizontalPatternID != "omni" && !AngleInBeam(bearing, effectiveAzimuth, profile.BeamWidthDeg) {
 				continue
 			}
-			pathGeometry, err := buildPropagationPathGeometryContext(ctx, origin, point, buildings)
+			pathGeometry, err := buildPropagationPathGeometryContextWithOptions(ctx, origin, point, buildings, propagationPathGeometryOptions{
+				TxHeightM: profile.AntennaHeightM,
+				RxHeightM: profile.ReceiverHeightM,
+			})
 			if err != nil {
 				return CoverageSurfaceResponse{}, err
 			}
-			losState, endpointCase, wallEventCount := pathGeometry.classify(point, distanceMeters)
+			losState, endpointCase, wallEventCount, losClassification := classifyPropagationPath(profile, pathGeometry, point, distanceMeters)
 			propagation := EvaluatePropagationLink(PropagationLinkContext{
 				Profile: profile, GroundDistanceM: math.Max(distanceMeters, 1),
 				HorizontalOffsetDeg: smallestAngleDifference(bearing, effectiveAzimuth),
 				CalibrationOffsetDB: req.Simulation.CalibrationOffsetDB,
 				LOSState:            losState, EndpointCase: endpointCase,
+				LOSClassification:     losClassification,
 				BuildingDataAvailable: pathGeometry.available, WallEventCount: wallEventCount,
 			})
 			signal := propagation.ReceivedPowerDBm
@@ -206,9 +212,12 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 			ValueSemantics:      "raw_received_power_dbm",
 			NoDataMeaning:       "radius or beam geometry exclusion; weak numeric values are retained",
 			UsesSensitivityMask: false,
+			LOSClassifierID:     classifierIDForProfile(profile),
+			TerrainStatus:       terrainStatusForProfile(profile),
 			Assumptions: []string{
 				"Grid centers are evaluated with the selected cell profile and shared propagation evaluator; the response contract identifies the applied model or explicit legacy fallback.",
-				"The urban_short_range model uses deterministic 2D footprint LOS/NLOS classification and does not add legacy wall-event dB to empirical NLOS path loss.",
+				"The urban_short_range model uses footprint-height-los-v1 centerline roof classification; known heights can clear a footprint while unknown heights remain conservative NLOS, and no legacy wall-event dB is added to empirical NLOS path loss.",
+				"Current Ankara network surfaces report terrain_unavailable and use flat-ground relative Tx/Rx heights; no terrain evidence is fused into the roof test.",
 				"Contours use marching-square line segments over valid grid cells; no smoothing or kriging is applied.",
 				"The regular surface does not apply receiver sensitivity as a mask and does not apply the point-to-point terrain-profile or environmental sensitivity components.",
 			},

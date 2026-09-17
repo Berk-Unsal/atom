@@ -42,7 +42,7 @@ func TestBuildingFeatureRouteRequiresBoundedBBoxAndReturnsGeoJSON(t *testing.T) 
 func TestBuildingFeatureRouteExportsCSV(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	index := raytracer.NewBuildingIndex([]*raytracer.BuildingFootprint{{
-		ID: "b1", Tags: map[string]string{"building": "house"}, HeightMeters: 9, HeightSource: "default", Material: "unknown",
+		ID: "b1", LogicalID: "logical-b1", Tags: map[string]string{"building": "house"}, HeightMeters: 9, HeightSource: "default", HeightEvidenceMeters: 0, HeightEvidenceSource: "unavailable", HeightEvidenceTag: "unavailable", Material: "unknown",
 		Bounds:   raytracer.Bounds{MinLon: 32.84, MinLat: 39.91, MaxLon: 32.85, MaxLat: 39.92},
 		Vertices: []raytracer.Point{{Lon: 32.84, Lat: 39.91}, {Lon: 32.85, Lat: 39.91}, {Lon: 32.85, Lat: 39.92}, {Lon: 32.84, Lat: 39.91}},
 	}})
@@ -51,7 +51,7 @@ func TestBuildingFeatureRouteExportsCSV(t *testing.T) {
 	registerBuildingFeatureRoutes(router, runtime)
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/api/collections/buildings/items?bbox=32.83,39.90,32.86,39.93&f=csv", nil))
-	if response.Code != http.StatusOK || !strings.Contains(response.Header().Get("Content-Type"), "text/csv") || !strings.Contains(response.Body.String(), "POLYGON") {
+	if response.Code != http.StatusOK || !strings.Contains(response.Header().Get("Content-Type"), "text/csv") || !strings.Contains(response.Body.String(), "POLYGON") || !strings.Contains(response.Body.String(), "logical_building_id") || !strings.Contains(response.Body.String(), "unavailable") {
 		t.Fatalf("CSV response = %d %q %s", response.Code, response.Header().Get("Content-Type"), response.Body.String())
 	}
 }

@@ -50,7 +50,7 @@ FSPL(dB) = 32.45 + 20log10(distance_m) + 20log10(frequency_GHz)
 
 The urban mode applies the 3GPP UMa LOS/NLOS median path-loss formula after shared 2D footprint classification; it does not add the legacy wall heuristic to empirical NLOS. Every mode applies configured transmit power, antenna gain, beam/radius eligibility, and antenna-pattern terms. Rays are segmented and returned as GeoJSON with model identity and explainability metadata.
 
-The selected model does not use terrain/building-height obstruction, diffraction, reflection-heavy multipath, fast fading, MIMO scheduling, or uplink behavior. A separate `path-profile-diagnostic-v1` point-to-point workflow adds terrain/building profiles, LOS and Fresnel classification, material-specific wall planning losses, and an explicitly selected single knife-edge approximation; its result is isolated from network RF. See the [Concept 4D design note](concept-4d-urban-propagation.md).
+The selected `urban_short_range` model uses deterministic height-aware footprint centerline obstruction with explicit height provenance. It does not use terrain in the current Ankara network evaluator, Fresnel clearance, diffraction, reflection-heavy multipath, fast fading, MIMO scheduling, or uplink behavior; unknown building heights are conservative NLOS. A separate `path-profile-diagnostic-v1` point-to-point workflow adds terrain/building profiles, LOS and Fresnel classification, material-specific wall planning losses, and an explicitly selected single knife-edge approximation; its result is isolated from network RF. See the [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md).
 
 ### 2.5D Path Profiles And Fidelity
 

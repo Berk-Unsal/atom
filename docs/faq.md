@@ -12,7 +12,7 @@ No. RSRP, SINR, RSRQ, RSSI, coverage, and demand KPIs are planning estimates fro
 
 ### Which propagation model is used?
 
-The default 2.6/28 GHz network model is `urban_short_range`, a deterministic 3GPP UMa median outdoor path-loss baseline with shared 2D footprint LOS/NLOS classification. `legacy_fspl_walls` remains selectable and is the explicit fallback when urban inputs are outside scope; `research_sub_thz` is the research-only 140 GHz profile. Responses report requested/applied model identity, applicability, and fallback reason. See the [Concept 4D design note](concept-4d-urban-propagation.md). A separate `path-profile-diagnostic-v1` point-to-point profile can add optional COG/GeoTIFF terrain, building height, LOS/Fresnel evidence, material sensitivity, and a selected single knife-edge approximation without changing network RF.
+The default 2.6/28 GHz network model is `urban_short_range`, a deterministic 3GPP UMa median outdoor path-loss baseline with shared height-aware centerline footprint LOS/NLOS classification. Known roof evidence can clear an intersected footprint; missing evidence is conservative NLOS. `legacy_fspl_walls` remains selectable and is the explicit fallback when urban inputs are outside scope; `research_sub_thz` is the research-only 140 GHz profile. Responses report requested/applied model identity, applicability, classifier basis, height evidence, and fallback reason. See the [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md). A separate `path-profile-diagnostic-v1` point-to-point profile can add optional COG/GeoTIFF terrain, building height, LOS/Fresnel evidence, material sensitivity, and a selected single knife-edge approximation without changing network RF.
 
 ### Why can SINR be close to 0 dB?
 

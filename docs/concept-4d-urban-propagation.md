@@ -2,6 +2,8 @@
 
 Concept 4D adds an explicit propagation-model boundary to A.T.O.M. The production default for 2.6 GHz and 28 GHz planning requests is `urban_short_range`; 140 GHz uses the explicitly research-only `research_sub_thz` profile. `legacy_fspl_walls` remains selectable for compatibility and side-by-side comparison.
 
+Concept 4F.1 supersedes the 2D footprint-only LOS/NLOS branch described below for production `urban_short_range` links. The equations, applicability envelope, fallback policy, and legacy/research boundaries remain the same; read the [Concept 4F.1 height-aware obstruction note](concept-4f1-height-aware-obstruction.md) for the current classifier and height-evidence contract.
+
 The pre-change Ankara result is preserved in [`concept-4d-pre-change-baseline.json`](concept-4d-pre-change-baseline.json). The post-change legacy-versus-urban run is recorded in [`concept-4d-canonical-comparison.json`](concept-4d-canonical-comparison.json). These are measurement artifacts, not goldens to rewrite.
 
 ## Selected model
@@ -70,7 +72,7 @@ The classifier is shared by rays, surface cells, interference samples, and netwo
 - Transmitter or receiver inside a footprint: an explicit indoor endpoint case, not outdoor NLOS.
 - Missing footprint data or an unclassifiable path: `unknown`, which makes `urban_short_range` inapplicable.
 
-The urban model uses known Tx/Rx heights only. Building heights remain separate data-quality metadata and do not silently become a propagation input.
+The historical 2D rule above is retained here to explain the Concept 4D comparison artifact. Production urban links now use the Concept 4F.1 centerline roof rule and report explicit building-height provenance; legacy and research modes retain their historical numerical behavior.
 
 Ray segmentation is representational. Every segment endpoint is evaluated from the physical endpoint distance and shared path classification; splitting a ray into 25 m GeoJSON segments cannot add propagation loss by itself.
 

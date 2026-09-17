@@ -1,0 +1,80 @@
+{
+  "concept": "4F.1",
+  "title": "Canonical Ankara height-aware obstruction audit",
+  "captured_at": "2026-09-17",
+  "source": "ATOM_RUN_CANONICAL_HEIGHT_AUDIT=1 go test ./raytracer -run TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled -count=1 -v",
+  "dataset": {
+    "footprints": 161784,
+    "towers": 451,
+    "height_evidence": {
+      "observed_tag": {"count": 1108, "pct": 0.68},
+      "derived_from_levels": {"count": 4966, "pct": 3.07},
+      "fallback_only": {"count": 155710, "pct": 96.25},
+      "unavailable": {"count": 0, "pct": 0.0}
+    }
+  },
+  "scenario": {
+    "frequency_ghz": 28,
+    "tx_height_m": 25,
+    "rx_height_m": 1.5,
+    "radius_m": 400,
+    "beam_width_deg": 120,
+    "rays_per_cell": 72,
+    "cells": 6,
+    "audited_paths": 432,
+    "classifier_id": "footprint-height-los-v1",
+    "terrain_status": "terrain_unavailable"
+  },
+  "old_2d_to_new_height_aware": {
+    "los_to_los": 29,
+    "nlos_to_nlos": 248,
+    "unknown_to_unknown": 155,
+    "los_to_nlos": 0,
+    "nlos_to_los": 0,
+    "other": 0
+  },
+  "canonical_representatives": {
+    "no_footprint_intersection": "tower=LTE-35084 ray=47 old=los new=los",
+    "conservative_2d_unknown_height": "tower=LTE-35084 ray=0 old=nlos new=nlos unknown=6",
+    "known_obstruction_with_unknown_height_conservative": "tower=LTE-35104 ray=0 old=nlos new=nlos blocking=2 cleared=1 unknown=10",
+    "receiver_inside_building": "tower=LTE-35084 ray=43 old=unknown new=unknown",
+    "transmitter_inside_building": "tower=LTE-313110 ray=0 old=unknown new=unknown"
+  },
+  "controlled_transition_ledgers": [
+    {"case": "known_roof_block", "old_2d": "nlos", "new_state": "nlos", "basis": "known_height_obstruction"},
+    {"case": "known_roof_clear", "old_2d": "nlos", "new_state": "los", "basis": "known_height_roofs_cleared"},
+    {"case": "unknown_fallback", "old_2d": "nlos", "new_state": "nlos", "basis": "conservative_2d_unknown_height"},
+    {"case": "exact_roof_touch", "old_2d": "nlos", "new_state": "nlos", "basis": "known_height_obstruction"},
+    {"case": "target_facade_exclusion", "old_2d": "nlos", "new_state": "los", "basis": "no_footprint_intersection"}
+  ],
+  "urban_short_range_optimization": {
+    "baseline": {
+      "network_score": 13509330.8,
+      "composite_score": 0.391373,
+      "unique_demand_buildings": 12,
+      "unique_residential_buildings": 82,
+      "propagation_reach_score": 18330.7658,
+      "overlap_buildings": 10,
+      "served_demand_weight": 430.0,
+      "score": 39.1373
+    },
+    "optimized": {
+      "azimuths_deg": [150, 300, 110, 300, 290, 100],
+      "network_score": 32568641.1,
+      "composite_score": 0.489145,
+      "unique_demand_buildings": 29,
+      "unique_residential_buildings": 137,
+      "propagation_reach_score": 22141.1276,
+      "overlap_buildings": 0,
+      "served_demand_weight": 1115.0,
+      "score": 48.9145,
+      "pareto_frontier_size": 23
+    }
+  },
+  "performance": {
+    "height_aware_optimizer_elapsed_seconds": 18.484,
+    "pre_change_reference_seconds": 17.78,
+    "pre_change_reference": "concept-4d-canonical-comparison.json urban_short_range wall-time measurement",
+    "comparison_note": "The pre-change artifact is a full canonical wall-time measurement; the post-change gated audit timer isolates OptimizeNetworkContext. Treat the figures as a bounded performance ledger, not a strict apples-to-apples benchmark."
+  }
+}

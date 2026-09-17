@@ -25,9 +25,13 @@ type Bounds struct {
 
 type BuildingFootprint struct {
 	ID                    string            `json:"id"`
+	LogicalID             string            `json:"logicalId,omitempty"`
 	Tags                  map[string]string `json:"tags"`
 	HeightMeters          float64           `json:"heightMeters"`
 	HeightSource          string            `json:"heightSource"`
+	HeightEvidenceMeters  float64           `json:"heightEvidenceMeters,omitempty"`
+	HeightEvidenceSource  string            `json:"heightEvidenceSource,omitempty"`
+	HeightEvidenceTag     string            `json:"heightEvidenceTag,omitempty"`
 	Material              string            `json:"material"`
 	Weight                float64           `json:"weight"`
 	DemandWeight          float64           `json:"demandWeight"`
@@ -71,8 +75,21 @@ type BuildingDemandSummary struct {
 	MaterialMetadataCoveragePct  float64            `json:"material_metadata_coverage_pct"`
 	MaterialTagCoveragePct       map[string]float64 `json:"material_tag_coverage_pct"`
 	MaterialCategories           map[string]int     `json:"material_categories"`
+	ExplicitHeightBuildings      int                `json:"explicit_height_buildings"`
+	LevelsDerivedHeightBuildings int                `json:"levels_derived_height_buildings"`
+	FallbackOnlyHeightBuildings  int                `json:"fallback_only_height_buildings"`
+	UnavailableHeightBuildings   int                `json:"unavailable_height_buildings"`
 	DataQuality                  string             `json:"data_quality"`
 }
+
+const (
+	HeightEvidenceObservedTag  = "observed_tag"
+	HeightEvidenceFromLevels   = "derived_from_levels"
+	HeightEvidenceUnavailable  = "unavailable"
+	HeightSourceExplicitLegacy = "height"
+	HeightSourceLevelsLegacy   = "building:levels"
+	HeightSourceFallbackLegacy = "default-3-storey"
+)
 
 func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexStats, error) {
 	file, err := os.Open(path)
@@ -155,7 +172,7 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 
 func appendFeatureFootprints(footprints []*BuildingFootprint, feature feature, featureIndex int) []*BuildingFootprint {
 	tags := feature.StringProperties()
-	heightMeters, heightSource := buildingHeight(feature)
+	heightMeters, heightSource, evidenceMeters, evidenceSource, evidenceTag := buildingHeightWithEvidence(feature)
 	material := buildingMaterial(tags)
 	weight := feature.FloatProperty("weight", 1.0)
 	if weight <= 0 {
@@ -205,16 +222,21 @@ func appendFeatureFootprints(footprints []*BuildingFootprint, feature feature, f
 			continue
 		}
 
-		id := feature.IDOrIndex(featureIndex)
+		logicalID := feature.IDOrIndex(featureIndex)
+		id := logicalID
 		if len(rings) > 1 {
 			id = fmt.Sprintf("%s-%d", id, ringIndex)
 		}
 
 		footprints = append(footprints, &BuildingFootprint{
 			ID:                    id,
+			LogicalID:             logicalID,
 			Tags:                  tags,
 			HeightMeters:          heightMeters,
 			HeightSource:          heightSource,
+			HeightEvidenceMeters:  evidenceMeters,
+			HeightEvidenceSource:  evidenceSource,
+			HeightEvidenceTag:     evidenceTag,
 			Material:              material,
 			Weight:                weight,
 			DemandWeight:          demandWeight,
@@ -236,13 +258,19 @@ func appendFeatureFootprints(footprints []*BuildingFootprint, feature feature, f
 const defaultBuildingHeightMeters = 9.0
 
 func buildingHeight(feature feature) (float64, string) {
+	heightMeters, heightSource, _, _, _ := buildingHeightWithEvidence(feature)
+	return heightMeters, heightSource
+}
+
+func buildingHeightWithEvidence(feature feature) (float64, string, float64, string, string) {
 	if height, ok := parseBuildingLength(feature.StringProperty("height", "")); ok {
-		return height, "height"
+		return height, HeightSourceExplicitLegacy, height, HeightEvidenceObservedTag, "height"
 	}
 	if levels, ok := parsePositiveNumber(feature.StringProperty("building:levels", "")); ok {
-		return math.Min(levels*3, 500), "building:levels"
+		height := math.Min(levels*3, 500)
+		return height, HeightSourceLevelsLegacy, height, HeightEvidenceFromLevels, "building:levels"
 	}
-	return defaultBuildingHeightMeters, "default-3-storey"
+	return defaultBuildingHeightMeters, HeightSourceFallbackLegacy, 0, HeightEvidenceUnavailable, ""
 }
 
 func parseBuildingLength(value string) (float64, bool) {
@@ -254,7 +282,9 @@ func parseBuildingLength(value string) (float64, bool) {
 	if strings.HasSuffix(cleaned, "ft") || strings.HasSuffix(cleaned, "feet") || strings.HasSuffix(cleaned, "'") {
 		multiplier = 0.3048
 	}
-	cleaned = strings.TrimSpace(strings.TrimSuffix(strings.TrimSuffix(strings.TrimSuffix(cleaned, "feet"), "ft"), "'"))
+	for _, suffix := range []string{"meters", "metres", "meter", "metre", "m", "feet", "ft", "'"} {
+		cleaned = strings.TrimSpace(strings.TrimSuffix(cleaned, suffix))
+	}
 	number, ok := parsePositiveNumber(cleaned)
 	if !ok {
 		return 0, false
@@ -443,6 +473,31 @@ func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary
 		}
 		if materialEvidence {
 			summary.MaterialMetadataBuildings++
+		}
+		switch footprint.HeightEvidenceSource {
+		case HeightEvidenceObservedTag:
+			summary.ExplicitHeightBuildings++
+		case HeightEvidenceFromLevels:
+			summary.LevelsDerivedHeightBuildings++
+		case HeightEvidenceUnavailable:
+			if footprint.HeightSource == HeightSourceFallbackLegacy {
+				summary.FallbackOnlyHeightBuildings++
+			} else {
+				summary.UnavailableHeightBuildings++
+			}
+		default:
+			// Manually constructed fixtures predate the evidence fields. Their
+			// legacy height source remains authoritative when it is explicit.
+			switch footprint.HeightSource {
+			case HeightSourceExplicitLegacy:
+				summary.ExplicitHeightBuildings++
+			case HeightSourceLevelsLegacy:
+				summary.LevelsDerivedHeightBuildings++
+			case HeightSourceFallbackLegacy:
+				summary.FallbackOnlyHeightBuildings++
+			default:
+				summary.UnavailableHeightBuildings++
+			}
 		}
 		category := strings.TrimSpace(strings.ToLower(footprint.Material))
 		if category == "" {

@@ -51,6 +51,8 @@ build_page modeling-limits.md modeling-limits.html "Modeling Limits" "Confidence
   "What the deterministic planning model includes, what it excludes, and how to interpret its outputs responsibly."
 build_page concept-4e-building-entry.md concept-4e-building-entry.html "Concept 4E Building Entry" "Model reference" \
   "Deterministic facade-entry estimates, standard-derived O2I scenarios, material evidence, API behavior, and canonical audit."
+build_page concept-4f1-height-aware-obstruction.md concept-4f1-height-aware-obstruction.html "Concept 4F.1 Height-Aware Obstruction" "Model reference" \
+  "Deterministic centerline roof obstruction, height provenance, conservative unknown-height behavior, terrain metadata, and canonical audit."
 build_page bug-fixes.md bug-fixes.html "Bug-Fix Register" "Quality history" \
   "Prioritized confirmed defects, user impact, root causes, corrections, and regression evidence for A.T.O.M releases."
 build_page ../CHANGELOG.md changelog.html "Changelog" "Release history" \

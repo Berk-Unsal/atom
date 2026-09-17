@@ -608,10 +608,60 @@ components:
       type: object
       required: [geojson, stats, rf_profile, rf_contract]
       properties:
-        geojson: { $ref: "#/components/schemas/FeatureCollection" }
+        geojson: { $ref: "#/components/schemas/FeatureCollection", description: "Ray features expose los_state, los_classifier_id, los_classification_basis, terrain_status, and los_classification evidence when the urban height-aware classifier applies." }
         stats: { type: object, additionalProperties: true }
         rf_profile: { $ref: "#/components/schemas/RFProfile" }
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
+    LOSBuildingInterval:
+      type: object
+      required: [t_entry, t_exit, los_height_at_entry_m, los_height_at_exit_m, minimum_los_height_m, maximum_los_height_m, roof_height_m, minimum_clearance_m]
+      properties:
+        t_entry: { type: number, minimum: 0, maximum: 1 }
+        t_exit: { type: number, minimum: 0, maximum: 1 }
+        los_height_at_entry_m: { type: number }
+        los_height_at_exit_m: { type: number }
+        minimum_los_height_m: { type: number }
+        maximum_los_height_m: { type: number }
+        roof_height_m: { type: number }
+        minimum_clearance_m: { type: number }
+    LOSBuildingEvidence:
+      type: object
+      required: [building_id, height_source]
+      properties:
+        building_id: { type: string }
+        logical_building_id: { type: string }
+        part_ids: { type: array, items: { type: string } }
+        height_m: { type: number }
+        height_source: { type: string, enum: [observed_tag, derived_from_levels, unavailable] }
+        height_tag: { type: string }
+        intervals: { type: array, items: { $ref: "#/components/schemas/LOSBuildingInterval" } }
+    LOSClassification:
+      type: object
+      required: [state, classifier_id, classifier_description, terrain_status, classification_basis, endpoint_case]
+      properties:
+        state: { type: string, enum: [los, nlos, unknown] }
+        classifier_id: { type: string }
+        classifier_description: { type: string }
+        terrain_status: { type: string, enum: [terrain_available, terrain_unavailable] }
+        classification_basis: { type: string }
+        endpoint_case: { type: string }
+        blocking_buildings: { type: array, items: { $ref: "#/components/schemas/LOSBuildingEvidence" } }
+        cleared_buildings: { type: array, items: { $ref: "#/components/schemas/LOSBuildingEvidence" } }
+        unknown_height_buildings: { type: array, items: { $ref: "#/components/schemas/LOSBuildingEvidence" } }
+    TerrainMetadata:
+      type: object
+      required: [available, status]
+      properties:
+        available: { type: boolean }
+        status: { type: string, enum: [terrain_available, terrain_unavailable] }
+        source: { type: string }
+        format: { type: string }
+        crs: { type: string }
+        elevation_reference: { type: string, description: "DTM/DSM reference; unavailable means no terrain evidence was supplied." }
+        width: { type: integer, minimum: 0 }
+        height: { type: integer, minimum: 0 }
+        bounds: { type: array, minItems: 4, maxItems: 4, items: { type: number } }
+        limitations: { type: array, items: { type: string } }
     CoverageGapResponse:
       type: object
       required: [geojson, stats, rf_contract]
@@ -702,6 +752,10 @@ components:
         frequency_ghz: { type: number }
         propagation_model: { type: string, const: urban_short_range }
         outdoor_los_state: { type: string, enum: [los, nlos, unknown] }
+        outdoor_los_classifier_id: { type: string }
+        outdoor_los_classification_basis: { type: string }
+        outdoor_terrain_status: { type: string, enum: [terrain_available, terrain_unavailable] }
+        outdoor_los_classification: { $ref: "#/components/schemas/LOSClassification" }
         outdoor_distance_m: { type: number }
         outdoor_rx_at_facade_dbm: { type: number }
         outdoor_path_loss_db: { type: number }
@@ -1236,10 +1290,12 @@ components:
           type: object
           required: [type, value_semantics, nodata_meaning, uses_sensitivity_mask]
           properties:
-            type: { type: string, const: received_signal_surface_fspl_walls }
+            type: { type: string }
             value_semantics: { type: string, const: raw_received_power_dbm }
             nodata_meaning: { type: string }
             uses_sensitivity_mask: { type: boolean, const: false }
+            los_classifier_id: { type: string, description: "Shared urban classifier ID when urban_short_range is selected." }
+            terrain_status: { type: string, enum: [terrain_available, terrain_unavailable] }
             assumptions: { type: array, items: { type: string } }
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
     OptimizeAzimuthResponse:
@@ -1257,6 +1313,7 @@ components:
       required: [rf_contract]
       properties:
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
+        terrain: { $ref: "#/components/schemas/TerrainMetadata" }
       additionalProperties: true
     InterferenceModel:
       type: object
@@ -1274,7 +1331,7 @@ components:
       type: object
       required: [geojson, demand_geojson, stats, model]
       properties:
-        geojson: { $ref: "#/components/schemas/FeatureCollection" }
+        geojson: { $ref: "#/components/schemas/FeatureCollection", description: "Sample properties include los_state, los_classifier_id, los_classification_basis, terrain_status, and los_classification evidence for serving cells." }
         demand_geojson: { $ref: "#/components/schemas/FeatureCollection" }
         stats: { type: object, additionalProperties: true }
         model: { $ref: "#/components/schemas/InterferenceModel" }

@@ -119,16 +119,18 @@ drive-test, channel-sounder, or PHY measurements.</p>
 used?</h3>
 <p>The default 2.6/28 GHz network model is
 <code>urban_short_range</code>, a deterministic 3GPP UMa median outdoor
-path-loss baseline with shared 2D footprint LOS/NLOS classification.
+path-loss baseline with shared height-aware centerline footprint
+LOS/NLOS classification. Known roof evidence can clear an intersected
+footprint; missing evidence is conservative NLOS.
 <code>legacy_fspl_walls</code> remains selectable and is the explicit
 fallback when urban inputs are outside scope;
 <code>research_sub_thz</code> is the research-only 140 GHz profile.
-Responses report requested/applied model identity, applicability, and
-fallback reason. See the Concept 4D design note. A separate
-<code>path-profile-diagnostic-v1</code> point-to-point profile can add
-optional COG/GeoTIFF terrain, building height, LOS/Fresnel evidence,
-material sensitivity, and a selected single knife-edge approximation
-without changing network RF.</p>
+Responses report requested/applied model identity, applicability,
+classifier basis, height evidence, and fallback reason. See the Concept
+4F.1 design note. A separate <code>path-profile-diagnostic-v1</code>
+point-to-point profile can add optional COG/GeoTIFF terrain, building
+height, LOS/Fresnel evidence, material sensitivity, and a selected
+single knife-edge approximation without changing network RF.</p>
 <h3 id="why-can-sinr-be-close-to-0-db">Why can SINR be close to 0
 dB?</h3>
 <p>When the serving cell and strongest co-channel interferer arrive at

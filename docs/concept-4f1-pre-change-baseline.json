@@ -1,0 +1,66 @@
+{
+  "concept": "4F.1",
+  "title": "Height-aware centerline obstruction pre-change baseline",
+  "captured_at": "2026-09-17",
+  "source": "real backend immediately before Concept 4F.1 implementation",
+  "command": "ATOM_REAL_E2E=1 npm run test:e2e -- e2e/real-backend.spec.js --project=desktop-1440",
+  "acceptance": {
+    "backend_startup": "passed",
+    "dataset_footprints": 161784,
+    "dataset_towers": 451,
+    "real_backend_tests_passed": 2,
+    "real_backend_tests_failed": 0,
+    "duration_seconds": 8.1
+  },
+  "scenario": {
+    "technology": "5g",
+    "frequency_ghz": 28,
+    "tx_power_dbm": 30,
+    "antenna_height_m": 25,
+    "receiver_height_m": 1.5,
+    "radius_m": 400,
+    "beam_width_deg": 120,
+    "rays": 72,
+    "tower_ids": [
+      "LTE-35084",
+      "LTE-35104",
+      "LTE-35877",
+      "LTE-313100",
+      "LTE-313110",
+      "LTE-322828"
+    ],
+    "azimuths_deg": [0, 60, 120, 180, 240, 300]
+  },
+  "classifier_before": {
+    "id": "footprint-2d-v1",
+    "rule": "outdoor-to-outdoor paths with one or more footprint boundary events are NLOS",
+    "height_evidence": "not exposed",
+    "terrain_status": "not exposed"
+  },
+  "urban_short_range": {
+    "baseline": {
+      "network_score": 13509330.8,
+      "composite_score": 0.391373,
+      "unique_demand_buildings": 12,
+      "unique_residential_buildings": 82,
+      "propagation_reach_score": 18330.7658,
+      "overlap_buildings": 10
+    },
+    "optimized": {
+      "azimuths_deg": [150, 300, 110, 300, 290, 100],
+      "network_score": 32568641.7,
+      "composite_score": 0.489148,
+      "unique_demand_buildings": 29,
+      "unique_residential_buildings": 137,
+      "propagation_reach_score": 22141.6608,
+      "overlap_buildings": 0,
+      "pareto_frontier_size": 23
+    }
+  },
+  "reference": "concept-4d-canonical-comparison.json",
+  "notes": [
+    "This artifact preserves the measured urban_short_range 2D-footprint baseline before height-aware classification.",
+    "No 4F.1 height provenance, terrain-status, or old-to-new transition fields existed in this pre-change response.",
+    "The 4F.1 implementation keeps the urban path-loss equations and optimizer objective definitions unchanged; any metric movement is measured as shared RF classification impact."
+  ]
+}

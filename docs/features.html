@@ -229,13 +229,17 @@ wall heuristic to empirical NLOS. Every mode applies configured transmit
 power, antenna gain, beam/radius eligibility, and antenna-pattern terms.
 Rays are segmented and returned as GeoJSON with model identity and
 explainability metadata.</p>
-<p>The selected model does not use terrain/building-height obstruction,
-diffraction, reflection-heavy multipath, fast fading, MIMO scheduling,
-or uplink behavior. A separate <code>path-profile-diagnostic-v1</code>
-point-to-point workflow adds terrain/building profiles, LOS and Fresnel
-classification, material-specific wall planning losses, and an
-explicitly selected single knife-edge approximation; its result is
-isolated from network RF. See the Concept 4D design note.</p>
+<p>The selected <code>urban_short_range</code> model uses deterministic
+height-aware footprint centerline obstruction with explicit height
+provenance. It does not use terrain in the current Ankara network
+evaluator, Fresnel clearance, diffraction, reflection-heavy multipath,
+fast fading, MIMO scheduling, or uplink behavior; unknown building
+heights are conservative NLOS. A separate
+<code>path-profile-diagnostic-v1</code> point-to-point workflow adds
+terrain/building profiles, LOS and Fresnel classification,
+material-specific wall planning losses, and an explicitly selected
+single knife-edge approximation; its result is isolated from network RF.
+See the Concept 4F.1 design note.</p>
 <h3 id="25d-path-profiles-and-fidelity">2.5D Path Profiles And
 Fidelity</h3>
 <ul>

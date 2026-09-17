@@ -58,26 +58,31 @@ type InterferenceFeature struct {
 }
 
 type InterferenceProperties struct {
-	SampleID               string   `json:"sample_id"`
-	ServingCellID          string   `json:"serving_cell_id,omitempty"`
-	ChannelID              string   `json:"channel_id,omitempty"`
-	RSRPDBm                *float64 `json:"rsrp_dbm"`
-	SINRDB                 *float64 `json:"sinr_db"`
-	RSRQDB                 *float64 `json:"rsrq_db"`
-	RSSIDBm                *float64 `json:"rssi_dbm"`
-	InterferenceDBm        *float64 `json:"interference_dbm"`
-	QualityClass           string   `json:"quality_class"`
-	Serviceable            bool     `json:"serviceable"`
-	InterferenceLimited    bool     `json:"interference_limited"`
-	WallCount              int      `json:"wall_count"`
-	StrongestInterfererID  string   `json:"strongest_interferer_id,omitempty"`
-	StrongestInterfererDBm *float64 `json:"strongest_interferer_dbm,omitempty"`
-	ContributingCells      int      `json:"contributing_cells"`
-	BuildingID             string   `json:"building_id,omitempty"`
-	DemandWeight           float64  `json:"demand_weight,omitempty"`
-	ResidentialDemand      float64  `json:"residential_demand,omitempty"`
-	TotalDemand            float64  `json:"total_demand,omitempty"`
-	Reason                 string   `json:"reason,omitempty"`
+	SampleID               string             `json:"sample_id"`
+	ServingCellID          string             `json:"serving_cell_id,omitempty"`
+	ChannelID              string             `json:"channel_id,omitempty"`
+	RSRPDBm                *float64           `json:"rsrp_dbm"`
+	SINRDB                 *float64           `json:"sinr_db"`
+	RSRQDB                 *float64           `json:"rsrq_db"`
+	RSSIDBm                *float64           `json:"rssi_dbm"`
+	InterferenceDBm        *float64           `json:"interference_dbm"`
+	QualityClass           string             `json:"quality_class"`
+	Serviceable            bool               `json:"serviceable"`
+	InterferenceLimited    bool               `json:"interference_limited"`
+	WallCount              int                `json:"wall_count"`
+	LOSState               string             `json:"los_state,omitempty"`
+	LOSClassifierID        string             `json:"los_classifier_id,omitempty"`
+	LOSClassificationBasis string             `json:"los_classification_basis,omitempty"`
+	TerrainStatus          string             `json:"terrain_status,omitempty"`
+	LOSClassification      *LOSClassification `json:"los_classification,omitempty"`
+	StrongestInterfererID  string             `json:"strongest_interferer_id,omitempty"`
+	StrongestInterfererDBm *float64           `json:"strongest_interferer_dbm,omitempty"`
+	ContributingCells      int                `json:"contributing_cells"`
+	BuildingID             string             `json:"building_id,omitempty"`
+	DemandWeight           float64            `json:"demand_weight,omitempty"`
+	ResidentialDemand      float64            `json:"residential_demand,omitempty"`
+	TotalDemand            float64            `json:"total_demand,omitempty"`
+	Reason                 string             `json:"reason,omitempty"`
 }
 
 type InterferenceStats struct {
@@ -143,12 +148,17 @@ type interferencePreset struct {
 }
 
 type receivedCellSignal struct {
-	cellID     string
-	channelID  string
-	rsrpDBm    float64
-	wallCount  int
-	loadFactor float64
-	preset     interferencePreset
+	cellID              string
+	channelID           string
+	rsrpDBm             float64
+	wallCount           int
+	losState            string
+	classifierID        string
+	classificationBasis string
+	terrainStatus       string
+	losClassification   *LOSClassification
+	loadFactor          float64
+	preset              interferencePreset
 }
 
 type gridSample struct {
@@ -587,16 +597,20 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 		if profile.HorizontalPatternID != "omni" && !AngleInBeam(bearing, effectiveAzimuth, profile.BeamWidthDeg) {
 			continue
 		}
-		pathGeometry, err := buildPropagationPathGeometryContext(ctx, origin, point, buildings)
+		pathGeometry, err := buildPropagationPathGeometryContextWithOptions(ctx, origin, point, buildings, propagationPathGeometryOptions{
+			TxHeightM: profile.AntennaHeightM,
+			RxHeightM: profile.ReceiverHeightM,
+		})
 		if err != nil {
 			return InterferenceProperties{}, err
 		}
-		losState, endpointCase, wallCount := pathGeometry.classify(point, distance)
+		losState, endpointCase, wallCount, losClassification := classifyPropagationPath(profile, pathGeometry, point, distance)
 		propagation := EvaluatePropagationLink(PropagationLinkContext{
 			Profile: profile, GroundDistanceM: distance,
 			HorizontalOffsetDeg: smallestAngleDifference(bearing, effectiveAzimuth),
 			CalibrationOffsetDB: req.CalibrationOffsetDB,
 			LOSState:            losState, EndpointCase: endpointCase,
+			LOSClassification:     losClassification,
 			BuildingDataAvailable: pathGeometry.available, WallEventCount: wallCount,
 		})
 		carrierRxDBm := propagation.ReceivedPowerDBm
@@ -605,12 +619,17 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 		}
 		rePowerOffsetDB := 10 * math.Log10(12*float64(towerPreset.resourceBlocks))
 		signals = append(signals, receivedCellSignal{
-			cellID:     tower.ID,
-			channelID:  profile.ChannelID,
-			rsrpDBm:    carrierRxDBm - rePowerOffsetDB,
-			wallCount:  wallCount,
-			loadFactor: profile.LoadFactor,
-			preset:     towerPreset,
+			cellID:              tower.ID,
+			channelID:           profile.ChannelID,
+			rsrpDBm:             carrierRxDBm - rePowerOffsetDB,
+			wallCount:           wallCount,
+			losState:            string(propagation.LOSState),
+			classifierID:        propagation.LOSClassifierID,
+			classificationBasis: propagation.ClassificationBasis,
+			terrainStatus:       propagation.TerrainStatus,
+			losClassification:   propagation.LOSClassification,
+			loadFactor:          profile.LoadFactor,
+			preset:              towerPreset,
 		})
 	}
 
@@ -649,17 +668,22 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 	interferenceLimited := serving.rsrpDBm >= InterferenceRSRPThresholdDBm && (sinrDB < InterferenceSINRThresholdDB || rsrqDB < InterferenceRSRQThresholdDB)
 
 	properties := InterferenceProperties{
-		ServingCellID:       serving.cellID,
-		ChannelID:           serving.channelID,
-		RSRPDBm:             floatPointer(roundOne(serving.rsrpDBm)),
-		SINRDB:              floatPointer(roundOne(sinrDB)),
-		RSRQDB:              floatPointer(roundOne(rsrqDB)),
-		RSSIDBm:             floatPointer(roundOne(rssiDBm)),
-		QualityClass:        interferenceQualityClass(serving.rsrpDBm, sinrDB, rsrqDB),
-		Serviceable:         serviceable,
-		InterferenceLimited: interferenceLimited,
-		WallCount:           serving.wallCount,
-		ContributingCells:   contributingCells,
+		ServingCellID:          serving.cellID,
+		ChannelID:              serving.channelID,
+		RSRPDBm:                floatPointer(roundOne(serving.rsrpDBm)),
+		SINRDB:                 floatPointer(roundOne(sinrDB)),
+		RSRQDB:                 floatPointer(roundOne(rsrqDB)),
+		RSSIDBm:                floatPointer(roundOne(rssiDBm)),
+		QualityClass:           interferenceQualityClass(serving.rsrpDBm, sinrDB, rsrqDB),
+		Serviceable:            serviceable,
+		InterferenceLimited:    interferenceLimited,
+		WallCount:              serving.wallCount,
+		LOSState:               serving.losState,
+		LOSClassifierID:        serving.classifierID,
+		LOSClassificationBasis: serving.classificationBasis,
+		TerrainStatus:          serving.terrainStatus,
+		LOSClassification:      serving.losClassification,
+		ContributingCells:      contributingCells,
 	}
 	if interferenceMW > 0 {
 		properties.InterferenceDBm = floatPointer(roundOne(interferenceDBm))

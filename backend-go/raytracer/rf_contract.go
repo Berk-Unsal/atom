@@ -114,11 +114,13 @@ func rfContractForProfile(profile *CellRFProfile, calibrationOffsetDB float64) R
 		contract.ModelStatus = "deterministic planning baseline"
 		contract.Reference = "3GPP TR 38.901 V19.4.0, Table 7.4.1-1 UMa path loss"
 		contract.Applicability = "0.5 < f_c < 100 GHz, 10 m <= d_2D <= 5000 m, known Tx/Rx heights in the deterministic UMa envelope, outdoor-to-outdoor endpoint, and footprint LOS/NLOS classification"
-		contract.PropagationDimensions = "2D footprint LOS/NLOS classification with 3D distance in the 3GPP UMa median path-loss equation"
-		contract.UsesBuildingHeight = false
+		contract.PropagationDimensions = "height-aware 2D footprint centerline visibility with flat-ground relative heights and 3D distance in the 3GPP UMa median path-loss equation"
+		contract.UsesBuildingHeight = true
+		contract.LOSClassificationRule = "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable"
+		contract.BuildingHeightNote = "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS"
 		contract.WallModel = "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB"
 		contract.LinkBudgetEquation = "P_rx = P_tx + G_tx - L_system + calibration - PL_3GPP_UMa(LOS|NLOS) - A_pattern"
-		contract.PropagationTerms = []string{"3GPP UMa PL1/PL2 breakpoint LOS path loss", "3GPP UMa NLOS max(LOS, PL') path loss", "2D footprint LOS/NLOS classifier"}
+		contract.PropagationTerms = []string{"3GPP UMa PL1/PL2 breakpoint LOS path loss", "3GPP UMa NLOS max(LOS, PL') path loss", "footprint-height-los-v1 geometric centerline classifier", "conservative unknown-height fallback"}
 	case ResearchSubTHzPropagationID:
 		contract.ModelFamily = "research sub-THz planning profile"
 		contract.Scenario = "research-only sub-THz planning"

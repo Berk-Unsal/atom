@@ -152,7 +152,7 @@ func LoadDatasetPack(root string) (*DatasetPack, error) {
 	if buildingIndex.Len() == 0 {
 		return nil, errors.New("building dataset contains no valid Polygon features")
 	}
-	terrainMeta := TerrainMetadata{Available: false, Limitations: []string{"dataset pack does not include a terrain layer; elevations use a zero-metre local datum"}}
+	terrainMeta := TerrainMetadata{Available: false, Status: TerrainStatusUnavailable, ElevationReference: "unavailable", Limitations: []string{"dataset pack does not include a terrain layer; height-aware network classification uses flat-ground relative heights and no terrain evidence"}}
 	var terrain TerrainModel
 	if terrainPath := layerPaths["terrain"]; terrainPath != "" {
 		layer := manifest.Layers["terrain"]

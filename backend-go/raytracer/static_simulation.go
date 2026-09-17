@@ -276,25 +276,29 @@ type RayFeature struct {
 }
 
 type RayProperties struct {
-	AngleDeg                  float64 `json:"angle_deg"`
-	RayIndex                  int     `json:"ray_index"`
-	SegmentIndex              int     `json:"segment_index"`
-	SignalDBm                 float64 `json:"signal_dbm"`
-	SignalStartDBm            float64 `json:"signal_start_dbm"`
-	SignalEndDBm              float64 `json:"signal_end_dbm"`
-	PathLossDB                float64 `json:"path_loss_db"`
-	WallLossDB                float64 `json:"wall_loss_db"`
-	IsBlocked                 bool    `json:"is_blocked"`
-	DistanceMeters            float64 `json:"distance_m"`
-	SegmentStartM             float64 `json:"segment_start_m"`
-	SegmentEndM               float64 `json:"segment_end_m"`
-	HitBuildingID             string  `json:"hit_building_id,omitempty"`
-	CandidateChecks           int     `json:"candidate_checks"`
-	PropagationModelID        string  `json:"propagation_model_id,omitempty"`
-	AppliedPropagationModelID string  `json:"applied_propagation_model_id,omitempty"`
-	LOSState                  string  `json:"los_state,omitempty"`
-	FallbackUsed              bool    `json:"fallback_used,omitempty"`
-	ApplicabilityReason       string  `json:"applicability_reason,omitempty"`
+	AngleDeg                  float64            `json:"angle_deg"`
+	RayIndex                  int                `json:"ray_index"`
+	SegmentIndex              int                `json:"segment_index"`
+	SignalDBm                 float64            `json:"signal_dbm"`
+	SignalStartDBm            float64            `json:"signal_start_dbm"`
+	SignalEndDBm              float64            `json:"signal_end_dbm"`
+	PathLossDB                float64            `json:"path_loss_db"`
+	WallLossDB                float64            `json:"wall_loss_db"`
+	IsBlocked                 bool               `json:"is_blocked"`
+	DistanceMeters            float64            `json:"distance_m"`
+	SegmentStartM             float64            `json:"segment_start_m"`
+	SegmentEndM               float64            `json:"segment_end_m"`
+	HitBuildingID             string             `json:"hit_building_id,omitempty"`
+	CandidateChecks           int                `json:"candidate_checks"`
+	PropagationModelID        string             `json:"propagation_model_id,omitempty"`
+	AppliedPropagationModelID string             `json:"applied_propagation_model_id,omitempty"`
+	LOSState                  string             `json:"los_state,omitempty"`
+	LOSClassifierID           string             `json:"los_classifier_id,omitempty"`
+	LOSClassificationBasis    string             `json:"los_classification_basis,omitempty"`
+	TerrainStatus             string             `json:"terrain_status,omitempty"`
+	LOSClassification         *LOSClassification `json:"los_classification,omitempty"`
+	FallbackUsed              bool               `json:"fallback_used,omitempty"`
+	ApplicabilityReason       string             `json:"applicability_reason,omitempty"`
 }
 
 type LineGeometry struct {
@@ -1541,12 +1545,15 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 	wallLossPerIntersection := PenetrationLossForFrequencyGHz(profile.FrequencyGHz)
 	horizontalOffsetDeg := smallestAngleDifference(angle, profile.EffectiveAzimuth(req.AzimuthDeg))
 	castEndpoint := DestinationPoint(origin, angle, castDistance)
-	pathGeometry, err := buildPropagationPathGeometryContext(ctx, origin, castEndpoint, buildings)
+	pathGeometry, err := buildPropagationPathGeometryContextWithOptions(ctx, origin, castEndpoint, buildings, propagationPathGeometryOptions{
+		TxHeightM: profile.AntennaHeightM,
+		RxHeightM: profile.ReceiverHeightM,
+	})
 	if err != nil {
 		return nil, rayTerminal{}, err
 	}
 	propagationAt := func(distanceMeters float64, point Point, attenuationDB float64) PropagationResult {
-		losState, endpointCase, geometryWallEvents := pathGeometry.classify(point, distanceMeters)
+		losState, endpointCase, geometryWallEvents, losClassification := classifyPropagationPath(profile, pathGeometry, point, distanceMeters)
 		wallEventCount := geometryWallEvents
 		if wallLossPerIntersection > 0 {
 			wallEventCount = int(math.Max(float64(wallEventCount), math.Round(math.Max(attenuationDB, 0)/wallLossPerIntersection)))
@@ -1555,6 +1562,7 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 			Profile: profile, GroundDistanceM: distanceMeters,
 			HorizontalOffsetDeg: horizontalOffsetDeg, CalibrationOffsetDB: req.CalibrationOffsetDB,
 			LOSState: losState, EndpointCase: endpointCase,
+			LOSClassification:     losClassification,
 			BuildingDataAvailable: pathGeometry.available, WallEventCount: wallEventCount,
 		})
 	}
@@ -1803,13 +1811,21 @@ func wallIntersectionsForSegmentContext(ctx context.Context, origin Point, start
 		return []wallIntersection{}, 0, nil
 	}
 	candidates := buildings.SearchRay(start, end)
+	intersections, err := wallIntersectionsForCandidatesContext(ctx, origin, start, end, candidates)
+	return intersections, len(candidates), err
+}
+
+func wallIntersectionsForCandidatesContext(ctx context.Context, origin Point, start Point, end Point, candidates []*BuildingFootprint) ([]wallIntersection, error) {
 	intersections := make([]wallIntersection, 0, len(candidates))
 
 	for index, building := range candidates {
 		if index%16 == 0 {
 			if err := ctx.Err(); err != nil {
-				return nil, len(candidates), err
+				return nil, err
 			}
+		}
+		if building == nil {
+			continue
 		}
 		if PointInPolygon(origin, building.Vertices) {
 			continue
@@ -1817,7 +1833,7 @@ func wallIntersectionsForSegmentContext(ctx context.Context, origin Point, start
 
 		points, err := segmentPolygonIntersectionsContext(ctx, start, end, building.Vertices)
 		if err != nil {
-			return nil, len(candidates), err
+			return nil, err
 		}
 		for _, point := range points {
 			distance := ApproxDistanceMeters(start, point)
@@ -1836,7 +1852,7 @@ func wallIntersectionsForSegmentContext(ctx context.Context, origin Point, start
 	sort.SliceStable(intersections, func(i, j int) bool {
 		return intersections[i].distanceMeters < intersections[j].distanceMeters
 	})
-	return intersections, len(candidates), nil
+	return intersections, nil
 }
 
 func appendUniqueWallIntersection(intersections []wallIntersection, candidate wallIntersection) []wallIntersection {
@@ -1954,6 +1970,10 @@ func makeRaySegmentFeature(
 			PropagationModelID:        propagation.ModelID,
 			AppliedPropagationModelID: propagation.AppliedModelID,
 			LOSState:                  string(propagation.LOSState),
+			LOSClassifierID:           propagation.LOSClassifierID,
+			LOSClassificationBasis:    propagation.ClassificationBasis,
+			TerrainStatus:             propagation.TerrainStatus,
+			LOSClassification:         propagation.LOSClassification,
 			FallbackUsed:              propagation.FallbackUsed,
 			ApplicabilityReason:       propagation.ApplicabilityReason,
 		},

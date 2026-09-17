@@ -22,22 +22,35 @@ const (
 )
 
 type TerrainMetadata struct {
-	Available      bool      `json:"available"`
-	Source         string    `json:"source,omitempty"`
-	Format         string    `json:"format,omitempty"`
-	CRS            string    `json:"crs,omitempty"`
-	Width          int       `json:"width,omitempty"`
-	Height         int       `json:"height,omitempty"`
-	Bounds         []float64 `json:"bounds,omitempty"`
-	ResolutionXDeg float64   `json:"resolution_x_deg,omitempty"`
-	ResolutionYDeg float64   `json:"resolution_y_deg,omitempty"`
-	NoData         *float64  `json:"nodata,omitempty"`
-	Limitations    []string  `json:"limitations,omitempty"`
+	Available          bool      `json:"available"`
+	Status             string    `json:"status"`
+	Source             string    `json:"source,omitempty"`
+	Format             string    `json:"format,omitempty"`
+	CRS                string    `json:"crs,omitempty"`
+	ElevationReference string    `json:"elevation_reference,omitempty"`
+	Width              int       `json:"width,omitempty"`
+	Height             int       `json:"height,omitempty"`
+	Bounds             []float64 `json:"bounds,omitempty"`
+	ResolutionXDeg     float64   `json:"resolution_x_deg,omitempty"`
+	ResolutionYDeg     float64   `json:"resolution_y_deg,omitempty"`
+	NoData             *float64  `json:"nodata,omitempty"`
+	Limitations        []string  `json:"limitations,omitempty"`
 }
 
 type TerrainModel interface {
 	Elevation(Point) (float64, bool)
 	Metadata() TerrainMetadata
+}
+
+func normalizeTerrainMetadata(metadata TerrainMetadata) TerrainMetadata {
+	if metadata.Status == "" {
+		if metadata.Available {
+			metadata.Status = TerrainStatusAvailable
+		} else {
+			metadata.Status = TerrainStatusUnavailable
+		}
+	}
+	return metadata
 }
 
 type tiffEntry struct {
@@ -215,8 +228,9 @@ func LoadGeoTIFFTerrain(path, declaredCRS string) (TerrainModel, error) {
 	}
 	limitations := []string{"north-up EPSG:4326 rasters only", "single-band integer or IEEE floating-point samples", "none/DEFLATE compression; predictor 1 or integer predictor 2"}
 	terrain.metadata = TerrainMetadata{
-		Available: true, Source: filepath.Base(path), Format: "cog-geotiff", CRS: crs,
-		Width: width, Height: height,
+		Available: true, Status: TerrainStatusAvailable, Source: filepath.Base(path), Format: "cog-geotiff", CRS: crs,
+		ElevationReference: "unspecified; provider must distinguish DTM from DSM before height fusion",
+		Width:              width, Height: height,
 		Bounds:         []float64{originX, originY - float64(height)*scales[1], originX + float64(width)*scales[0], originY},
 		ResolutionXDeg: scales[0], ResolutionYDeg: scales[1], NoData: terrain.nodata, Limitations: limitations,
 	}

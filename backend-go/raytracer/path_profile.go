@@ -239,9 +239,9 @@ func AnalyzePathProfileContext(ctx context.Context, request PathProfileRequest, 
 	if sampleCount > MaxPathProfileSamples {
 		return PathProfileResponse{}, errors.New("path profile sample limit exceeded")
 	}
-	terrainMeta := TerrainMetadata{Available: false, Limitations: []string{"dataset pack does not include terrain; a zero-metre local datum is used"}}
+	terrainMeta := TerrainMetadata{Available: false, Status: TerrainStatusUnavailable, ElevationReference: "unavailable", Limitations: []string{"terrain unavailable; a zero-metre local datum is used only as an explicit relative profile reference, not as measured elevation"}}
 	if terrain != nil {
-		terrainMeta = terrain.Metadata()
+		terrainMeta = normalizeTerrainMetadata(terrain.Metadata())
 	}
 	txGround, txTerrainAvailable := terrainElevation(terrain, request.Transmitter)
 	rxGround, rxTerrainAvailable := terrainElevation(terrain, request.Receiver)
@@ -335,7 +335,7 @@ func AnalyzePathProfileContext(ctx context.Context, request PathProfileRequest, 
 		txTerrainAvailable, rxTerrainAvailable = false, false
 	}
 	if !txTerrainAvailable || !rxTerrainAvailable {
-		terrainMeta.Limitations = appendUniqueString(terrainMeta.Limitations, "one or both endpoints fall outside valid terrain pixels; missing elevations use the zero-metre local datum")
+		terrainMeta.Limitations = appendUniqueString(terrainMeta.Limitations, "one or both endpoints fall outside valid terrain pixels; missing terrain remains unavailable and the relative profile reference is not measured elevation")
 	}
 	return PathProfileResponse{
 		DistanceM: round1(distance), Classification: classification,

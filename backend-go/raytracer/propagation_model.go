@@ -26,7 +26,7 @@ const (
 )
 
 const (
-	UrbanShortRangeModelDescription = "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic footprint LOS/NLOS classification"
+	UrbanShortRangeModelDescription = "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification"
 	LegacyPropagationDescription    = "Legacy FSPL with frequency-dependent footprint wall-event loss"
 	ResearchSubTHzDescription       = "Research-only sub-THz planning profile using the legacy conservative attenuation envelope"
 )
@@ -46,14 +46,16 @@ type PropagationLOSState string
 type PropagationEndpointCase string
 
 // PropagationLinkContext is the complete link-level input shared by all
-// propagation engines. Building height is intentionally absent: the selected
-// urban baseline uses known Tx/Rx heights and a 2D footprint LOS/NLOS label.
+// propagation engines. The urban baseline receives one shared geometric
+// classification; legacy and research callers can continue to provide the
+// historical 2D state without opting into the height-aware classifier.
 type PropagationLinkContext struct {
 	Profile               CellRFProfile
 	GroundDistanceM       float64
 	HorizontalOffsetDeg   float64
 	CalibrationOffsetDB   float64
 	LOSState              PropagationLOSState
+	LOSClassification     *LOSClassification
 	EndpointCase          PropagationEndpointCase
 	BuildingDataAvailable bool
 	WallEventCount        int
@@ -86,21 +88,26 @@ type PropagationPathTerms struct {
 // evaluator. ModelID is the requested model; AppliedModelID identifies the
 // numeric evaluator actually used after applicability and fallback checks.
 type PropagationResult struct {
-	ModelID             string                  `json:"model_id"`
-	AppliedModelID      string                  `json:"applied_model_id"`
-	ModelDescription    string                  `json:"model_description"`
-	Applicable          bool                    `json:"applicable"`
-	ApplicabilityReason string                  `json:"applicability_reason"`
-	ApplicabilityDetail string                  `json:"applicability_detail,omitempty"`
-	FallbackUsed        bool                    `json:"fallback_used"`
-	FallbackModelID     string                  `json:"fallback_model_id,omitempty"`
-	LOSState            PropagationLOSState     `json:"los_state"`
-	EndpointCase        PropagationEndpointCase `json:"endpoint_case"`
-	DistanceM           float64                 `json:"distance_m"`
-	SlantDistanceM      float64                 `json:"slant_distance_m"`
-	ReceivedPowerDBm    float64                 `json:"received_power_dbm"`
-	TotalPathLossDB     float64                 `json:"total_path_loss_db"`
-	Terms               PropagationPathTerms    `json:"terms"`
+	ModelID                  string                  `json:"model_id"`
+	AppliedModelID           string                  `json:"applied_model_id"`
+	ModelDescription         string                  `json:"model_description"`
+	Applicable               bool                    `json:"applicable"`
+	ApplicabilityReason      string                  `json:"applicability_reason"`
+	ApplicabilityDetail      string                  `json:"applicability_detail,omitempty"`
+	FallbackUsed             bool                    `json:"fallback_used"`
+	FallbackModelID          string                  `json:"fallback_model_id,omitempty"`
+	LOSState                 PropagationLOSState     `json:"los_state"`
+	EndpointCase             PropagationEndpointCase `json:"endpoint_case"`
+	LOSClassifierID          string                  `json:"los_classifier_id,omitempty"`
+	LOSClassifierDescription string                  `json:"los_classifier_description,omitempty"`
+	TerrainStatus            string                  `json:"terrain_status,omitempty"`
+	ClassificationBasis      string                  `json:"classification_basis,omitempty"`
+	LOSClassification        *LOSClassification      `json:"los_classification,omitempty"`
+	DistanceM                float64                 `json:"distance_m"`
+	SlantDistanceM           float64                 `json:"slant_distance_m"`
+	ReceivedPowerDBm         float64                 `json:"received_power_dbm"`
+	TotalPathLossDB          float64                 `json:"total_path_loss_db"`
+	Terms                    PropagationPathTerms    `json:"terms"`
 }
 
 // PropagationModel is the narrow abstraction implemented by every selectable
@@ -234,9 +241,9 @@ func PropagationModelCatalog() []PropagationModelInfo {
 			ID: UrbanShortRangePropagationID, Description: UrbanShortRangeModelDescription,
 			ModelFamily: "3GPP UMa outdoor urban median path loss", Scenario: "urban-short-range-outdoor-to-outdoor",
 			Formula:         "PL_LOS = PL1/PL2 with dBP; PL_NLOS = max(PL_LOS, PL') using Table 7.4.1-1",
-			FallbackModelID: LegacyPropagationModelID, BuildingHeightUsed: false, RequiresBuildingData: true, RequiresLOSOrNLOS: true,
+			FallbackModelID: LegacyPropagationModelID, BuildingHeightUsed: true, RequiresBuildingData: true, RequiresLOSOrNLOS: true,
 			FrequencyMinGHz: 0.5, FrequencyMaxGHz: 100, DistanceMinM: 10, DistanceMaxM: 5000,
-			Limitations: []string{"median outdoor path loss only", "no shadow fading, diffraction, reflection, MIMO, or indoor entry", "building heights are not used"},
+			Limitations: []string{"median outdoor path loss only", "no shadow fading, Fresnel clearance, diffraction, or reflection", "unknown building heights use conservative 2D NLOS", "terrain is unavailable in the current Ankara network evaluator; flat-ground relative-height assumption applies"},
 		},
 		{
 			ID: LegacyPropagationModelID, Description: LegacyPropagationDescription,
@@ -305,7 +312,8 @@ func fallbackPropagationResult(ctx PropagationLinkContext, requestedID string, a
 }
 
 func propagationResultFromTerms(model PropagationModel, ctx PropagationLinkContext, terms PropagationPathTerms) PropagationResult {
-	return PropagationResult{
+	classification := ctx.LOSClassification
+	result := PropagationResult{
 		ModelID: model.ID(), AppliedModelID: model.ID(), ModelDescription: model.Description(),
 		Applicable: true, ApplicabilityReason: RFReferenceReasonApplicable,
 		LOSState: ctx.LOSState, EndpointCase: ctx.EndpointCase,
@@ -313,6 +321,14 @@ func propagationResultFromTerms(model PropagationModel, ctx PropagationLinkConte
 		ReceivedPowerDBm: terms.EIRPDBm - terms.TotalPathLossDB,
 		TotalPathLossDB:  terms.TotalPathLossDB, Terms: terms,
 	}
+	if classification != nil {
+		result.LOSClassifierID = classification.ClassifierID
+		result.LOSClassifierDescription = classification.ClassifierDescription
+		result.TerrainStatus = classification.TerrainStatus
+		result.ClassificationBasis = classification.ClassificationBasis
+		result.LOSClassification = classification
+	}
+	return result
 }
 
 func propagationPatternTerms(profile CellRFProfile, distanceM, calibrationOffsetDB, horizontalOffsetDeg float64) (float64, float64, float64, float64) {
@@ -369,42 +385,85 @@ func urbanPropagationTerms(profile CellRFProfile, distanceM float64, state Propa
 }
 
 type propagationPathGeometry struct {
-	available     bool
-	txInside      bool
-	buildings     *BuildingIndex
-	intersections []wallIntersection
+	available                  bool
+	txInside                   bool
+	buildings                  *BuildingIndex
+	intersections              []wallIntersection
+	heightEvidence             []buildingPathEvidence
+	excludedBuildingIDs        map[string]struct{}
+	excludedLogicalBuildingIDs map[string]struct{}
+	totalDistanceM             float64
+	txHeightM                  float64
+	rxHeightM                  float64
+	terrainStatus              string
 }
 
 func buildPropagationPathGeometryContext(ctx context.Context, origin, endpoint Point, buildings *BuildingIndex) (propagationPathGeometry, error) {
-	geometry := propagationPathGeometry{buildings: buildings}
+	return buildPropagationPathGeometryContextWithOptions(ctx, origin, endpoint, buildings, propagationPathGeometryOptions{})
+}
+
+func buildPropagationPathGeometryContextWithOptions(ctx context.Context, origin, endpoint Point, buildings *BuildingIndex, options propagationPathGeometryOptions) (propagationPathGeometry, error) {
+	geometry := propagationPathGeometry{
+		buildings:                  buildings,
+		excludedBuildingIDs:        options.ExcludedBuildingIDs,
+		excludedLogicalBuildingIDs: options.ExcludedLogicalBuildingIDs,
+		totalDistanceM:             ApproxDistanceMeters(origin, endpoint),
+		txHeightM:                  options.TxHeightM,
+		rxHeightM:                  options.RxHeightM,
+		terrainStatus:              terrainStatusForModel(options.Terrain),
+	}
 	if buildings == nil || buildings.Len() == 0 {
 		return geometry, nil
 	}
 	geometry.available = true
-	geometry.txInside = buildings.BuildingAt(origin) != nil
-	intersections, _, err := wallIntersectionsForSegmentContext(ctx, origin, origin, endpoint, buildings)
+	candidates := buildings.SearchRay(origin, endpoint)
+	for _, candidate := range candidates {
+		if candidate == nil || geometry.isExcludedBuilding(candidate) {
+			continue
+		}
+		if PointInPolygon(origin, candidate.Vertices) {
+			geometry.txInside = true
+		}
+	}
+	intersections, err := wallIntersectionsForCandidatesContext(ctx, origin, origin, endpoint, candidates)
 	if err != nil {
 		return propagationPathGeometry{}, err
 	}
 	geometry.intersections = intersections
+	geometry.heightEvidence = make([]buildingPathEvidence, 0, len(candidates))
+	logicalEvidence := make(map[string]int, len(candidates))
+	for index, candidate := range candidates {
+		if index%16 == 0 {
+			if err := ctx.Err(); err != nil {
+				return propagationPathGeometry{}, err
+			}
+		}
+		if candidate == nil || geometry.isExcludedBuilding(candidate) || PointInPolygon(origin, candidate.Vertices) {
+			continue
+		}
+		intervals, intervalErr := buildingPathIntervalsContext(ctx, origin, endpoint, candidate.Vertices)
+		if intervalErr != nil {
+			return propagationPathGeometry{}, intervalErr
+		}
+		if len(intervals) > 0 {
+			logicalID := logicalBuildingID(candidate)
+			if existingIndex, ok := logicalEvidence[logicalID]; ok {
+				existing := &geometry.heightEvidence[existingIndex]
+				existing.intervals = mergeLOSIntervals(append(existing.intervals, intervals...))
+				existing.partIDs = append(existing.partIDs, candidate.ID)
+				continue
+			}
+			logicalEvidence[logicalID] = len(geometry.heightEvidence)
+			geometry.heightEvidence = append(geometry.heightEvidence, buildingPathEvidence{
+				building: candidate, logicalBuilding: logicalID, partIDs: []string{candidate.ID}, intervals: intervals,
+			})
+		}
+	}
 	return geometry, nil
 }
 
 func (geometry propagationPathGeometry) classify(point Point, distanceM float64) (PropagationLOSState, PropagationEndpointCase, int) {
-	if !geometry.available || geometry.buildings == nil {
-		return PropagationLOSState(PropagationLOSUnknown), PropagationEndpointCase(PropagationEndpointUnknown), 0
-	}
-	if geometry.txInside {
-		return PropagationLOSState(PropagationLOSUnknown), PropagationEndpointCase(PropagationEndpointIndoorTx), 0
-	}
-	if building := geometry.buildings.BuildingAt(point); building != nil && !pointOnPolygonBoundary(point, building.Vertices) {
-		return PropagationLOSState(PropagationLOSUnknown), PropagationEndpointCase(PropagationEndpointIndoorRx), countPropagationWallEvents(geometry.intersections, distanceM)
-	}
-	wallEvents := countPropagationWallEvents(geometry.intersections, distanceM)
-	if wallEvents > 0 {
-		return PropagationLOSState(PropagationNLOS), PropagationEndpointCase(PropagationEndpointOutdoorO2O), wallEvents
-	}
-	return PropagationLOSState(PropagationLOS), PropagationEndpointCase(PropagationEndpointOutdoorO2O), 0
+	return geometry.classify2D(point, distanceM)
 }
 
 func pointOnPolygonBoundary(point Point, polygon []Point) bool {

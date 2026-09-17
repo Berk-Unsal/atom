@@ -141,12 +141,13 @@ func writeBuildingFeatureCSV(c *gin.Context, collection raytracer.BuildingGeoJSO
 	c.Header("Content-Disposition", `attachment; filename="buildings.csv"`)
 	c.Status(http.StatusOK)
 	writer := csv.NewWriter(c.Writer)
-	_ = writer.Write([]string{"id", "geometry_wkt", "building", "name", "amenity", "height_m", "height_source", "material", "demand_weight", "residential_demand", "density_score"})
+	_ = writer.Write([]string{"id", "geometry_wkt", "building", "logical_building_id", "name", "amenity", "height_m", "height_source", "height_evidence_m", "height_evidence_source", "height_evidence_tag", "material", "demand_weight", "residential_demand", "density_score"})
 	for _, feature := range collection.Features {
 		properties := feature.Properties
 		_ = writer.Write([]string{
-			feature.ID, polygonWKT(feature.Geometry.Coordinates), properties.Building, properties.Name, properties.Amenity,
-			strconv.FormatFloat(properties.HeightMeters, 'f', -1, 64), properties.HeightSource, properties.Material,
+			feature.ID, polygonWKT(feature.Geometry.Coordinates), properties.Building, properties.LogicalBuildingID, properties.Name, properties.Amenity,
+			strconv.FormatFloat(properties.HeightMeters, 'f', -1, 64), properties.HeightSource,
+			strconv.FormatFloat(properties.HeightEvidenceMeters, 'f', -1, 64), properties.HeightEvidenceSource, properties.HeightEvidenceTag, properties.Material,
 			strconv.FormatFloat(properties.DemandWeight, 'f', -1, 64), strconv.FormatFloat(properties.ResidentialDemand, 'f', -1, 64), strconv.FormatFloat(properties.DensityScore, 'f', -1, 64),
 		})
 	}

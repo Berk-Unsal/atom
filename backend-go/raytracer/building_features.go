@@ -27,10 +27,14 @@ type PolygonGeometry struct {
 
 type BuildingFeatureProperties struct {
 	Building              string  `json:"building,omitempty"`
+	LogicalBuildingID     string  `json:"logical_building_id,omitempty"`
 	Name                  string  `json:"name,omitempty"`
 	Amenity               string  `json:"amenity,omitempty"`
 	HeightMeters          float64 `json:"height_m"`
 	HeightSource          string  `json:"height_source"`
+	HeightEvidenceMeters  float64 `json:"height_evidence_m"`
+	HeightEvidenceSource  string  `json:"height_evidence_source"`
+	HeightEvidenceTag     string  `json:"height_evidence_tag,omitempty"`
 	Material              string  `json:"material"`
 	DemandWeight          float64 `json:"demand_weight"`
 	ResidentialDemand     float64 `json:"residential_demand"`
@@ -78,8 +82,10 @@ func buildingGeoJSONFeature(building *BuildingFootprint) BuildingGeoJSONFeature 
 	return BuildingGeoJSONFeature{
 		Type: "Feature", ID: building.ID,
 		Properties: BuildingFeatureProperties{
-			Building: building.Tags["building"], Name: building.Tags["name"], Amenity: building.Tags["amenity"],
-			HeightMeters: building.HeightMeters, HeightSource: building.HeightSource, Material: building.Material,
+			Building: building.Tags["building"], LogicalBuildingID: building.LogicalID, Name: building.Tags["name"], Amenity: building.Tags["amenity"],
+			HeightMeters: building.HeightMeters, HeightSource: building.HeightSource,
+			HeightEvidenceMeters: building.HeightEvidenceMeters, HeightEvidenceSource: building.HeightEvidenceSource,
+			HeightEvidenceTag: building.HeightEvidenceTag, Material: building.Material,
 			DemandWeight: building.DemandWeight, ResidentialDemand: building.ResidentialDemand,
 			DensityScore: building.DensityScore, WeightConfidence: building.WeightConfidence,
 			ResidentialConfidence: building.ResidentialConfidence,

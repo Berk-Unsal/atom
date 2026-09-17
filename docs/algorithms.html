@@ -78,6 +78,9 @@ Physics page contents">
       <li><a href="#concept-4d-urban-short-range-propagation"
       id="toc-concept-4d-urban-short-range-propagation">Concept 4D:
       Urban Short-Range Propagation</a></li>
+      <li><a href="#concept-4f1-height-aware-centerline-obstruction"
+      id="toc-concept-4f1-height-aware-centerline-obstruction">Concept
+      4F.1: Height-Aware Centerline Obstruction</a></li>
       <li><a href="#concept-4e-building-entry"
       id="toc-concept-4e-building-entry">Concept 4E: Building
       Entry</a></li>
@@ -131,14 +134,13 @@ Short-Range Propagation</h2>
 <p>The production planning default for 2.6 GHz and 28 GHz is
 <code>urban_short_range</code>, a deterministic 3GPP TR 38.901 UMa
 outdoor-to-outdoor median path-loss baseline. It uses known Tx/Rx
-heights, 2D footprint distance, and one shared LOS/NLOS classifier
-across rays, surfaces, interference, and network scoring. The classifier
-marks a path LOS when it has no footprint boundary event, NLOS when it
-crosses one or more footprints, and separately identifies indoor
-endpoints. Missing footprint data, unknown LOS/NLOS, unsupported
-endpoint cases, or out-of-envelope distances produce an explicit
-applicability result and use <code>legacy_fspl_walls</code> as the
-reported fallback.</p>
+heights and one shared <code>footprint-height-los-v1</code> centerline
+classifier across rays, surfaces, interference, and network scoring.
+Known building heights can clear a footprint when the roof stays below
+the Tx-to-Rx line; unknown-height intersections are conservative NLOS.
+Missing footprint data, unknown LOS/NLOS, unsupported endpoint cases, or
+out-of-envelope distances produce an explicit applicability result and
+use <code>legacy_fspl_walls</code> as the reported fallback.</p>
 <p>The urban formula uses metres, GHz, base-10 logarithms, and the 3GPP
 breakpoint:</p>
 <pre class="text"><code>d3D = sqrt(d2D^2 + (hBS - hUT)^2)
@@ -150,6 +152,20 @@ wall heuristic. The <code>research_sub_thz</code> mode is the explicit
 140 GHz safety profile, while the separate
 <code>Concept 4D design note</code> records scope, limitations, fallback
 policy, and references.</p>
+<h2 id="concept-4f1-height-aware-centerline-obstruction">Concept 4F.1:
+Height-Aware Centerline Obstruction</h2>
+<p>The height-aware branch keeps the equations above unchanged and
+changes only the urban LOS/NLOS input. For each footprint interval
+<code>[t_entry, t_exit]</code>, it compares the roof evidence with
+<code>h_los(t) = h_tx + (h_rx - h_tx)t</code> on flat ground. Exact roof
+contact is deterministic obstruction; no Fresnel or diffraction margin
+is applied. Explicit <code>height</code> tags are
+<code>observed_tag</code>, <code>building:levels</code> uses 3 m per
+level and is <code>derived_from_levels</code>, and the existing generic
+9 m fallback is <code>unavailable</code> evidence and therefore
+conservative NLOS. See the <code>Concept 4F.1 design note</code> for the
+result metadata, multipart identity contract, terrain status, and Ankara
+audit.</p>
 <h2 id="concept-4e-building-entry">Concept 4E: Building Entry</h2>
 <p>The separate <code>Concept 4E design note</code> evaluates a
 representative building facade in one batched analysis. It first
@@ -200,9 +216,8 @@ and
 are relative analytic antenna-pattern attenuations</li>
 </ul>
 <p>This compatibility mode uses horizontal building-footprint geometry
-and height-aware FSPL; it does not use terrain, building-height
-obstruction, diffraction, reflection, fast fading, or multipath. A
-positive
+and height-aware FSPL; it does not use the urban roof classifier,
+terrain, diffraction, reflection, fast fading, or multipath. A positive
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
 raises predicted received power by the same global dB offset. The
 separate path-profile workflow is an advanced point-to-point diagnostic

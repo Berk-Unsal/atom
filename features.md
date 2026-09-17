@@ -25,7 +25,7 @@ Project history is local to the browser. A.T.O.M does not provide accounts, shar
 
 - Place cells manually on the map, drag editable cells, edit coordinates, duplicate or delete them, and import bounded CSV or GeoJSON inventories.
 - Search the inventory and select cells without losing their per-cell overrides.
-- Configure technology, band, frequency, bandwidth, channel, duplex mode, transmit power, antenna gain, system loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and receiver sensitivity independently for every cell.
+- Configure technology, band, frequency, bandwidth, channel, duplex mode, conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and receiver sensitivity independently for every cell.
 - Validate technology/frequency compatibility and all numeric/text limits before RF execution.
 - Persist the complete inventory and profile overrides in schema-v2 project drafts and scenarios; schema-v1 files remain importable.
 - Include resolved per-cell profiles in simulation, network, interference, recommendation, measurement, and planning-report contracts.
@@ -48,7 +48,9 @@ The backend exposes explicit propagation modes. `urban_short_range` is the defau
 FSPL(dB) = 32.45 + 20log10(distance_m) + 20log10(frequency_GHz)
 ```
 
-The urban mode applies the 3GPP UMa LOS/NLOS median path-loss formula after shared 2D footprint classification; it does not add the legacy wall heuristic to empirical NLOS. Every mode applies configured transmit power, antenna gain, beam/radius eligibility, and antenna-pattern terms. Rays are segmented and returned as GeoJSON with model identity and explainability metadata.
+The urban mode applies the 3GPP UMa LOS/NLOS median path-loss formula after shared 2D footprint classification; it does not add the legacy wall heuristic to empirical NLOS. Every mode applies the explicit link ledger: conducted TX power, absolute TX boresight gain, relative TX pattern attenuation, propagation/building loss, scalar RX gain, system loss, polarization loss, and calibration. Boresight and directional EIRP are reported separately; the legacy effective-transmit alias is retained only for compatibility. Rays are segmented and returned as GeoJSON with model identity, antenna semantics, and explainability metadata.
+
+The `ideal-sector`, `cosine-sector`, and panel presets preserve their deterministic analytic equations and hard beam eligibility. The optional `3gpp-single-element` preset is a full-azimuth single-element reference based on [3GPP TR 38.901 §7.3/Table 7.3-1](https://www.etsi.org/deliver/etsi_tr/138900_138999/138901/19.04.00_60/tr_138901v190400p.pdf); it combines bounded horizontal and vertical cuts with a 30 dB cap and does not model an array factor, beamforming, MIMO, codebooks, vendor diagrams, or measured sidelobes. Positive mechanical downtilt points the antenna boresight downward; mechanical and electrical tilt remain distinct inputs and sum for the current analytic/reference evaluation.
 
 The selected `urban_short_range` model uses deterministic height-aware footprint centerline obstruction with explicit height provenance. It does not use terrain in the current Ankara network evaluator, Fresnel clearance, diffraction, reflection-heavy multipath, fast fading, MIMO scheduling, or uplink behavior; unknown building heights are conservative NLOS. A separate `path-profile-diagnostic-v1` point-to-point workflow adds terrain/building profiles, LOS and Fresnel classification, material-specific wall planning losses, and an explicitly selected single knife-edge approximation; its result is isolated from network RF. See the [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md).
 
@@ -57,7 +59,7 @@ The selected `urban_short_range` model uses deterministic height-aware footprint
 - Loads an optional north-up EPSG:4326 COG/GeoTIFF terrain layer lazily by strip/tile and samples it bilinearly.
 - Combines ground elevation, inferred or explicit building height, transmitter/receiver height above ground, direct geometric LOS, 60% first-Fresnel clearance, and a dominant obstruction. Fresnel concern never changes geometric LOS/NLOS.
 - Provides `terrain-profile` (30 MHz–6 GHz), `urban-short-range` (300 MHz–100 GHz), and explicitly out-of-range research profiles. These applicability labels are tracked against [ITU-R P.1812-8 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf) and [ITU-R P.1411-13 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf); the implementation is an inspectable planning approximation, not either complete method.
-- Exposes free-space, antenna-pattern, system, wall, diffraction, clutter, vegetation, atmospheric-gas, rain, calibration, and shadow-sensitivity components rather than hiding them in one total.
+- Exposes free-space, antenna-pattern, conducted-power, TX boresight-gain, directional-EIRP, RX-gain, system, polarization, wall, diffraction, clutter, vegetation, atmospheric-gas, rain, calibration, and shadow-sensitivity components rather than hiding them in one total.
 - Uses the isolated [Concept 4F.2 P.526-16 single-edge diagnostic](concept-4f2-diffraction-diagnostic.md) only when explicit or levels-derived roof evidence is available. Generic fallback heights are unavailable for diffraction; the diagnostic is never added to canonical UMa NLOS. Material, gas, and rain controls are planning inputs informed by [ITU-R P.2040](https://www.itu.int/rec/r-rec-p.2040/en), [ITU-R P.676](https://www.itu.int/rec/R-REC-P.676/en), and [ITU-R P.838](https://www.itu.int/rec/R-REC-P.838/en), not automatic weather or construction-data inference.
 - Displays a vertical terrain/building/LOS/Fresnel cross section with the loss budget and P50/P90-style shadow-sensitivity bounds.
 
@@ -71,7 +73,7 @@ The selected `urban_short_range` model uses deterministic height-aware footprint
 
 ## Batch Experiments
 
-- Sweeps frequency, transmit power, beam width, azimuth, and calibration offset across at most 64 deterministic combinations.
+- Sweeps frequency, conducted TX power, beam width, azimuth, and calibration offset across at most 64 deterministic combinations.
 - Executes through bounded asynchronous jobs with progress, cancellation, a dataset/model/request fingerprint, and a small result cache.
 - Compares runs in a scenario table and Pareto view and exports the exact experiment definition.
 - Runs headlessly through `go run ./cmd/run-experiment -definition experiment.json` or the process/job API.

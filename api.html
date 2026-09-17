@@ -206,18 +206,36 @@ that every cell used that value.</p>
 <p>The request profile accepts
 <code>propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz</code>.
 The default is <code>urban_short_range</code> at 2.6/28 GHz and
-<code>research_sub_thz</code> at 140 GHz. Positive calibration dB raises
-predicted received power. The urban model reports its 3GPP UMa formula
-and <code>footprint-height-los-v1</code> centerline LOS/NLOS rule in
-<code>rf_contract</code>; it does not add legacy wall loss to empirical
-NLOS. Receiver sensitivity is per-cell ray termination, building service
-is <code>raw P_rx &gt; -100 dBm</code>, and interference serviceability
-is <code>RSRP &gt;= -110 dBm</code> plus <code>SINR &gt;= 0 dB</code>
-plus <code>RSRQ &gt;= -20 dB</code>. See the Concept 4F.1 design note
-for height evidence, terrain status, and classification metadata; the
-Concept 4D design note remains the applicability and equation reference;
-and the Concept 4E building-entry note covers facade-entry
-estimation.</p>
+<code>research_sub_thz</code> at 140 GHz. <code>tx_power_dbm</code> is
+conducted transmitter power; <code>tx_antenna_gain_dbi</code> is the
+preferred absolute TX boresight gain field, while
+<code>antenna_gain_dbi</code> remains a stable compatibility alias.
+Pattern attenuation is relative to boresight and is never another gain.
+<code>rx_antenna_gain_dbi</code> is an explicit scalar receiver gain
+with a backward-compatible default of <code>0 dBi</code>;
+<code>polarization_loss_db</code> is an explicit deterministic mismatch
+loss with a default of <code>0 dB</code>. Positive calibration dB raises
+predicted received power. The signed link contract is
+<code>P_rx = P_tx_conducted + G_tx_boresight - A_tx_pattern + G_rx - L_system - L_polarization + calibration - L_propagation - L_building</code>.
+Boresight and directional EIRP are exposed separately in link-budget
+diagnostics; the historical <code>eirp_dbm</code> field is retained as
+an effective-transmit compatibility alias, not a replacement for
+conducted power.</p>
+<p>The analytic compatibility presets keep their established formulas
+and hard-sector eligibility. The optional
+<code>3gpp-single-element</code> preset is a full-azimuth,
+single-element reference shape based on 3GPP TR 38.901 §7.3/Table 7.3-1;
+it has no array factor, beamforming, codebook, sidelobe dataset, or MIMO
+behavior. Mechanical and electrical downtilt remain separate inputs but
+combine as <code>mechanical + electrical</code> for the current
+deterministic patterns; positive mechanical downtilt points the
+boresight downward. See the <a
+href="./concept-4g1-antenna-link-budget.html">Concept 4G.1 antenna and
+link-budget note</a> for the complete contract and comparison fixtures.
+The Concept 4F.1 design note covers height evidence and terrain status;
+the Concept 4D design note remains the propagation applicability and
+equation reference; and the Concept 4E building-entry note covers
+facade-entry estimation.</p>
 <p>For <code>urban_short_range</code>, explicit OSM <code>height</code>
 is reported as <code>observed_tag</code>, <code>building:levels</code>
 is derived at 3 m per level as <code>derived_from_levels</code>, and the
@@ -245,23 +263,26 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;channel_id&quot;</span><span class="fu">:</span> <span class="st">&quot;NR-634666&quot;</span><span class="fu">,</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;duplex_mode&quot;</span><span class="fu">:</span> <span class="st">&quot;tdd&quot;</span><span class="fu">,</span></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;tx_power_dbm&quot;</span><span class="fu">:</span> <span class="dv">37</span><span class="fu">,</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;antenna_gain_dbi&quot;</span><span class="fu">:</span> <span class="dv">17</span><span class="fu">,</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;system_loss_db&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">1200</span><span class="fu">,</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">65</span><span class="fu">,</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;antenna_height_m&quot;</span><span class="fu">:</span> <span class="dv">32</span><span class="fu">,</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;mechanical_downtilt_deg&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;electrical_downtilt_deg&quot;</span><span class="fu">:</span> <span class="dv">4</span><span class="fu">,</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;orientation_deg&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;horizontal_pattern_id&quot;</span><span class="fu">:</span> <span class="st">&quot;cosine-sector&quot;</span><span class="fu">,</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;vertical_pattern_id&quot;</span><span class="fu">:</span> <span class="st">&quot;panel-10deg&quot;</span><span class="fu">,</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;load_factor&quot;</span><span class="fu">:</span> <span class="fl">0.65</span><span class="fu">,</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;reuse_factor&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;pci&quot;</span><span class="fu">:</span> <span class="dv">321</span><span class="fu">,</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_height_m&quot;</span><span class="fu">:</span> <span class="fl">1.5</span><span class="fu">,</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_sensitivity_dbm&quot;</span><span class="fu">:</span> <span class="dv">-110</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;tx_antenna_gain_dbi&quot;</span><span class="fu">:</span> <span class="dv">17</span><span class="fu">,</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;antenna_gain_dbi&quot;</span><span class="fu">:</span> <span class="dv">17</span><span class="fu">,</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;rx_antenna_gain_dbi&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;system_loss_db&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;polarization_loss_db&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">1200</span><span class="fu">,</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">65</span><span class="fu">,</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;antenna_height_m&quot;</span><span class="fu">:</span> <span class="dv">32</span><span class="fu">,</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;mechanical_downtilt_deg&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;electrical_downtilt_deg&quot;</span><span class="fu">:</span> <span class="dv">4</span><span class="fu">,</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;orientation_deg&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;horizontal_pattern_id&quot;</span><span class="fu">:</span> <span class="st">&quot;cosine-sector&quot;</span><span class="fu">,</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;vertical_pattern_id&quot;</span><span class="fu">:</span> <span class="st">&quot;panel-10deg&quot;</span><span class="fu">,</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;load_factor&quot;</span><span class="fu">:</span> <span class="fl">0.65</span><span class="fu">,</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;reuse_factor&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;pci&quot;</span><span class="fu">:</span> <span class="dv">321</span><span class="fu">,</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_height_m&quot;</span><span class="fu">:</span> <span class="fl">1.5</span><span class="fu">,</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_sensitivity_dbm&quot;</span><span class="fu">:</span> <span class="dv">-110</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <table>
 <thead>
 <tr>
@@ -284,8 +305,9 @@ bandwidth <code>0.1–2000 MHz</code></td>
 </tr>
 <tr>
 <td>Link budget</td>
-<td>TX <code>0–60 dBm</code>; gain <code>-20–80 dBi</code>; system loss
-<code>0–100 dB</code></td>
+<td>Conducted TX <code>0–60 dBm</code>; absolute TX boresight gain
+<code>-20–80 dBi</code>; scalar RX gain <code>-20–80 dBi</code>; system
+loss <code>0–100 dB</code>; polarization loss <code>0–40 dB</code></td>
 </tr>
 <tr>
 <td>Geometry</td>
@@ -296,9 +318,10 @@ orientation <code>0–&lt;360°</code></td>
 <tr>
 <td>Tilt/pattern</td>
 <td>mechanical/electrical tilt <code>-30–90°</code>; horizontal
-<code>ideal-sector</code>, <code>cosine-sector</code>, or
-<code>omni</code>; vertical <code>flat</code>, <code>panel-10deg</code>,
-or <code>panel-20deg</code></td>
+<code>ideal-sector</code>, <code>cosine-sector</code>,
+<code>omni</code>, or <code>3gpp-single-element</code>; vertical
+<code>flat</code>, <code>panel-10deg</code>, or
+<code>panel-20deg</code></td>
 </tr>
 <tr>
 <td>Interference</td>
@@ -311,9 +334,12 @@ or <code>panel-20deg</code></td>
 </tr>
 </tbody>
 </table>
-<p>The profile pattern IDs are analytic planning presets, not imported
-vendor radiation diagrams. Interference analysis remains limited to 4G
-and 5G even though propagation accepts the 6G research profile.</p>
+<p>The profile pattern IDs are deterministic planning presets, not
+imported vendor radiation diagrams. <code>3gpp-single-element</code> is
+a bounded standards-derived reference cut, not a 3GPP array,
+beamforming, or MIMO model. No tabulated/vendor pattern upload is
+exposed in this phase. Interference analysis remains limited to 4G and
+5G even though propagation accepts the 6G research profile.</p>
 <hr />
 <h2 id="endpoints">Endpoints</h2>
 <h3 id="health-check">Health Check</h3>
@@ -636,7 +662,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb11-1"><a href=
 <td>number</td>
 <td>0 - 60</td>
 <td>No</td>
-<td>Transmit power before antenna gain; defaults to 30</td>
+<td>Conducted TX power before antenna gain; defaults to 30</td>
 </tr>
 <tr>
 <td><code>azimuth</code></td>
@@ -968,7 +994,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb17-1"><a href=
 <td><code>tx_power_dbm</code></td>
 <td>number</td>
 <td>Yes</td>
-<td>Transmit power before antenna gain</td>
+<td>Conducted TX power before antenna gain</td>
 </tr>
 <tr>
 <td><code>azimuth</code></td>

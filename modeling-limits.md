@@ -8,23 +8,31 @@ The network engine dispatches explicit propagation models. `urban_short_range` i
 
 | Concept | Meaning in the API | Threshold or scope |
 |---|---|---|
-| Raw received power | The link-budget output for a cell at a valid geometry sample | `P_rx` may be below sensitivity; the value remains numeric |
+| Raw received power | The signed link-budget output for a cell at a valid geometry sample | `P_rx` may be below sensitivity; the value remains numeric |
+| Conducted TX power | Transmitter output before absolute antenna gain | `tx_power_dbm`; never an EIRP input |
+| TX boresight gain | Absolute transmit antenna gain at boresight | `tx_antenna_gain_dbi`; `antenna_gain_dbi` is a stable alias |
+| TX pattern attenuation | Relative loss from the TX boresight direction | Non-negative dB; separate from absolute gain and hard-beam eligibility |
+| Boresight/directional EIRP | Conducted TX plus absolute TX gain, before/after relative pattern loss | `boresight_eirp_dbm` and `directional_eirp_dbm`; neither includes an implicit receiver gain |
+| Receiver gain | Scalar receiver-side gain | `rx_antenna_gain_dbi`, default `0 dBi`; no receiver orientation/pattern model |
+| System loss | Aggregate non-propagation implementation loss | `system_loss_db`; does not include antenna pattern, building entry, polarization, or propagation |
+| Polarization loss | Explicit deterministic mismatch loss | `polarization_loss_db`, default `0 dB`; no vector or stochastic model |
 | Receiver sensitivity | Per-cell static-ray termination threshold | Read `rf_profile.receiver_sensitivity_dbm` from the effective cell profile |
 | Usable signal | A cell/ray whose raw received power is strictly above its effective receiver sensitivity | Per-cell, not a building-service or interference threshold |
 | Building service | Demand-building classification from raw received power | Served only when `raw P_rx > -100 dBm` |
-| Propagation reach | Aggregate usable-ray reach used by coverage/reach scores | Capped by configured radius and beam geometry; panel patterns use the same sensitivity rule |
+| Propagation reach | Aggregate usable-ray reach used by coverage/reach scores | Capped by configured radius and compatibility hard-beam geometry; full-azimuth reference patterns retain finite off-axis power |
 | Received-signal surface | One selected cell's raw received-power raster | Numeric below-sensitivity cells are retained; NoData means only radius/beam geometry exclusion |
 | Interference serviceability | Quality classification after serving/interferer formation | `RSRP >= -110 dBm` **and** `SINR >= 0 dB` **and** `RSRQ >= -20 dB` |
 
-The building and interference thresholds above are current planning defaults. They are intentionally separate from each cell's receiver sensitivity. A global calibration offset is signed: positive dB raises predicted received power.
+The building and interference thresholds above are current planning defaults. They are intentionally separate from each cell's receiver sensitivity. The canonical ledger is `P_rx = P_tx_conducted + G_tx_boresight - A_tx_pattern + G_rx - L_system - L_polarization + calibration - L_propagation - L_building`. A global calibration offset is signed: positive dB raises predicted received power. The historical `eirp_dbm` field is retained as an effective-transmit compatibility alias and must not be read as conducted power or as boresight EIRP.
 
 ## What the Model Uses
 
-- Per-cell coordinates, azimuth, technology/frequency/bandwidth, interference channel, beam width, radius, transmit power, antenna gain/loss, antenna and receiver heights, downtilts, orientation, pattern preset, sensitivity, and load
+- Per-cell coordinates, azimuth, technology/frequency/bandwidth, interference channel, beam width, radius, conducted TX power, absolute antenna gain, relative pattern, antenna and receiver heights, downtilts, orientation, pattern preset, sensitivity, and load
 - Explicit propagation model selection and the requested/applied model identity
 - Free-space path loss (FSPL)
-- Configured per-cell antenna gain and system loss
-- Beam-sector, horizontal/vertical pattern-preset attenuation, per-cell receiver-sensitivity termination, and configured-radius eligibility
+- Configured per-cell conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, and calibration
+- One shared antenna evaluator for horizontal/vertical relative attenuation, tilt, orientation, and eligibility across direct links, rays, surfaces, interference, building entry, and optimization
+- Analytic compatibility patterns with hard-sector eligibility, plus the optional full-azimuth `3gpp-single-element` reference cut
 - Building-polygon intersections from the local Ankara GeoJSON dataset
 - Frequency-dependent cumulative wall attenuation only in `legacy_fspl_walls`; urban empirical NLOS does not receive an additional legacy wall term, and indoor endpoint fallback is explicit
 - Deterministic POI and residential-demand enrichment for scoring
@@ -40,14 +48,14 @@ The same request and dataset produce the same RF result. Core Lab scenario state
 - Multiple-obstacle diffraction, roof/corner diffraction beyond the selected single knife-edge approximation
 - Multipath reflection or ray bouncing
 - Automatic foliage, weather, atmospheric, and clutter datasets; those effects are explicit sensitivity inputs when enabled
-- Measured antenna diagrams, sidelobes, polarization, and per-frequency pattern interpolation
-- MIMO layers, beamforming codebooks, polarization, or device orientation
+- Measured/vendor antenna diagrams, tabulated-pattern upload/interpolation, array factor, codebooks, and per-frequency hardware calibration
+- MIMO layers, beamforming codebooks, stochastic polarization, UE/device orientation, or receiver radiation patterns. A scalar RX gain and scalar polarization loss are the only new receiver-side terms.
 - Dynamic scheduling, mobility, handover margins, and UE implementation behavior
 - Uplink interference and adjacent-channel leakage
 
 Cells outside their configured beam or radius contribute no signal in the current model. Static rays terminate when modeled power is at or below the effective per-cell receiver sensitivity; coverage surfaces retain those valid below-sensitivity values instead of converting them to NoData. This sharp planning boundary explains why samples can show no signal immediately outside a sector even when a real antenna might contribute sidelobe energy.
 
-The `ideal-sector`, `cosine-sector`, `omni`, `flat`, `panel-10deg`, and `panel-20deg` choices are deterministic analytic presets, not vendor antenna files. Mechanical and electrical downtilt are combined against a simple elevation angle; antenna and receiver heights affect slant distance but do not create a full 3D scene.
+The `ideal-sector`, `cosine-sector`, `omni`, `flat`, `panel-10deg`, and `panel-20deg` choices are deterministic analytic presets, not vendor antenna files. Compatibility sector presets use hard beam eligibility; `omni` and `3gpp-single-element` evaluate finite directions across the full azimuth. Mechanical and electrical downtilt are combined against a simple elevation angle; antenna and receiver heights affect slant distance but do not create a full 3D scene. Positive downtilt points the boresight downward.
 
 Band labels, duplex mode, reuse factor, and PCI are retained and validated as inventory/reproducibility metadata. Channel IDs determine co-channel interference, while reuse supplies deterministic default channel assignment; the engine does not otherwise simulate duplex timing, PCI planning, or band-specific protocol behavior.
 

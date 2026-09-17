@@ -148,9 +148,53 @@ note for the centerline rule and audit.</p>
 <tbody>
 <tr>
 <td>Raw received power</td>
-<td>The link-budget output for a cell at a valid geometry sample</td>
+<td>The signed link-budget output for a cell at a valid geometry
+sample</td>
 <td><code>P_rx</code> may be below sensitivity; the value remains
 numeric</td>
+</tr>
+<tr>
+<td>Conducted TX power</td>
+<td>Transmitter output before absolute antenna gain</td>
+<td><code>tx_power_dbm</code>; never an EIRP input</td>
+</tr>
+<tr>
+<td>TX boresight gain</td>
+<td>Absolute transmit antenna gain at boresight</td>
+<td><code>tx_antenna_gain_dbi</code>; <code>antenna_gain_dbi</code> is a
+stable alias</td>
+</tr>
+<tr>
+<td>TX pattern attenuation</td>
+<td>Relative loss from the TX boresight direction</td>
+<td>Non-negative dB; separate from absolute gain and hard-beam
+eligibility</td>
+</tr>
+<tr>
+<td>Boresight/directional EIRP</td>
+<td>Conducted TX plus absolute TX gain, before/after relative pattern
+loss</td>
+<td><code>boresight_eirp_dbm</code> and
+<code>directional_eirp_dbm</code>; neither includes an implicit receiver
+gain</td>
+</tr>
+<tr>
+<td>Receiver gain</td>
+<td>Scalar receiver-side gain</td>
+<td><code>rx_antenna_gain_dbi</code>, default <code>0 dBi</code>; no
+receiver orientation/pattern model</td>
+</tr>
+<tr>
+<td>System loss</td>
+<td>Aggregate non-propagation implementation loss</td>
+<td><code>system_loss_db</code>; does not include antenna pattern,
+building entry, polarization, or propagation</td>
+</tr>
+<tr>
+<td>Polarization loss</td>
+<td>Explicit deterministic mismatch loss</td>
+<td><code>polarization_loss_db</code>, default <code>0 dB</code>; no
+vector or stochastic model</td>
 </tr>
 <tr>
 <td>Receiver sensitivity</td>
@@ -172,8 +216,8 @@ receiver sensitivity</td>
 <tr>
 <td>Propagation reach</td>
 <td>Aggregate usable-ray reach used by coverage/reach scores</td>
-<td>Capped by configured radius and beam geometry; panel patterns use
-the same sensitivity rule</td>
+<td>Capped by configured radius and compatibility hard-beam geometry;
+full-azimuth reference patterns retain finite off-axis power</td>
 </tr>
 <tr>
 <td>Received-signal surface</td>
@@ -192,21 +236,30 @@ radius/beam geometry exclusion</td>
 </table>
 <p>The building and interference thresholds above are current planning
 defaults. They are intentionally separate from each cell's receiver
-sensitivity. A global calibration offset is signed: positive dB raises
-predicted received power.</p>
+sensitivity. The canonical ledger is
+<code>P_rx = P_tx_conducted + G_tx_boresight - A_tx_pattern + G_rx - L_system - L_polarization + calibration - L_propagation - L_building</code>.
+A global calibration offset is signed: positive dB raises predicted
+received power. The historical <code>eirp_dbm</code> field is retained
+as an effective-transmit compatibility alias and must not be read as
+conducted power or as boresight EIRP.</p>
 <h2 id="what-the-model-uses">What the Model Uses</h2>
 <ul>
 <li>Per-cell coordinates, azimuth, technology/frequency/bandwidth,
-interference channel, beam width, radius, transmit power, antenna
-gain/loss, antenna and receiver heights, downtilts, orientation, pattern
-preset, sensitivity, and load</li>
+interference channel, beam width, radius, conducted TX power, absolute
+antenna gain, relative pattern, antenna and receiver heights, downtilts,
+orientation, pattern preset, sensitivity, and load</li>
 <li>Explicit propagation model selection and the requested/applied model
 identity</li>
 <li>Free-space path loss (FSPL)</li>
-<li>Configured per-cell antenna gain and system loss</li>
-<li>Beam-sector, horizontal/vertical pattern-preset attenuation,
-per-cell receiver-sensitivity termination, and configured-radius
-eligibility</li>
+<li>Configured per-cell conducted TX power, absolute TX boresight gain,
+scalar RX gain, system loss, deterministic polarization loss, and
+calibration</li>
+<li>One shared antenna evaluator for horizontal/vertical relative
+attenuation, tilt, orientation, and eligibility across direct links,
+rays, surfaces, interference, building entry, and optimization</li>
+<li>Analytic compatibility patterns with hard-sector eligibility, plus
+the optional full-azimuth <code>3gpp-single-element</code> reference
+cut</li>
 <li>Building-polygon intersections from the local Ankara GeoJSON
 dataset</li>
 <li>Frequency-dependent cumulative wall attenuation only in
@@ -234,10 +287,12 @@ selected single knife-edge approximation</li>
 <li>Multipath reflection or ray bouncing</li>
 <li>Automatic foliage, weather, atmospheric, and clutter datasets; those
 effects are explicit sensitivity inputs when enabled</li>
-<li>Measured antenna diagrams, sidelobes, polarization, and
-per-frequency pattern interpolation</li>
-<li>MIMO layers, beamforming codebooks, polarization, or device
-orientation</li>
+<li>Measured/vendor antenna diagrams, tabulated-pattern
+upload/interpolation, array factor, codebooks, and per-frequency
+hardware calibration</li>
+<li>MIMO layers, beamforming codebooks, stochastic polarization,
+UE/device orientation, or receiver radiation patterns. A scalar RX gain
+and scalar polarization loss are the only new receiver-side terms.</li>
 <li>Dynamic scheduling, mobility, handover margins, and UE
 implementation behavior</li>
 <li>Uplink interference and adjacent-channel leakage</li>
@@ -252,9 +307,12 @@ contribute sidelobe energy.</p>
 <p>The <code>ideal-sector</code>, <code>cosine-sector</code>,
 <code>omni</code>, <code>flat</code>, <code>panel-10deg</code>, and
 <code>panel-20deg</code> choices are deterministic analytic presets, not
-vendor antenna files. Mechanical and electrical downtilt are combined
-against a simple elevation angle; antenna and receiver heights affect
-slant distance but do not create a full 3D scene.</p>
+vendor antenna files. Compatibility sector presets use hard beam
+eligibility; <code>omni</code> and <code>3gpp-single-element</code>
+evaluate finite directions across the full azimuth. Mechanical and
+electrical downtilt are combined against a simple elevation angle;
+antenna and receiver heights affect slant distance but do not create a
+full 3D scene. Positive downtilt points the boresight downward.</p>
 <p>Band labels, duplex mode, reuse factor, and PCI are retained and
 validated as inventory/reproducibility metadata. Channel IDs determine
 co-channel interference, while reuse supplies deterministic default

@@ -52,7 +52,9 @@ Error responses use a simple object with an `error` message.
 
 Single-sector requests accept `rf_profile` at the request root. Network, interference, recommendation, and measurement requests accept it independently inside every `towers[]` item. Legacy top-level fields remain defaults; an explicit nested property overrides its top-level/default counterpart only for that cell. Normalized simulation, optimized-tower, recommendation, measurement, and interference-model responses include resolved profiles for reproducibility. Network-shaped responses also expose `request_defaults` separately from `effective_cell_profiles`; a request default is not evidence that every cell used that value.
 
-The request profile accepts `propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz`. The default is `urban_short_range` at 2.6/28 GHz and `research_sub_thz` at 140 GHz. Positive calibration dB raises predicted received power. The urban model reports its 3GPP UMa formula and `footprint-height-los-v1` centerline LOS/NLOS rule in `rf_contract`; it does not add legacy wall loss to empirical NLOS. Receiver sensitivity is per-cell ray termination, building service is `raw P_rx > -100 dBm`, and interference serviceability is `RSRP >= -110 dBm` plus `SINR >= 0 dB` plus `RSRQ >= -20 dB`. See the [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md) for height evidence, terrain status, and classification metadata; the [Concept 4D design note](concept-4d-urban-propagation.md) remains the applicability and equation reference; and the [Concept 4E building-entry note](concept-4e-building-entry.md) covers facade-entry estimation.
+The request profile accepts `propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz`. The default is `urban_short_range` at 2.6/28 GHz and `research_sub_thz` at 140 GHz. `tx_power_dbm` is conducted transmitter power; `tx_antenna_gain_dbi` is the preferred absolute TX boresight gain field, while `antenna_gain_dbi` remains a stable compatibility alias. Pattern attenuation is relative to boresight and is never another gain. `rx_antenna_gain_dbi` is an explicit scalar receiver gain with a backward-compatible default of `0 dBi`; `polarization_loss_db` is an explicit deterministic mismatch loss with a default of `0 dB`. Positive calibration dB raises predicted received power. The signed link contract is `P_rx = P_tx_conducted + G_tx_boresight - A_tx_pattern + G_rx - L_system - L_polarization + calibration - L_propagation - L_building`. Boresight and directional EIRP are exposed separately in link-budget diagnostics; the historical `eirp_dbm` field is retained as an effective-transmit compatibility alias, not a replacement for conducted power.
+
+The analytic compatibility presets keep their established formulas and hard-sector eligibility. The optional `3gpp-single-element` preset is a full-azimuth, single-element reference shape based on 3GPP TR 38.901 §7.3/Table 7.3-1; it has no array factor, beamforming, codebook, sidelobe dataset, or MIMO behavior. Mechanical and electrical downtilt remain separate inputs but combine as `mechanical + electrical` for the current deterministic patterns; positive mechanical downtilt points the boresight downward. See the [Concept 4G.1 antenna and link-budget note](concept-4g1-antenna-link-budget.md) for the complete contract and comparison fixtures. The [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md) covers height evidence and terrain status; the [Concept 4D design note](concept-4d-urban-propagation.md) remains the propagation applicability and equation reference; and the [Concept 4E building-entry note](concept-4e-building-entry.md) covers facade-entry estimation.
 
 For `urban_short_range`, explicit OSM `height` is reported as `observed_tag`, `building:levels` is derived at 3 m per level as `derived_from_levels`, and the existing generic 9 m display fallback is `unavailable` roof evidence. An intersected unknown-height footprint is conservatively NLOS. Ray GeoJSON properties expose `los_classifier_id`, `los_classification_basis`, and `terrain_status`; interference and building-entry responses expose the same serving/outdoor metadata, while coverage-surface model metadata identifies the shared classifier. The current Ankara pack reports `terrain_unavailable`; no zero terrain value is treated as measured obstruction evidence.
 
@@ -71,8 +73,11 @@ For `urban_short_range`, explicit OSM `height` is reported as `observed_tag`, `b
     "channel_id": "NR-634666",
     "duplex_mode": "tdd",
     "tx_power_dbm": 37,
+    "tx_antenna_gain_dbi": 17,
     "antenna_gain_dbi": 17,
+    "rx_antenna_gain_dbi": 0,
     "system_loss_db": 2,
+    "polarization_loss_db": 0,
     "radius_m": 1200,
     "beam_width": 65,
     "antenna_height_m": 32,
@@ -94,13 +99,13 @@ For `urban_short_range`, explicit OSM `height` is reported as `observed_tag`, `b
 |---|---|
 | Identity | schema `1`; technology `4g`, `5g`, or `6g`; non-empty band/channel up to 64 UTF-8 bytes; duplex `fdd`, `tdd`, `sdl`, or `sul` |
 | Carrier | frequency `>0–300 GHz` and compatible with technology; bandwidth `0.1–2000 MHz` |
-| Link budget | TX `0–60 dBm`; gain `-20–80 dBi`; system loss `0–100 dB` |
+| Link budget | Conducted TX `0–60 dBm`; absolute TX boresight gain `-20–80 dBi`; scalar RX gain `-20–80 dBi`; system loss `0–100 dB`; polarization loss `0–40 dB` |
 | Geometry | radius `25–5000 m`; beam `10–360°`; antenna height `0.5–300 m`; receiver height `0.1–100 m`; orientation `0–<360°` |
-| Tilt/pattern | mechanical/electrical tilt `-30–90°`; horizontal `ideal-sector`, `cosine-sector`, or `omni`; vertical `flat`, `panel-10deg`, or `panel-20deg` |
+| Tilt/pattern | mechanical/electrical tilt `-30–90°`; horizontal `ideal-sector`, `cosine-sector`, `omni`, or `3gpp-single-element`; vertical `flat`, `panel-10deg`, or `panel-20deg` |
 | Interference | load `>0–1`; reuse `1–12`; optional PCI `0–503` for LTE or `0–1007` for NR |
 | Receiver | sensitivity `-180–-20 dBm` |
 
-The profile pattern IDs are analytic planning presets, not imported vendor radiation diagrams. Interference analysis remains limited to 4G and 5G even though propagation accepts the 6G research profile.
+The profile pattern IDs are deterministic planning presets, not imported vendor radiation diagrams. `3gpp-single-element` is a bounded standards-derived reference cut, not a 3GPP array, beamforming, or MIMO model. No tabulated/vendor pattern upload is exposed in this phase. Interference analysis remains limited to 4G and 5G even though propagation accepts the 6G research profile.
 
 ---
 
@@ -362,7 +367,7 @@ Run RF propagation simulation with given parameters.
 | `rays` | number | 8 - 720 | No | Ray count used to sample the sector; defaults to 60 |
 | `radius_m` | number | 25 - 5000 | No | Maximum requested simulation radius; defaults to 400 |
 | `frequency_ghz` | number | > 0 - 300 | No | Network frequency in GHz; defaults to 28 |
-| `tx_power_dbm` | number | 0 - 60 | No | Transmit power before antenna gain; defaults to 30 |
+| `tx_power_dbm` | number | 0 - 60 | No | Conducted TX power before antenna gain; defaults to 30 |
 | `azimuth` | number | Any finite angle | No | Antenna direction, normalized to 0-360; defaults to 0 |
 | `beam_width` | number | 10 - 360 | No | Sector width in degrees; defaults to 120 |
 
@@ -630,7 +635,7 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 | `rays` | number | Yes | Ray count used to sample the sector |
 | `radius_m` | number | Yes | Maximum requested simulation radius |
 | `frequency_ghz` | number | Yes | Network frequency in GHz |
-| `tx_power_dbm` | number | Yes | Transmit power before antenna gain |
+| `tx_power_dbm` | number | Yes | Conducted TX power before antenna gain |
 | `azimuth` | number | Yes | Current azimuth seed value |
 | `beam_width` | number | Yes | Sector width in degrees |
 

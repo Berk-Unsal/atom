@@ -13,6 +13,7 @@ local page_routes = {
   ["architecture.md"] = "architecture.html",
   ["getting-started.md"] = "download.html",
   ["index.md"] = "index.html",
+  ["concept-4g1-antenna-link-budget.md"] = "concept-4g1-antenna-link-budget.html",
 }
 
 function Header(element)

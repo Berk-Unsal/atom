@@ -48,14 +48,14 @@ The 5G visualization reveals:
 
 ---
 
-## 6G Sub-THz Coverage (140 GHz)
+## 6G Research Profile Coverage (140 GHz)
 
 ![6G Propagation](./assets/6g.png)
 
 ### Characteristics
 
 - **Wavelength**: 2.14 mm (near-optical)
-- **Coverage Type**: Ultra-localized, street-level only
+- **Coverage Type**: Ultra-localized comparative planning overlay
 - **Penetration Loss**: roughly +80 dB per wall crossing in the current Sub-THz model
 - **Line-of-Sight Requirement**: Mandatory for coverage
 
@@ -67,7 +67,7 @@ The 6G heatmap demonstrates:
 - 🟡 **Yellow zones**: Minimal; mostly absent
 - 🔴 **Red zones**: Vast majority (blocked by buildings)
 
-**Key Insight**: 6G requires a **"pave the streets"** deployment model with frequent small cells (every 50-100 meters). Coverage beyond the immediate vicinity is impractical.
+**Key Insight**: The 140 GHz mode is a 6G research profile, not a standardized network-quality model. Its short-range result is useful for comparative planning and is not a deployment guarantee.
 
 ---
 
@@ -97,14 +97,14 @@ The auto-optimized placement achieves:
 
 ## Color Mapping Reference
 
-All visualizations use the same **signal strength to color mapping**:
+The map uses a display-only received-power palette. It is not a universal service-quality legend: receiver sensitivity is per effective cell, building service uses a separate `-100 dBm` threshold, and interference serviceability uses RSRP/SINR/RSRQ thresholds.
 
 | Color | Signal Range | Quality | Use Case |
 |-------|-------------|---------|----------|
 | 🟢 Green | -50 to -70 dBm | Excellent | Voice, video, IoT |
 | 🟡 Yellow | -70 to -90 dBm | Good | Voice, messaging |
 | 🔴 Red | -90 to -110 dBm | Poor | Emergency services |
-| ⚫ Black | < -110 dBm | No service | (Not shown) |
+| ⚫ Black | Below the configured display floor | Visually suppressed | Presentation only; raw values remain in the API |
 
 ---
 
@@ -116,7 +116,7 @@ All visualizations use the same **signal strength to color mapping**:
 |-----------|---------------|-----------|
 | **4G** | 2 km (urban) | 5 km (rural) |
 | **5G mmWave** | 300 m planning preset | 1 km configurable limit |
-| **6G Sub-THz** | 50 m (LOS) | 200 m (exceptional) |
+| **6G research profile** | 50 m (illustrative) | 200 m (illustrative planning bound) |
 
 ### Site Density Required
 
@@ -124,7 +124,7 @@ All visualizations use the same **signal strength to color mapping**:
 |-----------|------------|------------------------|
 | **4G** | 1-3 | Low (penetrates walls) |
 | **5G mmWave** | 10-50 | High (requires LOS) |
-| **6G Sub-THz** | 100+ | Very High (street-level) |
+| **6G research profile** | 100+ | Very High (illustrative street-level comparison) |
 
 ### Urban Canyon Effect
 
@@ -132,7 +132,7 @@ The visualizations clearly show how **building density** impacts each band:
 
 - **4G**: Usually produces the broadest modeled reach because FSPL and wall loss are lower.
 - **5G**: Produces more localized, directional modeled coverage at 28 GHz.
-- **6G**: Is a research overlay with the strongest configured wall attenuation and shortest practical range.
+- **6G**: Is a research profile with the strongest configured wall attenuation and shortest illustrative planning range.
 
 ---
 
@@ -152,11 +152,11 @@ Each heatmap consists of thousands of **ray segments** (colored lines):
 1. **Green Zones**: Primary coverage area; reliable service expected
 2. **Yellow Zones**: Secondary coverage; service possible with optimal conditions
 3. **Red Zones**: Marginal; not recommended for primary coverage
-4. **No Color**: Below sensitivity threshold; no usable signal
+4. **No Color**: Below the visual display floor or outside the rendered evidence; this does not mean the API value is NoData or that it fails every serviceability rule
 
 ### Analytical Surface Layer
 
-The Signal surface tool replaces dense point markers with a regular received-power raster drawn below operational markers. Adjust opacity to compare it with the basemap and select a display floor to hide weaker cells. Contours are unsmoothed marching-square line segments at the selected dBm thresholds; they are deterministic grid evidence, not kriged measurement isolines. The surface is calculated for one selected cell, so it is not an aggregate network-coverage claim.
+The Signal surface tool replaces dense point markers with a regular raw single-cell received-power raster drawn below operational markers. Adjust opacity to compare it with the basemap and select a display floor to hide weaker cells; that floor is visual only. Valid below-sensitivity values remain in the surface, while NoData means radius/beam geometry exclusion. Contours are unsmoothed marching-square line segments at the selected dBm thresholds; they are deterministic grid evidence, not kriged measurement isolines. The surface is calculated for one selected cell, so it is not an aggregate network-coverage claim.
 
 ### RF Map Display Controls
 

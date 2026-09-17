@@ -12,7 +12,7 @@ No. RSRP, SINR, RSRQ, RSSI, coverage, and demand KPIs are planning estimates fro
 
 ### Which propagation model is used?
 
-The default sector model combines free-space path loss with antenna gain, beam/radius eligibility, exact building intersections, and cumulative frequency-dependent wall loss. It does not implement Okumura-Hata, reflections, fading, MIMO scheduling, or uplink propagation. A separate point-to-point profile can add optional COG/GeoTIFF terrain, building height, LOS/Fresnel evidence, material sensitivity, and a selected single knife-edge approximation.
+The default 2.6/28 GHz network model is `urban_short_range`, a deterministic 3GPP UMa median outdoor path-loss baseline with shared 2D footprint LOS/NLOS classification. `legacy_fspl_walls` remains selectable and is the explicit fallback when urban inputs are outside scope; `research_sub_thz` is the research-only 140 GHz profile. Responses report requested/applied model identity, applicability, and fallback reason. See the [Concept 4D design note](concept-4d-urban-propagation.md). A separate `path-profile-diagnostic-v1` point-to-point profile can add optional COG/GeoTIFF terrain, building height, LOS/Fresnel evidence, material sensitivity, and a selected single knife-edge approximation without changing network RF.
 
 ### Why can SINR be close to 0 dB?
 
@@ -20,7 +20,7 @@ When the serving cell and strongest co-channel interferer arrive at nearly equal
 
 ### Why does a sample say no signal?
 
-A cell contributes only when the point is inside its configured radius and beam. High path loss or cumulative wall attenuation can then push modeled power below the signal floor. The interference Inspector lists serving-cell, wall, radius, beam, and interferer context where available.
+A cell contributes only when the point is inside its configured radius and beam. Static rays terminate at or below that cell's effective receiver sensitivity; high path loss or cumulative wall attenuation can also make a demand building fail the separate `raw P_rx > -100 dBm` building-service rule. A received-power surface keeps valid below-sensitivity numeric values and uses NoData only for radius/beam exclusion. The interference Inspector lists serving-cell, wall, radius, beam, and interferer context where available.
 
 ### Does measurement import calibrate the complete model?
 
@@ -28,7 +28,7 @@ No. A.T.O.M compares measured and predicted RSRP and may suggest one robust glob
 
 ### What is the 6G mode?
 
-The 140 GHz mode is an exploratory Sub-THz propagation overlay. Interference analysis, measurement validation, recommendations, and 5G Core language are intentionally unavailable where their assumptions are unsupported.
+The 140 GHz mode is a 6G research profile for comparative propagation planning. Interference analysis, measurement validation, recommendations, and 5G Core language are intentionally unavailable where their assumptions are unsupported.
 
 ## Projects And Results
 

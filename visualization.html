@@ -80,9 +80,9 @@ Propagation Maps page contents">
       <li><a href="#5g-mmwave-coverage-28-ghz"
       id="toc-5g-mmwave-coverage-28-ghz">5G mmWave Coverage (28
       GHz)</a></li>
-      <li><a href="#6g-sub-thz-coverage-140-ghz"
-      id="toc-6g-sub-thz-coverage-140-ghz">6G Sub-THz Coverage (140
-      GHz)</a></li>
+      <li><a href="#6g-research-profile-coverage-140-ghz"
+      id="toc-6g-research-profile-coverage-140-ghz">6G Research Profile
+      Coverage (140 GHz)</a></li>
       <li><a href="#auto-optimized-5g-sector"
       id="toc-auto-optimized-5g-sector">Auto-Optimized 5G
       Sector</a></li>
@@ -169,13 +169,14 @@ building walls</li>
 reach street-level users. Antenna orientation (azimuth) dramatically
 affects coverage.</p>
 <hr />
-<h2 id="6g-sub-thz-coverage-140-ghz">6G Sub-THz Coverage (140 GHz)</h2>
+<h2 id="6g-research-profile-coverage-140-ghz">6G Research Profile
+Coverage (140 GHz)</h2>
 <p><img src="./assets/6g.png" alt="6G Propagation" /></p>
 <h3 id="characteristics-2">Characteristics</h3>
 <ul>
 <li><strong>Wavelength</strong>: 2.14 mm (near-optical)</li>
-<li><strong>Coverage Type</strong>: Ultra-localized, street-level
-only</li>
+<li><strong>Coverage Type</strong>: Ultra-localized comparative planning
+overlay</li>
 <li><strong>Penetration Loss</strong>: roughly +80 dB per wall crossing
 in the current Sub-THz model</li>
 <li><strong>Line-of-Sight Requirement</strong>: Mandatory for
@@ -190,10 +191,10 @@ points</li>
 <li>🔴 <strong>Red zones</strong>: Vast majority (blocked by
 buildings)</li>
 </ul>
-<p><strong>Key Insight</strong>: 6G requires a <strong>"pave the
-streets"</strong> deployment model with frequent small cells (every
-50-100 meters). Coverage beyond the immediate vicinity is
-impractical.</p>
+<p><strong>Key Insight</strong>: The 140 GHz mode is a 6G research
+profile, not a standardized network-quality model. Its short-range
+result is useful for comparative planning and is not a deployment
+guarantee.</p>
 <hr />
 <h2 id="auto-optimized-5g-sector">Auto-Optimized 5G Sector</h2>
 <p><img src="./assets/5g-auto-optimized.png"
@@ -221,8 +222,10 @@ candidate azimuths using the same demand and coverage score. It does not
 predict live-network spectral efficiency.</p>
 <hr />
 <h2 id="color-mapping-reference">Color Mapping Reference</h2>
-<p>All visualizations use the same <strong>signal strength to color
-mapping</strong>:</p>
+<p>The map uses a display-only received-power palette. It is not a
+universal service-quality legend: receiver sensitivity is per effective
+cell, building service uses a separate <code>-100 dBm</code> threshold,
+and interference serviceability uses RSRP/SINR/RSRQ thresholds.</p>
 <table>
 <thead>
 <tr>
@@ -253,9 +256,9 @@ mapping</strong>:</p>
 </tr>
 <tr>
 <td>⚫ Black</td>
-<td>&lt; -110 dBm</td>
-<td>No service</td>
-<td>(Not shown)</td>
+<td>Below the configured display floor</td>
+<td>Visually suppressed</td>
+<td>Presentation only; raw values remain in the API</td>
 </tr>
 </tbody>
 </table>
@@ -283,9 +286,9 @@ mapping</strong>:</p>
 <td>1 km configurable limit</td>
 </tr>
 <tr>
-<td><strong>6G Sub-THz</strong></td>
-<td>50 m (LOS)</td>
-<td>200 m (exceptional)</td>
+<td><strong>6G research profile</strong></td>
+<td>50 m (illustrative)</td>
+<td>200 m (illustrative planning bound)</td>
 </tr>
 </tbody>
 </table>
@@ -310,9 +313,9 @@ mapping</strong>:</p>
 <td>High (requires LOS)</td>
 </tr>
 <tr>
-<td><strong>6G Sub-THz</strong></td>
+<td><strong>6G research profile</strong></td>
 <td>100+</td>
-<td>Very High (street-level)</td>
+<td>Very High (illustrative street-level comparison)</td>
 </tr>
 </tbody>
 </table>
@@ -324,8 +327,9 @@ impacts each band:</p>
 because FSPL and wall loss are lower.</li>
 <li><strong>5G</strong>: Produces more localized, directional modeled
 coverage at 28 GHz.</li>
-<li><strong>6G</strong>: Is a research overlay with the strongest
-configured wall attenuation and shortest practical range.</li>
+<li><strong>6G</strong>: Is a research profile with the strongest
+configured wall attenuation and shortest illustrative planning
+range.</li>
 </ul>
 <hr />
 <h2 id="understanding-the-heatmaps">Understanding the Heatmaps</h2>
@@ -349,14 +353,17 @@ service expected</li>
 with optimal conditions</li>
 <li><strong>Red Zones</strong>: Marginal; not recommended for primary
 coverage</li>
-<li><strong>No Color</strong>: Below sensitivity threshold; no usable
-signal</li>
+<li><strong>No Color</strong>: Below the visual display floor or outside
+the rendered evidence; this does not mean the API value is NoData or
+that it fails every serviceability rule</li>
 </ol>
 <h3 id="analytical-surface-layer">Analytical Surface Layer</h3>
 <p>The Signal surface tool replaces dense point markers with a regular
-received-power raster drawn below operational markers. Adjust opacity to
-compare it with the basemap and select a display floor to hide weaker
-cells. Contours are unsmoothed marching-square line segments at the
+raw single-cell received-power raster drawn below operational markers.
+Adjust opacity to compare it with the basemap and select a display floor
+to hide weaker cells; that floor is visual only. Valid below-sensitivity
+values remain in the surface, while NoData means radius/beam geometry
+exclusion. Contours are unsmoothed marching-square line segments at the
 selected dBm thresholds; they are deterministic grid evidence, not
 kriged measurement isolines. The surface is calculated for one selected
 cell, so it is not an aggregate network-coverage claim.</p>

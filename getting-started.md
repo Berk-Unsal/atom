@@ -206,7 +206,7 @@ A.T.O.M admits two RF jobs by default. A saturated request returns `429` with `R
 
 ### Blank Basemap
 
-The RF engines and datasets run locally, but the default Leaflet layer requests OpenStreetMap tiles. Confirm network access or configure a separate local tile source.
+The RF engines and datasets run locally, but the default Leaflet layer requests OpenStreetMap tiles from `https://tile.openstreetmap.org/{z}/{x}/{y}.png`. The app keeps the required OpenStreetMap attribution and sends the browser's normal origin Referer so the community tile service can apply its usage policy. Confirm network access if the basemap is blank; a production deployment that cannot use the public community service should use an appropriate OSM-derived provider or a self-hosted tile service, while retaining attribution and that provider's caching and usage requirements. A tile failure does not affect RF results or create a tile prefetch loop.
 
 ## Next References
 

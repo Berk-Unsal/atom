@@ -1,6 +1,6 @@
 # Features
 
-A.T.O.M is a local-first, deterministic RF planning workspace for comparing urban 4G, 5G, and exploratory 6G sector plans. Its outputs are planning estimates, not UE or PHY measurements.
+A.T.O.M is a local-first, deterministic RF planning workspace for comparing urban 4G, 5G, and a 6G research profile. Its outputs are planning estimates, not UE or PHY measurements.
 
 ## Focused Planning Workspace
 
@@ -40,23 +40,23 @@ Legacy top-level RF controls remain request defaults. A nested `rf_profile` over
 |---|---:|---|
 | 4G LTE | 2.6 GHz | Wider urban coverage planning |
 | 5G NR mmWave | 28 GHz | Directional high-capacity planning |
-| 6G Sub-THz research overlay | 140 GHz | Exploratory propagation comparison |
+| 6G research profile | 140 GHz | Comparative planning overlay; not standardized project-level RF quality |
 
-The backend uses free-space path loss with meter/GHz units:
+The backend exposes explicit propagation modes. `urban_short_range` is the default at 2.6/28 GHz, `legacy_fspl_walls` remains selectable, and `research_sub_thz` is the 140 GHz research-only profile. The legacy mode uses free-space path loss with meter/GHz units:
 
 ```text
 FSPL(dB) = 32.45 + 20log10(distance_m) + 20log10(frequency_GHz)
 ```
 
-It then applies configured transmit power, antenna gain, beam/radius eligibility, and cumulative frequency-dependent wall loss. Rays are segmented and returned as GeoJSON with modeled received power.
+The urban mode applies the 3GPP UMa LOS/NLOS median path-loss formula after shared 2D footprint classification; it does not add the legacy wall heuristic to empirical NLOS. Every mode applies configured transmit power, antenna gain, beam/radius eligibility, and antenna-pattern terms. Rays are segmented and returned as GeoJSON with model identity and explainability metadata.
 
-The fast sector and surface models remain FSPL-plus-walls estimators. A separate 2.5D point-to-point workflow adds terrain/building profiles, LOS and Fresnel classification, material-specific wall planning losses, and an explicitly selected single knife-edge approximation. It does not claim full ITU-R Recommendation conformance or simulate reflection-heavy multipath, fast fading, MIMO scheduling, or uplink behavior.
+The selected model does not use terrain/building-height obstruction, diffraction, reflection-heavy multipath, fast fading, MIMO scheduling, or uplink behavior. A separate `path-profile-diagnostic-v1` point-to-point workflow adds terrain/building profiles, LOS and Fresnel classification, material-specific wall planning losses, and an explicitly selected single knife-edge approximation; its result is isolated from network RF. See the [Concept 4D design note](concept-4d-urban-propagation.md).
 
 ### 2.5D Path Profiles And Fidelity
 
 - Loads an optional north-up EPSG:4326 COG/GeoTIFF terrain layer lazily by strip/tile and samples it bilinearly.
 - Combines ground elevation, inferred or explicit building height, transmitter/receiver height above ground, direct LOS, 60% first-Fresnel clearance, and a dominant obstruction.
-- Provides `terrain-profile` (30 MHz–6 GHz), `urban-short-range` (300 MHz–100 GHz), and explicitly out-of-range research profiles. These applicability labels follow the published ranges of [ITU-R P.1812-8](https://www.itu.int/rec/R-REC-P.1812-8-202509-I/en) and [ITU-R P.1411-9](https://www.itu.int/rec/R-REC-P.1411-9-201706-I/en); the implementation is an inspectable planning approximation, not either complete method.
+- Provides `terrain-profile` (30 MHz–6 GHz), `urban-short-range` (300 MHz–100 GHz), and explicitly out-of-range research profiles. These applicability labels are tracked against [ITU-R P.1812-8 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf) and [ITU-R P.1411-13 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf); the implementation is an inspectable planning approximation, not either complete method.
 - Exposes free-space, antenna-pattern, system, wall, diffraction, clutter, vegetation, atmospheric-gas, rain, calibration, and shadow-sensitivity components rather than hiding them in one total.
 - Uses an explicitly selected single knife-edge approximation informed by [ITU-R P.526](https://www.itu.int/rec/R-REC-P.526/en). Material, gas, and rain controls are planning inputs informed by [ITU-R P.2040](https://www.itu.int/rec/r-rec-p.2040/en), [ITU-R P.676](https://www.itu.int/rec/R-REC-P.676/en), and [ITU-R P.838](https://www.itu.int/rec/R-REC-P.838/en), not automatic weather or construction-data inference.
 - Displays a vertical terrain/building/LOS/Fresnel cross section with the loss budget and P50/P90-style shadow-sensitivity bounds.
@@ -80,6 +80,7 @@ The fast sector and surface models remain FSPL-plus-walls estimators. A separate
 ## Analytical Surfaces And GIS Interchange
 
 - Evaluates bounded regular received-power grids with a 100,000-cell ceiling and produces unsmoothed marching-square isolines.
+- Returns a raw single-cell received-power surface: valid cells below receiver sensitivity remain numeric, while NoData is reserved for radius/beam geometry exclusion.
 - Renders the raster below the cell/measurement overlays with opacity and minimum-display-threshold controls.
 - Exports the regular grid as float32 EPSG:4326 GeoTIFF, valid grid cells as CSV, and isolines as GeoJSON.
 - Queries building footprints through mandatory viewport `bbox`, pagination, a 50 km diagonal ceiling, and a 5,000-feature page ceiling; outputs GeoJSON or CSV/WKT.
@@ -96,6 +97,7 @@ Planning-grade 4G and 5G interference analysis calculates:
 - Adaptive spatial sampling capped to keep requests bounded.
 - Serviceable, interference-limited, and affected-demand statistics.
 - SINR, RSRP, and RSRQ map surfaces with threshold-specific legends.
+- Uses separate serviceability thresholds (`RSRP >= -110 dBm`, `SINR >= 0 dB`, `RSRQ >= -20 dB`), not receiver sensitivity or the `-100 dBm` building-service threshold.
 
 Near-equal co-channel powers can correctly produce SINR near `0 dB`; the Inspector explains this and other no-signal or poor-quality states.
 
@@ -150,7 +152,8 @@ It is a planning overlay, not an LTE/EPC model or a complete bundled Open5GS dep
 
 ## Reproducibility And Reports
 
-- `/api/meta` exposes application version, build commit, model version, supported technologies, and active dataset identity.
+- `/api/meta` exposes application version, build commit, default propagation model and catalog, the RF semantic contract, supported technology capabilities, and active dataset identity.
+- Network responses preserve request-level defaults alongside normalized effective per-cell RF profiles.
 - Scenarios and reports retain exact request inputs and runtime metadata.
 - Markdown and printable PDF reports include RF assumptions, radio quality, communication paths, calibration evidence, recommendations, and scenario comparison where available.
 - The downloadable OpenAPI 3.1 specification documents current REST routes and error envelopes.

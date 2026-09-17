@@ -135,9 +135,10 @@ For each sampled angle inside the active per-cell beam/pattern, the propagation 
 1. Converts the requested geographic radius into ray segments.
 2. Queries candidate building bounds from the R-tree.
 3. Performs exact segment/polygon intersection tests.
-4. Calculates slant-distance free-space path loss with meter/GHz units, per-cell transmit power, antenna gain/system loss, orientation, simplified horizontal/vertical pattern attenuation, and receiver sensitivity.
-5. Applies frequency-dependent cumulative wall loss.
-6. Emits signal-colored GeoJSON line segments and aggregate range/power statistics.
+4. Classifies the physical endpoint path as LOS, NLOS, indoor, or unknown using shared 2D footprint geometry.
+5. Dispatches `urban_short_range`, `legacy_fspl_walls`, or `research_sub_thz` through the shared evaluator and records applicability/fallback metadata.
+6. Applies the selected model's decomposed link budget using slant distance, per-cell RF values, and relative analytic pattern attenuation.
+7. Emits signal-colored GeoJSON line segments and aggregate range/power statistics.
 
 Cells outside the configured radius or hard beam sector do not contribute. The current engine does not model sidelobes.
 
@@ -145,7 +146,7 @@ Cells outside the configured radius or hard beam sector do not contribute. The c
 
 ### Coverage Gaps
 
-Coverage-gap analysis filters demand-weighted building centroids by radius and sector, estimates received power, and returns buildings below the service threshold ordered by demand and signal severity.
+Coverage-gap analysis filters demand-weighted building centroids by radius and sector, estimates raw received power, and returns buildings that do not meet the building-service rule `raw P_rx > -100 dBm`, ordered by demand and signal severity. This threshold is distinct from per-cell receiver sensitivity.
 
 ### Single-Sector Optimization
 
@@ -165,7 +166,7 @@ The frontend renders selected-cell propagation with a sequential `/api/simulate`
 
 ### Candidate Cell Recommendation
 
-Recommendation accepts two to five selected cells and a drawn search polygon. It considers unselected records from the active dataset, prefilters up to 50 by nearby demand, evaluates at most 12, optimizes only the candidate azimuth, and returns the five strongest marginal network-score gains. Existing selected-cell azimuths remain fixed. Interference, cost, backhaul, permitting, and site availability are intentionally excluded.
+Recommendation accepts two to five selected cells and a drawn search polygon. It considers unselected records from the active dataset, prefilters up to 50 by nearby demand, evaluates at most 12, optimizes only the candidate azimuth, and returns the five strongest raw marginal compatibility deltas. Existing selected-cell azimuths remain fixed. Interference, cost, backhaul, permitting, and site availability are intentionally excluded.
 
 ## Interference Engine
 
@@ -173,11 +174,13 @@ Interference analysis supports selected 4G and 5G cells:
 
 1. Build the union of selected-cell coverage bounds.
 2. Start with the requested grid spacing and increase it when needed to keep the surface bounded.
-3. Evaluate eligible cells using FSPL, gain, beam/radius eligibility, and wall loss.
+3. Evaluate eligible cells using the shared propagation model, gain, and beam/radius eligibility.
 4. Choose the strongest modeled RSRP as the serving cell.
 5. Add receiver noise and load-scaled co-channel interference in linear power.
 6. Derive modeled RSRP, SINR, RSRQ, RSSI, quality class, and serviceability.
 7. Evaluate bounded demand-building centroids using the same radio assumptions.
+
+Interference serviceability is separate from ray termination and building service: a sample is serviceable only when RSRP is at least `-110 dBm`, SINR is at least `0 dB`, and RSRQ is at least `-20 dB`.
 
 Returned averages and P10 values are nullable when no valid signal samples exist.
 

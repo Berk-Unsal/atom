@@ -30,17 +30,17 @@ Most responses are **JSON**. Explicit GIS export representations use GeoJSON, CS
 
 - `GET /healthz` returns a liveness status object
 - `GET /readyz` returns dependency readiness
-- `GET /api/meta` returns application, model, and active dataset identity
+- `GET /api/meta` returns application, default propagation model catalog, RF semantic contract, capability matrix, and active dataset identity
 - `GET /api/datasets` returns installed packs and the active manifest ID
 - `GET /api/buildings` and `GET /api/towers` return raw GeoJSON; bounded clients should prefer `/api/collections/buildings/items`
 - `GET /api/collections/buildings/items` returns viewport-bounded building GeoJSON or CSV
 - `POST /api/analyze-sector` returns `{ simulation, coverage_gaps }` from one shared ray-profile computation
 - `POST /api/path-profile` returns an inspectable 2.5D vertical profile and component loss budget
 - `POST /api/coverage-surface` returns a compact regular raster, isolines, statistics, and model assumptions, or an export representation
-- `POST /api/simulate` returns `{ geojson, stats, rf_profile }`
-- `POST /api/coverage-gaps` returns `{ geojson, stats }`
-- `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`
-- `POST /api/optimize-azimuth` returns `{ optimal_azimuth, coverage_score, demand_score, residential_score }`
+- `POST /api/simulate` returns `{ geojson, stats, rf_profile, rf_contract }`
+- `POST /api/coverage-gaps` returns `{ geojson, stats, rf_contract }`
+- `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`, with defaults, effective profiles, and threshold metadata in `model`
+- `POST /api/optimize-azimuth` returns `{ optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, rf_contract }`
 - `POST /api/recommend-sites` returns a baseline plus ranked candidate records and GeoJSON
 - `POST /api/measurements/evaluate` returns residual GeoJSON, subgroup diagnostics, uncertainty, and spatially validated bias guidance
 - `/api/processes/batch-experiment` and `/api/jobs/{jobID}` expose asynchronous experiment execution, progress, results, and cancellation
@@ -49,7 +49,9 @@ Error responses use a simple object with an `error` message.
 
 ## Per-Cell RF Profile Contract
 
-Single-sector requests accept `rf_profile` at the request root. Network, interference, recommendation, and measurement requests accept it independently inside every `towers[]` item. Legacy top-level fields remain defaults; an explicit nested property overrides its top-level/default counterpart only for that cell. Normalized simulation, optimized-tower, recommendation, and interference-model responses include resolved profiles for reproducibility.
+Single-sector requests accept `rf_profile` at the request root. Network, interference, recommendation, and measurement requests accept it independently inside every `towers[]` item. Legacy top-level fields remain defaults; an explicit nested property overrides its top-level/default counterpart only for that cell. Normalized simulation, optimized-tower, recommendation, measurement, and interference-model responses include resolved profiles for reproducibility. Network-shaped responses also expose `request_defaults` separately from `effective_cell_profiles`; a request default is not evidence that every cell used that value.
+
+The request profile accepts `propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz`. The default is `urban_short_range` at 2.6/28 GHz and `research_sub_thz` at 140 GHz. Positive calibration dB raises predicted received power. The urban model reports its 3GPP UMa formula and deterministic footprint LOS/NLOS rule in `rf_contract`; it does not add legacy wall loss to empirical NLOS. Receiver sensitivity is per-cell ray termination, building service is `raw P_rx > -100 dBm`, and interference serviceability is `RSRP >= -110 dBm` plus `SINR >= 0 dB` plus `RSRQ >= -20 dB`. See the [Concept 4D design note](concept-4d-urban-propagation.md) for the applicability envelope and fallback policy.
 
 ```json
 {
@@ -59,6 +61,7 @@ Single-sector requests accept `rf_profile` at the request root. Network, interfe
   "rf_profile": {
     "schema_version": 1,
     "network_tech": "5g",
+    "propagation_model": "urban_short_range",
     "frequency_ghz": 28,
     "band": "n257",
     "bandwidth_mhz": 100,
@@ -155,8 +158,20 @@ Returns the running application and model versions, build commit, supported tech
 {
   "application_version": "1.0.0",
   "build_commit": "abc1234",
-  "model_version": "fspl-walls-2p5d-v3",
+  "model_version": "urban_short_range",
+  "model_id": "urban_short_range",
+  "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic footprint LOS/NLOS classification",
   "supported_technologies": ["4g", "5g", "6g-research"],
+  "propagation_models": ["urban_short_range", "legacy_fspl_walls", "research_sub_thz"],
+  "rf_contract": {
+    "building_service_threshold_dbm": -100,
+    "propagation_reach_definition": "usable receiver-power reach",
+    "surface_nodata_definition": "radius/beam geometry exclusion; below-sensitivity values remain numeric",
+    "interference_rsrp_threshold_dbm": -110,
+    "interference_sinr_threshold_db": 0,
+    "interference_rsrq_threshold_db": -20
+  },
+  "technology_capabilities": [],
   "dataset": {
     "id": "ankara-open-planning",
     "version": "2026.07",
@@ -292,7 +307,7 @@ The standalone `/api/simulate` and `/api/coverage-gaps` endpoints remain availab
 }
 ```
 
-The response contains sampled terrain/building elevations, endpoint height above ground, direct LOS and 60% Fresnel classification, the dominant obstruction, one selected knife-edge approximation, component losses, P50 and shadow-sensitivity bounds, and an applicability statement. `terrain-profile` accepts 0.03–6 GHz, `urban-short-range` accepts 0.3–100 GHz, and `research-sub-thz` is explicitly outside those ITU-R profile ranges.
+The response contains sampled terrain/building elevations, endpoint height above ground, direct LOS and 60% Fresnel classification, the dominant obstruction, one selected knife-edge approximation, component losses, P50 and shadow-sensitivity bounds, and an applicability statement. It carries `rf_contract.model_id: "path-profile-diagnostic-v1"` to make the diagnostic scope explicit; it does not alter canonical network RF. `terrain-profile` accepts 0.03–6 GHz, `urban-short-range` accepts 0.3–100 GHz, and `research-sub-thz` is explicitly outside those ITU-R profile ranges.
 
 COG/GeoTIFF support is limited to north-up EPSG:4326, one-band integer/float samples, none/DEFLATE compression, and supported integer predictors. The response lists these limitations.
 
@@ -310,7 +325,7 @@ The default JSON response contains a CRS84 row-major raster (`grid`), marching-s
 - `?f=geojson` for isoline GeoJSON
 - `?f=csv` for valid grid-center longitude, latitude, and received power
 
-The surface uses the fast FSPL, antenna-pattern, calibration, and frequency wall-loss model. It does not currently apply the terrain-profile or environmental sensitivity components.
+The surface uses the canonical FSPL, antenna-pattern, calibration, and frequency wall-loss model. It is a raw single-cell received-power surface: valid below-sensitivity values remain numeric, `uses_sensitivity_mask` is false, and NoData means only radius/beam geometry exclusion. It does not apply the terrain-profile or environmental sensitivity components.
 
 ---
 
@@ -401,7 +416,7 @@ Run RF propagation simulation with given parameters.
 
 **Endpoint**: `POST /api/coverage-gaps`
 
-Find demand-weighted buildings inside the selected sector whose estimated received power is below the usable service threshold.
+Find demand-weighted buildings inside the selected sector whose raw received power does not meet the building-service rule.
 
 **Request Body**:
 
@@ -453,7 +468,12 @@ Uses the same payload as `POST /api/simulate`.
     "gap_pct": 24.2,
     "total_gap_demand": 618.5,
     "worst_rx_dbm": -126.4,
-    "threshold_dbm": -105
+    "threshold_dbm": -100,
+    "building_service_threshold_dbm": -100
+  },
+  "rf_contract": {
+    "model_id": "urban_short_range",
+    "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold"
   }
 }
 ```
@@ -462,7 +482,8 @@ Uses the same payload as `POST /api/simulate`.
 
 - Candidate buildings must have `demand_weight + residential_demand > 0`
 - The building centroid must be inside the requested radius and beam sector
-- Received power is estimated with EIRP, FSPL, and cumulative wall penetration loss
+- Received power is estimated with the selected shared propagation evaluator, analytic pattern terms, and explicit applicability/fallback semantics
+- The building-service threshold is `-100 dBm` and is separate from per-cell receiver sensitivity
 - Returned point features are sorted by demand, then by weakest estimated signal
 
 ---
@@ -492,14 +513,14 @@ Calculate planning-grade LTE or NR RSRP, SINR, RSRQ, RSSI, serving-cell, and str
 }
 ```
 
-The request accepts 2–6 unique cells. LTE bandwidths are `1.4`, `3`, `5`, `10`, `15`, or `20` MHz; 5G NR bandwidths are `50`, `100`, `200`, or `400` MHz. Reuse must be `1` or `3`. 6G is rejected because standardized project-level RSRP/RSRQ assumptions are not defined for the research overlay.
+The request accepts 2–6 unique cells. LTE bandwidths are `1.4`, `3`, `5`, `10`, `15`, or `20` MHz; 5G NR bandwidths are `50`, `100`, `200`, or `400` MHz. Reuse must be `1` or `3`. 6G is rejected because standardized project-level RSRP/RSRQ assumptions are not defined for the 6G research profile.
 
 The response contains:
 
 - `geojson`: up to 3,000 grid samples with radio KPIs and serving/interferer context.
 - `demand_geojson`: up to 500 affected demand-building centroids.
 - `stats`: average and P10 radio quality, serviceable area, interference-limited area, affected demand, and per-cell summaries. `valid_sample_count` reports the number of samples with usable measurements; average and P10 fields are `null` when that count is zero.
-- `model`: bandwidth, SCS, resource blocks, load, reuse, effective spacing, and explicit modeling assumptions.
+- `model`: bandwidth, SCS, resource blocks, load, reuse, effective spacing, request defaults, effective per-cell profiles, and explicit modeling assumptions. It also reports serviceability thresholds of `RSRP >= -110 dBm`, `SINR >= 0 dB`, and `RSRQ >= -20 dB`.
 
 Results are deterministic planning estimates, not measurements reported by a UE or live radio network.
 
@@ -546,11 +567,13 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 ```json
 {
   "optimal_azimuth": 42,
+  "propagation_reach_score": 18320.5,
   "coverage_score": 18320.5,
   "demand_score": 140000,
   "residential_score": 86000,
   "hit_demand_buildings": 18,
-  "data_quality": "good"
+  "data_quality": "good",
+  "rf_contract": { "model_id": "urban_short_range" }
 }
 ```
 
@@ -559,7 +582,8 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 | Field | Description |
 |-------|-------------|
 | `optimal_azimuth` | Recommended antenna direction (0-360°) |
-| `coverage_score` | Capped distance-based tie-breaker score |
+| `propagation_reach_score` | Capped aggregate usable-ray reach score |
+| `coverage_score` | Compatibility alias for `propagation_reach_score` |
 | `demand_score` | POI/commercial/critical-building score |
 | `residential_score` | Residential-density demand score |
 | `hit_demand_buildings` | Unique demand-weighted buildings reached by the winning sector |
@@ -611,6 +635,8 @@ Objective IDs are `coverage`, `demand`, `residential`, and `overlap`; the legacy
 The legacy constraint field `min_coverage_score` is also a minimum propagation-reach score, not a spatial-coverage constraint. Its mathematics and wire name remain unchanged for compatibility.
 
 Responses expose both stable normalized utilities and raw domain measurements. Every network request derives one deterministic `optimization_domain` from the logical union of maximum configured service-radius envelopes around the selected cells. The domain is fixed before candidate azimuth evaluation and is independent of antenna azimuth and simulated ray outcomes. The composite score is `100 * (demandWeight*demandUtility + residentialWeight*residentialUtility + coverageWeight*reachUtility + overlapWeight*overlapUtility)`, so it is always in the 0–100 range. Demand is served demand weight divided by relevant demand weight in the fixed domain; residential is covered residential footprints divided by relevant residential footprints intersecting that domain; propagation reach is the existing capped aggregate usable-ray-reach score divided by its configured reach maximum; and overlap utility is `1 - overlapRatio`, where overlap ratio is overlapping covered footprints divided by covered footprints. Utilities are clamped to `[0, 1]` and do not use candidate-set min/max values.
+
+The score fields have intentionally different representations. `stats.network_score` is the legacy raw aggregate of the weighted domain metrics and is not bounded to 100. `stats.objectives` contains normalized utilities, `stats.composite_score` is the weighted 0–1 composite, and `stats.score` is the authoritative normalized score for UI and reports. `optimization.objective_score` and recommendation `marginal_network_score` are raw compatibility deltas; they are not /100 scores or normalized quality percentages.
 
 If a domain has no relevant entities for an objective, that objective is reported as unavailable with `utility: null` and is excluded from effective weight normalization. Configured slider priorities are preserved separately from effective weights. If no positively weighted objective is available, scoring fails with a domain-scoping error. Hard constraints remain active independently; for example, a minimum residential-building constraint still fails when the domain contains no residential buildings.
 
@@ -701,7 +727,7 @@ The response stores complete candidate details only in `recommendations`. Each `
 }
 ```
 
-Candidate records are not approved deployment sites. Cost, backhaul, permitting, and interference are not included in candidate scoring; run `/api/interference` after applying a candidate.
+Candidate records are not approved deployment sites. `marginal_network_score` is a raw legacy compatibility delta; the normalized composite score is exposed separately in network optimization responses. Cost, backhaul, permitting, and interference are not included in candidate scoring; run `/api/interference` after applying a candidate.
 
 ### Evaluate Field Measurements
 
@@ -731,7 +757,7 @@ Compares one to 5,000 measured 4G or 5G RSRP points with the deterministic model
 }
 ```
 
-The response separates valid predictions, no-signal samples, and requested-cell mismatches before reporting residual MAE/RMSE/bias, P50/P90 absolute error, per-cell and per-band summaries, distance/obstruction bins, robust MAD outliers, fold metrics, a 95% median-adjustment interval, and provenance/expiration state. The correction remains a single dB path-loss offset, not full propagation calibration. When applied, send `calibration_offset_db` with compatible simulation, network, interference, recommendation, and measurement requests. Accepted range is `-40` to `40` dB.
+The response separates valid predictions, no-signal samples, and requested-cell mismatches before reporting residual MAE/RMSE/bias, P50/P90 absolute error, per-cell and per-band summaries, distance/obstruction bins, robust MAD outliers, fold metrics, a 95% median-adjustment interval, and provenance/expiration state. It also returns request defaults, effective per-cell profiles, and the canonical RF contract. The correction remains a single dB path-loss offset, not full propagation calibration. When applied, send `calibration_offset_db` with compatible simulation, network, interference, recommendation, and measurement requests. Accepted range is `-40` to `40` dB.
 
 ### Run Batch Experiments
 

@@ -148,7 +148,8 @@ representations use GeoJSON, CSV, or GeoTIFF as documented below:</p>
 <ul>
 <li><code>GET /healthz</code> returns a liveness status object</li>
 <li><code>GET /readyz</code> returns dependency readiness</li>
-<li><code>GET /api/meta</code> returns application, model, and active
+<li><code>GET /api/meta</code> returns application, default propagation
+model catalog, RF semantic contract, capability matrix, and active
 dataset identity</li>
 <li><code>GET /api/datasets</code> returns installed packs and the
 active manifest ID</li>
@@ -166,13 +167,14 @@ vertical profile and component loss budget</li>
 raster, isolines, statistics, and model assumptions, or an export
 representation</li>
 <li><code>POST /api/simulate</code> returns
-<code>{ geojson, stats, rf_profile }</code></li>
+<code>{ geojson, stats, rf_profile, rf_contract }</code></li>
 <li><code>POST /api/coverage-gaps</code> returns
-<code>{ geojson, stats }</code></li>
+<code>{ geojson, stats, rf_contract }</code></li>
 <li><code>POST /api/interference</code> returns
-<code>{ geojson, demand_geojson, stats, model }</code></li>
+<code>{ geojson, demand_geojson, stats, model }</code>, with defaults,
+effective profiles, and threshold metadata in <code>model</code></li>
 <li><code>POST /api/optimize-azimuth</code> returns
-<code>{ optimal_azimuth, coverage_score, demand_score, residential_score }</code></li>
+<code>{ optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, rf_contract }</code></li>
 <li><code>POST /api/recommend-sites</code> returns a baseline plus
 ranked candidate records and GeoJSON</li>
 <li><code>POST /api/measurements/evaluate</code> returns residual
@@ -190,8 +192,24 @@ root. Network, interference, recommendation, and measurement requests
 accept it independently inside every <code>towers[]</code> item. Legacy
 top-level fields remain defaults; an explicit nested property overrides
 its top-level/default counterpart only for that cell. Normalized
-simulation, optimized-tower, recommendation, and interference-model
-responses include resolved profiles for reproducibility.</p>
+simulation, optimized-tower, recommendation, measurement, and
+interference-model responses include resolved profiles for
+reproducibility. Network-shaped responses also expose
+<code>request_defaults</code> separately from
+<code>effective_cell_profiles</code>; a request default is not evidence
+that every cell used that value.</p>
+<p>The request profile accepts
+<code>propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz</code>.
+The default is <code>urban_short_range</code> at 2.6/28 GHz and
+<code>research_sub_thz</code> at 140 GHz. Positive calibration dB raises
+predicted received power. The urban model reports its 3GPP UMa formula
+and deterministic footprint LOS/NLOS rule in <code>rf_contract</code>;
+it does not add legacy wall loss to empirical NLOS. Receiver sensitivity
+is per-cell ray termination, building service is
+<code>raw P_rx &gt; -100 dBm</code>, and interference serviceability is
+<code>RSRP &gt;= -110 dBm</code> plus <code>SINR &gt;= 0 dB</code> plus
+<code>RSRQ &gt;= -20 dB</code>. See the Concept 4D design note for the
+applicability envelope and fallback policy.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tower_lon&quot;</span><span class="fu">:</span> <span class="fl">32.8541</span><span class="fu">,</span></span>
@@ -200,29 +218,30 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rf_profile&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;schema_version&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;network_tech&quot;</span><span class="fu">:</span> <span class="st">&quot;5g&quot;</span><span class="fu">,</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="dv">28</span><span class="fu">,</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;band&quot;</span><span class="fu">:</span> <span class="st">&quot;n257&quot;</span><span class="fu">,</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;bandwidth_mhz&quot;</span><span class="fu">:</span> <span class="dv">100</span><span class="fu">,</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;channel_id&quot;</span><span class="fu">:</span> <span class="st">&quot;NR-634666&quot;</span><span class="fu">,</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;duplex_mode&quot;</span><span class="fu">:</span> <span class="st">&quot;tdd&quot;</span><span class="fu">,</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;tx_power_dbm&quot;</span><span class="fu">:</span> <span class="dv">37</span><span class="fu">,</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;antenna_gain_dbi&quot;</span><span class="fu">:</span> <span class="dv">17</span><span class="fu">,</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;system_loss_db&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">1200</span><span class="fu">,</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">65</span><span class="fu">,</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;antenna_height_m&quot;</span><span class="fu">:</span> <span class="dv">32</span><span class="fu">,</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;mechanical_downtilt_deg&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;electrical_downtilt_deg&quot;</span><span class="fu">:</span> <span class="dv">4</span><span class="fu">,</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;orientation_deg&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;horizontal_pattern_id&quot;</span><span class="fu">:</span> <span class="st">&quot;cosine-sector&quot;</span><span class="fu">,</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;vertical_pattern_id&quot;</span><span class="fu">:</span> <span class="st">&quot;panel-10deg&quot;</span><span class="fu">,</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;load_factor&quot;</span><span class="fu">:</span> <span class="fl">0.65</span><span class="fu">,</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;reuse_factor&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;pci&quot;</span><span class="fu">:</span> <span class="dv">321</span><span class="fu">,</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_height_m&quot;</span><span class="fu">:</span> <span class="fl">1.5</span><span class="fu">,</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_sensitivity_dbm&quot;</span><span class="fu">:</span> <span class="dv">-110</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;propagation_model&quot;</span><span class="fu">:</span> <span class="st">&quot;urban_short_range&quot;</span><span class="fu">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="dv">28</span><span class="fu">,</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;band&quot;</span><span class="fu">:</span> <span class="st">&quot;n257&quot;</span><span class="fu">,</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;bandwidth_mhz&quot;</span><span class="fu">:</span> <span class="dv">100</span><span class="fu">,</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;channel_id&quot;</span><span class="fu">:</span> <span class="st">&quot;NR-634666&quot;</span><span class="fu">,</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;duplex_mode&quot;</span><span class="fu">:</span> <span class="st">&quot;tdd&quot;</span><span class="fu">,</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;tx_power_dbm&quot;</span><span class="fu">:</span> <span class="dv">37</span><span class="fu">,</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;antenna_gain_dbi&quot;</span><span class="fu">:</span> <span class="dv">17</span><span class="fu">,</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;system_loss_db&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">1200</span><span class="fu">,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">65</span><span class="fu">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;antenna_height_m&quot;</span><span class="fu">:</span> <span class="dv">32</span><span class="fu">,</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;mechanical_downtilt_deg&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;electrical_downtilt_deg&quot;</span><span class="fu">:</span> <span class="dv">4</span><span class="fu">,</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;orientation_deg&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;horizontal_pattern_id&quot;</span><span class="fu">:</span> <span class="st">&quot;cosine-sector&quot;</span><span class="fu">,</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;vertical_pattern_id&quot;</span><span class="fu">:</span> <span class="st">&quot;panel-10deg&quot;</span><span class="fu">,</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;load_factor&quot;</span><span class="fu">:</span> <span class="fl">0.65</span><span class="fu">,</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;reuse_factor&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;pci&quot;</span><span class="fu">:</span> <span class="dv">321</span><span class="fu">,</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_height_m&quot;</span><span class="fu">:</span> <span class="fl">1.5</span><span class="fu">,</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_sensitivity_dbm&quot;</span><span class="fu">:</span> <span class="dv">-110</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <table>
 <thead>
 <tr>
@@ -327,14 +346,26 @@ reproduction matters.</p>
 class="sourceCode json"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;application_version&quot;</span><span class="fu">:</span> <span class="st">&quot;1.0.0&quot;</span><span class="fu">,</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;build_commit&quot;</span><span class="fu">:</span> <span class="st">&quot;abc1234&quot;</span><span class="fu">,</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;model_version&quot;</span><span class="fu">:</span> <span class="st">&quot;fspl-walls-2p5d-v3&quot;</span><span class="fu">,</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;supported_technologies&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;4g&quot;</span><span class="ot">,</span> <span class="st">&quot;5g&quot;</span><span class="ot">,</span> <span class="st">&quot;6g-research&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;dataset&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;ankara-open-planning&quot;</span><span class="fu">,</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;2026.07&quot;</span><span class="fu">,</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;crs&quot;</span><span class="fu">:</span> <span class="st">&quot;EPSG:4326&quot;</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;model_version&quot;</span><span class="fu">:</span> <span class="st">&quot;urban_short_range&quot;</span><span class="fu">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;model_id&quot;</span><span class="fu">:</span> <span class="st">&quot;urban_short_range&quot;</span><span class="fu">,</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;model_description&quot;</span><span class="fu">:</span> <span class="st">&quot;3GPP TR 38.901 UMa median outdoor urban path loss with deterministic footprint LOS/NLOS classification&quot;</span><span class="fu">,</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;supported_technologies&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;4g&quot;</span><span class="ot">,</span> <span class="st">&quot;5g&quot;</span><span class="ot">,</span> <span class="st">&quot;6g-research&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;propagation_models&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;urban_short_range&quot;</span><span class="ot">,</span> <span class="st">&quot;legacy_fspl_walls&quot;</span><span class="ot">,</span> <span class="st">&quot;research_sub_thz&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rf_contract&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;building_service_threshold_dbm&quot;</span><span class="fu">:</span> <span class="dv">-100</span><span class="fu">,</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;propagation_reach_definition&quot;</span><span class="fu">:</span> <span class="st">&quot;usable receiver-power reach&quot;</span><span class="fu">,</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;surface_nodata_definition&quot;</span><span class="fu">:</span> <span class="st">&quot;radius/beam geometry exclusion; below-sensitivity values remain numeric&quot;</span><span class="fu">,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interference_rsrp_threshold_dbm&quot;</span><span class="fu">:</span> <span class="dv">-110</span><span class="fu">,</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interference_sinr_threshold_db&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interference_rsrq_threshold_db&quot;</span><span class="fu">:</span> <span class="dv">-20</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;technology_capabilities&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;dataset&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;ankara-open-planning&quot;</span><span class="fu">,</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;2026.07&quot;</span><span class="fu">,</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;crs&quot;</span><span class="fu">:</span> <span class="st">&quot;EPSG:4326&quot;</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <hr />
 <h3 id="get-buildings">Get Buildings</h3>
 <p><strong>Endpoint</strong>: <code>GET /api/buildings</code></p>
@@ -470,7 +501,10 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb10-1"><a href=
 height above ground, direct LOS and 60% Fresnel classification, the
 dominant obstruction, one selected knife-edge approximation, component
 losses, P50 and shadow-sensitivity bounds, and an applicability
-statement. <code>terrain-profile</code> accepts 0.03–6 GHz,
+statement. It carries
+<code>rf_contract.model_id: "path-profile-diagnostic-v1"</code> to make
+the diagnostic scope explicit; it does not alter canonical network RF.
+<code>terrain-profile</code> accepts 0.03–6 GHz,
 <code>urban-short-range</code> accepts 0.3–100 GHz, and
 <code>research-sub-thz</code> is explicitly outside those ITU-R profile
 ranges.</p>
@@ -495,9 +529,12 @@ GeoTIFF with <code>-9999</code> nodata</li>
 <li><code>?f=csv</code> for valid grid-center longitude, latitude, and
 received power</li>
 </ul>
-<p>The surface uses the fast FSPL, antenna-pattern, calibration, and
-frequency wall-loss model. It does not currently apply the
-terrain-profile or environmental sensitivity components.</p>
+<p>The surface uses the canonical FSPL, antenna-pattern, calibration,
+and frequency wall-loss model. It is a raw single-cell received-power
+surface: valid below-sensitivity values remain numeric,
+<code>uses_sensitivity_mask</code> is false, and NoData means only
+radius/beam geometry exclusion. It does not apply the terrain-profile or
+environmental sensitivity components.</p>
 <hr />
 <h3 id="simulate-propagation">Simulate Propagation</h3>
 <p><strong>Endpoint</strong>: <code>POST /api/simulate</code></p>
@@ -643,8 +680,8 @@ four workers.</li>
 <hr />
 <h3 id="find-coverage-gaps">Find Coverage Gaps</h3>
 <p><strong>Endpoint</strong>: <code>POST /api/coverage-gaps</code></p>
-<p>Find demand-weighted buildings inside the selected sector whose
-estimated received power is below the usable service threshold.</p>
+<p>Find demand-weighted buildings inside the selected sector whose raw
+received power does not meet the building-service rule.</p>
 <p><strong>Request Body</strong>:</p>
 <p>Uses the same payload as <code>POST /api/simulate</code>.</p>
 <div class="sourceCode" id="cb13"><pre
@@ -690,17 +727,25 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb14-1"><a href=
 <span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;gap_pct&quot;</span><span class="fu">:</span> <span class="fl">24.2</span><span class="fu">,</span></span>
 <span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;total_gap_demand&quot;</span><span class="fu">:</span> <span class="fl">618.5</span><span class="fu">,</span></span>
 <span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;worst_rx_dbm&quot;</span><span class="fu">:</span> <span class="fl">-126.4</span><span class="fu">,</span></span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;threshold_dbm&quot;</span><span class="fu">:</span> <span class="dv">-105</span></span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;threshold_dbm&quot;</span><span class="fu">:</span> <span class="dv">-100</span><span class="fu">,</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;building_service_threshold_dbm&quot;</span><span class="fu">:</span> <span class="dv">-100</span></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rf_contract&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;model_id&quot;</span><span class="fu">:</span> <span class="st">&quot;urban_short_range&quot;</span><span class="fu">,</span></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;building_service_rule&quot;</span><span class="fu">:</span> <span class="st">&quot;building is served when modeled received power is strictly greater than the building-service threshold&quot;</span></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p><strong>How it works</strong>:</p>
 <ul>
 <li>Candidate buildings must have
 <code>demand_weight + residential_demand &gt; 0</code></li>
 <li>The building centroid must be inside the requested radius and beam
 sector</li>
-<li>Received power is estimated with EIRP, FSPL, and cumulative wall
-penetration loss</li>
+<li>Received power is estimated with the selected shared propagation
+evaluator, analytic pattern terms, and explicit applicability/fallback
+semantics</li>
+<li>The building-service threshold is <code>-100 dBm</code> and is
+separate from per-cell receiver sensitivity</li>
 <li>Returned point features are sorted by demand, then by weakest
 estimated signal</li>
 </ul>
@@ -734,7 +779,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb15-1"><a href=
 <code>50</code>, <code>100</code>, <code>200</code>, or <code>400</code>
 MHz. Reuse must be <code>1</code> or <code>3</code>. 6G is rejected
 because standardized project-level RSRP/RSRQ assumptions are not defined
-for the research overlay.</p>
+for the 6G research profile.</p>
 <p>The response contains:</p>
 <ul>
 <li><code>geojson</code>: up to 3,000 grid samples with radio KPIs and
@@ -747,7 +792,10 @@ interference-limited area, affected demand, and per-cell summaries.
 usable measurements; average and P10 fields are <code>null</code> when
 that count is zero.</li>
 <li><code>model</code>: bandwidth, SCS, resource blocks, load, reuse,
-effective spacing, and explicit modeling assumptions.</li>
+effective spacing, request defaults, effective per-cell profiles, and
+explicit modeling assumptions. It also reports serviceability thresholds
+of <code>RSRP &gt;= -110 dBm</code>, <code>SINR &gt;= 0 dB</code>, and
+<code>RSRQ &gt;= -20 dB</code>.</li>
 </ul>
 <p>Results are deterministic planning estimates, not measurements
 reported by a UE or live radio network.</p>
@@ -838,12 +886,14 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb16-1"><a href=
 <div class="sourceCode" id="cb17"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;optimal_azimuth&quot;</span><span class="fu">:</span> <span class="dv">42</span><span class="fu">,</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;coverage_score&quot;</span><span class="fu">:</span> <span class="fl">18320.5</span><span class="fu">,</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;demand_score&quot;</span><span class="fu">:</span> <span class="dv">140000</span><span class="fu">,</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;residential_score&quot;</span><span class="fu">:</span> <span class="dv">86000</span><span class="fu">,</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;hit_demand_buildings&quot;</span><span class="fu">:</span> <span class="dv">18</span><span class="fu">,</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;data_quality&quot;</span><span class="fu">:</span> <span class="st">&quot;good&quot;</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;propagation_reach_score&quot;</span><span class="fu">:</span> <span class="fl">18320.5</span><span class="fu">,</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;coverage_score&quot;</span><span class="fu">:</span> <span class="fl">18320.5</span><span class="fu">,</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;demand_score&quot;</span><span class="fu">:</span> <span class="dv">140000</span><span class="fu">,</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;residential_score&quot;</span><span class="fu">:</span> <span class="dv">86000</span><span class="fu">,</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;hit_demand_buildings&quot;</span><span class="fu">:</span> <span class="dv">18</span><span class="fu">,</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;data_quality&quot;</span><span class="fu">:</span> <span class="st">&quot;good&quot;</span><span class="fu">,</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rf_contract&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;model_id&quot;</span><span class="fu">:</span> <span class="st">&quot;urban_short_range&quot;</span> <span class="fu">}</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p><strong>Response Fields</strong>:</p>
 <table>
 <thead>
@@ -858,8 +908,12 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb17-1"><a href=
 <td>Recommended antenna direction (0-360°)</td>
 </tr>
 <tr>
+<td><code>propagation_reach_score</code></td>
+<td>Capped aggregate usable-ray reach score</td>
+</tr>
+<tr>
 <td><code>coverage_score</code></td>
-<td>Capped distance-based tie-breaker score</td>
+<td>Compatibility alias for <code>propagation_reach_score</code></td>
 </tr>
 <tr>
 <td><code>demand_score</code></td>
@@ -949,6 +1003,15 @@ maximum; and overlap utility is <code>1 - overlapRatio</code>, where
 overlap ratio is overlapping covered footprints divided by covered
 footprints. Utilities are clamped to <code>[0, 1]</code> and do not use
 candidate-set min/max values.</p>
+<p>The score fields have intentionally different representations.
+<code>stats.network_score</code> is the legacy raw aggregate of the
+weighted domain metrics and is not bounded to 100.
+<code>stats.objectives</code> contains normalized utilities,
+<code>stats.composite_score</code> is the weighted 0–1 composite, and
+<code>stats.score</code> is the authoritative normalized score for UI
+and reports. <code>optimization.objective_score</code> and
+recommendation <code>marginal_network_score</code> are raw compatibility
+deltas; they are not /100 scores or normalized quality percentages.</p>
 <p>If a domain has no relevant entities for an objective, that objective
 is reported as unavailable with <code>utility: null</code> and is
 excluded from effective weight normalization. Configured slider
@@ -1093,9 +1156,12 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb21-1"><a href=
 <span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
 <span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
 <span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p>Candidate records are not approved deployment sites. Cost, backhaul,
-permitting, and interference are not included in candidate scoring; run
-<code>/api/interference</code> after applying a candidate.</p>
+<p>Candidate records are not approved deployment sites.
+<code>marginal_network_score</code> is a raw legacy compatibility delta;
+the normalized composite score is exposed separately in network
+optimization responses. Cost, backhaul, permitting, and interference are
+not included in candidate scoring; run <code>/api/interference</code>
+after applying a candidate.</p>
 <h3 id="evaluate-field-measurements">Evaluate Field Measurements</h3>
 <p><strong>Endpoint</strong>:
 <code>POST /api/measurements/evaluate</code></p>
@@ -1129,12 +1195,13 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb22-1"><a href=
 requested-cell mismatches before reporting residual MAE/RMSE/bias,
 P50/P90 absolute error, per-cell and per-band summaries,
 distance/obstruction bins, robust MAD outliers, fold metrics, a 95%
-median-adjustment interval, and provenance/expiration state. The
-correction remains a single dB path-loss offset, not full propagation
-calibration. When applied, send <code>calibration_offset_db</code> with
-compatible simulation, network, interference, recommendation, and
-measurement requests. Accepted range is <code>-40</code> to
-<code>40</code> dB.</p>
+median-adjustment interval, and provenance/expiration state. It also
+returns request defaults, effective per-cell profiles, and the canonical
+RF contract. The correction remains a single dB path-loss offset, not
+full propagation calibration. When applied, send
+<code>calibration_offset_db</code> with compatible simulation, network,
+interference, recommendation, and measurement requests. Accepted range
+is <code>-40</code> to <code>40</code> dB.</p>
 <h3 id="run-batch-experiments">Run Batch Experiments</h3>
 <p><strong>Discovery</strong>:
 <code>GET /api/processes/batch-experiment</code></p>

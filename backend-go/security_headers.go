@@ -8,14 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const contentSecurityPolicy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https://*.tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:"
+const contentSecurityPolicy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:"
 
 func securityHeaders(trustedProxies []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Header("Content-Security-Policy", contentSecurityPolicy)
 		c.Header("Cross-Origin-Opener-Policy", "same-origin")
 		c.Header("Permissions-Policy", "camera=(), geolocation=(), microphone=()")
-		c.Header("Referrer-Policy", "no-referrer")
+		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
 		c.Header("X-Content-Type-Options", "nosniff")
 		c.Header("X-Frame-Options", "DENY")
 		if requestIsHTTPS(c.Request, trustedProxies) {

@@ -150,8 +150,9 @@ export function normalizeNetworkStats(optimization) {
   return {
     coverageScore: stats.coverage_score ?? null,
     demandScore: stats.demand_score ?? null,
-    networkScore: stats.score ?? stats.network_score ?? null,
-    optimizationScore: stats.score ?? null,
+    networkScore: normalizedNetworkScore(stats),
+    optimizationScore: normalizedNetworkScore(stats),
+    rawNetworkScore: Number.isFinite(Number(stats.network_score)) ? Number(stats.network_score) : null,
     overlapBuildings: stats.overlap_buildings ?? null,
     overlapPenalty: stats.overlap_penalty ?? null,
     residentialScore: stats.residential_score ?? null,
@@ -163,4 +164,14 @@ export function normalizeNetworkStats(optimization) {
     relevantResidentialTotal: raw.relevant_residential_total ?? raw.residential_total ?? null,
     optimizationDomain: optimization?.optimization_domain ?? null,
   };
+}
+
+export function normalizedNetworkScore(stats) {
+  if (typeof stats === "number") {
+    return Number.isFinite(stats) ? stats : null;
+  }
+  const score = Number(stats?.score);
+  if (Number.isFinite(score)) return score;
+  const composite = Number(stats?.composite_score);
+  return Number.isFinite(composite) ? composite * 100 : null;
 }

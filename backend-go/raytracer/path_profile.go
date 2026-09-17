@@ -134,6 +134,7 @@ type PathProfileResponse struct {
 	Applicability       ModelApplicability  `json:"applicability"`
 	RFProfile           CellRFProfile       `json:"rf_profile"`
 	Fidelity            PropagationFidelity `json:"fidelity"`
+	RFContract          RFContractMetadata  `json:"rf_contract"`
 }
 
 func (input PathProfileRequestInput) ToRequest() PathProfileRequest {
@@ -341,17 +342,18 @@ func AnalyzePathProfileContext(ctx context.Context, request PathProfileRequest, 
 		MinimumClearanceM: round1(minimumClearance), MinimumFresnelRatio: round2(minimumFresnelRatio),
 		DominantObstruction: dominant, Samples: samples, Terrain: terrainMeta, LossBudget: lossBudget,
 		Applicability: PathModelApplicability(request.ModelProfile, request.RFProfile.FrequencyGHz), RFProfile: request.RFProfile, Fidelity: request.Fidelity,
+		RFContract: diagnosticRFContract(&request.RFProfile, request.CalibrationOffsetDB),
 	}, nil
 }
 
 func PathModelApplicability(profile string, frequencyGHz float64) ModelApplicability {
-	result := ModelApplicability{ProfileID: strings.ToLower(strings.TrimSpace(profile)), Implementation: "inspectable planning approximation; not a complete implementation of the cited Recommendation"}
+	result := ModelApplicability{ProfileID: strings.ToLower(strings.TrimSpace(profile)), Implementation: "advanced point-to-point diagnostic model; inspectable planning approximation, not a complete implementation of the cited Recommendation and not canonical network RF"}
 	switch result.ProfileID {
 	case "terrain-profile":
 		result.Reference, result.FrequencyMinGHz, result.FrequencyMaxGHz = "ITU-R P.1812-8", 0.03, 6
 		result.Note = "Terrain/building profile with free-space loss and explicitly selected single-knife-edge diffraction."
 	case "urban-short-range":
-		result.Reference, result.FrequencyMinGHz, result.FrequencyMaxGHz = "ITU-R P.1411-9", 0.3, 100
+		result.Reference, result.FrequencyMinGHz, result.FrequencyMaxGHz = "ITU-R P.1411-13", 0.3, 100
 		result.Note = "Short-range outdoor profile with building-screen classification and inspectable additive losses."
 	case "research-sub-thz":
 		result.Reference, result.FrequencyMinGHz, result.FrequencyMaxGHz = "research planning profile", 100, MaxFrequencyGHz
@@ -405,7 +407,7 @@ func pathLossBudget(request PathProfileRequest, distance, bearing float64, domin
 		{ID: "vegetation", Label: "Vegetation", LossDB: round2(vegetation), Enabled: request.Fidelity.VegetationDepthM > 0 && request.Fidelity.VegetationSpecificAttenuationDBPerM > 0, Method: "user-supplied depth × dB/m sensitivity"},
 		{ID: "atmospheric-gas", Label: "Atmospheric gas", LossDB: round2(gas), Enabled: request.Fidelity.GasSpecificAttenuationDBPerKM > 0, Method: "user-supplied specific attenuation", Reference: "ITU-R P.676"},
 		{ID: "rain", Label: "Rain", LossDB: round2(rain), Enabled: request.Fidelity.RainSpecificAttenuationDBPerKM > 0, Method: "user-supplied specific attenuation", Reference: "ITU-R P.838"},
-		{ID: "calibration", Label: "Calibration correction", LossDB: round2(calibrationLoss), Enabled: request.CalibrationOffsetDB != 0, Method: "signed project calibration offset"},
+		{ID: "calibration", Label: "Global calibration offset", LossDB: round2(calibrationLoss), Enabled: request.CalibrationOffsetDB != 0, Method: "signed global dB offset; positive values raise received power", Note: CanonicalCalibrationDefinition},
 	}
 	total := freeSpace + pattern + profile.SystemLossDB + wallLoss + diffraction + clutter + vegetation + gas + rain + calibrationLoss
 	rxP50 := profile.TxPowerDBm + profile.AntennaGainDBi - total

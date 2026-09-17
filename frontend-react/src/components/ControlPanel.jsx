@@ -1,6 +1,7 @@
 import { Activity, Compass, Gauge, MapPin, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
 import { NETWORK_TECH_OPTIONS } from "../utils/networkTech.js";
 import { MAX_NETWORK_CELLS } from "../utils/networkSelection.js";
+import { defaultPropagationModelForFrequency } from "../utils/rfProfile.js";
 
 export default function ControlPanel({
   activeTool,
@@ -28,6 +29,7 @@ export default function ControlPanel({
     onChange((current) => ({
       ...current,
       frequencyGHz: option.frequencyGHz,
+      propagationModelID: defaultPropagationModelForFrequency(option.frequencyGHz),
       interferenceBandwidthMHz: option.defaultBandwidthMHz ?? current.interferenceBandwidthMHz,
     }));
   };
@@ -82,6 +84,22 @@ export default function ControlPanel({
             ))}
           </div>
         </div>
+
+        <label className="input-row select-row">
+          <span className="input-label">Propagation model</span>
+          <span className="number-wrap">
+            <select
+              aria-label="Propagation model"
+              value={settings.propagationModelID ?? defaultPropagationModelForFrequency(settings.frequencyGHz)}
+              onChange={(event) => update("propagationModelID", event.target.value)}
+            >
+              <option value="urban_short_range">Urban short-range (UMa)</option>
+              <option value="legacy_fspl_walls">Legacy FSPL + walls</option>
+              <option value="research_sub_thz">Research sub-THz</option>
+            </select>
+          </span>
+        </label>
+        <p className="selection-note">Urban is the default at 2.6/28 GHz; 140 GHz is research-only.</p>
 
         <NumberField
           icon={<Zap size={18} />}
@@ -212,9 +230,9 @@ export default function ControlPanel({
       return (
         <ToolReadinessState
           actionLabel="Use 5G mmWave"
-          description="The current 6G mode is a propagation research overlay and does not expose SINR, RSRP, or RSRQ analysis."
+          description="The current 6G research profile is a 140 GHz propagation planning overlay and does not expose SINR, RSRP, or RSRQ analysis."
           onAction={() => updateNetworkTech(nrOption)}
-          title="Not available in 6G mode"
+          title="Not available in 6G research profile"
         />
       );
     }

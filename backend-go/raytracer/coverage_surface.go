@@ -29,10 +29,11 @@ type CoverageSurfaceRequest struct {
 }
 
 type CoverageSurfaceResponse struct {
-	Grid     CoverageRasterGrid       `json:"grid"`
-	Contours SurfaceFeatureCollection `json:"contours"`
-	Stats    CoverageSurfaceStats     `json:"stats"`
-	Model    CoverageSurfaceModel     `json:"model"`
+	Grid       CoverageRasterGrid       `json:"grid"`
+	Contours   SurfaceFeatureCollection `json:"contours"`
+	Stats      CoverageSurfaceStats     `json:"stats"`
+	Model      CoverageSurfaceModel     `json:"model"`
+	RFContract RFContractMetadata       `json:"rf_contract"`
 }
 
 type CoverageRasterGrid struct {
@@ -47,16 +48,22 @@ type CoverageRasterGrid struct {
 }
 
 type CoverageSurfaceStats struct {
-	CellCount      int       `json:"cell_count"`
-	ValidCellCount int       `json:"valid_cell_count"`
-	MinimumDBm     *float64  `json:"min_dbm"`
-	MaximumDBm     *float64  `json:"max_dbm"`
-	ThresholdsDBm  []float64 `json:"thresholds_dbm"`
+	CellCount                 int       `json:"cell_count"`
+	ValidCellCount            int       `json:"valid_cell_count"`
+	NoDataCellCount           int       `json:"nodata_cell_count"`
+	BelowSensitivityCellCount int       `json:"below_sensitivity_cell_count"`
+	MinimumDBm                *float64  `json:"min_dbm"`
+	MaximumDBm                *float64  `json:"max_dbm"`
+	ThresholdsDBm             []float64 `json:"thresholds_dbm"`
+	ReceiverSensitivityDBm    float64   `json:"receiver_sensitivity_dbm"`
 }
 
 type CoverageSurfaceModel struct {
-	Type        string   `json:"type"`
-	Assumptions []string `json:"assumptions"`
+	Type                string   `json:"type"`
+	ValueSemantics      string   `json:"value_semantics"`
+	NoDataMeaning       string   `json:"nodata_meaning"`
+	UsesSensitivityMask bool     `json:"uses_sensitivity_mask"`
+	Assumptions         []string `json:"assumptions"`
 }
 
 type SurfaceFeatureCollection struct {
@@ -130,6 +137,7 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 	}
 	minimum, maximum := math.Inf(1), math.Inf(-1)
 	validCount := 0
+	belowSensitivityCount := 0
 	for row := 0; row < height; row++ {
 		y := -radiusMeters + float64(row)*effectiveCellSizeMeters
 		for column := 0; column < width; column++ {
@@ -147,16 +155,26 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 			if profile.HorizontalPatternID != "omni" && !AngleInBeam(bearing, effectiveAzimuth, profile.BeamWidthDeg) {
 				continue
 			}
-			intersections, _, err := wallIntersectionsForSegmentContext(ctx, origin, origin, point, buildings)
+			pathGeometry, err := buildPropagationPathGeometryContext(ctx, origin, point, buildings)
 			if err != nil {
 				return CoverageSurfaceResponse{}, err
 			}
-			wallLoss := float64(len(intersections)) * PenetrationLossForFrequencyGHz(profile.FrequencyGHz)
-			signal := profile.ReceivedPowerDBm(math.Max(distanceMeters, 1), wallLoss, req.Simulation.CalibrationOffsetDB, smallestAngleDifference(bearing, effectiveAzimuth))
+			losState, endpointCase, wallEventCount := pathGeometry.classify(point, distanceMeters)
+			propagation := EvaluatePropagationLink(PropagationLinkContext{
+				Profile: profile, GroundDistanceM: math.Max(distanceMeters, 1),
+				HorizontalOffsetDeg: smallestAngleDifference(bearing, effectiveAzimuth),
+				CalibrationOffsetDB: req.Simulation.CalibrationOffsetDB,
+				LOSState:            losState, EndpointCase: endpointCase,
+				BuildingDataAvailable: pathGeometry.available, WallEventCount: wallEventCount,
+			})
+			signal := propagation.ReceivedPowerDBm
 			signal = roundOne(signal)
 			values[row*width+column] = signal
 			minimum, maximum = math.Min(minimum, signal), math.Max(maximum, signal)
 			validCount++
+			if signal <= profile.ReceiverSensitivityDBm {
+				belowSensitivityCount++
+			}
 		}
 	}
 	thresholds := append([]float64(nil), req.ThresholdsDBm...)
@@ -166,17 +184,36 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 		CRS: "OGC:CRS84", Bounds: bounds, Width: width, Height: height, CellSizeMeters: round2(effectiveCellSizeMeters),
 		NoDataValue: SurfaceNoDataValue, RowOrder: "south-to-north", Values: values,
 	}
-	stats := CoverageSurfaceStats{CellCount: len(values), ValidCellCount: validCount, ThresholdsDBm: thresholds}
+	stats := CoverageSurfaceStats{
+		CellCount:                 len(values),
+		ValidCellCount:            validCount,
+		NoDataCellCount:           len(values) - validCount,
+		BelowSensitivityCellCount: belowSensitivityCount,
+		ThresholdsDBm:             thresholds,
+		ReceiverSensitivityDBm:    profile.ReceiverSensitivityDBm,
+	}
 	if validCount > 0 {
 		stats.MinimumDBm, stats.MaximumDBm = floatPointer(roundOne(minimum)), floatPointer(roundOne(maximum))
 	}
+	surfaceType := "received_signal_surface_" + profile.PropagationModelID
+	if profile.PropagationModelID == CanonicalRFModelID || profile.PropagationModelID == LegacyPropagationModelID {
+		surfaceType = "received_signal_surface_fspl_walls"
+	}
 	return CoverageSurfaceResponse{
 		Grid: grid, Contours: surfaceContours(grid, thresholds), Stats: stats,
-		Model: CoverageSurfaceModel{Type: "regular_grid_fspl_walls", Assumptions: []string{
-			"Grid centers are evaluated with the selected cell profile, antenna horizontal pattern, calibration offset, and material-agnostic frequency wall loss.",
-			"Contours use marching-square line segments over valid grid cells; no smoothing or kriging is applied.",
-			"The regular surface does not yet apply the point-to-point terrain-profile or environmental sensitivity components.",
-		}},
+		Model: CoverageSurfaceModel{
+			Type:                surfaceType,
+			ValueSemantics:      "raw_received_power_dbm",
+			NoDataMeaning:       "radius or beam geometry exclusion; weak numeric values are retained",
+			UsesSensitivityMask: false,
+			Assumptions: []string{
+				"Grid centers are evaluated with the selected cell profile and shared propagation evaluator; the response contract identifies the applied model or explicit legacy fallback.",
+				"The urban_short_range model uses deterministic 2D footprint LOS/NLOS classification and does not add legacy wall-event dB to empirical NLOS path loss.",
+				"Contours use marching-square line segments over valid grid cells; no smoothing or kriging is applied.",
+				"The regular surface does not apply receiver sensitivity as a mask and does not apply the point-to-point terrain-profile or environmental sensitivity components.",
+			},
+		},
+		RFContract: rfContractForProfile(&profile, req.Simulation.CalibrationOffsetDB),
 	}, nil
 }
 

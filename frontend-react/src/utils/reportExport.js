@@ -1,4 +1,5 @@
 import { rxPowerColor } from "./geojson.js";
+import { normalizedNetworkScore } from "./appWorkspace.js";
 import { buildCellMarginalEffectView } from "./optimizationConfig.js";
 import {
   renderMarkdownInterferenceSection,
@@ -612,7 +613,8 @@ function buildRFParameterRows(view) {
     row("Antenna gain", formatUnit(view.rfProfiles[0]?.antennaGainDbi, 1, "dBi")),
     row("System loss", formatUnit(view.rfProfiles[0]?.systemLossDb, 1, "dB")),
     row("Antenna height", formatUnit(view.rfProfiles[0]?.antennaHeightM, 1, "m")),
-    row("Receiver sensitivity", formatUnit(view.rfProfiles[0]?.receiverSensitivityDbm, 1, "dBm")),
+    row("Receiver sensitivity (first effective cell)", formatUnit(view.rfProfiles[0]?.receiverSensitivityDbm, 1, "dBm")),
+    row("Building service threshold", formatUnit(view.coverageGaps?.stats?.building_service_threshold_dbm ?? view.coverageGaps?.stats?.threshold_dbm ?? view.appMeta?.rf_contract?.building_service_threshold_dbm, 1, "dBm")),
     row("Ray count", formatCount(view.parameters.rays ?? view.settings.rayCount)),
     row("Calibration offset", formatUnit(view.parameters.calibration_offset_db ?? view.settings.calibrationOffsetDb, 1, "dB")),
   ].filter((item) => item[1] !== null);
@@ -621,7 +623,7 @@ function buildRFParameterRows(view) {
 function buildRFProfileTable(view) {
   const includePCI = view.rfProfiles.some((profile) => finiteOrNull(profile.pci) !== null);
   return {
-    headers: ["Cell", "Band / channel", "Frequency / bandwidth", "TX / gain / loss", "Antenna", "Patterns", includePCI ? "Load / reuse / PCI" : "Load / reuse", "Receiver"],
+    headers: ["Cell", "Band / channel", "Frequency / bandwidth", "TX / gain / loss", "Antenna", "Patterns", includePCI ? "Load / reuse / PCI" : "Load / reuse", "Receiver / sensitivity"],
     rows: buildRFProfileRows(view, includePCI),
   };
 }
@@ -784,10 +786,10 @@ function renderPrintableCoreLab(view) {
 function renderMarkdownRecommendations(view) {
   const recommendations = view.recommendations?.recommendations ?? [];
   if (recommendations.length === 0) return "";
-  const rows = recommendations.map((candidate, index) => [index + 1, candidate.cell_id, formatAngle(candidate.optimal_azimuth), formatNumberOrText(candidate.marginal_network_score, 1), candidate.reason]);
+  const rows = recommendations.map((candidate, index) => [index + 1, candidate.cell_id, formatAngle(candidate.optimal_azimuth), formatSigned(candidate.marginal_network_score, 1), candidate.reason]);
   return `## Candidate Cell Recommendations
 
-${renderMarkdownTable(["Rank", "Cell", "Azimuth", "Marginal score", "Reason"], rows)}
+${renderMarkdownTable(["Rank", "Cell", "Azimuth", "Raw marginal Δ", "Reason"], rows)}
 
 Candidates are known planning records, not approved deployment sites. Interference is excluded from candidate scoring.`;
 }
@@ -795,8 +797,8 @@ Candidates are known planning records, not approved deployment sites. Interferen
 function renderPrintableRecommendations(view) {
   const recommendations = view.recommendations?.recommendations ?? [];
   if (recommendations.length === 0) return "";
-  const rows = recommendations.map((candidate, index) => [index + 1, candidate.cell_id, formatAngle(candidate.optimal_azimuth), formatNumberOrText(candidate.marginal_network_score, 1), candidate.reason]);
-  return `<section data-report-section="candidate-recommendations"><h2>Candidate Cell Recommendations</h2>${renderHtmlTable(["Rank", "Cell", "Azimuth", "Marginal score", "Reason"], rows)}<p class="report-note">Candidates are known planning records, not approved deployment sites. Interference is excluded from candidate scoring.</p></section>`;
+  const rows = recommendations.map((candidate, index) => [index + 1, candidate.cell_id, formatAngle(candidate.optimal_azimuth), formatSigned(candidate.marginal_network_score, 1), candidate.reason]);
+  return `<section data-report-section="candidate-recommendations"><h2>Candidate Cell Recommendations</h2>${renderHtmlTable(["Rank", "Cell", "Azimuth", "Raw marginal Δ", "Reason"], rows)}<p class="report-note">Candidates are known planning records, not approved deployment sites. The raw marginal delta is a legacy compatibility aggregate, not the normalized optimization score; interference is excluded from candidate scoring.</p></section>`;
 }
 
 function renderMarkdownSavedScenarios(view) {
@@ -887,7 +889,7 @@ function formatComparisonChange(metric, definition) {
 function buildNetworkPerformanceRows(stats, objectiveStatus) {
   const raw = stats?.raw_metrics ?? stats?.rawMetrics ?? {};
   const rows = [];
-  const score = finiteOrNull(stats?.score) ?? (finiteOrNull(stats?.composite_score) === null ? null : Number(stats.composite_score) * 100) ?? finiteOrNull(stats?.network_score);
+  const score = normalizedNetworkScore(stats);
   if (score !== null) rows.push(["Optimization score", `${formatNumber(score, 1)} / 100`]);
   if (objectiveAvailable(objectiveStatus, "demand")) {
     const served = readNumeric(raw, "served_demand_weight", "servedDemandWeight", "served_weighted_demand", "servedWeightedDemand") ?? readNumeric(stats, "unique_demand_buildings", "uniqueDemandBuildings");
@@ -1000,7 +1002,11 @@ function buildConstraintRows({ constraints, status }) {
 
 function buildDatasetRows(report) {
   const dataset = report.appMeta?.dataset ?? {};
+  const contract = report.appMeta?.rf_contract ?? {};
   const summary = report.buildingSummary ?? {};
+  const interferenceRsrp = finiteOrNull(contract.interference_rsrp_threshold_dbm);
+  const interferenceSinr = finiteOrNull(contract.interference_sinr_threshold_db);
+  const interferenceRsrq = finiteOrNull(contract.interference_rsrq_threshold_db);
   return [
     row("Dataset", dataset.name),
     row("Dataset version", dataset.version),
@@ -1016,6 +1022,15 @@ function buildDatasetRows(report) {
     row("Layers", dataset.layers ? Object.keys(dataset.layers).join(", ") : null),
     row("Hashed files", dataset.sha256 ? formatCount(Object.keys(dataset.sha256).length) : null),
     row("Model version", report.appMeta?.model_version),
+    row("RF model", report.appMeta?.model_id ?? contract.model_id),
+    row("RF model scope", report.appMeta?.model_description ?? contract.model_description),
+    row("Applied RF model", contract.applied_model_id),
+    row("RF applicability", contract.applicability),
+    row("RF fallback", contract.fallback_model_id ? `${contract.fallback_model_id} · ${contract.fallback_policy ?? "explicit fallback"}` : null),
+    row("Building service threshold", formatUnit(contract.building_service_threshold_dbm, 1, "dBm")),
+    row("Interference serviceability", interferenceRsrp !== null && interferenceSinr !== null && interferenceRsrq !== null
+      ? `RSRP ≥ ${formatUnit(interferenceRsrp, 1, "dBm")} · SINR ≥ ${formatUnit(interferenceSinr, 1, "dB")} · RSRQ ≥ ${formatUnit(interferenceRsrq, 1, "dB")}`
+      : null),
     row("Application version", report.appMeta?.application_version),
     row("Optimization run", report.networkOptimization?.optimization_run_id),
   ].filter((item) => item[1] !== null);
@@ -1167,11 +1182,7 @@ function formatCount(value) {
 }
 
 function formatScore(value) {
-  const composite = finiteOrNull(value?.composite_score);
-  const numeric = finiteOrNull(value)
-    ?? finiteOrNull(value?.score)
-    ?? (composite === null ? null : composite * 100)
-    ?? finiteOrNull(value?.network_score);
+  const numeric = normalizedNetworkScore(value);
   return numeric === null ? null : `${formatNumber(numeric, 1)} / 100`;
 }
 

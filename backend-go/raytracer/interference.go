@@ -13,9 +13,6 @@ import (
 const (
 	MaxInterferenceSamples        = 3000
 	MaxInterferenceDemandFeatures = 500
-	InterferenceRSRPThresholdDBm  = -110.0
-	InterferenceSINRThresholdDB   = 0.0
-	InterferenceRSRQThresholdDB   = -20.0
 )
 
 type InterferenceTowerRequest struct {
@@ -115,21 +112,28 @@ type InterferenceCellSummary struct {
 }
 
 type InterferenceModel struct {
-	Type                    string          `json:"type"`
-	NetworkTech             string          `json:"network_tech"`
-	MeasurementFamily       string          `json:"measurement_family"`
-	FrequencyGHz            float64         `json:"frequency_ghz"`
-	BandwidthMHz            float64         `json:"bandwidth_mhz"`
-	SubcarrierSpacingKHz    float64         `json:"subcarrier_spacing_khz"`
-	ResourceBlocks          int             `json:"resource_blocks"`
-	NoiseFigureDB           float64         `json:"noise_figure_db"`
-	LoadFactor              float64         `json:"load_factor"`
-	ReuseFactor             int             `json:"reuse_factor"`
-	RequestedSampleSpacingM float64         `json:"requested_sample_spacing_m"`
-	EffectiveSampleSpacingM float64         `json:"effective_sample_spacing_m"`
-	Assumptions             []string        `json:"assumptions"`
-	HeterogeneousProfiles   bool            `json:"heterogeneous_profiles"`
-	Profiles                []CellRFProfile `json:"profiles"`
+	Type                    string                   `json:"type"`
+	NetworkTech             string                   `json:"network_tech"`
+	MeasurementFamily       string                   `json:"measurement_family"`
+	FrequencyGHz            float64                  `json:"frequency_ghz"`
+	BandwidthMHz            float64                  `json:"bandwidth_mhz"`
+	SubcarrierSpacingKHz    float64                  `json:"subcarrier_spacing_khz"`
+	ResourceBlocks          int                      `json:"resource_blocks"`
+	NoiseFigureDB           float64                  `json:"noise_figure_db"`
+	LoadFactor              float64                  `json:"load_factor"`
+	ReuseFactor             int                      `json:"reuse_factor"`
+	RequestedSampleSpacingM float64                  `json:"requested_sample_spacing_m"`
+	EffectiveSampleSpacingM float64                  `json:"effective_sample_spacing_m"`
+	Assumptions             []string                 `json:"assumptions"`
+	HeterogeneousProfiles   bool                     `json:"heterogeneous_profiles"`
+	Profiles                []CellRFProfile          `json:"profiles"`
+	RequestDefaults         RFRequestDefaults        `json:"request_defaults"`
+	EffectiveCellProfiles   []EffectiveCellRFProfile `json:"effective_cell_profiles"`
+	RFContract              RFContractMetadata       `json:"rf_contract"`
+	RSRPThresholdDBm        float64                  `json:"rsrp_threshold_dbm"`
+	SINRThresholdDB         float64                  `json:"sinr_threshold_db"`
+	RSRQThresholdDB         float64                  `json:"rsrq_threshold_db"`
+	ServiceabilityRule      string                   `json:"serviceability_rule"`
 }
 
 type interferencePreset struct {
@@ -340,11 +344,18 @@ func AnalyzeInterferenceContext(ctx context.Context, req InterferenceRequest, bu
 			Assumptions: []string{
 				"Each cell's transmit power, gain, loss, height, pattern, load, channel, bandwidth, and receiver assumptions are applied independently.",
 				"Only selected co-channel cells inside their configured beam and radius contribute.",
-				"FSPL, antenna-pattern attenuation, and cumulative frequency-dependent wall-boundary loss are deterministic.",
+				"The selected propagation model is evaluated through the shared link evaluator; the urban model uses footprint boundaries for LOS/NLOS classification without adding legacy wall dB.",
 				"Sidelobes, fading, diffraction, MIMO scheduling, uplink, and adjacent-channel leakage are excluded.",
 			},
 			HeterogeneousProfiles: heterogeneousProfiles,
 			Profiles:              profiles,
+			RequestDefaults:       interferenceRequestDefaults(req),
+			EffectiveCellProfiles: effectiveInterferenceCellRFProfiles(req),
+			RFContract:            rfContractForProfile(&req.RFProfile, req.CalibrationOffsetDB),
+			RSRPThresholdDBm:      InterferenceRSRPThresholdDBm,
+			SINRThresholdDB:       InterferenceSINRThresholdDB,
+			RSRQThresholdDB:       InterferenceRSRQThresholdDB,
+			ServiceabilityRule:    "serviceable = RSRP >= threshold AND SINR >= threshold AND RSRQ >= threshold",
 		},
 	}, nil
 }
@@ -576,17 +587,19 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 		if profile.HorizontalPatternID != "omni" && !AngleInBeam(bearing, effectiveAzimuth, profile.BeamWidthDeg) {
 			continue
 		}
-		intersections, _, err := wallIntersectionsForSegmentContext(ctx, origin, origin, point, buildings)
+		pathGeometry, err := buildPropagationPathGeometryContext(ctx, origin, point, buildings)
 		if err != nil {
 			return InterferenceProperties{}, err
 		}
-		wallCount := len(intersections)
-		carrierRxDBm := profile.ReceivedPowerDBm(
-			distance,
-			float64(wallCount)*PenetrationLossForFrequencyGHz(profile.FrequencyGHz),
-			req.CalibrationOffsetDB,
-			smallestAngleDifference(bearing, effectiveAzimuth),
-		)
+		losState, endpointCase, wallCount := pathGeometry.classify(point, distance)
+		propagation := EvaluatePropagationLink(PropagationLinkContext{
+			Profile: profile, GroundDistanceM: distance,
+			HorizontalOffsetDeg: smallestAngleDifference(bearing, effectiveAzimuth),
+			CalibrationOffsetDB: req.CalibrationOffsetDB,
+			LOSState:            losState, EndpointCase: endpointCase,
+			BuildingDataAvailable: pathGeometry.available, WallEventCount: wallCount,
+		})
+		carrierRxDBm := propagation.ReceivedPowerDBm
 		if carrierRxDBm <= profile.ReceiverSensitivityDBm {
 			continue
 		}

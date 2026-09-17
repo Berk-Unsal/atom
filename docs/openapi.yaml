@@ -118,7 +118,7 @@ paths:
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
-        "200": { description: Nested simulation and coverage_gaps results derived from one propagation pass }
+        "200": { description: Nested simulation and coverage_gaps results derived from one propagation pass, each carrying the canonical RF contract }
         "400": { $ref: "#/components/responses/BadRequest" }
         "413": { $ref: "#/components/responses/TooLarge" }
         "422": { $ref: "#/components/responses/TooComplex" }
@@ -131,7 +131,9 @@ paths:
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
-        "200": { description: Segmented propagation GeoJSON and statistics }
+        "200":
+          description: Segmented propagation GeoJSON, statistics, effective RF profile, and canonical RF contract
+          content: { application/json: { schema: { $ref: "#/components/schemas/SimulationResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "413": { $ref: "#/components/responses/TooLarge" }
         "422": { $ref: "#/components/responses/TooComplex" }
@@ -144,7 +146,9 @@ paths:
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
-        "200": { description: Gap GeoJSON and demand statistics }
+        "200":
+          description: Gap GeoJSON, demand statistics, building-service threshold, and canonical RF contract
+          content: { application/json: { schema: { $ref: "#/components/schemas/CoverageGapResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
@@ -157,7 +161,9 @@ paths:
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/PathProfileRequest" } } } }
       responses:
-        "200": { description: Vertical samples, classification, component loss budget, and uncertainty bounds }
+        "200":
+          description: Vertical samples, classification, component loss budget, uncertainty bounds, and isolated diagnostic RF contract
+          content: { application/json: { schema: { $ref: "#/components/schemas/PathProfileResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
@@ -188,7 +194,9 @@ paths:
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
-        "200": { description: Optimal azimuth and score breakdown }
+        "200":
+          description: Optimal azimuth, propagation-reach score, score breakdown, and canonical RF contract
+          content: { application/json: { schema: { $ref: "#/components/schemas/OptimizeAzimuthResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "422": { $ref: "#/components/responses/TooComplex" }
         "401": { $ref: "#/components/responses/Unauthorized" }
@@ -243,7 +251,9 @@ paths:
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/InterferenceRequest" } } } }
       responses:
-        "200": { description: Radio-quality surface, demand samples, statistics, and model metadata }
+        "200":
+          description: Radio-quality surface, demand samples, statistics, threshold metadata, and effective per-cell profiles
+          content: { application/json: { schema: { $ref: "#/components/schemas/InterferenceResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
@@ -270,7 +280,9 @@ paths:
       description: Returns spatially blocked five-fold residual validation, subgroup/outlier/uncertainty diagnostics, and an optional global bias correction. This is not full propagation calibration.
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MeasurementRequest" } } } }
       responses:
-        "200": { description: Residual GeoJSON, aggregate/per-cell/per-band diagnostics, uncertainty, folds, provenance, and bias guidance }
+        "200":
+          description: Residual GeoJSON, aggregate/per-cell/per-band diagnostics, uncertainty, folds, provenance, bias guidance, and RF contract metadata
+          content: { application/json: { schema: { $ref: "#/components/schemas/MeasurementResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "413": { $ref: "#/components/responses/TooLarge" }
         "401": { $ref: "#/components/responses/Unauthorized" }
@@ -397,12 +409,17 @@ components:
         towerCount: { type: integer }
     Meta:
       type: object
-      required: [application_version, build_commit, model_version, supported_technologies]
+      required: [application_version, build_commit, model_version, model_id, model_description, supported_technologies, propagation_models, rf_contract]
       properties:
         application_version: { type: string }
         build_commit: { type: string }
         model_version: { type: string }
+        model_id: { type: string, const: urban_short_range }
+        model_description: { type: string }
         supported_technologies: { type: array, items: { type: string } }
+        propagation_models: { type: array, items: { type: object, additionalProperties: true } }
+        technology_capabilities: { type: array, items: { type: object, additionalProperties: true } }
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
         dataset: { $ref: "#/components/schemas/DatasetManifest" }
     DatasetManifest:
       type: object
@@ -482,10 +499,11 @@ components:
         warnings: { type: array, items: { type: string } }
     RFProfile:
       type: object
-      description: Complete per-cell RF contract. Omitted properties inherit the enclosing request defaults; normalized responses include every property.
+      description: Complete per-cell RF contract. Omitted properties inherit the enclosing request defaults; normalized responses include every property. receiver_sensitivity_dbm is the per-cell usable-reach/ray-termination threshold, not the building-service or interference-serviceability threshold.
       properties:
         schema_version: { type: integer, const: 1, default: 1 }
         network_tech: { type: string, enum: [4g, 5g, 6g] }
+        propagation_model: { type: string, enum: [legacy_fspl_walls, urban_short_range, research_sub_thz], default: urban_short_range }
         frequency_ghz: { type: number, exclusiveMinimum: 0, maximum: 300 }
         band: { type: string, minLength: 1, maxLength: 64 }
         bandwidth_mhz: { type: number, minimum: 0.1, maximum: 2000 }
@@ -507,6 +525,85 @@ components:
         pci: { type: [integer, "null"], minimum: 0, maximum: 1007, description: LTE profiles are limited to 503; NR profiles are limited to 1007. }
         receiver_height_m: { type: number, minimum: 0.1, maximum: 100 }
         receiver_sensitivity_dbm: { type: number, minimum: -180, maximum: -20 }
+    RFContractMetadata:
+      type: object
+      required: [model_id, model_description, deterministic, propagation_dimensions, link_budget_equation, receiver_sensitivity_scope, building_service_threshold_dbm, building_service_rule, propagation_reach_definition, surface_definition, surface_nodata_definition, interference_serviceability_rule, interference_rsrp_threshold_dbm, interference_sinr_threshold_db, interference_rsrq_threshold_db, calibration_definition, endpoint_scope]
+      properties:
+        model_id: { type: string }
+        model_description: { type: string }
+        applied_model_id: { type: string }
+        model_family: { type: string }
+        scenario: { type: string }
+        model_status: { type: string }
+        reference: { type: string }
+        applicability: { type: string }
+        fallback_model_id: { type: string }
+        fallback_policy: { type: string }
+        los_classification_rule: { type: string }
+        building_height_note: { type: string }
+        deterministic: { type: boolean }
+        propagation_dimensions: { type: string }
+        uses_terrain: { type: boolean }
+        uses_building_height: { type: boolean }
+        uses_diffraction: { type: boolean }
+        uses_reflection: { type: boolean }
+        wall_model: { type: string }
+        link_budget_equation: { type: string }
+        absolute_terms: { type: array, items: { type: string } }
+        relative_attenuation_terms: { type: array, items: { type: string } }
+        propagation_terms: { type: array, items: { type: string } }
+        receiver_sensitivity_scope: { type: string }
+        building_service_threshold_dbm: { type: number }
+        building_service_rule: { type: string }
+        propagation_reach_definition: { type: string }
+        surface_definition: { type: string }
+        surface_nodata_definition: { type: string }
+        interference_serviceability_rule: { type: string }
+        interference_rsrp_threshold_dbm: { type: number }
+        interference_sinr_threshold_db: { type: number }
+        interference_rsrq_threshold_db: { type: number }
+        calibration_offset_db: { type: number }
+        calibration_definition: { type: string }
+        endpoint_scope: { type: string }
+    EffectiveCellRFProfile:
+      type: object
+      required: [id, tower_lon, tower_lat, azimuth_deg, rf_profile]
+      properties:
+        id: { type: string }
+        tower_lon: { type: number }
+        tower_lat: { type: number }
+        azimuth_deg: { type: number }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
+    RFRequestDefaults:
+      type: object
+      required: [rays, radius_m, frequency_ghz, tx_power_dbm, beam_width, rf_profile]
+      properties:
+        rays: { type: integer }
+        radius_m: { type: number }
+        frequency_ghz: { type: number }
+        tx_power_dbm: { type: number }
+        beam_width: { type: number }
+        bandwidth_mhz: { type: number }
+        load_factor: { type: number }
+        reuse_factor: { type: integer }
+        noise_figure_db: { type: number }
+        calibration_offset_db: { type: number }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
+    SimulationResponse:
+      type: object
+      required: [geojson, stats, rf_profile, rf_contract]
+      properties:
+        geojson: { $ref: "#/components/schemas/FeatureCollection" }
+        stats: { type: object, additionalProperties: true }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
+    CoverageGapResponse:
+      type: object
+      required: [geojson, stats, rf_contract]
+      properties:
+        geojson: { $ref: "#/components/schemas/FeatureCollection" }
+        stats: { type: object, additionalProperties: true }
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
     Tower:
       type: object
       required: [id, tower_lon, tower_lat]
@@ -522,6 +619,7 @@ components:
         rays: { type: integer, minimum: 8, maximum: 720, default: 60, description: Combined with radius_m, rays × ceil(radius_m / 25) must not exceed 25,000. }
         radius_m: { type: number, minimum: 25, maximum: 5000, default: 400, description: Combined with rays, rays × ceil(radius_m / 25) must not exceed 25,000. }
         frequency_ghz: { type: number, exclusiveMinimum: 0, maximum: 300, default: 28 }
+        propagation_model: { type: string, enum: [legacy_fspl_walls, urban_short_range, research_sub_thz], default: urban_short_range }
         tx_power_dbm: { type: number, minimum: 0, maximum: 60, default: 30 }
         azimuth: { type: number, default: 0 }
         beam_width: { type: number, minimum: 10, maximum: 360, default: 120 }
@@ -708,10 +806,13 @@ components:
         explanation: { type: string }
     NetworkOptimizationResponse:
       type: object
-      required: [optimized_towers, stats, optimization_domain, optimization, pareto_frontier]
+      required: [optimized_towers, stats, optimization_domain, optimization, pareto_frontier, request_defaults, effective_cell_profiles, rf_contract]
       properties:
         optimized_towers: { type: array, items: { $ref: "#/components/schemas/NetworkOptimizedTower" } }
         stats: { $ref: "#/components/schemas/NetworkOptimizationStats" }
+        request_defaults: { $ref: "#/components/schemas/RFRequestDefaults" }
+        effective_cell_profiles: { type: array, items: { $ref: "#/components/schemas/EffectiveCellRFProfile" } }
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
         optimization_run_id: { type: string, description: Stable identity for RF-affecting optimization state; objective priorities are excluded so raw explanations can survive priority-only re-ranking. }
         optimization_domain: { $ref: "#/components/schemas/OptimizationDomainMetadata" }
         optimization: { $ref: "#/components/schemas/OptimizationOutcome" }
@@ -812,9 +913,10 @@ components:
         tower_lon: { type: number, minimum: -180, maximum: 180 }
         tower_lat: { type: number, minimum: -90, maximum: 90 }
         optimal_azimuth: { type: number }
-        marginal_network_score: { type: number }
+        marginal_network_score: { type: number, description: Raw legacy compatibility delta; not a normalized /100 score. }
         stats: { type: object, additionalProperties: true }
         reason: { type: string }
+        rf_profile: { $ref: "#/components/schemas/RFProfile" }
     RecommendationFeature:
       type: object
       required: [type, id, properties, geometry]
@@ -830,9 +932,12 @@ components:
             coordinates: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
     RecommendationResponse:
       type: object
-      required: [baseline, candidates_evaluated, recommendations, geojson, notes]
+      required: [baseline, candidates_evaluated, recommendations, geojson, notes, request_defaults, effective_cell_profiles, rf_contract]
       properties:
         baseline: { type: object, additionalProperties: true }
+        request_defaults: { $ref: "#/components/schemas/RFRequestDefaults" }
+        effective_cell_profiles: { type: array, items: { $ref: "#/components/schemas/EffectiveCellRFProfile" } }
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
         candidates_evaluated: { type: integer, minimum: 0 }
         recommendations: { type: array, items: { $ref: "#/components/schemas/Recommendation" } }
         geojson:
@@ -908,7 +1013,7 @@ components:
             thresholds_dbm: { type: array, minItems: 1, maxItems: 10, uniqueItems: true, items: { type: number, minimum: -180, maximum: 0 } }
     CoverageSurfaceResponse:
       type: object
-      required: [grid, contours, stats, model]
+      required: [grid, contours, stats, model, rf_contract]
       properties:
         grid:
           type: object
@@ -923,8 +1028,71 @@ components:
             row_order: { type: string, const: south-to-north }
             values: { type: array, maxItems: 100000, items: { type: number } }
         contours: { $ref: "#/components/schemas/FeatureCollection" }
+        stats:
+          type: object
+          required: [cell_count, valid_cell_count, nodata_cell_count, below_sensitivity_cell_count, receiver_sensitivity_dbm]
+          properties:
+            cell_count: { type: integer, minimum: 0 }
+            valid_cell_count: { type: integer, minimum: 0 }
+            nodata_cell_count: { type: integer, minimum: 0 }
+            below_sensitivity_cell_count: { type: integer, minimum: 0 }
+            min_dbm: { type: [number, "null"] }
+            max_dbm: { type: [number, "null"] }
+            receiver_sensitivity_dbm: { type: number, description: Effective selected-cell receiver threshold; not a surface mask. }
+        model:
+          type: object
+          required: [type, value_semantics, nodata_meaning, uses_sensitivity_mask]
+          properties:
+            type: { type: string, const: received_signal_surface_fspl_walls }
+            value_semantics: { type: string, const: raw_received_power_dbm }
+            nodata_meaning: { type: string }
+            uses_sensitivity_mask: { type: boolean, const: false }
+            assumptions: { type: array, items: { type: string } }
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
+    OptimizeAzimuthResponse:
+      type: object
+      required: [optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, rf_contract]
+      properties:
+        optimal_azimuth: { type: number }
+        propagation_reach_score: { type: number, description: Aggregate usable-ray reach score; coverage_score remains a compatibility alias. }
+        coverage_score: { type: number, description: Compatibility alias for propagation_reach_score. }
+        demand_score: { type: number }
+        residential_score: { type: number }
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
+    PathProfileResponse:
+      type: object
+      required: [rf_contract]
+      properties:
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
+      additionalProperties: true
+    InterferenceModel:
+      type: object
+      required: [request_defaults, effective_cell_profiles, rf_contract, rsrp_threshold_dbm, sinr_threshold_db, rsrq_threshold_db, serviceability_rule]
+      properties:
+        request_defaults: { $ref: "#/components/schemas/RFRequestDefaults" }
+        effective_cell_profiles: { type: array, items: { $ref: "#/components/schemas/EffectiveCellRFProfile" } }
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
+        profiles: { type: array, items: { $ref: "#/components/schemas/RFProfile" } }
+        rsrp_threshold_dbm: { type: number, const: -110 }
+        sinr_threshold_db: { type: number, const: 0 }
+        rsrq_threshold_db: { type: number, const: -20 }
+        serviceability_rule: { type: string }
+    InterferenceResponse:
+      type: object
+      required: [geojson, demand_geojson, stats, model]
+      properties:
+        geojson: { $ref: "#/components/schemas/FeatureCollection" }
+        demand_geojson: { $ref: "#/components/schemas/FeatureCollection" }
         stats: { type: object, additionalProperties: true }
-        model: { type: object, additionalProperties: true }
+        model: { $ref: "#/components/schemas/InterferenceModel" }
+    MeasurementResponse:
+      type: object
+      required: [rf_contract, request_defaults, effective_cell_profiles]
+      properties:
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
+        request_defaults: { $ref: "#/components/schemas/RFRequestDefaults" }
+        effective_cell_profiles: { type: array, items: { $ref: "#/components/schemas/EffectiveCellRFProfile" } }
+      additionalProperties: true
     ExperimentDefinition:
       type: object
       required: [base]

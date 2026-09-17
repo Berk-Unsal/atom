@@ -10,6 +10,7 @@ import {
 const DUPLEX_MODES = new Set(["fdd", "tdd", "sdl", "sul"]);
 const HORIZONTAL_PATTERNS = new Set(["ideal-sector", "cosine-sector", "omni"]);
 const VERTICAL_PATTERNS = new Set(["flat", "panel-10deg", "panel-20deg"]);
+const PROPAGATION_MODELS = new Set(["legacy_fspl_walls", "urban_short_range", "research_sub_thz"]);
 
 export function resolveRFProfile(tower = {}, settings = DEFAULT_SIMULATION, index = 0) {
   const override = tower.rfProfile ?? {};
@@ -22,6 +23,10 @@ export function resolveRFProfile(tower = {}, settings = DEFAULT_SIMULATION, inde
   const frequencyGHz = override.frequencyGHz === undefined
     ? explicitTechnology ? technology.default_frequency_ghz : globalFrequency
     : finiteNumber(override.frequencyGHz, technology.default_frequency_ghz);
+  const propagationModelID = cleanText(
+    override.propagationModelID ?? override.propagationModelId,
+    cleanText(settings.propagationModelID, defaultPropagationModelForFrequency(frequencyGHz)),
+  ).toLowerCase();
   const reuseFactor = integerNumber(
     override.reuseFactor,
     integerNumber(settings.reuseFactor, DEFAULT_RF_PROFILE.reuseFactor),
@@ -29,6 +34,7 @@ export function resolveRFProfile(tower = {}, settings = DEFAULT_SIMULATION, inde
   return {
     schemaVersion: RF_PROFILE_SCHEMA_VERSION,
     networkTech,
+    propagationModelID,
     frequencyGHz,
     band: cleanText(override.band, technology.default_band),
     bandwidthMHz: finiteNumber(
@@ -60,6 +66,7 @@ export function rfProfileToPayload(profile) {
   return {
     schema_version: profile.schemaVersion,
     network_tech: profile.networkTech,
+    propagation_model: profile.propagationModelID,
     frequency_ghz: profile.frequencyGHz,
     band: profile.band,
     bandwidth_mhz: profile.bandwidthMHz,
@@ -91,6 +98,7 @@ export function validateRFProfile(profile) {
   if (networkTechnologyForFrequency(profile.frequencyGHz) !== profile.networkTech) {
     errors.frequencyGHz = "Frequency must match the selected technology.";
   }
+  if (!PROPAGATION_MODELS.has(profile.propagationModelID)) errors.propagationModelID = "Unsupported propagation model.";
   checkText(errors, "band", profile.band);
   checkRange(errors, "bandwidthMHz", profile.bandwidthMHz, limits.bandwidth_mhz_min, limits.bandwidth_mhz_max);
   checkText(errors, "channelId", profile.channelId);
@@ -132,6 +140,10 @@ export function technologyDefaults(networkTech) {
   };
 }
 
+export function defaultPropagationModelForFrequency(frequencyGHz) {
+  return Number(frequencyGHz) >= 100 ? "research_sub_thz" : "urban_short_range";
+}
+
 export function rfProfileOverrideFromProperties(properties = {}) {
   const nested = properties.rf_profile && typeof properties.rf_profile === "object" && !Array.isArray(properties.rf_profile)
     ? properties.rf_profile
@@ -146,6 +158,7 @@ export function rfProfileOverrideFromProperties(properties = {}) {
   };
   return Object.fromEntries(Object.entries({
     networkTech: read("network_tech", "networkTech"),
+    propagationModelID: read("propagation_model", "propagationModelID", "propagationModelId"),
     frequencyGHz: read("frequency_ghz", "frequencyGHz"),
     band: read("band"),
     bandwidthMHz: read("bandwidth_mhz", "bandwidthMHz"),

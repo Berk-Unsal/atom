@@ -229,6 +229,7 @@ def render_frontend(policy: dict) -> str:
     rf_profile = policy["rf_profile"]
     ui_defaults = {
         "frequencyGHz": defaults["frequency_ghz"],
+        "propagationModelID": defaults["propagation_model"],
         "txPowerDbm": defaults["tx_power_dbm"],
         "rayCount": defaults["frontend_simulation_rays"],
         "radiusMeters": defaults["radius_m"],

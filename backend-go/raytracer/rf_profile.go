@@ -12,6 +12,7 @@ import (
 type CellRFProfile struct {
 	SchemaVersion          int     `json:"schema_version"`
 	NetworkTech            string  `json:"network_tech"`
+	PropagationModelID     string  `json:"propagation_model"`
 	FrequencyGHz           float64 `json:"frequency_ghz"`
 	Band                   string  `json:"band"`
 	BandwidthMHz           float64 `json:"bandwidth_mhz"`
@@ -38,6 +39,7 @@ type CellRFProfile struct {
 type CellRFProfileInput struct {
 	SchemaVersion          *int     `json:"schema_version"`
 	NetworkTech            *string  `json:"network_tech"`
+	PropagationModelID     *string  `json:"propagation_model"`
 	FrequencyGHz           *float64 `json:"frequency_ghz"`
 	Band                   *string  `json:"band"`
 	BandwidthMHz           *float64 `json:"bandwidth_mhz"`
@@ -88,8 +90,12 @@ func DefaultCellRFProfile(networkTech string, frequencyGHz, txPowerDBm, radiusMe
 		reuseFactor = DefaultInterferenceReuseFactor
 	}
 	return CellRFProfile{
-		SchemaVersion:          RFProfileSchemaVersion,
-		NetworkTech:            networkTech,
+		SchemaVersion: RFProfileSchemaVersion,
+		NetworkTech:   networkTech,
+		// DefaultCellRFProfile is retained as the source-compatible legacy
+		// constructor used by direct Go callers and historical fixtures. API
+		// request constructors use DefaultPlanningCellRFProfile below.
+		PropagationModelID:     CanonicalRFModelID,
 		FrequencyGHz:           frequencyGHz,
 		Band:                   DefaultBandForTechnology(networkTech),
 		BandwidthMHz:           bandwidthMHz,
@@ -113,6 +119,15 @@ func DefaultCellRFProfile(networkTech string, frequencyGHz, txPowerDBm, radiusMe
 	}
 }
 
+// DefaultPlanningCellRFProfile is the production request default. Keeping it
+// separate from DefaultCellRFProfile preserves the historical Go helper while
+// making API requests explicit about the Concept 4D model selection.
+func DefaultPlanningCellRFProfile(networkTech string, frequencyGHz, txPowerDBm, radiusMeters, beamWidthDeg, bandwidthMHz, loadFactor float64, reuseFactor int) CellRFProfile {
+	profile := DefaultCellRFProfile(networkTech, frequencyGHz, txPowerDBm, radiusMeters, beamWidthDeg, bandwidthMHz, loadFactor, reuseFactor)
+	profile.PropagationModelID = DefaultPropagationModelID(profile.FrequencyGHz)
+	return profile
+}
+
 func (input *CellRFProfileInput) WithDefaults(defaults CellRFProfile) CellRFProfile {
 	if input == nil {
 		return defaults.normalized()
@@ -120,6 +135,7 @@ func (input *CellRFProfileInput) WithDefaults(defaults CellRFProfile) CellRFProf
 	profile := CellRFProfile{
 		SchemaVersion:          valueOr(input.SchemaVersion, defaults.SchemaVersion),
 		NetworkTech:            valueOr(input.NetworkTech, defaults.NetworkTech),
+		PropagationModelID:     valueOr(input.PropagationModelID, defaults.PropagationModelID),
 		FrequencyGHz:           valueOr(input.FrequencyGHz, defaults.FrequencyGHz),
 		Band:                   valueOr(input.Band, defaults.Band),
 		BandwidthMHz:           valueOr(input.BandwidthMHz, defaults.BandwidthMHz),
@@ -150,11 +166,15 @@ func (input *CellRFProfileInput) WithDefaults(defaults CellRFProfile) CellRFProf
 
 func (profile CellRFProfile) normalized() CellRFProfile {
 	profile.NetworkTech = strings.ToLower(strings.TrimSpace(profile.NetworkTech))
+	profile.PropagationModelID = strings.ToLower(strings.TrimSpace(profile.PropagationModelID))
 	profile.Band = strings.TrimSpace(profile.Band)
 	profile.ChannelID = strings.TrimSpace(profile.ChannelID)
 	profile.DuplexMode = strings.ToLower(strings.TrimSpace(profile.DuplexMode))
 	profile.HorizontalPatternID = strings.ToLower(strings.TrimSpace(profile.HorizontalPatternID))
 	profile.VerticalPatternID = strings.ToLower(strings.TrimSpace(profile.VerticalPatternID))
+	if profile.PropagationModelID == "" {
+		profile.PropagationModelID = DefaultPropagationModelID(profile.FrequencyGHz)
+	}
 	profile.OrientationDeg = normalizeDegrees(profile.OrientationDeg)
 	return profile
 }
@@ -171,6 +191,9 @@ func ValidateCellRFProfile(profile CellRFProfile, analysisOnly bool) string {
 	}
 	if !finiteInRange(profile.FrequencyGHz, math.SmallestNonzeroFloat64, MaxFrequencyGHz) || !FrequencyMatchesTechnology(profile.NetworkTech, profile.FrequencyGHz) {
 		return "rf_profile.frequency_ghz must be finite, positive, and match network_tech"
+	}
+	if _, ok := PropagationModelByID(profile.PropagationModelID); !ok {
+		return "rf_profile.propagation_model must be legacy_fspl_walls, urban_short_range, or research_sub_thz"
 	}
 	if invalidProfileText(profile.Band, false) {
 		return fmt.Sprintf("rf_profile.band must be non-empty and at most %d bytes", MaxRFProfileTextBytes)
@@ -255,6 +278,12 @@ func (profile CellRFProfile) SlantDistanceMeters(groundDistanceMeters float64) f
 }
 
 func (profile CellRFProfile) PatternAttenuationDB(groundDistanceMeters, horizontalOffsetDeg float64) float64 {
+	return profile.HorizontalPatternAttenuationDB(horizontalOffsetDeg) + profile.VerticalPatternAttenuationDB(groundDistanceMeters)
+}
+
+// HorizontalPatternAttenuationDB is a relative antenna-pattern loss. It is
+// not the configured absolute antenna gain.
+func (profile CellRFProfile) HorizontalPatternAttenuationDB(horizontalOffsetDeg float64) float64 {
 	horizontal := 0.0
 	switch profile.HorizontalPatternID {
 	case "cosine-sector":
@@ -262,7 +291,13 @@ func (profile CellRFProfile) PatternAttenuationDB(groundDistanceMeters, horizont
 		horizontal = math.Min(30, 12*math.Pow(math.Abs(horizontalOffsetDeg)/halfBeam, 2))
 	case "omni", "ideal-sector":
 	}
+	return horizontal
+}
 
+// VerticalPatternAttenuationDB is a relative antenna-pattern loss. It is
+// kept separate from horizontal attenuation so the link-budget contract is
+// explicit even though the production model sums both terms.
+func (profile CellRFProfile) VerticalPatternAttenuationDB(groundDistanceMeters float64) float64 {
 	verticalBeamWidth := 0.0
 	switch profile.VerticalPatternID {
 	case "panel-10deg":
@@ -276,12 +311,14 @@ func (profile CellRFProfile) PatternAttenuationDB(groundDistanceMeters, horizont
 		tilt := profile.MechanicalDowntiltDeg + profile.ElectricalDowntiltDeg
 		vertical = math.Min(30, 12*math.Pow((depressionAngle-tilt)/verticalBeamWidth, 2))
 	}
-	return horizontal + vertical
+	return vertical
 }
 
+// ReceivedPowerDBm is the authoritative production received-power contract:
+// absolute transmit/gain/system/calibration terms minus FSPL, building loss,
+// and relative horizontal/vertical pattern attenuation.
 func (profile CellRFProfile) ReceivedPowerDBm(groundDistanceMeters, attenuationDB, calibrationOffsetDB, horizontalOffsetDeg float64) float64 {
-	eirpDBm := profile.TxPowerDBm + profile.AntennaGainDBi - profile.SystemLossDB + calibrationOffsetDB
-	return eirpDBm - FreeSpacePathLossMetersGHz(profile.SlantDistanceMeters(groundDistanceMeters), profile.FrequencyGHz) - attenuationDB - profile.PatternAttenuationDB(groundDistanceMeters, horizontalOffsetDeg)
+	return profile.LinkBudgetTerms(groundDistanceMeters, attenuationDB, calibrationOffsetDB, horizontalOffsetDeg).ReceivedPowerDBm
 }
 
 func finiteInRange(value, minimum, maximum float64) bool {

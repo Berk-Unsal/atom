@@ -6,6 +6,8 @@ import {
   formatNumber,
   isCalibrationProfileCompatible,
   networkAzimuthMap,
+  normalizeNetworkStats,
+  normalizedNetworkScore,
   normalizeSimulationStats,
 } from "./appWorkspace.js";
 
@@ -37,6 +39,16 @@ describe("app workspace helpers", () => {
 
   it("normalizes absent simulation evidence", () => {
     expect(normalizeSimulationStats(null, null)).toMatchObject({ avgPower: null, rayCount: 0 });
+  });
+
+  it("keeps raw network aggregates separate from normalized recommendation scores", () => {
+    expect(normalizedNetworkScore({ network_score: 6567105.4 })).toBeNull();
+    expect(normalizedNetworkScore({ composite_score: 0.405071 })).toBeCloseTo(40.5071, 6);
+    expect(normalizeNetworkStats({ stats: { network_score: 6567105.4, composite_score: 0.405071 } })).toMatchObject({
+      networkScore: 40.5071,
+      optimizationScore: 40.5071,
+      rawNetworkScore: 6567105.4,
+    });
   });
 
   it("accepts spatial calibration profiles and rejects expired provenance", () => {

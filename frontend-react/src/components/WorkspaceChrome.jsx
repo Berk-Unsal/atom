@@ -411,6 +411,8 @@ export function MapToolbar({
   availableLayers,
   hasRays = false,
   hasSignalSurface = false,
+  onSignalToggle,
+  signalSurfaceState,
   hasInterferenceData,
   interferenceMetric,
   isDrawingSelection,
@@ -435,6 +437,8 @@ export function MapToolbar({
 }) {
   const layerMenuRef = useRef(null);
   const layerTriggerRef = useRef(null);
+  const resolvedSignalSurfaceState = signalSurfaceState ?? (hasSignalSurface ? "ready" : "unavailable");
+  const handleSignalToggle = onSignalToggle ?? (() => onToggleLayer("surfaces"));
   const layers = [
     { id: "buildings", label: "Viewport buildings" },
     { id: "gaps", label: "Coverage gaps" },
@@ -526,12 +530,22 @@ export function MapToolbar({
           <span className="rf-display-label">RF</span>
           <button
             type="button"
-            className={layerVisibility?.surfaces && hasSignalSurface ? "active" : ""}
-            aria-pressed={Boolean(layerVisibility?.surfaces && hasSignalSurface)}
+            className={layerVisibility?.surfaces && hasSignalSurface && resolvedSignalSurfaceState === "ready" ? "active" : ""}
+            aria-pressed={Boolean(layerVisibility?.surfaces && hasSignalSurface && resolvedSignalSurfaceState === "ready")}
+            aria-busy={resolvedSignalSurfaceState === "loading" || undefined}
             aria-label="Toggle received signal surface"
-            disabled={!hasSignalSurface}
-            title={hasSignalSurface ? "Toggle received signal surface" : "Generate a received signal surface first"}
-            onClick={() => onToggleLayer("surfaces")}
+            data-surface-state={resolvedSignalSurfaceState}
+            disabled={resolvedSignalSurfaceState === "unavailable"}
+            title={resolvedSignalSurfaceState === "ready"
+              ? "Toggle received signal surface"
+              : resolvedSignalSurfaceState === "available"
+                ? "Load received signal surface"
+                : resolvedSignalSurfaceState === "loading"
+                  ? "Loading received signal surface"
+                  : resolvedSignalSurfaceState === "error"
+                    ? "Retry received signal surface"
+                    : "Run a current RF or network analysis first"}
+            onClick={handleSignalToggle}
           >
             Signal
           </button>
@@ -606,7 +620,7 @@ export function MapToolbar({
   );
 }
 
-export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, hasSignalSurface, metric, onToggle, planningMode, surface, surfaceCellId, surfaceDisplayThresholdDBm = -110 }) {
+export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, hasSignalSurface, metric, onToggle, planningMode, receiverSensitivityDBm = -115, surface, surfaceCellId, surfaceDisplayThresholdDBm = -110 }) {
   const legends = {
     sinr: ["< 0", "0–13", "13–20", "≥ 20 dB"],
     rsrp: ["< -100", "-100–-90", "-90–-80", "≥ -80 dBm"],
@@ -630,8 +644,8 @@ export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, ha
             <section aria-label="Received power">
               <strong>Received power</strong>
               <span><i className="map-key-line strong-signal" aria-hidden="true" />Strong ≥ −85 dBm</span>
-              <span><i className="map-key-line usable-signal" aria-hidden="true" />Usable −105 to −85</span>
-              <span><i className="map-key-line weak-signal" aria-hidden="true" />Weak &lt; −105 dBm</span>
+              <span><i className="map-key-line usable-signal" aria-hidden="true" />Usable {formatLegendPower(receiverSensitivityDBm)} to −85 dBm</span>
+              <span><i className="map-key-line weak-signal" aria-hidden="true" />Below sensitivity &lt; {formatLegendPower(receiverSensitivityDBm)}</span>
             </section>
           ) : null}
           {hasSignalSurface ? (

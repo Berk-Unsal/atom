@@ -55,10 +55,7 @@ export default function MapCanvas({
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map" preferCanvas>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <OpenStreetMapLayer />
       <SelectionPolygonLayer
         isDrawing={isDrawingSelection}
         onAddPoint={onAddSelectionPolygonPoint}
@@ -156,6 +153,27 @@ export default function MapCanvas({
       )}
       <PathProfileMapLayer profile={pathProfile} />
     </MapContainer>
+  );
+}
+
+function OpenStreetMapLayer() {
+  const [unavailable, setUnavailable] = useState(false);
+  const handleTileError = () => setUnavailable(true);
+
+  return (
+    <>
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        eventHandlers={{ tileerror: handleTileError }}
+        opacity={unavailable ? 0 : 1}
+        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      {unavailable ? (
+        <div className="map-basemap-status" role="status">
+          Base map unavailable. RF layers remain available; see deployment notes for a compliant tile provider.
+        </div>
+      ) : null}
+    </>
   );
 }
 
@@ -531,7 +549,7 @@ function RecommendationLayer({ onSelectMapObject, recommendations, selectedMapOb
           },
         }}
       >
-        <Popup>Candidate {properties.cell_id ?? properties.id}: {formatNumber(properties.marginal_network_score)} score gain</Popup>
+        <Popup>Candidate {properties.cell_id ?? properties.id}: raw Δ {formatNumber(properties.marginal_network_score)} (legacy compatibility score)</Popup>
       </CircleMarker>
     );
   });

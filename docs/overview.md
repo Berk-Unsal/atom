@@ -8,7 +8,7 @@ Traditional network planning relies on expensive commercial simulators or empiri
 
 - **Computational efficiency** through Go's concurrent processing
 - **Spatial processing** using R-Tree indexing and polygon intersection testing
-- **Inspectable RF estimates** using FSPL and fixed frequency-dependent wall loss
+- **Inspectable RF estimates** using explicit legacy, urban short-range, and research sub-THz propagation contracts
 - **Visual intelligence** via interactive GeoJSON rendering
 
 ## Use Cases
@@ -47,15 +47,15 @@ A.T.O.M solves these by:
 | Desktop-only tools | Containerized web application with REST API |
 | Single-frequency testing | Multi-band simulation (4G, 5G, 6G) |
 
-## Key Innovation: Frequency-Dependent Penetration
+## Key Innovation: Explicit Propagation Model Boundaries
 
-Unlike monolithic RF simulators, A.T.O.M natively models how different frequencies interact with urban materials:
+A.T.O.M keeps model choice and applicability visible at every RF endpoint:
 
-- **4G (2.6 GHz)**: Long wavelength penetrates concrete; typical wall loss is much lower than mmWave
-- **5G mmWave (28 GHz)**: Shorter wavelength; heavy attenuation through walls and facades
-- **6G Sub-THz (140 GHz)**: Near-optical propagation; blocked by most buildings
+- **2.6 GHz and 28 GHz**: The default `urban_short_range` profile uses 3GPP UMa median LOS/NLOS path loss with a shared 2D footprint classifier.
+- **Legacy compatibility**: `legacy_fspl_walls` remains selectable and is the explicit fallback when urban inputs are outside scope.
+- **140 GHz**: `research_sub_thz` is explicitly research-only; it is not presented as a validated sub-THz channel model.
 
-This enables accurate visualization of **why** coverage differs across frequency bands.
+The urban model does not convert an empirical NLOS formula into additional legacy wall dB. Responses identify the requested model, applied model, LOS/NLOS rule, applicability, and fallback reason so planners can see why coverage differs across bands.
 
 ## Architectural Philosophy
 

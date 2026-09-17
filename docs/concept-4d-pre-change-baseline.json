@@ -1,0 +1,188 @@
+{
+  "concept": "4D",
+  "title": "Urban Short-Range Propagation Baseline",
+  "captured_at": "2026-09-17",
+  "source": "real backend before Concept 4D production changes",
+  "real_backend_e2e": {
+    "command": "ATOM_REAL_E2E=1 npm run test:e2e -- e2e/real-backend.spec.js --project=desktop-1440",
+    "tests": 2,
+    "passed": 2,
+    "duration_seconds": 9.2,
+    "backend": "PORT=18080 FRONTEND_DIST_PATH=../frontend-react/dist go run ."
+  },
+  "scenario": {
+    "technology": "5g",
+    "frequency_ghz": 28,
+    "band": "NR n257",
+    "bandwidth_mhz": 100,
+    "channel_id": "CH-1",
+    "duplex_mode": "tdd",
+    "tx_power_dbm": 30,
+    "antenna_gain_dbi": 25,
+    "system_loss_db": 0,
+    "radius_m": 400,
+    "beam_width_deg": 120,
+    "antenna_height_m": 25,
+    "receiver_height_m": 1.5,
+    "horizontal_pattern_id": "ideal-sector",
+    "vertical_pattern_id": "flat",
+    "receiver_sensitivity_dbm": -115,
+    "load_factor": 0.7,
+    "reuse_factor": 1,
+    "rays": 72,
+    "towers": [
+      { "id": "LTE-35084", "lat": 39.9113, "lon": 32.8477, "azimuth_deg": 0 },
+      { "id": "LTE-35104", "lat": 39.9081, "lon": 32.8585, "azimuth_deg": 60 },
+      { "id": "LTE-35877", "lat": 39.924, "lon": 32.8488, "azimuth_deg": 120 },
+      { "id": "LTE-313100", "lat": 39.9054, "lon": 32.8677, "azimuth_deg": 180 },
+      { "id": "LTE-313110", "lat": 39.9062, "lon": 32.8639, "azimuth_deg": 240 },
+      { "id": "LTE-322828", "lat": 39.9135, "lon": 32.8523, "azimuth_deg": 300 }
+    ],
+    "objectives": {
+      "demand_weight": 50,
+      "residential_weight": 50,
+      "coverage_weight": 50,
+      "overlap_weight": 50
+    }
+  },
+  "legacy_model": {
+    "model_id": "fspl-walls-2p5d-v3",
+    "description": "Deterministic FSPL + footprint obstruction planning model"
+  },
+  "baseline": {
+    "azimuths_deg": [0, 60, 120, 180, 240, 300],
+    "network_score": 4646513.3,
+    "unique_demand_buildings": 6,
+    "unique_residential_buildings": 28,
+    "overlap_buildings": 6,
+    "demand_score": 1850000,
+    "residential_score": 2795500,
+    "coverage_score": 16013.3,
+    "overlap_penalty": 15000,
+    "data_quality": "good",
+    "raw_metrics": {
+      "served_weighted_demand": 185,
+      "served_demand_weight": 185,
+      "total_weighted_demand": 3730,
+      "relevant_demand_weight": 3730,
+      "residential_covered": 28,
+      "residential_total": 944,
+      "relevant_residential_total": 944,
+      "coverage_reach_score": 16013.3051,
+      "coverage_reach_maximum": 43200,
+      "propagation_reach_score": 16013.3051,
+      "propagation_reach_maximum": 43200,
+      "covered_units": 61,
+      "overlap_ratio": 0.098361,
+      "objectives": {
+        "demand": 0.049598,
+        "residential": 0.029661,
+        "coverage": 0.370678,
+        "overlap": 0.901639
+      },
+      "composite_score": 0.337894,
+      "score": 33.7894
+    }
+  },
+  "optimized": {
+    "azimuths_deg": [70, 20, 130, 160, 290, 110],
+    "network_score": 11585048.7,
+    "unique_demand_buildings": 14,
+    "unique_residential_buildings": 43,
+    "overlap_buildings": 0,
+    "demand_score": 5550000,
+    "residential_score": 6015500,
+    "coverage_score": 19548.7,
+    "overlap_penalty": 0,
+    "raw_metrics": {
+      "served_weighted_demand": 555,
+      "total_weighted_demand": 3730,
+      "residential_covered": 43,
+      "residential_total": 944,
+      "coverage_reach_score": 19548.691,
+      "coverage_reach_maximum": 43200,
+      "propagation_reach_score": 19548.691,
+      "propagation_reach_maximum": 43200,
+      "covered_units": 88,
+      "overlap_ratio": 0,
+      "objectives": {
+        "demand": 0.148794,
+        "residential": 0.045551,
+        "coverage": 0.452516,
+        "overlap": 1
+      },
+      "composite_score": 0.411715,
+      "score": 41.1715
+    },
+    "pareto_frontier_size": 6,
+    "recommended_solution_id": "70.0,20.0,130.0,160.0,290.0,110.0"
+  },
+  "single_cell_ray": {
+    "tower_id": "LTE-35084",
+    "azimuth_deg": 0,
+    "blocked_pct": 76.4,
+    "avg_rx_dbm": -115.1,
+    "min_range_m": 51,
+    "max_range_m": 400,
+    "feature_count": 694,
+    "representative_clear_segment": {
+      "ray_index": 36,
+      "distance_m": 50,
+      "signal_end_dbm": -41.2,
+      "wall_loss_db": 0,
+      "hit_building_id": ""
+    },
+    "representative_blocked_segment": {
+      "ray_index": 36,
+      "distance_m": 59,
+      "signal_end_dbm": -72.5,
+      "wall_loss_db": 30,
+      "hit_building_id": "feature-37894"
+    }
+  },
+  "surface": {
+    "cell_size_m": 25,
+    "grid_width": 33,
+    "grid_height": 33,
+    "value_order": "south-to-north rows",
+    "nodata_value": -9999,
+    "cell_count": 1089,
+    "valid_cell_count": 267,
+    "nodata_cell_count": 822,
+    "below_sensitivity_cell_count": 171,
+    "min_dbm": -598,
+    "max_dbm": -33.8,
+    "sensitivity_dbm": -115,
+    "center_value_dbm": -33.8
+  },
+  "interference": {
+    "model_type": "deterministic_planning_estimate",
+    "sample_spacing_m": 50,
+    "noise_figure_db": 7,
+    "sample_count": 989,
+    "signal_samples": 68,
+    "valid_sample_count": 68,
+    "no_signal_count": 921,
+    "serviceable_samples": 50,
+    "serviceable_pct": 5.1,
+    "interference_limited_count": 0,
+    "interference_limited_pct": 0,
+    "avg_sinr_db": 14,
+    "p10_sinr_db": -19.9,
+    "avg_rsrp_dbm": -95.7,
+    "p10_rsrp_dbm": -136.1,
+    "avg_rsrq_db": -15.6,
+    "p10_rsrq_db": -30.7,
+    "demand_candidates": 996,
+    "affected_demand_buildings": 980,
+    "affected_demand": 18668.3,
+    "per_serving_cell": [
+      { "tower_id": "LTE-35084", "samples": 15, "serviceable_samples": 13, "avg_sinr_db": 17.2, "avg_rsrp_dbm": -87, "avg_rsrq_db": -13.1 },
+      { "tower_id": "LTE-35104", "samples": 3, "serviceable_samples": 1, "avg_sinr_db": -5, "avg_rsrp_dbm": -121.2, "avg_rsrq_db": -22.4 },
+      { "tower_id": "LTE-35877", "samples": 10, "serviceable_samples": 8, "avg_sinr_db": 24.5, "avg_rsrp_dbm": -91.7, "avg_rsrq_db": -14.1 },
+      { "tower_id": "LTE-313100", "samples": 6, "serviceable_samples": 3, "avg_sinr_db": 9.6, "avg_rsrp_dbm": -106.6, "avg_rsrq_db": -19.3 },
+      { "tower_id": "LTE-313110", "samples": 4, "serviceable_samples": 2, "avg_sinr_db": 6.9, "avg_rsrp_dbm": -109.4, "avg_rsrq_db": -20 },
+      { "tower_id": "LTE-322828", "samples": 30, "serviceable_samples": 23, "avg_sinr_db": 12.7, "avg_rsrp_dbm": -94.9, "avg_rsrq_db": -15.4 }
+    ]
+  }
+}

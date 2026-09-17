@@ -13,7 +13,7 @@
   "technologies": [
     { "id": "4g", "label": "4G LTE", "default_frequency_ghz": 2.6, "minimum_frequency_ghz": 0, "maximum_frequency_ghz": 10, "default_band": "LTE Band 7", "default_duplex_mode": "fdd", "default_bandwidth_mhz": 20.0, "bandwidths_mhz": [1.4, 3, 5, 10, 15, 20] },
     { "id": "5g", "label": "5G mmWave", "default_frequency_ghz": 28, "minimum_frequency_ghz": 10, "maximum_frequency_ghz": 100, "default_band": "NR n257", "default_duplex_mode": "tdd", "default_bandwidth_mhz": 100.0, "bandwidths_mhz": [50, 100, 200, 400] },
-    { "id": "6g", "label": "6G Sub-THz", "default_frequency_ghz": 140, "minimum_frequency_ghz": 100, "maximum_frequency_ghz": 300, "default_band": "Sub-THz research", "default_duplex_mode": "tdd", "default_bandwidth_mhz": 1000.0, "bandwidths_mhz": [100, 400, 800, 1000] }
+    { "id": "6g", "label": "6G research profile (140 GHz)", "default_frequency_ghz": 140, "minimum_frequency_ghz": 100, "maximum_frequency_ghz": 300, "default_band": "Sub-THz research", "default_duplex_mode": "tdd", "default_bandwidth_mhz": 1000.0, "bandwidths_mhz": [100, 400, 800, 1000] }
   ],
   "rf_profile": {
     "schema_version": 1,
@@ -35,6 +35,7 @@
     "frontend_simulation_rays": 120,
     "radius_m": 400,
     "frequency_ghz": 28,
+    "propagation_model": "urban_short_range",
     "tx_power_dbm": 30,
     "azimuth_deg": 90,
     "beam_width_deg": 120,

@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -19,8 +20,15 @@ func TestSecurityHeadersAndHTTPSBoundary(t *testing.T) {
 	if insecure.Code != http.StatusUpgradeRequired {
 		t.Fatalf("insecure status = %d, want 426", insecure.Code)
 	}
-	if insecure.Header().Get("Content-Security-Policy") == "" || insecure.Header().Get("X-Content-Type-Options") != "nosniff" {
+	contentSecurityPolicy := insecure.Header().Get("Content-Security-Policy")
+	if contentSecurityPolicy == "" || insecure.Header().Get("X-Content-Type-Options") != "nosniff" {
 		t.Fatalf("security headers missing: %#v", insecure.Header())
+	}
+	if !strings.Contains(contentSecurityPolicy, "img-src 'self' data: https://tile.openstreetmap.org") || strings.Contains(contentSecurityPolicy, "*.tile.openstreetmap.org") {
+		t.Fatalf("Content-Security-Policy has an invalid OSM tile source: %q", contentSecurityPolicy)
+	}
+	if insecure.Header().Get("Referrer-Policy") != "strict-origin-when-cross-origin" {
+		t.Fatalf("Referrer-Policy = %q, want strict-origin-when-cross-origin", insecure.Header().Get("Referrer-Policy"))
 	}
 
 	secureRequest := httptest.NewRequest(http.MethodGet, "/", nil)

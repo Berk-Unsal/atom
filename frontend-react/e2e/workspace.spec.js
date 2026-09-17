@@ -250,6 +250,12 @@ test("keeps the focused workspace usable without horizontal overflow", async ({ 
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
+test("keeps RF controls usable when basemap tiles fail", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".map-basemap-status")).toContainText("Base map unavailable. RF layers remain available", { timeout: 30_000 });
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+});
+
 test("keeps every workspace destination reachable in the mobile rail", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-390", "Mobile navigation regression");
 

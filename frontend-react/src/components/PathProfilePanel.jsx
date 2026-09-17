@@ -39,7 +39,7 @@ export default function PathProfilePanel({
   return (
     <section className="path-profile-panel" aria-label="Vertical path profile">
       <header className="panel-title"><Mountain size={16} /><span>Vertical path profile</span></header>
-      <p className="data-note">Inspect terrain, roof screens, Fresnel clearance, and every enabled loss term along one selected path.</p>
+      <p className="data-note">Advanced diagnostic only: inspect terrain, roof screens, Fresnel clearance, and enabled loss terms along one selected path. It does not change canonical network RF.</p>
 
       <div className="path-endpoint-controls">
         <button type="button" className={isSelectingEndpoint ? "active" : ""} onClick={isSelectingEndpoint ? onCancelSelection : onStartSelection} disabled={!selectedTower}>
@@ -127,6 +127,7 @@ export function PathProfileResult({ profile }) {
       <p className={`path-applicability ${applicability.frequency_applicable ? "valid" : "warning"}`}>
         <strong>{applicability.reference}</strong> · {applicability.implementation}
       </p>
+      <p className="data-note">Model scope: {profile.rf_contract?.model_id ?? "path-profile-diagnostic-v1"}. This diagnostic response is isolated from the canonical network model.</p>
     </section>
   );
 }

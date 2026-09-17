@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildInterferencePayload,
   buildCoverageSurfacePayload,
+  buildCoverageSurfaceSourceKey,
   buildMeasurementPayload,
   buildNetworkCellExplanationPayload,
   buildNetworkOptimizationPayload,
@@ -116,6 +117,21 @@ describe("interference request payload", () => {
       thresholdsDBm: [-105, -90],
     });
     expect(payload).toMatchObject({ tower_lon: 32.85, tower_lat: 39.92, cell_size_m: 50, thresholds_dbm: [-105, -90] });
+  });
+
+  it("keys a surface to the RF source while ignoring raster presentation options", () => {
+    const first = buildCoverageSurfacePayload(towers[0], { ...settings, rayCount: 72 }, {
+      cellSizeMeters: 25,
+      thresholdsDBm: [-110, -90],
+    });
+    const second = buildCoverageSurfacePayload(towers[0], { ...settings, rayCount: 72 }, {
+      cellSizeMeters: 100,
+      thresholdsDBm: [-100, -80],
+    });
+
+    expect(buildCoverageSurfaceSourceKey(first, "1")).toBe(buildCoverageSurfaceSourceKey(second, "1"));
+    expect(buildCoverageSurfaceSourceKey(first, "1")).not.toBe(buildCoverageSurfaceSourceKey(first, "2"));
+    expect(buildCoverageSurfaceSourceKey({ ...first, azimuth: 180 }, "1")).not.toBe(buildCoverageSurfaceSourceKey(first, "1"));
   });
 
   it("serializes the retained baseline and selected solution for one-cell explanation", () => {

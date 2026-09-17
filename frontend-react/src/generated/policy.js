@@ -72,7 +72,7 @@ export const NETWORK_TECHNOLOGIES = Object.freeze([
   },
   {
     "id": "6g",
-    "label": "6G Sub-THz",
+    "label": "6G research profile (140 GHz)",
     "default_frequency_ghz": 140,
     "minimum_frequency_ghz": 100,
     "maximum_frequency_ghz": 300,
@@ -98,6 +98,7 @@ export const NETWORK_TECH_OPTIONS = Object.freeze(NETWORK_TECHNOLOGIES.map((tech
 
 export const DEFAULT_SIMULATION = Object.freeze({
   "frequencyGHz": 28,
+  "propagationModelID": "urban_short_range",
   "txPowerDbm": 30,
   "rayCount": 120,
   "radiusMeters": 400,

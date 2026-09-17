@@ -2,8 +2,8 @@ import { DEFAULT_RECOMMENDATION_RESULTS, networkTechnologyForFrequency } from ".
 import { resolveRFProfile, rfProfileToPayload } from "./rfProfile.js";
 import { optimizationConfigToPayload } from "./optimizationConfig.js";
 
-export function buildSimulationPayload(selectedTower, settings) {
-  const profile = resolveRFProfile(selectedTower, settings, 0);
+export function buildSimulationPayload(selectedTower, settings, profileIndex = 0) {
+  const profile = resolveRFProfile(selectedTower, settings, profileIndex);
   return {
     tower_lon: selectedTower.coordinates[0],
     tower_lat: selectedTower.coordinates[1],
@@ -42,12 +42,23 @@ export function buildPathProfilePayload(selectedTower, receiver, settings, optio
   };
 }
 
-export function buildCoverageSurfacePayload(selectedTower, settings, options = {}) {
+export function buildCoverageSurfacePayload(selectedTower, settings, options = {}, profileIndex = 0) {
   return {
-    ...buildSimulationPayload(selectedTower, settings),
+    ...buildSimulationPayload(selectedTower, settings, profileIndex),
     cell_size_m: Number(options.cellSizeMeters ?? 25),
     thresholds_dbm: [...(options.thresholdsDBm ?? [-110, -100, -90, -80])].map(Number),
   };
+}
+
+export function buildCoverageSurfaceSourceKey(payload, cellID) {
+  if (!payload) return null;
+  const rfPayload = Object.fromEntries(
+    Object.entries(payload).filter(([key]) => key !== "cell_size_m" && key !== "thresholds_dbm"),
+  );
+  return JSON.stringify({
+    cell_id: cellID === null || cellID === undefined ? null : String(cellID),
+    ...rfPayload,
+  });
 }
 
 export function defaultPathModelProfile(frequencyGHz) {

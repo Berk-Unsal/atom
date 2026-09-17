@@ -300,7 +300,7 @@ describe("planning report network workflow", () => {
     expect(markdown).not.toContain("## Per-cell RF Profiles");
     expect(markdown).toContain("| Demand | 25 / 100 | 25.0% | Available |");
     expect(markdown).toContain("Configured priorities are relative importance values on a 0–100 scale; effective weights are normalized percentages.");
-    expect(markdown).toContain("| Load / reuse | Receiver |");
+    expect(markdown).toContain("| Load / reuse | Receiver / sensitivity |");
     expect(markdown).not.toContain("PCI Not available");
     expect(markdown).toContain("Selected-cell service-radius envelope");
     expect(markdown).toContain("Minimum propagation reach");
@@ -434,6 +434,19 @@ describe("planning report conditional and fallback behavior", () => {
 });
 
 describe("planning report values", () => {
+  it("does not format a raw compatibility aggregate as a normalized score", () => {
+    const networkOptimization = makeNetworkOptimization();
+    networkOptimization.stats = {
+      ...networkOptimization.stats,
+      score: undefined,
+      composite_score: undefined,
+      network_score: 6567105.4,
+    };
+    const markdown = renderMarkdownReport(makeNetworkReport({ networkOptimization }));
+
+    expect(markdown).not.toContain("6567105.4 / 100");
+  });
+
   it("does not emit broken unavailable-unit placeholders", () => {
     const report = buildPlanningReport({
       activeNetworkTech: "5G mmWave",

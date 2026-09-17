@@ -1,0 +1,199 @@
+{
+  "concept": "4D",
+  "title": "Canonical Ankara legacy versus urban short-range comparison",
+  "captured_at": "2026-09-17",
+  "source": "real backend after Concept 4D implementation",
+  "pre_change_artifact": "concept-4d-pre-change-baseline.json",
+  "scenario": {
+    "technology": "5g",
+    "frequency_ghz": 28,
+    "tx_power_dbm": 30,
+    "antenna_gain_dbi": 25,
+    "system_loss_db": 0,
+    "radius_m": 400,
+    "beam_width_deg": 120,
+    "antenna_height_m": 25,
+    "receiver_height_m": 1.5,
+    "receiver_sensitivity_dbm": -115,
+    "rays": 72,
+    "sample_spacing_m": 50,
+    "azimuths_deg": [0, 60, 120, 180, 240, 300],
+    "tower_ids": [
+      "LTE-35084",
+      "LTE-35104",
+      "LTE-35877",
+      "LTE-313100",
+      "LTE-313110",
+      "LTE-322828"
+    ],
+    "objective_priorities": {
+      "demand": 50,
+      "residential": 50,
+      "coverage": 50,
+      "overlap": 50
+    }
+  },
+  "comparison": {
+    "legacy_fspl_walls": {
+      "model_id": "legacy_fspl_walls",
+      "baseline": {
+        "network_score": 4646513.3,
+        "composite_score": 0.337894,
+        "unique_demand_buildings": 6,
+        "unique_residential_buildings": 28,
+        "propagation_reach_score": 16013.3051,
+        "overlap_buildings": 6
+      },
+      "optimized": {
+        "azimuths_deg": [70, 20, 130, 160, 290, 110],
+        "network_score": 11585048.7,
+        "composite_score": 0.411715,
+        "unique_demand_buildings": 14,
+        "unique_residential_buildings": 43,
+        "propagation_reach_score": 19548.691,
+        "overlap_buildings": 0,
+        "pareto_frontier_size": 6
+      },
+      "single_cell_ray": {
+        "blocked_pct": 76.4,
+        "avg_rx_dbm": -115.1,
+        "feature_count": 694,
+        "clear_50m_rx_dbm": -41.2,
+        "nlos_100m_rx_dbm": -106.6,
+        "nlos_100m_wall_loss_db": 60
+      },
+      "surface": {
+        "valid_cell_count": 267,
+        "below_sensitivity_cell_count": 171,
+        "min_dbm": -598,
+        "max_dbm": -33.8,
+        "center_value_dbm": -33.8
+      },
+      "interference": {
+        "signal_samples": 68,
+        "serviceable_samples": 50,
+        "serviceable_pct": 5.1,
+        "avg_rsrp_dbm": -95.7,
+        "p10_rsrp_dbm": -136.1,
+        "avg_sinr_db": 14,
+        "p10_sinr_db": -19.9
+      }
+    },
+    "urban_short_range": {
+      "model_id": "urban_short_range",
+      "reference": "3GPP TR 38.901 V19.4.0 UMa Table 7.4.1-1 median path loss",
+      "baseline": {
+        "network_score": 13509330.8,
+        "composite_score": 0.391373,
+        "unique_demand_buildings": 12,
+        "unique_residential_buildings": 82,
+        "propagation_reach_score": 18330.7658,
+        "overlap_buildings": 10
+      },
+      "optimized": {
+        "azimuths_deg": [150, 300, 110, 300, 290, 100],
+        "network_score": 32568641.7,
+        "composite_score": 0.489148,
+        "unique_demand_buildings": 29,
+        "unique_residential_buildings": 137,
+        "propagation_reach_score": 22141.6608,
+        "overlap_buildings": 0,
+        "pareto_frontier_size": 23
+      },
+      "single_cell_ray": {
+        "blocked_pct": 63.9,
+        "avg_rx_dbm": -127.9,
+        "feature_count": 853,
+        "clear_50m_rx_dbm": -40.3,
+        "nlos_100m_rx_dbm": -66.1,
+        "nlos_100m_wall_loss_db": 0
+      },
+      "surface": {
+        "valid_cell_count": 267,
+        "below_sensitivity_cell_count": 34,
+        "min_dbm": -506,
+        "max_dbm": -33.8,
+        "center_value_dbm": -33.8
+      },
+      "interference": {
+        "signal_samples": 307,
+        "serviceable_samples": 179,
+        "serviceable_pct": 18.1,
+        "avg_rsrp_dbm": -100.4,
+        "p10_rsrp_dbm": -117,
+        "avg_sinr_db": 14.3,
+        "p10_sinr_db": -0.8
+      }
+    }
+  },
+  "controlled_links": [
+    {
+      "case": "near_clear_2.6GHz",
+      "frequency_ghz": 2.6,
+      "distance_m": 10,
+      "los_state": "los",
+      "legacy_wall_event_count": 0,
+      "legacy_fspl_walls": {"path_loss_db": 68.8936078371, "rx_dbm": -13.8936078371},
+      "urban_short_range": {"path_loss_db": 67.2580219249, "rx_dbm": -12.2580219249},
+      "urban_minus_legacy_rx_db": 1.6355859122
+    },
+    {
+      "case": "medium_blocked_2.6GHz",
+      "frequency_ghz": 2.6,
+      "distance_m": 100,
+      "los_state": "nlos",
+      "legacy_wall_event_count": 1,
+      "legacy_fspl_walls": {"path_loss_db": 88.9829176775, "rx_dbm": -33.9829176775},
+      "urban_short_range": {"path_loss_db": 100.4556296625, "rx_dbm": -45.4556296625},
+      "urban_minus_legacy_rx_db": -11.472711985
+    },
+    {
+      "case": "radius_edge_blocked_2.6GHz",
+      "frequency_ghz": 2.6,
+      "distance_m": 400,
+      "los_state": "nlos",
+      "legacy_wall_event_count": 1,
+      "legacy_fspl_walls": {"path_loss_db": 100.8056309215, "rx_dbm": -45.8056309215},
+      "urban_short_range": {"path_loss_db": 123.5572113412, "rx_dbm": -68.5572113412},
+      "urban_minus_legacy_rx_db": -22.751580419
+    },
+    {
+      "case": "near_clear_28GHz",
+      "frequency_ghz": 28,
+      "distance_m": 10,
+      "los_state": "los",
+      "legacy_wall_event_count": 0,
+      "legacy_fspl_walls": {"path_loss_db": 89.5373015046, "rx_dbm": -34.5373015046},
+      "urban_short_range": {"path_loss_db": 87.9017155923, "rx_dbm": -32.9017155923},
+      "urban_minus_legacy_rx_db": 1.6355859122
+    },
+    {
+      "case": "medium_blocked_28GHz",
+      "frequency_ghz": 28,
+      "distance_m": 100,
+      "los_state": "nlos",
+      "legacy_wall_event_count": 1,
+      "legacy_fspl_walls": {"path_loss_db": 131.6266113449, "rx_dbm": -76.6266113449},
+      "urban_short_range": {"path_loss_db": 121.0993233299, "rx_dbm": -66.0993233299},
+      "urban_minus_legacy_rx_db": 10.527288015
+    },
+    {
+      "case": "radius_edge_blocked_28GHz",
+      "frequency_ghz": 28,
+      "distance_m": 400,
+      "los_state": "nlos",
+      "legacy_wall_event_count": 1,
+      "legacy_fspl_walls": {"path_loss_db": 143.4493245889, "rx_dbm": -88.4493245889},
+      "urban_short_range": {"path_loss_db": 144.2009050087, "rx_dbm": -89.2009050087},
+      "urban_minus_legacy_rx_db": -0.7515804198
+    }
+  ],
+  "interpretation": "The urban result is scenario-aware and reference-aligned, not claimed to be more accurate. Its NLOS formula represents outdoor obstruction statistically and therefore does not add the legacy wall-event term; indoor endpoint cases explicitly fall back to legacy_fspl_walls. The changed optimizer tuple and serviceability counts are model effects, not coefficient tuning to reproduce the legacy run.",
+  "performance": {
+    "workload": "six-cell canonical optimize-network request, 72 rays, 400 m radius, 28 GHz",
+    "legacy_fspl_walls_wall_seconds": 10.11,
+    "urban_short_range_wall_seconds": 17.78,
+    "urban_relative_change_percent": 75.9,
+    "measurement_note": "Single local run on the same dataset/build; both completed within the 120-second HTTP write budget."
+  }
+}

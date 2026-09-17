@@ -165,6 +165,13 @@ const gapPayload = {
   stats: { gap_buildings: 4, gap_pct: 2, returned_gaps: 0 },
 };
 
+const coverageSurfacePayload = {
+  grid: { width: 3, height: 3, values: [-100, -90, -80, -101, -91, -81, -102, -92, -82] },
+  contours: { type: "FeatureCollection", features: [] },
+  stats: { min_dbm: -102, max_dbm: -80, valid_cell_count: 9 },
+  model: { assumptions: [] },
+};
+
 const cellExplanationPayload = {
   available: true,
   unchanged: false,
@@ -301,6 +308,63 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(rfRequestCount);
   });
 
+  it("enables Signal after RF completes, loads the surface lazily, and keeps ray toggles presentation-only", async () => {
+    api.postJSON.mockImplementation((path) => {
+      if (path === "/api/analyze-sector") {
+        return Promise.resolve({ simulation: simulationPayload, coverage_gaps: gapPayload });
+      }
+      if (path === "/api/coverage-surface") return Promise.resolve(coverageSurfacePayload);
+      return Promise.resolve(simulationPayload);
+    });
+
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+
+    const signalButton = screen.getByRole("button", { name: "Toggle received signal surface" });
+    expect(signalButton).toBeEnabled();
+    expect(signalButton).toHaveAttribute("data-surface-state", "available");
+
+    const rfRequestCount = api.postJSON.mock.calls.length;
+    fireEvent.click(signalButton);
+    await waitFor(() => expect(signalButton).toHaveAttribute("data-surface-state", "ready"));
+    expect(api.postJSON).toHaveBeenCalledWith(
+      "/api/coverage-surface",
+      expect.objectContaining({ cell_size_m: 25, tower_lon: 32.85, tower_lat: 39.92 }),
+      "Coverage surface generation failed",
+      expect.any(AbortSignal),
+    );
+    expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/analyze-sector").length).toBe(1);
+
+    expect(screen.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(screen.getByRole("button", { name: "Toggle propagation rays" }));
+    expect(screen.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "true");
+    expect(api.postJSON.mock.calls.length).toBe(rfRequestCount + 1);
+  });
+
+  it("clears the current surface when RF inputs change and exposes Signal again after rerun", async () => {
+    api.postJSON.mockImplementation((path) => {
+      if (path === "/api/analyze-sector") return Promise.resolve({ simulation: simulationPayload, coverage_gaps: gapPayload });
+      if (path === "/api/coverage-surface") return Promise.resolve(coverageSurfacePayload);
+      return Promise.resolve(simulationPayload);
+    });
+
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    const signalButton = screen.getByRole("button", { name: "Toggle received signal surface" });
+    fireEvent.click(signalButton);
+    await waitFor(() => expect(signalButton).toHaveAttribute("data-surface-state", "ready"));
+
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Transmit power (dBm)" }), { target: { value: "31" } });
+    expect(signalButton).toBeDisabled();
+    expect(signalButton).toHaveAttribute("data-surface-state", "unavailable");
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(signalButton).toHaveAttribute("data-surface-state", "available"));
+  });
+
   it("does not launch a sector request when switching into network planning", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
@@ -413,7 +477,7 @@ describe("App planning workflow", () => {
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     fireEvent.click(screen.getByRole("button", { name: "Data" }));
     expect(screen.getByRole("region", { name: "Propagation model assumptions" })).toBeInTheDocument();
-    expect(screen.getByText("FSPL + wall loss")).toBeInTheDocument();
+    expect(screen.getByText("FSPL + footprint obstruction")).toBeInTheDocument();
     expect(screen.getByText(/Fast fading, diffraction, sidelobes/)).toBeInTheDocument();
   });
 

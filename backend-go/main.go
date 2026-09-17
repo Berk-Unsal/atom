@@ -26,7 +26,7 @@ const maxRequestBodyBytes int64 = 1 << 20
 var (
 	appVersion   = "dev"
 	buildCommit  = "unknown"
-	modelVersion = "fspl-walls-2p5d-v3"
+	modelVersion = raytracer.UrbanShortRangePropagationID
 )
 
 func main() {
@@ -127,10 +127,15 @@ func main() {
 	buildingCacheControl := buildingDatasetCacheControl(buildingAPIKey != "")
 	router.GET("/api/meta", func(c *gin.Context) {
 		response := gin.H{
-			"application_version":    appVersion,
-			"build_commit":           buildCommit,
-			"model_version":          modelVersion,
-			"supported_technologies": []string{"4g", "5g", "6g-research"},
+			"application_version":     appVersion,
+			"build_commit":            buildCommit,
+			"model_version":           modelVersion,
+			"model_id":                raytracer.UrbanShortRangePropagationID,
+			"model_description":       raytracer.UrbanShortRangeModelDescription,
+			"propagation_models":      raytracer.PropagationModelCatalog(),
+			"rf_contract":             raytracer.RFContractMetadataForModel(raytracer.UrbanShortRangePropagationID, raytracer.DefaultCalibrationOffsetDB),
+			"supported_technologies":  []string{"4g", "5g", "6g-research"},
+			"technology_capabilities": raytracer.RFTechnologyEndpointCapabilityMatrix(),
 		}
 		if pack := datasets.Current(); pack != nil {
 			response["dataset"] = pack.Manifest

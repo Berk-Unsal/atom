@@ -36,6 +36,7 @@ export default function InterferenceResultsPanel({ analysis }) {
           ))}
         </div>
       ) : null}
+      <p className="data-note">Serviceability is evaluated independently as RSRP ≥ {formatMetric(analysis.model?.rsrp_threshold_dbm, "dBm")}, SINR ≥ {formatMetric(analysis.model?.sinr_threshold_db, "dB")}, and RSRQ ≥ {formatMetric(analysis.model?.rsrq_threshold_db, "dB")}; these are not receiver sensitivity or building-service thresholds.</p>
       <p className="data-note">Deterministic planning estimate, not a UE or protocol measurement.</p>
     </section>
   );

@@ -2,11 +2,26 @@
 
 A.T.O.M combines deterministic planning equations with computational geometry to produce inspectable RF estimates. It is not a calibrated propagation solver or a substitute for field measurements.
 
+## Concept 4D: Urban Short-Range Propagation
+
+The production planning default for 2.6 GHz and 28 GHz is `urban_short_range`, a deterministic 3GPP TR 38.901 UMa outdoor-to-outdoor median path-loss baseline. It uses known Tx/Rx heights, 2D footprint distance, and one shared LOS/NLOS classifier across rays, surfaces, interference, and network scoring. The classifier marks a path LOS when it has no footprint boundary event, NLOS when it crosses one or more footprints, and separately identifies indoor endpoints. Missing footprint data, unknown LOS/NLOS, unsupported endpoint cases, or out-of-envelope distances produce an explicit applicability result and use `legacy_fspl_walls` as the reported fallback.
+
+The urban formula uses metres, GHz, base-10 logarithms, and the 3GPP breakpoint:
+
+```text
+d3D = sqrt(d2D^2 + (hBS - hUT)^2)
+dBP' = 4 (hBS - 1) (hUT - 1) fc_Hz / 3e8
+PL_LOS = PL1 or PL2 at dBP'
+PL_NLOS = max(PL_LOS, 13.54 + 39.08 log10(d3D) + 20 log10(fc_GHz) - 0.6(hUT - 1.5))
+```
+
+The urban path-loss result is not combined with FSPL or the legacy wall heuristic. The `research_sub_thz` mode is the explicit 140 GHz safety profile, while the separate [`Concept 4D design note`](concept-4d-urban-propagation.md) records scope, limitations, fallback policy, and references.
+
 ## Radio Frequency Physics Foundation
 
 ### Free-Space Path Loss (FSPL)
 
-The fundamental equation for all propagation calculations:
+The fundamental free-space term uses the current [ITU-R P.525-5 (2024-11)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf) equation as a mathematical reference:
 
 $$L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45$$
 
@@ -14,16 +29,20 @@ $$L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45$$
 
 $$L[dB] = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45$$
 
-### Received Power Calculation
+### Legacy Received Power Calculation
 
-$$P_{rx}[dBm] = EIRP_{dBm} - L_{path} - L_{walls}$$
+The selectable compatibility mode is `legacy_fspl_walls` (historically reported as `fspl-walls-2p5d-v3`). Its link budget is:
+
+$$P_{rx}[dBm] = P_{tx} + G_{tx} - L_{system} + C - L_{FSPL} - L_{building} - A_{horizontal} - A_{vertical}$$
 
 Where:
-- $EIRP$ = Transmit power plus antenna gain
-- $L_{path}$ = Free-space path loss (FSPL equation)
-- $L_{walls}$ = Cumulative building penetration loss
+- $P_{tx}$ and $G_{tx}$ are the absolute transmit-power and antenna-gain terms
+- $L_{system}$ is the configured system loss and $C$ is the signed global calibration offset
+- $L_{FSPL}$ uses the slant distance between the transmitter and receiver, with meter/GHz units
+- $L_{building}$ is cumulative frequency-dependent, material-agnostic building-boundary loss
+- $A_{horizontal}$ and $A_{vertical}$ are relative analytic antenna-pattern attenuations
 
-The fast sector model does not include terrain, diffraction, reflection, fast fading, or multipath. The separate 2.5D path profiler samples optional COG/GeoTIFF terrain, building height, LOS/Fresnel clearance, and one explicitly selected dominant knife-edge approximation; it is not a full replacement for the sector engine or a complete ITU-R method.
+This compatibility mode uses horizontal building-footprint geometry and height-aware FSPL; it does not use terrain, building-height obstruction, diffraction, reflection, fast fading, or multipath. A positive $C$ raises predicted received power by the same global dB offset. The separate path-profile workflow is an advanced point-to-point diagnostic with its own `path-profile-diagnostic-v1` contract; it does not alter network RF.
 
 ## 2.5D Point-To-Point Profiles
 
@@ -39,7 +58,7 @@ When selected, the dominant obstruction is converted to the usual dimensionless 
 
 The inspectable loss budget keeps FSPL, horizontal/vertical antenna attenuation, system loss, wall penetration, diffraction, clutter, vegetation, gas, rain, and calibration as separate signed components. Shadow sigma produces sensitivity bounds and is not injected as a random field, preserving determinism.
 
-The `terrain-profile` and `urban-short-range` labels enforce the published frequency ranges of [ITU-R P.1812-8](https://www.itu.int/rec/R-REC-P.1812-8-202509-I/en) and [ITU-R P.1411-9](https://www.itu.int/rec/R-REC-P.1411-9-201706-I/en). The knife-edge, material, gas, and rain controls are informed by [P.526](https://www.itu.int/rec/R-REC-P.526/en), [P.2040](https://www.itu.int/rec/r-rec-p.2040/en), [P.676](https://www.itu.int/rec/R-REC-P.676/en), and [P.838](https://www.itu.int/rec/R-REC-P.838/en); A.T.O.M does not claim full Recommendation conformance.
+The `terrain-profile` and `urban-short-range` labels use the current recorded scopes of [ITU-R P.1812-8 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf) and [ITU-R P.1411-13 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf), while retaining A.T.O.M's existing runtime conditions and limits. The knife-edge, material, gas, and rain controls are informed by [P.526-16](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.526-16-202511-I!!PDF-E.pdf), [P.2040-4](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf), [P.676](https://www.itu.int/rec/R-REC-P.676/en), and [P.838](https://www.itu.int/rec/R-REC-P.838/en); A.T.O.M does not claim full Recommendation conformance.
 
 ### Frequency Dependence
 
@@ -53,14 +72,14 @@ $$L \propto f^2$$
 
 ## Building Penetration Model
 
-### Generation-Specific Wall Loss
+### Legacy Generation-Specific Wall Loss
 
-A.T.O.M uses the selected network generation to apply a fixed loss each time a ray crosses a building boundary. OSM building tags are still used for demand scoring and diagnostics, but wall penetration is intentionally frequency-driven in the current runtime:
+The selectable `legacy_fspl_walls` mode applies a fixed loss each time a ray crosses a building boundary. OSM building tags are still used for demand scoring and diagnostics, but wall penetration is intentionally frequency-driven in that compatibility mode:
 
 ```
-if frequency_ghz <= 3:
+if frequency_ghz < 10:
     loss_4g = 8 dB
-elif frequency_ghz <= 40:
+elif frequency_ghz < 100:
     loss_5g = 30 dB
 else:
     loss_6g = 80 dB
@@ -89,9 +108,10 @@ A.T.O.M uses a **deterministic segmented sector raytracer**:
 2. Split the selected sector into configurable rays
 3. Split each ray into short segments
 4. Query the R-Tree for buildings intersecting each segment
-5. Apply cumulative wall loss and receiver sensitivity thresholding
-6. Color each segment by received power
-7. Serialize the segments as GeoJSON
+5. Evaluate the selected shared propagation model at each physical endpoint; only the explicit legacy mode applies cumulative wall dB
+6. Apply the effective per-cell receiver sensitivity threshold
+7. Color each segment by received power
+8. Serialize the segments as GeoJSON
 
 ### Pseudocode
 
@@ -101,7 +121,8 @@ func TraceSector(tx Location, req SimulationRequest) GeoJSON {
     if req.rays * ceil(req.radius_m / 25) > 25_000 {
         return error("simulation response feature limit exceeded")
     }
-    maxDistance := min(req.radius_m, sensitivityLimitedDistance(req))
+    maxDistance := req.radius_m
+    receiverSensitivity := effectiveReceiverSensitivity(req)
 
     for angle in sector_angles(req.azimuth, req.beam_width, req.rays) {
         current := tx
@@ -119,9 +140,9 @@ func TraceSector(tx Location, req SimulationRequest) GeoJSON {
 
             distance := haversine_distance(tx, segmentEnd)
             fspl := 20*log10(distance) + 20*log10(req.frequency_ghz) + 32.45
-            rxPower := EIRP_DBM - fspl - wallLoss
+            rxPower := req.tx_power_dbm + req.antenna_gain_dbi - req.system_loss_db + req.calibration_offset_db - fspl - wallLoss - horizontalPatternLoss(req) - verticalPatternLoss(req)
 
-            if rxPower < ReceiverSensitivityDBm {
+            if rxPower <= receiverSensitivity {
                 break
             }
 
@@ -138,11 +159,11 @@ func TraceSector(tx Location, req SimulationRequest) GeoJSON {
 
 **Problem**: Does a ray (line segment) intersect a building (polygon)?
 
-**Solution**: Use **separating axis theorem** (SAT):
+**Solution**: Query the R-Tree's segment bounding box, then test each candidate polygon with exact segment-edge intersections and point-in-polygon checks. Duplicate boundary points for the same building are collapsed within the current 5 cm tolerance, and intersections are processed in distance order.
 
 ```go
 func SegmentIntersectsPolygon(segment Line, polygon Polygon) bool {
-    // Test segment against all polygon edges
+    // Test the segment against all polygon edges
     for i := 0; i < len(polygon.Edges); i++ {
         edge := polygon.Edges[i]
         if SegmentIntersectsSegment(segment, edge) {
@@ -150,7 +171,7 @@ func SegmentIntersectsPolygon(segment Line, polygon Polygon) bool {
         }
     }
     
-    // Test if segment start/end inside polygon
+    // Test if segment start/end is inside the polygon
     return PointInPolygon(segment.Start, polygon) ||
            PointInPolygon(segment.End, polygon)
 }
@@ -241,7 +262,7 @@ Coverage: 12.5° to 77.5°
         /─────────────\
        /               \
       |    Main Lobe     |
-      |   (Gain = 0 dBi)  |
+      | (relative loss=0dB)|
        \               /
         \─────────────/
              θ = 65°
@@ -257,7 +278,7 @@ func IsInsideSector(direction float64, antennaAzimuth float64,
 }
 ```
 
-Samples outside the configured sector or radius do not contribute. Version 1 does not model sidelobes or a continuous antenna gain pattern.
+Samples outside the configured sector or radius do not contribute. Configured antenna gain is applied separately in the link budget; the diagram's zero value means zero relative preset attenuation at boresight. Version 1 does not model sidelobes or a continuous vendor antenna diagram.
 
 ---
 
@@ -268,7 +289,7 @@ Samples outside the configured sector or radius do not contribute. Version 1 doe
 **Find**: The antenna azimuth that best serves demand-weighted coverage
 
 **Constraints**:
-- Distance range: 50 m to 5 km
+- Distance range: 25 m to 5 km
 - Beam width: user configured
 - Frequency: user selected
 
@@ -317,11 +338,11 @@ func OptimizeAzimuth(tx Location, request SimulationRequest) float64 {
 
 ### Complexity Analysis
 
-- **Loop iterations**: 360° / 5° = 72
+- **Loop iterations**: 360° / 10° = 36
 - **Per iteration**:
   - Ray tracing: O(90,000 rays × log n intersections) ~1 second
   - Coverage calculation: O(90,000)
-- **Total time**: ~72 seconds (naive)
+- **Total time**: ~36 seconds (naive)
 - **Optimized time**: ~250 ms (with parallelization)
 
 ### Parallelization
@@ -340,20 +361,20 @@ type Result struct {
 }
 
 // Dispatch all azimuths to workers
-jobs := make(chan Job, 72)
-results := make(chan Result, 72)
+jobs := make(chan Job, 36)
+results := make(chan Result, 36)
 
 // 4 workers process in parallel
 for w := 1; w <= 4; w++ {
     go worker(jobs, results)
 }
 
-for azimuth := 0; azimuth < 360; azimuth += 5 {
+for azimuth := 0; azimuth < 360; azimuth += 10 {
     jobs <- Job{azimuth}
 }
 
 // Collect results
-for i := 1; i <= 72; i++ {
+for i := 1; i <= 36; i++ {
     result := <-results
     if result.coverage > bestCoverage {
         bestCoverage = result.coverage

@@ -18,7 +18,7 @@
 
 ## Overview
 
-A.T.O.M is a full-stack spatial planning engine for visualizing and evaluating cellular networks across multiple generations (4G LTE, 5G mmWave, and an experimental 6G Sub-THz mode) in dense urban environments. Built on OpenStreetMap (OSM) and OpenCellID-derived data, it combines deterministic RF estimation with interactive geospatial analysis so telecommunications engineers and students can compare coverage, antenna configurations, interference, demand impact, and network topology in Ankara, Turkey.
+A.T.O.M is a full-stack spatial planning engine for visualizing and evaluating cellular networks across multiple generations (4G LTE, 5G mmWave, and an experimental 6G research profile at 140 GHz) in dense urban environments. Built on OpenStreetMap (OSM) and OpenCellID-derived data, it combines deterministic RF estimation with interactive geospatial analysis so telecommunications engineers and students can compare coverage, antenna configurations, interference, demand impact, and network topology in Ankara, Turkey.
 
 The engine combines bounded Go worker pools, spatial indexing, deterministic ray tracing, and demand-aware search to evaluate urban RF planning scenarios. Results are planning estimates derived from static OSM and OpenCellID data; they are not drive-test, UE, or PHY measurements.
 
@@ -28,11 +28,11 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 - **Focused Map Workspace**: Organizes setup, propagation, interference, 5G Core, results, data assumptions, and reports in a compact workflow rail while keeping the map primary.
 
-- **Multi-Generation Planning Presets**: Evaluates 4G (2.6 GHz), 5G (28 GHz), and experimental 6G (140 GHz) scenarios using Free-Space Path Loss (FSPL) with frequency-dependent attenuation.
+- **Multi-Generation Planning Presets**: Evaluates 4G (2.6 GHz) and 5G (28 GHz) with the explicit `urban_short_range` LOS/NLOS baseline, keeps `legacy_fspl_walls` selectable, and labels 6G (140 GHz) as the `research_sub_thz` planning profile.
 
 - **Segmented Heatmap Raytracing**: Generates GeoJSON ray segments that change color based on modeled signal strength (Rx dBm), providing interactive visual feedback on coverage quality.
 
-- **Frequency-Dependent Penetration**: 4G rays penetrate concrete buildings with Cumulative Wall Loss calculations, while 5G/6G rays experience heavy attenuation or immediate blockage, reflecting real-world propagation behavior.
+- **Explainable Propagation Modes**: Shared model dispatch, applicability checks, deterministic footprint LOS/NLOS classification, explicit legacy fallback, and per-response model identity keep urban NLOS path loss separate from legacy wall-event loss.
 
 - **Sector Planning**: Fast sector simulation with adjustable azimuth and beam width. The sector engine uses analytic antenna presets and does not model reflection-heavy multipath, fading, multiple-edge diffraction, or MIMO scheduling.
 - **2.5D Path Profiles**: Optional COG/GeoTIFF terrain, building-height obstruction, LOS/Fresnel evidence, selected single knife-edge diffraction, inspectable fidelity components, and a vertical cross section.
@@ -44,7 +44,7 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 - **Deterministic Network Optimization**: Sweeps candidate azimuths and scores sectors or two-to-six-cell clusters using POI demand, residential-density demand, coverage, and overlap penalties.
 
-- **Coverage Gap Finder**: Flags demand-weighted buildings inside the active beam that fall below usable service quality, helping planners see underserved residential and POI targets instead of only raw ray distance.
+- **Coverage Gap Finder**: Flags demand-weighted buildings inside the active beam whose raw received power does not exceed the separate `-100 dBm` building-service threshold, helping planners see underserved residential and POI targets instead of only raw ray distance.
 
 - **5G Communication Paths**: Separately visualizes direct Xn-C/Xn-U coordination, N2 fallback through AMF, and N3 user-plane routing through UPF when the optional 5G Core Lab overlay is enabled.
 
@@ -107,7 +107,7 @@ The current interface uses a compact command bar, workflow rail, overlay tool dr
 ### 5G Coverage
 ![5G Propagation](./docs/assets/5g.png)
 
-### 6G Sub-THz Coverage
+### 6G Research Profile Coverage (140 GHz)
 ![6G Propagation](./docs/assets/6g.png)
 
 ### Auto-Optimized 5G Beamforming

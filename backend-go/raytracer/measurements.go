@@ -177,10 +177,13 @@ type BiasCalibration struct {
 }
 
 type MeasurementModel struct {
-	Technology        string   `json:"technology"`
-	MeasurementFamily string   `json:"measurement_family"`
-	CalibrationKind   string   `json:"calibration_kind"`
-	Notes             []string `json:"notes"`
+	Technology            string                   `json:"technology"`
+	MeasurementFamily     string                   `json:"measurement_family"`
+	CalibrationKind       string                   `json:"calibration_kind"`
+	Notes                 []string                 `json:"notes"`
+	RequestDefaults       RFRequestDefaults        `json:"request_defaults"`
+	EffectiveCellProfiles []EffectiveCellRFProfile `json:"effective_cell_profiles"`
+	RFContract            RFContractMetadata       `json:"rf_contract"`
 }
 
 func (input MeasurementEvaluationRequestInput) ToRequest() MeasurementEvaluationRequest {
@@ -405,6 +408,9 @@ func EvaluateMeasurementsContext(ctx context.Context, req MeasurementEvaluationR
 				"The suggested correction is a spatially cross-validated global dB bias, not a fitted propagation model.",
 				"Per-cell, per-band, distance, obstruction, and outlier diagnostics are descriptive and are not automatically fitted.",
 			},
+			RequestDefaults:       interferenceRequestDefaults(req.Radio),
+			EffectiveCellProfiles: effectiveInterferenceCellRFProfiles(req.Radio),
+			RFContract:            rfContractForProfile(&req.Radio.RFProfile, req.Radio.CalibrationOffsetDB),
 		},
 	}, nil
 }

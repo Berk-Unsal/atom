@@ -75,6 +75,9 @@ results." />
 Physics page contents">
       <strong>On this page</strong>
       <ul>
+      <li><a href="#concept-4d-urban-short-range-propagation"
+      id="toc-concept-4d-urban-short-range-propagation">Concept 4D:
+      Urban Short-Range Propagation</a></li>
       <li><a href="#radio-frequency-physics-foundation"
       id="toc-radio-frequency-physics-foundation">Radio Frequency
       Physics Foundation</a></li>
@@ -120,30 +123,75 @@ radio-quality methods behind A.T.O.M results.</p>
 <p>A.T.O.M combines deterministic planning equations with computational
 geometry to produce inspectable RF estimates. It is not a calibrated
 propagation solver or a substitute for field measurements.</p>
+<h2 id="concept-4d-urban-short-range-propagation">Concept 4D: Urban
+Short-Range Propagation</h2>
+<p>The production planning default for 2.6 GHz and 28 GHz is
+<code>urban_short_range</code>, a deterministic 3GPP TR 38.901 UMa
+outdoor-to-outdoor median path-loss baseline. It uses known Tx/Rx
+heights, 2D footprint distance, and one shared LOS/NLOS classifier
+across rays, surfaces, interference, and network scoring. The classifier
+marks a path LOS when it has no footprint boundary event, NLOS when it
+crosses one or more footprints, and separately identifies indoor
+endpoints. Missing footprint data, unknown LOS/NLOS, unsupported
+endpoint cases, or out-of-envelope distances produce an explicit
+applicability result and use <code>legacy_fspl_walls</code> as the
+reported fallback.</p>
+<p>The urban formula uses metres, GHz, base-10 logarithms, and the 3GPP
+breakpoint:</p>
+<pre class="text"><code>d3D = sqrt(d2D^2 + (hBS - hUT)^2)
+dBP&#39; = 4 (hBS - 1) (hUT - 1) fc_Hz / 3e8
+PL_LOS = PL1 or PL2 at dBP&#39;
+PL_NLOS = max(PL_LOS, 13.54 + 39.08 log10(d3D) + 20 log10(fc_GHz) - 0.6(hUT - 1.5))</code></pre>
+<p>The urban path-loss result is not combined with FSPL or the legacy
+wall heuristic. The <code>research_sub_thz</code> mode is the explicit
+140 GHz safety profile, while the separate
+<code>Concept 4D design note</code> records scope, limitations, fallback
+policy, and references.</p>
 <h2 id="radio-frequency-physics-foundation">Radio Frequency Physics
 Foundation</h2>
 <h3 id="free-space-path-loss-fspl">Free-Space Path Loss (FSPL)</h3>
-<p>The fundamental equation for all propagation calculations:</p>
+<p>The fundamental free-space term uses the current <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf">ITU-R
+P.525-5 (2024-11)</a> equation as a mathematical reference:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="prefix">[</mo><mi>m</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">[</mo><mi>G</mi><mi>H</mi><mi>z</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>32.45</mn></mrow><annotation encoding="application/x-tex">L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45</annotation></semantics></math></p>
 <p><strong>Simplification</strong> (practical form):</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo stretchy="false" form="prefix">[</mo><mi>d</mi><mi>B</mi><mo stretchy="false" form="postfix">]</mo><mo>=</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="prefix">[</mo><mi>m</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>20</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">[</mo><mi>G</mi><mi>H</mi><mi>z</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>32.45</mn></mrow><annotation encoding="application/x-tex">L[dB] = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45</annotation></semantics></math></p>
-<h3 id="received-power-calculation">Received Power Calculation</h3>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>r</mi><mi>x</mi></mrow></msub><mo stretchy="false" form="prefix">[</mo><mi>d</mi><mi>B</mi><mi>m</mi><mo stretchy="false" form="postfix">]</mo><mo>=</mo><mi>E</mi><mi>I</mi><mi>R</mi><msub><mi>P</mi><mrow><mi>d</mi><mi>B</mi><mi>m</mi></mrow></msub><mo>−</mo><msub><mi>L</mi><mrow><mi>p</mi><mi>a</mi><mi>t</mi><mi>h</mi></mrow></msub><mo>−</mo><msub><mi>L</mi><mrow><mi>w</mi><mi>a</mi><mi>l</mi><mi>l</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">P_{rx}[dBm] = EIRP_{dBm} - L_{path} - L_{walls}</annotation></semantics></math></p>
+<h3 id="legacy-received-power-calculation">Legacy Received Power
+Calculation</h3>
+<p>The selectable compatibility mode is <code>legacy_fspl_walls</code>
+(historically reported as <code>fspl-walls-2p5d-v3</code>). Its link
+budget is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>r</mi><mi>x</mi></mrow></msub><mo stretchy="false" form="prefix">[</mo><mi>d</mi><mi>B</mi><mi>m</mi><mo stretchy="false" form="postfix">]</mo><mo>=</mo><msub><mi>P</mi><mrow><mi>t</mi><mi>x</mi></mrow></msub><mo>+</mo><msub><mi>G</mi><mrow><mi>t</mi><mi>x</mi></mrow></msub><mo>−</mo><msub><mi>L</mi><mrow><mi>s</mi><mi>y</mi><mi>s</mi><mi>t</mi><mi>e</mi><mi>m</mi></mrow></msub><mo>+</mo><mi>C</mi><mo>−</mo><msub><mi>L</mi><mrow><mi>F</mi><mi>S</mi><mi>P</mi><mi>L</mi></mrow></msub><mo>−</mo><msub><mi>L</mi><mrow><mi>b</mi><mi>u</mi><mi>i</mi><mi>l</mi><mi>d</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow></msub><mo>−</mo><msub><mi>A</mi><mrow><mi>h</mi><mi>o</mi><mi>r</mi><mi>i</mi><mi>z</mi><mi>o</mi><mi>n</mi><mi>t</mi><mi>a</mi><mi>l</mi></mrow></msub><mo>−</mo><msub><mi>A</mi><mrow><mi>v</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>i</mi><mi>c</mi><mi>a</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex">P_{rx}[dBm] = P_{tx} + G_{tx} - L_{system} + C - L_{FSPL} - L_{building} - A_{horizontal} - A_{vertical}</annotation></semantics></math></p>
 <p>Where:</p>
 <ul>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>I</mi><mi>R</mi><mi>P</mi></mrow><annotation encoding="application/x-tex">EIRP</annotation></semantics></math>
-= Transmit power plus antenna gain</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mrow><mi>p</mi><mi>a</mi><mi>t</mi><mi>h</mi></mrow></msub><annotation encoding="application/x-tex">L_{path}</annotation></semantics></math>
-= Free-space path loss (FSPL equation)</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mrow><mi>w</mi><mi>a</mi><mi>l</mi><mi>l</mi><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">L_{walls}</annotation></semantics></math>
-= Cumulative building penetration loss</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>P</mi><mrow><mi>t</mi><mi>x</mi></mrow></msub><annotation encoding="application/x-tex">P_{tx}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>G</mi><mrow><mi>t</mi><mi>x</mi></mrow></msub><annotation encoding="application/x-tex">G_{tx}</annotation></semantics></math>
+are the absolute transmit-power and antenna-gain terms</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mrow><mi>s</mi><mi>y</mi><mi>s</mi><mi>t</mi><mi>e</mi><mi>m</mi></mrow></msub><annotation encoding="application/x-tex">L_{system}</annotation></semantics></math>
+is the configured system loss and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+is the signed global calibration offset</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mrow><mi>F</mi><mi>S</mi><mi>P</mi><mi>L</mi></mrow></msub><annotation encoding="application/x-tex">L_{FSPL}</annotation></semantics></math>
+uses the slant distance between the transmitter and receiver, with
+meter/GHz units</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mrow><mi>b</mi><mi>u</mi><mi>i</mi><mi>l</mi><mi>d</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow></msub><annotation encoding="application/x-tex">L_{building}</annotation></semantics></math>
+is cumulative frequency-dependent, material-agnostic building-boundary
+loss</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>A</mi><mrow><mi>h</mi><mi>o</mi><mi>r</mi><mi>i</mi><mi>z</mi><mi>o</mi><mi>n</mi><mi>t</mi><mi>a</mi><mi>l</mi></mrow></msub><annotation encoding="application/x-tex">A_{horizontal}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>A</mi><mrow><mi>v</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>i</mi><mi>c</mi><mi>a</mi><mi>l</mi></mrow></msub><annotation encoding="application/x-tex">A_{vertical}</annotation></semantics></math>
+are relative analytic antenna-pattern attenuations</li>
 </ul>
-<p>The fast sector model does not include terrain, diffraction,
-reflection, fast fading, or multipath. The separate 2.5D path profiler
-samples optional COG/GeoTIFF terrain, building height, LOS/Fresnel
-clearance, and one explicitly selected dominant knife-edge
-approximation; it is not a full replacement for the sector engine or a
-complete ITU-R method.</p>
+<p>This compatibility mode uses horizontal building-footprint geometry
+and height-aware FSPL; it does not use terrain, building-height
+obstruction, diffraction, reflection, fast fading, or multipath. A
+positive
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+raises predicted received power by the same global dB offset. The
+separate path-profile workflow is an advanced point-to-point diagnostic
+with its own <code>path-profile-diagnostic-v1</code> contract; it does
+not alter network RF.</p>
 <h2 id="25d-point-to-point-profiles">2.5D Point-To-Point Profiles</h2>
 <p>For a selected transmitter and receiver, the engine samples a
 geodesic path at a bounded spacing. Each sample contains ground
@@ -163,14 +211,17 @@ vegetation, gas, rain, and calibration as separate signed components.
 Shadow sigma produces sensitivity bounds and is not injected as a random
 field, preserving determinism.</p>
 <p>The <code>terrain-profile</code> and <code>urban-short-range</code>
-labels enforce the published frequency ranges of <a
-href="https://www.itu.int/rec/R-REC-P.1812-8-202509-I/en">ITU-R
-P.1812-8</a> and <a
-href="https://www.itu.int/rec/R-REC-P.1411-9-201706-I/en">ITU-R
-P.1411-9</a>. The knife-edge, material, gas, and rain controls are
-informed by <a href="https://www.itu.int/rec/R-REC-P.526/en">P.526</a>,
-<a href="https://www.itu.int/rec/r-rec-p.2040/en">P.2040</a>, <a
-href="https://www.itu.int/rec/R-REC-P.676/en">P.676</a>, and <a
+labels use the current recorded scopes of <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf">ITU-R
+P.1812-8 (2025-09)</a> and <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf">ITU-R
+P.1411-13 (2025-09)</a>, while retaining A.T.O.M's existing runtime
+conditions and limits. The knife-edge, material, gas, and rain controls
+are informed by <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.526-16-202511-I!!PDF-E.pdf">P.526-16</a>,
+<a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf">P.2040-4</a>,
+<a href="https://www.itu.int/rec/R-REC-P.676/en">P.676</a>, and <a
 href="https://www.itu.int/rec/R-REC-P.838/en">P.838</a>; A.T.O.M does
 not claim full Recommendation conformance.</p>
 <h3 id="frequency-dependence">Frequency Dependence</h3>
@@ -181,15 +232,15 @@ higher loss as frequency rises, which is why mmWave and Sub-THz coverage
 shrink quickly in urban settings.</p>
 <hr />
 <h2 id="building-penetration-model">Building Penetration Model</h2>
-<h3 id="generation-specific-wall-loss">Generation-Specific Wall
-Loss</h3>
-<p>A.T.O.M uses the selected network generation to apply a fixed loss
-each time a ray crosses a building boundary. OSM building tags are still
-used for demand scoring and diagnostics, but wall penetration is
-intentionally frequency-driven in the current runtime:</p>
-<pre><code>if frequency_ghz &lt;= 3:
+<h3 id="legacy-generation-specific-wall-loss">Legacy Generation-Specific
+Wall Loss</h3>
+<p>The selectable <code>legacy_fspl_walls</code> mode applies a fixed
+loss each time a ray crosses a building boundary. OSM building tags are
+still used for demand scoring and diagnostics, but wall penetration is
+intentionally frequency-driven in that compatibility mode:</p>
+<pre><code>if frequency_ghz &lt; 10:
     loss_4g = 8 dB
-elif frequency_ghz &lt;= 40:
+elif frequency_ghz &lt; 100:
     loss_5g = 30 dB
 else:
     loss_6g = 80 dB</code></pre>
@@ -214,79 +265,84 @@ raytracer</strong>:</p>
 <li>Split the selected sector into configurable rays</li>
 <li>Split each ray into short segments</li>
 <li>Query the R-Tree for buildings intersecting each segment</li>
-<li>Apply cumulative wall loss and receiver sensitivity
-thresholding</li>
+<li>Evaluate the selected shared propagation model at each physical
+endpoint; only the explicit legacy mode applies cumulative wall dB</li>
+<li>Apply the effective per-cell receiver sensitivity threshold</li>
 <li>Color each segment by received power</li>
 <li>Serialize the segments as GeoJSON</li>
 </ol>
 <h3 id="pseudocode">Pseudocode</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> TraceSector<span class="op">(</span>tx Location<span class="op">,</span> req SimulationRequest<span class="op">)</span> GeoJSON <span class="op">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    result <span class="op">:=</span> GeoJSON<span class="op">{}</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> req<span class="op">.</span>rays <span class="op">*</span> ceil<span class="op">(</span>req<span class="op">.</span>radius_m <span class="op">/</span> <span class="dv">25</span><span class="op">)</span> <span class="op">&gt;</span> <span class="dv">25_000</span> <span class="op">{</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dt">error</span><span class="op">(</span><span class="st">&quot;simulation response feature limit exceeded&quot;</span><span class="op">)</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    maxDistance <span class="op">:=</span> min<span class="op">(</span>req<span class="op">.</span>radius_m<span class="op">,</span> sensitivityLimitedDistance<span class="op">(</span>req<span class="op">))</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> angle in sector_angles<span class="op">(</span>req<span class="op">.</span>azimuth<span class="op">,</span> req<span class="op">.</span>beam_width<span class="op">,</span> req<span class="op">.</span>rays<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        current <span class="op">:=</span> tx</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        wallLoss <span class="op">:=</span> <span class="fl">0.0</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> segmentEnd in stepped_points<span class="op">(</span>tx<span class="op">,</span> angle<span class="op">,</span> maxDistance<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            segment <span class="op">:=</span> LineSegment<span class="op">{</span>current<span class="op">,</span> segmentEnd<span class="op">}</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            intersections <span class="op">:=</span> rtree<span class="op">.</span>Query<span class="op">(</span>segment<span class="op">.</span>Bounds<span class="op">())</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> building in intersections <span class="op">{</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> segment_intersects_polygon<span class="op">(</span>segment<span class="op">,</span> building<span class="op">.</span>Polygon<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                    wallLoss <span class="op">+=</span> penetration_loss<span class="op">(</span>req<span class="op">.</span>frequency_ghz<span class="op">)</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            distance <span class="op">:=</span> haversine_distance<span class="op">(</span>tx<span class="op">,</span> segmentEnd<span class="op">)</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>            fspl <span class="op">:=</span> <span class="dv">20</span><span class="op">*</span>log10<span class="op">(</span>distance<span class="op">)</span> <span class="op">+</span> <span class="dv">20</span><span class="op">*</span>log10<span class="op">(</span>req<span class="op">.</span>frequency_ghz<span class="op">)</span> <span class="op">+</span> <span class="fl">32.45</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>            rxPower <span class="op">:=</span> EIRP_DBM <span class="op">-</span> fspl <span class="op">-</span> wallLoss</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> rxPower <span class="op">&lt;</span> ReceiverSensitivityDBm <span class="op">{</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>            result<span class="op">.</span>Add<span class="op">(</span>LineString<span class="op">{</span>current<span class="op">,</span> segmentEnd<span class="op">},</span> rxPower<span class="op">)</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>            current <span class="op">=</span> segmentEnd</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> TraceSector<span class="op">(</span>tx Location<span class="op">,</span> req SimulationRequest<span class="op">)</span> GeoJSON <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    result <span class="op">:=</span> GeoJSON<span class="op">{}</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> req<span class="op">.</span>rays <span class="op">*</span> ceil<span class="op">(</span>req<span class="op">.</span>radius_m <span class="op">/</span> <span class="dv">25</span><span class="op">)</span> <span class="op">&gt;</span> <span class="dv">25_000</span> <span class="op">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dt">error</span><span class="op">(</span><span class="st">&quot;simulation response feature limit exceeded&quot;</span><span class="op">)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    maxDistance <span class="op">:=</span> req<span class="op">.</span>radius_m</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    receiverSensitivity <span class="op">:=</span> effectiveReceiverSensitivity<span class="op">(</span>req<span class="op">)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> angle in sector_angles<span class="op">(</span>req<span class="op">.</span>azimuth<span class="op">,</span> req<span class="op">.</span>beam_width<span class="op">,</span> req<span class="op">.</span>rays<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        current <span class="op">:=</span> tx</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        wallLoss <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> segmentEnd in stepped_points<span class="op">(</span>tx<span class="op">,</span> angle<span class="op">,</span> maxDistance<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>            segment <span class="op">:=</span> LineSegment<span class="op">{</span>current<span class="op">,</span> segmentEnd<span class="op">}</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            intersections <span class="op">:=</span> rtree<span class="op">.</span>Query<span class="op">(</span>segment<span class="op">.</span>Bounds<span class="op">())</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> building in intersections <span class="op">{</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> segment_intersects_polygon<span class="op">(</span>segment<span class="op">,</span> building<span class="op">.</span>Polygon<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                    wallLoss <span class="op">+=</span> penetration_loss<span class="op">(</span>req<span class="op">.</span>frequency_ghz<span class="op">)</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            distance <span class="op">:=</span> haversine_distance<span class="op">(</span>tx<span class="op">,</span> segmentEnd<span class="op">)</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            fspl <span class="op">:=</span> <span class="dv">20</span><span class="op">*</span>log10<span class="op">(</span>distance<span class="op">)</span> <span class="op">+</span> <span class="dv">20</span><span class="op">*</span>log10<span class="op">(</span>req<span class="op">.</span>frequency_ghz<span class="op">)</span> <span class="op">+</span> <span class="fl">32.45</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>            rxPower <span class="op">:=</span> req<span class="op">.</span>tx_power_dbm <span class="op">+</span> req<span class="op">.</span>antenna_gain_dbi <span class="op">-</span> req<span class="op">.</span>system_loss_db <span class="op">+</span> req<span class="op">.</span>calibration_offset_db <span class="op">-</span> fspl <span class="op">-</span> wallLoss <span class="op">-</span> horizontalPatternLoss<span class="op">(</span>req<span class="op">)</span> <span class="op">-</span> verticalPatternLoss<span class="op">(</span>req<span class="op">)</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> rxPower <span class="op">&lt;=</span> receiverSensitivity <span class="op">{</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>            result<span class="op">.</span>Add<span class="op">(</span>LineString<span class="op">{</span>current<span class="op">,</span> segmentEnd<span class="op">},</span> rxPower<span class="op">)</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>            current <span class="op">=</span> segmentEnd</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3 id="computational-geometry-polygon-intersection">Computational
 Geometry: Polygon Intersection</h3>
 <p><strong>Problem</strong>: Does a ray (line segment) intersect a
 building (polygon)?</p>
-<p><strong>Solution</strong>: Use <strong>separating axis
-theorem</strong> (SAT):</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> SegmentIntersectsPolygon<span class="op">(</span>segment Line<span class="op">,</span> polygon Polygon<span class="op">)</span> <span class="dt">bool</span> <span class="op">{</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Test segment against all polygon edges</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="bu">len</span><span class="op">(</span>polygon<span class="op">.</span>Edges<span class="op">);</span> i<span class="op">++</span> <span class="op">{</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        edge <span class="op">:=</span> polygon<span class="op">.</span>Edges<span class="op">[</span>i<span class="op">]</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> SegmentIntersectsSegment<span class="op">(</span>segment<span class="op">,</span> edge<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="ot">true</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Test if segment start/end inside polygon</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> PointInPolygon<span class="op">(</span>segment<span class="op">.</span>Start<span class="op">,</span> polygon<span class="op">)</span> <span class="op">||</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>           PointInPolygon<span class="op">(</span>segment<span class="op">.</span>End<span class="op">,</span> polygon<span class="op">)</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> SegmentIntersectsSegment<span class="op">(</span>s1<span class="op">,</span> s2 Line<span class="op">)</span> <span class="dt">bool</span> <span class="op">{</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Standard 2D line intersection test</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">// (Cross product method)</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">:=</span> cross_product<span class="op">(</span>s2<span class="op">.</span>Start <span class="op">-</span> s1<span class="op">.</span>Start<span class="op">,</span> s1<span class="op">.</span>Dir<span class="op">)</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">:=</span> cross_product<span class="op">(</span>s2<span class="op">.</span>End <span class="op">-</span> s1<span class="op">.</span>Start<span class="op">,</span> s1<span class="op">.</span>Dir<span class="op">)</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    d3 <span class="op">:=</span> cross_product<span class="op">(</span>s1<span class="op">.</span>Start <span class="op">-</span> s2<span class="op">.</span>Start<span class="op">,</span> s2<span class="op">.</span>Dir<span class="op">)</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    d4 <span class="op">:=</span> cross_product<span class="op">(</span>s1<span class="op">.</span>End <span class="op">-</span> s2<span class="op">.</span>Start<span class="op">,</span> s2<span class="op">.</span>Dir<span class="op">)</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">((</span>d1 <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d2 <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span>d1 <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d2 <span class="op">&gt;</span> <span class="dv">0</span><span class="op">))</span> <span class="op">&amp;&amp;</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>           <span class="op">((</span>d3 <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d4 <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span>d3 <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d4 <span class="op">&gt;</span> <span class="dv">0</span><span class="op">))</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Solution</strong>: Query the R-Tree's segment bounding box,
+then test each candidate polygon with exact segment-edge intersections
+and point-in-polygon checks. Duplicate boundary points for the same
+building are collapsed within the current 5 cm tolerance, and
+intersections are processed in distance order.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> SegmentIntersectsPolygon<span class="op">(</span>segment Line<span class="op">,</span> polygon Polygon<span class="op">)</span> <span class="dt">bool</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Test the segment against all polygon edges</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="bu">len</span><span class="op">(</span>polygon<span class="op">.</span>Edges<span class="op">);</span> i<span class="op">++</span> <span class="op">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        edge <span class="op">:=</span> polygon<span class="op">.</span>Edges<span class="op">[</span>i<span class="op">]</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> SegmentIntersectsSegment<span class="op">(</span>segment<span class="op">,</span> edge<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="ot">true</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Test if segment start/end is inside the polygon</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> PointInPolygon<span class="op">(</span>segment<span class="op">.</span>Start<span class="op">,</span> polygon<span class="op">)</span> <span class="op">||</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>           PointInPolygon<span class="op">(</span>segment<span class="op">.</span>End<span class="op">,</span> polygon<span class="op">)</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> SegmentIntersectsSegment<span class="op">(</span>s1<span class="op">,</span> s2 Line<span class="op">)</span> <span class="dt">bool</span> <span class="op">{</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Standard 2D line intersection test</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">// (Cross product method)</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    d1 <span class="op">:=</span> cross_product<span class="op">(</span>s2<span class="op">.</span>Start <span class="op">-</span> s1<span class="op">.</span>Start<span class="op">,</span> s1<span class="op">.</span>Dir<span class="op">)</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    d2 <span class="op">:=</span> cross_product<span class="op">(</span>s2<span class="op">.</span>End <span class="op">-</span> s1<span class="op">.</span>Start<span class="op">,</span> s1<span class="op">.</span>Dir<span class="op">)</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    d3 <span class="op">:=</span> cross_product<span class="op">(</span>s1<span class="op">.</span>Start <span class="op">-</span> s2<span class="op">.</span>Start<span class="op">,</span> s2<span class="op">.</span>Dir<span class="op">)</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    d4 <span class="op">:=</span> cross_product<span class="op">(</span>s1<span class="op">.</span>End <span class="op">-</span> s2<span class="op">.</span>Start<span class="op">,</span> s2<span class="op">.</span>Dir<span class="op">)</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">((</span>d1 <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d2 <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span>d1 <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d2 <span class="op">&gt;</span> <span class="dv">0</span><span class="op">))</span> <span class="op">&amp;&amp;</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>           <span class="op">((</span>d3 <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d4 <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span>d3 <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d4 <span class="op">&gt;</span> <span class="dv">0</span><span class="op">))</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><strong>Complexity</strong>: O(log n) per ray thanks to R-Tree
 spatial indexing.</p>
 <hr />
@@ -314,25 +370,25 @@ tree:</p>
 └─ Node C (covers buildings 11-15)
    └─ Building 11 bbox</code></pre>
 <h3 id="query-algorithm">Query Algorithm</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> RTtree<span class="op">.</span>Query<span class="op">(</span>ray LineSegment<span class="op">)</span> <span class="op">[]</span>Building <span class="op">{</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    candidates <span class="op">:=</span> <span class="op">[]</span>Building<span class="op">{}</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Recursively check which nodes overlap with ray</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">func</span> traverse<span class="op">(</span>node <span class="op">*</span>RNode<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> node<span class="op">.</span>bbox<span class="op">.</span>Intersects<span class="op">(</span>ray<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> node<span class="op">.</span>IsLeaf<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                candidates<span class="op">.</span><span class="bu">append</span><span class="op">(</span>node<span class="op">.</span>buildings<span class="op">)</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> child in node<span class="op">.</span>Children <span class="op">{</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                    traverse<span class="op">(</span>child<span class="op">)</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    traverse<span class="op">(</span>rtree<span class="op">.</span>Root<span class="op">)</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> candidates</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> RTtree<span class="op">.</span>Query<span class="op">(</span>ray LineSegment<span class="op">)</span> <span class="op">[]</span>Building <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    candidates <span class="op">:=</span> <span class="op">[]</span>Building<span class="op">{}</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Recursively check which nodes overlap with ray</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">func</span> traverse<span class="op">(</span>node <span class="op">*</span>RNode<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> node<span class="op">.</span>bbox<span class="op">.</span>Intersects<span class="op">(</span>ray<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> node<span class="op">.</span>IsLeaf<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                candidates<span class="op">.</span><span class="bu">append</span><span class="op">(</span>node<span class="op">.</span>buildings<span class="op">)</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> child in node<span class="op">.</span>Children <span class="op">{</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                    traverse<span class="op">(</span>child<span class="op">)</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    traverse<span class="op">(</span>rtree<span class="op">.</span>Root<span class="op">)</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> candidates</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><strong>Result</strong>: Typically 5-20 building candidates per ray
 (vs 12,000 total buildings).</p>
 <hr />
@@ -348,19 +404,21 @@ Coverage: 12.5° to 77.5°
         /─────────────\
        /               \
       |    Main Lobe     |
-      |   (Gain = 0 dBi)  |
+      | (relative loss=0dB)|
        \               /
         \─────────────/
              θ = 65°</code></pre>
 <h3 id="eligibility-function">Eligibility Function</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> IsInsideSector<span class="op">(</span>direction <span class="dt">float64</span><span class="op">,</span> antennaAzimuth <span class="dt">float64</span><span class="op">,</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                    beamWidth <span class="dt">float64</span><span class="op">)</span> <span class="dt">bool</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    offset <span class="op">:=</span> abs<span class="op">(</span>normalize_angle<span class="op">(</span>direction <span class="op">-</span> antennaAzimuth<span class="op">))</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> offset <span class="op">&lt;=</span> beamWidth <span class="op">/</span> <span class="dv">2</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> IsInsideSector<span class="op">(</span>direction <span class="dt">float64</span><span class="op">,</span> antennaAzimuth <span class="dt">float64</span><span class="op">,</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                    beamWidth <span class="dt">float64</span><span class="op">)</span> <span class="dt">bool</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    offset <span class="op">:=</span> abs<span class="op">(</span>normalize_angle<span class="op">(</span>direction <span class="op">-</span> antennaAzimuth<span class="op">))</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> offset <span class="op">&lt;=</span> beamWidth <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>Samples outside the configured sector or radius do not contribute.
-Version 1 does not model sidelobes or a continuous antenna gain
-pattern.</p>
+Configured antenna gain is applied separately in the link budget; the
+diagram's zero value means zero relative preset attenuation at
+boresight. Version 1 does not model sidelobes or a continuous vendor
+antenna diagram.</p>
 <hr />
 <h2 id="deterministic-optimization-sweep--score-algorithm">Deterministic
 Optimization: Sweep &amp; Score Algorithm</h2>
@@ -369,95 +427,96 @@ Optimization: Sweep &amp; Score Algorithm</h2>
 demand-weighted coverage</p>
 <p><strong>Constraints</strong>:</p>
 <ul>
-<li>Distance range: 50 m to 5 km</li>
+<li>Distance range: 25 m to 5 km</li>
 <li>Beam width: user configured</li>
 <li>Frequency: user selected</li>
 </ul>
 <h3 id="algorithm">Algorithm</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> OptimizeAzimuth<span class="op">(</span>tx Location<span class="op">,</span> request SimulationRequest<span class="op">)</span> <span class="dt">float64</span> <span class="op">{</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    bestAzimuth <span class="op">:=</span> <span class="fl">0.0</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    bestScore <span class="op">:=</span> <span class="fl">0.0</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Sweep all azimuths in 10° increments</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> azimuth <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> azimuth <span class="op">&lt;</span> <span class="dv">360</span><span class="op">;</span> azimuth <span class="op">+=</span> <span class="dv">10</span> <span class="op">{</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Run simulation at this azimuth</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        rays <span class="op">:=</span> TraceSector<span class="op">(</span>tx<span class="op">,</span> request<span class="op">.</span>withAzimuth<span class="op">(</span>azimuth<span class="op">))</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Track unique buildings reached by the sector</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        demandScore <span class="op">:=</span> <span class="fl">0.0</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        residentialScore <span class="op">:=</span> <span class="fl">0.0</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        hitBuildings <span class="op">:=</span> NewSet<span class="op">()</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> ray in rays <span class="op">{</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> building in ray<span class="op">.</span>hitBuildings <span class="op">{</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> hitBuildings<span class="op">.</span>add<span class="op">(</span>building<span class="op">.</span>id<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>                    demandScore <span class="op">+=</span> building<span class="op">.</span>demandWeight <span class="op">*</span> <span class="dv">10000</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>                    residentialScore <span class="op">+=</span> building<span class="op">.</span>residentialDemand <span class="op">*</span> <span class="dv">10000</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Coverage is capped and used as a tie-breaker</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        coverageTieBreaker <span class="op">:=</span> <span class="fl">0.0</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> ray in rays <span class="op">{</span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>            coverageTieBreaker <span class="op">+=</span> min<span class="op">(</span>ray<span class="op">.</span>distance<span class="op">,</span> <span class="dv">500</span><span class="op">)</span> <span class="op">/</span> <span class="dv">500</span> <span class="op">*</span> <span class="dv">100</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        score <span class="op">:=</span> demandScore <span class="op">+</span> residentialScore <span class="op">+</span> coverageTieBreaker</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Track best</span></span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> score <span class="op">&gt;</span> bestScore <span class="op">{</span></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>            bestScore <span class="op">=</span> score</span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>            bestAzimuth <span class="op">=</span> azimuth</span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bestAzimuth</span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode go"><code class="sourceCode go"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> OptimizeAzimuth<span class="op">(</span>tx Location<span class="op">,</span> request SimulationRequest<span class="op">)</span> <span class="dt">float64</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    bestAzimuth <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    bestScore <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Sweep all azimuths in 10° increments</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> azimuth <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> azimuth <span class="op">&lt;</span> <span class="dv">360</span><span class="op">;</span> azimuth <span class="op">+=</span> <span class="dv">10</span> <span class="op">{</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Run simulation at this azimuth</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        rays <span class="op">:=</span> TraceSector<span class="op">(</span>tx<span class="op">,</span> request<span class="op">.</span>withAzimuth<span class="op">(</span>azimuth<span class="op">))</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Track unique buildings reached by the sector</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        demandScore <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        residentialScore <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        hitBuildings <span class="op">:=</span> NewSet<span class="op">()</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> ray in rays <span class="op">{</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> building in ray<span class="op">.</span>hitBuildings <span class="op">{</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> hitBuildings<span class="op">.</span>add<span class="op">(</span>building<span class="op">.</span>id<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>                    demandScore <span class="op">+=</span> building<span class="op">.</span>demandWeight <span class="op">*</span> <span class="dv">10000</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>                    residentialScore <span class="op">+=</span> building<span class="op">.</span>residentialDemand <span class="op">*</span> <span class="dv">10000</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Coverage is capped and used as a tie-breaker</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        coverageTieBreaker <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> ray in rays <span class="op">{</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>            coverageTieBreaker <span class="op">+=</span> min<span class="op">(</span>ray<span class="op">.</span>distance<span class="op">,</span> <span class="dv">500</span><span class="op">)</span> <span class="op">/</span> <span class="dv">500</span> <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        score <span class="op">:=</span> demandScore <span class="op">+</span> residentialScore <span class="op">+</span> coverageTieBreaker</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Track best</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> score <span class="op">&gt;</span> bestScore <span class="op">{</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>            bestScore <span class="op">=</span> score</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>            bestAzimuth <span class="op">=</span> azimuth</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bestAzimuth</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3 id="complexity-analysis">Complexity Analysis</h3>
 <ul>
-<li><strong>Loop iterations</strong>: 360° / 5° = 72</li>
+<li><strong>Loop iterations</strong>: 360° / 10° = 36</li>
 <li><strong>Per iteration</strong>:
 <ul>
 <li>Ray tracing: O(90,000 rays × log n intersections) ~1 second</li>
 <li>Coverage calculation: O(90,000)</li>
 </ul></li>
-<li><strong>Total time</strong>: ~72 seconds (naive)</li>
+<li><strong>Total time</strong>: ~36 seconds (naive)</li>
 <li><strong>Optimized time</strong>: ~250 ms (with parallelization)</li>
 </ul>
 <h3 id="parallelization">Parallelization</h3>
 <p>Go's Goroutines enable <strong>embarrassingly parallel</strong>
 optimization:</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Create worker pool</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Job <span class="kw">struct</span> <span class="op">{</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    azimuth <span class="dt">float64</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Result <span class="kw">struct</span> <span class="op">{</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    azimuth <span class="dt">float64</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    coverage <span class="dt">float64</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Dispatch all azimuths to workers</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>jobs <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> Job<span class="op">,</span> <span class="dv">72</span><span class="op">)</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>results <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> Result<span class="op">,</span> <span class="dv">72</span><span class="op">)</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co">// 4 workers process in parallel</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> w <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> w <span class="op">&lt;=</span> <span class="dv">4</span><span class="op">;</span> w<span class="op">++</span> <span class="op">{</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">go</span> worker<span class="op">(</span>jobs<span class="op">,</span> results<span class="op">)</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> azimuth <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> azimuth <span class="op">&lt;</span> <span class="dv">360</span><span class="op">;</span> azimuth <span class="op">+=</span> <span class="dv">5</span> <span class="op">{</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    jobs <span class="op">&lt;-</span> Job<span class="op">{</span>azimuth<span class="op">}</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co">// Collect results</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;=</span> <span class="dv">72</span><span class="op">;</span> i<span class="op">++</span> <span class="op">{</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    result <span class="op">:=</span> <span class="op">&lt;-</span>results</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> result<span class="op">.</span>coverage <span class="op">&gt;</span> bestCoverage <span class="op">{</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        bestCoverage <span class="op">=</span> result<span class="op">.</span>coverage</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        bestAzimuth <span class="op">=</span> result<span class="op">.</span>azimuth</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode go"><code class="sourceCode go"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Create worker pool</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Job <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    azimuth <span class="dt">float64</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Result <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    azimuth <span class="dt">float64</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    coverage <span class="dt">float64</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Dispatch all azimuths to workers</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>jobs <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> Job<span class="op">,</span> <span class="dv">36</span><span class="op">)</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>results <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> Result<span class="op">,</span> <span class="dv">36</span><span class="op">)</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co">// 4 workers process in parallel</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> w <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> w <span class="op">&lt;=</span> <span class="dv">4</span><span class="op">;</span> w<span class="op">++</span> <span class="op">{</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">go</span> worker<span class="op">(</span>jobs<span class="op">,</span> results<span class="op">)</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> azimuth <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> azimuth <span class="op">&lt;</span> <span class="dv">360</span><span class="op">;</span> azimuth <span class="op">+=</span> <span class="dv">10</span> <span class="op">{</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    jobs <span class="op">&lt;-</span> Job<span class="op">{</span>azimuth<span class="op">}</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co">// Collect results</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;=</span> <span class="dv">36</span><span class="op">;</span> i<span class="op">++</span> <span class="op">{</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    result <span class="op">:=</span> <span class="op">&lt;-</span>results</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> result<span class="op">.</span>coverage <span class="op">&gt;</span> bestCoverage <span class="op">{</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        bestCoverage <span class="op">=</span> result<span class="op">.</span>coverage</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        bestAzimuth <span class="op">=</span> result<span class="op">.</span>azimuth</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><strong>Result</strong>: 4× speedup on quad-core machine.</p>
 <h2 id="network-objective-model">Network Objective Model</h2>
 <p>Network azimuth optimization keeps the existing RF evaluation and

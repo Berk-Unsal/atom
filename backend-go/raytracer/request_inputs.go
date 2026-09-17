@@ -14,6 +14,7 @@ type StaticSimulationRequestInput struct {
 	TxPowerDBm          *float64            `json:"tx_power_dbm"`
 	AzimuthDeg          *float64            `json:"azimuth"`
 	BeamWidthDeg        *float64            `json:"beam_width"`
+	PropagationModelID  *string             `json:"propagation_model"`
 	CalibrationOffsetDB *float64            `json:"calibration_offset_db"`
 	RFProfile           *CellRFProfileInput `json:"rf_profile"`
 }
@@ -33,6 +34,7 @@ type NetworkOptimizationRequestInput struct {
 	FrequencyGHz        *float64            `json:"frequency_ghz"`
 	TxPowerDBm          *float64            `json:"tx_power_dbm"`
 	BeamWidthDeg        *float64            `json:"beam_width"`
+	PropagationModelID  *string             `json:"propagation_model"`
 	CalibrationOffsetDB *float64            `json:"calibration_offset_db"`
 	Optimization        *OptimizationConfig `json:"optimization"`
 }
@@ -44,6 +46,7 @@ type InterferenceRequestInput struct {
 	FrequencyGHz        *float64            `json:"frequency_ghz"`
 	TxPowerDBm          *float64            `json:"tx_power_dbm"`
 	BeamWidthDeg        *float64            `json:"beam_width"`
+	PropagationModelID  *string             `json:"propagation_model"`
 	BandwidthMHz        *float64            `json:"bandwidth_mhz"`
 	LoadFactor          *float64            `json:"load_factor"`
 	ReuseFactor         *int                `json:"reuse_factor"`
@@ -68,7 +71,7 @@ func (input StaticSimulationRequestInput) ToRequest() StaticSimulationRequest {
 	legacyTxPower := valueOr(input.TxPowerDBm, DefaultTxPowerDBm)
 	legacyRadius := valueOr(input.RadiusMeters, DefaultRadiusMeters)
 	legacyBeamWidth := valueOr(input.BeamWidthDeg, DefaultBeamWidthDeg)
-	defaults := DefaultCellRFProfile(
+	defaults := DefaultPlanningCellRFProfile(
 		NetworkTechnologyForFrequency(frequencyGHz),
 		frequencyGHz,
 		legacyTxPower,
@@ -82,6 +85,9 @@ func (input StaticSimulationRequestInput) ToRequest() StaticSimulationRequest {
 	defaults.TxPowerDBm = legacyTxPower
 	defaults.RadiusMeters = legacyRadius
 	defaults.BeamWidthDeg = legacyBeamWidth
+	if input.PropagationModelID != nil {
+		defaults.PropagationModelID = strings.ToLower(strings.TrimSpace(*input.PropagationModelID))
+	}
 	profile := input.RFProfile.WithDefaults(defaults)
 	return StaticSimulationRequest{
 		TowerLon:            valueOr(input.TowerLon, 0),
@@ -99,7 +105,7 @@ func (input StaticSimulationRequestInput) ToRequest() StaticSimulationRequest {
 
 func (input NetworkOptimizationRequestInput) ToRequest() NetworkOptimizationRequest {
 	frequencyGHz := valueOr(input.FrequencyGHz, DefaultFrequencyGHz)
-	defaults := DefaultCellRFProfile(
+	defaults := DefaultPlanningCellRFProfile(
 		NetworkTechnologyForFrequency(frequencyGHz),
 		frequencyGHz,
 		valueOr(input.TxPowerDBm, DefaultTxPowerDBm),
@@ -113,6 +119,9 @@ func (input NetworkOptimizationRequestInput) ToRequest() NetworkOptimizationRequ
 	defaults.TxPowerDBm = valueOr(input.TxPowerDBm, DefaultTxPowerDBm)
 	defaults.RadiusMeters = valueOr(input.RadiusMeters, DefaultRadiusMeters)
 	defaults.BeamWidthDeg = valueOr(input.BeamWidthDeg, DefaultBeamWidthDeg)
+	if input.PropagationModelID != nil {
+		defaults.PropagationModelID = strings.ToLower(strings.TrimSpace(*input.PropagationModelID))
+	}
 	towers := make([]NetworkTowerRequest, 0, len(input.Towers))
 	for _, tower := range input.Towers {
 		towers = append(towers, NetworkTowerRequest{
@@ -159,7 +168,7 @@ func (input InterferenceRequestInput) ToRequest() InterferenceRequest {
 	globalBandwidth := valueOr(input.BandwidthMHz, defaultBandwidth)
 	globalLoad := valueOr(input.LoadFactor, DefaultInterferenceLoadFactor)
 	globalReuse := valueOr(input.ReuseFactor, DefaultInterferenceReuseFactor)
-	defaults := DefaultCellRFProfile(networkTech, frequencyGHz, globalPower, globalRadius, globalBeam, globalBandwidth, globalLoad, globalReuse)
+	defaults := DefaultPlanningCellRFProfile(networkTech, frequencyGHz, globalPower, globalRadius, globalBeam, globalBandwidth, globalLoad, globalReuse)
 	defaults.FrequencyGHz = frequencyGHz
 	defaults.TxPowerDBm = globalPower
 	defaults.RadiusMeters = globalRadius
@@ -167,6 +176,9 @@ func (input InterferenceRequestInput) ToRequest() InterferenceRequest {
 	defaults.BandwidthMHz = globalBandwidth
 	defaults.LoadFactor = globalLoad
 	defaults.ReuseFactor = globalReuse
+	if input.PropagationModelID != nil {
+		defaults.PropagationModelID = strings.ToLower(strings.TrimSpace(*input.PropagationModelID))
+	}
 	towers := make([]InterferenceTowerRequest, 0, len(input.Towers))
 	for index, tower := range input.Towers {
 		profileDefaults := defaults

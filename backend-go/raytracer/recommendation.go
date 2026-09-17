@@ -36,11 +36,14 @@ type SiteRecommendationRequest struct {
 }
 
 type SiteRecommendationResponse struct {
-	Baseline            NetworkOptimizationStats        `json:"baseline"`
-	CandidatesEvaluated int                             `json:"candidates_evaluated"`
-	Recommendations     []SiteRecommendation            `json:"recommendations"`
-	GeoJSON             RecommendationFeatureCollection `json:"geojson"`
-	Notes               []string                        `json:"notes"`
+	Baseline              NetworkOptimizationStats        `json:"baseline"`
+	CandidatesEvaluated   int                             `json:"candidates_evaluated"`
+	Recommendations       []SiteRecommendation            `json:"recommendations"`
+	GeoJSON               RecommendationFeatureCollection `json:"geojson"`
+	Notes                 []string                        `json:"notes"`
+	RequestDefaults       RFRequestDefaults               `json:"request_defaults"`
+	EffectiveCellProfiles []EffectiveCellRFProfile        `json:"effective_cell_profiles"`
+	RFContract            RFContractMetadata              `json:"rf_contract"`
 }
 
 type SiteRecommendation struct {
@@ -282,10 +285,13 @@ func RecommendSitesContext(ctx context.Context, req SiteRecommendationRequest, t
 		})
 	}
 	return SiteRecommendationResponse{
-		Baseline:            baseline.rounded(),
-		CandidatesEvaluated: len(evaluationCandidates),
-		Recommendations:     recommendations,
-		GeoJSON:             RecommendationFeatureCollection{Type: "FeatureCollection", Features: features},
+		Baseline:              baseline.rounded(),
+		CandidatesEvaluated:   len(evaluationCandidates),
+		Recommendations:       recommendations,
+		GeoJSON:               RecommendationFeatureCollection{Type: "FeatureCollection", Features: features},
+		RequestDefaults:       networkRequestDefaults(req.Network),
+		EffectiveCellProfiles: effectiveCellRFProfiles(req.Network, azimuths),
+		RFContract:            rfContractForProfile(&req.Network.RFProfile, req.Network.CalibrationOffsetDB),
 		Notes: []string{
 			"Candidates are known planning records, not approved deployment sites.",
 			"Candidate scoring excludes interference; analyze SINR after applying a recommendation.",

@@ -127,7 +127,7 @@ evidence, reports, and supported radio technologies.</p>
 
       <div class="prose">
 <p>A.T.O.M is a local-first, deterministic RF planning workspace for
-comparing urban 4G, 5G, and exploratory 6G sector plans. Its outputs are
+comparing urban 4G, 5G, and a 6G research profile. Its outputs are
 planning estimates, not UE or PHY measurements.</p>
 <h2 id="focused-planning-workspace">Focused Planning Workspace</h2>
 <ul>
@@ -206,23 +206,32 @@ explicitly.</p>
 <td>Directional high-capacity planning</td>
 </tr>
 <tr>
-<td>6G Sub-THz research overlay</td>
+<td>6G research profile</td>
 <td style="text-align: right;">140 GHz</td>
-<td>Exploratory propagation comparison</td>
+<td>Comparative planning overlay; not standardized project-level RF
+quality</td>
 </tr>
 </tbody>
 </table>
-<p>The backend uses free-space path loss with meter/GHz units:</p>
+<p>The backend exposes explicit propagation modes.
+<code>urban_short_range</code> is the default at 2.6/28 GHz,
+<code>legacy_fspl_walls</code> remains selectable, and
+<code>research_sub_thz</code> is the 140 GHz research-only profile. The
+legacy mode uses free-space path loss with meter/GHz units:</p>
 <pre class="text"><code>FSPL(dB) = 32.45 + 20log10(distance_m) + 20log10(frequency_GHz)</code></pre>
-<p>It then applies configured transmit power, antenna gain, beam/radius
-eligibility, and cumulative frequency-dependent wall loss. Rays are
-segmented and returned as GeoJSON with modeled received power.</p>
-<p>The fast sector and surface models remain FSPL-plus-walls estimators.
-A separate 2.5D point-to-point workflow adds terrain/building profiles,
-LOS and Fresnel classification, material-specific wall planning losses,
-and an explicitly selected single knife-edge approximation. It does not
-claim full ITU-R Recommendation conformance or simulate reflection-heavy
-multipath, fast fading, MIMO scheduling, or uplink behavior.</p>
+<p>The urban mode applies the 3GPP UMa LOS/NLOS median path-loss formula
+after shared 2D footprint classification; it does not add the legacy
+wall heuristic to empirical NLOS. Every mode applies configured transmit
+power, antenna gain, beam/radius eligibility, and antenna-pattern terms.
+Rays are segmented and returned as GeoJSON with model identity and
+explainability metadata.</p>
+<p>The selected model does not use terrain/building-height obstruction,
+diffraction, reflection-heavy multipath, fast fading, MIMO scheduling,
+or uplink behavior. A separate <code>path-profile-diagnostic-v1</code>
+point-to-point workflow adds terrain/building profiles, LOS and Fresnel
+classification, material-specific wall planning losses, and an
+explicitly selected single knife-edge approximation; its result is
+isolated from network RF. See the Concept 4D design note.</p>
 <h3 id="25d-path-profiles-and-fidelity">2.5D Path Profiles And
 Fidelity</h3>
 <ul>
@@ -233,12 +242,12 @@ transmitter/receiver height above ground, direct LOS, 60% first-Fresnel
 clearance, and a dominant obstruction.</li>
 <li>Provides <code>terrain-profile</code> (30 MHz–6 GHz),
 <code>urban-short-range</code> (300 MHz–100 GHz), and explicitly
-out-of-range research profiles. These applicability labels follow the
-published ranges of <a
-href="https://www.itu.int/rec/R-REC-P.1812-8-202509-I/en">ITU-R
-P.1812-8</a> and <a
-href="https://www.itu.int/rec/R-REC-P.1411-9-201706-I/en">ITU-R
-P.1411-9</a>; the implementation is an inspectable planning
+out-of-range research profiles. These applicability labels are tracked
+against <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf">ITU-R
+P.1812-8 (2025-09)</a> and <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf">ITU-R
+P.1411-13 (2025-09)</a>; the implementation is an inspectable planning
 approximation, not either complete method.</li>
 <li>Exposes free-space, antenna-pattern, system, wall, diffraction,
 clutter, vegetation, atmospheric-gas, rain, calibration, and
@@ -291,6 +300,9 @@ GIS Interchange</h2>
 <ul>
 <li>Evaluates bounded regular received-power grids with a 100,000-cell
 ceiling and produces unsmoothed marching-square isolines.</li>
+<li>Returns a raw single-cell received-power surface: valid cells below
+receiver sensitivity remain numeric, while NoData is reserved for
+radius/beam geometry exclusion.</li>
 <li>Renders the raster below the cell/measurement overlays with opacity
 and minimum-display-threshold controls.</li>
 <li>Exports the regular grid as float32 EPSG:4326 GeoTIFF, valid grid
@@ -322,6 +334,10 @@ addition.</li>
 statistics.</li>
 <li>SINR, RSRP, and RSRQ map surfaces with threshold-specific
 legends.</li>
+<li>Uses separate serviceability thresholds
+(<code>RSRP &gt;= -110 dBm</code>, <code>SINR &gt;= 0 dB</code>,
+<code>RSRQ &gt;= -20 dB</code>), not receiver sensitivity or the
+<code>-100 dBm</code> building-service threshold.</li>
 </ul>
 <p>Near-equal co-channel powers can correctly produce SINR near
 <code>0 dB</code>; the Inspector explains this and other no-signal or
@@ -415,7 +431,10 @@ Open5GS deployment.</p>
 <h2 id="reproducibility-and-reports">Reproducibility And Reports</h2>
 <ul>
 <li><code>/api/meta</code> exposes application version, build commit,
-model version, supported technologies, and active dataset identity.</li>
+default propagation model and catalog, the RF semantic contract,
+supported technology capabilities, and active dataset identity.</li>
+<li>Network responses preserve request-level defaults alongside
+normalized effective per-cell RF profiles.</li>
 <li>Scenarios and reports retain exact request inputs and runtime
 metadata.</li>
 <li>Markdown and printable PDF reports include RF assumptions, radio

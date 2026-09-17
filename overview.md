@@ -51,7 +51,7 @@ A.T.O.M solves these by:
 
 A.T.O.M keeps model choice and applicability visible at every RF endpoint:
 
-- **2.6 GHz and 28 GHz**: The default `urban_short_range` profile uses 3GPP UMa median LOS/NLOS path loss with a shared 2D footprint classifier.
+- **2.6 GHz and 28 GHz**: The default `urban_short_range` profile uses 3GPP UMa median LOS/NLOS path loss with the shared `footprint-height-los-v1` centerline classifier and explicit height provenance.
 - **Legacy compatibility**: `legacy_fspl_walls` remains selectable and is the explicit fallback when urban inputs are outside scope.
 - **140 GHz**: `research_sub_thz` is explicitly research-only; it is not presented as a validated sub-THz channel model.
 

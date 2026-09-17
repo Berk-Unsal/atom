@@ -52,7 +52,9 @@ Error responses use a simple object with an `error` message.
 
 Single-sector requests accept `rf_profile` at the request root. Network, interference, recommendation, and measurement requests accept it independently inside every `towers[]` item. Legacy top-level fields remain defaults; an explicit nested property overrides its top-level/default counterpart only for that cell. Normalized simulation, optimized-tower, recommendation, measurement, and interference-model responses include resolved profiles for reproducibility. Network-shaped responses also expose `request_defaults` separately from `effective_cell_profiles`; a request default is not evidence that every cell used that value.
 
-The request profile accepts `propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz`. The default is `urban_short_range` at 2.6/28 GHz and `research_sub_thz` at 140 GHz. Positive calibration dB raises predicted received power. The urban model reports its 3GPP UMa formula and deterministic footprint LOS/NLOS rule in `rf_contract`; it does not add legacy wall loss to empirical NLOS. Receiver sensitivity is per-cell ray termination, building service is `raw P_rx > -100 dBm`, and interference serviceability is `RSRP >= -110 dBm` plus `SINR >= 0 dB` plus `RSRQ >= -20 dB`. See the [Concept 4D design note](concept-4d-urban-propagation.md) for the applicability envelope and fallback policy, and the [Concept 4E building-entry note](concept-4e-building-entry.md) for facade-entry estimation.
+The request profile accepts `propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz`. The default is `urban_short_range` at 2.6/28 GHz and `research_sub_thz` at 140 GHz. Positive calibration dB raises predicted received power. The urban model reports its 3GPP UMa formula and `footprint-height-los-v1` centerline LOS/NLOS rule in `rf_contract`; it does not add legacy wall loss to empirical NLOS. Receiver sensitivity is per-cell ray termination, building service is `raw P_rx > -100 dBm`, and interference serviceability is `RSRP >= -110 dBm` plus `SINR >= 0 dB` plus `RSRQ >= -20 dB`. See the [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md) for height evidence, terrain status, and classification metadata; the [Concept 4D design note](concept-4d-urban-propagation.md) remains the applicability and equation reference; and the [Concept 4E building-entry note](concept-4e-building-entry.md) covers facade-entry estimation.
+
+For `urban_short_range`, explicit OSM `height` is reported as `observed_tag`, `building:levels` is derived at 3 m per level as `derived_from_levels`, and the existing generic 9 m display fallback is `unavailable` roof evidence. An intersected unknown-height footprint is conservatively NLOS. Ray GeoJSON properties expose `los_classifier_id`, `los_classification_basis`, and `terrain_status`; interference and building-entry responses expose the same serving/outdoor metadata, while coverage-surface model metadata identifies the shared classifier. The current Ankara pack reports `terrain_unavailable`; no zero terrain value is treated as measured obstruction evidence.
 
 ```json
 {
@@ -225,7 +227,7 @@ Set `BUILDINGS_API_KEY` to require `Authorization: Bearer <key>` or `X-API-Key: 
 
 The `bbox` parameter is mandatory in OGC CRS84 longitude/latitude order and its diagonal may not exceed 50 km. `limit` defaults to 1,000 and is capped at 5,000. Results are sorted by stable building ID and report `numberMatched`, `numberReturned`, `limit`, and `offset`; a further page includes an HTTP `Link` header with `rel="next"`.
 
-The default representation is `application/geo+json`. Send `f=csv` or `Accept: text/csv` for CSV containing WKT polygon geometry, inferred height/source, normalized material, and demand fields. Discover the collection at `GET /api/collections`, inspect metadata at `GET /api/collections/buildings`, and inspect the standards declaration at `GET /api/conformance`. Its `conformsTo` list is deliberately empty because this project does not claim a complete OGC conformance class.
+The default representation is `application/geo+json`. Send `f=csv` or `Accept: text/csv` for CSV containing WKT polygon geometry, display height/source, height-evidence provenance (`height_evidence_m`, `height_evidence_source`, `height_evidence_tag`), normalized material, and demand fields. Discover the collection at `GET /api/collections`, inspect metadata at `GET /api/collections/buildings`, and inspect the standards declaration at `GET /api/conformance`. Its `conformsTo` list is deliberately empty because this project does not claim a complete OGC conformance class.
 
 This interface follows OGC API Features collection and bounding-box concepts. It is not a vector-tile endpoint.
 
@@ -320,13 +322,13 @@ COG/GeoTIFF support is limited to north-up EPSG:4326, one-band integer/float sam
 
 Use the normal sector request fields plus `cell_size_m` from 10–250 and one to ten unique `thresholds_dbm`. The regular grid is capped at 100,000 cells.
 
-The default JSON response contains a CRS84 row-major raster (`grid`), marching-square line segments (`contours`), bounds/statistics, and explicit model assumptions. Export the same request using:
+The default JSON response contains a CRS84 row-major raster (`grid`), marching-square line segments (`contours`), bounds/statistics, and explicit model assumptions. For `urban_short_range`, `model.los_classifier_id` is `footprint-height-los-v1` and `model.terrain_status` is `terrain_unavailable` for the current Ankara pack. Export the same request using:
 
 - `?f=geotiff` for an uncompressed float32 EPSG:4326 GeoTIFF with `-9999` nodata
 - `?f=geojson` for isoline GeoJSON
 - `?f=csv` for valid grid-center longitude, latitude, and received power
 
-The surface uses the canonical FSPL, antenna-pattern, calibration, and frequency wall-loss model. It is a raw single-cell received-power surface: valid below-sensitivity values remain numeric, `uses_sensitivity_mask` is false, and NoData means only radius/beam geometry exclusion. It does not apply the terrain-profile or environmental sensitivity components.
+The surface uses the selected propagation model, antenna-pattern, and calibration terms. For `urban_short_range`, known roof heights can clear footprint intersections and unknown heights remain conservative NLOS; no legacy wall-event dB is added to the empirical NLOS formula. It is a raw single-cell received-power surface: valid below-sensitivity values remain numeric, `uses_sensitivity_mask` is false, and NoData means only radius/beam geometry exclusion. It does not apply the terrain-profile or environmental sensitivity components.
 
 ---
 
@@ -467,6 +469,9 @@ cell-radius union. `residential_only` is an optional filter.
 The response includes `model`, `applicability`, `summary`, `results[]`,
 per-cell summaries, effective profiles, `rf_contract`, and diagnostics. Each
 result carries the representative and facade points, outdoor LOS/NLOS baseline,
+the shared `outdoor_los_classifier_id`, `outdoor_los_classification_basis`,
+`outdoor_terrain_status`, and detailed `outdoor_los_classification` evidence;
+the target building is excluded from the outdoor leg,
 `outdoor_rx_at_facade_dbm`, `outdoor_wall_loss_db: 0`, both entry losses, both
 just-inside powers, separate receiver-sensitivity and building-service
 thresholds, and material evidence. `diagnostics.http_requests_required` is

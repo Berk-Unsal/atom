@@ -120,17 +120,22 @@ results, calibrated link budgets, or a replacement for a commercial
 propagation tool.</p>
 <p>The network engine dispatches explicit propagation models.
 <code>urban_short_range</code> is the deterministic 3GPP UMa LOS/NLOS
-baseline for 2.6/28 GHz, <code>legacy_fspl_walls</code> is the
-compatibility model and fallback, and <code>research_sub_thz</code> is
-the explicitly research-only 140 GHz profile. The urban baseline uses 2D
-footprint geometry for LOS/NLOS classification, known Tx/Rx heights, and
-no uncertain building height. Its applicability and any fallback reason
-are returned in <code>rf_contract</code> and ray explainability fields.
-The separate Concept 4E building-entry analysis adds one standard O2I
-facade term at zero indoor depth; it is not indoor or whole-building
-coverage. The point-to-point path profile remains an isolated advanced
-diagnostic with model id <code>path-profile-diagnostic-v1</code>. Read
-the Concept 4D design note for equations and limits.</p>
+baseline for 2.6/28 GHz, using the shared height-aware
+<code>footprint-height-los-v1</code> centerline classifier;
+<code>legacy_fspl_walls</code> is the compatibility model and fallback,
+and <code>research_sub_thz</code> is the explicitly research-only 140
+GHz profile. Known heights can clear a footprint, while unknown-height
+intersections remain conservative NLOS. The current Ankara network has
+no terrain layer, so height-aware results report
+<code>terrain_unavailable</code> and use flat-ground relative heights.
+Its applicability and classification metadata are returned in
+<code>rf_contract</code>, ray explainability, interference, surface, and
+building-entry fields. The separate Concept 4E building-entry analysis
+adds one standard O2I facade term at zero indoor depth; it is not indoor
+or whole-building coverage. The point-to-point path profile remains an
+isolated advanced diagnostic with model id
+<code>path-profile-diagnostic-v1</code>. Read the Concept 4F.1 design
+note for the centerline rule and audit.</p>
 <h2 id="rf-semantic-contract">RF Semantic Contract</h2>
 <table>
 <thead>
@@ -279,10 +284,14 @@ calculations.</li>
 by the point-to-point profile only. The fast sector, interference,
 optimization, batch, and regular-surface engines do not consume
 terrain.</li>
-<li>Building footprints infer height from <code>height</code>, then
-<code>building:levels</code>, then an explicit 9 m fallback. Material
-tags are normalized when present; explicit material/environment controls
-must not be described as surveyed site data.</li>
+<li>Building footprints preserve height provenance: reliable
+<code>height</code> is <code>observed_tag</code>,
+<code>building:levels</code> is <code>derived_from_levels</code> at 3 m
+per level, and the explicit 9 m display fallback is
+<code>unavailable</code> roof evidence. Unknown-height urban
+intersections are conservative NLOS. Material tags are normalized when
+present; explicit material/environment controls must not be described as
+surveyed site data.</li>
 <li>Separate clutter, height, and material sidecar layers are validated
 as pack metadata but are not automatically spatially joined into all
 analyses.</li>

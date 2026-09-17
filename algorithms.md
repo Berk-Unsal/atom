@@ -17,6 +17,10 @@ PL_NLOS = max(PL_LOS, 13.54 + 39.08 log10(d3D) + 20 log10(fc_GHz) - 0.6(hUT - 1.
 
 The urban path-loss result is not combined with FSPL or the legacy wall heuristic. The `research_sub_thz` mode is the explicit 140 GHz safety profile, while the separate [`Concept 4D design note`](concept-4d-urban-propagation.md) records scope, limitations, fallback policy, and references.
 
+## Concept 4E: Building Entry
+
+The separate [`Concept 4E design note`](concept-4e-building-entry.md) evaluates a representative building facade in one batched analysis. It first evaluates the Concept 4D outdoor baseline to the facade, then subtracts the deterministic median O2I external-wall term from [3GPP TR 38.901 V19.4.0, §7.4.3.1](https://www.etsi.org/deliver/etsi_tr/138900_138999/138901/19.04.00_60/tr_138901v190400p.pdf). Indoor depth is fixed at zero, so no interior loss, room/floor geometry, or whole-building claim is produced. Outdoor NLOS does not receive a second legacy wall loss. At 28 GHz the standard low/high terms are evaluated from the glass/concrete compositions; at 2.6 GHz the single-frequency 20 dB compatibility value is used for both API scenarios. Material tags are evidence only, and the deterministic median omits random shadow-fading draws.
+
 ## Radio Frequency Physics Foundation
 
 ### Free-Space Path Loss (FSPL)

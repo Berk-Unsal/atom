@@ -4,6 +4,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-17
+
 ### Added
 
 - Add Concept 4E building-entry analysis for deterministic 2.6/28 GHz service estimates immediately inside representative facades, with standard-derived low/high O2I scenarios, material-data auditing, one batched API request, RF-aware caching, and restrained Analyze/report surfaces.
@@ -153,7 +155,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/Berk-Unsal/atom/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Berk-Unsal/atom/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Berk-Unsal/atom/compare/v0.3.0...v0.4.0

@@ -229,13 +229,19 @@ geodesic path at a bounded spacing. Each sample contains ground
 elevation plus any intersecting building height. Antenna and receiver
 elevations are their local ground elevations plus configured height
 above ground.</p>
-<p>The result reports direct line-of-sight clearance and a 60%
-first-Fresnel-zone clearance check:</p>
+<p>The result reports direct geometric line-of-sight clearance and a 60%
+first-Fresnel-zone clearance check. Fresnel concern is a separate
+geometry diagnostic and does not change LOS/NLOS classification:</p>
 <pre class="text"><code>r1 = sqrt(lambda * d1 * d2 / (d1 + d2))</code></pre>
-<p>When selected, the dominant obstruction is converted to the usual
-dimensionless knife-edge parameter and the positive-loss approximation
-is applied. Only the dominant edge is used; Deygout/multiple-edge,
-reflection, and terrain-clutter coupling are not implemented.</p>
+<p>The isolated Concept 4F.2 workflow represents each known flat-roof
+footprint by deterministic entry and exit roof-edge candidates. It
+exposes the signed P.526-16 equation (26) parameter and applies equation
+(31) for <code>v &gt; -0.78</code>; the candidate with maximum
+applicable <code>v</code> is selected. Generic fallback heights are
+unavailable evidence. The diagnostic compares FSPL plus explicit
+single-edge loss against canonical UMa; it never adds diffraction to UMa
+NLOS. Deygout/multiple-edge, reflection, and terrain-clutter coupling
+are not implemented.</p>
 <p>The inspectable loss budget keeps FSPL, horizontal/vertical antenna
 attenuation, system loss, wall penetration, diffraction, clutter,
 vegetation, gas, rain, and calibration as separate signed components.

@@ -110,6 +110,18 @@ planning. It supports sector propagation, demand gaps, multi-cell
 evaluation and optimization, 4G/5G interference analysis, candidate-site
 recommendations, measurement residual analysis, scenario comparison, and
 an optional 5G communication-path overlay.</p>
+<h3 id="what-does-the-diffraction-diagnostic-mean">What does the
+diffraction diagnostic mean?</h3>
+<p>The Path Profile panel exposes a separate
+<code>p526-single-edge-v1</code> diagnostic: free-space path loss plus a
+P.526-16-aligned single knife-edge loss calculated from known
+obstruction geometry. It shows the obstruction ledger, <code>v</code>,
+loss, diagnostic Rx, and canonical UMa comparison. It is not summed with
+UMa NLOS and does not change optimization, surfaces, interference,
+building entry, or the research 140 GHz propagation profile.
+Unknown-height footprints make the explicit diagnostic unavailable
+rather than turning the generic 9 m fallback into evidence. See the
+Concept 4F.2 design note.</p>
 <h3 id="are-the-results-field-measurements">Are the results field
 measurements?</h3>
 <p>No. RSRP, SINR, RSRQ, RSSI, coverage, and demand KPIs are planning

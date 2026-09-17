@@ -13,6 +13,7 @@ Use the [documentation hub](index.html) for the maintained browser experience. I
 - [Concept 4D urban propagation](concept-4d-urban-propagation.md): selectable model modes, UMa equations, LOS/NLOS rule, fallback policy, and baseline artifact. The [canonical comparison](concept-4d-canonical-comparison.json) records the real Ankara legacy-versus-urban run.
 - [Concept 4E building entry](concept-4e-building-entry.html): deterministic facade-entry semantics, TR 38.901 O2I loss profiles, material audit, API contract, caching, and canonical Ankara ledger.
 - [Concept 4F.1 height-aware obstruction](concept-4f1-height-aware-obstruction.md): height provenance, deterministic centerline roof blocking, conservative unknown-height behavior, terrain status, multipart identity, and canonical audit.
+- [Concept 4F.2 diffraction diagnostic](concept-4f2-diffraction-diagnostic.md): P.526-16 single-edge reference math, obstruction ledgers, known-height applicability, canonical comparison, and diagnostic-only boundaries.
 - [API reference](api.html) and [OpenAPI contract](openapi.yaml): documented REST interfaces and response behavior.
 - [Bug-fix register](bug-fixes.html): confirmed defects, priority, correction, and regression evidence.
 

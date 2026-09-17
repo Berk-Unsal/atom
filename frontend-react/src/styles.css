@@ -506,6 +506,133 @@ a:focus-visible {
   background: #fbfdfc;
 }
 
+.building-entry-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-strong);
+}
+
+.building-entry-panel .panel-title.compact {
+  margin-top: 2px;
+  font-size: 0.82rem;
+}
+
+.building-entry-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--line);
+}
+
+.building-entry-metrics > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px;
+  background: #fbfdfc;
+}
+
+.building-entry-metrics span,
+.building-entry-detail-grid dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.building-entry-metrics strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.building-entry-note,
+.building-entry-limitations,
+.building-entry-diagnostics {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.building-entry-empty,
+.building-entry-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  background: #fbfdfc;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.building-entry-empty svg {
+  flex: 0 0 auto;
+  color: var(--teal);
+}
+
+.building-entry-status.warning {
+  border-color: #f2d39b;
+  color: #7a5514;
+  background: #fffaf0;
+}
+
+.building-entry-status div {
+  display: grid;
+  gap: 3px;
+}
+
+.building-entry-status strong {
+  color: #5f4210;
+  font-size: 0.8rem;
+}
+
+.building-entry-detail {
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.building-entry-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 12px;
+  margin: 0;
+}
+
+.building-entry-detail-grid div {
+  min-width: 0;
+}
+
+.building-entry-detail-grid dt,
+.building-entry-detail-grid dd {
+  margin: 0;
+}
+
+.building-entry-detail-grid dd {
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .building-entry-detail-grid,
+  .building-entry-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .comparison-card {
   background: #fbfdfc;
 }

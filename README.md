@@ -46,6 +46,8 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 - **Coverage Gap Finder**: Flags demand-weighted buildings inside the active beam whose raw received power does not exceed the separate `-100 dBm` building-service threshold, helping planners see underserved residential and POI targets instead of only raw ray distance.
 
+- **Building Entry Analysis**: Estimates deterministic 2.6/28 GHz low-loss and high-loss service immediately inside representative building facades with one batched request, optional material evidence, and no indoor or whole-building claim.
+
 - **5G Communication Paths**: Separately visualizes direct Xn-C/Xn-U coordination, N2 fallback through AMF, and N3 user-plane routing through UPF when the optional 5G Core Lab overlay is enabled.
 
 - **Operational Safeguards**: Uses request cancellation, latest-response protection, bounded worker pools, request-size limits, readiness probes, and explicit `429` overload responses.

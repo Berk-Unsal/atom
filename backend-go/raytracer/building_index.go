@@ -67,6 +67,10 @@ type BuildingDemandSummary struct {
 	AvgDensityScore              float64            `json:"avg_density_score"`
 	MaxDensityScore              float64            `json:"max_density_score"`
 	TagCoveragePct               map[string]float64 `json:"tag_coverage_pct"`
+	MaterialMetadataBuildings    int                `json:"material_metadata_buildings"`
+	MaterialMetadataCoveragePct  float64            `json:"material_metadata_coverage_pct"`
+	MaterialTagCoveragePct       map[string]float64 `json:"material_tag_coverage_pct"`
+	MaterialCategories           map[string]int     `json:"material_categories"`
 	DataQuality                  string             `json:"data_quality"`
 }
 
@@ -381,9 +385,11 @@ func (idx *BuildingIndex) BuildingAt(point Point) *BuildingFootprint {
 
 func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary {
 	summary := BuildingDemandSummary{
-		SourcePath:     sourcePath,
-		TagCoveragePct: make(map[string]float64),
-		DataQuality:    "sparse",
+		SourcePath:             sourcePath,
+		TagCoveragePct:         make(map[string]float64),
+		MaterialTagCoveragePct: make(map[string]float64),
+		MaterialCategories:     make(map[string]int),
+		DataQuality:            "sparse",
 	}
 	if idx == nil || len(idx.footprints) == 0 {
 		return summary
@@ -397,6 +403,12 @@ func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary
 		"shop":            0,
 		"office":          0,
 		"name":            0,
+	}
+	materialTagHits := map[string]int{
+		"building:material": 0,
+		"facade:material":   0,
+		"roof:material":     0,
+		"material":          0,
 	}
 	totalDemandWeight := 0.0
 	totalResidentialDemand := 0.0
@@ -422,6 +434,21 @@ func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary
 				tagHits[tag]++
 			}
 		}
+		materialEvidence := false
+		for tag := range materialTagHits {
+			if meaningfulTagValue(footprint.Tags[tag]) {
+				materialTagHits[tag]++
+				materialEvidence = true
+			}
+		}
+		if materialEvidence {
+			summary.MaterialMetadataBuildings++
+		}
+		category := strings.TrimSpace(strings.ToLower(footprint.Material))
+		if category == "" {
+			category = "unknown"
+		}
+		summary.MaterialCategories[category]++
 	}
 	if summary.DemandWeightedBuildings > 0 {
 		summary.AvgDemandWeight = math.Round((totalDemandWeight/float64(summary.DemandWeightedBuildings))*100) / 100
@@ -436,6 +463,10 @@ func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary
 	for tag, count := range tagHits {
 		summary.TagCoveragePct[tag] = math.Round((float64(count)/float64(summary.TotalBuildings))*10000) / 100
 	}
+	for tag, count := range materialTagHits {
+		summary.MaterialTagCoveragePct[tag] = math.Round((float64(count)/float64(summary.TotalBuildings))*10000) / 100
+	}
+	summary.MaterialMetadataCoveragePct = math.Round((float64(summary.MaterialMetadataBuildings)/float64(summary.TotalBuildings))*10000) / 100
 
 	weightedPct := float64(summary.DemandWeightedBuildings+summary.ResidentialWeightedBuildings) / float64(summary.TotalBuildings) * 100
 	switch {

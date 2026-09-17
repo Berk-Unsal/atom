@@ -16,6 +16,7 @@ import {
 import ControlPanel from "./components/ControlPanel.jsx";
 import ExperimentPanel from "./components/ExperimentPanel.jsx";
 import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
+import BuildingEntryPanel from "./components/BuildingEntryPanel.jsx";
 import InventoryPanel from "./components/InventoryPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
@@ -85,6 +86,8 @@ import {
   buildRecommendationPayload,
   buildSimulationPayload,
   buildCoverageSurfaceSourceKey,
+  buildBuildingEntryAnalysisPayload,
+  buildBuildingEntryAnalysisSourceKey,
 } from "./utils/requestPayloads.js";
 import {
   buildPlanningReport,
@@ -202,6 +205,8 @@ export default function App() {
   const [interferenceRevision, setInterferenceRevision] = useState(0);
   const [interferenceMetric, setInterferenceMetric] = useState("sinr");
   const [buildingSummary, setBuildingSummary] = useState(null);
+  const [buildingEntryAnalysis, setBuildingEntryAnalysis] = useState(null);
+  const [buildingEntrySourceKey, setBuildingEntrySourceKey] = useState(null);
   const [appMeta, setAppMeta] = useState(null);
 	const [datasetRevision, setDatasetRevision] = useState(0);
 	const [hydratedDatasetRevision, setHydratedDatasetRevision] = useState(0);
@@ -235,6 +240,7 @@ export default function App() {
   const restoredProjectRef = useRef(null);
   const cellExplanationCacheRef = useRef(new Map());
   const coverageSurfaceSourceKeyRef = useRef(null);
+  const buildingEntrySourceKeyRef = useRef(null);
   const clearCellExplanation = useCallback(() => {
     cellExplanationCacheRef.current.clear();
     setCellExplanationState(EMPTY_CELL_EXPLANATION_STATE);
@@ -445,6 +451,8 @@ export default function App() {
     setCoverageGaps(artifacts?.coverageGaps ?? EMPTY_COVERAGE_GAPS);
     setInterferenceAnalysis(artifacts?.interferenceAnalysis ?? EMPTY_INTERFERENCE_ANALYSIS);
     setNetworkOptimization(artifacts?.networkOptimization ?? null);
+    setBuildingEntryAnalysis(artifacts?.buildingEntryAnalysis ?? null);
+    setBuildingEntrySourceKey(artifacts?.buildingEntrySourceKey ?? null);
     setCoverageSurface(null);
     setCoverageSurfaceRequest(null);
     setCoverageSurfaceCellId(null);
@@ -738,6 +746,8 @@ export default function App() {
         tower: selectedTower,
       });
 
+      setBuildingEntryAnalysis(null);
+      setBuildingEntrySourceKey(null);
       setOptimizationDiagnostics(payload);
       setSettings(optimizedSettings);
       setSimulation(optimizedSimulation);
@@ -820,6 +830,8 @@ export default function App() {
       if (!request.isCurrent()) {
         return;
       }
+      setBuildingEntryAnalysis(null);
+      setBuildingEntrySourceKey(null);
       setNetworkOptimization(payload);
       setSelectedParetoSolutionId(null);
       setNetworkAzimuths(networkAzimuthMap(selectedNetworkTowers, payload, networkAzimuths));
@@ -977,6 +989,23 @@ export default function App() {
     () => selectedNetworkTowers.map((tower) => tower.id),
     [selectedNetworkTowers],
   );
+  const buildingEntryPayload = useMemo(
+    () => buildBuildingEntryAnalysisPayload(
+      planningMode === "network" ? selectedNetworkTowers : [],
+      selectedTower,
+      settings,
+      networkAzimuths,
+    ),
+    [networkAzimuths, planningMode, selectedNetworkTowers, selectedTower, settings],
+  );
+  const currentBuildingEntrySourceKey = useMemo(
+    () => buildBuildingEntryAnalysisSourceKey(buildingEntryPayload, datasetRevision),
+    [buildingEntryPayload, datasetRevision],
+  );
+  buildingEntrySourceKeyRef.current = currentBuildingEntrySourceKey;
+  const buildingEntryIsCurrent = Boolean(
+    buildingEntryAnalysis && buildingEntrySourceKey && buildingEntrySourceKey === currentBuildingEntrySourceKey,
+  );
   const selectedTowerOrder = useMemo(() => {
     return new Map(selectedNetworkSelectionIDs.map((towerID, index) => [towerID, index + 1]));
   }, [selectedNetworkSelectionIDs]);
@@ -1075,6 +1104,45 @@ export default function App() {
       }
     }
   }, [interferenceApplicable, networkAzimuths, networkOptimization, requests, selectedNetworkTowers, settings]);
+
+  const analyzeBuildingEntry = useCallback(async () => {
+    const hasTargetCell = planningMode === "network" ? selectedNetworkTowers.length > 0 : Boolean(selectedTower);
+    if (!hasTargetCell) {
+      setError("Select at least one cell before running building-entry analysis");
+      return;
+    }
+    if (buildingEntryIsCurrent) {
+      setError("");
+      return;
+    }
+    const request = requests.begin("building-entry");
+    setActiveRFTask("building_entry");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/building-entry-analysis",
+        buildingEntryPayload,
+        "Building-entry analysis failed",
+        request.signal,
+      );
+      if (!request.isCurrent() || currentBuildingEntrySourceKey !== buildingEntrySourceKeyRef.current) {
+        return;
+      }
+      setBuildingEntryAnalysis(payload);
+      setBuildingEntrySourceKey(currentBuildingEntrySourceKey);
+      setLastAnalysisKind("building-entry");
+      setPlanDirty(false);
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) {
+        setError(requestError.message);
+      }
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [buildingEntryIsCurrent, buildingEntryPayload, currentBuildingEntrySourceKey, planningMode, requests, selectedNetworkTowers.length, selectedTower]);
 
   const coreLabTowerIDs = useMemo(() => {
     if (planningMode === "network" && selectedNetworkTowers.length > 0) {
@@ -1207,6 +1275,8 @@ export default function App() {
     clearInterferenceAnalysis();
     setSiteRecommendations(null);
     setMeasurementAnalysis(null);
+    setBuildingEntryAnalysis(null);
+    setBuildingEntrySourceKey(null);
   }, [clearCellExplanation, clearInterferenceAnalysis]);
 
   const clearRenderedAnalysis = useCallback(() => {
@@ -1222,6 +1292,7 @@ export default function App() {
     requests.cancel("rf");
     requests.cancel("path-profile");
     requests.cancel("coverage-surface");
+    requests.cancel("building-entry");
     setActiveRFTask(null);
     setPathProfile(null);
     setOptimizationDiagnostics(null);
@@ -1829,10 +1900,20 @@ export default function App() {
               ? "Recommending"
               : isEvaluatingMeasurements
                 ? "Validating"
+                : activeRFTask === "building_entry"
+                  ? "Estimating entry"
             : planDirty
               ? "Plan changed"
               : "Ready";
   const resultSummary = useMemo(() => {
+    if (lastAnalysisKind === "building-entry" && buildingEntryAnalysis?.summary) {
+      return {
+        label: "Building entry",
+        primary: `${buildingEntryAnalysis.summary.low_loss_serviceable_buildings ?? 0} low-loss served`,
+        secondary: `${buildingEntryAnalysis.summary.high_loss_serviceable_buildings ?? 0} high-loss served`,
+        view: "building-entry",
+      };
+    }
     if (lastAnalysisKind === "interference" && interferenceAnalysis.stats) {
       return {
         label: "Interference",
@@ -1866,7 +1947,7 @@ export default function App() {
       };
     }
     return null;
-  }, [displayedNetworkOptimization, gapStats, interferenceAnalysis.stats, lastAnalysisKind, networkResultKind, simulation?.stats, siteRecommendations, stats.avgPower]);
+  }, [buildingEntryAnalysis, displayedNetworkOptimization, gapStats, interferenceAnalysis.stats, lastAnalysisKind, networkResultKind, simulation?.stats, siteRecommendations, stats.avgPower]);
   const selectedCellCount = selectedNetworkSelectionIDs.length;
 	const activeProfileTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
 	const invalidProfileCount = activeProfileTowers.filter((tower, index) => (
@@ -1877,7 +1958,8 @@ export default function App() {
     : `Single · Cell ${selectedTowerLabel}`;
   const planSummary = `${formatNumber(settings.frequencyGHz, 1)} GHz · ${formatNumber(settings.txPowerDbm, 0)} dBm · ${formatNumber(settings.radiusMeters, 0)} m`;
   const hasInterferenceData = (interferenceAnalysis.geojson?.features ?? []).length > 0;
-  const hasResults = Boolean(simulation?.stats || networkOptimization?.stats || interferenceAnalysis.stats || siteRecommendations || measurementAnalysis);
+  const currentBuildingEntryAnalysis = buildingEntryIsCurrent ? buildingEntryAnalysis : null;
+  const hasResults = Boolean(simulation?.stats || networkOptimization?.stats || interferenceAnalysis.stats || siteRecommendations || measurementAnalysis || currentBuildingEntryAnalysis);
   const interferenceUnavailableReason = planningMode !== "network"
     ? "Interference requires Network planning mode"
     : !interferenceApplicable
@@ -1910,6 +1992,10 @@ export default function App() {
       reason: interferenceUnavailableReason,
       badge: hasInterferenceData ? "•" : interferenceUnavailableReason ? "!" : null,
       tone: hasInterferenceData ? "success" : "warning",
+    },
+    "building-entry": {
+      badge: currentBuildingEntryAnalysis ? "•" : null,
+      tone: currentBuildingEntryAnalysis ? "success" : undefined,
     },
     core: {
       unavailable: Boolean(coreUnavailableReason),
@@ -2000,12 +2086,16 @@ export default function App() {
       optimizationDiagnostics,
       siteRecommendations,
       measurementAnalysis,
+      buildingEntryAnalysis: currentBuildingEntryAnalysis,
+      buildingEntrySourceKey: currentBuildingEntryAnalysis ? buildingEntrySourceKey : null,
     }),
     requiresRerun: Boolean(planDirty),
   }), [
     activeResultsView,
-    appMeta,
-    calibrationProfile,
+	    appMeta,
+	    buildingEntrySourceKey,
+	    currentBuildingEntryAnalysis,
+	    calibrationProfile,
     coverageGaps,
     interferenceAnalysis,
     lastAnalysisKind,
@@ -2101,6 +2191,7 @@ export default function App() {
       buildPlanningReport({
         activeNetworkTech,
         appMeta,
+        buildingEntryAnalysis: currentBuildingEntryAnalysis,
         buildingSummary,
         calibrationProfile,
         cellExplanations: [
@@ -2131,6 +2222,7 @@ export default function App() {
       activeNetworkTech,
       activeProject,
       appMeta,
+      currentBuildingEntryAnalysis,
       buildingSummary,
       calibrationProfile,
       activeComparison,
@@ -2176,9 +2268,10 @@ export default function App() {
 		inventory: "Local cells, map placement, imports, and per-cell RF profiles",
     propagation: "Ray geometry, coverage radius, and optimization",
     experiments: "Queued parameter sweeps, fingerprints, and Pareto comparison",
-    surfaces: "Received signal surface, contours, and GIS exports",
-    interference: "Co-channel load and radio-quality assumptions",
-    core: "Xn, N2, N3, sessions, and lab scenarios",
+	    surfaces: "Received signal surface, contours, and GIS exports",
+	    interference: "Co-channel load and radio-quality assumptions",
+	    "building-entry": "Estimated service just inside representative building facades",
+	    core: "Xn, N2, N3, sessions, and lab scenarios",
     results: "Focused analysis from the latest RF operation",
     data: "Dataset confidence and model assumptions",
     report: "Export the current planning state",
@@ -2452,6 +2545,17 @@ export default function App() {
               scenarios={CORE_LAB_SCENARIOS}
               startCommand={CORE_LAB_START_COMMAND}
               towerIDs={coreLabTowerIDs}
+            />
+          ) : null}
+
+          {drawerMode === "tool" && activeTool === "building-entry" ? (
+            <BuildingEntryPanel
+              analysis={buildingEntryAnalysis}
+              disabled={activeRFTask !== null || (planningMode === "network" ? selectedNetworkTowers.length === 0 : !selectedTower)}
+              disabledReason={planningMode === "network" ? "Select at least one network cell first." : "Select a transmitter cell first."}
+              isCurrent={buildingEntryIsCurrent}
+              isLoading={activeRFTask === "building_entry"}
+              onRun={analyzeBuildingEntry}
             />
           ) : null}
 

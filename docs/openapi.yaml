@@ -216,6 +216,21 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
+  /api/building-entry-analysis:
+    post:
+      summary: Estimate deterministic service immediately inside representative building facades
+      description: Batches one to six selected cells and returns the Concept 4E 2.6/28 GHz O2I low-loss and high-loss scenarios. The estimate is not indoor, room, floor, interior-wall, or whole-building coverage. 140 GHz remains unsupported for this analysis.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/BuildingEntryAnalysisRequest" } } } }
+      responses:
+        "200":
+          description: Batched facade-entry estimates, material audit, cell summaries, RF contract, and request-count diagnostics
+          content: { application/json: { schema: { $ref: "#/components/schemas/BuildingEntryAnalysisResponse" } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "413": { $ref: "#/components/responses/TooLarge" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/optimize-network:
     post:
       summary: Coordinate selected-cell azimuth optimization
@@ -604,6 +619,166 @@ components:
         geojson: { $ref: "#/components/schemas/FeatureCollection" }
         stats: { type: object, additionalProperties: true }
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
+    BuildingEntryApplicability:
+      type: object
+      required: [applicable, reason]
+      properties:
+        applicable: { type: boolean }
+        reason: { type: string }
+        detail: { type: string }
+        limitations: { type: array, items: { type: string } }
+    BuildingEntryMaterialEvidence:
+      type: object
+      required: [available, source, used_for_profile, interpretation]
+      properties:
+        available: { type: boolean }
+        source: { type: string, description: Optional raw OSM evidence or unavailable; never a profile selection by itself. }
+        tag: { type: string }
+        value: { type: string }
+        normalized: { type: string }
+        used_for_profile: { type: boolean, const: false }
+        interpretation: { type: string }
+    BuildingEntryGeometry:
+      type: object
+      required: [representative_point_source, facade_entry_point_source, indoor_depth_m, geometry_rule]
+      properties:
+        representative_point_source: { type: string }
+        facade_entry_point_source: { type: string }
+        indoor_depth_m: { type: number, const: 0 }
+        geometry_rule: { type: string }
+    BuildingEntryPoint:
+      type: object
+      required: [lon, lat]
+      properties:
+        lon: { type: number, minimum: -180, maximum: 180 }
+        lat: { type: number, minimum: -90, maximum: 90 }
+    BuildingEntryModelProfile:
+      type: object
+      required: [id, frequency_scope, external_wall_loss_db, indoor_depth_m, indoor_loss_db, median_entry_loss_db, shadow_sigma_db, random_draw_applied, equation, composition_assumption]
+      properties:
+        id: { type: string, enum: [low_loss, high_loss] }
+        label: { type: string }
+        frequency_scope: { type: string }
+        external_wall_loss_db: { type: number }
+        indoor_depth_m: { type: number, const: 0 }
+        indoor_loss_db: { type: number, const: 0 }
+        median_entry_loss_db: { type: number }
+        shadow_sigma_db: { type: number, const: 0, description: Applied stochastic term; Concept 4E uses the deterministic median. }
+        reference_shadow_sigma_db: { type: number, description: Standard reference sigma exposed for traceability; not sampled. }
+        reference_shadow_sigma_note: { type: string }
+        random_draw_applied: { type: boolean, const: false }
+        equation: { type: string }
+        composition_assumption: { type: string }
+    BuildingEntryModelMetadata:
+      type: object
+      required: [id, reference, scenario, supported_frequencies_ghz, outdoor_baseline_model, indoor_depth_m, random_draws_used, material_evidence_only, no_whole_building_claim, profiles]
+      properties:
+        id: { type: string, const: 3gpp_tr_38_901_o2i }
+        reference: { type: string }
+        scenario: { type: string, const: building-entry-just-inside-facade }
+        description: { type: string }
+        supported_frequencies_ghz: { type: array, items: { type: number, enum: [2.6, 28] } }
+        unsupported_frequencies_ghz: { type: array, items: { type: number } }
+        outdoor_baseline_model: { type: string, const: urban_short_range }
+        outdoor_baseline_rule: { type: string }
+        indoor_depth_m: { type: number, const: 0 }
+        random_draws_used: { type: boolean, const: false }
+        material_evidence_only: { type: boolean, const: true }
+        no_whole_building_claim: { type: boolean, const: true }
+        profile_semantics: { type: string }
+        profiles: { type: array, minItems: 2, maxItems: 2, items: { $ref: "#/components/schemas/BuildingEntryModelProfile" } }
+    BuildingEntryEstimate:
+      type: object
+      required: [building_id, residential, outdoor_wall_loss_db, outdoor_serviceable, material_evidence, selected_entry_profile, applicability, entry_geometry, limitations]
+      properties:
+        building_id: { type: string }
+        building_type: { type: string }
+        residential: { type: boolean }
+        demand_weight: { type: number }
+        residential_demand: { type: number }
+        representative_point: { $ref: "#/components/schemas/BuildingEntryPoint" }
+        facade_entry_point: { $ref: "#/components/schemas/BuildingEntryPoint" }
+        serving_cell_id: { type: string }
+        frequency_ghz: { type: number }
+        propagation_model: { type: string, const: urban_short_range }
+        outdoor_los_state: { type: string, enum: [los, nlos, unknown] }
+        outdoor_distance_m: { type: number }
+        outdoor_rx_at_facade_dbm: { type: number }
+        outdoor_path_loss_db: { type: number }
+        outdoor_wall_loss_db: { type: number, const: 0 }
+        outdoor_serviceable: { type: boolean }
+        low_loss_entry_loss_db: { type: number }
+        low_loss_rx_just_inside_dbm: { type: number }
+        low_loss_serviceable: { type: boolean }
+        high_loss_entry_loss_db: { type: number }
+        high_loss_rx_just_inside_dbm: { type: number }
+        high_loss_serviceable: { type: boolean }
+        receiver_sensitivity_dbm: { type: number }
+        building_service_threshold_dbm: { type: number, const: -100 }
+        material_evidence: { $ref: "#/components/schemas/BuildingEntryMaterialEvidence" }
+        selected_entry_profile: { type: string, enum: [low_loss, high_loss, unknown] }
+        applicability: { $ref: "#/components/schemas/BuildingEntryApplicability" }
+        entry_geometry: { $ref: "#/components/schemas/BuildingEntryGeometry" }
+        limitations: { type: array, items: { type: string } }
+    BuildingEntrySummary:
+      type: object
+      required: [relevant_buildings, evaluated_buildings, low_loss_serviceable_buildings, high_loss_serviceable_buildings, material_known_buildings, material_unknown_buildings, material_metadata_coverage_pct, unsupported_buildings, invalid_geometry_buildings, candidate_cell_link_evaluations]
+      properties:
+        relevant_buildings: { type: integer, minimum: 0 }
+        relevant_residential_buildings: { type: integer, minimum: 0 }
+        relevant_demand_buildings: { type: integer, minimum: 0 }
+        evaluated_buildings: { type: integer, minimum: 0 }
+        buildings_with_serving_cell: { type: integer, minimum: 0 }
+        outdoor_serviceable_buildings: { type: integer, minimum: 0 }
+        low_loss_serviceable_buildings: { type: integer, minimum: 0 }
+        high_loss_serviceable_buildings: { type: integer, minimum: 0 }
+        low_loss_serviceable_residential: { type: integer, minimum: 0 }
+        high_loss_serviceable_residential: { type: integer, minimum: 0 }
+        total_demand_weight: { type: number, minimum: 0 }
+        low_loss_served_demand_weight: { type: number, minimum: 0 }
+        high_loss_served_demand_weight: { type: number, minimum: 0 }
+        material_known_buildings: { type: integer, minimum: 0 }
+        material_unknown_buildings: { type: integer, minimum: 0 }
+        material_metadata_coverage_pct: { type: number, minimum: 0, maximum: 100 }
+        material_tag_coverage_pct: { type: object, additionalProperties: { type: number, minimum: 0, maximum: 100 } }
+        material_categories: { type: object, additionalProperties: { type: integer, minimum: 0 } }
+        unsupported_buildings: { type: integer, minimum: 0 }
+        invalid_geometry_buildings: { type: integer, minimum: 0 }
+        candidate_cell_link_evaluations: { type: integer, minimum: 0 }
+        building_service_threshold_dbm: { type: number, const: -100 }
+        receiver_sensitivity_rule: { type: string }
+    BuildingEntryCellSummary:
+      type: object
+      required: [cell_id, candidate_buildings, evaluated_links, serving_buildings, low_loss_serviceable, high_loss_serviceable]
+      properties:
+        cell_id: { type: string }
+        candidate_buildings: { type: integer, minimum: 0 }
+        evaluated_links: { type: integer, minimum: 0 }
+        serving_buildings: { type: integer, minimum: 0 }
+        low_loss_serviceable: { type: integer, minimum: 0 }
+        high_loss_serviceable: { type: integer, minimum: 0 }
+    BuildingEntryDiagnostics:
+      type: object
+      required: [http_requests_required, buildings_evaluated, candidate_cell_links, elapsed_ms, selection_rule, cache_key_inputs]
+      properties:
+        http_requests_required: { type: integer, const: 1 }
+        buildings_evaluated: { type: integer, minimum: 0 }
+        candidate_cell_links: { type: integer, minimum: 0 }
+        elapsed_ms: { type: number, minimum: 0 }
+        selection_rule: { type: string }
+        cache_key_inputs: { type: array, items: { type: string } }
+    BuildingEntryAnalysisResponse:
+      type: object
+      required: [model, applicability, summary, results, cell_summaries, effective_cell_profiles, diagnostics, rf_contract]
+      properties:
+        model: { $ref: "#/components/schemas/BuildingEntryModelMetadata" }
+        applicability: { $ref: "#/components/schemas/BuildingEntryApplicability" }
+        summary: { $ref: "#/components/schemas/BuildingEntrySummary" }
+        results: { type: array, items: { $ref: "#/components/schemas/BuildingEntryEstimate" } }
+        cell_summaries: { type: array, items: { $ref: "#/components/schemas/BuildingEntryCellSummary" } }
+        effective_cell_profiles: { type: array, items: { $ref: "#/components/schemas/EffectiveCellRFProfile" } }
+        diagnostics: { $ref: "#/components/schemas/BuildingEntryDiagnostics" }
+        rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
     Tower:
       type: object
       required: [id, tower_lon, tower_lat]
@@ -641,6 +816,24 @@ components:
           properties:
             towers: { type: array, minItems: 2, maxItems: 6, items: { $ref: "#/components/schemas/Tower" } }
             optimization: { $ref: "#/components/schemas/OptimizationConfig" }
+    BuildingEntryAnalysisRequest:
+      allOf:
+        - { $ref: "#/components/schemas/CommonRFSettings" }
+        - type: object
+          required: [towers]
+          properties:
+            towers:
+              type: array
+              minItems: 1
+              maxItems: 6
+              items: { $ref: "#/components/schemas/Tower" }
+            building_ids:
+              type: array
+              maxItems: 5000
+              uniqueItems: true
+              items: { type: string, minLength: 1, maxLength: 256 }
+              description: Optional stable building IDs. An empty list selects footprints in the effective cell-radius union.
+            residential_only: { type: boolean, default: false }
     OptimizationConfig:
       type: object
       properties:

@@ -87,6 +87,32 @@ export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings,
   };
 }
 
+export function buildBuildingEntryAnalysisPayload(selectedNetworkTowers, selectedTower, settings, networkAzimuths = {}) {
+  const towers = selectedNetworkTowers.length > 0
+    ? selectedNetworkTowers
+    : [selectedTower].filter(Boolean);
+  return {
+    towers: towers.map((tower, index) => ({
+      id: String(tower.cellId ?? tower.id),
+      tower_lon: tower.coordinates[0],
+      tower_lat: tower.coordinates[1],
+      azimuth: azimuthForTower(tower, settings, networkAzimuths),
+      rf_profile: rfProfileToPayload(resolveRFProfile(tower, settings, index)),
+    })),
+    rays: settings.rayCount,
+    radius_m: settings.radiusMeters,
+    frequency_ghz: settings.frequencyGHz,
+    tx_power_dbm: settings.txPowerDbm,
+    beam_width: settings.beamWidthDeg,
+    calibration_offset_db: settings.calibrationOffsetDb ?? 0,
+  };
+}
+
+export function buildBuildingEntryAnalysisSourceKey(payload, datasetRevision = 0) {
+  if (!payload) return null;
+  return JSON.stringify({ dataset_revision: datasetRevision, payload });
+}
+
 export function buildNetworkCellExplanationPayload({
   baseline,
   cellID,

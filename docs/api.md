@@ -39,6 +39,7 @@ Most responses are **JSON**. Explicit GIS export representations use GeoJSON, CS
 - `POST /api/coverage-surface` returns a compact regular raster, isolines, statistics, and model assumptions, or an export representation
 - `POST /api/simulate` returns `{ geojson, stats, rf_profile, rf_contract }`
 - `POST /api/coverage-gaps` returns `{ geojson, stats, rf_contract }`
+- `POST /api/building-entry-analysis` returns one batched, RF-derived facade-entry estimate for the selected buildings and cells
 - `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`, with defaults, effective profiles, and threshold metadata in `model`
 - `POST /api/optimize-azimuth` returns `{ optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, rf_contract }`
 - `POST /api/recommend-sites` returns a baseline plus ranked candidate records and GeoJSON
@@ -51,7 +52,7 @@ Error responses use a simple object with an `error` message.
 
 Single-sector requests accept `rf_profile` at the request root. Network, interference, recommendation, and measurement requests accept it independently inside every `towers[]` item. Legacy top-level fields remain defaults; an explicit nested property overrides its top-level/default counterpart only for that cell. Normalized simulation, optimized-tower, recommendation, measurement, and interference-model responses include resolved profiles for reproducibility. Network-shaped responses also expose `request_defaults` separately from `effective_cell_profiles`; a request default is not evidence that every cell used that value.
 
-The request profile accepts `propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz`. The default is `urban_short_range` at 2.6/28 GHz and `research_sub_thz` at 140 GHz. Positive calibration dB raises predicted received power. The urban model reports its 3GPP UMa formula and deterministic footprint LOS/NLOS rule in `rf_contract`; it does not add legacy wall loss to empirical NLOS. Receiver sensitivity is per-cell ray termination, building service is `raw P_rx > -100 dBm`, and interference serviceability is `RSRP >= -110 dBm` plus `SINR >= 0 dB` plus `RSRQ >= -20 dB`. See the [Concept 4D design note](concept-4d-urban-propagation.md) for the applicability envelope and fallback policy.
+The request profile accepts `propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz`. The default is `urban_short_range` at 2.6/28 GHz and `research_sub_thz` at 140 GHz. Positive calibration dB raises predicted received power. The urban model reports its 3GPP UMa formula and deterministic footprint LOS/NLOS rule in `rf_contract`; it does not add legacy wall loss to empirical NLOS. Receiver sensitivity is per-cell ray termination, building service is `raw P_rx > -100 dBm`, and interference serviceability is `RSRP >= -110 dBm` plus `SINR >= 0 dB` plus `RSRQ >= -20 dB`. See the [Concept 4D design note](concept-4d-urban-propagation.md) for the applicability envelope and fallback policy, and the [Concept 4E building-entry note](concept-4e-building-entry.md) for facade-entry estimation.
 
 ```json
 {
@@ -409,6 +410,72 @@ Run RF propagation simulation with given parameters.
 - Individual bounds remain 720 rays and 5,000 meters, but combinations must stay within the 25,000-feature estimate.
 - The reported 720-ray, 5,000-meter combination estimates 144,000 base features and is rejected before ray allocation.
 - The server uses a 120-second write timeout and caps each RF job at four workers.
+
+### Estimate Building Entry
+
+**Endpoint**: `POST /api/building-entry-analysis`
+
+Estimate service immediately inside one representative facade point for one to
+six selected cells. This is a separate Concept 4E analysis, not a replacement
+for `/api/coverage-gaps` or `/api/interference`. It is supported at 2.6 GHz
+and 28 GHz only; 140 GHz returns a structured `unsupported_frequency`
+applicability result and remains `research_sub_thz`.
+
+The request uses the network RF defaults and per-cell `rf_profile` objects.
+`building_ids` is optional; an empty list selects footprints in the effective
+cell-radius union. `residential_only` is an optional filter.
+
+```json
+{
+  "towers": [
+    {
+      "id": "cell-28-a",
+      "tower_lon": 32.8541,
+      "tower_lat": 39.9208,
+      "azimuth": 45,
+      "rf_profile": {
+        "schema_version": 1,
+        "network_tech": "5g",
+        "propagation_model": "urban_short_range",
+        "frequency_ghz": 28,
+        "band": "n257",
+        "bandwidth_mhz": 100,
+        "channel_id": "NR-634666",
+        "duplex_mode": "tdd",
+        "tx_power_dbm": 30,
+        "antenna_gain_dbi": 17,
+        "system_loss_db": 2,
+        "radius_m": 400,
+        "beam_width": 120,
+        "antenna_height_m": 25,
+        "receiver_height_m": 1.5,
+        "receiver_sensitivity_dbm": -115
+      }
+    }
+  ],
+  "rays": 72,
+  "radius_m": 400,
+  "frequency_ghz": 28,
+  "tx_power_dbm": 30,
+  "beam_width": 120,
+  "calibration_offset_db": 0,
+  "building_ids": [],
+  "residential_only": false
+}
+```
+
+The response includes `model`, `applicability`, `summary`, `results[]`,
+per-cell summaries, effective profiles, `rf_contract`, and diagnostics. Each
+result carries the representative and facade points, outdoor LOS/NLOS baseline,
+`outdoor_rx_at_facade_dbm`, `outdoor_wall_loss_db: 0`, both entry losses, both
+just-inside powers, separate receiver-sensitivity and building-service
+thresholds, and material evidence. `diagnostics.http_requests_required` is
+`1`; the frontend caches the response under an RF-derived source key.
+
+The low-loss and high-loss values are deterministic scenarios, not confidence
+limits. OSM material tags are optional evidence only and never automatically
+choose a scenario. See the [Concept 4E design note](concept-4e-building-entry.md)
+for the equations, geometry rules, canonical audit, and invalidation policy.
 
 ---
 

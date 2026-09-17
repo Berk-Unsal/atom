@@ -11,6 +11,7 @@ Use the [documentation hub](index.html) for the maintained browser experience. I
 - [Capabilities](features.html): current supported planning workflows and technology boundaries.
 - [Modeling limits](modeling-limits.html): what the deterministic model includes and excludes.
 - [Concept 4D urban propagation](concept-4d-urban-propagation.md): selectable model modes, UMa equations, LOS/NLOS rule, fallback policy, and baseline artifact. The [canonical comparison](concept-4d-canonical-comparison.json) records the real Ankara legacy-versus-urban run.
+- [Concept 4E building entry](concept-4e-building-entry.html): deterministic facade-entry semantics, TR 38.901 O2I loss profiles, material audit, API contract, caching, and canonical Ankara ledger.
 - [API reference](api.html) and [OpenAPI contract](openapi.yaml): documented REST interfaces and response behavior.
 - [Bug-fix register](bug-fixes.html): confirmed defects, priority, correction, and regression evidence.
 

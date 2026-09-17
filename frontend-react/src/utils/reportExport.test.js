@@ -381,6 +381,29 @@ describe("planning report conditional and fallback behavior", () => {
     expect(html).not.toContain('data-report-section="interference"');
   });
 
+  it("includes building-entry output only when the batched analysis exists", () => {
+    const buildingEntryAnalysis = {
+      applicability: { applicable: true },
+      model: { reference: "3GPP TR 38.901 V19.4.0, §7.4.3.1", outdoor_baseline_model: "urban_short_range" },
+      summary: {
+        relevant_buildings: 12,
+        relevant_residential_buildings: 7,
+        outdoor_serviceable_buildings: 8,
+        low_loss_serviceable_buildings: 8,
+        high_loss_serviceable_buildings: 3,
+        material_metadata_coverage_pct: 0,
+      },
+      diagnostics: { elapsed_ms: 18.3 },
+    };
+    const withAnalysis = renderMarkdownReport(makeNetworkReport({ buildingEntryAnalysis }));
+    const withoutAnalysis = renderMarkdownReport(makeNetworkReport({ buildingEntryAnalysis: null }));
+
+    expect(withAnalysis).toContain("## Building-entry analysis");
+    expect(withAnalysis).toContain("3GPP TR 38.901 V19.4.0");
+    expect(withAnalysis).toContain("0.0% known");
+    expect(withoutAnalysis).not.toContain("## Building-entry analysis");
+  });
+
   it("uses an evaluated network result without fabricating baseline or Pareto metadata", () => {
     const report = makeNetworkReport({
       networkOptimization: makeNetworkOptimization({ includeBaseline: false, includePareto: false }),

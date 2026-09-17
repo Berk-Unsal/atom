@@ -78,6 +78,9 @@ Physics page contents">
       <li><a href="#concept-4d-urban-short-range-propagation"
       id="toc-concept-4d-urban-short-range-propagation">Concept 4D:
       Urban Short-Range Propagation</a></li>
+      <li><a href="#concept-4e-building-entry"
+      id="toc-concept-4e-building-entry">Concept 4E: Building
+      Entry</a></li>
       <li><a href="#radio-frequency-physics-foundation"
       id="toc-radio-frequency-physics-foundation">Radio Frequency
       Physics Foundation</a></li>
@@ -147,6 +150,19 @@ wall heuristic. The <code>research_sub_thz</code> mode is the explicit
 140 GHz safety profile, while the separate
 <code>Concept 4D design note</code> records scope, limitations, fallback
 policy, and references.</p>
+<h2 id="concept-4e-building-entry">Concept 4E: Building Entry</h2>
+<p>The separate <code>Concept 4E design note</code> evaluates a
+representative building facade in one batched analysis. It first
+evaluates the Concept 4D outdoor baseline to the facade, then subtracts
+the deterministic median O2I external-wall term from <a
+href="https://www.etsi.org/deliver/etsi_tr/138900_138999/138901/19.04.00_60/tr_138901v190400p.pdf">3GPP
+TR 38.901 V19.4.0, §7.4.3.1</a>. Indoor depth is fixed at zero, so no
+interior loss, room/floor geometry, or whole-building claim is produced.
+Outdoor NLOS does not receive a second legacy wall loss. At 28 GHz the
+standard low/high terms are evaluated from the glass/concrete
+compositions; at 2.6 GHz the single-frequency 20 dB compatibility value
+is used for both API scenarios. Material tags are evidence only, and the
+deterministic median omits random shadow-fading draws.</p>
 <h2 id="radio-frequency-physics-foundation">Radio Frequency Physics
 Foundation</h2>
 <h3 id="free-space-path-loss-fspl">Free-Space Path Loss (FSPL)</h3>

@@ -42,7 +42,7 @@ Legacy top-level RF controls remain request defaults. A nested `rf_profile` over
 | 5G NR mmWave | 28 GHz | Directional high-capacity planning |
 | 6G research profile | 140 GHz | Comparative planning overlay; not standardized project-level RF quality |
 
-The backend exposes explicit propagation modes. `urban_short_range` is the default at 2.6/28 GHz, `legacy_fspl_walls` remains selectable, and `research_sub_thz` is the 140 GHz research-only profile. The legacy mode uses free-space path loss with meter/GHz units:
+The backend exposes explicit propagation modes. `urban_short_range` is the default at 2.6/28 GHz, `legacy_fspl_walls` remains selectable, and `research_sub_thz` is the 140 GHz research-only profile. The separate Building entry analysis estimates service immediately inside a representative facade at 2.6/28 GHz with deterministic low-loss/high-loss O2I scenarios; it does not claim indoor or whole-building coverage. The legacy mode uses free-space path loss with meter/GHz units:
 
 ```text
 FSPL(dB) = 32.45 + 20log10(distance_m) + 20log10(frequency_GHz)

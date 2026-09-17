@@ -32,6 +32,7 @@ const REPORT_OBJECTIVES = [
 export function buildPlanningReport({
   activeNetworkTech,
   appMeta,
+  buildingEntryAnalysis,
   buildingSummary,
   calibrationProfile,
   cellExplanations = [],
@@ -72,6 +73,7 @@ export function buildPlanningReport({
   const report = {
     activeNetworkTech,
     appMeta,
+    buildingEntryAnalysis,
     buildingSummary,
     calibrationProfile,
     cellExplanations,
@@ -162,6 +164,7 @@ export function renderMarkdownReport(report) {
     renderMarkdownPareto(view),
     renderMarkdownCellExplanations(view),
     renderMarkdownRFPerformance(view),
+    renderMarkdownBuildingEntry(view),
     renderMarkdownInterferenceSection(report),
     renderMarkdownPlanningMap(report),
     renderMarkdownCoverageGaps(view),
@@ -188,6 +191,7 @@ export function renderPrintableReport(report) {
     renderPrintablePareto(view),
     renderPrintableCellExplanations(view),
     renderPrintableRFPerformance(view),
+    renderPrintableBuildingEntry(view),
     renderPrintableInterferenceSection(report),
     renderPrintablePlanningMap(report),
     renderPrintableCoverageGaps(view),
@@ -327,6 +331,7 @@ function buildReportViewModel(report) {
     activeNetworkTech: report.activeNetworkTech,
     appMeta: report.appMeta,
     baselineStats,
+    buildingEntryAnalysis: report.buildingEntryAnalysis,
     buildingSummary: report.buildingSummary,
     calibrationProfile: report.calibrationProfile,
     comparison,
@@ -544,6 +549,44 @@ ${renderMarkdownTable(["Metric", "Value"], view.rfPerformanceRows)}`;
 function renderPrintableRFPerformance(view) {
   if (!view.rfPerformanceRows.length) return "";
   return `<section data-report-section="rf-performance"><h2>RF Propagation Performance</h2>${renderHtmlTable(["Metric", "Value"], view.rfPerformanceRows)}</section>`;
+}
+
+function renderMarkdownBuildingEntry(view) {
+  const analysis = view.buildingEntryAnalysis;
+  if (!analysis) return "";
+  const summary = analysis.summary ?? {};
+  const rows = [
+    ["Applicability", analysis.applicability?.applicable ? "Applicable" : analysis.applicability?.reason ?? REPORT_NOT_AVAILABLE],
+    ["Relevant buildings", formatCount(summary.relevant_buildings)],
+    ["Relevant residential buildings", formatCount(summary.relevant_residential_buildings)],
+    ["Outdoor building service", `${formatCount(summary.outdoor_serviceable_buildings)} / ${formatCount(summary.relevant_buildings)}`],
+    ["Low-loss entry service", `${formatCount(summary.low_loss_serviceable_buildings)} / ${formatCount(summary.relevant_buildings)}`],
+    ["High-loss entry service", `${formatCount(summary.high_loss_serviceable_buildings)} / ${formatCount(summary.relevant_buildings)}`],
+    ["Material metadata", `${formatNumber(summary.material_metadata_coverage_pct, 1)}% known`],
+    ["Analysis runtime", formatUnit(analysis.diagnostics?.elapsed_ms, 0, "ms")],
+  ].filter((item) => item[1] !== null);
+  return `## Building-entry analysis
+
+${renderMarkdownTable(["Metric", "Value"], rows)}
+
+Model: ${markdownText(analysis.model?.reference ?? REPORT_NOT_AVAILABLE)}. Outdoor facade power uses the ${markdownText(analysis.model?.outdoor_baseline_model ?? REPORT_NOT_AVAILABLE)} baseline; entry values are deterministic low-loss/high-loss scenarios at zero indoor depth. This is estimated service just inside a representative facade, not indoor or whole-building coverage.`;
+}
+
+function renderPrintableBuildingEntry(view) {
+  const analysis = view.buildingEntryAnalysis;
+  if (!analysis) return "";
+  const summary = analysis.summary ?? {};
+  const rows = [
+    ["Applicability", analysis.applicability?.applicable ? "Applicable" : analysis.applicability?.reason ?? REPORT_NOT_AVAILABLE],
+    ["Relevant buildings", formatCount(summary.relevant_buildings)],
+    ["Relevant residential buildings", formatCount(summary.relevant_residential_buildings)],
+    ["Outdoor building service", `${formatCount(summary.outdoor_serviceable_buildings)} / ${formatCount(summary.relevant_buildings)}`],
+    ["Low-loss entry service", `${formatCount(summary.low_loss_serviceable_buildings)} / ${formatCount(summary.relevant_buildings)}`],
+    ["High-loss entry service", `${formatCount(summary.high_loss_serviceable_buildings)} / ${formatCount(summary.relevant_buildings)}`],
+    ["Material metadata", `${formatNumber(summary.material_metadata_coverage_pct, 1)}% known`],
+    ["Analysis runtime", formatUnit(analysis.diagnostics?.elapsed_ms, 0, "ms")],
+  ].filter((item) => item[1] !== null);
+  return `<section data-report-section="building-entry"><h2>Building-entry analysis</h2>${renderHtmlTable(["Metric", "Value"], rows)}<p class="report-note">Model: ${escapeHtml(analysis.model?.reference ?? REPORT_NOT_AVAILABLE)}. Outdoor facade power uses the ${escapeHtml(analysis.model?.outdoor_baseline_model ?? REPORT_NOT_AVAILABLE)} baseline; entry values are deterministic low-loss/high-loss scenarios at zero indoor depth. This is estimated service just inside a representative facade, not indoor or whole-building coverage.</p></section>`;
 }
 
 function renderMarkdownPlanningMap(report) {
@@ -1014,6 +1057,7 @@ function buildDatasetRows(report) {
     row("Total buildings", formatCount(summary.total_buildings)),
     row("Demand-weighted buildings", formatCount(summary.demand_weighted_buildings)),
     row("Residential buildings", formatCount(summary.residential_weighted_buildings)),
+    row("Material metadata coverage", formatPercent(summary.material_metadata_coverage_pct, false)),
     row("Sources", Array.isArray(dataset.sources) && dataset.sources.length ? dataset.sources.join(", ") : null),
     row("Licenses", Array.isArray(dataset.licenses) && dataset.licenses.length ? dataset.licenses.join(", ") : null),
     row("Confidence", dataset.confidence),

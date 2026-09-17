@@ -3,6 +3,8 @@ import {
   buildInterferencePayload,
   buildCoverageSurfacePayload,
   buildCoverageSurfaceSourceKey,
+  buildBuildingEntryAnalysisPayload,
+  buildBuildingEntryAnalysisSourceKey,
   buildMeasurementPayload,
   buildNetworkCellExplanationPayload,
   buildNetworkOptimizationPayload,
@@ -153,5 +155,21 @@ describe("interference request payload", () => {
       optimization_domain: { source: "selected_cell_radius_union" },
     });
     expect(payload.optimization.objectives).toHaveLength(4);
+  });
+});
+
+describe("building-entry request payload", () => {
+  it("batches selected cells into one RF-derived request and keys only RF state", () => {
+    const payload = buildBuildingEntryAnalysisPayload(towers, null, { ...settings, rayCount: 72 }, { "lte-1": 45, "lte-2": 180 });
+    expect(payload.towers.map((tower) => tower.id)).toEqual(["1", "2"]);
+    expect(payload.towers.map((tower) => tower.azimuth)).toEqual([45, 180]);
+    expect(payload.frequency_ghz).toBe(2.6);
+    expect(buildBuildingEntryAnalysisSourceKey(payload, 3)).toBe(JSON.stringify({ dataset_revision: 3, payload }));
+  });
+
+  it("uses the single selected cell when network selection is empty", () => {
+    const payload = buildBuildingEntryAnalysisPayload([], towers[0], { ...settings, rayCount: 72 });
+    expect(payload.towers).toHaveLength(1);
+    expect(payload.towers[0].id).toBe("1");
   });
 });

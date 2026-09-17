@@ -133,6 +133,7 @@ func main() {
 			"model_id":                raytracer.UrbanShortRangePropagationID,
 			"model_description":       raytracer.UrbanShortRangeModelDescription,
 			"propagation_models":      raytracer.PropagationModelCatalog(),
+			"building_entry_model":    raytracer.BuildingEntryModelInfo(raytracer.DefaultFrequencyGHz),
 			"rf_contract":             raytracer.RFContractMetadataForModel(raytracer.UrbanShortRangePropagationID, raytracer.DefaultCalibrationOffsetDB),
 			"supported_technologies":  []string{"4g", "5g", "6g-research"},
 			"technology_capabilities": raytracer.RFTechnologyEndpointCapabilityMatrix(),
@@ -276,6 +277,23 @@ func main() {
 			return
 		}
 		payload, runErr := raytracer.EvaluateNetworkContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		writeRFResponse(c, payload, runErr)
+	})
+	router.POST("/api/building-entry-analysis", func(c *gin.Context) {
+		var input raytracer.BuildingEntryAnalysisRequestInput
+		if !bindJSON(c, &input, "building-entry analysis") {
+			return
+		}
+		if input.MissingRequiredTowerFields() {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "each tower must include id, tower_lon, and tower_lat"})
+			return
+		}
+		req := input.ToRequest()
+		if validationError := raytracer.ValidateBuildingEntryAnalysisRequest(req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		payload, runErr := raytracer.AnalyzeBuildingEntryContext(c.Request.Context(), req, currentBuildingIndex(datasets))
 		writeRFResponse(c, payload, runErr)
 	})
 	router.POST("/api/coverage-gaps", func(c *gin.Context) {
@@ -548,7 +566,7 @@ func registerFrontendRoutes(router *gin.Engine, distPath string, indexPath strin
 				"routes": []string{
 					"/healthz", "/readyz", "/api/meta", "/api/datasets", "/api/datasets/switch", "/api/towers", "/api/buildings", "/api/buildings/summary",
 					"/api/conformance", "/api/collections", "/api/collections/buildings", "/api/collections/buildings/items", "/api/path-profile", "/api/coverage-surface", "/api/processes/batch-experiment", "/api/processes/batch-experiment/execution", "/api/jobs/:jobID", "/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network", "/api/explain-network-cell",
-					"/api/optimize-network", "/api/interference", "/api/recommend-sites", "/api/measurements/evaluate",
+					"/api/optimize-network", "/api/building-entry-analysis", "/api/interference", "/api/recommend-sites", "/api/measurements/evaluate",
 					"/api/core/status", "/api/core/topology", "/api/core/sessions", "/api/core/events", "/api/core/scenario",
 				},
 			})

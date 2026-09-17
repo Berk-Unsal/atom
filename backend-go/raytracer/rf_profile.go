@@ -1,6 +1,7 @@
 package raytracer
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"strings"
@@ -10,17 +11,22 @@ import (
 // engines. Request inputs use CellRFProfileInput so an explicit zero is not
 // confused with an omitted value.
 type CellRFProfile struct {
-	SchemaVersion          int     `json:"schema_version"`
-	NetworkTech            string  `json:"network_tech"`
-	PropagationModelID     string  `json:"propagation_model"`
-	FrequencyGHz           float64 `json:"frequency_ghz"`
-	Band                   string  `json:"band"`
-	BandwidthMHz           float64 `json:"bandwidth_mhz"`
-	ChannelID              string  `json:"channel_id"`
-	DuplexMode             string  `json:"duplex_mode"`
-	TxPowerDBm             float64 `json:"tx_power_dbm"`
+	SchemaVersion      int     `json:"schema_version"`
+	NetworkTech        string  `json:"network_tech"`
+	PropagationModelID string  `json:"propagation_model"`
+	FrequencyGHz       float64 `json:"frequency_ghz"`
+	Band               string  `json:"band"`
+	BandwidthMHz       float64 `json:"bandwidth_mhz"`
+	ChannelID          string  `json:"channel_id"`
+	DuplexMode         string  `json:"duplex_mode"`
+	TxPowerDBm         float64 `json:"tx_power_dbm"`
+	// AntennaGainDBi is retained as the stable wire/source alias for the
+	// configured absolute TX boresight gain. New clients may send
+	// tx_antenna_gain_dbi; normalized responses expose both names.
 	AntennaGainDBi         float64 `json:"antenna_gain_dbi"`
+	RxAntennaGainDBi       float64 `json:"rx_antenna_gain_dbi"`
 	SystemLossDB           float64 `json:"system_loss_db"`
+	PolarizationLossDB     float64 `json:"polarization_loss_db"`
 	RadiusMeters           float64 `json:"radius_m"`
 	BeamWidthDeg           float64 `json:"beam_width"`
 	AntennaHeightM         float64 `json:"antenna_height_m"`
@@ -46,8 +52,11 @@ type CellRFProfileInput struct {
 	ChannelID              *string  `json:"channel_id"`
 	DuplexMode             *string  `json:"duplex_mode"`
 	TxPowerDBm             *float64 `json:"tx_power_dbm"`
+	TxAntennaGainDBi       *float64 `json:"tx_antenna_gain_dbi"`
 	AntennaGainDBi         *float64 `json:"antenna_gain_dbi"`
+	RxAntennaGainDBi       *float64 `json:"rx_antenna_gain_dbi"`
 	SystemLossDB           *float64 `json:"system_loss_db"`
+	PolarizationLossDB     *float64 `json:"polarization_loss_db"`
 	RadiusMeters           *float64 `json:"radius_m"`
 	BeamWidthDeg           *float64 `json:"beam_width"`
 	AntennaHeightM         *float64 `json:"antenna_height_m"`
@@ -103,7 +112,9 @@ func DefaultCellRFProfile(networkTech string, frequencyGHz, txPowerDBm, radiusMe
 		DuplexMode:             DefaultDuplexModeForTechnology(networkTech),
 		TxPowerDBm:             txPowerDBm,
 		AntennaGainDBi:         DefaultAntennaGainDBi,
+		RxAntennaGainDBi:       DefaultRxAntennaGainDBi,
 		SystemLossDB:           DefaultSystemLossDB,
+		PolarizationLossDB:     DefaultPolarizationLossDB,
 		RadiusMeters:           radiusMeters,
 		BeamWidthDeg:           beamWidthDeg,
 		AntennaHeightM:         DefaultAntennaHeightM,
@@ -132,6 +143,10 @@ func (input *CellRFProfileInput) WithDefaults(defaults CellRFProfile) CellRFProf
 	if input == nil {
 		return defaults.normalized()
 	}
+	antennaGainDBi := valueOr(input.AntennaGainDBi, defaults.AntennaGainDBi)
+	if input.TxAntennaGainDBi != nil {
+		antennaGainDBi = *input.TxAntennaGainDBi
+	}
 	profile := CellRFProfile{
 		SchemaVersion:          valueOr(input.SchemaVersion, defaults.SchemaVersion),
 		NetworkTech:            valueOr(input.NetworkTech, defaults.NetworkTech),
@@ -142,8 +157,10 @@ func (input *CellRFProfileInput) WithDefaults(defaults CellRFProfile) CellRFProf
 		ChannelID:              valueOr(input.ChannelID, defaults.ChannelID),
 		DuplexMode:             valueOr(input.DuplexMode, defaults.DuplexMode),
 		TxPowerDBm:             valueOr(input.TxPowerDBm, defaults.TxPowerDBm),
-		AntennaGainDBi:         valueOr(input.AntennaGainDBi, defaults.AntennaGainDBi),
+		AntennaGainDBi:         antennaGainDBi,
+		RxAntennaGainDBi:       valueOr(input.RxAntennaGainDBi, defaults.RxAntennaGainDBi),
 		SystemLossDB:           valueOr(input.SystemLossDB, defaults.SystemLossDB),
+		PolarizationLossDB:     valueOr(input.PolarizationLossDB, defaults.PolarizationLossDB),
 		RadiusMeters:           valueOr(input.RadiusMeters, defaults.RadiusMeters),
 		BeamWidthDeg:           valueOr(input.BeamWidthDeg, defaults.BeamWidthDeg),
 		AntennaHeightM:         valueOr(input.AntennaHeightM, defaults.AntennaHeightM),
@@ -213,8 +230,14 @@ func ValidateCellRFProfile(profile CellRFProfile, analysisOnly bool) string {
 	if !finiteInRange(profile.AntennaGainDBi, MinAntennaGainDBi, MaxAntennaGainDBi) {
 		return "rf_profile.antenna_gain_dbi is outside the supported range"
 	}
+	if !finiteInRange(profile.RxAntennaGainDBi, MinRxAntennaGainDBi, MaxRxAntennaGainDBi) {
+		return "rf_profile.rx_antenna_gain_dbi is outside the supported range"
+	}
 	if !finiteInRange(profile.SystemLossDB, MinSystemLossDB, MaxSystemLossDB) {
 		return "rf_profile.system_loss_db is outside the supported range"
+	}
+	if !finiteInRange(profile.PolarizationLossDB, MinPolarizationLossDB, MaxPolarizationLossDB) {
+		return "rf_profile.polarization_loss_db is outside the supported range"
 	}
 	if !finiteInRange(profile.RadiusMeters, MinRadiusMeters, MaxRadiusMeters) {
 		return "rf_profile.radius_m must be between 25 and 5000"
@@ -231,7 +254,7 @@ func ValidateCellRFProfile(profile CellRFProfile, analysisOnly bool) string {
 	if !finiteInRange(profile.OrientationDeg, 0, 360) || profile.OrientationDeg == 360 {
 		return "rf_profile.orientation_deg must be from 0 up to 360"
 	}
-	if !oneOf(profile.HorizontalPatternID, "ideal-sector", "cosine-sector", "omni") {
+	if !oneOf(profile.HorizontalPatternID, AntennaPatternIdealSectorID, AntennaPatternCosineSectorID, AntennaPatternOmniID, AntennaPattern3GPPSingleElementID) {
 		return "rf_profile.horizontal_pattern_id is not supported"
 	}
 	if !oneOf(profile.VerticalPatternID, "flat", "panel-10deg", "panel-20deg") {
@@ -266,7 +289,7 @@ func (profile CellRFProfile) EffectiveAzimuth(baseAzimuthDeg float64) float64 {
 }
 
 func (profile CellRFProfile) EffectiveBeamWidthDeg() float64 {
-	if profile.HorizontalPatternID == "omni" {
+	if !antennaPatternUsesHardBeam(profile.HorizontalPatternID) {
 		return 360
 	}
 	return profile.BeamWidthDeg
@@ -278,47 +301,63 @@ func (profile CellRFProfile) SlantDistanceMeters(groundDistanceMeters float64) f
 }
 
 func (profile CellRFProfile) PatternAttenuationDB(groundDistanceMeters, horizontalOffsetDeg float64) float64 {
-	return profile.HorizontalPatternAttenuationDB(horizontalOffsetDeg) + profile.VerticalPatternAttenuationDB(groundDistanceMeters)
+	return EvaluateAntennaPattern(profile, groundDistanceMeters, horizontalOffsetDeg).TotalAttenuationDB
 }
 
 // HorizontalPatternAttenuationDB is a relative antenna-pattern loss. It is
 // not the configured absolute antenna gain.
 func (profile CellRFProfile) HorizontalPatternAttenuationDB(horizontalOffsetDeg float64) float64 {
-	horizontal := 0.0
-	switch profile.HorizontalPatternID {
-	case "cosine-sector":
-		halfBeam := math.Max(profile.BeamWidthDeg/2, 1)
-		horizontal = math.Min(30, 12*math.Pow(math.Abs(horizontalOffsetDeg)/halfBeam, 2))
-	case "omni", "ideal-sector":
-	}
-	return horizontal
+	return EvaluateAntennaPattern(profile, 100, horizontalOffsetDeg).HorizontalAttenuationDB
 }
 
 // VerticalPatternAttenuationDB is a relative antenna-pattern loss. It is
 // kept separate from horizontal attenuation so the link-budget contract is
 // explicit even though the production model sums both terms.
 func (profile CellRFProfile) VerticalPatternAttenuationDB(groundDistanceMeters float64) float64 {
-	verticalBeamWidth := 0.0
-	switch profile.VerticalPatternID {
-	case "panel-10deg":
-		verticalBeamWidth = 10
-	case "panel-20deg":
-		verticalBeamWidth = 20
-	}
-	vertical := 0.0
-	if verticalBeamWidth > 0 {
-		depressionAngle := math.Atan2(profile.AntennaHeightM-profile.ReceiverHeightM, math.Max(groundDistanceMeters, 0.1)) * 180 / math.Pi
-		tilt := profile.MechanicalDowntiltDeg + profile.ElectricalDowntiltDeg
-		vertical = math.Min(30, 12*math.Pow((depressionAngle-tilt)/verticalBeamWidth, 2))
-	}
-	return vertical
+	return EvaluateAntennaPattern(profile, groundDistanceMeters, 0).VerticalAttenuationDB
 }
 
 // ReceivedPowerDBm is the authoritative production received-power contract:
-// absolute transmit/gain/system/calibration terms minus FSPL, building loss,
-// and relative horizontal/vertical pattern attenuation.
+// conducted TX power plus absolute TX gain, RX gain, and calibration minus
+// propagation/building/pattern/system/polarization losses.
 func (profile CellRFProfile) ReceivedPowerDBm(groundDistanceMeters, attenuationDB, calibrationOffsetDB, horizontalOffsetDeg float64) float64 {
 	return profile.LinkBudgetTerms(groundDistanceMeters, attenuationDB, calibrationOffsetDB, horizontalOffsetDeg).ReceivedPowerDBm
+}
+
+// MarshalJSON keeps antenna_gain_dbi source compatibility while making the
+// preferred TX-gain terminology visible in normalized API responses.
+func (profile CellRFProfile) MarshalJSON() ([]byte, error) {
+	type profileAlias CellRFProfile
+	return json.Marshal(struct {
+		profileAlias
+		TxAntennaGainDBi float64 `json:"tx_antenna_gain_dbi"`
+	}{
+		profileAlias:     profileAlias(profile),
+		TxAntennaGainDBi: profile.AntennaGainDBi,
+	})
+}
+
+// UnmarshalJSON accepts the preferred TX-gain alias on full profiles as well
+// as the historical antenna_gain_dbi name. Request bodies normally use
+// CellRFProfileInput, but full-profile decoding is also part of the public
+// JSON contract for saved scenarios and integrations.
+func (profile *CellRFProfile) UnmarshalJSON(data []byte) error {
+	type profileAlias CellRFProfile
+	var decoded profileAlias
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var preferred struct {
+		TxAntennaGainDBi *float64 `json:"tx_antenna_gain_dbi"`
+	}
+	if err := json.Unmarshal(data, &preferred); err != nil {
+		return err
+	}
+	*profile = CellRFProfile(decoded)
+	if preferred.TxAntennaGainDBi != nil {
+		profile.AntennaGainDBi = *preferred.TxAntennaGainDBi
+	}
+	return nil
 }
 
 func finiteInRange(value, minimum, maximum float64) bool {

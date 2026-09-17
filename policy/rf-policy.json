@@ -21,7 +21,8 @@
     "horizontal_patterns": [
       { "id": "ideal-sector", "label": "Ideal sector" },
       { "id": "cosine-sector", "label": "Cosine sector" },
-      { "id": "omni", "label": "Omnidirectional" }
+      { "id": "omni", "label": "Omnidirectional" },
+      { "id": "3gpp-single-element", "label": "3GPP single element (reference)" }
     ],
     "vertical_patterns": [
       { "id": "flat", "label": "Flat" },
@@ -46,7 +47,9 @@
     "calibration_offset_db": 0,
     "recommendation_results": 5,
     "antenna_gain_dbi": 25,
+    "rx_antenna_gain_dbi": 0,
     "system_loss_db": 0,
+    "polarization_loss_db": 0,
     "antenna_height_m": 25,
     "mechanical_downtilt_deg": 0,
     "electrical_downtilt_deg": 0,
@@ -91,8 +94,12 @@
     "bandwidth_mhz_max": 2000,
     "antenna_gain_dbi_min": -20,
     "antenna_gain_dbi_max": 80,
+    "rx_antenna_gain_dbi_min": -20,
+    "rx_antenna_gain_dbi_max": 80,
     "system_loss_db_min": 0,
     "system_loss_db_max": 100,
+    "polarization_loss_db_min": 0,
+    "polarization_loss_db_max": 40,
     "antenna_height_m_min": 0.5,
     "antenna_height_m_max": 300,
     "downtilt_deg_min": -30,

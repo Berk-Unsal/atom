@@ -250,7 +250,7 @@ describe("App planning workflow", () => {
     expect(api.postJSON).not.toHaveBeenCalled();
     expect(screen.queryByRole("button", { name: /Open Sector result results/i })).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole("spinbutton", { name: "Transmit power (dBm)" }), {
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }), {
       target: { value: "31" },
     });
     await act(async () => Promise.resolve());
@@ -358,7 +358,7 @@ describe("App planning workflow", () => {
     fireEvent.click(signalButton);
     await waitFor(() => expect(signalButton).toHaveAttribute("data-surface-state", "ready"));
 
-    fireEvent.change(screen.getByRole("spinbutton", { name: "Transmit power (dBm)" }), { target: { value: "31" } });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }), { target: { value: "31" } });
     expect(signalButton).toBeDisabled();
     expect(signalButton).toHaveAttribute("data-surface-state", "unavailable");
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));

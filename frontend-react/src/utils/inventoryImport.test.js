@@ -49,6 +49,32 @@ describe("inventory import", () => {
     expect(cell.rfProfile).toMatchObject({ networkTech: "4g", frequencyGHz: 2.6, txPowerDbm: 43 });
   });
 
+  it("imports antenna realism aliases from nested RF profiles", () => {
+    const geojson = JSON.stringify({
+      type: "FeatureCollection",
+      features: [{
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [32.8, 39.9] },
+        properties: {
+          id: "site-realistic",
+          rf_profile: {
+            tx_antenna_gain_dbi: 21,
+            rx_antenna_gain_dbi: 3,
+            polarization_loss_db: 2,
+            horizontal_pattern_id: "3gpp-single-element",
+          },
+        },
+      }],
+    });
+    const [cell] = parseInventoryFile(geojson, "cells.geojson", settings);
+    expect(cell.rfProfile).toMatchObject({
+      antennaGainDbi: 21,
+      rxAntennaGainDbi: 3,
+      polarizationLossDb: 2,
+      horizontalPatternId: "3gpp-single-element",
+    });
+  });
+
   it("rejects invalid coordinates before changing inventory", () => {
     expect(() => parseInventoryFile("id,longitude,latitude\nbad,500,39", "bad.csv", settings)).toThrow(/invalid longitude/i);
   });

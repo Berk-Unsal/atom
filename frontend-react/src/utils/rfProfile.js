@@ -8,7 +8,7 @@ import {
 } from "../generated/policy.js";
 
 const DUPLEX_MODES = new Set(["fdd", "tdd", "sdl", "sul"]);
-const HORIZONTAL_PATTERNS = new Set(["ideal-sector", "cosine-sector", "omni"]);
+const HORIZONTAL_PATTERNS = new Set(["ideal-sector", "cosine-sector", "omni", "3gpp-single-element"]);
 const VERTICAL_PATTERNS = new Set(["flat", "panel-10deg", "panel-20deg"]);
 const PROPAGATION_MODELS = new Set(["legacy_fspl_walls", "urban_short_range", "research_sub_thz"]);
 
@@ -44,8 +44,10 @@ export function resolveRFProfile(tower = {}, settings = DEFAULT_SIMULATION, inde
     channelId: cleanText(override.channelId, `CH-${index % Math.max(reuseFactor, 1) + 1}`),
     duplexMode: cleanText(override.duplexMode, technology.default_duplex_mode).toLowerCase(),
     txPowerDbm: finiteNumber(override.txPowerDbm, settings.txPowerDbm),
-    antennaGainDbi: finiteNumber(override.antennaGainDbi, DEFAULT_RF_PROFILE.antennaGainDbi),
-    systemLossDb: finiteNumber(override.systemLossDb, DEFAULT_RF_PROFILE.systemLossDb),
+    antennaGainDbi: finiteNumber(override.txAntennaGainDbi ?? override.tx_antenna_gain_dbi ?? override.antennaGainDbi ?? override.antenna_gain_dbi, DEFAULT_RF_PROFILE.antennaGainDbi),
+    rxAntennaGainDbi: finiteNumber(override.rxAntennaGainDbi ?? override.rx_antenna_gain_dbi, DEFAULT_RF_PROFILE.rxAntennaGainDbi),
+    systemLossDb: finiteNumber(override.systemLossDb ?? override.system_loss_db, DEFAULT_RF_PROFILE.systemLossDb),
+    polarizationLossDb: finiteNumber(override.polarizationLossDb ?? override.polarization_loss_db, DEFAULT_RF_PROFILE.polarizationLossDb),
     radiusMeters: finiteNumber(override.radiusMeters, settings.radiusMeters),
     beamWidthDeg: finiteNumber(override.beamWidthDeg, settings.beamWidthDeg),
     antennaHeightM: finiteNumber(override.antennaHeightM, DEFAULT_RF_PROFILE.antennaHeightM),
@@ -73,8 +75,11 @@ export function rfProfileToPayload(profile) {
     channel_id: profile.channelId,
     duplex_mode: profile.duplexMode,
     tx_power_dbm: profile.txPowerDbm,
+    tx_antenna_gain_dbi: profile.antennaGainDbi,
     antenna_gain_dbi: profile.antennaGainDbi,
+    rx_antenna_gain_dbi: profile.rxAntennaGainDbi,
     system_loss_db: profile.systemLossDb,
+    polarization_loss_db: profile.polarizationLossDb,
     radius_m: profile.radiusMeters,
     beam_width: profile.beamWidthDeg,
     antenna_height_m: profile.antennaHeightM,
@@ -105,7 +110,9 @@ export function validateRFProfile(profile) {
   if (!DUPLEX_MODES.has(profile.duplexMode)) errors.duplexMode = "Unsupported duplex mode.";
   checkRange(errors, "txPowerDbm", profile.txPowerDbm, limits.tx_power_dbm_min, limits.tx_power_dbm_max);
   checkRange(errors, "antennaGainDbi", profile.antennaGainDbi, limits.antenna_gain_dbi_min, limits.antenna_gain_dbi_max);
+  checkRange(errors, "rxAntennaGainDbi", profile.rxAntennaGainDbi, limits.rx_antenna_gain_dbi_min, limits.rx_antenna_gain_dbi_max);
   checkRange(errors, "systemLossDb", profile.systemLossDb, limits.system_loss_db_min, limits.system_loss_db_max);
+  checkRange(errors, "polarizationLossDb", profile.polarizationLossDb, limits.polarization_loss_db_min, limits.polarization_loss_db_max);
   checkRange(errors, "radiusMeters", profile.radiusMeters, limits.radius_m_min, limits.radius_m_max);
   checkRange(errors, "beamWidthDeg", profile.beamWidthDeg, limits.beam_width_deg_min, limits.beam_width_deg_max);
   checkRange(errors, "antennaHeightM", profile.antennaHeightM, limits.antenna_height_m_min, limits.antenna_height_m_max);
@@ -165,8 +172,10 @@ export function rfProfileOverrideFromProperties(properties = {}) {
     channelId: read("channel_id", "channelId"),
     duplexMode: read("duplex_mode", "duplexMode"),
     txPowerDbm: read("tx_power_dbm", "txPowerDbm"),
-    antennaGainDbi: read("antenna_gain_dbi", "antennaGainDbi"),
+    antennaGainDbi: read("tx_antenna_gain_dbi", "txAntennaGainDbi", "antenna_gain_dbi", "antennaGainDbi"),
+    rxAntennaGainDbi: read("rx_antenna_gain_dbi", "rxAntennaGainDbi"),
     systemLossDb: read("system_loss_db", "systemLossDb"),
+    polarizationLossDb: read("polarization_loss_db", "polarizationLossDb"),
     radiusMeters: read("radius_m", "radiusMeters"),
     beamWidthDeg: read("beam_width", "beamWidthDeg"),
     antennaHeightM: read("antenna_height_m", "antennaHeightM"),

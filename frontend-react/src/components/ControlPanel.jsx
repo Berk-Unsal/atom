@@ -103,7 +103,7 @@ export default function ControlPanel({
 
         <NumberField
           icon={<Zap size={18} />}
-          label="Transmit power"
+          label="Conducted TX power"
           suffix="dBm"
           min={0}
           max={60}

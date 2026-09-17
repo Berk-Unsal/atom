@@ -105,13 +105,14 @@ type LossComponent struct {
 }
 
 type PathLossBudget struct {
-	Components          []LossComponent `json:"components"`
-	TotalMedianLossDB   float64         `json:"total_median_loss_db"`
-	RxDBmP50            float64         `json:"rx_dbm_p50"`
-	RxDBmP90Reliability float64         `json:"rx_dbm_p90_reliability"`
-	RxDBmUpper90        float64         `json:"rx_dbm_upper_90"`
-	ShadowSigmaDB       float64         `json:"shadow_sigma_db"`
-	Definition          string          `json:"definition"`
+	Components          []LossComponent   `json:"components"`
+	TotalMedianLossDB   float64           `json:"total_median_loss_db"`
+	RxDBmP50            float64           `json:"rx_dbm_p50"`
+	RxDBmP90Reliability float64           `json:"rx_dbm_p90_reliability"`
+	RxDBmUpper90        float64           `json:"rx_dbm_upper_90"`
+	ShadowSigmaDB       float64           `json:"shadow_sigma_db"`
+	Definition          string            `json:"definition"`
+	LinkBudget          RFLinkBudgetTerms `json:"link_budget"`
 }
 
 type ModelApplicability struct {
@@ -393,9 +394,9 @@ func PathModelApplicability(profile string, frequencyGHz float64) ModelApplicabi
 
 func pathLossBudget(request PathProfileRequest, distance, bearing float64, dominant *PathObstruction, buildings map[string]*BuildingFootprint, diagnostic *DiffractionDiagnostic) PathLossBudget {
 	profile := request.RFProfile
-	horizontalOffset := smallestAngleDifference(bearing, profile.EffectiveAzimuth(request.AzimuthDeg))
+	antenna := EvaluateAntennaLink(profile, distance, bearing, request.AzimuthDeg)
 	freeSpace := FreeSpacePathLossMetersGHz(profile.SlantDistanceMeters(distance), profile.FrequencyGHz)
-	pattern := profile.PatternAttenuationDB(distance, horizontalOffset)
+	pattern := antenna.Pattern.TotalAttenuationDB
 	diffraction := 0.0
 	diffractionEnabled := false
 	if diagnostic != nil && diagnostic.Available && diagnostic.DiffractionLossDB != nil {
@@ -427,8 +428,10 @@ func pathLossBudget(request PathProfileRequest, distance, bearing float64, domin
 	calibrationLoss := -request.CalibrationOffsetDB
 	components := []LossComponent{
 		{ID: "free-space", Label: "Free-space path loss", LossDB: round2(freeSpace), Enabled: true, Method: "distance/frequency FSPL"},
-		{ID: "antenna-pattern", Label: "Antenna pattern", LossDB: round2(pattern), Enabled: pattern != 0, Method: profile.HorizontalPatternID + " + " + profile.VerticalPatternID},
+		{ID: "antenna-pattern", Label: "TX relative antenna pattern", LossDB: round2(pattern), Enabled: pattern != 0, Method: antenna.Pattern.Description},
+		{ID: "rx-antenna-gain", Label: "RX antenna gain", LossDB: round2(-profile.RxAntennaGainDBi), Enabled: profile.RxAntennaGainDBi != 0, Method: "explicit scalar receive gain"},
 		{ID: "system", Label: "System loss", LossDB: round2(profile.SystemLossDB), Enabled: profile.SystemLossDB != 0, Method: "per-cell RF profile"},
+		{ID: "polarization", Label: "Polarization loss", LossDB: round2(profile.PolarizationLossDB), Enabled: profile.PolarizationLossDB != 0, Method: "explicit deterministic link loss"},
 		{ID: "wall-penetration", Label: "Material penetration", LossDB: round2(wallLoss), Enabled: request.Fidelity.BuildingLossMode == "penetration" && len(buildings) > 0, Method: "planning material multiplier", Reference: "ITU-R P.2040", Note: strings.Join(materials, ", ")},
 		{ID: "diffraction", Label: "Knife-edge diffraction", LossDB: round2(diffraction), Enabled: diffractionEnabled, Method: "P.526-aligned selected edge", Reference: P526SingleEdgeReference, Note: "diagnostic only; never summed with canonical UMa NLOS"},
 		{ID: "clutter", Label: "Clutter", LossDB: round2(clutter), Enabled: request.Fidelity.ClutterSpecificAttenuationDBPerKM > 0, Method: "user-supplied dB/km sensitivity"},
@@ -437,13 +440,16 @@ func pathLossBudget(request PathProfileRequest, distance, bearing float64, domin
 		{ID: "rain", Label: "Rain", LossDB: round2(rain), Enabled: request.Fidelity.RainSpecificAttenuationDBPerKM > 0, Method: "user-supplied specific attenuation", Reference: "ITU-R P.838"},
 		{ID: "calibration", Label: "Global calibration offset", LossDB: round2(calibrationLoss), Enabled: request.CalibrationOffsetDB != 0, Method: "signed global dB offset; positive values raise received power", Note: CanonicalCalibrationDefinition},
 	}
-	total := freeSpace + pattern + profile.SystemLossDB + wallLoss + diffraction + clutter + vegetation + gas + rain + calibrationLoss
-	rxP50 := profile.TxPowerDBm + profile.AntennaGainDBi - total
+	propagationLoss := freeSpace + diffraction + clutter + vegetation + gas + rain
+	linkBudget := rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, propagationLoss, freeSpace, wallLoss, request.CalibrationOffsetDB)
+	total := propagationLoss + pattern + profile.SystemLossDB + profile.PolarizationLossDB - profile.RxAntennaGainDBi + wallLoss + calibrationLoss
+	rxP50 := linkBudget.ReceivedPowerDBm
 	margin := 1.2815515655446004 * request.Fidelity.ShadowSigmaDB
 	return PathLossBudget{
 		Components: components, TotalMedianLossDB: round2(total), RxDBmP50: round2(rxP50),
 		RxDBmP90Reliability: round2(rxP50 - margin), RxDBmUpper90: round2(rxP50 + margin), ShadowSigmaDB: round2(request.Fidelity.ShadowSigmaDB),
-		Definition: "P50 is the isolated path-profile planning estimate; this budget is diagnostic only and never canonical network RF.",
+		Definition: "P50 is the isolated path-profile planning estimate; the signed link ledger separates conducted TX power, absolute TX gain, relative TX pattern, propagation/building losses, system/polarization losses, RX gain, and calibration. This budget is diagnostic only and never canonical network RF.",
+		LinkBudget: linkBudget,
 	}
 }
 

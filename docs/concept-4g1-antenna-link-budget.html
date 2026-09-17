@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Conducted-power and EIRP semantics,
+shared antenna evaluation, explicit link-budget terms, reference-pattern
+behavior, diagnostics, and compatibility evidence." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4G.1 Antenna and Link
+Budget | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4G.1
+Antenna and Link Budget page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#audit-conclusion" id="toc-audit-conclusion">Audit
+      conclusion</a></li>
+      <li><a href="#canonical-link-budget"
+      id="toc-canonical-link-budget">Canonical link budget</a></li>
+      <li><a href="#field-contract" id="toc-field-contract">Field
+      contract</a></li>
+      <li><a href="#existing-analytic-pattern-contracts"
+      id="toc-existing-analytic-pattern-contracts">Existing analytic
+      pattern contracts</a></li>
+      <li><a href="#reference-single-element-pattern"
+      id="toc-reference-single-element-pattern">Reference single-element
+      pattern</a></li>
+      <li><a href="#coordinate-and-tilt-conventions"
+      id="toc-coordinate-and-tilt-conventions">Coordinate and tilt
+      conventions</a></li>
+      <li><a href="#shared-integration-and-diagnostics"
+      id="toc-shared-integration-and-diagnostics">Shared integration and
+      diagnostics</a></li>
+      <li><a href="#independent-fixtures-and-compatibility-evidence"
+      id="toc-independent-fixtures-and-compatibility-evidence">Independent
+      fixtures and compatibility evidence</a></li>
+      <li><a href="#scope-and-deferred-work"
+      id="toc-scope-and-deferred-work">Scope and deferred work</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Model reference</span>
+        <h1>Concept 4G.1 Antenna and Link Budget</h1>
+        <p>Conducted-power and EIRP semantics, shared antenna
+evaluation, explicit link-budget terms, reference-pattern behavior,
+diagnostics, and compatibility evidence.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4g1-antenna-link-budget.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Concept 4G.1 makes A.T.O.M's antenna and link-budget semantics
+explicit while preserving the existing compatibility profiles by
+default. It is a contract foundation, not a full beamforming, receiver,
+or channel-model implementation.</p>
+<h2 id="audit-conclusion">Audit conclusion</h2>
+<p>The pre-change audit is preserved in
+<code>concept-4g1-antenna-audit.md</code>, with machine- readable
+compatibility evidence in <a
+href="concept-4g1-pre-change-baseline.json"><code>concept-4g1-pre-change-baseline.json</code></a>.
+The existing implementation treated <code>tx_power_dbm</code> as
+conducted power and <code>antenna_gain_dbi</code> as absolute TX gain,
+then applied relative pattern loss, system loss, calibration, and
+propagation loss. Its <code>eirp_dbm</code>-named value was actually an
+effective transmit term that already included system loss and
+calibration. Receiver gain and polarization mismatch were not
+represented and therefore were implicitly <code>0 dBi</code> and
+<code>0 dB</code>.</p>
+<p>The compatibility sector presets use one hard beam for both ray
+emission and eligibility. <code>ideal-sector</code> and
+<code>omni</code> have zero relative attenuation;
+<code>cosine-sector</code> uses the existing capped quadratic
+attenuation. The panel vertical presets use the same capped quadratic
+form around the geometric depression angle. Mechanical and electrical
+tilt were already summed by the analytic path, but their coordinate/sign
+convention was not part of the API contract.</p>
+<h2 id="canonical-link-budget">Canonical link budget</h2>
+<p>The authoritative signed ledger is:</p>
+<pre class="text"><code>P_rx = P_tx_conducted
+     + G_tx_boresight
+     - A_tx_pattern
+     + G_rx
+     - L_system
+     - L_polarization
+     + calibration
+     - L_propagation
+     - L_building</code></pre>
+<p>The building term is zero when the selected outdoor path crosses no
+footprint wall events; the legacy wall-event, building-entry, or
+diagnostic calculation may populate it. Propagation loss is produced by
+the selected propagation model; antenna code does not contain UMa or
+FSPL equations. The implementation exposes the intermediate EIRP
+values:</p>
+<pre class="text"><code>EIRP_boresight   = P_tx_conducted + G_tx_boresight
+EIRP_directional = EIRP_boresight - A_tx_pattern</code></pre>
+<p>System loss, polarization loss, and calibration remain separate
+signed ledger terms. The historical
+<code>eirp_dbm</code>/<code>EIRPDBm</code> field remains available as an
+effective-transmit compatibility alias
+(<code>EIRP_boresight - L_system + calibration</code>); it is not
+conducted power and is not the new boresight EIRP.</p>
+<h2 id="field-contract">Field contract</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Contract</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tx_power_dbm</code></td>
+<td>Conducted transmitter output before antenna gain; default
+compatibility value is 30 dBm.</td>
+</tr>
+<tr>
+<td><code>tx_antenna_gain_dbi</code></td>
+<td>Preferred absolute TX boresight gain.</td>
+</tr>
+<tr>
+<td><code>antenna_gain_dbi</code></td>
+<td>Stable legacy alias for the absolute TX boresight gain; both names
+are normalized on responses.</td>
+</tr>
+<tr>
+<td><code>tx_pattern_attenuation_db</code></td>
+<td>Non-negative relative attenuation from boresight, never another
+gain.</td>
+</tr>
+<tr>
+<td><code>rx_antenna_gain_dbi</code></td>
+<td>Scalar receiver gain, added exactly once; default is 0 dBi. No
+receiver orientation or receiver pattern is inferred.</td>
+</tr>
+<tr>
+<td><code>system_loss_db</code></td>
+<td>Aggregate non-propagation implementation loss such as feeder,
+connector, or implementation margin. It does not include pattern,
+propagation, building, or polarization loss.</td>
+</tr>
+<tr>
+<td><code>polarization_loss_db</code></td>
+<td>Explicit deterministic mismatch loss, subtracted exactly once;
+default is 0 dB. It is not inferred from antenna names or
+randomized.</td>
+</tr>
+<tr>
+<td><code>calibration_offset_db</code></td>
+<td>Global deterministic prediction correction; positive values raise
+predicted received power. It is not antenna gain or measured EIRP.</td>
+</tr>
+<tr>
+<td><code>propagation_loss_db</code></td>
+<td>Loss returned by the selected propagation model.</td>
+</tr>
+<tr>
+<td><code>building_loss_db</code></td>
+<td>Explicit legacy wall-event, building-entry, or diagnostic loss when
+applicable; otherwise zero.</td>
+</tr>
+</tbody>
+</table>
+<p>The API accepts both TX gain field names for migration safety. The
+frontend uses the preferred name when available and emits both aliases
+for compatibility. The new receiver and polarization fields are optional
+and default to zero, so an old profile reproduces its previous numerical
+interpretation without a silent receiver gain or polarization
+penalty.</p>
+<h2 id="existing-analytic-pattern-contracts">Existing analytic pattern
+contracts</h2>
+<p>All pattern evaluation goes through <code>EvaluateAntennaLink</code>
+and <code>EvaluateAntennaPattern</code> in
+<code>backend-go/raytracer/antenna_evaluator.go</code>. Absolute gain is
+supplied by the profile; the evaluator returns relative attenuation and
+eligibility only.</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Relative attenuation</th>
+<th>Eligibility and limitations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ideal-sector</code></td>
+<td>0 dB</td>
+<td>Hard eligible inside the configured horizontal beam; no sidelobe or
+backlobe.</td>
+</tr>
+<tr>
+<td><code>cosine-sector</code></td>
+<td><code>min(30, 12 * (abs(offset)/(beam_width/2))²)</code> dB</td>
+<td>Same hard beam eligibility; the formula is an analytic planning
+preset.</td>
+</tr>
+<tr>
+<td><code>omni</code></td>
+<td>0 dB</td>
+<td>Full-azimuth eligibility; no elevation-dependent receiver or
+hardware pattern.</td>
+</tr>
+<tr>
+<td><code>flat</code></td>
+<td>0 dB vertical attenuation</td>
+<td>Horizontal behavior comes from the selected horizontal preset.</td>
+</tr>
+<tr>
+<td><code>panel-10deg</code></td>
+<td><code>min(30, 12 * (vertical_offset/10)²)</code> dB</td>
+<td>Analytic vertical cut; no array factor.</td>
+</tr>
+<tr>
+<td><code>panel-20deg</code></td>
+<td><code>min(30, 12 * (vertical_offset/20)²)</code> dB</td>
+<td>Analytic vertical cut; no array factor.</td>
+</tr>
+</tbody>
+</table>
+<p>For analytic patterns, horizontal and vertical attenuation are added
+as relative terms and capped by their existing per-cut limit. The
+compatibility hard beam remains a geometric eligibility gate; an
+outside-sector ray is not converted into a finite sidelobe
+contribution.</p>
+<h2 id="reference-single-element-pattern">Reference single-element
+pattern</h2>
+<p><code>3gpp-single-element</code> is an optional, non-default
+reference pattern based on <a
+href="https://www.etsi.org/deliver/etsi_tr/138900_138999/138901/19.04.00_60/tr_138901v190400p.pdf">3GPP
+TR 38.901 V19.4.0</a>, §7.3, Table 7.3-1. The reference uses the
+documented 65° <code>phi_3dB</code>/<code>theta_3dB</code> cut
+parameters and a 30 dB maximum attenuation cap; with the table's
+quadratic <code>12 * (offset/parameter)²</code> form, the 3 dB point is
+at a 32.5° offset. Horizontal and vertical relative losses are combined
+with <code>min(30 dB, A_horizontal + A_vertical)</code>. It evaluates
+finite attenuation over the full azimuth, including rear directions, and
+therefore does not use the compatibility hard-sector gate.</p>
+<p>This is deliberately a bounded single-element shape. It is not a 3GPP
+array model, beamforming/codebook model, MIMO model, measured/vendor
+diagram, sidelobe database, frequency-interpolated hardware pattern, or
+validated 140 GHz antenna model. The configured absolute TX gain remains
+the user's antenna assumption and is not derived from the reference
+cut.</p>
+<p>No tabulated-pattern upload or interpolation contract is exposed in
+4G.1. A future tabulated foundation must define bounded numeric samples,
+boresight normalization, sign/range validation, periodic azimuth
+handling, linear interpolation, duplicate rejection, and explicit
+horizontal/vertical combination before it becomes a user-facing
+option.</p>
+<h2 id="coordinate-and-tilt-conventions">Coordinate and tilt
+conventions</h2>
+<ul>
+<li>Azimuth is degrees clockwise from north, normalized to
+<code>[0, 360)</code>.</li>
+<li><code>orientation_deg</code> is added to the request/tower base
+azimuth.</li>
+<li>A link's horizontal offset is the signed shortest difference between
+its bearing and the effective antenna azimuth.</li>
+<li>Ground distance is the horizontal transmitter-to-receiver distance
+used by the existing analytic vertical calculation.</li>
+<li>The receiver depression angle is
+<code>atan2(antenna_height - receiver_height, ground_distance)</code>.</li>
+<li>Vertical offset is
+<code>depression_angle - (mechanical_downtilt + electrical_downtilt)</code>.</li>
+<li>Positive mechanical downtilt points the boresight downward toward
+the receiver plane. Mechanical and electrical tilt remain separate
+fields even though current deterministic patterns use their sum; no
+electrical-array beam steering is implied.</li>
+</ul>
+<h2 id="shared-integration-and-diagnostics">Shared integration and
+diagnostics</h2>
+<p>The shared evaluator is used by direct propagation, segmented rays,
+coverage surfaces, network/optimization scoring, interference carrier
+formation, building-entry outdoor facade links, and the isolated
+path-profile and diffraction diagnostics. Propagation receives the
+evaluated directional TX and receiver terms, then returns model-specific
+path loss. This prevents each consumer from implementing a different
+gain, tilt, or beam rule.</p>
+<p>Inspectable response ledgers use <code>RFLinkBudgetTerms</code> and
+include:</p>
+<pre class="text"><code>tx_power_dbm
+tx_antenna_gain_dbi / antenna_gain_dbi
+boresight_eirp_dbm
+tx_pattern_attenuation_db
+directional_eirp_dbm
+rx_antenna_gain_dbi
+system_loss_db
+polarization_loss_db
+calibration_offset_db
+propagation_loss_db
+building_loss_db
+received_power_dbm</code></pre>
+<p>The Path Profile panel shows the signed ledger without dumping
+pattern tables. Ray, interference, building-entry, and diffraction
+responses expose the ledger where the corresponding result has a
+link-level diagnostic. Diffraction stays diagnostic-only under the
+Concept 4F.2 boundary and never feeds canonical network RF, surfaces,
+interference, optimization, or building-entry service
+classification.</p>
+<h2 id="independent-fixtures-and-compatibility-evidence">Independent
+fixtures and compatibility evidence</h2>
+<p><code>antenna_evaluator_test.go</code> uses expected values
+calculated in the tests rather than calling the production evaluator to
+generate fixtures. It covers:</p>
+<ul>
+<li>conducted power plus absolute gain and the separate
+boresight/directional EIRP ledger;</li>
+<li>system-loss, calibration, receiver-gain, and polarization-loss
+signs;</li>
+<li>preferred/legacy TX gain aliases and normalized wire output;</li>
+<li>analytic cosine, ideal-sector, omni, hard-edge, and cap
+behavior;</li>
+<li>positive mechanical downtilt and vertical panel alignment;</li>
+<li>3GPP reference boresight, horizontal 3-dB point, rear direction,
+combined attenuation/cap, and full-azimuth behavior;</li>
+<li>propagation carrying the same signed antenna ledger.</li>
+</ul>
+<p>The pre-change canonical compatibility artifact records the six-cell
+Ankara 28 GHz run, representative 2.6/28 GHz links,
+surface/interference/building entry counts, height audit, optimization
+scores, recommended azimuth tuple, Pareto size, and runtime. The gated
+post-change canonical compatibility run reproduces the same
+legacy-profile values: baseline score 33.7894, optimized score 41.1715,
+optimized azimuths <code>[70, 20, 130, 160, 290, 110]</code>, and Pareto
+frontier size 6. The new reference pattern is opt-in and is compared
+separately in the <a
+href="concept-4g1-antenna-pattern-comparison.json">pattern comparison
+artifact</a>; it is not tuned or made the silent default.</p>
+<h2 id="scope-and-deferred-work">Scope and deferred work</h2>
+<p>4G.1 does not add receiver thermal-noise-derived sensitivity,
+modulation/coding, CQI/MCS, throughput, arrays, massive MIMO,
+beamforming codebooks, dynamic beam selection, UE orientation,
+stochastic polarization, fast fading, Doppler, scheduling,
+adjacent-channel effects, or optimizer objectives for antenna choice.
+The existing 140 GHz profile remains research-only and may use the
+compatibility analytic presets; this reference cut does not validate
+sub-THz hardware.</p>
+<p>Concept 4G.2 can build on this contract for more realistic beam/array
+and receiver/channel behavior. It must retain the explicit term ledger
+and avoid reinterpreting conducted power, absolute gain, or calibration
+as one another.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

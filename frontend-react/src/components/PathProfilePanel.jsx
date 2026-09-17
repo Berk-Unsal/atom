@@ -98,6 +98,7 @@ export function PathProfileResult({ profile }) {
   const candidates = geometry.candidates ?? profile?.obstruction_ledger ?? [];
   const selectedEdge = diagnostic.selected_edge;
   const diagnosticAvailable = diagnostic.available === true;
+  const linkBudget = profile?.loss_budget?.link_budget ?? diagnostic.link_budget ?? {};
   return (
     <section className="path-profile-result" aria-live="polite">
       <div className="path-profile-summary">
@@ -156,6 +157,8 @@ export function PathProfileResult({ profile }) {
         ) : null}
       </section>
 
+      {Object.keys(linkBudget).length > 0 ? <LinkBudgetLedger ledger={linkBudget} /> : null}
+
       <details className="profile-loss-details">
         <summary>Supplemental path-profile loss budget</summary>
         <div className="loss-budget" role="table" aria-label="Supplemental propagation loss budget">
@@ -174,6 +177,55 @@ export function PathProfileResult({ profile }) {
       <p className="data-note">Model scope: {profile.rf_contract?.model_id ?? "path-profile-diagnostic-v1"}. This diagnostic response is isolated from the canonical network model.</p>
     </section>
   );
+}
+
+function LinkBudgetLedger({ ledger }) {
+  const rows = [
+    ["Conducted TX power", ledger.tx_power_dbm, "dBm", "plain"],
+    ["TX absolute boresight gain", ledger.tx_antenna_gain_dbi, "dBi", "gain"],
+    ["Boresight EIRP", ledger.boresight_eirp_dbm, "dBm", "plain"],
+    ["TX directional EIRP", ledger.directional_eirp_dbm, "dBm", "plain"],
+    ["TX relative pattern", ledger.tx_pattern_attenuation_db, "dB loss", "loss"],
+    ["Propagation loss", ledger.propagation_loss_db, "dB loss", "loss"],
+    ["Building loss", ledger.building_loss_db, "dB loss", "loss"],
+    ["System loss", ledger.system_loss_db, "dB loss", "loss"],
+    ["Polarization loss", ledger.polarization_loss_db, "dB loss", "loss"],
+    ["RX antenna gain", ledger.rx_antenna_gain_dbi, "dBi", "gain"],
+    ["Calibration", ledger.calibration_offset_db, "dB", "offset"],
+    ["Total signed loss", ledger.total_loss_db, "dB", "offset"],
+  ];
+  return (
+    <details className="link-budget-details" open>
+      <summary>Signed link-budget ledger</summary>
+      <p className="data-note">Directional EIRP = boresight EIRP − TX pattern loss. Received power keeps conducted TX power, absolute gain, propagation/building loss, system loss, polarization loss, RX gain, and calibration separate.</p>
+      <div className="link-budget-grid" role="table" aria-label="Signed link-budget ledger">
+        {rows.map(([label, value, unit, sign]) => (
+          <div key={label} role="row"><span role="cell">{label}</span><strong role="cell">{formatLedgerValue(value, unit, sign)}</strong></div>
+        ))}
+        <div className="link-budget-result" role="row"><span role="cell">Received power</span><strong role="cell">{formatValue(ledger.received_power_dbm, "dBm")}</strong></div>
+      </div>
+    </details>
+  );
+}
+
+function formatValue(value, unit) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? `${numeric.toFixed(2)} ${unit}` : "—";
+}
+
+function formatSigned(value, unit) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return "—";
+  return `${numeric >= 0 ? "+" : ""}${numeric.toFixed(2)} ${unit}`;
+}
+
+function formatLedgerValue(value, unit, sign) {
+  if (sign === "loss") {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? `−${Math.abs(numeric).toFixed(2)} ${unit}` : "—";
+  }
+  if (sign === "gain" || sign === "offset") return formatSigned(value, unit);
+  return formatValue(value, unit);
 }
 
 function formatLabel(value) {

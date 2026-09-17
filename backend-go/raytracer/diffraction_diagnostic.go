@@ -89,6 +89,7 @@ type DiffractionDiagnostic struct {
 	DiffractionLossDB          *float64                  `json:"diffraction_loss_db"`
 	DiagnosticTotalPathLossDB  *float64                  `json:"diagnostic_total_path_loss_db"`
 	DiagnosticRxDBm            *float64                  `json:"diagnostic_rx_dbm"`
+	LinkBudget                 RFLinkBudgetTerms         `json:"link_budget"`
 	AppliedPatternLossDB       float64                   `json:"applied_pattern_loss_db"`
 	AppliedSystemLossDB        float64                   `json:"applied_system_loss_db"`
 	AppliedCalibrationOffsetDB float64                   `json:"applied_calibration_offset_db"`
@@ -253,6 +254,7 @@ func buildDiffractionDiagnostic(request PathProfileRequest, modelProfile string,
 		return left.EdgePosition < right.EdgePosition
 	})
 
+	antenna := EvaluateAntennaLink(profile, distance, bearing, request.AzimuthDeg)
 	diagnostic := DiffractionDiagnostic{
 		ID:                         DiffractionDiagnosticID,
 		Reference:                  P526SingleEdgeReference,
@@ -264,7 +266,7 @@ func buildDiffractionDiagnostic(request PathProfileRequest, modelProfile string,
 		Applicability:              applicability,
 		MultipleEdgeStatus:         "multi-edge deferred",
 		Limitations:                diffractionLimitations(terrainMeta.Status, applicability),
-		AppliedPatternLossDB:       round2(profile.PatternAttenuationDB(distance, smallestAngleDifference(bearing, profile.EffectiveAzimuth(request.AzimuthDeg)))),
+		AppliedPatternLossDB:       round2(antenna.Pattern.TotalAttenuationDB),
 		AppliedSystemLossDB:        round2(profile.SystemLossDB),
 		AppliedCalibrationOffsetDB: round2(request.CalibrationOffsetDB),
 	}
@@ -272,22 +274,26 @@ func buildDiffractionDiagnostic(request PathProfileRequest, modelProfile string,
 	if applicability == "unavailable" {
 		diagnostic.Available = false
 		diagnostic.Reason = applicabilityReason
+		diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
 		return diagnostic
 	}
 	if request.Fidelity.DiffractionModel != "single-knife-edge" || request.Fidelity.BuildingLossMode != "screen-diffraction" {
 		diagnostic.Available = false
 		diagnostic.Reason = "diffraction_disabled_by_fidelity"
+		diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
 		return diagnostic
 	}
 	if buildings == nil {
 		diagnostic.Available = false
 		diagnostic.Reason = "building_data_unavailable"
+		diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
 		return diagnostic
 	}
 	for _, candidate := range geometryResult.Candidates {
 		if !candidate.HeightAvailable && candidate.ObstructionType == "building_roof_edge" {
 			diagnostic.Available = false
 			diagnostic.Reason = DiffractionUnavailableHeight
+			diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
 			return diagnostic
 		}
 	}
@@ -323,10 +329,8 @@ func buildDiffractionDiagnostic(request PathProfileRequest, modelProfile string,
 	diffractionLoss := valueOrFloat(diagnostic.DiffractionLossDB)
 	diagnosticTotal := diagnostic.FSPLDB + diffractionLoss
 	diagnostic.DiagnosticTotalPathLossDB = floatPointer(round2(diagnosticTotal))
-	horizontalOffset := smallestAngleDifference(bearing, profile.EffectiveAzimuth(request.AzimuthDeg))
-	pattern := profile.PatternAttenuationDB(distance, horizontalOffset)
-	rx := profile.TxPowerDBm + profile.AntennaGainDBi - profile.SystemLossDB + request.CalibrationOffsetDB - pattern - diagnostic.FSPLDB - diffractionLoss
-	diagnostic.DiagnosticRxDBm = floatPointer(round2(rx))
+	diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB+diffractionLoss, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
+	diagnostic.DiagnosticRxDBm = floatPointer(round2(diagnostic.LinkBudget.ReceivedPowerDBm))
 	return diagnostic
 }
 

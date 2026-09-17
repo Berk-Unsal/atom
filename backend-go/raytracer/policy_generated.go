@@ -50,7 +50,9 @@ const (
 	MaxSampleSpacingM                  = 200
 	RFProfileSchemaVersion             = 1
 	DefaultAntennaGainDBi              = 25
+	DefaultRxAntennaGainDBi            = 0
 	DefaultSystemLossDB                = 0
+	DefaultPolarizationLossDB          = 0
 	DefaultAntennaHeightM              = 25
 	DefaultMechanicalDowntiltDeg       = 0
 	DefaultElectricalDowntiltDeg       = 0
@@ -62,8 +64,12 @@ const (
 	MaxBandwidthMHz                    = 2000
 	MinAntennaGainDBi                  = -20
 	MaxAntennaGainDBi                  = 80
+	MinRxAntennaGainDBi                = -20
+	MaxRxAntennaGainDBi                = 80
 	MinSystemLossDB                    = 0
 	MaxSystemLossDB                    = 100
+	MinPolarizationLossDB              = 0
+	MaxPolarizationLossDB              = 40
 	MinAntennaHeightM                  = 0.5
 	MaxAntennaHeightM                  = 300
 	MinDowntiltDeg                     = -30

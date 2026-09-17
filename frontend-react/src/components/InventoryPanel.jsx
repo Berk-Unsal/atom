@@ -7,9 +7,11 @@ import { resolveRFProfile, technologyDefaults, validateRFProfile } from "../util
 const NUMBER_FIELDS = [
   ["frequencyGHz", "Frequency", "GHz", "0.1"],
   ["bandwidthMHz", "Bandwidth", "MHz", "0.1"],
-  ["txPowerDbm", "TX power", "dBm", "0.1"],
-  ["antennaGainDbi", "Antenna gain", "dBi", "0.1"],
+  ["txPowerDbm", "Conducted TX power", "dBm", "0.1"],
+  ["antennaGainDbi", "TX boresight gain", "dBi", "0.1"],
+  ["rxAntennaGainDbi", "RX antenna gain", "dBi", "0.1"],
   ["systemLossDb", "System loss", "dB", "0.1"],
+  ["polarizationLossDb", "Polarization loss", "dB", "0.1"],
   ["radiusMeters", "Radius", "m", "1"],
   ["beamWidthDeg", "Beam width", "°", "1"],
   ["antennaHeightM", "Antenna height", "m", "0.1"],
@@ -132,6 +134,7 @@ export default function InventoryPanel({
           </fieldset>
           <fieldset>
             <legend>Antenna & receiver</legend>
+            <p className="field-help inventory-model-note">TX power is conducted; TX gain is absolute boresight gain; pattern loss is relative. RX gain and polarization loss are explicit scalar link terms.</p>
             <div className="inventory-field-grid">
               {NUMBER_FIELDS.map(([key, label, unit, step]) => (
                 <InventoryField key={key} label={label} unit={unit} error={errors[key]}>

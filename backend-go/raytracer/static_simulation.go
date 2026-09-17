@@ -299,6 +299,7 @@ type RayProperties struct {
 	LOSClassification         *LOSClassification `json:"los_classification,omitempty"`
 	FallbackUsed              bool               `json:"fallback_used,omitempty"`
 	ApplicabilityReason       string             `json:"applicability_reason,omitempty"`
+	LinkBudget                RFLinkBudgetTerms  `json:"link_budget"`
 }
 
 type LineGeometry struct {
@@ -1437,7 +1438,8 @@ func demandCandidatesInBeamContext(ctx context.Context, origin Point, req Static
 			continue
 		}
 		bearing := BearingDegrees(origin, centroid)
-		if req.RFProfile.HorizontalPatternID != "omni" && !AngleInBeam(bearing, req.RFProfile.EffectiveAzimuth(req.AzimuthDeg), req.BeamWidthDeg) {
+		antenna := EvaluateAntennaLink(req.RFProfile, math.Max(distance, 1), bearing, req.AzimuthDeg)
+		if !antenna.Eligible {
 			continue
 		}
 		demandCandidates = append(demandCandidates, building)
@@ -1543,7 +1545,8 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 	profile = profile.normalized()
 	castDistance := profile.RadiusMeters
 	wallLossPerIntersection := PenetrationLossForFrequencyGHz(profile.FrequencyGHz)
-	horizontalOffsetDeg := smallestAngleDifference(angle, profile.EffectiveAzimuth(req.AzimuthDeg))
+	antenna := EvaluateAntennaLink(profile, math.Max(castDistance, 1), angle, req.AzimuthDeg)
+	horizontalOffsetDeg := antenna.HorizontalOffsetDeg
 	castEndpoint := DestinationPoint(origin, angle, castDistance)
 	pathGeometry, err := buildPropagationPathGeometryContextWithOptions(ctx, origin, castEndpoint, buildings, propagationPathGeometryOptions{
 		TxHeightM: profile.AntennaHeightM,
@@ -1570,7 +1573,7 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 		return propagationAt(distanceMeters, point, attenuationDB).ReceivedPowerDBm
 	}
 	pathLossAt := func(propagation PropagationResult) float64 {
-		return profile.TxPowerDBm + profile.AntennaGainDBi + req.CalibrationOffsetDB - propagation.ReceivedPowerDBm
+		return propagation.LinkBudget.TotalLossDB
 	}
 	isObstructed := func(propagation PropagationResult) bool {
 		return propagation.Terms.WallLossDB > 0 || propagation.LOSState == PropagationLOSState(PropagationNLOS) || propagation.EndpointCase == PropagationEndpointCase(PropagationEndpointIndoorTx) || propagation.EndpointCase == PropagationEndpointCase(PropagationEndpointIndoorRx)
@@ -1976,6 +1979,7 @@ func makeRaySegmentFeature(
 			LOSClassification:         propagation.LOSClassification,
 			FallbackUsed:              propagation.FallbackUsed,
 			ApplicabilityReason:       propagation.ApplicabilityReason,
+			LinkBudget:                propagation.LinkBudget,
 		},
 		Geometry: LineGeometry{
 			Type: "LineString",

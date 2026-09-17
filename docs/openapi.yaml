@@ -514,7 +514,7 @@ components:
         warnings: { type: array, items: { type: string } }
     RFProfile:
       type: object
-      description: Complete per-cell RF contract. Omitted properties inherit the enclosing request defaults; normalized responses include every property. receiver_sensitivity_dbm is the per-cell usable-reach/ray-termination threshold, not the building-service or interference-serviceability threshold.
+      description: Complete per-cell RF contract. Omitted properties inherit the enclosing request defaults; normalized responses include every property. tx_power_dbm is conducted transmitter output, antenna_gain_dbi is the stable legacy alias for absolute TX boresight gain, and receiver_sensitivity_dbm is the per-cell usable-reach/ray-termination threshold, not the building-service or interference-serviceability threshold.
       properties:
         schema_version: { type: integer, const: 1, default: 1 }
         network_tech: { type: string, enum: [4g, 5g, 6g] }
@@ -525,24 +525,51 @@ components:
         channel_id: { type: string, minLength: 1, maxLength: 64 }
         duplex_mode: { type: string, enum: [fdd, tdd, sdl, sul] }
         tx_power_dbm: { type: number, minimum: 0, maximum: 60 }
-        antenna_gain_dbi: { type: number, minimum: -20, maximum: 80 }
+        tx_antenna_gain_dbi: { type: number, minimum: -20, maximum: 80, description: Preferred alias for the absolute TX boresight gain; normalized responses also preserve antenna_gain_dbi. }
+        antenna_gain_dbi: { type: number, minimum: -20, maximum: 80, description: Stable legacy alias for absolute TX boresight gain; this is not a relative pattern offset. }
+        rx_antenna_gain_dbi: { type: number, minimum: -20, maximum: 80, default: 0, description: Explicit scalar receive-antenna gain; no UE orientation or vector polarization model is implied. }
         system_loss_db: { type: number, minimum: 0, maximum: 100 }
+        polarization_loss_db: { type: number, minimum: 0, maximum: 40, default: 0, description: Explicit deterministic polarization mismatch loss; no stochastic polarization model is implied. }
         radius_m: { type: number, minimum: 25, maximum: 5000 }
         beam_width: { type: number, minimum: 10, maximum: 360 }
         antenna_height_m: { type: number, minimum: 0.5, maximum: 300 }
         mechanical_downtilt_deg: { type: number, minimum: -30, maximum: 90 }
         electrical_downtilt_deg: { type: number, minimum: -30, maximum: 90 }
         orientation_deg: { type: number, minimum: 0, exclusiveMaximum: 360 }
-        horizontal_pattern_id: { type: string, enum: [ideal-sector, cosine-sector, omni] }
+        horizontal_pattern_id: { type: string, enum: [ideal-sector, cosine-sector, omni, 3gpp-single-element], description: Analytic compatibility patterns retain hard beam eligibility; 3gpp-single-element is a full-azimuth single-element reference shape with no array factor. }
         vertical_pattern_id: { type: string, enum: [flat, panel-10deg, panel-20deg] }
         load_factor: { type: number, exclusiveMinimum: 0, maximum: 1 }
         reuse_factor: { type: integer, minimum: 1, maximum: 12 }
         pci: { type: [integer, "null"], minimum: 0, maximum: 1007, description: LTE profiles are limited to 503; NR profiles are limited to 1007. }
         receiver_height_m: { type: number, minimum: 0.1, maximum: 100 }
         receiver_sensitivity_dbm: { type: number, minimum: -180, maximum: -20 }
+    RFLinkBudgetTerms:
+      type: object
+      description: Inspectable signed link ledger. EIRPDBm/eirp_dbm is retained as a historical effective-transmit alias; use boresight_eirp_dbm and directional_eirp_dbm for explicit EIRP semantics.
+      required: [tx_power_dbm, tx_antenna_gain_dbi, antenna_gain_dbi, boresight_eirp_dbm, directional_eirp_dbm, rx_antenna_gain_dbi, system_loss_db, polarization_loss_db, calibration_offset_db, eirp_dbm, fspl_db, propagation_loss_db, building_loss_db, tx_pattern_attenuation_db, horizontal_pattern_attenuation_db, vertical_pattern_attenuation_db, pattern_attenuation_db, total_loss_db, received_power_dbm]
+      properties:
+        tx_power_dbm: { type: number, description: Conducted TX power before absolute TX gain. }
+        tx_antenna_gain_dbi: { type: number, description: Absolute TX boresight gain. }
+        antenna_gain_dbi: { type: number, description: Compatibility alias for tx_antenna_gain_dbi. }
+        boresight_eirp_dbm: { type: number }
+        directional_eirp_dbm: { type: number, description: Boresight EIRP minus relative TX pattern attenuation. }
+        rx_antenna_gain_dbi: { type: number }
+        system_loss_db: { type: number }
+        polarization_loss_db: { type: number }
+        calibration_offset_db: { type: number, description: Signed offset; positive values raise received power. }
+        eirp_dbm: { type: number, description: Historical effective-transmit compatibility alias. }
+        fspl_db: { type: number }
+        propagation_loss_db: { type: number }
+        building_loss_db: { type: number, description: Explicit legacy wall-event, building-entry, or diagnostic loss when applicable; otherwise zero. }
+        tx_pattern_attenuation_db: { type: number }
+        horizontal_pattern_attenuation_db: { type: number }
+        vertical_pattern_attenuation_db: { type: number }
+        pattern_attenuation_db: { type: number }
+        total_loss_db: { type: number, description: Propagation + building + TX pattern + system + polarization − RX gain; calibration is separate. }
+        received_power_dbm: { type: number }
     RFContractMetadata:
       type: object
-      required: [model_id, model_description, deterministic, propagation_dimensions, link_budget_equation, receiver_sensitivity_scope, building_service_threshold_dbm, building_service_rule, propagation_reach_definition, surface_definition, surface_nodata_definition, interference_serviceability_rule, interference_rsrp_threshold_dbm, interference_sinr_threshold_db, interference_rsrq_threshold_db, calibration_definition, endpoint_scope]
+      required: [model_id, model_description, deterministic, propagation_dimensions, link_budget_equation, boresight_eirp_equation, directional_eirp_equation, tx_power_semantics, tx_gain_semantics, rx_gain_semantics, polarization_semantics, system_loss_semantics, receiver_sensitivity_scope, building_service_threshold_dbm, building_service_rule, propagation_reach_definition, surface_definition, surface_nodata_definition, interference_serviceability_rule, interference_rsrp_threshold_dbm, interference_sinr_threshold_db, interference_rsrq_threshold_db, calibration_definition, endpoint_scope, antenna_pattern_uses_hard_beam]
       properties:
         model_id: { type: string }
         model_description: { type: string }
@@ -564,6 +591,17 @@ components:
         uses_reflection: { type: boolean }
         wall_model: { type: string }
         link_budget_equation: { type: string }
+        boresight_eirp_equation: { type: string }
+        directional_eirp_equation: { type: string }
+        tx_power_semantics: { type: string }
+        tx_gain_semantics: { type: string }
+        rx_gain_semantics: { type: string }
+        polarization_semantics: { type: string }
+        system_loss_semantics: { type: string }
+        antenna_pattern_id: { type: string }
+        antenna_pattern_description: { type: string }
+        antenna_pattern_reference: { type: string }
+        antenna_pattern_uses_hard_beam: { type: boolean }
         absolute_terms: { type: array, items: { type: string } }
         relative_attenuation_terms: { type: array, items: { type: string } }
         propagation_terms: { type: array, items: { type: string } }
@@ -608,7 +646,7 @@ components:
       type: object
       required: [geojson, stats, rf_profile, rf_contract]
       properties:
-        geojson: { $ref: "#/components/schemas/FeatureCollection", description: "Ray features expose los_state, los_classifier_id, los_classification_basis, terrain_status, and los_classification evidence when the urban height-aware classifier applies." }
+        geojson: { $ref: "#/components/schemas/FeatureCollection", description: "Ray features expose los_state, los_classifier_id, los_classification_basis, terrain_status, los_classification evidence, and a signed link_budget when the urban height-aware classifier applies." }
         stats: { type: object, additionalProperties: true }
         rf_profile: { $ref: "#/components/schemas/RFProfile" }
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
@@ -759,6 +797,7 @@ components:
         outdoor_distance_m: { type: number }
         outdoor_rx_at_facade_dbm: { type: number }
         outdoor_path_loss_db: { type: number }
+        outdoor_link_budget: { $ref: "#/components/schemas/RFLinkBudgetTerms", description: Signed outdoor facade link ledger before the selected O2I entry scenario loss. }
         outdoor_wall_loss_db: { type: number, const: 0 }
         outdoor_serviceable: { type: boolean }
         low_loss_entry_loss_db: { type: number }
@@ -1324,11 +1363,23 @@ components:
         diffraction_diagnostic: { $ref: "#/components/schemas/DiffractionDiagnostic" }
         canonical_comparison: { $ref: "#/components/schemas/CanonicalDiagnosticComparison" }
         samples: { type: array, items: { type: object, additionalProperties: true } }
-        loss_budget: { type: object, additionalProperties: true, description: "Supplemental isolated path-profile budget; not canonical network RF." }
+        loss_budget: { $ref: "#/components/schemas/PathLossBudget", description: "Supplemental isolated path-profile budget; not canonical network RF." }
         applicability: { type: object, additionalProperties: true }
         rf_profile: { $ref: "#/components/schemas/RFProfile" }
         fidelity: { type: object, additionalProperties: true }
       additionalProperties: true
+    PathLossBudget:
+      type: object
+      required: [components, total_median_loss_db, rx_dbm_p50, rx_dbm_p90_reliability, rx_dbm_upper_90, shadow_sigma_db, definition, link_budget]
+      properties:
+        components: { type: array, items: { type: object, additionalProperties: true } }
+        total_median_loss_db: { type: number, description: Signed compatibility total including calibration and RX-gain effect. }
+        rx_dbm_p50: { type: number }
+        rx_dbm_p90_reliability: { type: number }
+        rx_dbm_upper_90: { type: number }
+        shadow_sigma_db: { type: number }
+        definition: { type: string }
+        link_budget: { $ref: "#/components/schemas/RFLinkBudgetTerms" }
     FresnelClearanceDiagnostics:
       type: object
       required: [minimum_ratio, threshold_ratio, status, classification_independent, note]
@@ -1404,6 +1455,7 @@ components:
         diffraction_loss_db: { type: [number, "null"] }
         diagnostic_total_path_loss_db: { type: [number, "null"] }
         diagnostic_rx_dbm: { type: [number, "null"] }
+        link_budget: { $ref: "#/components/schemas/RFLinkBudgetTerms", description: "Diagnostic-only FSPL/diffraction link ledger; it never feeds canonical network RF." }
         applied_pattern_loss_db: { type: number }
         applied_system_loss_db: { type: number }
         applied_calibration_offset_db: { type: number }

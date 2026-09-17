@@ -78,6 +78,7 @@ type InterferenceProperties struct {
 	StrongestInterfererID  string             `json:"strongest_interferer_id,omitempty"`
 	StrongestInterfererDBm *float64           `json:"strongest_interferer_dbm,omitempty"`
 	ContributingCells      int                `json:"contributing_cells"`
+	LinkBudget             *RFLinkBudgetTerms `json:"link_budget,omitempty"`
 	BuildingID             string             `json:"building_id,omitempty"`
 	DemandWeight           float64            `json:"demand_weight,omitempty"`
 	ResidentialDemand      float64            `json:"residential_demand,omitempty"`
@@ -159,6 +160,7 @@ type receivedCellSignal struct {
 	losClassification   *LOSClassification
 	loadFactor          float64
 	preset              interferencePreset
+	linkBudget          RFLinkBudgetTerms
 }
 
 type gridSample struct {
@@ -352,7 +354,7 @@ func AnalyzeInterferenceContext(ctx context.Context, req InterferenceRequest, bu
 			RequestedSampleSpacingM: req.SampleSpacingM,
 			EffectiveSampleSpacingM: roundOne(effectiveSpacing),
 			Assumptions: []string{
-				"Each cell's transmit power, gain, loss, height, pattern, load, channel, bandwidth, and receiver assumptions are applied independently.",
+				"Each cell's conducted TX power, absolute gain, relative pattern, loss, height, load, channel, bandwidth, and receiver assumptions are applied independently.",
 				"Only selected co-channel cells inside their configured beam and radius contribute.",
 				"The selected propagation model is evaluated through the shared link evaluator; the urban model uses footprint boundaries for LOS/NLOS classification without adding legacy wall dB.",
 				"Sidelobes, fading, diffraction, MIMO scheduling, uplink, and adjacent-channel leakage are excluded.",
@@ -593,8 +595,8 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 			continue
 		}
 		bearing := BearingDegrees(origin, point)
-		effectiveAzimuth := profile.EffectiveAzimuth(tower.AzimuthDeg)
-		if profile.HorizontalPatternID != "omni" && !AngleInBeam(bearing, effectiveAzimuth, profile.BeamWidthDeg) {
+		antenna := EvaluateAntennaLink(profile, math.Max(distance, 1), bearing, tower.AzimuthDeg)
+		if !antenna.Eligible {
 			continue
 		}
 		pathGeometry, err := buildPropagationPathGeometryContextWithOptions(ctx, origin, point, buildings, propagationPathGeometryOptions{
@@ -607,7 +609,7 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 		losState, endpointCase, wallCount, losClassification := classifyPropagationPath(profile, pathGeometry, point, distance)
 		propagation := EvaluatePropagationLink(PropagationLinkContext{
 			Profile: profile, GroundDistanceM: distance,
-			HorizontalOffsetDeg: smallestAngleDifference(bearing, effectiveAzimuth),
+			HorizontalOffsetDeg: antenna.HorizontalOffsetDeg,
 			CalibrationOffsetDB: req.CalibrationOffsetDB,
 			LOSState:            losState, EndpointCase: endpointCase,
 			LOSClassification:     losClassification,
@@ -630,6 +632,7 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 			losClassification:   propagation.LOSClassification,
 			loadFactor:          profile.LoadFactor,
 			preset:              towerPreset,
+			linkBudget:          propagation.LinkBudget,
 		})
 	}
 
@@ -685,6 +688,7 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 		LOSClassification:      serving.losClassification,
 		ContributingCells:      contributingCells,
 	}
+	properties.LinkBudget = &serving.linkBudget
 	if interferenceMW > 0 {
 		properties.InterferenceDBm = floatPointer(roundOne(interferenceDBm))
 		properties.StrongestInterfererID = strongestInterfererID

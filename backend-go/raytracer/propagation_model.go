@@ -71,6 +71,14 @@ type PropagationPathTerms struct {
 	FrequencyGHz                   float64 `json:"frequency_ghz"`
 	DistanceM                      float64 `json:"distance_m"`
 	SlantDistanceM                 float64 `json:"slant_distance_m"`
+	TxPowerDBm                     float64 `json:"tx_power_dbm"`
+	TxAntennaGainDBi               float64 `json:"tx_antenna_gain_dbi"`
+	BoresightEIRPDBm               float64 `json:"boresight_eirp_dbm"`
+	DirectionalEIRPDBm             float64 `json:"directional_eirp_dbm"`
+	RxAntennaGainDBi               float64 `json:"rx_antenna_gain_dbi"`
+	SystemLossDB                   float64 `json:"system_loss_db"`
+	PolarizationLossDB             float64 `json:"polarization_loss_db"`
+	CalibrationOffsetDB            float64 `json:"calibration_offset_db"`
 	EIRPDBm                        float64 `json:"eirp_dbm"`
 	FreeSpacePathLossDB            float64 `json:"free_space_path_loss_db"`
 	UrbanPathLossDB                float64 `json:"urban_path_loss_db"`
@@ -79,6 +87,8 @@ type PropagationPathTerms struct {
 	HorizontalPatternAttenuationDB float64 `json:"horizontal_pattern_attenuation_db"`
 	VerticalPatternAttenuationDB   float64 `json:"vertical_pattern_attenuation_db"`
 	PatternAttenuationDB           float64 `json:"pattern_attenuation_db"`
+	TxPatternAttenuationDB         float64 `json:"tx_pattern_attenuation_db"`
+	PropagationLossDB              float64 `json:"propagation_loss_db"`
 	BasePathLossDB                 float64 `json:"base_path_loss_db"`
 	AdditionalLossDB               float64 `json:"additional_loss_db"`
 	TotalPathLossDB                float64 `json:"total_path_loss_db"`
@@ -107,6 +117,7 @@ type PropagationResult struct {
 	SlantDistanceM           float64                 `json:"slant_distance_m"`
 	ReceivedPowerDBm         float64                 `json:"received_power_dbm"`
 	TotalPathLossDB          float64                 `json:"total_path_loss_db"`
+	LinkBudget               RFLinkBudgetTerms       `json:"link_budget"`
 	Terms                    PropagationPathTerms    `json:"terms"`
 }
 
@@ -313,13 +324,30 @@ func fallbackPropagationResult(ctx PropagationLinkContext, requestedID string, a
 
 func propagationResultFromTerms(model PropagationModel, ctx PropagationLinkContext, terms PropagationPathTerms) PropagationResult {
 	classification := ctx.LOSClassification
+	profile := ctx.Profile.normalized()
+	pattern := EvaluateAntennaPattern(profile, terms.DistanceM, ctx.HorizontalOffsetDeg)
+	linkBudget := rfLinkBudgetTermsFromAntenna(profile, pattern, terms.BasePathLossDB, terms.FreeSpacePathLossDB, terms.WallLossDB, ctx.CalibrationOffsetDB)
+	terms.TxPowerDBm = linkBudget.TxPowerDBm
+	terms.TxAntennaGainDBi = linkBudget.TxAntennaGainDBi
+	terms.BoresightEIRPDBm = linkBudget.BoresightEIRPDBm
+	terms.DirectionalEIRPDBm = linkBudget.DirectionalEIRPDBm
+	terms.RxAntennaGainDBi = linkBudget.RxAntennaGainDBi
+	terms.SystemLossDB = linkBudget.SystemLossDB
+	terms.PolarizationLossDB = linkBudget.PolarizationLossDB
+	terms.CalibrationOffsetDB = linkBudget.CalibrationOffsetDB
+	terms.EIRPDBm = linkBudget.EIRPDBm
+	terms.HorizontalPatternAttenuationDB = linkBudget.HorizontalPatternAttenuationDB
+	terms.VerticalPatternAttenuationDB = linkBudget.VerticalPatternAttenuationDB
+	terms.PatternAttenuationDB = linkBudget.PatternAttenuationDB
+	terms.TxPatternAttenuationDB = linkBudget.TxPatternAttenuationDB
+	terms.PropagationLossDB = linkBudget.PropagationLossDB
 	result := PropagationResult{
 		ModelID: model.ID(), AppliedModelID: model.ID(), ModelDescription: model.Description(),
 		Applicable: true, ApplicabilityReason: RFReferenceReasonApplicable,
 		LOSState: ctx.LOSState, EndpointCase: ctx.EndpointCase,
 		DistanceM: terms.DistanceM, SlantDistanceM: terms.SlantDistanceM,
-		ReceivedPowerDBm: terms.EIRPDBm - terms.TotalPathLossDB,
-		TotalPathLossDB:  terms.TotalPathLossDB, Terms: terms,
+		ReceivedPowerDBm: linkBudget.ReceivedPowerDBm,
+		TotalPathLossDB:  terms.TotalPathLossDB, LinkBudget: linkBudget, Terms: terms,
 	}
 	if classification != nil {
 		result.LOSClassifierID = classification.ClassifierID
@@ -331,31 +359,30 @@ func propagationResultFromTerms(model PropagationModel, ctx PropagationLinkConte
 	return result
 }
 
-func propagationPatternTerms(profile CellRFProfile, distanceM, calibrationOffsetDB, horizontalOffsetDeg float64) (float64, float64, float64, float64) {
-	horizontal := profile.HorizontalPatternAttenuationDB(horizontalOffsetDeg)
-	vertical := profile.VerticalPatternAttenuationDB(distanceM)
-	return horizontal, vertical, horizontal + vertical, profile.TxPowerDBm + profile.AntennaGainDBi - profile.SystemLossDB + calibrationOffsetDB
+func propagationPatternTerms(profile CellRFProfile, distanceM, horizontalOffsetDeg float64) AntennaPatternEvaluation {
+	return EvaluateAntennaPattern(profile, distanceM, horizontalOffsetDeg)
 }
 
 func legacyPropagationTerms(profile CellRFProfile, distanceM float64, wallEventCount int, calibrationOffsetDB, horizontalOffsetDeg float64) PropagationPathTerms {
 	distanceM = math.Max(distanceM, 0)
 	slantDistanceM := profile.SlantDistanceMeters(distanceM)
-	horizontal, vertical, pattern, eirp := propagationPatternTerms(profile, distanceM, calibrationOffsetDB, horizontalOffsetDeg)
+	pattern := propagationPatternTerms(profile, distanceM, horizontalOffsetDeg)
 	fspl := FreeSpacePathLossMetersGHz(slantDistanceM, profile.FrequencyGHz)
 	wallLoss := math.Max(0, float64(wallEventCount)) * PenetrationLossForFrequencyGHz(profile.FrequencyGHz)
 	return PropagationPathTerms{
 		FrequencyGHz: profile.FrequencyGHz, DistanceM: distanceM, SlantDistanceM: slantDistanceM,
-		EIRPDBm: eirp, FreeSpacePathLossDB: fspl, WallLossDB: wallLoss,
-		HorizontalPatternAttenuationDB: horizontal, VerticalPatternAttenuationDB: vertical,
-		PatternAttenuationDB: pattern, BasePathLossDB: fspl, AdditionalLossDB: wallLoss,
-		TotalPathLossDB: fspl + wallLoss + pattern,
+		FreeSpacePathLossDB: fspl, WallLossDB: wallLoss,
+		HorizontalPatternAttenuationDB: pattern.HorizontalAttenuationDB, VerticalPatternAttenuationDB: pattern.VerticalAttenuationDB,
+		PatternAttenuationDB: pattern.TotalAttenuationDB, TxPatternAttenuationDB: pattern.TotalAttenuationDB,
+		PropagationLossDB: fspl, BasePathLossDB: fspl, AdditionalLossDB: wallLoss,
+		TotalPathLossDB: fspl + wallLoss + pattern.TotalAttenuationDB,
 	}
 }
 
 func urbanPropagationTerms(profile CellRFProfile, distanceM float64, state PropagationLOSState, calibrationOffsetDB, horizontalOffsetDeg float64) PropagationPathTerms {
 	distanceM = math.Max(distanceM, 0)
 	slantDistanceM := profile.SlantDistanceMeters(distanceM)
-	horizontal, vertical, pattern, eirp := propagationPatternTerms(profile, distanceM, calibrationOffsetDB, horizontalOffsetDeg)
+	pattern := propagationPatternTerms(profile, distanceM, horizontalOffsetDeg)
 	fcHz := profile.FrequencyGHz * 1e9
 	hBSPrime := profile.AntennaHeightM - 1
 	hUTPrime := profile.ReceiverHeightM - 1
@@ -377,10 +404,11 @@ func urbanPropagationTerms(profile CellRFProfile, distanceM float64, state Propa
 	}
 	return PropagationPathTerms{
 		FrequencyGHz: profile.FrequencyGHz, DistanceM: distanceM, SlantDistanceM: slantDistanceM,
-		EIRPDBm: eirp, UrbanPathLossDB: selected, BreakpointDistanceM: dBP,
-		HorizontalPatternAttenuationDB: horizontal, VerticalPatternAttenuationDB: vertical,
-		PatternAttenuationDB: pattern, BasePathLossDB: selected, AdditionalLossDB: 0,
-		TotalPathLossDB: selected + pattern,
+		UrbanPathLossDB: selected, BreakpointDistanceM: dBP,
+		HorizontalPatternAttenuationDB: pattern.HorizontalAttenuationDB, VerticalPatternAttenuationDB: pattern.VerticalAttenuationDB,
+		PatternAttenuationDB: pattern.TotalAttenuationDB, TxPatternAttenuationDB: pattern.TotalAttenuationDB,
+		PropagationLossDB: selected, BasePathLossDB: selected, AdditionalLossDB: 0,
+		TotalPathLossDB: selected + pattern.TotalAttenuationDB,
 	}
 }
 

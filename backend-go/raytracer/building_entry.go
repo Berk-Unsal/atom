@@ -334,6 +334,7 @@ type BuildingEntryEstimate struct {
 	OutdoorDistanceM              float64                       `json:"outdoor_distance_m,omitempty"`
 	OutdoorRxAtFacadeDBm          *float64                      `json:"outdoor_rx_at_facade_dbm,omitempty"`
 	OutdoorPathLossDB             *float64                      `json:"outdoor_path_loss_db,omitempty"`
+	OutdoorLinkBudget             *RFLinkBudgetTerms            `json:"outdoor_link_budget,omitempty"`
 	OutdoorWallLossDB             float64                       `json:"outdoor_wall_loss_db"`
 	OutdoorServiceable            bool                          `json:"outdoor_serviceable"`
 	LowLossEntryLossDB            *float64                      `json:"low_loss_entry_loss_db,omitempty"`
@@ -700,8 +701,8 @@ func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysis
 			continue
 		}
 		bearing := BearingDegrees(towerPoint, representative)
-		effectiveAzimuth := profile.EffectiveAzimuth(tower.AzimuthDeg)
-		if !AngleInBeam(bearing, effectiveAzimuth, profile.EffectiveBeamWidthDeg()) {
+		antenna := EvaluateAntennaLink(profile, math.Max(distanceToRepresentative, 1), bearing, tower.AzimuthDeg)
+		if !antenna.Eligible {
 			continue
 		}
 		entryPoint, entryDistance, entryOK := facadeEntryPoint(towerPoint, representative, building.Vertices)
@@ -729,7 +730,7 @@ func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysis
 		linkContext := PropagationLinkContext{
 			Profile:               profile,
 			GroundDistanceM:       entryDistance,
-			HorizontalOffsetDeg:   signedBearingOffset(bearing, effectiveAzimuth),
+			HorizontalOffsetDeg:   antenna.HorizontalOffsetDeg,
 			CalibrationOffsetDB:   req.Network.CalibrationOffsetDB,
 			LOSState:              losState,
 			LOSClassification:     &classification,
@@ -784,6 +785,7 @@ func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysis
 	result.OutdoorDistanceM = roundFloat(best.facadeDistanceM, 3)
 	result.OutdoorRxAtFacadeDBm = floatPointer(roundFloat(best.outdoorResult.ReceivedPowerDBm, 3))
 	result.OutdoorPathLossDB = floatPointer(roundFloat(best.outdoorResult.TotalPathLossDB, 3))
+	result.OutdoorLinkBudget = &best.outdoorResult.LinkBudget
 	result.OutdoorWallLossDB = 0
 	result.OutdoorServiceable = best.outdoorServiceable
 	result.FacadeEntryPoint = &best.entryPoint

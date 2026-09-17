@@ -173,9 +173,12 @@ func TestPropagationGeometryAndEngineConsistency(t *testing.T) {
 	buildings := testPropagationFixtureBuilding(origin, 0, 80, 4)
 	profile := DefaultPlanningCellRFProfile("5g", 28, 30, 100, 360, 100, 0.7, 1)
 	profile.HorizontalPatternID = "omni"
+	profile.RxAntennaGainDBi = 3
+	profile.SystemLossDB = 1
+	profile.PolarizationLossDB = 2
 	request := StaticSimulationRequest{
 		TowerLon: origin.Lon, TowerLat: origin.Lat, Rays: 1, RadiusMeters: 100,
-		FrequencyGHz: 28, TxPowerDBm: 30, AzimuthDeg: 0, BeamWidthDeg: 360,
+		FrequencyGHz: 28, TxPowerDBm: 30, AzimuthDeg: 0, BeamWidthDeg: 360, CalibrationOffsetDB: 1,
 		RFProfile: profile,
 	}
 
@@ -190,7 +193,7 @@ func TestPropagationGeometryAndEngineConsistency(t *testing.T) {
 	}
 	direct := EvaluatePropagationLink(PropagationLinkContext{
 		Profile: profile, GroundDistanceM: 100, LOSState: los, EndpointCase: endpoint,
-		BuildingDataAvailable: geometry.available, WallEventCount: walls,
+		CalibrationOffsetDB: request.CalibrationOffsetDB, BuildingDataAvailable: geometry.available, WallEventCount: walls,
 	})
 
 	surface, err := GenerateCoverageSurfaceContext(context.Background(), CoverageSurfaceRequest{
@@ -215,6 +218,9 @@ func TestPropagationGeometryAndEngineConsistency(t *testing.T) {
 			if feature.Properties.AppliedPropagationModelID != UrbanShortRangePropagationID || feature.Properties.LOSState != PropagationLOS {
 				t.Fatalf("ray explainability = %+v", feature.Properties)
 			}
+			if math.Abs(roundOne(feature.Properties.LinkBudget.ReceivedPowerDBm)-feature.Properties.SignalEndDBm) > 1e-9 || feature.Properties.LinkBudget.RxAntennaGainDBi != 3 || feature.Properties.LinkBudget.PolarizationLossDB != 2 {
+				t.Fatalf("ray link ledger = %+v signal=%.6f", feature.Properties.LinkBudget, feature.Properties.SignalEndDBm)
+			}
 		}
 	}
 	if !found || math.Abs(rayPower-surfacePower) > 0.1 {
@@ -232,7 +238,7 @@ func TestPropagationGeometryAndEngineConsistency(t *testing.T) {
 	}
 	nlosDirect := EvaluatePropagationLink(PropagationLinkContext{
 		Profile: profile, GroundDistanceM: 100, LOSState: nlos, EndpointCase: nlosEndpoint,
-		BuildingDataAvailable: nlosGeometry.available, WallEventCount: nlosWalls,
+		CalibrationOffsetDB: request.CalibrationOffsetDB, BuildingDataAvailable: nlosGeometry.available, WallEventCount: nlosWalls,
 	})
 	nlosSurface, err := GenerateCoverageSurfaceContext(context.Background(), CoverageSurfaceRequest{
 		Simulation: request, CellSizeMeters: 25, ThresholdsDBm: []float64{-100},
@@ -279,7 +285,7 @@ func TestPropagationGeometryAndEngineConsistency(t *testing.T) {
 	interferenceRequest := InterferenceRequest{
 		NetworkTech: "5g", Towers: []InterferenceTowerRequest{{ID: "fixture", TowerLon: origin.Lon, TowerLat: origin.Lat, AzimuthDeg: 90, RFProfile: profile}},
 		RadiusMeters: 100, FrequencyGHz: 28, TxPowerDBm: 30, BeamWidthDeg: 360, BandwidthMHz: 100,
-		LoadFactor: 0.7, ReuseFactor: 1, NoiseFigureDB: 7, SampleSpacingM: 40, RFProfile: profile,
+		LoadFactor: 0.7, ReuseFactor: 1, NoiseFigureDB: 7, SampleSpacingM: 40, CalibrationOffsetDB: request.CalibrationOffsetDB, RFProfile: profile,
 	}
 	NormalizeInterferenceRequest(&interferenceRequest)
 	preset, _ := interferencePresetFor("5g", 100)
@@ -292,7 +298,7 @@ func TestPropagationGeometryAndEngineConsistency(t *testing.T) {
 	interferenceDirect := EvaluatePropagationLink(PropagationLinkContext{
 		Profile: profile, GroundDistanceM: ApproxDistanceMeters(origin, interferencePoint),
 		LOSState: interferenceLOS, EndpointCase: interferenceEndpoint,
-		BuildingDataAvailable: interferenceGeometry.available, WallEventCount: interferenceWalls,
+		CalibrationOffsetDB: interferenceRequest.CalibrationOffsetDB, BuildingDataAvailable: interferenceGeometry.available, WallEventCount: interferenceWalls,
 	})
 	properties, err := evaluateInterferencePointContext(context.Background(), interferenceRequest, preset, buildings, interferencePoint)
 	if err != nil || properties.RSRPDBm == nil {
@@ -301,5 +307,8 @@ func TestPropagationGeometryAndEngineConsistency(t *testing.T) {
 	expectedRSRP := interferenceDirect.ReceivedPowerDBm - 10*math.Log10(12*float64(preset.resourceBlocks))
 	if math.Abs(*properties.RSRPDBm-roundOne(expectedRSRP)) > 0.1 {
 		t.Fatalf("interference RSRP = %.3f, direct conversion = %.3f", *properties.RSRPDBm, expectedRSRP)
+	}
+	if properties.LinkBudget == nil || math.Abs(properties.LinkBudget.ReceivedPowerDBm-interferenceDirect.ReceivedPowerDBm) > 1e-9 {
+		t.Fatalf("interference carrier link ledger = %+v, direct = %+v", properties.LinkBudget, interferenceDirect.LinkBudget)
 	}
 }

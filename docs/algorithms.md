@@ -148,7 +148,10 @@ func TraceSector(tx Location, req SimulationRequest) GeoJSON {
 
             distance := haversine_distance(tx, segmentEnd)
             fspl := 20*log10(distance) + 20*log10(req.frequency_ghz) + 32.45
-            rxPower := req.tx_power_dbm + req.antenna_gain_dbi - req.system_loss_db + req.calibration_offset_db - fspl - wallLoss - horizontalPatternLoss(req) - verticalPatternLoss(req)
+            txGain := effectiveTxAntennaGain(req)
+            patternLoss := sharedAntennaPatternLoss(req, segmentEnd)
+            propagationLoss := fspl + wallLoss
+            rxPower := req.tx_power_dbm + txGain - patternLoss + req.rx_antenna_gain_dbi - req.system_loss_db - req.polarization_loss_db + req.calibration_offset_db - propagationLoss
 
             if rxPower <= receiverSensitivity {
                 break

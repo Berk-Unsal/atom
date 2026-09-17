@@ -19,6 +19,51 @@ describe("path profile chart geometry", () => {
 });
 
 describe("PathProfileResult diffraction diagnostic", () => {
+  it("renders the explicit signed link-budget ledger", () => {
+    render(
+      <PathProfileResult
+        profile={{
+          classification: "los",
+          geometric_los: true,
+          distance_m: 100,
+          fresnel_clearance: { status: "clear" },
+          terrain: { available: false },
+          samples: [],
+          loss_budget: {
+            components: [],
+            rx_dbm_p50: -49.75,
+            total_median_loss_db: 105.5,
+            link_budget: {
+              tx_power_dbm: 30,
+              tx_antenna_gain_dbi: 25,
+              boresight_eirp_dbm: 55,
+              directional_eirp_dbm: 52,
+              tx_pattern_attenuation_db: 3,
+              propagation_loss_db: 100,
+              building_loss_db: 2,
+              system_loss_db: 1,
+              polarization_loss_db: 0.5,
+              rx_antenna_gain_dbi: 4,
+              calibration_offset_db: -0.25,
+              total_loss_db: 102.5,
+              received_power_dbm: -49.75,
+            },
+          },
+          applicability: { frequency_applicable: true, reference: "ITU-R P.1411-13", implementation: "diagnostic" },
+          diffraction_diagnostic: { available: false, limitations: [] },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Signed link-budget ledger")).toBeInTheDocument();
+    expect(screen.getByText("TX directional EIRP")).toBeInTheDocument();
+    expect(screen.getByText("−3.00 dB loss")).toBeInTheDocument();
+    expect(screen.getByText("+4.00 dBi")).toBeInTheDocument();
+    expect(screen.getByText("-0.25 dB")).toBeInTheDocument();
+    expect(screen.getByText("+102.50 dB")).toBeInTheDocument();
+    expect(screen.getByText("-49.75 dBm")).toBeInTheDocument();
+  });
+
   it("keeps canonical UMa and diagnostic values visibly separate", () => {
     render(
       <PathProfileResult

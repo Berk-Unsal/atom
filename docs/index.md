@@ -14,6 +14,7 @@ Use the [documentation hub](index.html) for the maintained browser experience. I
 - [Concept 4E building entry](concept-4e-building-entry.html): deterministic facade-entry semantics, TR 38.901 O2I loss profiles, material audit, API contract, caching, and canonical Ankara ledger.
 - [Concept 4F.1 height-aware obstruction](concept-4f1-height-aware-obstruction.md): height provenance, deterministic centerline roof blocking, conservative unknown-height behavior, terrain status, multipart identity, and canonical audit.
 - [Concept 4F.2 diffraction diagnostic](concept-4f2-diffraction-diagnostic.md): P.526-16 single-edge reference math, obstruction ledgers, known-height applicability, canonical comparison, and diagnostic-only boundaries.
+- [Concept 4G.1 antenna and link-budget foundation](concept-4g1-antenna-link-budget.md): conducted-power/EIRP semantics, absolute gain versus relative pattern attenuation, shared antenna evaluation, explicit RX/polarization terms, reference single-element behavior, diagnostics, and compatibility evidence.
 - [API reference](api.html) and [OpenAPI contract](openapi.yaml): documented REST interfaces and response behavior.
 - [Bug-fix register](bug-fixes.html): confirmed defects, priority, correction, and regression evidence.
 

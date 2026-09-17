@@ -333,19 +333,22 @@ endpoint; only the explicit legacy mode applies cumulative wall dB</li>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            distance <span class="op">:=</span> haversine_distance<span class="op">(</span>tx<span class="op">,</span> segmentEnd<span class="op">)</span></span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            fspl <span class="op">:=</span> <span class="dv">20</span><span class="op">*</span>log10<span class="op">(</span>distance<span class="op">)</span> <span class="op">+</span> <span class="dv">20</span><span class="op">*</span>log10<span class="op">(</span>req<span class="op">.</span>frequency_ghz<span class="op">)</span> <span class="op">+</span> <span class="fl">32.45</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>            rxPower <span class="op">:=</span> req<span class="op">.</span>tx_power_dbm <span class="op">+</span> req<span class="op">.</span>antenna_gain_dbi <span class="op">-</span> req<span class="op">.</span>system_loss_db <span class="op">+</span> req<span class="op">.</span>calibration_offset_db <span class="op">-</span> fspl <span class="op">-</span> wallLoss <span class="op">-</span> horizontalPatternLoss<span class="op">(</span>req<span class="op">)</span> <span class="op">-</span> verticalPatternLoss<span class="op">(</span>req<span class="op">)</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> rxPower <span class="op">&lt;=</span> receiverSensitivity <span class="op">{</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>            result<span class="op">.</span>Add<span class="op">(</span>LineString<span class="op">{</span>current<span class="op">,</span> segmentEnd<span class="op">},</span> rxPower<span class="op">)</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>            current <span class="op">=</span> segmentEnd</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>            txGain <span class="op">:=</span> effectiveTxAntennaGain<span class="op">(</span>req<span class="op">)</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>            patternLoss <span class="op">:=</span> sharedAntennaPatternLoss<span class="op">(</span>req<span class="op">,</span> segmentEnd<span class="op">)</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>            propagationLoss <span class="op">:=</span> fspl <span class="op">+</span> wallLoss</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>            rxPower <span class="op">:=</span> req<span class="op">.</span>tx_power_dbm <span class="op">+</span> txGain <span class="op">-</span> patternLoss <span class="op">+</span> req<span class="op">.</span>rx_antenna_gain_dbi <span class="op">-</span> req<span class="op">.</span>system_loss_db <span class="op">-</span> req<span class="op">.</span>polarization_loss_db <span class="op">+</span> req<span class="op">.</span>calibration_offset_db <span class="op">-</span> propagationLoss</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> rxPower <span class="op">&lt;=</span> receiverSensitivity <span class="op">{</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>            result<span class="op">.</span>Add<span class="op">(</span>LineString<span class="op">{</span>current<span class="op">,</span> segmentEnd<span class="op">},</span> rxPower<span class="op">)</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>            current <span class="op">=</span> segmentEnd</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3 id="computational-geometry-polygon-intersection">Computational
 Geometry: Polygon Intersection</h3>
 <p><strong>Problem</strong>: Does a ray (line segment) intersect a

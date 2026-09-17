@@ -75,6 +75,15 @@ func TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled(t *testi
 	if first.Baseline != nil {
 		baselineRaw := first.Baseline.Stats.RawMetrics
 		optimizedRaw := first.Stats.RawMetrics
+		if math.Abs(baselineRaw.ServedDemandWeight-185) > 1e-6 || baselineRaw.ResidentialCovered != 28 || math.Abs(baselineRaw.PropagationReachScore-16013.3051) > 1e-4 || math.Abs(baselineRaw.OverlapRatio-0.098361) > 1e-6 || math.Abs(first.Baseline.Stats.Score-33.7894) > 1e-4 {
+			t.Fatalf("canonical compatibility baseline changed: raw=%+v score=%.6f", baselineRaw, first.Baseline.Stats.Score)
+		}
+		if math.Abs(optimizedRaw.ServedDemandWeight-555) > 1e-6 || optimizedRaw.ResidentialCovered != 43 || math.Abs(optimizedRaw.PropagationReachScore-19548.6910) > 1e-4 || math.Abs(optimizedRaw.OverlapRatio) > 1e-6 || math.Abs(first.Stats.Score-41.1715) > 1e-4 {
+			t.Fatalf("canonical compatibility optimized result changed: raw=%+v score=%.6f", optimizedRaw, first.Stats.Score)
+		}
+		if len(first.ParetoFrontier) != 6 || len(first.OptimizedTowers) != 6 || first.Optimization.RecommendedSolutionID != "70.0,20.0,130.0,160.0,290.0,110.0" {
+			t.Fatalf("canonical compatibility recommendation changed: pareto=%d recommended=%s towers=%v", len(first.ParetoFrontier), first.Optimization.RecommendedSolutionID, first.OptimizedTowers)
+		}
 		t.Logf("comparison baseline={demand=%.4f residential=%d reach=%.4f overlap=%.6f score=%.4f feasible=%v} optimized={demand=%.4f residential=%d reach=%.4f overlap=%.6f score=%.4f feasible=%v} deltas={demand=%.4f residential=%d reach=%.4f overlap=%.6f score=%.4f}",
 			baselineRaw.ServedDemandWeight, baselineRaw.ResidentialCovered, baselineRaw.PropagationReachScore, baselineRaw.OverlapRatio, first.Baseline.Stats.Score, first.Baseline.ConstraintsSatisfied,
 			optimizedRaw.ServedDemandWeight, optimizedRaw.ResidentialCovered, optimizedRaw.PropagationReachScore, optimizedRaw.OverlapRatio, first.Stats.Score, first.Optimization.ConstraintsSatisfied,

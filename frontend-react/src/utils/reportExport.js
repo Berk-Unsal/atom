@@ -384,7 +384,7 @@ function renderMarkdownExecutiveSummary(view) {
       row("Technology", view.activeNetworkTech),
       row("Selected cells", formatCount(view.networkTowers.length || view.parameters.selected_cell_count)),
       row("Frequency", formatUnit(view.parameters.frequency_ghz ?? view.parameters.frequencyGHz, 3, "GHz")),
-      row("Transmit power", formatUnit(view.parameters.tx_power_dbm ?? view.parameters.txPowerDbm, 1, "dBm")),
+      row("Conducted TX power", formatUnit(view.parameters.tx_power_dbm ?? view.parameters.txPowerDbm, 1, "dBm")),
       row("Planning radius", formatUnit(view.parameters.radius_m ?? view.parameters.radiusMeters, 0, "m")),
     ]
     : [
@@ -392,7 +392,7 @@ function renderMarkdownExecutiveSummary(view) {
       row("Cell", view.networkTowers[0]?.cellId ?? view.networkTowers[0]?.id),
       row("Technology", view.activeNetworkTech),
       row("Frequency", formatUnit(view.settings.frequencyGHz, 3, "GHz")),
-      row("Transmit power", formatUnit(view.settings.tx_power_dbm ?? view.settings.txPowerDbm, 1, "dBm")),
+      row("Conducted TX power", formatUnit(view.settings.tx_power_dbm ?? view.settings.txPowerDbm, 1, "dBm")),
       row("Planning radius", formatUnit(view.settings.radiusMeters ?? view.settings.radius_m, 0, "m")),
     ];
   const summaryPerformance = view.performanceRows.filter((item) => ["Optimization score", "Demand served", "Residential", "Propagation reach", "Overlap ratio"].includes(item[0]));
@@ -426,7 +426,7 @@ function renderPrintableExecutiveSummary(view) {
       row("Technology", view.activeNetworkTech),
       row("Selected cells", formatCount(view.networkTowers.length || view.parameters.selected_cell_count)),
       row("Frequency", formatUnit(view.parameters.frequency_ghz ?? view.parameters.frequencyGHz, 3, "GHz")),
-      row("Transmit power", formatUnit(view.parameters.tx_power_dbm ?? view.parameters.txPowerDbm, 1, "dBm")),
+      row("Conducted TX power", formatUnit(view.parameters.tx_power_dbm ?? view.parameters.txPowerDbm, 1, "dBm")),
       row("Planning radius", formatUnit(view.parameters.radius_m ?? view.parameters.radiusMeters, 0, "m")),
     ]
     : [
@@ -434,7 +434,7 @@ function renderPrintableExecutiveSummary(view) {
       row("Cell", view.networkTowers[0]?.cellId ?? view.networkTowers[0]?.id),
       row("Technology", view.activeNetworkTech),
       row("Frequency", formatUnit(view.settings.frequencyGHz, 3, "GHz")),
-      row("Transmit power", formatUnit(view.settings.tx_power_dbm ?? view.settings.txPowerDbm, 1, "dBm")),
+      row("Conducted TX power", formatUnit(view.settings.tx_power_dbm ?? view.settings.txPowerDbm, 1, "dBm")),
       row("Planning radius", formatUnit(view.settings.radiusMeters ?? view.settings.radius_m, 0, "m")),
     ];
   const summaryPerformance = view.performanceRows.filter((item) => ["Optimization score", "Demand served", "Residential", "Propagation reach", "Overlap ratio"].includes(item[0]));
@@ -652,9 +652,11 @@ function buildRFParameterRows(view) {
     row("Technology", view.activeNetworkTech),
     row("Frequency", formatUnit(view.parameters.frequency_ghz ?? view.settings.frequencyGHz, 3, "GHz")),
     row("Bandwidth", formatUnit(view.rfProfiles[0]?.bandwidthMHz ?? view.settings.interferenceBandwidthMHz, 1, "MHz")),
-    row("Transmit power", formatUnit(view.parameters.tx_power_dbm ?? view.settings.txPowerDbm, 1, "dBm")),
-    row("Antenna gain", formatUnit(view.rfProfiles[0]?.antennaGainDbi, 1, "dBi")),
+    row("Conducted TX power", formatUnit(view.parameters.tx_power_dbm ?? view.settings.txPowerDbm, 1, "dBm")),
+    row("TX absolute boresight gain", formatUnit(view.rfProfiles[0]?.antennaGainDbi, 1, "dBi")),
+    row("RX antenna gain", formatUnit(view.rfProfiles[0]?.rxAntennaGainDbi, 1, "dBi")),
     row("System loss", formatUnit(view.rfProfiles[0]?.systemLossDb, 1, "dB")),
+    row("Polarization loss", formatUnit(view.rfProfiles[0]?.polarizationLossDb, 1, "dB")),
     row("Antenna height", formatUnit(view.rfProfiles[0]?.antennaHeightM, 1, "m")),
     row("Receiver sensitivity (first effective cell)", formatUnit(view.rfProfiles[0]?.receiverSensitivityDbm, 1, "dBm")),
     row("Building service threshold", formatUnit(view.coverageGaps?.stats?.building_service_threshold_dbm ?? view.coverageGaps?.stats?.threshold_dbm ?? view.appMeta?.rf_contract?.building_service_threshold_dbm, 1, "dBm")),
@@ -666,7 +668,7 @@ function buildRFParameterRows(view) {
 function buildRFProfileTable(view) {
   const includePCI = view.rfProfiles.some((profile) => finiteOrNull(profile.pci) !== null);
   return {
-    headers: ["Cell", "Band / channel", "Frequency / bandwidth", "TX / gain / loss", "Antenna", "Patterns", includePCI ? "Load / reuse / PCI" : "Load / reuse", "Receiver / sensitivity"],
+    headers: ["Cell", "Band / channel", "Frequency / bandwidth", "Signed link terms", "Antenna", "Patterns", includePCI ? "Load / reuse / PCI" : "Load / reuse", "Receiver / sensitivity"],
     rows: buildRFProfileRows(view, includePCI),
   };
 }
@@ -676,7 +678,7 @@ function buildRFProfileRows(view, includePCI = view.rfProfiles.some((profile) =>
     profile.cellId,
     `${formatText(profile.band)} / ${formatText(profile.channelId)}`,
     `${formatUnit(profile.frequencyGHz, 3, "GHz")} · ${formatUnit(profile.bandwidthMHz, 1, "MHz")}`,
-    `${formatUnit(profile.txPowerDbm, 1, "dBm")} · ${formatUnit(profile.antennaGainDbi, 1, "dBi")} · ${formatUnit(profile.systemLossDb, 1, "dB")}`,
+    `TX ${formatUnit(profile.txPowerDbm, 1, "dBm")} · G_TX ${formatUnit(profile.antennaGainDbi, 1, "dBi")} · G_RX ${formatUnit(profile.rxAntennaGainDbi, 1, "dBi")} · L_sys ${formatUnit(profile.systemLossDb, 1, "dB")} · L_pol ${formatUnit(profile.polarizationLossDb, 1, "dB")}`,
     `${formatUnit(profile.antennaHeightM, 1, "m")} · ${formatUnit(totalTilt(profile), 1, "°")} tilt · ${formatUnit(profile.orientationDeg, 1, "°")} orientation`,
     `${formatText(profile.horizontalPatternId)} / ${formatText(profile.verticalPatternId)}`,
     `${formatPercent(profile.loadFactor)} load · reuse ${formatCount(profile.reuseFactor)}${includePCI ? ` · PCI ${formatText(profile.pci)}` : ""}`,
@@ -1370,8 +1372,10 @@ function snapshotRFProfileToOverride(profile = {}) {
     channelId: profile.channel_id ?? profile.channelId,
     duplexMode: profile.duplex_mode ?? profile.duplexMode,
     txPowerDbm: profile.tx_power_dbm ?? profile.txPowerDbm,
-    antennaGainDbi: profile.antenna_gain_dbi ?? profile.antennaGainDbi,
+    antennaGainDbi: profile.tx_antenna_gain_dbi ?? profile.txAntennaGainDbi ?? profile.antenna_gain_dbi ?? profile.antennaGainDbi,
+    rxAntennaGainDbi: profile.rx_antenna_gain_dbi ?? profile.rxAntennaGainDbi,
     systemLossDb: profile.system_loss_db ?? profile.systemLossDb,
+    polarizationLossDb: profile.polarization_loss_db ?? profile.polarizationLossDb,
     radiusMeters: profile.radius_m ?? profile.radiusMeters,
     beamWidthDeg: profile.beam_width ?? profile.beamWidthDeg,
     antennaHeightM: profile.antenna_height_m ?? profile.antennaHeightM,

@@ -121,7 +121,9 @@ export const DEFAULT_RF_PROFILE = Object.freeze({
   "channelId": "CH-1",
   "duplexMode": "tdd",
   "antennaGainDbi": 25,
+  "rxAntennaGainDbi": 0,
   "systemLossDb": 0,
+  "polarizationLossDb": 0,
   "antennaHeightM": 25,
   "mechanicalDowntiltDeg": 0,
   "electricalDowntiltDeg": 0,
@@ -154,6 +156,10 @@ export const RF_PROFILE_OPTIONS = Object.freeze({
     {
       "id": "omni",
       "label": "Omnidirectional"
+    },
+    {
+      "id": "3gpp-single-element",
+      "label": "3GPP single element (reference)"
     }
   ],
   "verticalPatterns": [
@@ -209,8 +215,12 @@ export const POLICY_LIMITS = Object.freeze({
   "bandwidth_mhz_max": 2000,
   "antenna_gain_dbi_min": -20,
   "antenna_gain_dbi_max": 80,
+  "rx_antenna_gain_dbi_min": -20,
+  "rx_antenna_gain_dbi_max": 80,
   "system_loss_db_min": 0,
   "system_loss_db_max": 100,
+  "polarization_loss_db_min": 0,
+  "polarization_loss_db_max": 40,
   "antenna_height_m_min": 0.5,
   "antenna_height_m_max": 300,
   "downtilt_deg_min": -30,

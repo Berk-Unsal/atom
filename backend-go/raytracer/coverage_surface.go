@@ -153,8 +153,8 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 			}
 			point := Point{Lon: origin.Lon + x*lonScale, Lat: origin.Lat + y*latScale}
 			bearing := BearingDegrees(origin, point)
-			effectiveAzimuth := profile.EffectiveAzimuth(req.Simulation.AzimuthDeg)
-			if profile.HorizontalPatternID != "omni" && !AngleInBeam(bearing, effectiveAzimuth, profile.BeamWidthDeg) {
+			antenna := EvaluateAntennaLink(profile, math.Max(distanceMeters, 1), bearing, req.Simulation.AzimuthDeg)
+			if !antenna.Eligible {
 				continue
 			}
 			pathGeometry, err := buildPropagationPathGeometryContextWithOptions(ctx, origin, point, buildings, propagationPathGeometryOptions{
@@ -167,7 +167,7 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 			losState, endpointCase, wallEventCount, losClassification := classifyPropagationPath(profile, pathGeometry, point, distanceMeters)
 			propagation := EvaluatePropagationLink(PropagationLinkContext{
 				Profile: profile, GroundDistanceM: math.Max(distanceMeters, 1),
-				HorizontalOffsetDeg: smallestAngleDifference(bearing, effectiveAzimuth),
+				HorizontalOffsetDeg: antenna.HorizontalOffsetDeg,
 				CalibrationOffsetDB: req.Simulation.CalibrationOffsetDB,
 				LOSState:            losState, EndpointCase: endpointCase,
 				LOSClassification:     losClassification,

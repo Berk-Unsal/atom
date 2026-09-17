@@ -2967,12 +2967,14 @@ a:focus-visible {
 }
 
 .diffraction-ledger,
+.link-budget-details,
 .profile-loss-details {
   border-top: 1px solid var(--line);
   padding-top: 8px;
 }
 
 .diffraction-ledger summary,
+.link-budget-details summary,
 .profile-loss-details summary {
   color: var(--teal-dark);
   cursor: pointer;
@@ -2981,8 +2983,59 @@ a:focus-visible {
 }
 
 .diffraction-ledger[open] summary,
+.link-budget-details[open] summary,
 .profile-loss-details[open] summary {
   margin-bottom: 7px;
+}
+
+.link-budget-details > .data-note {
+  margin: 0 0 8px;
+}
+
+.link-budget-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.link-budget-grid > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.link-budget-grid > div:nth-child(odd) {
+  border-right: 1px solid var(--line);
+}
+
+.link-budget-grid > div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.link-budget-grid strong {
+  flex: 0 0 auto;
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.link-budget-grid .link-budget-result {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--line-strong);
+  border-right: 0;
+  border-bottom: 0;
+  color: var(--teal-dark);
+  background: #f1faf6;
+  font-weight: 820;
 }
 
 .diffraction-ledger-table {

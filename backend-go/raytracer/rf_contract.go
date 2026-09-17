@@ -5,16 +5,18 @@ import "strings"
 // The canonical network model is intentionally narrow. It is a deterministic
 // footprint-obstruction planning model, not a full 2.5D channel solver.
 const (
-	CanonicalRFModelID             = "fspl-walls-2p5d-v3"
-	DiagnosticPathModelID          = "path-profile-diagnostic-v1"
-	CanonicalRFModelDescription    = "Deterministic FSPL + footprint obstruction planning model"
-	CanonicalPropagationDimensions = "2D footprint propagation with Tx/Rx height-aware FSPL"
-	CanonicalWallModel             = "frequency-dependent, material-agnostic building-boundary loss"
-	CanonicalPropagationReach      = "usable receiver-power reach"
-	CanonicalSurfaceDefinition     = "raw single-cell received-power surface"
-	CanonicalCalibrationDefinition = "global calibration offset; positive dB raises predicted received power"
-	CanonicalPathProfileScope      = "advanced point-to-point diagnostic model; isolated from canonical network RF"
-	CanonicalLinkBudgetEquation    = "P_rx = P_tx + G_tx - L_system + calibration - L_FSPL - L_building - A_pattern"
+	CanonicalRFModelID               = "fspl-walls-2p5d-v3"
+	DiagnosticPathModelID            = "path-profile-diagnostic-v1"
+	CanonicalRFModelDescription      = "Deterministic FSPL + footprint obstruction planning model"
+	CanonicalPropagationDimensions   = "2D footprint propagation with Tx/Rx height-aware FSPL"
+	CanonicalWallModel               = "frequency-dependent, material-agnostic building-boundary loss"
+	CanonicalPropagationReach        = "usable receiver-power reach"
+	CanonicalSurfaceDefinition       = "raw single-cell received-power surface"
+	CanonicalCalibrationDefinition   = "global calibration offset; positive dB raises predicted received power"
+	CanonicalPathProfileScope        = "advanced point-to-point diagnostic model; isolated from canonical network RF"
+	CanonicalLinkBudgetEquation      = "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - L_propagation - L_building - L_system - L_polarization + G_rx + calibration"
+	CanonicalBoresightEIRPEquation   = "EIRP_boresight = P_tx(conducted) + G_tx,absolute"
+	CanonicalDirectionalEIRPEquation = "EIRP_directional = EIRP_boresight - A_tx,pattern"
 )
 
 const (
@@ -33,19 +35,29 @@ const (
 	InterferenceRSRQThresholdDB  = -20.0
 )
 
-// RFLinkBudgetTerms makes the production received-power equation inspectable
-// without changing the arithmetic used by the RF engines.
+// RFLinkBudgetTerms makes the production received-power equation inspectable.
+// EIRPDBm is retained as a compatibility alias for the historical effective
+// transmit term (boresight EIRP - system loss + calibration). New consumers
+// should use BoresightEIRPDBm and DirectionalEIRPDBm instead.
 type RFLinkBudgetTerms struct {
 	TxPowerDBm                     float64 `json:"tx_power_dbm"`
+	TxAntennaGainDBi               float64 `json:"tx_antenna_gain_dbi"`
 	AntennaGainDBi                 float64 `json:"antenna_gain_dbi"`
+	BoresightEIRPDBm               float64 `json:"boresight_eirp_dbm"`
+	DirectionalEIRPDBm             float64 `json:"directional_eirp_dbm"`
+	RxAntennaGainDBi               float64 `json:"rx_antenna_gain_dbi"`
 	SystemLossDB                   float64 `json:"system_loss_db"`
+	PolarizationLossDB             float64 `json:"polarization_loss_db"`
 	CalibrationOffsetDB            float64 `json:"calibration_offset_db"`
 	EIRPDBm                        float64 `json:"eirp_dbm"`
 	FSPLDB                         float64 `json:"fspl_db"`
+	PropagationLossDB              float64 `json:"propagation_loss_db"`
 	BuildingLossDB                 float64 `json:"building_loss_db"`
+	TxPatternAttenuationDB         float64 `json:"tx_pattern_attenuation_db"`
 	HorizontalPatternAttenuationDB float64 `json:"horizontal_pattern_attenuation_db"`
 	VerticalPatternAttenuationDB   float64 `json:"vertical_pattern_attenuation_db"`
 	PatternAttenuationDB           float64 `json:"pattern_attenuation_db"`
+	TotalLossDB                    float64 `json:"total_loss_db"`
 	ReceivedPowerDBm               float64 `json:"received_power_dbm"`
 }
 
@@ -74,6 +86,17 @@ type RFContractMetadata struct {
 	UsesReflection                 bool     `json:"uses_reflection"`
 	WallModel                      string   `json:"wall_model"`
 	LinkBudgetEquation             string   `json:"link_budget_equation"`
+	BoresightEIRPEquation          string   `json:"boresight_eirp_equation"`
+	DirectionalEIRPEquation        string   `json:"directional_eirp_equation"`
+	TxPowerSemantics               string   `json:"tx_power_semantics"`
+	TxGainSemantics                string   `json:"tx_gain_semantics"`
+	RxGainSemantics                string   `json:"rx_gain_semantics"`
+	PolarizationSemantics          string   `json:"polarization_semantics"`
+	SystemLossSemantics            string   `json:"system_loss_semantics"`
+	AntennaPatternID               string   `json:"antenna_pattern_id,omitempty"`
+	AntennaPatternDescription      string   `json:"antenna_pattern_description,omitempty"`
+	AntennaPatternReference        string   `json:"antenna_pattern_reference,omitempty"`
+	AntennaPatternUsesHardBeam     bool     `json:"antenna_pattern_uses_hard_beam"`
 	AbsoluteTerms                  []string `json:"absolute_terms"`
 	RelativeAttenuationTerms       []string `json:"relative_attenuation_terms"`
 	PropagationTerms               []string `json:"propagation_terms"`
@@ -98,6 +121,13 @@ func rfContractForProfile(profile *CellRFProfile, calibrationOffsetDB float64) R
 	}
 	profileValue := profile.normalized()
 	contract := canonicalRFContract(&profileValue, calibrationOffsetDB)
+	pattern := EvaluateAntennaPattern(profileValue, 100, 0)
+	contract.AntennaPatternID = profileValue.HorizontalPatternID
+	contract.AntennaPatternDescription = pattern.Description
+	if profileValue.HorizontalPatternID == AntennaPattern3GPPSingleElementID {
+		contract.AntennaPatternReference = AntennaPattern3GPPSingleElementReference
+	}
+	contract.AntennaPatternUsesHardBeam = pattern.UsesHardBeamEligibility
 	contract.ModelID = profileValue.PropagationModelID
 	contract.AppliedModelID = profileValue.PropagationModelID
 	contract.ModelDescription = PropagationModelDescription(profileValue.PropagationModelID)
@@ -119,7 +149,7 @@ func rfContractForProfile(profile *CellRFProfile, calibrationOffsetDB float64) R
 		contract.LOSClassificationRule = "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable"
 		contract.BuildingHeightNote = "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS"
 		contract.WallModel = "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB"
-		contract.LinkBudgetEquation = "P_rx = P_tx + G_tx - L_system + calibration - PL_3GPP_UMa(LOS|NLOS) - A_pattern"
+		contract.LinkBudgetEquation = "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL_3GPP_UMa(LOS|NLOS) - L_system - L_polarization + G_rx + calibration"
 		contract.PropagationTerms = []string{"3GPP UMa PL1/PL2 breakpoint LOS path loss", "3GPP UMa NLOS max(LOS, PL') path loss", "footprint-height-los-v1 geometric centerline classifier", "conservative unknown-height fallback"}
 	case ResearchSubTHzPropagationID:
 		contract.ModelFamily = "research sub-THz planning profile"
@@ -170,7 +200,14 @@ func canonicalRFContract(profile *CellRFProfile, calibrationOffsetDB float64) RF
 		UsesReflection:                 false,
 		WallModel:                      CanonicalWallModel,
 		LinkBudgetEquation:             CanonicalLinkBudgetEquation,
-		AbsoluteTerms:                  []string{"transmit power", "antenna gain", "system loss", "global calibration offset"},
+		BoresightEIRPEquation:          CanonicalBoresightEIRPEquation,
+		DirectionalEIRPEquation:        CanonicalDirectionalEIRPEquation,
+		TxPowerSemantics:               "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+		TxGainSemantics:                "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+		RxGainSemantics:                "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+		PolarizationSemantics:          "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+		SystemLossSemantics:            "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+		AbsoluteTerms:                  []string{"conducted transmit power", "absolute TX boresight gain", "receive antenna gain", "system loss", "global calibration offset"},
 		RelativeAttenuationTerms:       []string{"horizontal antenna attenuation", "vertical antenna attenuation"},
 		PropagationTerms:               []string{"FSPL", "building/wall-event loss"},
 		ReceiverSensitivityScope:       "effective per-cell static-ray receiver threshold",
@@ -217,9 +254,9 @@ func diagnosticRFContract(profile *CellRFProfile, calibrationOffsetDB float64) R
 	contract.UsesBuildingHeight = true
 	contract.UsesDiffraction = true
 	contract.WallModel = "user-selected diagnostic material/screen or penetration sensitivity"
-	contract.LinkBudgetEquation = "diagnostic P_rx = configured link terms - (FSPL + explicit P.526-aligned single-edge loss); canonical UMa is evaluated separately"
-	contract.AbsoluteTerms = []string{"transmit power", "antenna gain"}
-	contract.RelativeAttenuationTerms = []string{"horizontal/vertical pattern", "system loss", "selected wall, clutter, vegetation, gas, rain, and shadow terms"}
+	contract.LinkBudgetEquation = "diagnostic P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - (FSPL + explicit P.526-aligned single-edge loss) - L_building - L_system - L_polarization + G_rx + calibration; canonical UMa is evaluated separately"
+	contract.AbsoluteTerms = []string{"conducted transmit power", "absolute TX boresight gain", "receive antenna gain", "system loss", "global calibration offset"}
+	contract.RelativeAttenuationTerms = []string{"horizontal/vertical relative pattern", "selected wall, clutter, vegetation, gas, rain, and shadow terms"}
 	contract.PropagationTerms = []string{"FSPL baseline", "known-height terrain/building obstruction ledger", "P.526-16 §4.1 equation (26) v parameter", "equation (31) single-edge loss approximation"}
 	contract.PropagationReachDefinition = "not used by the point-to-point diagnostic workflow"
 	contract.SurfaceDefinition = "not used by the point-to-point diagnostic workflow"
@@ -315,22 +352,40 @@ func effectiveInterferenceCellRFProfiles(req InterferenceRequest) []EffectiveCel
 }
 
 func (profile CellRFProfile) LinkBudgetTerms(groundDistanceMeters, buildingLossDB, calibrationOffsetDB, horizontalOffsetDeg float64) RFLinkBudgetTerms {
-	horizontalPatternDB := profile.HorizontalPatternAttenuationDB(horizontalOffsetDeg)
-	verticalPatternDB := profile.VerticalPatternAttenuationDB(groundDistanceMeters)
-	patternDB := horizontalPatternDB + verticalPatternDB
-	eirpDBm := profile.TxPowerDBm + profile.AntennaGainDBi - profile.SystemLossDB + calibrationOffsetDB
+	profile = profile.normalized()
+	pattern := EvaluateAntennaPattern(profile, groundDistanceMeters, horizontalOffsetDeg)
 	fsplDB := FreeSpacePathLossMetersGHz(profile.SlantDistanceMeters(groundDistanceMeters), profile.FrequencyGHz)
+	return rfLinkBudgetTermsFromAntenna(profile, pattern, fsplDB, fsplDB, buildingLossDB, calibrationOffsetDB)
+}
+
+func rfLinkBudgetTermsFromAntenna(profile CellRFProfile, pattern AntennaPatternEvaluation, propagationLossDB, fsplDB, buildingLossDB, calibrationOffsetDB float64) RFLinkBudgetTerms {
+	boresightEIRP := profile.TxPowerDBm + profile.AntennaGainDBi
+	directionalEIRP := boresightEIRP - pattern.TotalAttenuationDB
+	// Keep the historical eirp_dbm wire value stable. It was an effective
+	// transmit term, not pure EIRP; the explicit fields above remove that
+	// ambiguity without silently changing old consumers' interpretation.
+	effectiveTransmit := boresightEIRP - profile.SystemLossDB + calibrationOffsetDB
+	totalLoss := propagationLossDB + buildingLossDB + pattern.TotalAttenuationDB + profile.SystemLossDB + profile.PolarizationLossDB - profile.RxAntennaGainDBi
+	received := directionalEIRP - propagationLossDB - buildingLossDB - profile.SystemLossDB - profile.PolarizationLossDB + profile.RxAntennaGainDBi + calibrationOffsetDB
 	return RFLinkBudgetTerms{
 		TxPowerDBm:                     profile.TxPowerDBm,
+		TxAntennaGainDBi:               profile.AntennaGainDBi,
 		AntennaGainDBi:                 profile.AntennaGainDBi,
+		BoresightEIRPDBm:               boresightEIRP,
+		DirectionalEIRPDBm:             directionalEIRP,
+		RxAntennaGainDBi:               profile.RxAntennaGainDBi,
 		SystemLossDB:                   profile.SystemLossDB,
+		PolarizationLossDB:             profile.PolarizationLossDB,
 		CalibrationOffsetDB:            calibrationOffsetDB,
-		EIRPDBm:                        eirpDBm,
+		EIRPDBm:                        effectiveTransmit,
 		FSPLDB:                         fsplDB,
+		PropagationLossDB:              propagationLossDB,
 		BuildingLossDB:                 buildingLossDB,
-		HorizontalPatternAttenuationDB: horizontalPatternDB,
-		VerticalPatternAttenuationDB:   verticalPatternDB,
-		PatternAttenuationDB:           patternDB,
-		ReceivedPowerDBm:               eirpDBm - fsplDB - buildingLossDB - patternDB,
+		TxPatternAttenuationDB:         pattern.TotalAttenuationDB,
+		HorizontalPatternAttenuationDB: pattern.HorizontalAttenuationDB,
+		VerticalPatternAttenuationDB:   pattern.VerticalAttenuationDB,
+		PatternAttenuationDB:           pattern.TotalAttenuationDB,
+		TotalLossDB:                    totalLoss,
+		ReceivedPowerDBm:               received,
 	}
 }

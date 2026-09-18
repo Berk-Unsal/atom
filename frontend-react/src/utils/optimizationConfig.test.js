@@ -26,8 +26,8 @@ describe("optimization configuration", () => {
     const first = createDefaultOptimizationConfig();
     const second = createDefaultOptimizationConfig();
     first.objectives[0].weight = 4;
-    expect(second.objectives.map((objective) => objective.id)).toEqual(["demand", "residential", "coverage", "overlap"]);
-    expect(second.objectives.map((objective) => objective.weight)).toEqual([50, 50, 50, 50]);
+    expect(second.objectives.map((objective) => objective.id)).toEqual(["demand", "residential", "coverage", "overlap", "radio_quality"]);
+    expect(second.objectives.map((objective) => objective.weight)).toEqual([50, 50, 50, 50, 0]);
   });
 
   it("normalizes persisted values and omits empty constraints", () => {
@@ -40,6 +40,7 @@ describe("optimization configuration", () => {
       { id: "residential", weight: 0 },
       { id: "coverage", weight: 100 },
       { id: "overlap", weight: 0 },
+      { id: "radio_quality", weight: 0 },
     ]);
     expect(normalized.constraints).toEqual({ min_coverage_score: 12.5 });
   });
@@ -55,6 +56,7 @@ describe("optimization configuration", () => {
         { id: "residential", weight: 0 },
         { id: "coverage", weight: 0 },
         { id: "overlap", weight: 2 },
+        { id: "radio_quality", weight: 0 },
       ],
       constraints: { max_overlap_buildings: 4 },
     });
@@ -81,7 +83,7 @@ describe("optimization configuration", () => {
       { id: "overlap", weight: 0 },
     ] };
     expect(optimizationConfigValidationMessage(config)).toMatch(/at least one/i);
-    expect(normalizePriorityWeights(config)).toEqual({ demand: 0, residential: 0, coverage: 0, overlap: 0 });
+    expect(normalizePriorityWeights(config)).toEqual({ demand: 0, residential: 0, coverage: 0, overlap: 0, radio_quality: 0 });
   });
 
   it("normalizes objective utilities and reverses overlap into positive utility", () => {
@@ -97,7 +99,23 @@ describe("optimization configuration", () => {
         overlap_buildings: 2,
       },
     });
-    expect(utilities).toEqual({ demand: 0.6, residential: 0.75, coverage: 0.9, overlap: 0.8 });
+    expect(utilities).toEqual({ demand: 0.6, residential: 0.75, coverage: 0.9, overlap: 0.8, radio_quality: null });
+  });
+
+  it("uses fixed-domain radio serviceability directly as a stable utility", () => {
+    const stats = {
+      raw_metrics: {
+        radio_quality_total_samples: 8,
+        radio_quality_serviceable_samples: 3,
+        radio_quality_serviceable_fraction: 0.375,
+      },
+      objective_status: { radio_quality: { available: true } },
+    };
+    expect(normalizeObjectiveUtilities(stats).radio_quality).toBe(0.375);
+    const scored = scoreOptimizationStats(stats, { objectives: [{ id: "radio_quality", weight: 100 }] });
+    expect(scored.objectives.radio_quality).toBe(0.375);
+    expect(scored.score).toBe(37.5);
+    expect(scored.objective_breakdown.radio_quality).toEqual({ utility: 0.375, weight: 1, contribution: 0.375 });
   });
 
   it("uses relevant-domain aliases and represents unavailable objectives as N/A", () => {
@@ -119,7 +137,7 @@ describe("optimization configuration", () => {
         overlap: { available: true },
       },
     });
-    expect(utilities).toEqual({ demand: 0.6, residential: null, coverage: 0.9, overlap: 0.8 });
+    expect(utilities).toEqual({ demand: 0.6, residential: null, coverage: 0.9, overlap: 0.8, radio_quality: null });
   });
 
   it("does not turn incomplete legacy raw metrics into numeric utilities", () => {
@@ -129,7 +147,7 @@ describe("optimization configuration", () => {
         relevant_demand_weight: 100,
       },
     });
-    expect(utilities).toEqual({ demand: 0.6, residential: null, coverage: null, overlap: null });
+    expect(utilities).toEqual({ demand: 0.6, residential: null, coverage: null, overlap: null, radio_quality: null });
   });
 
   it("renormalizes effective weights without mutating configured priorities", () => {
@@ -141,7 +159,7 @@ describe("optimization configuration", () => {
     ] };
     const status = { residential: { available: false, reason: "no_relevant_entities" } };
     const weights = normalizePriorityWeights(config, status);
-    expect(weights).toEqual({ demand: 60 / 150, residential: 0, coverage: 50 / 150, overlap: 40 / 150 });
+    expect(weights).toEqual({ demand: 60 / 150, residential: 0, coverage: 50 / 150, overlap: 40 / 150, radio_quality: 0 });
     expect(config.objectives[1].weight).toBe(80);
   });
 
@@ -179,6 +197,36 @@ describe("optimization configuration", () => {
     expect(residentialFirst.optimized_towers[0].optimal_azimuth).toBe(10);
     expect(demandFirst.stats.score).toBeGreaterThanOrEqual(0);
     expect(residentialFirst.stats.objective_breakdown.demand.weight).toBe(0);
+  });
+
+  it("re-ranks evaluated stored radio-quality metrics without another RF request", () => {
+    const frontier = [
+      {
+        id: "propagation-first",
+        towers: [{ id: "a", azimuth_deg: 0 }],
+        stats: statsForComparison({ radio_quality_serviceable_fraction: 0.2, radio_quality_total_samples: 10 }),
+      },
+      {
+        id: "radio-first",
+        towers: [{ id: "a", azimuth_deg: 10 }],
+        stats: statsForComparison({ radio_quality_serviceable_fraction: 0.8, radio_quality_total_samples: 10 }),
+      },
+    ];
+    for (const solution of frontier) solution.stats.objective_status.radio_quality = { available: true };
+    const ranked = rankParetoSolutions(frontier, { objectives: [{ id: "radio_quality", weight: 100 }] });
+    expect(ranked[0].id).toBe("radio-first");
+    expect(ranked[0].stats.objective_breakdown.radio_quality.contribution).toBe(0.8);
+  });
+
+  it("does not fabricate radio quality when a saved run lacks fixed-domain metrics", () => {
+    const response = networkComparisonResponse();
+    response.stats.objective_status.radio_quality = { available: false, reason: "disabled" };
+    response.baseline.stats.objective_status.radio_quality = { available: false, reason: "disabled" };
+    const ranked = rankOptimizationResponse(response, { objectives: [{ id: "radio_quality", weight: 100 }] });
+    expect(ranked.stats.objectives.radio_quality).toBeNull();
+    expect(ranked.stats.objective_status.radio_quality.available).toBe(false);
+    expect(ranked.stats.objective_status.radio_quality.reason).toBe("not_evaluated");
+    expect(ranked.optimization.effective_weights.radio_quality).toBe(0);
   });
 
   it("builds same-domain baseline and optimized comparison metrics", () => {

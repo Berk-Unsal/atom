@@ -1,6 +1,6 @@
 import { rxPowerColor } from "./geojson.js";
 import { normalizedNetworkScore } from "./appWorkspace.js";
-import { buildCellMarginalEffectView } from "./optimizationConfig.js";
+import { buildCellMarginalEffectView, isRadioQualityEvaluated } from "./optimizationConfig.js";
 import {
   renderMarkdownInterferenceSection,
   renderPrintableInterferenceSection,
@@ -27,6 +27,7 @@ const REPORT_OBJECTIVES = [
   { id: "residential", label: "Residential", direction: "Maximize" },
   { id: "coverage", label: "Propagation reach", direction: "Maximize" },
   { id: "overlap", label: "Reduce overlap", direction: "Maximize utility" },
+  { id: "radio_quality", label: "Radio quality", direction: "Maximize serviceability" },
 ];
 
 export function buildPlanningReport({
@@ -728,6 +729,14 @@ function buildLimitations(view) {
     "The propagation model does not establish deployment approval, rooftop access, ownership, permitting, cost, fiber, or backhaul feasibility.",
   ];
   if (view.calibrationProfile || Number(view.settings.calibrationOffsetDb) !== 0) limitations.push("Any applied correction is a global path-loss bias and not full propagation calibration.");
+  const radio = view.networkOptimization?.optimization?.radio_quality;
+  if (radio?.enabled && radio?.available) {
+    limitations.push("Radio-quality optimization is a soft serviceability objective over a deterministic sampled union domain; no-carrier samples remain denominator failures.");
+    limitations.push(`Interference is horizon-bounded to the ${radio.interference_horizon_mode ?? radio.horizon_mode ?? "declared per-cell compatibility"} compatibility horizon and is not a claim of network-wide physical RF completeness.`);
+    limitations.push("Radio-quality planning thresholds are deterministic policy inputs, not UE or standards-conformance testing.");
+  } else if (radio?.enabled && radio?.available === false) {
+    limitations.push(`Radio-quality optimization was unavailable: ${radio.reason ?? REPORT_NOT_AVAILABLE}.`);
+  }
   return limitations;
 }
 
@@ -894,6 +903,7 @@ function buildReportComparisonRows(comparison) {
       { key: "residential", label: "Residential", kind: "ratio-count", direction: "higher", deltaUnit: "buildings" },
       { key: "propagation_reach", label: "Propagation reach", kind: "ratio", direction: "higher", deltaUnit: "pp" },
       { key: "overlap", label: "Overlap ratio", kind: "ratio", direction: "lower", deltaUnit: "pp" },
+      { key: "radio_quality", label: "Radio-quality serviceability", kind: "ratio", direction: "higher", deltaUnit: "pp" },
       { key: "overlap_buildings", label: "Overlap buildings", kind: "number", direction: "lower", deltaUnit: "buildings" },
       { key: "covered_units", label: "Covered units", kind: "number", direction: "informational", deltaUnit: "units" },
       { key: "score", label: "Optimization score", kind: "score", direction: "higher", deltaUnit: "points" },
@@ -972,6 +982,25 @@ function buildNetworkPerformanceRows(stats, objectiveStatus) {
     const value = ratio !== null ? formatPercent(ratio, false) : utility === null ? null : formatPercent(1 - utility, false);
     if (value !== null) rows.push(["Overlap ratio", value]);
   }
+  if (isRadioQualityEvaluated(stats)) {
+    const serviceable = readNumeric(raw, "radio_quality_serviceable_samples", "radioQualityServiceableSamples");
+    const total = readNumeric(raw, "radio_quality_total_samples", "radioQualityTotalSamples");
+    const fraction = readNumeric(raw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction");
+    if (serviceable !== null && total !== null) {
+      rows.push(["Radio-quality serviceability", `${formatCount(serviceable)} / ${formatCount(total)} (${formatPercent(fraction ?? (serviceable / total))})`]);
+    }
+    const p10Sinr = readNumeric(raw, "radio_quality_p10_sinr_db", "radioQualityP10SINRDB");
+    const medianSinr = readNumeric(raw, "radio_quality_median_sinr_db", "radioQualityMedianSINRDB");
+    if (p10Sinr !== null || medianSinr !== null) rows.push(["Radio-quality SINR", `p10 ${formatUnit(p10Sinr, 1, "dB")} · median ${formatUnit(medianSinr, 1, "dB")}`]);
+    const p10Rsrp = readNumeric(raw, "radio_quality_p10_rsrp_dbm", "radioQualityP10RSRPDBm");
+    const medianRsrp = readNumeric(raw, "radio_quality_median_rsrp_dbm", "radioQualityMedianRSRPDBm");
+    if (p10Rsrp !== null || medianRsrp !== null) rows.push(["Radio-quality RSRP", `p10 ${formatUnit(p10Rsrp, 1, "dBm")} · median ${formatUnit(medianRsrp, 1, "dBm")}`]);
+    const p10Rsrq = readNumeric(raw, "radio_quality_p10_rsrq_db", "radioQualityP10RSRQDB");
+    const medianRsrq = readNumeric(raw, "radio_quality_median_rsrq_db", "radioQualityMedianRSRQDB");
+    if (p10Rsrq !== null || medianRsrq !== null) rows.push(["Radio-quality RSRQ", `p10 ${formatUnit(p10Rsrq, 1, "dB")} · median ${formatUnit(medianRsrq, 1, "dB")}`]);
+    const outage = raw.radio_quality_outage_by_reason ?? raw.radioQualityOutageByReason;
+    if (outage && typeof outage === "object") rows.push(["Radio-quality outage reasons", formatCountMap(outage)]);
+  }
   const coveredUnits = readNumeric(raw, "covered_units", "coveredUnits");
   if (coveredUnits !== null) rows.push(["Covered units", formatCount(coveredUnits)]);
   const overlapBuildings = readNumeric(raw, "overlap_buildings", "overlapBuildings") ?? readNumeric(stats, "overlap_buildings", "OverlapBuildings");
@@ -1001,6 +1030,7 @@ function buildRFPerformanceRows(report) {
 
 function buildOptimizationDomainRows(view) {
   const domain = view.networkOptimization?.optimization_domain ?? view.comparison?.optimization_domain;
+  const radio = view.networkOptimization?.optimization?.radio_quality ?? {};
   if (!domain) return [];
   return [
     row("Scope", humanizeOptimizationDomainValue(domain.source)),
@@ -1009,6 +1039,13 @@ function buildOptimizationDomainRows(view) {
     row("Relevant buildings", formatCount(domain.relevant_building_entities ?? domain.relevantBuildingEntities)),
     row("Relevant demand entities", formatCount(domain.relevant_demand_entities ?? domain.relevantDemandEntities)),
     row("Relevant residential entities", formatCount(domain.relevant_residential_entities ?? domain.relevantResidentialEntities)),
+    row("Radio-quality domain", humanizeOptimizationDomainValue(domain.radio_quality_domain_description ?? domain.radioQualityDomainDescription)),
+    row("Radio-quality samples", formatCount(domain.radio_quality_sample_count ?? domain.radioQualitySampleCount)),
+    row("Radio-quality spacing", formatUnit(domain.radio_quality_sample_spacing_m ?? domain.radioQualitySampleSpacingM, 1, "m")),
+    row("Interference horizon", humanizeOptimizationDomainValue(domain.interference_horizon_description ?? domain.interferenceHorizonDescription)),
+    row("Radio-quality policy", radio.policy_id ?? radio.radio_quality_policy_id),
+    row("Radio-quality thresholds", radio.serviceability_rule ?? radio.radio_quality_serviceability_rule),
+    row("Radio-quality horizon", radio.horizon_description ?? radio.interference_horizon_description),
   ].filter((item) => item[1] !== null);
 }
 
@@ -1103,7 +1140,7 @@ function buildDatasetRows(report) {
 }
 
 function buildCellExplanationRows(effect) {
-  const definitions = [["demand", "Demand served", "weight"], ["residential", "Residential", "count"], ["propagation_reach", "Propagation reach", "ratio"], ["overlap", "Overlap ratio", "ratio"], ["overlap_buildings", "Overlap buildings", "count"], ["covered_units", "Covered units", "count"], ["score", "Optimization score", "score"]];
+  const definitions = [["demand", "Demand served", "weight"], ["residential", "Residential", "count"], ["propagation_reach", "Propagation reach", "ratio"], ["overlap", "Overlap ratio", "ratio"], ["radio_quality", "Radio quality", "ratio"], ["overlap_buildings", "Overlap buildings", "count"], ["covered_units", "Covered units", "count"], ["score", "Optimization score", "score"]];
   return definitions.map(([key, label, kind]) => {
     const metric = effect.metrics?.[key];
     if (!metric || metric.available === false) return null;
@@ -1133,7 +1170,7 @@ function formatCellMetricDelta(metric, kind) {
 
 function buildParetoHeaders(view) {
   const headers = ["Rank", "Score"];
-  for (const [id, label] of [["demand", "Demand"], ["residential", "Residential"], ["coverage", "Propagation reach"], ["overlap", "Overlap"]]) {
+  for (const [id, label] of [["demand", "Demand"], ["residential", "Residential"], ["coverage", "Propagation reach"], ["overlap", "Overlap"], ["radio_quality", "Radio quality"]]) {
     if (view.paretoSolutions.some((solution) => formatSolutionMetric(solution.stats, id, view.objectiveStatus) !== null)) headers.push(label);
   }
   return headers;
@@ -1143,7 +1180,7 @@ function buildParetoRow(solution, view, index) {
   const id = String(solution.id ?? "");
   const recommendedID = String(view.networkOptimization?.optimization?.recommended_solution_id ?? view.recommendedSolution?.id ?? "");
   const rowValues = [id && id === recommendedID ? `#${index + 1} Recommended` : `#${index + 1}`, formatScore(solution.stats ?? solution)];
-  for (const [idKey] of [["demand"], ["residential"], ["coverage"], ["overlap"]]) {
+  for (const [idKey] of [["demand"], ["residential"], ["coverage"], ["overlap"], ["radio_quality"]]) {
     const hasColumn = view.paretoSolutions.some((candidate) => formatSolutionMetric(candidate.stats, idKey, view.objectiveStatus) !== null);
     if (hasColumn) rowValues.push(formatSolutionMetric(solution.stats, idKey, view.objectiveStatus) ?? REPORT_NOT_AVAILABLE);
   }
@@ -1168,6 +1205,10 @@ function formatSolutionMetric(stats, id, objectiveStatus) {
     const reach = readNumeric(raw, "propagation_reach_score", "propagationReachScore", "coverage_reach_score", "coverageReachScore");
     const maximum = readNumeric(raw, "propagation_reach_maximum", "propagationReachMaximum", "coverage_reach_maximum", "coverageReachMaximum");
     return reach !== null && maximum !== null && maximum > 0 ? formatPercent(reach / maximum, false) : finiteOrNull(utilities.coverage) === null ? null : formatPercent(utilities.coverage, false);
+  }
+  if (id === "radio_quality") {
+    const fraction = readNumeric(raw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction");
+    return fraction !== null ? formatPercent(fraction, false) : finiteOrNull(utilities.radio_quality) === null ? null : formatPercent(utilities.radio_quality, false);
   }
   const ratio = readNumeric(raw, "overlap_ratio", "overlapRatio");
   return ratio !== null ? formatPercent(ratio, false) : finiteOrNull(utilities.overlap) === null ? null : formatPercent(1 - Number(utilities.overlap), false);
@@ -1245,6 +1286,14 @@ function formatPercent(value, inputIsPercent = false) {
 function formatCount(value) {
   const numeric = finiteOrNull(value);
   return numeric === null ? null : formatNumber(numeric, 0);
+}
+
+function formatCountMap(values) {
+  if (!values || typeof values !== "object") return REPORT_NOT_AVAILABLE;
+  const entries = Object.entries(values)
+    .filter(([, value]) => Number.isFinite(Number(value)))
+    .sort(([left], [right]) => left.localeCompare(right));
+  return entries.length > 0 ? entries.map(([key, value]) => `${key}: ${formatCount(value)}`).join(" · ") : REPORT_NOT_AVAILABLE;
 }
 
 function formatScore(value) {
@@ -1550,6 +1599,7 @@ function getNetworkOptimizationComparisonMetrics(comparison) {
     createComparisonMetric({ after: metrics.residential?.optimized, before: metrics.residential?.baseline, digits: 0, higherIsBetter: true, key: "residential", label: "Residential buildings", unit: "buildings" }),
     createComparisonMetric({ after: Number(metrics.propagation_reach?.optimized) * 100, before: Number(metrics.propagation_reach?.baseline) * 100, digits: 1, deltaUnit: "pp", higherIsBetter: true, key: "propagation_reach", label: "Propagation reach", unit: "%" }),
     createComparisonMetric({ after: Number(metrics.overlap?.optimized) * 100, before: Number(metrics.overlap?.baseline) * 100, digits: 1, deltaUnit: "pp", higherIsBetter: false, key: "overlap", label: "Overlap ratio", unit: "%" }),
+    createComparisonMetric({ after: Number(metrics.radio_quality?.optimized) * 100, before: Number(metrics.radio_quality?.baseline) * 100, digits: 1, deltaUnit: "pp", higherIsBetter: true, key: "radio_quality", label: "Radio quality", unit: "%" }),
     createComparisonMetric({ after: metrics.overlap_buildings?.optimized, before: metrics.overlap_buildings?.baseline, digits: 0, higherIsBetter: false, key: "overlap_buildings", label: "Overlap buildings", unit: "buildings" }),
     createComparisonMetric({ after: metrics.covered_units?.optimized, before: metrics.covered_units?.baseline, digits: 0, higherIsBetter: undefined, key: "covered_units", label: "Covered units", unit: "units" }),
     createComparisonMetric({ after: metrics.score?.optimized, before: metrics.score?.baseline, digits: 1, higherIsBetter: true, key: "score", label: "Optimization score", unit: "score" }),

@@ -66,6 +66,7 @@ describe("interference request payload", () => {
         { id: "residential", weight: 0 },
         { id: "coverage", weight: 2 },
         { id: "overlap", weight: 4 },
+        { id: "radio_quality", weight: 0 },
       ],
       constraints: { max_overlap_buildings: 3 },
     });
@@ -154,7 +155,7 @@ describe("interference request payload", () => {
       solution: { id: "solution-1" },
       optimization_domain: { source: "selected_cell_radius_union" },
     });
-    expect(payload.optimization.objectives).toHaveLength(4);
+    expect(payload.optimization.objectives).toHaveLength(5);
   });
 });
 

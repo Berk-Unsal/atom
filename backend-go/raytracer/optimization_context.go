@@ -13,13 +13,19 @@ const optimizationDomainQueryPaddingMeters = 2.0
 // OptimizationDomainMetadata describes the fixed geographic scope used by one
 // network optimization request. It intentionally omits the complete geometry.
 type OptimizationDomainMetadata struct {
-	Source                      string    `json:"source"`
-	SelectedCellCount           int       `json:"selected_cell_count"`
-	RadiusPolicy                string    `json:"radius_policy"`
-	EnvelopeRadiiMeters         []float64 `json:"envelope_radii_meters,omitempty"`
-	RelevantBuildingEntities    int       `json:"relevant_building_entities"`
-	RelevantDemandEntities      int       `json:"relevant_demand_entities"`
-	RelevantResidentialEntities int       `json:"relevant_residential_entities"`
+	Source                         string    `json:"source"`
+	SelectedCellCount              int       `json:"selected_cell_count"`
+	RadiusPolicy                   string    `json:"radius_policy"`
+	EnvelopeRadiiMeters            []float64 `json:"envelope_radii_meters,omitempty"`
+	RelevantBuildingEntities       int       `json:"relevant_building_entities"`
+	RelevantDemandEntities         int       `json:"relevant_demand_entities"`
+	RelevantResidentialEntities    int       `json:"relevant_residential_entities"`
+	RadioQualityDomainID           string    `json:"radio_quality_domain_id,omitempty"`
+	RadioQualityDomainDescription  string    `json:"radio_quality_domain_description,omitempty"`
+	RadioQualitySampleCount        int       `json:"radio_quality_sample_count,omitempty"`
+	RadioQualitySampleSpacingM     float64   `json:"radio_quality_sample_spacing_m,omitempty"`
+	InterferenceHorizonMode        string    `json:"interference_horizon_mode,omitempty"`
+	InterferenceHorizonDescription string    `json:"interference_horizon_description,omitempty"`
 }
 
 type optimizationDomainEnvelope struct {
@@ -42,6 +48,8 @@ type PreparedNetworkOptimizationContext struct {
 	TotalRelevantDemandWeight    float64
 	TotalRelevantResidential     int
 	ObjectiveAvailability        map[string]OptimizationObjectiveAvailability
+	RadioQuality                 *radioQualityOptimizationContext
+	RadioQualityMetadata         OptimizationRadioQualityMetadata
 }
 
 func prepareNetworkOptimizationContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (*PreparedNetworkOptimizationContext, error) {
@@ -146,6 +154,24 @@ func prepareNetworkOptimizationContext(ctx context.Context, req NetworkOptimizat
 			Available: len(prepared.RelevantBuildings) > 0,
 			Reason:    objectiveAvailabilityReason(len(prepared.RelevantBuildings) > 0, "no_relevant_entities"),
 		},
+	}
+	radioContext, radioMetadata, radioErr := prepareRadioQualityOptimizationContext(ctx, req, buildings)
+	if radioErr != nil {
+		return nil, radioErr
+	}
+	prepared.RadioQuality = radioContext
+	prepared.RadioQualityMetadata = radioMetadata
+	prepared.ObjectiveAvailability[radioQualityOptimizationObjectiveID] = OptimizationObjectiveAvailability{
+		Available: radioMetadata.Enabled && radioMetadata.Available,
+		Reason:    radioMetadata.Reason,
+	}
+	if radioMetadata.Available {
+		prepared.DomainMetadata.RadioQualityDomainID = radioMetadata.DomainID
+		prepared.DomainMetadata.RadioQualityDomainDescription = radioMetadata.DomainDescription
+		prepared.DomainMetadata.RadioQualitySampleCount = radioMetadata.SampleCount
+		prepared.DomainMetadata.RadioQualitySampleSpacingM = radioMetadata.SampleSpacingM
+		prepared.DomainMetadata.InterferenceHorizonMode = radioMetadata.HorizonMode
+		prepared.DomainMetadata.InterferenceHorizonDescription = radioMetadata.HorizonDescription
 	}
 	return prepared, nil
 }

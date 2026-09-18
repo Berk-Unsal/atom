@@ -219,20 +219,21 @@ type NetworkOptimizationResponse struct {
 }
 
 type OptimizationOutcome struct {
-	Objectives            []OptimizationObjective        `json:"objectives"`
-	ConfiguredPriorities  map[string]float64             `json:"configured_priorities"`
-	NormalizedWeights     map[string]float64             `json:"normalized_weights"`
-	EffectiveWeights      map[string]float64             `json:"effective_weights"`
-	ObjectiveStatus       OptimizationObjectiveStatusMap `json:"objective_status"`
-	Constraints           OptimizationConstraints        `json:"constraints"`
-	ObjectiveScore        float64                        `json:"objective_score"`
-	CompositeScore        float64                        `json:"composite_score"`
-	Score                 float64                        `json:"score"`
-	RecommendedSolutionID string                         `json:"recommended_solution_id,omitempty"`
-	ConstraintsSatisfied  bool                           `json:"constraints_satisfied"`
-	Recommended           bool                           `json:"recommended"`
-	Violations            []string                       `json:"violations"`
-	AdjustedParameters    []string                       `json:"adjusted_parameters"`
+	Objectives            []OptimizationObjective           `json:"objectives"`
+	ConfiguredPriorities  map[string]float64                `json:"configured_priorities"`
+	NormalizedWeights     map[string]float64                `json:"normalized_weights"`
+	EffectiveWeights      map[string]float64                `json:"effective_weights"`
+	ObjectiveStatus       OptimizationObjectiveStatusMap    `json:"objective_status"`
+	Constraints           OptimizationConstraints           `json:"constraints"`
+	ObjectiveScore        float64                           `json:"objective_score"`
+	CompositeScore        float64                           `json:"composite_score"`
+	Score                 float64                           `json:"score"`
+	RecommendedSolutionID string                            `json:"recommended_solution_id,omitempty"`
+	ConstraintsSatisfied  bool                              `json:"constraints_satisfied"`
+	Recommended           bool                              `json:"recommended"`
+	Violations            []string                          `json:"violations"`
+	AdjustedParameters    []string                          `json:"adjusted_parameters"`
+	RadioQuality          *OptimizationRadioQualityMetadata `json:"radio_quality,omitempty"`
 }
 
 type ParetoTowerSetting struct {
@@ -706,6 +707,7 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 			RecommendedSolutionID: recommendedSolutionID,
 			ConstraintsSatisfied:  len(violations) == 0, Recommended: recommended, Violations: violations,
 			AdjustedParameters: []string{"azimuth"},
+			RadioQuality:       radioQualityOptimizationMetadataPointer(prepared.RadioQualityMetadata),
 		},
 		ParetoFrontier: frontier,
 	}, nil
@@ -771,6 +773,7 @@ func EvaluateNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 			CompositeScore: roundFloat(scoredStats.CompositeScore, 6), Score: roundFloat(scoredStats.Score, 4),
 			ConstraintsSatisfied: len(violations) == 0, Recommended: false, Violations: violations,
 			AdjustedParameters: []string{},
+			RadioQuality:       radioQualityOptimizationMetadataPointer(prepared.RadioQualityMetadata),
 		},
 		ParetoFrontier: frontier,
 	}, nil
@@ -969,6 +972,23 @@ func networkCoverageScoreBreakdownPreparedContext(ctx context.Context, req Netwo
 		OverlapBuildings:         stats.OverlapBuildings,
 		OverlapRatio:             overlapRatio,
 	}
+	if prepared.RadioQuality != nil && prepared.RadioQualityMetadata.Available {
+		radioMetrics, radioErr := prepared.RadioQuality.evaluate(ctx, azimuths)
+		if radioErr != nil {
+			return NetworkOptimizationStats{}, radioErr
+		}
+		stats.RawMetrics.RadioQualityTotalSamples = radioMetrics.RadioQualityTotalSamples
+		stats.RawMetrics.RadioQualityServiceableSamples = radioMetrics.RadioQualityServiceableSamples
+		stats.RawMetrics.RadioQualityServiceableFraction = radioMetrics.RadioQualityServiceableFraction
+		stats.RawMetrics.RadioQualityP10SINRDB = radioMetrics.RadioQualityP10SINRDB
+		stats.RawMetrics.RadioQualityMedianSINRDB = radioMetrics.RadioQualityMedianSINRDB
+		stats.RawMetrics.RadioQualityP10RSRPDBm = radioMetrics.RadioQualityP10RSRPDBm
+		stats.RawMetrics.RadioQualityMedianRSRPDBm = radioMetrics.RadioQualityMedianRSRPDBm
+		stats.RawMetrics.RadioQualityP10RSRQDB = radioMetrics.RadioQualityP10RSRQDB
+		stats.RawMetrics.RadioQualityMedianRSRQDB = radioMetrics.RadioQualityMedianRSRQDB
+		stats.RawMetrics.RadioQualityOutageByReason = radioMetrics.RadioQualityOutageByReason
+		stats.RawMetrics.RadioQualityServingCellSamples = radioMetrics.RadioQualityServingCellSamples
+	}
 	return stats, nil
 }
 
@@ -1009,15 +1029,31 @@ func (stats NetworkOptimizationStats) rounded() NetworkOptimizationStats {
 	stats.RawMetrics.PropagationReachScore = roundFloat(stats.RawMetrics.PropagationReachScore, 4)
 	stats.RawMetrics.PropagationReachMaximum = roundFloat(stats.RawMetrics.PropagationReachMaximum, 4)
 	stats.RawMetrics.OverlapRatio = roundFloat(stats.RawMetrics.OverlapRatio, 6)
+	stats.RawMetrics.RadioQualityServiceableFraction = roundFloat(stats.RawMetrics.RadioQualityServiceableFraction, 6)
+	stats.RawMetrics.RadioQualityP10SINRDB = roundOptionalFloat(stats.RawMetrics.RadioQualityP10SINRDB, 4)
+	stats.RawMetrics.RadioQualityMedianSINRDB = roundOptionalFloat(stats.RawMetrics.RadioQualityMedianSINRDB, 4)
+	stats.RawMetrics.RadioQualityP10RSRPDBm = roundOptionalFloat(stats.RawMetrics.RadioQualityP10RSRPDBm, 4)
+	stats.RawMetrics.RadioQualityMedianRSRPDBm = roundOptionalFloat(stats.RawMetrics.RadioQualityMedianRSRPDBm, 4)
+	stats.RawMetrics.RadioQualityP10RSRQDB = roundOptionalFloat(stats.RawMetrics.RadioQualityP10RSRQDB, 4)
+	stats.RawMetrics.RadioQualityMedianRSRQDB = roundOptionalFloat(stats.RawMetrics.RadioQualityMedianRSRQDB, 4)
 	stats.CompositeScore = roundFloat(stats.CompositeScore, 6)
 	stats.Score = roundFloat(stats.Score, 4)
 	stats.Objectives.Demand = roundFloat(stats.Objectives.Demand, 6)
 	stats.Objectives.Residential = roundFloat(stats.Objectives.Residential, 6)
 	stats.Objectives.Coverage = roundFloat(stats.Objectives.Coverage, 6)
 	stats.Objectives.Overlap = roundFloat(stats.Objectives.Overlap, 6)
+	stats.Objectives.RadioQuality = roundFloat(stats.Objectives.RadioQuality, 6)
 	stats.ObjectiveBreakdown = roundObjectiveBreakdown(stats.ObjectiveBreakdown)
 	stats.ObjectiveStatus = roundObjectiveStatus(stats.ObjectiveStatus)
 	return stats
+}
+
+func roundOptionalFloat(value *float64, digits int) *float64 {
+	if value == nil {
+		return nil
+	}
+	rounded := roundFloat(*value, digits)
+	return &rounded
 }
 
 func FindCoverageGapsContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (CoverageGapResponse, error) {

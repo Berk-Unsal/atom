@@ -61,6 +61,8 @@ build_page concept-4g2-receiver-noise-sensitivity.md concept-4g2-receiver-noise-
   "Deterministic thermal-noise-derived receiver thresholds, strict link usability, per-cell metadata, bandwidth semantics, integration boundaries, and canonical comparison evidence."
 build_page concept-4h1-interference-radio-quality.md concept-4h1-interference-radio-quality.html "Concept 4H.1 Interference and Radio Quality" "Model reference" \
   "Inspectable received-carrier power, serving-cell selection, co-channel eligibility, resource normalization, thermal noise, planning radio-quality metrics, diagnostics, and deterministic fingerprints."
+build_page concept-4h2-radio-quality-optimization.md concept-4h2-radio-quality-optimization.html "Concept 4H.2 Interference-Aware Optimization" "Model reference" \
+  "An optional fixed-domain radio-quality objective for deterministic multi-cell optimization, with explicit denominator, horizon, policy, Pareto, compatibility, and performance semantics."
 build_page bug-fixes.md bug-fixes.html "Bug-Fix Register" "Quality history" \
   "Prioritized confirmed defects, user impact, root causes, corrections, and regression evidence for A.T.O.M releases."
 build_page ../CHANGELOG.md changelog.html "Changelog" "Release history" \

@@ -71,8 +71,8 @@ func TestNetworkInputPreservesStableTowerOrder(t *testing.T) {
 	if req.Towers[0].ID != "second" || req.Towers[1].ID != "first" {
 		t.Fatalf("tower order changed: %+v", req.Towers)
 	}
-	if len(req.Optimization.Objectives) != 4 || req.Optimization.Objectives[0].Weight != 50 {
-		t.Fatalf("default optimization priorities = %+v, want four 50-point priorities", req.Optimization.Objectives)
+	if len(req.Optimization.Objectives) != 5 || req.Optimization.Objectives[0].Weight != 50 || req.Optimization.Objectives[4].ID != "radio_quality" || req.Optimization.Objectives[4].Weight != 0 {
+		t.Fatalf("default optimization priorities = %+v, want four 50-point priorities plus disabled radio quality", req.Optimization.Objectives)
 	}
 }
 

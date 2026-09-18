@@ -51,6 +51,7 @@ import {
   buildParetoSolutionComparison,
   createDefaultOptimizationConfig,
   getOptimizationRunKey,
+  isRadioQualityEvaluated,
   normalizeOptimizationConfig,
   optimizationConfigValidationMessage,
   rankOptimizationResponse,
@@ -3213,6 +3214,7 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
     solutions.findIndex((solution) => String(solution.id) === String(selectedSolutionId)),
   );
   const selectedSolution = solutions[selectedIndex];
+  const showRadioQuality = solutions.every((solution) => isRadioQualityEvaluated(solution.stats));
   return (
     <section className="pareto-explorer" aria-label="Pareto alternative solutions">
       <div className="pareto-explorer-heading">
@@ -3270,6 +3272,7 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
                   <span className="pareto-solution-metric"><small>Residential</small><strong>{formatParetoObjectivePercent(solution.stats, "residential")}</strong></span>
                   <span className="pareto-solution-metric"><small>Propagation reach</small><strong>{formatParetoObjectivePercent(solution.stats, "propagation_reach")}</strong></span>
                   <span className="pareto-solution-metric"><small>Overlap</small><strong>{formatParetoObjectivePercent(solution.stats, "overlap")}</strong></span>
+                  {showRadioQuality ? <span className="pareto-solution-metric"><small>Radio quality</small><strong>{formatParetoObjectivePercent(solution.stats, "radio_quality")}</strong></span> : null}
                 </span>
                 <span className="pareto-solution-action">Inspect solution</span>
               </button>
@@ -3287,6 +3290,7 @@ function ParetoSolutionDetail({ baseline, cellExplanation, comparison, constrain
     { id: "residential", label: "Residential", rawLabel: "covered / relevant buildings" },
     { id: "propagation_reach", label: "Propagation reach", rawLabel: "score / maximum" },
     { id: "overlap", label: "Overlap", rawLabel: "overlap buildings / covered units" },
+    ...(isRadioQualityEvaluated(solution.stats) ? [{ id: "radio_quality", label: "Radio quality", rawLabel: "serviceable / fixed-domain samples" }] : []),
   ];
   const constraintsLabel = !constraintsConfigured
     ? "Not configured"
@@ -3401,6 +3405,7 @@ function CellMarginalEffectPanel({ explanation }) {
     { key: "overlap", label: "Overlap ratio" },
     { key: "covered_units", label: "Covered units" },
     { key: "score", label: "Optimization score" },
+    ...(effect.metrics?.radio_quality?.available ? [{ key: "radio_quality", label: "Radio quality" }] : []),
   ];
   return (
     <section className="cell-marginal-effect" aria-label={`Marginal effect for Cell ${cellID}`} aria-live="polite">
@@ -3478,6 +3483,7 @@ function ParetoTradeoffComparison({ comparison }) {
     { key: "propagation_reach", label: "Propagation reach" },
     { key: "overlap", label: "Overlap" },
     { key: "score", label: "Score" },
+    ...(comparison.metrics?.radio_quality?.available ? [{ key: "radio_quality", label: "Radio quality" }] : []),
   ];
   return (
     <section className="pareto-tradeoff" aria-label="Selected solution compared with recommended">
@@ -3516,6 +3522,13 @@ function NetworkOptimizationPanel({ comparison, kind, onViewComparison, onViewSo
   const raw = stats.raw_metrics ?? {};
   const objectiveStatus = outcome.objective_status ?? stats.objective_status ?? {};
   const objectiveAvailable = (id) => objectiveStatus?.[id]?.available !== false;
+  const radioQualityMetadata = outcome.radio_quality ?? {};
+  const radioQualityEvaluated = isRadioQualityEvaluated(stats);
+  const radioQualityValue = radioQualityEvaluated
+    ? `${formatPercent(raw.radio_quality_serviceable_fraction)} (${formatCount(raw.radio_quality_serviceable_samples)} / ${formatCount(raw.radio_quality_total_samples)} samples)`
+    : radioQualityMetadata.enabled && radioQualityMetadata.available === false
+      ? (radioQualityMetadata.reason ?? UNAVAILABLE_VALUE)
+      : null;
   const constraintsConfigured = Object.keys(outcome.constraints ?? {}).length > 0;
   const constraintsLabel = !constraintsConfigured
     ? "Not configured"
@@ -3556,6 +3569,7 @@ function NetworkOptimizationPanel({ comparison, kind, onViewComparison, onViewSo
         <MetricRow label="Overlap ratio" value={overlapRatio} />
         <MetricRow label="Covered units" value={formatCount(raw.covered_units)} />
         <MetricRow label="Overlap buildings" value={objectiveAvailable("overlap") ? (stats.overlap_buildings ?? 0).toLocaleString() : UNAVAILABLE_VALUE} />
+        {radioQualityValue !== null ? <MetricRow label="Radio quality" value={radioQualityValue} /> : null}
         <MetricRow label="Constraints" value={constraintsLabel} />
       </div>
       <div className="optimization-result-summary">
@@ -3611,6 +3625,10 @@ function formatParetoObjectivePercent(stats, id) {
     const utility = Number(utilityValue);
     return Number.isFinite(utility) ? formatPercent(1 - utility) : UNAVAILABLE_VALUE;
   }
+  if (id === "radio_quality") {
+    const rawFraction = readOptimizationRawMetric(raw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction");
+    if (rawFraction !== undefined) return formatPercent(rawFraction);
+  }
   const utilityValue = utilities[objectiveID];
   if (utilityValue === null || utilityValue === undefined || utilityValue === "") return UNAVAILABLE_VALUE;
   return formatPercent(utilityValue);
@@ -3622,6 +3640,9 @@ function hasParetoSolutionData(solution) {
   const utilities = stats.objectives ?? stats.objectives_normalized;
   const objectiveStatus = stats.objective_status ?? stats.objectiveStatus ?? {};
   const objectiveIDs = ["demand", "residential", "coverage", "overlap"];
+  // A disabled/placeholder radio status is not evidence that the candidate
+  // was evaluated. Add the dimension only when fixed-domain raw metrics exist.
+  if (isRadioQualityEvaluated(stats)) objectiveIDs.push("radio_quality");
   const hasObjectiveData = objectiveIDs.every((id) => (
     objectiveStatus?.[id]?.available === false
       || hasFiniteParetoUtility(utilities?.[id])
@@ -3650,6 +3671,10 @@ function hasParetoRawMetric(raw, id) {
   if (id === "coverage") {
     return readOptimizationRawMetric(raw, "propagation_reach_score", "propagationReachScore", "coverage_reach_score", "coverageReachScore") !== undefined
       && readOptimizationRawMetric(raw, "propagation_reach_maximum", "propagationReachMaximum", "coverage_reach_maximum", "coverageReachMaximum") !== undefined;
+  }
+  if (id === "radio_quality") {
+    return readOptimizationRawMetric(raw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction") !== undefined
+      && readOptimizationRawMetric(raw, "radio_quality_total_samples", "radioQualityTotalSamples") !== undefined;
   }
   return readOptimizationRawMetric(raw, "overlap_ratio", "overlapRatio") !== undefined
     || (
@@ -3687,6 +3712,12 @@ function formatParetoRawMetricPair(stats, id) {
       ?? readOptimizationRawMetric(stats, "overlap_buildings", "overlapBuildings");
     const units = readOptimizationRawMetric(raw, "covered_units", "coveredUnits");
     return formatPair(buildings, units, formatCount);
+  }
+  if (id === "radio_quality") {
+    const serviceable = readOptimizationRawMetric(raw, "radio_quality_serviceable_samples", "radioQualityServiceableSamples");
+    const total = readOptimizationRawMetric(raw, "radio_quality_total_samples", "radioQualityTotalSamples");
+    if (serviceable === undefined || total === undefined) return UNAVAILABLE_VALUE;
+    return `${formatCount(serviceable)} / ${formatCount(total)} samples`;
   }
   return UNAVAILABLE_VALUE;
 }

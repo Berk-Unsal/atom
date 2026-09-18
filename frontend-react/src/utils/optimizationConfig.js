@@ -3,13 +3,14 @@ export const OPTIMIZATION_OBJECTIVES = [
   { id: "residential", label: "Residential", direction: "Maximize", description: "Prioritize covered residential buildings." },
   { id: "coverage", label: "Propagation reach", direction: "Maximize", description: "Maximize usable propagation distance." },
   { id: "overlap", label: "Reduce overlap", direction: "Maximize utility", description: "Prefer coverage without duplicate service." },
+  { id: "radio_quality", label: "Radio quality", direction: "Maximize", description: "Reward the fixed-domain fraction meeting RSRP, SINR, and RSRQ planning thresholds.", defaultWeight: 0 },
 ];
 
 const DEFAULT_OPTIMIZATION_PRIORITY = 50;
 
 export function createDefaultOptimizationConfig() {
   return {
-    objectives: OPTIMIZATION_OBJECTIVES.map(({ id }) => ({ id, weight: DEFAULT_OPTIMIZATION_PRIORITY })),
+    objectives: OPTIMIZATION_OBJECTIVES.map(({ id, defaultWeight }) => ({ id, weight: defaultWeight ?? DEFAULT_OPTIMIZATION_PRIORITY })),
     constraints: {},
   };
 }
@@ -20,9 +21,10 @@ export function normalizeOptimizationConfig(config) {
   const known = new Set(OPTIMIZATION_OBJECTIVES.map(({ id }) => id));
   const byID = new Map();
   for (const objective of config.objectives) {
-    if (!known.has(objective?.id) || byID.has(objective.id)) continue;
-    byID.set(objective.id, {
-      id: objective.id,
+    const id = String(objective?.id ?? "").trim().toLowerCase();
+    if (!known.has(id) || byID.has(id)) continue;
+    byID.set(id, {
+      id,
       weight: boundedNumber(objective.weight, DEFAULT_OPTIMIZATION_PRIORITY, 0, 100),
     });
   }
@@ -97,6 +99,9 @@ export function normalizeObjectiveUtilities(stats = {}) {
   const overlapBuildings = readMetric(raw, "overlap_buildings", "overlapBuildings")
     ?? Number(stats.overlap_buildings ?? stats.overlapBuildings);
   const overlapFraction = overlapRatio ?? ratio01(overlapBuildings, coveredUnits);
+  const radioQualityFraction = readMetric(raw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction");
+  const radioQualityEvaluated = radioQualityFraction !== undefined
+    || readMetric(raw, "radio_quality_total_samples", "radioQualityTotalSamples") !== undefined;
 
   return {
     demand: objectiveStatus?.demand?.available === false ? null : ratio01(servedDemand, totalDemand),
@@ -105,6 +110,9 @@ export function normalizeObjectiveUtilities(stats = {}) {
     overlap: objectiveStatus?.overlap?.available === false
       ? null
       : overlapFraction === null ? null : clamp01(1 - overlapFraction),
+    radio_quality: objectiveStatus?.radio_quality?.available === false
+      ? null
+      : radioQualityEvaluated ? clamp01(radioQualityFraction ?? 0) : null,
   };
 }
 
@@ -116,8 +124,11 @@ export function calculateCompositeScore(utilities, weights) {
 }
 
 export function scoreOptimizationStats(stats = {}, config) {
-  const utilities = normalizeObjectiveUtilities(stats);
-  const objectiveStatus = stats.objective_status ?? stats.objectiveStatus ?? {};
+  const objectiveStatus = ensureRadioQualityRerankStatus(
+    stats.objective_status ?? stats.objectiveStatus ?? {},
+    stats,
+  );
+  const utilities = normalizeObjectiveUtilities({ ...stats, objective_status: objectiveStatus });
   const weights = normalizePriorityWeights(config, objectiveStatus);
   const compositeScore = calculateCompositeScore(utilities, weights);
   const objectiveBreakdown = Object.fromEntries(OPTIMIZATION_OBJECTIVES.map(({ id }) => [id, {
@@ -128,12 +139,13 @@ export function scoreOptimizationStats(stats = {}, config) {
   const nextStatus = Object.fromEntries(OPTIMIZATION_OBJECTIVES.map(({ id }) => {
     const configuredPriority = Number(normalizeOptimizationConfig(config).objectives.find((objective) => objective.id === id)?.weight ?? 0);
     const existing = objectiveStatus?.[id] ?? { available: true };
+    const available = existing.available !== false && utilities[id] !== null && utilities[id] !== undefined;
     return [id, {
       ...existing,
       configured_priority: configuredPriority,
       effective_weight: weights[id],
-      utility: existing.available === false ? null : utilities[id],
-      contribution: existing.available === false ? null : utilities[id] * weights[id],
+      utility: available ? utilities[id] : null,
+      contribution: available ? utilities[id] * weights[id] : null,
     }];
   }));
   return {
@@ -193,7 +205,7 @@ export function resolveSelectedParetoSolutionId(solutions, recommendedSolutionId
 // each current backend solution carries stable objective utilities/raw metrics.
 export function rankOptimizationResponse(response, config) {
   if (!response) return response;
-  const responseStatus = objectiveStatusFromResponse(response);
+  const responseStatus = ensureRadioQualityRerankStatus(objectiveStatusFromResponse(response), response);
   const weights = normalizePriorityWeights(config, responseStatus);
   const frontier = rankParetoSolutions(response.pareto_frontier, config, responseStatus);
   if (frontier.length === 0) {
@@ -327,6 +339,20 @@ export function buildParetoSolutionComparison(selectedSolution, recommendedSolut
         utilityRecommended: recommendedStats.objectives?.overlap,
         utilitySelected: selectedStats.objectives?.overlap,
       }),
+      radio_quality: solutionComparisonMetric({
+        available: objectiveAvailable(objectiveStatus, "radio_quality", selectedStats, recommendedStats)
+          && isRadioQualityEvaluated(selectedStats)
+          && isRadioQualityEvaluated(recommendedStats),
+        key: "radio_quality",
+        preferredDirection: "higher",
+        recommended: recommendedStats.objectives?.radio_quality,
+        selected: selectedStats.objectives?.radio_quality,
+        unit: "ratio",
+        denominator: sharedValue(
+          readMetric(selectedRaw, "radio_quality_total_samples", "radioQualityTotalSamples"),
+          readMetric(recommendedRaw, "radio_quality_total_samples", "radioQualityTotalSamples"),
+        ),
+      }),
       score: solutionComparisonMetric({
         available: Number.isFinite(Number(selectedStats.score)) && Number.isFinite(Number(recommendedStats.score)),
         key: "score",
@@ -400,6 +426,9 @@ export function buildNetworkOptimizationComparison(response, config) {
   const residentialAvailable = objectiveStatus.residential?.available !== false;
   const reachAvailable = objectiveStatus.coverage?.available !== false;
   const overlapAvailable = objectiveStatus.overlap?.available !== false;
+  const radioQualityAvailable = objectiveStatus.radio_quality?.available !== false
+    && isRadioQualityEvaluated(baselineStats)
+    && isRadioQualityEvaluated(optimizedStats);
 
   const baselineDemand = readMetric(baselineRaw, "served_demand_weight", "servedDemandWeight")
     ?? readMetric(baselineRaw, "served_weighted_demand", "servedWeightedDemand");
@@ -421,6 +450,12 @@ export function buildNetworkOptimizationComparison(response, config) {
     ?? readMetric(optimizedStats, "overlap_buildings", "overlapBuildings");
   const baselineCoveredUnits = readMetric(baselineRaw, "covered_units", "coveredUnits");
   const optimizedCoveredUnits = readMetric(optimizedRaw, "covered_units", "coveredUnits");
+  const baselineRadioQuality = readMetric(baselineRaw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction");
+  const optimizedRadioQuality = readMetric(optimizedRaw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction");
+  const sharedRadioQualitySampleCount = sharedValue(
+    readMetric(baselineRaw, "radio_quality_total_samples", "radioQualityTotalSamples"),
+    readMetric(optimizedRaw, "radio_quality_total_samples", "radioQualityTotalSamples"),
+  );
   const baselineScore = readMetric(baselineStats, "score");
   const optimizedScore = readMetric(optimizedStats, "score");
   const configuredConstraints = response.optimization?.constraints ?? config?.constraints ?? {};
@@ -432,6 +467,7 @@ export function buildNetworkOptimizationComparison(response, config) {
     kind: "network",
     type: "optimization",
     optimization_domain: response.optimization_domain ?? null,
+    radio_quality: response.optimization?.radio_quality ?? null,
     baseline_solution: {
       ...baseline,
       stats: baselineStats,
@@ -492,6 +528,17 @@ export function buildNetworkOptimizationComparison(response, config) {
         unit: "ratio",
         utilityBaseline: baselineStats.objectives?.overlap,
         utilityOptimized: optimizedStats.objectives?.overlap,
+      }),
+      radio_quality: comparisonMetric({
+        available: radioQualityAvailable,
+        baseline: baselineRadioQuality,
+        key: "radio_quality",
+        preferredDirection: "higher",
+        optimized: optimizedRadioQuality,
+        unit: "ratio",
+        denominator: sharedRadioQualitySampleCount,
+        utilityBaseline: baselineStats.objectives?.radio_quality,
+        utilityOptimized: optimizedStats.objectives?.radio_quality,
       }),
       overlap_buildings: comparisonMetric({
         available: overlapAvailable,
@@ -633,6 +680,12 @@ export function buildCellMarginalEffectView(explanation, config) {
     ?? readMetric(counterfactualStats, "overlap_buildings", "overlapBuildings");
   const actualCoveredUnits = readMetric(actualRaw, "covered_units", "coveredUnits");
   const counterfactualCoveredUnits = readMetric(counterfactualRaw, "covered_units", "coveredUnits");
+  const actualRadioQuality = readMetric(actualRaw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction");
+  const counterfactualRadioQuality = readMetric(counterfactualRaw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction");
+  const radioQualitySampleCount = sharedValue(
+    readMetric(actualRaw, "radio_quality_total_samples", "radioQualityTotalSamples"),
+    readMetric(counterfactualRaw, "radio_quality_total_samples", "radioQualityTotalSamples"),
+  );
 
   return {
     available: true,
@@ -702,6 +755,19 @@ export function buildCellMarginalEffectView(explanation, config) {
         key: "covered_units",
         preferredDirection: "informational",
         unit: "count",
+      }),
+      radio_quality: cellMarginalMetric({
+        actual: actualRadioQuality,
+        counterfactual: counterfactualRadioQuality,
+        denominator: radioQualitySampleCount,
+        available: objectiveStatus?.radio_quality?.available !== false
+          && actualRadioQuality !== undefined
+          && counterfactualRadioQuality !== undefined,
+        key: "radio_quality",
+        preferredDirection: "higher",
+        utilityActual: actualStats.objectives?.radio_quality,
+        utilityCounterfactual: counterfactualStats.objectives?.radio_quality,
+        unit: "ratio",
       }),
       score: cellMarginalMetric({
         actual: actualStats.score,
@@ -776,9 +842,38 @@ function cellMarginalConstraintMetric(actual, counterfactual, actualViolations =
 
 function ensureObjectiveStatus(stats, response) {
   const existing = stats?.objective_status ?? stats?.objectiveStatus ?? {};
-  const objectiveStatus = objectiveStatusFromResponse(response);
+  const objectiveStatus = ensureRadioQualityRerankStatus(objectiveStatusFromResponse(response), response);
   if (Object.keys(objectiveStatus).length === 0) return stats;
   return { ...stats, objective_status: { ...objectiveStatus, ...existing } };
+}
+
+// Radio-quality raw metrics are candidate data, not a presentation fallback.
+// A priority-only rerank may use them when present, but it must surface an
+// unevaluated state when the saved run predates the opt-in objective.
+export function ensureRadioQualityRerankStatus(status = {}, source = {}) {
+  const raw = source?.raw_metrics ?? source?.rawMetrics ?? source?.stats?.raw_metrics ?? source?.stats?.rawMetrics ?? {};
+  const total = readMetric(raw, "radio_quality_total_samples", "radioQualityTotalSamples");
+  const existing = status?.radio_quality;
+  if (existing?.available === false && existing.reason && existing.reason !== "disabled" && existing.reason !== "not_evaluated") {
+    return status;
+  }
+  if (Number.isFinite(total) && total > 0) {
+    return { ...status, radio_quality: { ...(existing ?? {}), available: true, reason: "" } };
+  }
+  return {
+    ...status,
+    radio_quality: {
+      ...(existing ?? {}),
+      available: false,
+      reason: existing?.reason === "disabled" ? "not_evaluated" : (existing?.reason ?? "not_evaluated"),
+    },
+  };
+}
+
+export function isRadioQualityEvaluated(stats = {}) {
+  const raw = stats?.raw_metrics ?? stats?.rawMetrics ?? {};
+  const total = readMetric(raw, "radio_quality_total_samples", "radioQualityTotalSamples");
+  return Number.isFinite(total) && total > 0;
 }
 
 function objectiveStatusFromResponse(response) {

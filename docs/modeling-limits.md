@@ -90,6 +90,23 @@ The reference catalog also records [3GPP TR 38.901 V19.4.0 (2026-06-23)](https:/
 
 Concept 4H.1 adds inspectable interference bookkeeping, but it remains a planning approximation: total-carrier propagation power is normalized to a common reference-resource basis, LTE/NR signal-resource density and scheduler timing are not modeled, adjacent-channel/partial-overlap selectivity is deferred, and each cell's configured radius is only a finite analysis horizon. The declared power ledger separates serving admission from non-serving interference eligibility, while exact co-channel rules, thermal-noise bandwidth, serviceability thresholds, and failure reasons are returned so results are auditable. See the [Concept 4H.1 interference and radio-quality note](concept-4h1-interference-radio-quality.md).
 
+Concept 4H.2 optionally couples that contract to optimization through the
+`radio_quality` objective. The utility is the fraction of a deterministic
+fixed sampled union domain that meets the combined RSRP/SINR/RSRQ planning
+policy. No-carrier samples remain failures in the denominator, and the domain
+does not change with azimuth, coverage, serviceability, or Pareto membership.
+The domain is sampled rather than a continuous-area integral. Its interference
+is bounded by each cell's effective `rf_profile.radius_m`; this is a declared
+compatibility horizon, not physical zero power outside the radius and not a
+claim of network-wide interference completeness. Radio quality is disabled by
+default, does not change the existing optimizer when its priority is zero, and
+does not redefine demand, residential, building-entry, or raw signal-surface
+semantics. The 140 GHz research profile is unavailable for this objective with
+reason `unsupported_radio_quality_model`. See the
+[Concept 4H.2 optimization note](concept-4h2-radio-quality-optimization.md)
+for the fixed-domain contract, Pareto/reranking behavior, performance
+architecture, policy/horizon limitations, and canonical enabled experiment.
+
 ## Reference and Applicability Foundation
 
 Concept 4B adds an independent, human-auditable fixture corpus at `backend-go/raytracer/testdata/rf-reference-fixtures.json` and the corresponding contract tests in `backend-go/raytracer/rf_reference_fixtures_test.go`. The corpus covers FSPL, slant-distance link budgets, antenna-pattern attenuation and beam boundaries, dBm/mW and thermal-noise arithmetic, RSRP/SINR arithmetic, Fresnel radius, knife-edge loss, exact polygon boundary cases, sensitivity termination, raw received-power surfaces, and point-sampled path-profile behavior. Concept 4G.2 adds independent receiver fixtures and a gated 2.6/28 GHz sensitivity matrix in `backend-go/raytracer/receiver_noise_test.go`, including bandwidth, noise-figure, SNR, margin, per-cell, surface, building, propagation, and interference separation checks. Expected values are independently calculated fixtures; the tests compare them with the existing implementation without changing its equations.

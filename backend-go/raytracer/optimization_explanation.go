@@ -71,13 +71,14 @@ type NetworkCellExplanationSide struct {
 // Ratio deltas are retained as ratios; consumers can present them as
 // percentage points without losing the underlying value.
 type NetworkCellExplanationDelta struct {
-	ServedDemandWeight    float64 `json:"served_demand_weight"`
-	ResidentialCovered    int     `json:"residential_covered"`
-	PropagationReachScore float64 `json:"propagation_reach_score"`
-	PropagationReachRatio float64 `json:"propagation_reach_ratio"`
-	OverlapBuildings      int     `json:"overlap_buildings"`
-	OverlapRatio          float64 `json:"overlap_ratio"`
-	CoveredUnits          int     `json:"covered_units"`
+	ServedDemandWeight              float64 `json:"served_demand_weight"`
+	ResidentialCovered              int     `json:"residential_covered"`
+	PropagationReachScore           float64 `json:"propagation_reach_score"`
+	PropagationReachRatio           float64 `json:"propagation_reach_ratio"`
+	RadioQualityServiceableFraction float64 `json:"radio_quality_serviceable_fraction"`
+	OverlapBuildings                int     `json:"overlap_buildings"`
+	OverlapRatio                    float64 `json:"overlap_ratio"`
+	CoveredUnits                    int     `json:"covered_units"`
 }
 
 // NetworkCellExplanationScore is the only priority-sensitive part of the
@@ -129,23 +130,45 @@ func NetworkOptimizationRunID(req NetworkOptimizationRequest) string {
 	normalized := req
 	NormalizeNetworkOptimizationRequest(&normalized)
 	identity := struct {
-		Towers              []NetworkTowerRequest   `json:"towers"`
-		Rays                int                     `json:"rays"`
-		RadiusMeters        float64                 `json:"radius_m"`
-		FrequencyGHz        float64                 `json:"frequency_ghz"`
-		TxPowerDBm          float64                 `json:"tx_power_dbm"`
-		BeamWidthDeg        float64                 `json:"beam_width"`
-		CalibrationOffsetDB float64                 `json:"calibration_offset_db"`
-		Constraints         OptimizationConstraints `json:"constraints"`
+		Towers                       []NetworkTowerRequest   `json:"towers"`
+		Rays                         int                     `json:"rays"`
+		RadiusMeters                 float64                 `json:"radius_m"`
+		FrequencyGHz                 float64                 `json:"frequency_ghz"`
+		TxPowerDBm                   float64                 `json:"tx_power_dbm"`
+		BeamWidthDeg                 float64                 `json:"beam_width"`
+		CalibrationOffsetDB          float64                 `json:"calibration_offset_db"`
+		Constraints                  OptimizationConstraints `json:"constraints"`
+		RadioQualityEnabled          bool                    `json:"radio_quality_enabled"`
+		RadioQualityDomainVersion    string                  `json:"radio_quality_domain_version"`
+		RadioQualityPolicy           string                  `json:"radio_quality_policy"`
+		RadioQualityDomain           string                  `json:"radio_quality_domain_source"`
+		RadioQualityHorizon          string                  `json:"radio_quality_horizon_mode"`
+		RadioQualitySpacing          float64                 `json:"radio_quality_sample_spacing_m"`
+		RadioQualityRSRPThresholdDBm float64                 `json:"radio_quality_rsrp_threshold_dbm"`
+		RadioQualitySINRThresholdDB  float64                 `json:"radio_quality_sinr_threshold_db"`
+		RadioQualityRSRQThresholdDB  float64                 `json:"radio_quality_rsrq_threshold_db"`
+		RadioQualityCoChannelRule    string                  `json:"radio_quality_co_channel_rule"`
+		RadioQualityLoadAssumption   string                  `json:"radio_quality_load_assumption"`
 	}{
-		Towers:              normalized.Towers,
-		Rays:                normalized.Rays,
-		RadiusMeters:        normalized.RadiusMeters,
-		FrequencyGHz:        normalized.FrequencyGHz,
-		TxPowerDBm:          normalized.TxPowerDBm,
-		BeamWidthDeg:        normalized.BeamWidthDeg,
-		CalibrationOffsetDB: normalized.CalibrationOffsetDB,
-		Constraints:         normalized.Optimization.Constraints,
+		Towers:                       normalized.Towers,
+		Rays:                         normalized.Rays,
+		RadiusMeters:                 normalized.RadiusMeters,
+		FrequencyGHz:                 normalized.FrequencyGHz,
+		TxPowerDBm:                   normalized.TxPowerDBm,
+		BeamWidthDeg:                 normalized.BeamWidthDeg,
+		CalibrationOffsetDB:          normalized.CalibrationOffsetDB,
+		Constraints:                  normalized.Optimization.Constraints,
+		RadioQualityEnabled:          optimizationObjectiveEnabled(normalized.Optimization, radioQualityOptimizationObjectiveID),
+		RadioQualityDomainVersion:    RadioQualityOptimizationDomainIDVersion,
+		RadioQualityPolicy:           "planning-default-v1",
+		RadioQualityDomain:           RadioQualityOptimizationDomainSource,
+		RadioQualityHorizon:          RadioQualityOptimizationHorizonMode,
+		RadioQualitySpacing:          DefaultInterferenceSpacingM,
+		RadioQualityRSRPThresholdDBm: InterferenceRSRPThresholdDBm,
+		RadioQualitySINRThresholdDB:  InterferenceSINRThresholdDB,
+		RadioQualityRSRQThresholdDB:  InterferenceRSRQThresholdDB,
+		RadioQualityCoChannelRule:    RadioQualityCoChannelRule,
+		RadioQualityLoadAssumption:   RadioQualityLoadAssumption,
 	}
 	serialized, err := json.Marshal(identity)
 	if err != nil {
@@ -428,7 +451,14 @@ func validateNetworkCellExplanationRFRequest(request NetworkOptimizationRequest)
 func sameOptimizationDomainMetadata(left, right OptimizationDomainMetadata) bool {
 	if left.Source != right.Source || left.SelectedCellCount != right.SelectedCellCount || left.RadiusPolicy != right.RadiusPolicy ||
 		left.RelevantBuildingEntities != right.RelevantBuildingEntities || left.RelevantDemandEntities != right.RelevantDemandEntities ||
-		left.RelevantResidentialEntities != right.RelevantResidentialEntities || len(left.EnvelopeRadiiMeters) != len(right.EnvelopeRadiiMeters) {
+		left.RelevantResidentialEntities != right.RelevantResidentialEntities ||
+		left.RadioQualityDomainID != right.RadioQualityDomainID ||
+		left.RadioQualityDomainDescription != right.RadioQualityDomainDescription ||
+		left.RadioQualitySampleCount != right.RadioQualitySampleCount ||
+		math.Abs(left.RadioQualitySampleSpacingM-right.RadioQualitySampleSpacingM) > 0.001 ||
+		left.InterferenceHorizonMode != right.InterferenceHorizonMode ||
+		left.InterferenceHorizonDescription != right.InterferenceHorizonDescription ||
+		len(left.EnvelopeRadiiMeters) != len(right.EnvelopeRadiiMeters) {
 		return false
 	}
 	for index := range left.EnvelopeRadiiMeters {
@@ -472,6 +502,21 @@ func validateStoredExplanationDomainMetrics(stats NetworkOptimizationStats, prep
 	if prepared.ObjectiveAvailability["coverage"].Available && (reachMaximum <= 0 || math.Abs(reachMaximum-wantedReachMaximum) > 0.01) {
 		return "selected solution propagation-reach maximum is missing"
 	}
+	if prepared.RadioQualityMetadata.Enabled && prepared.RadioQualityMetadata.Available {
+		if raw.RadioQualityTotalSamples != prepared.RadioQualityMetadata.SampleCount {
+			return "selected solution radio-quality denominator does not match the retained fixed domain"
+		}
+		if raw.RadioQualityServiceableSamples < 0 || raw.RadioQualityServiceableSamples > raw.RadioQualityTotalSamples ||
+			!finiteExplanationMetric(raw.RadioQualityServiceableFraction) || raw.RadioQualityServiceableFraction < 0 || raw.RadioQualityServiceableFraction > 1 {
+			return "selected solution radio-quality metrics are outside their valid range"
+		}
+		if raw.RadioQualityTotalSamples > 0 {
+			wantFraction := float64(raw.RadioQualityServiceableSamples) / float64(raw.RadioQualityTotalSamples)
+			if math.Abs(raw.RadioQualityServiceableFraction-wantFraction) > 0.00001 {
+				return "selected solution radio-quality serviceability is inconsistent with its counts"
+			}
+		}
+	}
 	return ""
 }
 
@@ -506,24 +551,26 @@ func explanationMetricsFromStats(stats NetworkOptimizationStats) NetworkCellExpl
 		overlapRatio = ratio01(float64(overlapBuildings), float64(raw.CoveredUnits))
 	}
 	return NetworkCellExplanationDelta{
-		ServedDemandWeight:    servedDemand,
-		ResidentialCovered:    residentialCovered,
-		PropagationReachScore: reachScore,
-		PropagationReachRatio: ratio01(reachScore, reachMaximum),
-		OverlapBuildings:      overlapBuildings,
-		OverlapRatio:          overlapRatio,
-		CoveredUnits:          raw.CoveredUnits,
+		ServedDemandWeight:              servedDemand,
+		ResidentialCovered:              residentialCovered,
+		PropagationReachScore:           reachScore,
+		PropagationReachRatio:           ratio01(reachScore, reachMaximum),
+		RadioQualityServiceableFraction: clamp01(raw.RadioQualityServiceableFraction),
+		OverlapBuildings:                overlapBuildings,
+		OverlapRatio:                    overlapRatio,
+		CoveredUnits:                    raw.CoveredUnits,
 	}
 }
 
 func subtractExplanationMetrics(actual, counterfactual NetworkCellExplanationDelta) NetworkCellExplanationDelta {
 	return NetworkCellExplanationDelta{
-		ServedDemandWeight:    actual.ServedDemandWeight - counterfactual.ServedDemandWeight,
-		ResidentialCovered:    actual.ResidentialCovered - counterfactual.ResidentialCovered,
-		PropagationReachScore: actual.PropagationReachScore - counterfactual.PropagationReachScore,
-		PropagationReachRatio: actual.PropagationReachRatio - counterfactual.PropagationReachRatio,
-		OverlapBuildings:      actual.OverlapBuildings - counterfactual.OverlapBuildings,
-		OverlapRatio:          actual.OverlapRatio - counterfactual.OverlapRatio,
-		CoveredUnits:          actual.CoveredUnits - counterfactual.CoveredUnits,
+		ServedDemandWeight:              actual.ServedDemandWeight - counterfactual.ServedDemandWeight,
+		ResidentialCovered:              actual.ResidentialCovered - counterfactual.ResidentialCovered,
+		PropagationReachScore:           actual.PropagationReachScore - counterfactual.PropagationReachScore,
+		PropagationReachRatio:           actual.PropagationReachRatio - counterfactual.PropagationReachRatio,
+		RadioQualityServiceableFraction: actual.RadioQualityServiceableFraction - counterfactual.RadioQualityServiceableFraction,
+		OverlapBuildings:                actual.OverlapBuildings - counterfactual.OverlapBuildings,
+		OverlapRatio:                    actual.OverlapRatio - counterfactual.OverlapRatio,
+		CoveredUnits:                    actual.CoveredUnits - counterfactual.CoveredUnits,
 	}
 }

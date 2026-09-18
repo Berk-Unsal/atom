@@ -46,6 +46,7 @@ func TestCanonicalAnkaraOptimizationFixtureIsStable(t *testing.T) {
 	if len(first.Towers) != 6 || first.Rays != 72 || first.RadiusMeters != 400 || first.FrequencyGHz != 28 || first.TxPowerDBm != 30 || first.BeamWidthDeg != 120 {
 		t.Fatalf("canonical fixture settings = %+v", first)
 	}
+	t.Logf("canonical disabled-semantics fingerprint=%s", NetworkScenarioFingerprint(first))
 }
 
 func TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled(t *testing.T) {

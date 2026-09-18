@@ -73,8 +73,8 @@ func InterferenceScenarioFingerprint(req InterferenceRequest) string {
 }
 
 // NetworkScenarioFingerprint captures the canonical optimizer scenario,
-// including priorities and hard constraints, without coupling interference
-// diagnostics into optimization math.
+// including priorities, hard constraints, and opt-in radio-quality semantics.
+// Presentation-only changes remain outside this identity.
 func NetworkScenarioFingerprint(req NetworkOptimizationRequest) string {
 	normalized := req
 	NormalizeNetworkOptimizationRequest(&normalized)
@@ -89,29 +89,53 @@ func NetworkScenarioFingerprint(req NetworkOptimizationRequest) string {
 		return objectives[i].ID < objectives[j].ID
 	})
 	identity := struct {
-		SchemaVersion       string                  `json:"schema_version"`
-		Towers              []NetworkTowerRequest   `json:"towers"`
-		Rays                int                     `json:"rays"`
-		RadiusMeters        float64                 `json:"radius_m"`
-		FrequencyGHz        float64                 `json:"frequency_ghz"`
-		TxPowerDBm          float64                 `json:"tx_power_dbm"`
-		BeamWidthDeg        float64                 `json:"beam_width"`
-		CalibrationOffsetDB float64                 `json:"calibration_offset_db"`
-		RFProfile           CellRFProfile           `json:"rf_profile"`
-		Objectives          []OptimizationObjective `json:"objectives"`
-		Constraints         OptimizationConstraints `json:"constraints"`
+		SchemaVersion                string                  `json:"schema_version"`
+		Towers                       []NetworkTowerRequest   `json:"towers"`
+		Rays                         int                     `json:"rays"`
+		RadiusMeters                 float64                 `json:"radius_m"`
+		FrequencyGHz                 float64                 `json:"frequency_ghz"`
+		TxPowerDBm                   float64                 `json:"tx_power_dbm"`
+		BeamWidthDeg                 float64                 `json:"beam_width"`
+		CalibrationOffsetDB          float64                 `json:"calibration_offset_db"`
+		RFProfile                    CellRFProfile           `json:"rf_profile"`
+		Objectives                   []OptimizationObjective `json:"objectives"`
+		Constraints                  OptimizationConstraints `json:"constraints"`
+		RadioQualityEnabled          bool                    `json:"radio_quality_enabled"`
+		RadioQualityDomainVersion    string                  `json:"radio_quality_domain_version"`
+		RadioQualityDomainSource     string                  `json:"radio_quality_domain_source"`
+		RadioQualitySampleSpacingM   float64                 `json:"radio_quality_sample_spacing_m"`
+		RadioQualityMaxSamples       int                     `json:"radio_quality_max_samples"`
+		RadioQualityHorizonMode      string                  `json:"radio_quality_horizon_mode"`
+		RadioQualityPolicyID         string                  `json:"radio_quality_policy_id"`
+		RadioQualityRSRPThresholdDBm float64                 `json:"radio_quality_rsrp_threshold_dbm"`
+		RadioQualitySINRThresholdDB  float64                 `json:"radio_quality_sinr_threshold_db"`
+		RadioQualityRSRQThresholdDB  float64                 `json:"radio_quality_rsrq_threshold_db"`
+		RadioQualityCoChannelRule    string                  `json:"radio_quality_co_channel_rule"`
+		RadioQualityLoadAssumption   string                  `json:"radio_quality_load_assumption"`
 	}{
-		SchemaVersion:       ScenarioFingerprintSchemaVersion,
-		Towers:              towers,
-		Rays:                normalized.Rays,
-		RadiusMeters:        normalized.RadiusMeters,
-		FrequencyGHz:        normalized.FrequencyGHz,
-		TxPowerDBm:          normalized.TxPowerDBm,
-		BeamWidthDeg:        normalized.BeamWidthDeg,
-		CalibrationOffsetDB: normalized.CalibrationOffsetDB,
-		RFProfile:           normalized.RFProfile,
-		Objectives:          objectives,
-		Constraints:         normalized.Optimization.Constraints,
+		SchemaVersion:                ScenarioFingerprintSchemaVersion,
+		Towers:                       towers,
+		Rays:                         normalized.Rays,
+		RadiusMeters:                 normalized.RadiusMeters,
+		FrequencyGHz:                 normalized.FrequencyGHz,
+		TxPowerDBm:                   normalized.TxPowerDBm,
+		BeamWidthDeg:                 normalized.BeamWidthDeg,
+		CalibrationOffsetDB:          normalized.CalibrationOffsetDB,
+		RFProfile:                    normalized.RFProfile,
+		Objectives:                   objectives,
+		Constraints:                  normalized.Optimization.Constraints,
+		RadioQualityEnabled:          optimizationObjectiveEnabled(normalized.Optimization, radioQualityOptimizationObjectiveID),
+		RadioQualityDomainVersion:    RadioQualityOptimizationDomainIDVersion,
+		RadioQualityDomainSource:     RadioQualityOptimizationDomainSource,
+		RadioQualitySampleSpacingM:   DefaultInterferenceSpacingM,
+		RadioQualityMaxSamples:       MaxInterferenceSamples,
+		RadioQualityHorizonMode:      RadioQualityOptimizationHorizonMode,
+		RadioQualityPolicyID:         "planning-default-v1",
+		RadioQualityRSRPThresholdDBm: InterferenceRSRPThresholdDBm,
+		RadioQualitySINRThresholdDB:  InterferenceSINRThresholdDB,
+		RadioQualityRSRQThresholdDB:  InterferenceRSRQThresholdDB,
+		RadioQualityCoChannelRule:    RadioQualityCoChannelRule,
+		RadioQualityLoadAssumption:   RadioQualityLoadAssumption,
 	}
 	return fingerprintJSON("network", identity)
 }

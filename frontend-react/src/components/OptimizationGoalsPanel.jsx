@@ -28,7 +28,7 @@ export default function OptimizationGoalsPanel({ config, onChange }) {
   return (
     <section className="optimization-goals" aria-label="Network optimization goals">
       <div className="panel-title"><Scale size={16} /><span>Optimization priorities</span></div>
-      <p className="data-note">Set the relative importance of each objective. Priorities are normalized for scoring.</p>
+      <p className="data-note">Set relative importance; priorities are normalized for scoring. Radio quality is opt-in and starts at 0.</p>
       <div className="optimization-objectives">
         {OPTIMIZATION_OBJECTIVES.map((objective) => {
           const value = Number(objectives.get(objective.id)?.weight ?? 0);

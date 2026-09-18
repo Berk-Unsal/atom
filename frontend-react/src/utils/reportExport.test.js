@@ -457,6 +457,72 @@ describe("planning report conditional and fallback behavior", () => {
 });
 
 describe("planning report values", () => {
+  it("renders fixed-domain radio-quality performance and outage provenance", () => {
+    const radioConfig = {
+      ...OPTIMIZATION_CONFIG,
+      objectives: [
+        ...OPTIMIZATION_CONFIG.objectives,
+        { id: "radio_quality", weight: 25 },
+      ],
+    };
+    const radioStatus = { ...OBJECTIVE_STATUS, radio_quality: { available: true } };
+    const withRadio = (rawMetrics, fraction) => ({
+      ...makeStats({
+        ...rawMetrics,
+        radio_quality_total_samples: 100,
+        radio_quality_serviceable_samples: Math.round(fraction * 100),
+        radio_quality_serviceable_fraction: fraction,
+        radio_quality_p10_sinr_db: -3.4,
+        radio_quality_median_sinr_db: 18.2,
+        radio_quality_p10_rsrp_dbm: -112.7,
+        radio_quality_median_rsrp_dbm: -86.5,
+        radio_quality_p10_rsrq_db: -15.4,
+        radio_quality_median_rsrq_db: -9.1,
+        radio_quality_outage_by_reason: { no_carrier: 72, sinr_failed: 8 },
+      }),
+      objective_status: radioStatus,
+    });
+    const networkOptimization = makeNetworkOptimization();
+    networkOptimization.optimization = {
+      ...networkOptimization.optimization,
+      objective_status: radioStatus,
+      radio_quality: {
+        enabled: true,
+        policy_id: "radio-quality-serviceability-v1",
+        serviceability_rule: "RSRP >= -110 dBm; SINR >= 0 dB; RSRQ >= -17 dB",
+        horizon_description: "Per-cell effective-radius horizon",
+      },
+    };
+    networkOptimization.optimization_domain = {
+      ...networkOptimization.optimization_domain,
+      radio_quality_domain_description: "Deterministic fixed union grid",
+      radio_quality_sample_count: 100,
+      radio_quality_sample_spacing_m: 40,
+      interference_horizon_description: "Per-cell effective-radius horizon",
+    };
+    networkOptimization.baseline.stats = withRadio(BASELINE_RAW, 0.18);
+    networkOptimization.stats = withRadio(RECOMMENDED_RAW, 0.25);
+    networkOptimization.pareto_frontier = networkOptimization.pareto_frontier.map((solution, index) => ({
+      ...solution,
+      stats: withRadio(solution.stats.raw_metrics, index === 0 ? 0.25 : 0.22),
+    }));
+    const report = makeNetworkReport({
+      networkOptimization,
+      optimizationConfig: radioConfig,
+      comparison: buildNetworkOptimizationComparison(networkOptimization, radioConfig),
+    });
+    const markdown = renderMarkdownReport(report);
+
+    expect(markdown).toContain("Radio-quality serviceability");
+    expect(markdown).toContain("25 / 100 (25.0%)");
+    expect(markdown).toContain("p10 -3.4 dB · median 18.2 dB");
+    expect(markdown).toContain("no_carrier: 72");
+    expect(markdown).toContain("Deterministic Fixed Union Grid");
+    expect(markdown).toContain("100");
+    expect(markdown).toContain("Per-cell effective-radius horizon");
+    expect(markdown).toContain("RSRP >= -110 dBm; SINR >= 0 dB; RSRQ >= -17 dB");
+  });
+
   it("does not format a raw compatibility aggregate as a normalized score", () => {
     const networkOptimization = makeNetworkOptimization();
     networkOptimization.stats = {

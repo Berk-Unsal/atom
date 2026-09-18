@@ -9,7 +9,9 @@ import (
 
 const defaultOptimizationPriority = 50.0
 
-var optimizationObjectiveIDs = []string{"demand", "residential", "coverage", "overlap"}
+const radioQualityOptimizationObjectiveID = "radio_quality"
+
+var optimizationObjectiveIDs = []string{"demand", "residential", "coverage", "overlap", radioQualityOptimizationObjectiveID}
 
 type networkOptimizationCandidate struct {
 	Azimuths []float64
@@ -36,31 +38,71 @@ type OptimizationObjectiveStatus struct {
 
 type OptimizationObjectiveStatusMap map[string]OptimizationObjectiveStatus
 
+// OptimizationRadioQualityMetadata records the fixed-domain contract used by
+// the opt-in radio-quality objective. The fields are intentionally explicit so
+// a score can be interpreted without treating a sampled estimate as a
+// continuous-area or standards-conformance measurement.
+type OptimizationRadioQualityMetadata struct {
+	Enabled                  bool      `json:"enabled"`
+	Available                bool      `json:"available"`
+	Reason                   string    `json:"reason,omitempty"`
+	DomainID                 string    `json:"radio_quality_domain_id,omitempty"`
+	DomainDescription        string    `json:"radio_quality_domain_description,omitempty"`
+	SampleCount              int       `json:"radio_quality_sample_count,omitempty"`
+	SampleSpacingM           float64   `json:"radio_quality_sample_spacing_m,omitempty"`
+	SampleOrdering           string    `json:"radio_quality_sample_ordering,omitempty"`
+	DomainSource             string    `json:"radio_quality_domain_source,omitempty"`
+	HorizonMode              string    `json:"interference_horizon_mode,omitempty"`
+	HorizonDescription       string    `json:"interference_horizon_description,omitempty"`
+	HorizonMeters            []float64 `json:"interference_horizon_meters,omitempty"`
+	PolicyID                 string    `json:"radio_quality_policy_id,omitempty"`
+	RSRPThresholdDBm         float64   `json:"radio_quality_rsrp_threshold_dbm,omitempty"`
+	SINRThresholdDB          float64   `json:"radio_quality_sinr_threshold_db,omitempty"`
+	RSRQThresholdDB          float64   `json:"radio_quality_rsrq_threshold_db,omitempty"`
+	ServiceabilityRule       string    `json:"radio_quality_serviceability_rule,omitempty"`
+	ServingSelectionMode     string    `json:"radio_quality_serving_selection_mode,omitempty"`
+	ServingSelectionMetric   string    `json:"radio_quality_serving_selection_metric,omitempty"`
+	CoChannelEligibilityRule string    `json:"radio_quality_co_channel_eligibility_rule,omitempty"`
+	HorizonBounded           bool      `json:"interference_horizon_bounded,omitempty"`
+}
+
 // OptimizationRawMetrics keeps domain measurements alongside normalized utilities.
 // The legacy fields remain serialized for compatibility; the relevant_* aliases
 // make the fixed optimization-domain meaning explicit to new consumers.
 type OptimizationRawMetrics struct {
-	ServedWeightedDemand     float64 `json:"served_weighted_demand"`
-	ServedDemandWeight       float64 `json:"served_demand_weight,omitempty"`
-	TotalWeightedDemand      float64 `json:"total_weighted_demand"`
-	RelevantDemandWeight     float64 `json:"relevant_demand_weight,omitempty"`
-	ResidentialCovered       int     `json:"residential_covered"`
-	ResidentialTotal         int     `json:"residential_total"`
-	RelevantResidentialTotal int     `json:"relevant_residential_total,omitempty"`
-	CoverageReachScore       float64 `json:"coverage_reach_score"`
-	CoverageReachMaximum     float64 `json:"coverage_reach_maximum"`
-	PropagationReachScore    float64 `json:"propagation_reach_score,omitempty"`
-	PropagationReachMaximum  float64 `json:"propagation_reach_maximum,omitempty"`
-	CoveredUnits             int     `json:"covered_units"`
-	OverlapBuildings         int     `json:"overlap_buildings"`
-	OverlapRatio             float64 `json:"overlap_ratio"`
+	ServedWeightedDemand            float64        `json:"served_weighted_demand"`
+	ServedDemandWeight              float64        `json:"served_demand_weight,omitempty"`
+	TotalWeightedDemand             float64        `json:"total_weighted_demand"`
+	RelevantDemandWeight            float64        `json:"relevant_demand_weight,omitempty"`
+	ResidentialCovered              int            `json:"residential_covered"`
+	ResidentialTotal                int            `json:"residential_total"`
+	RelevantResidentialTotal        int            `json:"relevant_residential_total,omitempty"`
+	CoverageReachScore              float64        `json:"coverage_reach_score"`
+	CoverageReachMaximum            float64        `json:"coverage_reach_maximum"`
+	PropagationReachScore           float64        `json:"propagation_reach_score,omitempty"`
+	PropagationReachMaximum         float64        `json:"propagation_reach_maximum,omitempty"`
+	CoveredUnits                    int            `json:"covered_units"`
+	OverlapBuildings                int            `json:"overlap_buildings"`
+	OverlapRatio                    float64        `json:"overlap_ratio"`
+	RadioQualityTotalSamples        int            `json:"radio_quality_total_samples"`
+	RadioQualityServiceableSamples  int            `json:"radio_quality_serviceable_samples"`
+	RadioQualityServiceableFraction float64        `json:"radio_quality_serviceable_fraction"`
+	RadioQualityP10SINRDB           *float64       `json:"radio_quality_p10_sinr_db,omitempty"`
+	RadioQualityMedianSINRDB        *float64       `json:"radio_quality_median_sinr_db,omitempty"`
+	RadioQualityP10RSRPDBm          *float64       `json:"radio_quality_p10_rsrp_dbm,omitempty"`
+	RadioQualityMedianRSRPDBm       *float64       `json:"radio_quality_median_rsrp_dbm,omitempty"`
+	RadioQualityP10RSRQDB           *float64       `json:"radio_quality_p10_rsrq_db,omitempty"`
+	RadioQualityMedianRSRQDB        *float64       `json:"radio_quality_median_rsrq_db,omitempty"`
+	RadioQualityOutageByReason      map[string]int `json:"radio_quality_outage_by_reason,omitempty"`
+	RadioQualityServingCellSamples  map[string]int `json:"radio_quality_serving_cell_samples,omitempty"`
 }
 
 type OptimizationUtilities struct {
-	Demand      float64 `json:"demand"`
-	Residential float64 `json:"residential"`
-	Coverage    float64 `json:"coverage"`
-	Overlap     float64 `json:"overlap"`
+	Demand       float64 `json:"demand"`
+	Residential  float64 `json:"residential"`
+	Coverage     float64 `json:"coverage"`
+	Overlap      float64 `json:"overlap"`
+	RadioQuality float64 `json:"radio_quality"`
 }
 
 type OptimizationContribution struct {
@@ -70,10 +112,11 @@ type OptimizationContribution struct {
 }
 
 type OptimizationObjectiveBreakdown struct {
-	Demand      OptimizationContribution `json:"demand"`
-	Residential OptimizationContribution `json:"residential"`
-	Coverage    OptimizationContribution `json:"coverage"`
-	Overlap     OptimizationContribution `json:"overlap"`
+	Demand       OptimizationContribution `json:"demand"`
+	Residential  OptimizationContribution `json:"residential"`
+	Coverage     OptimizationContribution `json:"coverage"`
+	Overlap      OptimizationContribution `json:"overlap"`
+	RadioQuality OptimizationContribution `json:"radio_quality"`
 }
 
 func DefaultOptimizationConfig() OptimizationConfig {
@@ -82,6 +125,7 @@ func DefaultOptimizationConfig() OptimizationConfig {
 		{ID: "residential", Weight: defaultOptimizationPriority},
 		{ID: "coverage", Weight: defaultOptimizationPriority},
 		{ID: "overlap", Weight: defaultOptimizationPriority},
+		{ID: radioQualityOptimizationObjectiveID, Weight: 0},
 	}}
 }
 
@@ -98,18 +142,25 @@ func NormalizeOptimizationConfig(config *OptimizationConfig) OptimizationConfig 
 	for index := range normalized.Objectives {
 		normalized.Objectives[index].ID = strings.ToLower(strings.TrimSpace(normalized.Objectives[index].ID))
 	}
+	seen := make(map[string]struct{}, len(normalized.Objectives))
+	for _, objective := range normalized.Objectives {
+		seen[objective.ID] = struct{}{}
+	}
+	if _, exists := seen[radioQualityOptimizationObjectiveID]; !exists {
+		normalized.Objectives = append(normalized.Objectives, OptimizationObjective{ID: radioQualityOptimizationObjectiveID, Weight: 0})
+	}
 	return normalized
 }
 
 func ValidateOptimizationConfig(config OptimizationConfig) string {
-	if len(config.Objectives) < 1 || len(config.Objectives) > 4 {
-		return "optimization.objectives must contain between 1 and 4 objectives"
+	if len(config.Objectives) < 1 || len(config.Objectives) > 5 {
+		return "optimization.objectives must contain between 1 and 5 objectives"
 	}
 	seen := make(map[string]struct{}, len(config.Objectives))
 	priorityTotal := 0.0
 	for _, objective := range config.Objectives {
 		if !oneOf(objective.ID, optimizationObjectiveIDs...) {
-			return "optimization objective id must be demand, residential, coverage, or overlap"
+			return "optimization objective id must be demand, residential, coverage, overlap, or radio_quality"
 		}
 		if _, exists := seen[objective.ID]; exists {
 			return "optimization objective ids must be unique"
@@ -230,12 +281,14 @@ func NormalizeOptimizationObjectives(stats NetworkOptimizationStats) Optimizatio
 	residentialUtility := ratio01(float64(coveredResidential), float64(totalResidential))
 	coverageUtility := ratio01(coverageScore, coverageMaximum)
 	overlapRatio := ratio01(float64(overlapBuildings), float64(coveredUnits))
+	radioQualityUtility := clamp01(raw.RadioQualityServiceableFraction)
 
 	return OptimizationUtilities{
-		Demand:      demandUtility,
-		Residential: residentialUtility,
-		Coverage:    coverageUtility,
-		Overlap:     clamp01(1 - overlapRatio),
+		Demand:       demandUtility,
+		Residential:  residentialUtility,
+		Coverage:     coverageUtility,
+		Overlap:      clamp01(1 - overlapRatio),
+		RadioQuality: radioQualityUtility,
 	}
 }
 
@@ -245,16 +298,18 @@ func CalculateCompositeScore(utilities OptimizationUtilities, weights map[string
 		weights["demand"]*utilities.Demand +
 			weights["residential"]*utilities.Residential +
 			weights["coverage"]*utilities.Coverage +
-			weights["overlap"]*utilities.Overlap
+			weights["overlap"]*utilities.Overlap +
+			weights[radioQualityOptimizationObjectiveID]*utilities.RadioQuality
 	return clamp01(value)
 }
 
 func calculateObjectiveBreakdown(utilities OptimizationUtilities, weights map[string]float64) OptimizationObjectiveBreakdown {
 	return OptimizationObjectiveBreakdown{
-		Demand:      contribution(utilities.Demand, weights["demand"]),
-		Residential: contribution(utilities.Residential, weights["residential"]),
-		Coverage:    contribution(utilities.Coverage, weights["coverage"]),
-		Overlap:     contribution(utilities.Overlap, weights["overlap"]),
+		Demand:       contribution(utilities.Demand, weights["demand"]),
+		Residential:  contribution(utilities.Residential, weights["residential"]),
+		Coverage:     contribution(utilities.Coverage, weights["coverage"]),
+		Overlap:      contribution(utilities.Overlap, weights["overlap"]),
+		RadioQuality: contribution(utilities.RadioQuality, weights[radioQualityOptimizationObjectiveID]),
 	}
 }
 
@@ -268,10 +323,11 @@ func contribution(utility float64, weight float64) OptimizationContribution {
 
 func roundObjectiveBreakdown(breakdown OptimizationObjectiveBreakdown) OptimizationObjectiveBreakdown {
 	return OptimizationObjectiveBreakdown{
-		Demand:      roundContribution(breakdown.Demand),
-		Residential: roundContribution(breakdown.Residential),
-		Coverage:    roundContribution(breakdown.Coverage),
-		Overlap:     roundContribution(breakdown.Overlap),
+		Demand:       roundContribution(breakdown.Demand),
+		Residential:  roundContribution(breakdown.Residential),
+		Coverage:     roundContribution(breakdown.Coverage),
+		Overlap:      roundContribution(breakdown.Overlap),
+		RadioQuality: roundContribution(breakdown.RadioQuality),
 	}
 }
 
@@ -310,6 +366,19 @@ func scoreNetworkOptimization(stats NetworkOptimizationStats, config Optimizatio
 	objectiveAvailability := optimizationAvailabilityForStats(stats)
 	if len(availability) > 0 && availability[0] != nil {
 		objectiveAvailability = availability[0]
+	}
+	if !optimizationObjectiveEnabled(config, radioQualityOptimizationObjectiveID) {
+		objectiveAvailability[radioQualityOptimizationObjectiveID] = OptimizationObjectiveAvailability{Available: false, Reason: "disabled"}
+	} else {
+		status, exists := objectiveAvailability[radioQualityOptimizationObjectiveID]
+		switch {
+		case exists && !status.Available && status.Reason != "" && status.Reason != "not_evaluated":
+			// Preserve a concrete unavailable-model reason.
+		case stats.RawMetrics.RadioQualityTotalSamples > 0:
+			objectiveAvailability[radioQualityOptimizationObjectiveID] = OptimizationObjectiveAvailability{Available: true}
+		default:
+			objectiveAvailability[radioQualityOptimizationObjectiveID] = OptimizationObjectiveAvailability{Available: false, Reason: "not_evaluated"}
+		}
 	}
 	weights, err := NormalizeAvailableOptimizationPriorities(config.Objectives, objectiveAvailability)
 	if err != nil {
@@ -368,6 +437,10 @@ func optimizationAvailabilityForStats(stats NetworkOptimizationStats) map[string
 		"residential": {Available: totalResidential > 0, Reason: objectiveAvailabilityReason(totalResidential > 0, "no_relevant_entities")},
 		"coverage":    {Available: coverageMaximum > 0, Reason: objectiveAvailabilityReason(coverageMaximum > 0, "no_reachable_rays")},
 		"overlap":     {Available: raw.CoveredUnits > 0, Reason: objectiveAvailabilityReason(raw.CoveredUnits > 0, "no_relevant_entities")},
+		radioQualityOptimizationObjectiveID: {
+			Available: raw.RadioQualityTotalSamples > 0,
+			Reason:    objectiveAvailabilityReason(raw.RadioQualityTotalSamples > 0, "not_evaluated"),
+		},
 	}
 }
 
@@ -480,7 +553,7 @@ func networkParetoFrontier(candidates []networkOptimizationCandidate, towers []N
 	for index, candidate := range scored {
 		dominated := false
 		for competitorIndex, competitor := range scored {
-			if index != competitorIndex && optimizationDominates(competitor.stats, candidate.stats) {
+			if index != competitorIndex && optimizationDominates(competitor.stats, candidate.stats, paretoObjectiveSelection(config)) {
 				dominated = true
 				break
 			}
@@ -520,6 +593,17 @@ func networkParetoFrontier(candidates []networkOptimizationCandidate, towers []N
 	return frontier
 }
 
+func paretoObjectiveSelection(config OptimizationConfig) []OptimizationObjective {
+	objectives := make([]OptimizationObjective, 0, len(optimizationObjectiveIDs))
+	for _, id := range optimizationObjectiveIDs {
+		if id == radioQualityOptimizationObjectiveID && !optimizationObjectiveEnabled(config, id) {
+			continue
+		}
+		objectives = append(objectives, OptimizationObjective{ID: id, Weight: 1})
+	}
+	return objectives
+}
+
 func optimizationDominates(left, right NetworkOptimizationStats, selectedObjectives ...[]OptimizationObjective) bool {
 	leftUtilities := NormalizeOptimizationObjectives(left)
 	rightUtilities := NormalizeOptimizationObjectives(right)
@@ -527,6 +611,9 @@ func optimizationDominates(left, right NetworkOptimizationStats, selectedObjecti
 	rightAvailability := optimizationAvailabilityForStats(right)
 	betterOrEqual, strictlyBetter := true, false
 	objectiveIDs := optimizationObjectiveIDs
+	if !optimizationObjectiveEnabledFromStats(left, right, selectedObjectives...) {
+		objectiveIDs = []string{"demand", "residential", "coverage", "overlap"}
+	}
 	if len(selectedObjectives) > 0 && len(selectedObjectives[0]) > 0 {
 		objectiveIDs = make([]string, 0, len(selectedObjectives[0]))
 		for _, objective := range selectedObjectives[0] {
@@ -560,9 +647,32 @@ func objectiveUtility(utilities OptimizationUtilities, id string) float64 {
 		return utilities.Coverage
 	case "overlap":
 		return utilities.Overlap
+	case radioQualityOptimizationObjectiveID:
+		return utilities.RadioQuality
 	default:
 		return 0
 	}
+}
+
+func optimizationObjectiveEnabled(config OptimizationConfig, objectiveID string) bool {
+	for _, objective := range config.Objectives {
+		if objective.ID == objectiveID {
+			return objective.Weight > 0
+		}
+	}
+	return false
+}
+
+func optimizationObjectiveEnabledFromStats(left, right NetworkOptimizationStats, selectedObjectives ...[]OptimizationObjective) bool {
+	if len(selectedObjectives) > 0 && len(selectedObjectives[0]) > 0 {
+		for _, objective := range selectedObjectives[0] {
+			if objective.ID == radioQualityOptimizationObjectiveID {
+				return objective.Weight > 0
+			}
+		}
+		return false
+	}
+	return left.RawMetrics.RadioQualityTotalSamples > 0 || right.RawMetrics.RadioQualityTotalSamples > 0
 }
 
 func paretoTowerKey(solution NetworkParetoSolution) string {

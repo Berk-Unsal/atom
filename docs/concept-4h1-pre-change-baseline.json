@@ -1,0 +1,61 @@
+{
+  "concept": "4H.1",
+  "title": "Interference and radio-quality contract pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "git_ref": "f40bba9",
+  "worktree_note": "Concept 4G.2 receiver-noise changes were already present and intentionally preserved; no Concept 4H.1 production changes were present when this artifact was captured.",
+  "validation": {
+    "real_backend_acceptance": {
+      "command": "ATOM_REAL_E2E=1 ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline npm run test:e2e",
+      "result": "36 tests: 27 passed, 9 skipped"
+    },
+    "backend_unit_suite": "pass",
+    "frontend_unit_suite": "165 passed",
+    "frontend_lint": "pass",
+    "canonical_optimization": {
+      "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_BENCHMARK=1 go test ./raytracer -run TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled -count=1 -v",
+      "result": "pass; baseline and optimized propagation-only metrics matched the stored canonical values"
+    }
+  },
+  "existing_interference_path_before_change": {
+    "raw_propagation_output": "received_power_dbm existed only inside the link-budget/propagation result; feature properties did not expose it as a named carrier-power quantity",
+    "reference_conversion": "rsrp_dbm = received_power_dbm - 10*log10(12*N_RB)",
+    "serving_selection": "strongest eligible RSRP; no explicit serving-cell override or selection metadata",
+    "co_channel_rule": "channel_id equality only; adjacent-channel/selectivity and frequency/bandwidth mismatch reasons were not exposed",
+    "power_sum": "co-channel reference-resource powers converted to mW, multiplied by configured load, and added linearly",
+    "thermal_noise": "kTB at the serving SCS bandwidth plus request noise figure; kept separate from receiver sensitivity",
+    "serviceability": "RSRP >= -110 dBm AND SINR >= 0 dB AND RSRQ >= -20 dB",
+    "diagnostic_gaps": [
+      "no per-cell exclusion ledger",
+      "no raw received-carrier-power feature field",
+      "no desired/interference/noise mW fields",
+      "no explicit serving-selection mode",
+      "no failure-reason aggregation",
+      "no scenario fingerprint"
+    ]
+  },
+  "canonical_six_cell_28ghz": {
+    "tower_ids": ["LTE-35084", "LTE-35104", "LTE-35877", "LTE-313100", "LTE-313110", "LTE-322828"],
+    "network_tech": "5g",
+    "frequency_ghz": 28,
+    "bandwidth_mhz": 100,
+    "load_factor": 0.7,
+    "reuse_factor": 1,
+    "signal_samples": 307,
+    "serviceable_samples": 179,
+    "serviceable_pct": 18.1,
+    "avg_rsrp_dbm": -100.4,
+    "p10_rsrp_dbm": -117,
+    "avg_sinr_db": 14.3,
+    "p10_sinr_db": -0.8,
+    "noise_semantics": "per-RE thermal noise from SCS plus request noise figure; separate from receiver sensitivity"
+  },
+  "controlled_fixture_contract_before_change": {
+    "equal_power_co_channel_sinr_db": "approximately 0 dB before thermal noise",
+    "different_channel": "excluded from interference, but only visible through aggregate behavior",
+    "explicit_weaker_serving": "not representable through the request/API contract",
+    "receiver_sensitivity": "strict carrier admission gate, independent of SINR denominator",
+    "optimizer_coupling": "none; optimizer remained propagation-only"
+  }
+}

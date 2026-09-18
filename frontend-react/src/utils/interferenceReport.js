@@ -50,9 +50,11 @@ function buildStatsRows(stats) {
   return [
     ["Average SINR", formatUnit(stats.avg_sinr_db, 1, "dB")],
     ["P10 SINR", formatUnit(stats.p10_sinr_db, 1, "dB")],
+    ["Median SINR", formatUnit(stats.median_sinr_db, 1, "dB")],
     ["Average RSRP", formatUnit(stats.avg_rsrp_dbm, 1, "dBm")],
     ["Average RSRQ", formatUnit(stats.avg_rsrq_db, 1, "dB")],
     ["Serviceable surface", formatPercent(stats.serviceable_pct, true)],
+    ["Serviceable of signal", formatPercent(stats.serviceable_fraction)],
     ["Interference-limited surface", formatPercent(stats.interference_limited_pct, true)],
     ["Affected demand buildings", formatCount(stats.affected_demand_buildings)],
     ["Affected demand", formatCompact(stats.affected_demand)],
@@ -70,6 +72,12 @@ function buildModelRows(model) {
     ["Cell load", formatPercent(model.load_factor ?? model.loadFactor)],
     ["Reuse factor", formatCount(model.reuse_factor ?? model.reuseFactor)],
     ["Effective grid", formatUnit(model.effective_sample_spacing_m ?? model.effectiveSampleSpacingM, 1, "m")],
+    ["Serving selection", display(model.serving_selection_mode ?? model.servingSelectionMode)],
+    ["Power basis", display(model.resource_basis ?? model.resourceBasis)],
+    ["RSRP conversion", display(model.rsrp_conversion_id ?? model.rsrpConversionID)],
+    ["Noise bandwidth", formatUnit(model.interference_noise_bandwidth_hz ?? model.interferenceNoiseBandwidthHz, 0, "Hz")],
+    ["Co-channel rule", display(model.co_channel_eligibility_rule ?? model.coChannelEligibilityRule)],
+    ["Scenario fingerprint", display(model.scenario_fingerprint ?? model.scenarioFingerprint)],
   ].filter((row) => row[1] !== null);
 }
 

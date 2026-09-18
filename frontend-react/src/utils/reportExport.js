@@ -10,7 +10,7 @@ import {
   formatCompactNumber,
   formatNumber,
 } from "./reportFormatting.js";
-import { resolveRFProfile } from "./rfProfile.js";
+import { effectiveReceiverSensitivityDbm, resolveRFProfile } from "./rfProfile.js";
 
 const SVG_WIDTH = 720;
 const SVG_HEIGHT = 460;
@@ -648,20 +648,32 @@ function renderPrintableRFConfiguration(view) {
 }
 
 function buildRFParameterRows(view) {
+  const firstProfile = view.rfProfiles[0];
+  const derivedReceiverRows = firstProfile?.receiverSensitivityMode === "derived"
+    ? [
+      row("Receiver noise bandwidth (first effective cell)", formatUnit(Number(firstProfile.receiverNoiseBandwidthHz) / 1e6, 1, "MHz")),
+      row("Receiver noise bandwidth source (first effective cell)", formatText(firstProfile.receiverNoiseBandwidthSource)),
+      row("Receiver noise figure (first effective cell)", formatUnit(firstProfile.receiverNoiseFigureDb, 1, "dB")),
+      row("Receiver required SNR (first effective cell)", formatUnit(firstProfile.receiverRequiredSnrDb, 1, "dB")),
+      row("Receiver margin (first effective cell)", formatUnit(firstProfile.receiverMarginDb, 1, "dB")),
+    ]
+    : [];
   return [
     row("Technology", view.activeNetworkTech),
     row("Frequency", formatUnit(view.parameters.frequency_ghz ?? view.settings.frequencyGHz, 3, "GHz")),
-    row("Bandwidth", formatUnit(view.rfProfiles[0]?.bandwidthMHz ?? view.settings.interferenceBandwidthMHz, 1, "MHz")),
+    row("Bandwidth", formatUnit(firstProfile?.bandwidthMHz ?? view.settings.interferenceBandwidthMHz, 1, "MHz")),
     row("Conducted TX power", formatUnit(view.parameters.tx_power_dbm ?? view.settings.txPowerDbm, 1, "dBm")),
-    row("TX absolute boresight gain", formatUnit(view.rfProfiles[0]?.antennaGainDbi, 1, "dBi")),
-    row("RX antenna gain", formatUnit(view.rfProfiles[0]?.rxAntennaGainDbi, 1, "dBi")),
-    row("System loss", formatUnit(view.rfProfiles[0]?.systemLossDb, 1, "dB")),
-    row("Polarization loss", formatUnit(view.rfProfiles[0]?.polarizationLossDb, 1, "dB")),
-    row("Antenna height", formatUnit(view.rfProfiles[0]?.antennaHeightM, 1, "m")),
-    row("Receiver sensitivity (first effective cell)", formatUnit(view.rfProfiles[0]?.receiverSensitivityDbm, 1, "dBm")),
+    row("TX absolute boresight gain", formatUnit(firstProfile?.antennaGainDbi, 1, "dBi")),
+    row("RX antenna gain", formatUnit(firstProfile?.rxAntennaGainDbi, 1, "dBi")),
+    row("System loss", formatUnit(firstProfile?.systemLossDb, 1, "dB")),
+    row("Polarization loss", formatUnit(firstProfile?.polarizationLossDb, 1, "dB")),
+    row("Antenna height", formatUnit(firstProfile?.antennaHeightM, 1, "m")),
+    row("Receiver threshold mode (first effective cell)", formatText(firstProfile?.receiverSensitivityMode)),
+    row("Receiver sensitivity (first effective cell)", formatUnit(effectiveReceiverSensitivityDbm(firstProfile), 1, "dBm")),
     row("Building service threshold", formatUnit(view.coverageGaps?.stats?.building_service_threshold_dbm ?? view.coverageGaps?.stats?.threshold_dbm ?? view.appMeta?.rf_contract?.building_service_threshold_dbm, 1, "dBm")),
     row("Ray count", formatCount(view.parameters.rays ?? view.settings.rayCount)),
     row("Calibration offset", formatUnit(view.parameters.calibration_offset_db ?? view.settings.calibrationOffsetDb, 1, "dB")),
+    ...derivedReceiverRows,
   ].filter((item) => item[1] !== null);
 }
 
@@ -682,7 +694,7 @@ function buildRFProfileRows(view, includePCI = view.rfProfiles.some((profile) =>
     `${formatUnit(profile.antennaHeightM, 1, "m")} · ${formatUnit(totalTilt(profile), 1, "°")} tilt · ${formatUnit(profile.orientationDeg, 1, "°")} orientation`,
     `${formatText(profile.horizontalPatternId)} / ${formatText(profile.verticalPatternId)}`,
     `${formatPercent(profile.loadFactor)} load · reuse ${formatCount(profile.reuseFactor)}${includePCI ? ` · PCI ${formatText(profile.pci)}` : ""}`,
-    `${formatUnit(profile.receiverHeightM, 1, "m")} · ${formatUnit(profile.receiverSensitivityDbm, 1, "dBm")}`,
+    `${formatUnit(profile.receiverHeightM, 1, "m")} · ${formatText(profile.receiverSensitivityMode)} · ${formatUnit(effectiveReceiverSensitivityDbm(profile), 1, "dBm")} threshold${profile.receiverSensitivityMode === "derived" ? ` · B ${formatUnit(Number(profile.receiverNoiseBandwidthHz) / 1e6, 1, "MHz")} · NF ${formatUnit(profile.receiverNoiseFigureDb, 1, "dB")} · SNR ${formatUnit(profile.receiverRequiredSnrDb, 1, "dB")} · margin ${formatUnit(profile.receiverMarginDb, 1, "dB")}` : ""}`,
   ]);
 }
 
@@ -1047,7 +1059,12 @@ function buildConstraintRows({ constraints, status }) {
 
 function buildDatasetRows(report) {
   const dataset = report.appMeta?.dataset ?? {};
-  const contract = report.appMeta?.rf_contract ?? {};
+  const contract = report.appMeta?.rf_contract
+    ?? report.networkOptimization?.rf_contract
+    ?? report.simulation?.rf_contract
+    ?? report.coverageGaps?.rf_contract
+    ?? report.interferenceAnalysis?.model?.rf_contract
+    ?? {};
   const summary = report.buildingSummary ?? {};
   const interferenceRsrp = finiteOrNull(contract.interference_rsrp_threshold_dbm);
   const interferenceSinr = finiteOrNull(contract.interference_sinr_threshold_db);
@@ -1074,6 +1091,9 @@ function buildDatasetRows(report) {
     row("RF applicability", contract.applicability),
     row("RF fallback", contract.fallback_model_id ? `${contract.fallback_model_id} · ${contract.fallback_policy ?? "explicit fallback"}` : null),
     row("Building service threshold", formatUnit(contract.building_service_threshold_dbm, 1, "dBm")),
+    row("Receiver sensitivity scope", contract.receiver_sensitivity_scope),
+    row("Receiver sensitivity equation", contract.receiver_sensitivity_equation),
+    row("Receiver noise semantics", contract.receiver_noise_semantics),
     row("Interference serviceability", interferenceRsrp !== null && interferenceSinr !== null && interferenceRsrq !== null
       ? `RSRP ≥ ${formatUnit(interferenceRsrp, 1, "dBm")} · SINR ≥ ${formatUnit(interferenceSinr, 1, "dB")} · RSRQ ≥ ${formatUnit(interferenceRsrq, 1, "dB")}`
       : null),
@@ -1389,6 +1409,12 @@ function snapshotRFProfileToOverride(profile = {}) {
     pci: profile.pci,
     receiverHeightM: profile.receiver_height_m ?? profile.receiverHeightM,
     receiverSensitivityDbm: profile.receiver_sensitivity_dbm ?? profile.receiverSensitivityDbm,
+    receiverSensitivityMode: profile.receiver_sensitivity_mode ?? profile.receiverSensitivityMode,
+    receiverNoiseBandwidthHz: profile.receiver_noise_bandwidth_hz ?? profile.receiverNoiseBandwidthHz,
+    receiverNoiseBandwidthSource: profile.receiver_noise_bandwidth_source ?? profile.receiverNoiseBandwidthSource,
+    receiverNoiseFigureDb: profile.receiver_noise_figure_db ?? profile.receiverNoiseFigureDb,
+    receiverRequiredSnrDb: profile.receiver_required_snr_db ?? profile.receiverRequiredSnrDb,
+    receiverMarginDb: profile.receiver_margin_db ?? profile.receiverMarginDb,
   };
 }
 

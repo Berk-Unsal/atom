@@ -255,6 +255,7 @@ func buildDiffractionDiagnostic(request PathProfileRequest, modelProfile string,
 	})
 
 	antenna := EvaluateAntennaLink(profile, distance, bearing, request.AzimuthDeg)
+	receiverThreshold := receiverThresholdForProfileOrManual(profile)
 	diagnostic := DiffractionDiagnostic{
 		ID:                         DiffractionDiagnosticID,
 		Reference:                  P526SingleEdgeReference,
@@ -274,26 +275,26 @@ func buildDiffractionDiagnostic(request PathProfileRequest, modelProfile string,
 	if applicability == "unavailable" {
 		diagnostic.Available = false
 		diagnostic.Reason = applicabilityReason
-		diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
+		diagnostic.LinkBudget = withReceiverThreshold(rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB), profile, &receiverThreshold)
 		return diagnostic
 	}
 	if request.Fidelity.DiffractionModel != "single-knife-edge" || request.Fidelity.BuildingLossMode != "screen-diffraction" {
 		diagnostic.Available = false
 		diagnostic.Reason = "diffraction_disabled_by_fidelity"
-		diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
+		diagnostic.LinkBudget = withReceiverThreshold(rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB), profile, &receiverThreshold)
 		return diagnostic
 	}
 	if buildings == nil {
 		diagnostic.Available = false
 		diagnostic.Reason = "building_data_unavailable"
-		diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
+		diagnostic.LinkBudget = withReceiverThreshold(rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB), profile, &receiverThreshold)
 		return diagnostic
 	}
 	for _, candidate := range geometryResult.Candidates {
 		if !candidate.HeightAvailable && candidate.ObstructionType == "building_roof_edge" {
 			diagnostic.Available = false
 			diagnostic.Reason = DiffractionUnavailableHeight
-			diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
+			diagnostic.LinkBudget = withReceiverThreshold(rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB), profile, &receiverThreshold)
 			return diagnostic
 		}
 	}
@@ -329,7 +330,7 @@ func buildDiffractionDiagnostic(request PathProfileRequest, modelProfile string,
 	diffractionLoss := valueOrFloat(diagnostic.DiffractionLossDB)
 	diagnosticTotal := diagnostic.FSPLDB + diffractionLoss
 	diagnostic.DiagnosticTotalPathLossDB = floatPointer(round2(diagnosticTotal))
-	diagnostic.LinkBudget = rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB+diffractionLoss, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB)
+	diagnostic.LinkBudget = withReceiverThreshold(rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, diagnostic.FSPLDB+diffractionLoss, diagnostic.FSPLDB, 0, request.CalibrationOffsetDB), profile, &receiverThreshold)
 	diagnostic.DiagnosticRxDBm = floatPointer(round2(diagnostic.LinkBudget.ReceivedPowerDBm))
 	return diagnostic
 }

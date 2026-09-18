@@ -24,6 +24,10 @@
       { "id": "omni", "label": "Omnidirectional" },
       { "id": "3gpp-single-element", "label": "3GPP single element (reference)" }
     ],
+    "receiver_sensitivity_modes": [
+      { "id": "manual", "label": "Manual" },
+      { "id": "derived", "label": "Derived" }
+    ],
     "vertical_patterns": [
       { "id": "flat", "label": "Flat" },
       { "id": "panel-10deg", "label": "10° panel" },
@@ -57,7 +61,12 @@
     "horizontal_pattern_id": "ideal-sector",
     "vertical_pattern_id": "flat",
     "receiver_height_m": 1.5,
-    "receiver_sensitivity_dbm": -115
+    "receiver_sensitivity_dbm": -115,
+    "receiver_sensitivity_mode": "manual",
+    "receiver_noise_bandwidth_hz": 100000000,
+    "receiver_noise_figure_db": 7,
+    "receiver_required_snr_db": 3,
+    "receiver_margin_db": 0
   },
   "limits": {
     "tower_id_bytes": 128,
@@ -111,6 +120,14 @@
     "receiver_height_m_min": 0.1,
     "receiver_height_m_max": 100,
     "receiver_sensitivity_dbm_min": -180,
-    "receiver_sensitivity_dbm_max": -20
+    "receiver_sensitivity_dbm_max": -20,
+    "receiver_noise_bandwidth_hz_min": 1,
+    "receiver_noise_bandwidth_hz_max": 2000000000,
+    "receiver_noise_figure_db_min": 0,
+    "receiver_noise_figure_db_max": 20,
+    "receiver_required_snr_db_min": -100,
+    "receiver_required_snr_db_max": 100,
+    "receiver_margin_db_min": -100,
+    "receiver_margin_db_max": 100
   }
 }

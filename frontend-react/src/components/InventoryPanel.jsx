@@ -22,8 +22,8 @@ const NUMBER_FIELDS = [
   ["reuseFactor", "Reuse factor", "", "1"],
   ["pci", "PCI", "optional", "1"],
   ["receiverHeightM", "Receiver height", "m", "0.1"],
-  ["receiverSensitivityDbm", "RX sensitivity", "dBm", "0.1"],
 ];
+const RECEIVER_NUMBER_FIELDS = new Set(["receiverSensitivityDbm", "receiverNoiseBandwidthHz", "receiverNoiseFigureDb", "receiverRequiredSnrDb", "receiverMarginDb"]);
 
 export default function InventoryPanel({
   isPlacingCell,
@@ -72,7 +72,7 @@ export default function InventoryPanel({
 
   const update = (key, rawValue) => {
     if (!selectedTower || !profile) return;
-    const numeric = NUMBER_FIELDS.some(([field]) => field === key);
+    const numeric = NUMBER_FIELDS.some(([field]) => field === key) || RECEIVER_NUMBER_FIELDS.has(key);
     const value = key === "pci" && rawValue === "" ? null : numeric ? Number(rawValue) : rawValue;
     if (key === "networkTech") {
       onUpdateProfile(selectedTower.id, { ...profile, ...technologyDefaults(value) });
@@ -143,6 +143,37 @@ export default function InventoryPanel({
               ))}
               <InventoryField label="Horizontal pattern" error={errors.horizontalPatternId}><select value={profile.horizontalPatternId} onChange={(event) => update("horizontalPatternId", event.target.value)}>{RF_PROFILE_OPTIONS.horizontalPatterns.map((pattern) => <option key={pattern.id} value={pattern.id}>{pattern.label}</option>)}</select></InventoryField>
               <InventoryField label="Vertical pattern" error={errors.verticalPatternId}><select value={profile.verticalPatternId} onChange={(event) => update("verticalPatternId", event.target.value)}>{RF_PROFILE_OPTIONS.verticalPatterns.map((pattern) => <option key={pattern.id} value={pattern.id}>{pattern.label}</option>)}</select></InventoryField>
+            </div>
+            <div className="receiver-sensitivity-editor">
+              <div className="receiver-sensitivity-heading"><strong>Receiver sensitivity</strong><span>Effective per-cell usability threshold</span></div>
+              <div className="inventory-field-grid">
+                <InventoryField label="Threshold mode" error={errors.receiverSensitivityMode}>
+                  <select value={profile.receiverSensitivityMode} onChange={(event) => update("receiverSensitivityMode", event.target.value)}>
+                    {(RF_PROFILE_OPTIONS.receiverSensitivityModes ?? [{ id: "manual", label: "Manual" }, { id: "derived", label: "Derived" }]).map((mode) => <option key={mode.id} value={mode.id}>{mode.label}</option>)}
+                  </select>
+                </InventoryField>
+                {profile.receiverSensitivityMode === "manual" ? (
+                  <InventoryField label="RX sensitivity" unit="dBm" error={errors.receiverSensitivityDbm}>
+                    <input type="number" step="0.1" value={profile.receiverSensitivityDbm ?? ""} onChange={(event) => update("receiverSensitivityDbm", event.target.value)} />
+                  </InventoryField>
+                ) : (
+                  <>
+                    <InventoryField label="Noise bandwidth" unit="MHz" error={errors.receiverNoiseBandwidthHz}>
+                      <input type="number" min="0.000001" step="0.1" value={Number(profile.receiverNoiseBandwidthHz) / 1e6} onChange={(event) => update("receiverNoiseBandwidthHz", Number(event.target.value) * 1e6)} />
+                    </InventoryField>
+                    <InventoryField label="Noise figure" unit="dB" error={errors.receiverNoiseFigureDb}>
+                      <input type="number" step="0.1" value={profile.receiverNoiseFigureDb ?? ""} onChange={(event) => update("receiverNoiseFigureDb", event.target.value)} />
+                    </InventoryField>
+                    <InventoryField label="Required SNR" unit="dB" error={errors.receiverRequiredSnrDb}>
+                      <input type="number" step="0.1" value={profile.receiverRequiredSnrDb ?? ""} onChange={(event) => update("receiverRequiredSnrDb", event.target.value)} />
+                    </InventoryField>
+                    <InventoryField label="Receiver margin" unit="dB" error={errors.receiverMarginDb}>
+                      <input type="number" step="0.1" value={profile.receiverMarginDb ?? ""} onChange={(event) => update("receiverMarginDb", event.target.value)} />
+                    </InventoryField>
+                  </>
+                )}
+              </div>
+              <p className="field-help">Derived = −174 dBm/Hz + 10 log₁₀(noise bandwidth) + NF + required SNR + margin. Interference noise and SINR remain a separate model.</p>
             </div>
           </fieldset>
           {Object.keys(errors).length ? <p className="inventory-validation" role="alert">Fix {Object.keys(errors).length} profile field{Object.keys(errors).length === 1 ? "" : "s"} before running RF analysis.</p> : <p className="inventory-valid">Profile valid · request-ready</p>}

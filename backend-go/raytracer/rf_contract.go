@@ -40,25 +40,28 @@ const (
 // transmit term (boresight EIRP - system loss + calibration). New consumers
 // should use BoresightEIRPDBm and DirectionalEIRPDBm instead.
 type RFLinkBudgetTerms struct {
-	TxPowerDBm                     float64 `json:"tx_power_dbm"`
-	TxAntennaGainDBi               float64 `json:"tx_antenna_gain_dbi"`
-	AntennaGainDBi                 float64 `json:"antenna_gain_dbi"`
-	BoresightEIRPDBm               float64 `json:"boresight_eirp_dbm"`
-	DirectionalEIRPDBm             float64 `json:"directional_eirp_dbm"`
-	RxAntennaGainDBi               float64 `json:"rx_antenna_gain_dbi"`
-	SystemLossDB                   float64 `json:"system_loss_db"`
-	PolarizationLossDB             float64 `json:"polarization_loss_db"`
-	CalibrationOffsetDB            float64 `json:"calibration_offset_db"`
-	EIRPDBm                        float64 `json:"eirp_dbm"`
-	FSPLDB                         float64 `json:"fspl_db"`
-	PropagationLossDB              float64 `json:"propagation_loss_db"`
-	BuildingLossDB                 float64 `json:"building_loss_db"`
-	TxPatternAttenuationDB         float64 `json:"tx_pattern_attenuation_db"`
-	HorizontalPatternAttenuationDB float64 `json:"horizontal_pattern_attenuation_db"`
-	VerticalPatternAttenuationDB   float64 `json:"vertical_pattern_attenuation_db"`
-	PatternAttenuationDB           float64 `json:"pattern_attenuation_db"`
-	TotalLossDB                    float64 `json:"total_loss_db"`
-	ReceivedPowerDBm               float64 `json:"received_power_dbm"`
+	TxPowerDBm                      float64 `json:"tx_power_dbm"`
+	TxAntennaGainDBi                float64 `json:"tx_antenna_gain_dbi"`
+	AntennaGainDBi                  float64 `json:"antenna_gain_dbi"`
+	BoresightEIRPDBm                float64 `json:"boresight_eirp_dbm"`
+	DirectionalEIRPDBm              float64 `json:"directional_eirp_dbm"`
+	RxAntennaGainDBi                float64 `json:"rx_antenna_gain_dbi"`
+	SystemLossDB                    float64 `json:"system_loss_db"`
+	PolarizationLossDB              float64 `json:"polarization_loss_db"`
+	CalibrationOffsetDB             float64 `json:"calibration_offset_db"`
+	EIRPDBm                         float64 `json:"eirp_dbm"`
+	FSPLDB                          float64 `json:"fspl_db"`
+	PropagationLossDB               float64 `json:"propagation_loss_db"`
+	BuildingLossDB                  float64 `json:"building_loss_db"`
+	TxPatternAttenuationDB          float64 `json:"tx_pattern_attenuation_db"`
+	HorizontalPatternAttenuationDB  float64 `json:"horizontal_pattern_attenuation_db"`
+	VerticalPatternAttenuationDB    float64 `json:"vertical_pattern_attenuation_db"`
+	PatternAttenuationDB            float64 `json:"pattern_attenuation_db"`
+	TotalLossDB                     float64 `json:"total_loss_db"`
+	ReceivedPowerDBm                float64 `json:"received_power_dbm"`
+	ReceiverSensitivityMode         string  `json:"receiver_sensitivity_mode"`
+	EffectiveReceiverSensitivityDBm float64 `json:"effective_receiver_sensitivity_dbm"`
+	ReceiverLinkMarginDB            float64 `json:"receiver_link_margin_db"`
 }
 
 // RFContractMetadata is shared metadata for current RF responses. Numeric
@@ -101,6 +104,8 @@ type RFContractMetadata struct {
 	RelativeAttenuationTerms       []string `json:"relative_attenuation_terms"`
 	PropagationTerms               []string `json:"propagation_terms"`
 	ReceiverSensitivityScope       string   `json:"receiver_sensitivity_scope"`
+	ReceiverSensitivityEquation    string   `json:"receiver_sensitivity_equation"`
+	ReceiverNoiseSemantics         string   `json:"receiver_noise_semantics"`
 	BuildingServiceThresholdDBm    float64  `json:"building_service_threshold_dbm"`
 	BuildingServiceRule            string   `json:"building_service_rule"`
 	PropagationReachDefinition     string   `json:"propagation_reach_definition"`
@@ -135,7 +140,7 @@ func rfContractForProfile(profile *CellRFProfile, calibrationOffsetDB float64) R
 	contract.FallbackPolicy = "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason"
 	contract.LOSClassificationRule = "2D footprint rule: outdoor-to-outdoor paths with no footprint boundary event are LOS; one or more boundary events are NLOS; indoor transmitter/receiver and missing footprint data are not urban-applicable"
 	contract.BuildingHeightNote = "building height is not used by the urban baseline; only known Tx/Rx heights are used, and uncertain building height remains a separate data limitation"
-	contract.ReceiverSensitivityScope = "effective per-cell static-ray receiver threshold; see rf_profile.receiver_sensitivity_dbm"
+	contract.ReceiverSensitivityScope = "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile"
 
 	switch profileValue.PropagationModelID {
 	case UrbanShortRangePropagationID:
@@ -211,6 +216,8 @@ func canonicalRFContract(profile *CellRFProfile, calibrationOffsetDB float64) RF
 		RelativeAttenuationTerms:       []string{"horizontal antenna attenuation", "vertical antenna attenuation"},
 		PropagationTerms:               []string{"FSPL", "building/wall-event loss"},
 		ReceiverSensitivityScope:       "effective per-cell static-ray receiver threshold",
+		ReceiverSensitivityEquation:    "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+		ReceiverNoiseSemantics:         "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
 		BuildingServiceThresholdDBm:    BuildingServiceThresholdDBm,
 		BuildingServiceRule:            "building is served when modeled received power is strictly greater than the building-service threshold",
 		PropagationReachDefinition:     CanonicalPropagationReach,
@@ -227,7 +234,7 @@ func canonicalRFContract(profile *CellRFProfile, calibrationOffsetDB float64) RF
 	if profile != nil {
 		// Keep this function's metadata compact. The numeric value remains in the
 		// effective profile, while this field explains its scope for consumers.
-		contract.ReceiverSensitivityScope = "effective per-cell static-ray receiver threshold; see rf_profile.receiver_sensitivity_dbm"
+		contract.ReceiverSensitivityScope = "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile"
 	}
 	return contract
 }
@@ -267,11 +274,12 @@ func diagnosticRFContract(profile *CellRFProfile, calibrationOffsetDB float64) R
 // EffectiveCellRFProfile identifies the normalized per-cell values that were
 // actually evaluated. Request-level defaults remain separately available.
 type EffectiveCellRFProfile struct {
-	ID         string        `json:"id"`
-	TowerLon   float64       `json:"tower_lon"`
-	TowerLat   float64       `json:"tower_lat"`
-	AzimuthDeg float64       `json:"azimuth_deg"`
-	RFProfile  CellRFProfile `json:"rf_profile"`
+	ID                string            `json:"id"`
+	TowerLon          float64           `json:"tower_lon"`
+	TowerLat          float64           `json:"tower_lat"`
+	AzimuthDeg        float64           `json:"azimuth_deg"`
+	RFProfile         CellRFProfile     `json:"rf_profile"`
+	ReceiverThreshold ReceiverThreshold `json:"receiver_threshold"`
 }
 
 // RFRequestDefaults records request-level defaults without implying that all
@@ -316,9 +324,11 @@ func effectiveCellRFProfiles(req NetworkOptimizationRequest, azimuths []float64)
 		if index < len(azimuths) {
 			azimuth = azimuths[index]
 		}
+		profile = profile.normalized()
 		profiles = append(profiles, EffectiveCellRFProfile{
 			ID: tower.ID, TowerLon: tower.TowerLon, TowerLat: tower.TowerLat,
-			AzimuthDeg: normalizeDegrees(azimuth), RFProfile: profile.normalized(),
+			AzimuthDeg: normalizeDegrees(azimuth), RFProfile: profile,
+			ReceiverThreshold: receiverThresholdForProfileOrManual(profile),
 		})
 	}
 	return profiles
@@ -343,9 +353,11 @@ func effectiveInterferenceCellRFProfiles(req InterferenceRequest) []EffectiveCel
 	profiles := make([]EffectiveCellRFProfile, 0, len(req.Towers))
 	for index, tower := range req.Towers {
 		profile := effectiveInterferenceTowerProfile(req, tower, index)
+		profile = profile.normalized()
 		profiles = append(profiles, EffectiveCellRFProfile{
 			ID: tower.ID, TowerLon: tower.TowerLon, TowerLat: tower.TowerLat,
 			AzimuthDeg: normalizeDegrees(tower.AzimuthDeg), RFProfile: profile,
+			ReceiverThreshold: receiverThresholdForProfileOrManual(profile),
 		})
 	}
 	return profiles
@@ -355,7 +367,8 @@ func (profile CellRFProfile) LinkBudgetTerms(groundDistanceMeters, buildingLossD
 	profile = profile.normalized()
 	pattern := EvaluateAntennaPattern(profile, groundDistanceMeters, horizontalOffsetDeg)
 	fsplDB := FreeSpacePathLossMetersGHz(profile.SlantDistanceMeters(groundDistanceMeters), profile.FrequencyGHz)
-	return rfLinkBudgetTermsFromAntenna(profile, pattern, fsplDB, fsplDB, buildingLossDB, calibrationOffsetDB)
+	terms := rfLinkBudgetTermsFromAntenna(profile, pattern, fsplDB, fsplDB, buildingLossDB, calibrationOffsetDB)
+	return withReceiverThreshold(terms, profile, nil)
 }
 
 func rfLinkBudgetTermsFromAntenna(profile CellRFProfile, pattern AntennaPatternEvaluation, propagationLossDB, fsplDB, buildingLossDB, calibrationOffsetDB float64) RFLinkBudgetTerms {

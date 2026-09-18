@@ -59,6 +59,7 @@ type PropagationLinkContext struct {
 	EndpointCase          PropagationEndpointCase
 	BuildingDataAvailable bool
 	WallEventCount        int
+	ReceiverThreshold     *ReceiverThreshold
 }
 
 type PropagationApplicability struct {
@@ -119,6 +120,8 @@ type PropagationResult struct {
 	TotalPathLossDB          float64                 `json:"total_path_loss_db"`
 	LinkBudget               RFLinkBudgetTerms       `json:"link_budget"`
 	Terms                    PropagationPathTerms    `json:"terms"`
+	ReceiverThreshold        ReceiverThreshold       `json:"receiver_threshold"`
+	ReceiverLinkMarginDB     float64                 `json:"receiver_link_margin_db"`
 }
 
 // PropagationModel is the narrow abstraction implemented by every selectable
@@ -279,6 +282,10 @@ func PropagationModelCatalog() []PropagationModelInfo {
 // records a deterministic legacy fallback when the requested scope is not met.
 func EvaluatePropagationLink(ctx PropagationLinkContext) PropagationResult {
 	ctx.Profile = ctx.Profile.normalized()
+	if ctx.ReceiverThreshold == nil {
+		threshold := receiverThresholdForProfileOrManual(ctx.Profile)
+		ctx.ReceiverThreshold = &threshold
+	}
 	requestedID := strings.ToLower(strings.TrimSpace(ctx.Profile.PropagationModelID))
 	if requestedID == "" {
 		requestedID = DefaultPropagationModelID(ctx.Profile.FrequencyGHz)
@@ -327,6 +334,7 @@ func propagationResultFromTerms(model PropagationModel, ctx PropagationLinkConte
 	profile := ctx.Profile.normalized()
 	pattern := EvaluateAntennaPattern(profile, terms.DistanceM, ctx.HorizontalOffsetDeg)
 	linkBudget := rfLinkBudgetTermsFromAntenna(profile, pattern, terms.BasePathLossDB, terms.FreeSpacePathLossDB, terms.WallLossDB, ctx.CalibrationOffsetDB)
+	linkBudget = withReceiverThreshold(linkBudget, profile, ctx.ReceiverThreshold)
 	terms.TxPowerDBm = linkBudget.TxPowerDBm
 	terms.TxAntennaGainDBi = linkBudget.TxAntennaGainDBi
 	terms.BoresightEIRPDBm = linkBudget.BoresightEIRPDBm
@@ -348,6 +356,8 @@ func propagationResultFromTerms(model PropagationModel, ctx PropagationLinkConte
 		DistanceM: terms.DistanceM, SlantDistanceM: terms.SlantDistanceM,
 		ReceivedPowerDBm: linkBudget.ReceivedPowerDBm,
 		TotalPathLossDB:  terms.TotalPathLossDB, LinkBudget: linkBudget, Terms: terms,
+		ReceiverThreshold:    *ctx.ReceiverThreshold,
+		ReceiverLinkMarginDB: linkBudget.ReceiverLinkMarginDB,
 	}
 	if classification != nil {
 		result.LOSClassifierID = classification.ClassifierID

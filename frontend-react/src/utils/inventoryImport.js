@@ -74,6 +74,11 @@ function normalizeInventoryRecord(record, index, settings, used, usedCellIDs) {
     pci: optionalNumber(profileField(nestedProfile, properties, "pci")),
     receiverHeightM: optionalNumber(profileField(nestedProfile, properties, "receiver_height_m", "receiverHeightM")),
     receiverSensitivityDbm: optionalNumber(profileField(nestedProfile, properties, "receiver_sensitivity_dbm", "receiverSensitivityDbm")),
+    receiverSensitivityMode: profileField(nestedProfile, properties, "receiver_sensitivity_mode", "receiverSensitivityMode"),
+    receiverNoiseBandwidthHz: optionalNumber(profileField(nestedProfile, properties, "receiver_noise_bandwidth_hz", "receiverNoiseBandwidthHz")),
+    receiverNoiseFigureDb: optionalNumber(profileField(nestedProfile, properties, "receiver_noise_figure_db", "receiverNoiseFigureDb")),
+    receiverRequiredSnrDb: optionalNumber(profileField(nestedProfile, properties, "receiver_required_snr_db", "receiverRequiredSnrDb")),
+    receiverMarginDb: optionalNumber(profileField(nestedProfile, properties, "receiver_margin_db", "receiverMarginDb")),
   };
   const rfProfile = resolveRFProfile({ rfProfile: compactDefined(profileFields) }, settings, index);
   const errors = validateRFProfile(rfProfile);

@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Deterministic thermal-noise-derived
+receiver thresholds, strict link usability, per-cell metadata, bandwidth
+semantics, integration boundaries, and canonical comparison
+evidence." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4G.2 Receiver Noise and
+Sensitivity | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4G.2
+Receiver Noise and Sensitivity page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#contract-summary" id="toc-contract-summary">Contract
+      summary</a></li>
+      <li><a href="#derived-receiver-equation"
+      id="toc-derived-receiver-equation">Derived receiver
+      equation</a></li>
+      <li><a href="#bandwidth-and-noise-semantics"
+      id="toc-bandwidth-and-noise-semantics">Bandwidth and noise
+      semantics</a></li>
+      <li><a href="#integration-semantics"
+      id="toc-integration-semantics">Integration semantics</a></li>
+      <li><a href="#api-and-ui-contract"
+      id="toc-api-and-ui-contract">API and UI contract</a></li>
+      <li><a href="#canonical-evidence"
+      id="toc-canonical-evidence">Canonical evidence</a></li>
+      <li><a href="#boundaries" id="toc-boundaries">Boundaries</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Model reference</span>
+        <h1>Concept 4G.2 Receiver Noise and Sensitivity</h1>
+        <p>Deterministic thermal-noise-derived receiver thresholds,
+strict link usability, per-cell metadata, bandwidth semantics,
+integration boundaries, and canonical comparison evidence.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4g2-receiver-noise-sensitivity.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Status: implemented as a deterministic planning foundation. This note
+defines the receiver contract added after <a
+href="./concept-4g1-antenna-link-budget.html">Concept 4G.1 antenna and
+link budget</a>. The implementation preserves the legacy manual
+threshold by default and adds an opt-in noise-derived threshold. It does
+not turn A.T.O.M into a UE/PHY simulator or a conformance
+implementation.</p>
+<p>The implementation audit is recorded in
+<code>concept-4g2-receiver-noise-audit.md</code>. The generated
+comparison artifacts are <a
+href="concept-4g2-pre-change-baseline.json"><code>concept-4g2-pre-change-baseline.json</code></a>,
+<a
+href="concept-4g2-receiver-comparison.json"><code>concept-4g2-receiver-comparison.json</code></a>,
+and <a
+href="concept-4g2-canonical-receiver-comparison.json"><code>concept-4g2-canonical-receiver-comparison.json</code></a>.</p>
+<h2 id="contract-summary">Contract summary</h2>
+<p>Receiver sensitivity is resolved once for each effective cell profile
+and is returned as <code>receiver_threshold</code>. The normalized
+profile retains the legacy <code>receiver_sensitivity_dbm</code> field,
+but the selected mode determines which value is used:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Effective threshold</th>
+<th>Required inputs</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>manual</code></td>
+<td>The configured <code>receiver_sensitivity_dbm</code></td>
+<td><code>receiver_sensitivity_dbm</code></td>
+<td><code>-115 dBm</code></td>
+</tr>
+<tr>
+<td><code>derived</code></td>
+<td>Thermal noise floor plus required SNR and receiver margin</td>
+<td><code>receiver_noise_bandwidth_hz</code>,
+<code>receiver_noise_figure_db</code>,
+<code>receiver_required_snr_db</code>,
+<code>receiver_margin_db</code></td>
+<td>Opt-in; profile defaults are 100 MHz, 7 dB, 3 dB, and 0 dB</td>
+</tr>
+</tbody>
+</table>
+<p>The threshold is per cell, not a single request-wide number. Network,
+interference, recommendation, measurement, surface, building-entry, path
+profile, and report responses carry either the effective-cell threshold
+or the selected threshold plus its provenance. The manual mode is the
+compatibility default for existing requests.</p>
+<h2 id="derived-receiver-equation">Derived receiver equation</h2>
+<p>The derived mode uses a rounded engineering reference of
+<code>-174 dBm/Hz</code> at <code>290 K</code>. For a receiver
+noise-equivalent bandwidth <code>B_noise</code> in hertz:</p>
+<pre class="text"><code>N0(T)       = -174 + 10 log10(T / 290)                         dBm/Hz
+Nthermal    = N0(T) + 10 log10(B_noise)                       dBm
+Nfloor      = Nthermal + NF                                   dBm
+Sensitivity = Nfloor + RequiredSNR + ReceiverMargin           dBm
+RxMargin    = ReceivedPower - Sensitivity                      dB</code></pre>
+<p>The current evaluator uses <code>T = 290 K</code>, so the normal
+derived expression is:</p>
+<pre class="text"><code>Sensitivity = -174 + 10 log10(B_noise_Hz) + NF_dB
+              + RequiredSNR_dB + ReceiverMargin_dB</code></pre>
+<p>All terms after the logarithm are dB quantities. A higher noise
+bandwidth, noise figure, required SNR, or receiver margin raises the
+threshold and makes the receiver requirement stricter. A carrier or ray
+is usable only when:</p>
+<pre class="text"><code>received_power_dbm &gt; effective_receiver_sensitivity_dbm</code></pre>
+<p>Equality is not usable. <code>receiver_link_margin_db</code> is the
+signed difference between raw received power and the effective
+threshold. It is a receiver decision margin, not a statistical fading
+margin, penetration allowance, or calibration correction.</p>
+<p>The first-principles basis is the SI Boltzmann constant and
+thermal-noise relation <code>kTB</code>; the implementation deliberately
+uses the rounded <code>-174 dBm/Hz</code> convention for deterministic
+compatibility. See <a
+href="https://www.nist.gov/si-redefinition/kelvin/kelvin-boltzmann-constant">NIST's
+kelvin and Boltzmann constant reference</a>, <a
+href="https://www.nist.gov/pml/special-publication-330/sp-330-section-2">NIST
+SP 330 section 2</a>, and the receiver-noise discussion in <a
+href="https://www.etsi.org/deliver/etsi_tr/103600_103699/103688/01.01.01_60/tr_103688v010101p.pdf">ETSI
+TR 103 688 Annex E</a>. Those references support the physical basis;
+A.T.O.M's selected default SNR, margin, and bounds are project planning
+inputs, not a 3GPP UE sensitivity claim.</p>
+<h2 id="bandwidth-and-noise-semantics">Bandwidth and noise
+semantics</h2>
+<p><code>receiver_noise_bandwidth_hz</code> is an independent
+noise-equivalent bandwidth. It is not automatically replaced with
+occupied bandwidth, resource-block bandwidth, SCS, load, or co-channel
+interference power.</p>
+<p>The response reports <code>receiver_noise_bandwidth_source</code> as
+either:</p>
+<ul>
+<li><code>explicit_receiver_noise_bandwidth_hz</code> when the cell
+profile supplies an explicit bandwidth; or</li>
+<li><code>channel_bandwidth_approximation</code> when the profile
+derives the noise bandwidth from its channel bandwidth.</li>
+</ul>
+<p>The approximation is visible and deterministic. In
+<code>manual</code> mode, the receiver noise inputs remain profile
+metadata for future/explicit selection, but no thermal-noise,
+noise-figure, SNR, or margin term is evaluated and the threshold
+response reports
+<code>noise_bandwidth_source: not_applicable</code>.</p>
+<p>Interference has a different bandwidth meaning. LTE/NR SCS and
+resource-element presets still determine the per-RE thermal noise used
+by the RSRP/SINR/RSRQ engine. The shared thermal-noise arithmetic now
+serves both calculations, but the sensitivity evaluator uses the
+receiver bandwidth while interference uses the selected
+SCS/resource-element bandwidth. Receiver sensitivity is not added as a
+second SINR noise term.</p>
+<p>The supported policy bounds are intentionally explicit: manual
+sensitivity is <code>-180</code> to <code>-20 dBm</code>; derived noise
+bandwidth is <code>1</code> Hz to <code>2 GHz</code>; noise figure is
+<code>0</code> to <code>20 dB</code>; required SNR and receiver margin
+are each bounded to <code>-100</code> to <code>100 dB</code>. Inputs are
+finite and validated before RF execution.</p>
+<h2 id="integration-semantics">Integration semantics</h2>
+<p>The same resolved threshold object is reused by all relevant
+evaluators:</p>
+<ol type="1">
+<li>Static rays test the threshold at ray start, wall events, and
+segment-end crossings. Usable reach, terminal metadata, demand coverage,
+and optimization use the strict comparison.</li>
+<li>Building entry compares the low-loss and high-loss indoor endpoint
+powers with the effective receiver threshold. Outdoor building service
+remains a separate strict <code>raw P_rx &gt; -100 dBm</code> rule.
+Geometry can continue to be accounted for after receiver termination so
+this independent building service rule is not accidentally hidden by a
+stricter receiver threshold.</li>
+<li>Coverage surfaces retain raw received-power values, including values
+below sensitivity. Sensitivity changes only the threshold metadata and
+the <code>below_sensitivity</code> statistic; NoData still means radius
+or beam geometry exclusion.</li>
+<li>Interference admits a carrier only when its raw carrier power is
+strictly above that cell's receiver threshold. It then computes RSRP,
+SINR, and RSRQ with the existing per-RE noise and co-channel power
+equations. Its serviceability thresholds remain
+<code>RSRP &gt;= -110 dBm</code>, <code>SINR &gt;= 0 dB</code>, and
+<code>RSRQ &gt;= -20 dB</code>.</li>
+<li>Link-budget and path-profile diagnostics expose the mode, effective
+threshold, and signed receiver link margin alongside the existing RF
+ledger.</li>
+</ol>
+<p>The threshold is resolved outside hot segment loops and is serialized
+with assumptions and applicability text. No per-ray logging or
+stochastic behavior was added. Receiver sensitivity does not include
+fast fading, shadow-fading draws, penetration, clutter, rain,
+atmospheric loss, system loss, calibration, or network interference;
+those remain separate model terms.</p>
+<h2 id="api-and-ui-contract">API and UI contract</h2>
+<p>Request profiles accept these fields in snake case, with per-cell
+overrides where the endpoint supports <code>towers[]</code>:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;receiver_sensitivity_mode&quot;</span><span class="fu">:</span> <span class="st">&quot;derived&quot;</span><span class="fu">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;receiver_noise_bandwidth_hz&quot;</span><span class="fu">:</span> <span class="dv">100000000</span><span class="fu">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;receiver_noise_figure_db&quot;</span><span class="fu">:</span> <span class="dv">7</span><span class="fu">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;receiver_required_snr_db&quot;</span><span class="fu">:</span> <span class="dv">3</span><span class="fu">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;receiver_margin_db&quot;</span><span class="fu">:</span> <span class="dv">0</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><code>receiver_noise_bandwidth_source</code> is response provenance
+and is read-only in the OpenAPI contract. A derived response includes
+the noise density, thermal noise, noise figure, noise floor, required
+SNR, margin, bandwidth source, assumptions, and applicability. A manual
+response includes the direct threshold and manual assumptions, without
+presenting unused derived numbers as if they were evaluated.</p>
+<p>The Inventory panel exposes mode and the corresponding fields.
+Propagation, surface, building-entry, interference, and path-profile
+inspectors show the effective threshold and link margin where relevant.
+Reports show detailed noise inputs only when the first effective cell is
+in derived mode and include the RF contract's receiver scope, equation,
+and noise semantics.</p>
+<h2 id="canonical-evidence">Canonical evidence</h2>
+<p>The controlled matrix covers 4G at 2.6 GHz and 5G at 28 GHz with 5,
+20, and 100 MHz receiver bandwidths, multiple noise figures, required
+SNR values, and receiver margins. It records 18 derived cases against a
+manual <code>-115 dBm</code> baseline. Independent fixtures cover 1 Hz,
+1 MHz, 20 MHz, and 100 MHz noise arithmetic, temperature scaling, strict
+threshold boundaries, heterogeneous per-cell profiles, propagation
+margins, raw surfaces, building entry, and interference noise
+separation.</p>
+<p>The real Ankara six-cell comparison uses the existing compatibility
+scenario:</p>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th style="text-align: right;">Manual compatibility</th>
+<th style="text-align: right;">Derived (<code>100 MHz</code>,
+<code>NF=7 dB</code>, <code>SNR=3 dB</code>,
+<code>margin=0 dB</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Effective threshold</td>
+<td style="text-align: right;"><code>-115 dBm</code></td>
+<td style="text-align: right;"><code>-84 dBm</code></td>
+</tr>
+<tr>
+<td>Baseline demand / residential</td>
+<td style="text-align: right;"><code>185 / 28</code></td>
+<td style="text-align: right;"><code>185 / 28</code></td>
+</tr>
+<tr>
+<td>Optimized demand / residential</td>
+<td style="text-align: right;"><code>555 / 43</code></td>
+<td style="text-align: right;"><code>555 / 48</code></td>
+</tr>
+<tr>
+<td>Optimized reach</td>
+<td style="text-align: right;"><code>19,548.6910 m</code></td>
+<td style="text-align: right;"><code>15,465.0539 m</code></td>
+</tr>
+<tr>
+<td>Optimized score</td>
+<td style="text-align: right;"><code>41.1715</code></td>
+<td style="text-align: right;"><code>38.9407</code></td>
+</tr>
+<tr>
+<td>Pareto frontier</td>
+<td style="text-align: right;"><code>6</code></td>
+<td style="text-align: right;"><code>5</code></td>
+</tr>
+<tr>
+<td>Recommended azimuths</td>
+<td
+style="text-align: right;"><code>[70, 20, 130, 160, 290, 110]</code></td>
+<td
+style="text-align: right;"><code>[70, 20, 140, 280, 290, 110]</code></td>
+</tr>
+</tbody>
+</table>
+<p>The threshold rises by <code>31 dB</code>; optimized demand is
+unchanged, optimized residential coverage increases by five units in
+this deterministic scenario, reach decreases by
+<code>4,083.6371 m</code>, the score decreases by <code>2.2308</code>,
+and the frontier loses one solution. These are scenario evidence, not
+universal performance predictions.</p>
+<p>The building-entry comparison has 1,488 relevant buildings and 698
+candidate cell-link evaluations. Outdoor building service stays at 521
+for both modes because it uses the independent <code>-100 dBm</code>
+rule. Low/high entry serviceability changes from <code>521/194</code> in
+manual mode to <code>48/16</code> in derived mode because those indoor
+endpoint powers are tested against the effective receiver threshold.</p>
+<p>The raw surface grid is invariant: 107 valid cells, minimum
+<code>-447.9 dBm</code>, maximum/center <code>-33.8 dBm</code>. Only the
+below-sensitivity count changes, from 13 to 44. The canonical
+interference run keeps 264 serviceable samples (17%) in both modes, but
+carrier admission changes the aggregate signal sample and distribution.
+This is expected and is not evidence that sensitivity is an extra SINR
+noise term. A focused regression test separately confirms that close-in
+RSRP/SINR/RSRQ values remain unchanged when only the receiver threshold
+mode changes.</p>
+<p>The pre-change artifact also records the accepted real-backend
+Playwright baseline (<code>36</code> tests: <code>27</code> passed and
+<code>9</code> skipped), canonical optimization, building-entry,
+height-audit, surface, and interference evidence. The canonical
+comparison test is gated by <code>ATOM_DATASET_DIR</code> and writes its
+JSON artifact only when explicitly requested.</p>
+<h2 id="boundaries">Boundaries</h2>
+<p>This concept supplies a transparent noise-floor and
+receiver-usability foundation. It does not select MCS, derive
+throughput, model coding gain, implement UE measurement behavior,
+perform link adaptation, simulate dynamic scheduling, or validate an
+operator hardware sensitivity specification. It does not make the
+existing 140 GHz <code>research_sub_thz</code> profile a validated 6G
+receiver model. Fading, blockage statistics, indoor depth, propagation
+calibration, and full PHY quality remain future or externally validated
+work.</p>
+<p>See <a href="./modeling-limits.html">modeling limits</a>, <a
+href="./api.html">API reference</a>, and the <a
+href="openapi.yaml">OpenAPI contract</a> for the current runtime
+boundary.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

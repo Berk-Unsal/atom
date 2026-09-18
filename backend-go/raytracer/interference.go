@@ -26,6 +26,7 @@ type InterferenceTowerRequest struct {
 type InterferenceRequest struct {
 	NetworkTech         string                     `json:"network_tech"`
 	Towers              []InterferenceTowerRequest `json:"towers"`
+	ServingCellID       string                     `json:"serving_cell_id,omitempty"`
 	RadiusMeters        float64                    `json:"radius_m"`
 	FrequencyGHz        float64                    `json:"frequency_ghz"`
 	TxPowerDBm          float64                    `json:"tx_power_dbm"`
@@ -37,6 +38,7 @@ type InterferenceRequest struct {
 	SampleSpacingM      float64                    `json:"sample_spacing_m"`
 	CalibrationOffsetDB float64                    `json:"calibration_offset_db,omitempty"`
 	RFProfile           CellRFProfile              `json:"rf_profile"`
+	receiverThresholds  []ReceiverThreshold
 }
 
 type InterferenceResponse struct {
@@ -58,32 +60,50 @@ type InterferenceFeature struct {
 }
 
 type InterferenceProperties struct {
-	SampleID               string             `json:"sample_id"`
-	ServingCellID          string             `json:"serving_cell_id,omitempty"`
-	ChannelID              string             `json:"channel_id,omitempty"`
-	RSRPDBm                *float64           `json:"rsrp_dbm"`
-	SINRDB                 *float64           `json:"sinr_db"`
-	RSRQDB                 *float64           `json:"rsrq_db"`
-	RSSIDBm                *float64           `json:"rssi_dbm"`
-	InterferenceDBm        *float64           `json:"interference_dbm"`
-	QualityClass           string             `json:"quality_class"`
-	Serviceable            bool               `json:"serviceable"`
-	InterferenceLimited    bool               `json:"interference_limited"`
-	WallCount              int                `json:"wall_count"`
-	LOSState               string             `json:"los_state,omitempty"`
-	LOSClassifierID        string             `json:"los_classifier_id,omitempty"`
-	LOSClassificationBasis string             `json:"los_classification_basis,omitempty"`
-	TerrainStatus          string             `json:"terrain_status,omitempty"`
-	LOSClassification      *LOSClassification `json:"los_classification,omitempty"`
-	StrongestInterfererID  string             `json:"strongest_interferer_id,omitempty"`
-	StrongestInterfererDBm *float64           `json:"strongest_interferer_dbm,omitempty"`
-	ContributingCells      int                `json:"contributing_cells"`
-	LinkBudget             *RFLinkBudgetTerms `json:"link_budget,omitempty"`
-	BuildingID             string             `json:"building_id,omitempty"`
-	DemandWeight           float64            `json:"demand_weight,omitempty"`
-	ResidentialDemand      float64            `json:"residential_demand,omitempty"`
-	TotalDemand            float64            `json:"total_demand,omitempty"`
-	Reason                 string             `json:"reason,omitempty"`
+	SampleID                       string                         `json:"sample_id"`
+	ServingCellID                  string                         `json:"serving_cell_id,omitempty"`
+	ChannelID                      string                         `json:"channel_id,omitempty"`
+	ServingReceivedCarrierPowerDBm *float64                       `json:"serving_received_carrier_power_dbm,omitempty"`
+	DesiredSignalPowerMW           *float64                       `json:"desired_signal_power_mw,omitempty"`
+	InterferencePowerMW            *float64                       `json:"interference_power_mw,omitempty"`
+	ThermalNoisePowerMW            *float64                       `json:"thermal_noise_power_mw,omitempty"`
+	ThermalNoiseDBm                *float64                       `json:"thermal_noise_dbm,omitempty"`
+	InterferenceNoiseBandwidthHz   float64                        `json:"interference_noise_bandwidth_hz,omitempty"`
+	NoiseBandwidthSource           string                         `json:"noise_bandwidth_source,omitempty"`
+	RSRPDBm                        *float64                       `json:"rsrp_dbm"`
+	SINRDB                         *float64                       `json:"sinr_db"`
+	RSRQDB                         *float64                       `json:"rsrq_db"`
+	RSSIDBm                        *float64                       `json:"rssi_dbm"`
+	InterferenceDBm                *float64                       `json:"interference_dbm"`
+	QualityClass                   string                         `json:"quality_class"`
+	Serviceable                    bool                           `json:"serviceable"`
+	InterferenceLimited            bool                           `json:"interference_limited"`
+	WallCount                      int                            `json:"wall_count"`
+	LOSState                       string                         `json:"los_state,omitempty"`
+	LOSClassifierID                string                         `json:"los_classifier_id,omitempty"`
+	LOSClassificationBasis         string                         `json:"los_classification_basis,omitempty"`
+	TerrainStatus                  string                         `json:"terrain_status,omitempty"`
+	LOSClassification              *LOSClassification             `json:"los_classification,omitempty"`
+	StrongestInterfererID          string                         `json:"strongest_interferer_id,omitempty"`
+	StrongestInterfererDBm         *float64                       `json:"strongest_interferer_dbm,omitempty"`
+	ContributingCells              int                            `json:"contributing_cells"`
+	InterfererCount                int                            `json:"interferer_count"`
+	ServingSelectionMode           string                         `json:"serving_selection_mode,omitempty"`
+	ServingSelectionMetric         string                         `json:"serving_selection_metric,omitempty"`
+	RSRPKind                       string                         `json:"rsrp_kind,omitempty"`
+	RSRPConversionID               string                         `json:"rsrp_conversion_id,omitempty"`
+	RSRPConversionDescription      string                         `json:"rsrp_conversion_description,omitempty"`
+	ServiceabilityStatus           string                         `json:"serviceability_status,omitempty"`
+	ServiceabilityFailures         []string                       `json:"serviceability_failures,omitempty"`
+	PowerLedger                    []RadioQualityPowerLedgerEntry `json:"power_ledger,omitempty"`
+	LinkBudget                     *RFLinkBudgetTerms             `json:"link_budget,omitempty"`
+	ReceiverThreshold              *ReceiverThreshold             `json:"receiver_threshold,omitempty"`
+	ReceiverLinkMarginDB           *float64                       `json:"receiver_link_margin_db,omitempty"`
+	BuildingID                     string                         `json:"building_id,omitempty"`
+	DemandWeight                   float64                        `json:"demand_weight,omitempty"`
+	ResidentialDemand              float64                        `json:"residential_demand,omitempty"`
+	TotalDemand                    float64                        `json:"total_demand,omitempty"`
+	Reason                         string                         `json:"reason,omitempty"`
 }
 
 type InterferenceStats struct {
@@ -97,6 +117,7 @@ type InterferenceStats struct {
 	InterferenceLimitedPct   float64                   `json:"interference_limited_pct"`
 	AvgSINRDB                *float64                  `json:"avg_sinr_db"`
 	P10SINRDB                *float64                  `json:"p10_sinr_db"`
+	MedianSINRDB             *float64                  `json:"median_sinr_db"`
 	AvgRSRPDBm               *float64                  `json:"avg_rsrp_dbm"`
 	P10RSRPDBm               *float64                  `json:"p10_rsrp_dbm"`
 	AvgRSRQDB                *float64                  `json:"avg_rsrq_db"`
@@ -104,6 +125,8 @@ type InterferenceStats struct {
 	DemandCandidates         int                       `json:"demand_candidates"`
 	AffectedDemandBuildings  int                       `json:"affected_demand_buildings"`
 	AffectedDemand           float64                   `json:"affected_demand"`
+	ServiceableFraction      *float64                  `json:"serviceable_fraction"`
+	OutageByReason           map[string]int            `json:"outage_by_reason"`
 	PerServingCell           []InterferenceCellSummary `json:"per_serving_cell"`
 }
 
@@ -118,28 +141,54 @@ type InterferenceCellSummary struct {
 }
 
 type InterferenceModel struct {
-	Type                    string                   `json:"type"`
-	NetworkTech             string                   `json:"network_tech"`
-	MeasurementFamily       string                   `json:"measurement_family"`
-	FrequencyGHz            float64                  `json:"frequency_ghz"`
-	BandwidthMHz            float64                  `json:"bandwidth_mhz"`
-	SubcarrierSpacingKHz    float64                  `json:"subcarrier_spacing_khz"`
-	ResourceBlocks          int                      `json:"resource_blocks"`
-	NoiseFigureDB           float64                  `json:"noise_figure_db"`
-	LoadFactor              float64                  `json:"load_factor"`
-	ReuseFactor             int                      `json:"reuse_factor"`
-	RequestedSampleSpacingM float64                  `json:"requested_sample_spacing_m"`
-	EffectiveSampleSpacingM float64                  `json:"effective_sample_spacing_m"`
-	Assumptions             []string                 `json:"assumptions"`
-	HeterogeneousProfiles   bool                     `json:"heterogeneous_profiles"`
-	Profiles                []CellRFProfile          `json:"profiles"`
-	RequestDefaults         RFRequestDefaults        `json:"request_defaults"`
-	EffectiveCellProfiles   []EffectiveCellRFProfile `json:"effective_cell_profiles"`
-	RFContract              RFContractMetadata       `json:"rf_contract"`
-	RSRPThresholdDBm        float64                  `json:"rsrp_threshold_dbm"`
-	SINRThresholdDB         float64                  `json:"sinr_threshold_db"`
-	RSRQThresholdDB         float64                  `json:"rsrq_threshold_db"`
-	ServiceabilityRule      string                   `json:"serviceability_rule"`
+	Type                         string                   `json:"type"`
+	NetworkTech                  string                   `json:"network_tech"`
+	MeasurementFamily            string                   `json:"measurement_family"`
+	FrequencyGHz                 float64                  `json:"frequency_ghz"`
+	BandwidthMHz                 float64                  `json:"bandwidth_mhz"`
+	SubcarrierSpacingKHz         float64                  `json:"subcarrier_spacing_khz"`
+	ResourceBlocks               int                      `json:"resource_blocks"`
+	NoiseFigureDB                float64                  `json:"noise_figure_db"`
+	LoadFactor                   float64                  `json:"load_factor"`
+	ReuseFactor                  int                      `json:"reuse_factor"`
+	RequestedSampleSpacingM      float64                  `json:"requested_sample_spacing_m"`
+	EffectiveSampleSpacingM      float64                  `json:"effective_sample_spacing_m"`
+	Assumptions                  []string                 `json:"assumptions"`
+	HeterogeneousProfiles        bool                     `json:"heterogeneous_profiles"`
+	Profiles                     []CellRFProfile          `json:"profiles"`
+	RequestDefaults              RFRequestDefaults        `json:"request_defaults"`
+	EffectiveCellProfiles        []EffectiveCellRFProfile `json:"effective_cell_profiles"`
+	InterferenceHorizonMeters    []float64                `json:"interference_horizon_meters"`
+	InterferenceHorizonSource    string                   `json:"interference_horizon_source"`
+	InterferenceHorizonSemantics string                   `json:"interference_horizon_semantics"`
+	RFContract                   RFContractMetadata       `json:"rf_contract"`
+	RSRPThresholdDBm             float64                  `json:"rsrp_threshold_dbm"`
+	SINRThresholdDB              float64                  `json:"sinr_threshold_db"`
+	RSRQThresholdDB              float64                  `json:"rsrq_threshold_db"`
+	ServiceabilityRule           string                   `json:"serviceability_rule"`
+	ReceiverThresholdRule        string                   `json:"receiver_threshold_rule"`
+	ReceiverNoiseSemantics       string                   `json:"receiver_noise_semantics"`
+	ServingSelectionMode         string                   `json:"serving_selection_mode"`
+	ServingSelectionMetric       string                   `json:"serving_selection_metric"`
+	CoChannelEligibilityRule     string                   `json:"co_channel_eligibility_rule"`
+	CarrierPowerSemantics        string                   `json:"carrier_power_semantics"`
+	ResourceBasis                string                   `json:"resource_basis"`
+	ResourceElementsPerRB        int                      `json:"resource_elements_per_rb"`
+	InterferenceNoiseBandwidthHz float64                  `json:"interference_noise_bandwidth_hz"`
+	NoiseBandwidthSource         string                   `json:"noise_bandwidth_source"`
+	RSRPKind                     string                   `json:"rsrp_kind"`
+	RSRPConversionID             string                   `json:"rsrp_conversion_id"`
+	RSRPConversionDescription    string                   `json:"rsrp_conversion_description"`
+	RSSIRSRQSemantics            string                   `json:"rssi_rsrq_semantics"`
+	LoadAssumption               string                   `json:"load_assumption"`
+	AdjacentChannelModel         string                   `json:"adjacent_channel_model"`
+	PartialOverlapModel          string                   `json:"partial_overlap_model"`
+	OptimizationCoupling         string                   `json:"optimization_coupling"`
+	ServiceabilityPolicyID       string                   `json:"serviceability_policy_id"`
+	ThresholdProvenance          string                   `json:"threshold_provenance"`
+	RadioQualityReferences       []RadioQualityReference  `json:"radio_quality_references"`
+	ScenarioFingerprint          string                   `json:"scenario_fingerprint"`
+	ScenarioSchemaVersion        string                   `json:"scenario_schema_version"`
 }
 
 type interferencePreset struct {
@@ -150,7 +199,11 @@ type interferencePreset struct {
 
 type receivedCellSignal struct {
 	cellID              string
+	networkTech         string
 	channelID           string
+	frequencyGHz        float64
+	bandwidthMHz        float64
+	receivedCarrierDBm  float64
 	rsrpDBm             float64
 	wallCount           int
 	losState            string
@@ -161,6 +214,8 @@ type receivedCellSignal struct {
 	loadFactor          float64
 	preset              interferencePreset
 	linkBudget          RFLinkBudgetTerms
+	receiverThreshold   ReceiverThreshold
+	servingEligible     bool
 }
 
 type gridSample struct {
@@ -228,6 +283,20 @@ func NormalizeInterferenceRequest(req *InterferenceRequest) {
 			req.Towers[index].RFProfile = req.Towers[index].RFProfile.normalized()
 		}
 	}
+	req.receiverThresholds = make([]ReceiverThreshold, len(req.Towers))
+	for index, tower := range req.Towers {
+		profile := effectiveInterferenceTowerProfile(*req, tower, index)
+		if threshold, err := ReceiverThresholdForProfile(profile); err == nil {
+			req.receiverThresholds[index] = threshold
+		}
+	}
+}
+
+func receiverThresholdForInterferenceTower(req InterferenceRequest, tower InterferenceTowerRequest, index int) ReceiverThreshold {
+	if index >= 0 && index < len(req.receiverThresholds) && req.receiverThresholds[index].Mode != "" {
+		return req.receiverThresholds[index]
+	}
+	return receiverThresholdForProfileOrManual(effectiveInterferenceTowerProfile(req, tower, index))
 }
 
 func effectiveInterferenceTowerProfile(req InterferenceRequest, tower InterferenceTowerRequest, index int) CellRFProfile {
@@ -244,6 +313,18 @@ func effectiveInterferenceTowerProfile(req InterferenceRequest, tower Interferen
 	}
 	profile.ChannelID = fmt.Sprintf("CH-%d", index%reuseFactor+1)
 	return profile
+}
+
+// interferenceHorizonMeters returns the per-cell finite analysis horizons
+// actually used by point and demand evaluation. The values are aligned with
+// effective_cell_profiles and deliberately remain separate from receiver
+// sensitivity admission.
+func interferenceHorizonMeters(req InterferenceRequest) []float64 {
+	horizons := make([]float64, 0, len(req.Towers))
+	for index, tower := range req.Towers {
+		horizons = append(horizons, effectiveInterferenceTowerProfile(req, tower, index).RadiusMeters)
+	}
+	return horizons
 }
 
 func ValidateInterferenceRequest(req InterferenceRequest) string {
@@ -314,6 +395,7 @@ func ValidateInterferenceRequest(req InterferenceRequest) string {
 func AnalyzeInterferenceContext(ctx context.Context, req InterferenceRequest, buildings *BuildingIndex) (InterferenceResponse, error) {
 	NormalizeInterferenceRequest(&req)
 	preset, _ := interferencePresetFor(req.NetworkTech, req.BandwidthMHz)
+	scenarioFingerprint := InterferenceScenarioFingerprint(req)
 	samples, effectiveSpacing, err := buildInterferenceGridContext(ctx, req)
 	if err != nil {
 		return InterferenceResponse{}, err
@@ -336,6 +418,7 @@ func AnalyzeInterferenceContext(ctx context.Context, req InterferenceRequest, bu
 			heterogeneousProfiles = true
 		}
 	}
+	horizonMeters := interferenceHorizonMeters(req)
 	return InterferenceResponse{
 		GeoJSON:       InterferenceFeatureCollection{Type: "FeatureCollection", Features: features},
 		DemandGeoJSON: InterferenceFeatureCollection{Type: "FeatureCollection", Features: demandFeatures},
@@ -355,19 +438,49 @@ func AnalyzeInterferenceContext(ctx context.Context, req InterferenceRequest, bu
 			EffectiveSampleSpacingM: roundOne(effectiveSpacing),
 			Assumptions: []string{
 				"Each cell's conducted TX power, absolute gain, relative pattern, loss, height, load, channel, bandwidth, and receiver assumptions are applied independently.",
-				"Only selected co-channel cells inside their configured beam and radius contribute.",
+				"Only selected cells with an exact channel, frequency, bandwidth, and technology match contribute co-channel interference.",
+				"Receiver sensitivity gates serving-cell admission only; finite non-serving signals remain available for co-channel interference summation.",
+				"Each cell's configured effective radius is a finite interference-analysis horizon for compatibility; outside_radius is not a claim that physical RF power is zero beyond that horizon.",
 				"The selected propagation model is evaluated through the shared link evaluator; the urban model uses footprint boundaries for LOS/NLOS classification without adding legacy wall dB.",
-				"Sidelobes, fading, diffraction, MIMO scheduling, uplink, and adjacent-channel leakage are excluded.",
+				"Carrier power is normalized to one occupied frequency resource element before linear summation; this is a deterministic uniform-PSD planning approximation, not a UE measurement implementation.",
+				"Thermal noise is kTB at the serving numerology's subcarrier bandwidth plus the configured analysis noise figure; receiver sensitivity is not in the SINR denominator.",
+				"Sidelobes, fading, diffraction, MIMO scheduling, uplink, adjacent-channel leakage, and partial-overlap selectivity are excluded or deferred.",
 			},
-			HeterogeneousProfiles: heterogeneousProfiles,
-			Profiles:              profiles,
-			RequestDefaults:       interferenceRequestDefaults(req),
-			EffectiveCellProfiles: effectiveInterferenceCellRFProfiles(req),
-			RFContract:            rfContractForProfile(&req.RFProfile, req.CalibrationOffsetDB),
-			RSRPThresholdDBm:      InterferenceRSRPThresholdDBm,
-			SINRThresholdDB:       InterferenceSINRThresholdDB,
-			RSRQThresholdDB:       InterferenceRSRQThresholdDB,
-			ServiceabilityRule:    "serviceable = RSRP >= threshold AND SINR >= threshold AND RSRQ >= threshold",
+			HeterogeneousProfiles:        heterogeneousProfiles,
+			Profiles:                     profiles,
+			RequestDefaults:              interferenceRequestDefaults(req),
+			EffectiveCellProfiles:        effectiveInterferenceCellRFProfiles(req),
+			InterferenceHorizonMeters:    horizonMeters,
+			InterferenceHorizonSource:    RadioQualityInterferenceHorizonSource,
+			InterferenceHorizonSemantics: RadioQualityInterferenceHorizonSemantics,
+			RFContract:                   rfContractForProfile(&req.RFProfile, req.CalibrationOffsetDB),
+			RSRPThresholdDBm:             InterferenceRSRPThresholdDBm,
+			SINRThresholdDB:              InterferenceSINRThresholdDB,
+			RSRQThresholdDB:              InterferenceRSRQThresholdDB,
+			ServiceabilityRule:           "serviceable = RSRP >= threshold AND SINR >= threshold AND RSRQ >= threshold",
+			ReceiverThresholdRule:        RadioQualityServingAdmissionRule,
+			ReceiverNoiseSemantics:       "receiver sensitivity is noise-limited and separate from co-channel interference",
+			ServingSelectionMode:         servingSelectionMode(req),
+			ServingSelectionMetric:       RadioQualityServingSelectionMetric,
+			CoChannelEligibilityRule:     RadioQualityCoChannelRule,
+			CarrierPowerSemantics:        RadioQualityCarrierPowerSemantics,
+			ResourceBasis:                RadioQualityResourceBasis,
+			ResourceElementsPerRB:        12,
+			InterferenceNoiseBandwidthHz: preset.resourceBandwidthHz(),
+			NoiseBandwidthSource:         RadioQualityNoiseBandwidthSource,
+			RSRPKind:                     preset.rsrpKind(),
+			RSRPConversionID:             RadioQualityRSRPConversionID,
+			RSRPConversionDescription:    preset.conversionDescription(),
+			RSSIRSRQSemantics:            "RSSI is reconstructed over 12*N_RB occupied subcarriers from desired reference-resource power, loaded co-channel reference-resource power, and thermal noise; RSRQ uses N_RB*RSRP/RSSI on that same planning basis.",
+			LoadAssumption:               RadioQualityLoadAssumption,
+			AdjacentChannelModel:         RadioQualityAdjacentChannelModel,
+			PartialOverlapModel:          RadioQualityPartialOverlapModel,
+			OptimizationCoupling:         RadioQualityOptimizationCoupling,
+			ServiceabilityPolicyID:       "planning-default-v1",
+			ThresholdProvenance:          "A.T.O.M. deterministic planning defaults; thresholds are policy inputs, not operator configuration or UE conformance limits",
+			RadioQualityReferences:       radioQualityReferences(),
+			ScenarioFingerprint:          scenarioFingerprint,
+			ScenarioSchemaVersion:        ScenarioFingerprintSchemaVersion,
 		},
 	}, nil
 }
@@ -580,23 +693,38 @@ func evaluateInterferencePoint(req InterferenceRequest, preset interferencePrese
 
 func evaluateInterferencePointContext(ctx context.Context, req InterferenceRequest, preset interferencePreset, buildings *BuildingIndex, point Point) (InterferenceProperties, error) {
 	signals := make([]receivedCellSignal, 0, len(req.Towers))
+	ledger := make([]RadioQualityPowerLedgerEntry, 0, len(req.Towers))
 	for index, tower := range req.Towers {
 		if err := ctx.Err(); err != nil {
 			return InterferenceProperties{}, err
 		}
 		profile := effectiveInterferenceTowerProfile(req, tower, index)
+		receiverThreshold := receiverThresholdForInterferenceTower(req, tower, index)
 		towerPreset, presetErr := interferencePresetFor(profile.NetworkTech, profile.BandwidthMHz)
 		if presetErr != nil {
 			towerPreset = preset
 		}
 		origin := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
 		distance := ApproxDistanceMeters(origin, point)
+		ledgerEntry := RadioQualityPowerLedgerEntry{
+			CellID:            tower.ID,
+			ChannelID:         profile.ChannelID,
+			NetworkTech:       profile.NetworkTech,
+			FrequencyGHz:      profile.FrequencyGHz,
+			BandwidthMHz:      profile.BandwidthMHz,
+			LoadFactor:        profile.LoadFactor,
+			ReceiverThreshold: &receiverThreshold,
+		}
 		if distance > profile.RadiusMeters {
+			ledgerEntry.ExclusionReason = "outside_radius"
+			ledger = append(ledger, ledgerEntry)
 			continue
 		}
 		bearing := BearingDegrees(origin, point)
 		antenna := EvaluateAntennaLink(profile, math.Max(distance, 1), bearing, tower.AzimuthDeg)
 		if !antenna.Eligible {
+			ledgerEntry.ExclusionReason = "antenna_ineligible"
+			ledger = append(ledger, ledgerEntry)
 			continue
 		}
 		pathGeometry, err := buildPropagationPathGeometryContextWithOptions(ctx, origin, point, buildings, propagationPathGeometryOptions{
@@ -604,7 +732,12 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 			RxHeightM: profile.ReceiverHeightM,
 		})
 		if err != nil {
-			return InterferenceProperties{}, err
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return InterferenceProperties{}, ctxErr
+			}
+			ledgerEntry.ExclusionReason = "propagation_unavailable"
+			ledger = append(ledger, ledgerEntry)
+			continue
 		}
 		losState, endpointCase, wallCount, losClassification := classifyPropagationPath(profile, pathGeometry, point, distance)
 		propagation := EvaluatePropagationLink(PropagationLinkContext{
@@ -614,16 +747,43 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 			LOSState:            losState, EndpointCase: endpointCase,
 			LOSClassification:     losClassification,
 			BuildingDataAvailable: pathGeometry.available, WallEventCount: wallCount,
+			ReceiverThreshold: &receiverThreshold,
 		})
 		carrierRxDBm := propagation.ReceivedPowerDBm
-		if carrierRxDBm <= profile.ReceiverSensitivityDBm {
+		if !isFiniteRadioValue(carrierRxDBm) {
+			ledgerEntry.ExclusionReason = "below_numeric_floor"
+			ledger = append(ledger, ledgerEntry)
 			continue
 		}
-		rePowerOffsetDB := 10 * math.Log10(12*float64(towerPreset.resourceBlocks))
+		ledgerEntry.ReceivedCarrierPowerDBm = floatPointer(roundOne(carrierRxDBm))
+		ledgerEntry.ReceiverLinkMarginDB = floatPointer(roundOne(propagation.LinkBudget.ReceiverLinkMarginDB))
+		rsrpDBm, ok := carrierPowerToReferencePower(carrierRxDBm, towerPreset)
+		if !ok {
+			ledgerEntry.ExclusionReason = "below_numeric_floor"
+			ledger = append(ledger, ledgerEntry)
+			continue
+		}
+		rsrpMW, ok := referencePowerMilliwatts(rsrpDBm)
+		if !ok {
+			ledgerEntry.ExclusionReason = "below_numeric_floor"
+			ledger = append(ledger, ledgerEntry)
+			continue
+		}
+		ledgerEntry.RSRPDBm = floatPointer(roundOne(rsrpDBm))
+		ledgerEntry.NormalizedPowerMW = floatPointer(rsrpMW)
+		ledgerEntry.Eligible = true
+		ledgerEntry.ServingEligible = ReceiverUsableSignal(carrierRxDBm, receiverThreshold.SensitivityDBm)
+		if !ledgerEntry.ServingEligible {
+			ledgerEntry.ExclusionReason = "below_receiver_sensitivity"
+		}
 		signals = append(signals, receivedCellSignal{
 			cellID:              tower.ID,
+			networkTech:         profile.NetworkTech,
 			channelID:           profile.ChannelID,
-			rsrpDBm:             carrierRxDBm - rePowerOffsetDB,
+			frequencyGHz:        profile.FrequencyGHz,
+			bandwidthMHz:        profile.BandwidthMHz,
+			receivedCarrierDBm:  carrierRxDBm,
+			rsrpDBm:             rsrpDBm,
 			wallCount:           wallCount,
 			losState:            string(propagation.LOSState),
 			classifierID:        propagation.LOSClassifierID,
@@ -633,28 +793,85 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 			loadFactor:          profile.LoadFactor,
 			preset:              towerPreset,
 			linkBudget:          propagation.LinkBudget,
+			receiverThreshold:   receiverThreshold,
+			servingEligible:     ledgerEntry.ServingEligible,
 		})
+		ledger = append(ledger, ledgerEntry)
 	}
 
 	if len(signals) == 0 {
-		return InterferenceProperties{QualityClass: "no_signal"}, nil
+		return InterferenceProperties{
+			QualityClass:           "no_signal",
+			ServingSelectionMode:   servingSelectionMode(req),
+			ServingSelectionMetric: RadioQualityServingSelectionMetric,
+			ServiceabilityStatus:   "unavailable",
+			ServiceabilityFailures: []string{"no_eligible_carrier"},
+			PowerLedger:            ledger,
+		}, nil
 	}
-	sort.SliceStable(signals, func(i, j int) bool { return signals[i].rsrpDBm > signals[j].rsrpDBm })
-	serving := signals[0]
-	servingMW := DBmToMilliwatts(serving.rsrpDBm)
+	serving, servingFound := selectServingInterferenceSignal(req, signals)
+	if !servingFound {
+		return InterferenceProperties{
+			QualityClass:           "no_signal",
+			ServingSelectionMode:   servingSelectionMode(req),
+			ServingSelectionMetric: RadioQualityServingSelectionMetric,
+			ServiceabilityStatus:   "unavailable",
+			ServiceabilityFailures: []string{"serving_cell_unavailable"},
+			PowerLedger:            ledger,
+		}, nil
+	}
+	for index := range ledger {
+		if ledger[index].CellID == serving.cellID {
+			ledger[index].Role = "serving"
+		} else if ledger[index].Eligible {
+			ledger[index].Role = "candidate"
+		}
+	}
+	servingMW, _ := referencePowerMilliwatts(serving.rsrpDBm)
+	for index := range ledger {
+		if ledger[index].CellID == serving.cellID {
+			ledger[index].ChannelMatch = true
+			ledger[index].LoadedPowerMW = floatPointer(servingMW)
+			break
+		}
+	}
 	noiseDBm := ThermalNoisePerREDBm(serving.preset.scsKHz, req.NoiseFigureDB)
 	noiseMW := DBmToMilliwatts(noiseDBm)
 	interferenceMW := 0.0
 	strongestInterfererID := ""
 	strongestInterfererDBm := math.Inf(-1)
 	contributingCells := 1
-	for _, signal := range signals[1:] {
-		if signal.channelID != serving.channelID {
+	interfererCount := 0
+	for _, signal := range signals {
+		if signal.cellID == serving.cellID {
 			continue
 		}
-		loadedMW := DBmToMilliwatts(signal.rsrpDBm) * signal.loadFactor
+		match := sameInterferenceCarrier(signal, serving)
+		for index := range ledger {
+			if ledger[index].CellID == signal.cellID {
+				ledger[index].ChannelMatch = match
+				if match {
+					ledger[index].Role = "interferer"
+				} else {
+					ledger[index].ExclusionReason = interferenceExclusionReason(signal, serving)
+				}
+				break
+			}
+		}
+		if !match {
+			continue
+		}
+		loadedMW, _ := referencePowerMilliwatts(signal.rsrpDBm)
+		loadedMW *= signal.loadFactor
 		interferenceMW += loadedMW
+		interfererCount++
 		contributingCells++
+		for index := range ledger {
+			if ledger[index].CellID == signal.cellID {
+				ledger[index].LoadedPowerMW = floatPointer(loadedMW)
+				break
+			}
+		}
 		loadedDBm := MilliwattsToDBm(loadedMW)
 		if loadedDBm > strongestInterfererDBm {
 			strongestInterfererDBm = loadedDBm
@@ -662,39 +879,140 @@ func evaluateInterferencePointContext(ctx context.Context, req InterferenceReque
 		}
 	}
 
-	sinrDB := 10 * math.Log10(servingMW/(noiseMW+interferenceMW))
-	rssiMW := 12 * float64(serving.preset.resourceBlocks) * (servingMW + interferenceMW + noiseMW)
-	rssiDBm := MilliwattsToDBm(rssiMW)
-	rsrqDB := 10 * math.Log10(float64(serving.preset.resourceBlocks)*servingMW/rssiMW)
-	interferenceDBm := MilliwattsToDBm(interferenceMW)
-	serviceable := serving.rsrpDBm >= InterferenceRSRPThresholdDBm && sinrDB >= InterferenceSINRThresholdDB && rsrqDB >= InterferenceRSRQThresholdDB
+	metrics := computeRadioQualityMetrics(servingMW, interferenceMW, noiseMW, serving.preset.resourceBlocks)
+	sinrDB := metrics.SINRDB
+	rssiDBm := metrics.RSSIDBm
+	rsrqDB := metrics.RSRQDB
+	serviceabilityFailures := radioQualityServiceabilityFailures(serving.rsrpDBm, sinrDB, rsrqDB)
+	serviceable := len(serviceabilityFailures) == 0
 	interferenceLimited := serving.rsrpDBm >= InterferenceRSRPThresholdDBm && (sinrDB < InterferenceSINRThresholdDB || rsrqDB < InterferenceRSRQThresholdDB)
 
 	properties := InterferenceProperties{
-		ServingCellID:          serving.cellID,
-		ChannelID:              serving.channelID,
-		RSRPDBm:                floatPointer(roundOne(serving.rsrpDBm)),
-		SINRDB:                 floatPointer(roundOne(sinrDB)),
-		RSRQDB:                 floatPointer(roundOne(rsrqDB)),
-		RSSIDBm:                floatPointer(roundOne(rssiDBm)),
-		QualityClass:           interferenceQualityClass(serving.rsrpDBm, sinrDB, rsrqDB),
-		Serviceable:            serviceable,
-		InterferenceLimited:    interferenceLimited,
-		WallCount:              serving.wallCount,
-		LOSState:               serving.losState,
-		LOSClassifierID:        serving.classifierID,
-		LOSClassificationBasis: serving.classificationBasis,
-		TerrainStatus:          serving.terrainStatus,
-		LOSClassification:      serving.losClassification,
-		ContributingCells:      contributingCells,
+		ServingCellID:                  serving.cellID,
+		ChannelID:                      serving.channelID,
+		ServingReceivedCarrierPowerDBm: floatPointer(roundOne(serving.receivedCarrierDBm)),
+		DesiredSignalPowerMW:           floatPointer(servingMW),
+		InterferencePowerMW:            floatPointer(interferenceMW),
+		ThermalNoisePowerMW:            floatPointer(noiseMW),
+		ThermalNoiseDBm:                floatPointer(roundOne(noiseDBm)),
+		InterferenceNoiseBandwidthHz:   serving.preset.resourceBandwidthHz(),
+		NoiseBandwidthSource:           RadioQualityNoiseBandwidthSource,
+		RSRPDBm:                        floatPointer(roundOne(serving.rsrpDBm)),
+		SINRDB:                         floatPointer(roundOne(sinrDB)),
+		RSRQDB:                         floatPointer(roundOne(rsrqDB)),
+		RSSIDBm:                        floatPointer(roundOne(rssiDBm)),
+		QualityClass:                   interferenceQualityClass(serving.rsrpDBm, sinrDB, rsrqDB),
+		Serviceable:                    serviceable,
+		InterferenceLimited:            interferenceLimited,
+		WallCount:                      serving.wallCount,
+		LOSState:                       serving.losState,
+		LOSClassifierID:                serving.classifierID,
+		LOSClassificationBasis:         serving.classificationBasis,
+		TerrainStatus:                  serving.terrainStatus,
+		LOSClassification:              serving.losClassification,
+		ContributingCells:              contributingCells,
+		InterfererCount:                interfererCount,
+		ServingSelectionMode:           servingSelectionMode(req),
+		ServingSelectionMetric:         RadioQualityServingSelectionMetric,
+		RSRPKind:                       serving.preset.rsrpKind(),
+		RSRPConversionID:               RadioQualityRSRPConversionID,
+		RSRPConversionDescription:      serving.preset.conversionDescription(),
+		ServiceabilityStatus:           radioQualityServiceabilityStatus(serviceabilityFailures),
+		ServiceabilityFailures:         serviceabilityFailures,
+		PowerLedger:                    ledger,
+		ReceiverThreshold:              &serving.receiverThreshold,
+		ReceiverLinkMarginDB:           floatPointer(roundOne(serving.linkBudget.ReceiverLinkMarginDB)),
 	}
 	properties.LinkBudget = &serving.linkBudget
 	if interferenceMW > 0 {
+		interferenceDBm := MilliwattsToDBm(interferenceMW)
 		properties.InterferenceDBm = floatPointer(roundOne(interferenceDBm))
 		properties.StrongestInterfererID = strongestInterfererID
 		properties.StrongestInterfererDBm = floatPointer(roundOne(strongestInterfererDBm))
 	}
 	return properties, nil
+}
+
+func servingSelectionMode(req InterferenceRequest) string {
+	if strings.TrimSpace(req.ServingCellID) != "" {
+		return RadioQualityServingSelectionExplicit
+	}
+	return RadioQualityServingSelectionAutomatic
+}
+
+func selectServingInterferenceSignal(req InterferenceRequest, signals []receivedCellSignal) (receivedCellSignal, bool) {
+	if requestedID := strings.TrimSpace(req.ServingCellID); requestedID != "" {
+		for _, signal := range signals {
+			if signal.cellID == requestedID && signal.servingEligible {
+				return signal, true
+			}
+		}
+		return receivedCellSignal{}, false
+	}
+	ordered := make([]receivedCellSignal, 0, len(signals))
+	for _, signal := range signals {
+		if signal.servingEligible {
+			ordered = append(ordered, signal)
+		}
+	}
+	if len(ordered) == 0 {
+		return receivedCellSignal{}, false
+	}
+	sort.SliceStable(ordered, func(i, j int) bool {
+		if ordered[i].rsrpDBm == ordered[j].rsrpDBm {
+			return ordered[i].cellID < ordered[j].cellID
+		}
+		return ordered[i].rsrpDBm > ordered[j].rsrpDBm
+	})
+	return ordered[0], true
+}
+
+func sameInterferenceCarrier(left, right receivedCellSignal) bool {
+	return left.networkTech == right.networkTech &&
+		left.channelID == right.channelID &&
+		math.Abs(left.frequencyGHz-right.frequencyGHz) < 1e-9 &&
+		math.Abs(left.bandwidthMHz-right.bandwidthMHz) < 1e-9 &&
+		left.preset.measurementFamily == right.preset.measurementFamily
+}
+
+func interferenceExclusionReason(signal, serving receivedCellSignal) string {
+	if signal.networkTech != serving.networkTech {
+		return "different_technology"
+	}
+	if signal.channelID != serving.channelID {
+		return "different_channel"
+	}
+	if math.Abs(signal.frequencyGHz-serving.frequencyGHz) >= 1e-9 {
+		return "different_frequency"
+	}
+	if math.Abs(signal.bandwidthMHz-serving.bandwidthMHz) >= 1e-9 {
+		return "different_bandwidth"
+	}
+	return "unsupported_configuration"
+}
+
+func radioQualityServiceabilityFailures(rsrpDBm, sinrDB, rsrqDB float64) []string {
+	failures := make([]string, 0, 3)
+	if rsrpDBm < InterferenceRSRPThresholdDBm {
+		failures = append(failures, "rsrp_below_threshold")
+	}
+	if sinrDB < InterferenceSINRThresholdDB {
+		failures = append(failures, "sinr_below_threshold")
+	}
+	if rsrqDB < InterferenceRSRQThresholdDB {
+		failures = append(failures, "rsrq_below_threshold")
+	}
+	return failures
+}
+
+func radioQualityServiceabilityStatus(failures []string) string {
+	if len(failures) == 0 {
+		return "serviceable"
+	}
+	if len(failures) == 1 {
+		return failures[0]
+	}
+	return "multiple_thresholds_below"
 }
 
 func evaluateDemandInterference(req InterferenceRequest, preset interferencePreset, buildings *BuildingIndex) ([]InterferenceFeature, int, int, float64) {

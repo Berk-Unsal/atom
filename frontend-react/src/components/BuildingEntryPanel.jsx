@@ -70,7 +70,7 @@ export default function BuildingEntryPanel({
             <div><span>High-loss entry · all buildings</span><strong>{serviceCount(summary.high_loss_serviceable_buildings, summary.relevant_buildings)}</strong></div>
           </div>
           <p className="building-entry-note">
-            Service rows use the analyzed-building domain as their denominator; residential buildings are a subset. Buildings without a valid facade estimate remain outside the numerator. Low-loss / high-loss values are standardized planning scenarios. Material metadata is evidence only; it does not choose a profile.
+            Service rows use the analyzed-building domain as their denominator; residential buildings are a subset. Buildings without a valid facade estimate remain outside the numerator. Outdoor service uses the fixed building-service threshold; low-loss / high-loss entry service uses the effective per-cell receiver threshold. Material metadata is evidence only; it does not choose a profile.
           </p>
         </>
       ) : null}
@@ -94,7 +94,10 @@ export default function BuildingEntryPanel({
             <div><dt>Outdoor facade Rx</dt><dd>{selected.outdoor_rx_at_facade_dbm === undefined ? EMPTY : `${number(selected.outdoor_rx_at_facade_dbm)} dBm`}</dd></div>
             <div><dt>Low-loss entry</dt><dd>{selected.low_loss_rx_just_inside_dbm === undefined ? EMPTY : `${number(selected.low_loss_rx_just_inside_dbm)} dBm · ${serviceLabel(selected.low_loss_serviceable)}`}</dd></div>
             <div><dt>High-loss entry</dt><dd>{selected.high_loss_rx_just_inside_dbm === undefined ? EMPTY : `${number(selected.high_loss_rx_just_inside_dbm)} dBm · ${serviceLabel(selected.high_loss_serviceable)}`}</dd></div>
-            <div><dt>Receiver threshold</dt><dd>{selected.receiver_sensitivity_dbm === undefined ? EMPTY : `${number(selected.receiver_sensitivity_dbm)} dBm`}</dd></div>
+            <div><dt>Receiver threshold</dt><dd>{selected.receiver_sensitivity_dbm === undefined ? EMPTY : `${selected.receiver_sensitivity_mode ?? "manual"} · ${number(selected.receiver_sensitivity_dbm)} dBm`}</dd></div>
+            <div><dt>Outdoor receiver margin</dt><dd>{selected.outdoor_receiver_link_margin_db === undefined ? EMPTY : `${number(selected.outdoor_receiver_link_margin_db)} dB`}</dd></div>
+            <div><dt>Low/high receiver margin</dt><dd>{selected.low_loss_receiver_link_margin_db === undefined || selected.high_loss_receiver_link_margin_db === undefined ? EMPTY : `${number(selected.low_loss_receiver_link_margin_db)} / ${number(selected.high_loss_receiver_link_margin_db)} dB`}</dd></div>
+            <div><dt>Building service threshold</dt><dd>{number(selected.building_service_threshold_dbm)} dBm · outdoor only</dd></div>
             <div><dt>Material evidence</dt><dd>{selected.material_evidence?.available ? `${selected.material_evidence.source}: ${selected.material_evidence.value}` : "Unavailable"}</dd></div>
             <div><dt>Entry point</dt><dd>{selected.facade_entry_point ? `${number(selected.facade_entry_point.lat, 5)}, ${number(selected.facade_entry_point.lon, 5)}` : EMPTY}</dd></div>
           </dl>

@@ -171,15 +171,17 @@ overrides.</li>
 mode, conducted TX power, absolute TX boresight gain, scalar RX gain,
 system loss, deterministic polarization loss, radius, beam width,
 height, mechanical/electrical downtilt, orientation, horizontal/vertical
-pattern, load, reuse, PCI, receiver height, and receiver sensitivity
-independently for every cell.</li>
+pattern, load, reuse, PCI, receiver height, and either manual receiver
+sensitivity or a derived receiver mode with noise bandwidth, noise
+figure, required SNR, and receiver margin independently for every
+cell.</li>
 <li>Validate technology/frequency compatibility and all numeric/text
 limits before RF execution.</li>
 <li>Persist the complete inventory and profile overrides in schema-v2
 project drafts and scenarios; schema-v1 files remain importable.</li>
-<li>Include resolved per-cell profiles in simulation, network,
-interference, recommendation, measurement, and planning-report
-contracts.</li>
+<li>Include resolved per-cell profiles and effective receiver-threshold
+metadata in simulation, network, interference, recommendation,
+measurement, and planning-report contracts.</li>
 </ul>
 <p>Legacy top-level RF controls remain request defaults. A nested
 <code>rf_profile</code> overrides those defaults for its cell, so older
@@ -249,12 +251,14 @@ height-aware footprint centerline obstruction with explicit height
 provenance. It does not use terrain in the current Ankara network
 evaluator, Fresnel clearance, diffraction, reflection-heavy multipath,
 fast fading, MIMO scheduling, or uplink behavior; unknown building
-heights are conservative NLOS. A separate
+heights are conservative NLOS. Static usable reach applies the effective
+per-cell receiver threshold strictly. A separate
 <code>path-profile-diagnostic-v1</code> point-to-point workflow adds
 terrain/building profiles, LOS and Fresnel classification,
 material-specific wall planning losses, and an explicitly selected
 single knife-edge approximation; its result is isolated from network RF.
-See the Concept 4F.1 design note.</p>
+See the Concept 4F.1 design note and the Concept 4G.2 receiver-noise
+note.</p>
 <h3 id="25d-path-profiles-and-fidelity">2.5D Path Profiles And
 Fidelity</h3>
 <ul>
@@ -330,7 +334,8 @@ GIS Interchange</h2>
 ceiling and produces unsmoothed marching-square isolines.</li>
 <li>Returns a raw single-cell received-power surface: valid cells below
 receiver sensitivity remain numeric, while NoData is reserved for
-radius/beam geometry exclusion.</li>
+radius/beam geometry exclusion; the effective threshold is
+metadata/statistics, not a mask.</li>
 <li>Renders the raster below the cell/measurement overlays with opacity
 and minimum-display-threshold controls.</li>
 <li>Exports the regular grid as float32 EPSG:4326 GeoTIFF, valid grid
@@ -352,7 +357,8 @@ are the intended interoperability references.</li>
 Quality</h2>
 <p>Planning-grade 4G and 5G interference analysis calculates:</p>
 <ul>
-<li>Serving-cell selection by strongest modeled RSRP.</li>
+<li>Serving-cell selection by strongest modeled RSRP, or an explicit
+serving-cell diagnostic override.</li>
 <li>RSRP, SINR, RSRQ, RSSI, noise, strongest interferer, and
 contributing-cell count.</li>
 <li>Co-channel loading and reuse-factor behavior using linear power
@@ -366,6 +372,12 @@ legends.</li>
 (<code>RSRP &gt;= -110 dBm</code>, <code>SINR &gt;= 0 dB</code>,
 <code>RSRQ &gt;= -20 dB</code>), not receiver sensitivity or the
 <code>-100 dBm</code> building-service threshold.</li>
+<li>Keeps receiver noise-equivalent bandwidth and per-RE interference
+noise separate; receiver sensitivity gates carrier admission but is not
+added as a second SINR noise term.</li>
+<li>Exposes raw received carrier power separately from planning RSRP, a
+linear-domain desired/interference/noise ledger, exact co-channel
+exclusion reasons, and deterministic scenario fingerprints.</li>
 </ul>
 <p>Near-equal co-channel powers can correctly produce SINR near
 <code>0 dB</code>; the Inspector explains this and other no-signal or
@@ -477,7 +489,8 @@ behavior.</li>
 <h2 id="deliberately-out-of-scope">Deliberately Out Of Scope</h2>
 <ul>
 <li>Full 3D reflection-heavy ray tracing, multiple-obstacle diffraction,
-fading, and MIMO scheduling.</li>
+fading, MIMO scheduling, PHY/MCS/throughput modeling, and UE conformance
+sensitivity validation.</li>
 <li>Live network control, LTE/EPC integration, and 6G Core
 integration.</li>
 <li>Cloud accounts, multi-user collaboration, and hosted project

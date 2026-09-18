@@ -344,6 +344,11 @@ type BuildingEntryEstimate struct {
 	HighLossRxJustInsideDBm       *float64                      `json:"high_loss_rx_just_inside_dbm,omitempty"`
 	HighLossServiceable           *bool                         `json:"high_loss_serviceable,omitempty"`
 	ReceiverSensitivityDBm        *float64                      `json:"receiver_sensitivity_dbm,omitempty"`
+	ReceiverSensitivityMode       string                        `json:"receiver_sensitivity_mode,omitempty"`
+	ReceiverThreshold             *ReceiverThreshold            `json:"receiver_threshold,omitempty"`
+	OutdoorReceiverLinkMarginDB   *float64                      `json:"outdoor_receiver_link_margin_db,omitempty"`
+	LowLossReceiverLinkMarginDB   *float64                      `json:"low_loss_receiver_link_margin_db,omitempty"`
+	HighLossReceiverLinkMarginDB  *float64                      `json:"high_loss_receiver_link_margin_db,omitempty"`
 	BuildingServiceThresholdDBm   float64                       `json:"building_service_threshold_dbm"`
 	MaterialEvidence              BuildingEntryMaterialEvidence `json:"material_evidence"`
 	SelectedEntryProfile          string                        `json:"selected_entry_profile"`
@@ -414,12 +419,16 @@ func AnalyzeBuildingEntryContext(ctx context.Context, req BuildingEntryAnalysisR
 		Model:         BuildingEntryModelInfo(req.Network.FrequencyGHz),
 		Results:       []BuildingEntryEstimate{},
 		CellSummaries: []BuildingEntryCellSummary{},
+		Summary: BuildingEntryAnalysisSummary{
+			BuildingServiceThresholdDBm: BuildingServiceThresholdDBm,
+		},
 		Diagnostics: BuildingEntryAnalysisDiagnostics{
 			HTTPRequestsRequired: BuildingEntryHTTPRequests,
 			SelectionRule:        "strongest low-loss just-inside received power among eligible cells; ties resolve by ascending cell id",
 			CacheKeyInputs:       []string{"effective cell RF profiles", "tower coordinates", "azimuths", "building dataset revision", "building filters"},
 		},
 	}
+	response.Summary.ReceiverSensitivityRule = "effective receiver threshold is resolved per cell; low/high entry serviceability uses strict received_power_dbm > sensitivity, while outdoor building service remains strict received_power_dbm > -100 dBm"
 	if len(req.Network.Towers) > 0 {
 		response.RFContract = rfContractForProfile(&req.Network.Towers[0].RFProfile, req.Network.CalibrationOffsetDB)
 	}
@@ -434,9 +443,11 @@ func AnalyzeBuildingEntryContext(ctx context.Context, req BuildingEntryAnalysisR
 	response.EffectiveCellProfiles = make([]EffectiveCellRFProfile, 0, len(towers))
 	cellSummaries := make(map[string]*BuildingEntryCellSummary, len(towers))
 	for _, tower := range towers {
+		profile := tower.RFProfile.normalized()
 		response.EffectiveCellProfiles = append(response.EffectiveCellProfiles, EffectiveCellRFProfile{
 			ID: tower.ID, TowerLon: tower.TowerLon, TowerLat: tower.TowerLat,
-			AzimuthDeg: tower.AzimuthDeg, RFProfile: tower.RFProfile,
+			AzimuthDeg: tower.AzimuthDeg, RFProfile: profile,
+			ReceiverThreshold: receiverThresholdForProfileOrManual(profile),
 		})
 		cellSummaries[tower.ID] = &BuildingEntryCellSummary{CellID: tower.ID}
 	}
@@ -635,18 +646,22 @@ type buildingEntryMetrics struct {
 }
 
 type buildingEntryCandidate struct {
-	tower              NetworkTowerRequest
-	entryPoint         Point
-	facadeDistanceM    float64
-	outdoorLOS         PropagationLOSState
-	outdoorResult      PropagationResult
-	lowLossDB          float64
-	highLossDB         float64
-	lowRxDBm           float64
-	highRxDBm          float64
-	lowServiceable     bool
-	highServiceable    bool
-	outdoorServiceable bool
+	tower               NetworkTowerRequest
+	entryPoint          Point
+	facadeDistanceM     float64
+	outdoorLOS          PropagationLOSState
+	outdoorResult       PropagationResult
+	lowLossDB           float64
+	highLossDB          float64
+	lowRxDBm            float64
+	highRxDBm           float64
+	receiverThreshold   ReceiverThreshold
+	outdoorLinkMarginDB float64
+	lowLinkMarginDB     float64
+	highLinkMarginDB    float64
+	lowServiceable      bool
+	highServiceable     bool
+	outdoorServiceable  bool
 }
 
 func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysisRequest, building *BuildingFootprint, towers []NetworkTowerRequest, buildings *BuildingIndex, cellSummaries map[string]*BuildingEntryCellSummary) (BuildingEntryEstimate, buildingEntryMetrics) {
@@ -692,6 +707,8 @@ func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysis
 			return result, metrics
 		}
 		profile := tower.RFProfile
+		profile = profile.normalized()
+		receiverThreshold := receiverThresholdForProfileOrManual(profile)
 		towerPoint := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
 		if PointInPolygon(towerPoint, building.Vertices) || pointOnPolygonBoundary(towerPoint, building.Vertices) {
 			continue
@@ -737,6 +754,7 @@ func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysis
 			EndpointCase:          PropagationEndpointOutdoorO2O,
 			BuildingDataAvailable: true,
 			WallEventCount:        0,
+			ReceiverThreshold:     &receiverThreshold,
 		}
 		baseline, applicable := evaluateBuildingEntryOutdoorBaseline(linkContext)
 		if !applicable.Applicable {
@@ -752,18 +770,22 @@ func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysis
 			continue
 		}
 		candidate := &buildingEntryCandidate{
-			tower:              tower,
-			entryPoint:         entryPoint,
-			facadeDistanceM:    entryDistance,
-			outdoorLOS:         losState,
-			outdoorResult:      baseline,
-			lowLossDB:          lowLoss,
-			highLossDB:         highLoss,
-			lowRxDBm:           baseline.ReceivedPowerDBm - lowLoss,
-			highRxDBm:          baseline.ReceivedPowerDBm - highLoss,
-			lowServiceable:     baseline.ReceivedPowerDBm-lowLoss > profile.ReceiverSensitivityDBm,
-			highServiceable:    baseline.ReceivedPowerDBm-highLoss > profile.ReceiverSensitivityDBm,
-			outdoorServiceable: baseline.ReceivedPowerDBm > BuildingServiceThresholdDBm,
+			tower:               tower,
+			entryPoint:          entryPoint,
+			facadeDistanceM:     entryDistance,
+			outdoorLOS:          losState,
+			outdoorResult:       baseline,
+			lowLossDB:           lowLoss,
+			highLossDB:          highLoss,
+			lowRxDBm:            baseline.ReceivedPowerDBm - lowLoss,
+			highRxDBm:           baseline.ReceivedPowerDBm - highLoss,
+			receiverThreshold:   receiverThreshold,
+			outdoorLinkMarginDB: receiverLinkMarginDB(baseline.ReceivedPowerDBm, receiverThreshold),
+			lowLinkMarginDB:     receiverLinkMarginDB(baseline.ReceivedPowerDBm-lowLoss, receiverThreshold),
+			highLinkMarginDB:    receiverLinkMarginDB(baseline.ReceivedPowerDBm-highLoss, receiverThreshold),
+			lowServiceable:      ReceiverUsableSignal(baseline.ReceivedPowerDBm-lowLoss, receiverThreshold.SensitivityDBm),
+			highServiceable:     ReceiverUsableSignal(baseline.ReceivedPowerDBm-highLoss, receiverThreshold.SensitivityDBm),
+			outdoorServiceable:  baseline.ReceivedPowerDBm > BuildingServiceThresholdDBm,
 		}
 		if best == nil || candidateBetter(candidate, best) {
 			best = candidate
@@ -795,7 +817,12 @@ func analyzeBuildingEntryBuilding(ctx context.Context, req BuildingEntryAnalysis
 	result.HighLossEntryLossDB = floatPointer(roundFloat(best.highLossDB, 3))
 	result.HighLossRxJustInsideDBm = floatPointer(roundFloat(best.highRxDBm, 3))
 	result.HighLossServiceable = boolPointer(best.highServiceable)
-	result.ReceiverSensitivityDBm = floatPointer(roundFloat(best.tower.RFProfile.ReceiverSensitivityDBm, 3))
+	result.ReceiverSensitivityDBm = floatPointer(roundFloat(best.receiverThreshold.SensitivityDBm, 3))
+	result.ReceiverSensitivityMode = best.receiverThreshold.Mode
+	result.ReceiverThreshold = &best.receiverThreshold
+	result.OutdoorReceiverLinkMarginDB = floatPointer(roundFloat(best.outdoorLinkMarginDB, 3))
+	result.LowLossReceiverLinkMarginDB = floatPointer(roundFloat(best.lowLinkMarginDB, 3))
+	result.HighLossReceiverLinkMarginDB = floatPointer(roundFloat(best.highLinkMarginDB, 3))
 	result.Applicability = BuildingEntryApplicability{
 		Applicable:  true,
 		Reason:      RFReferenceReasonApplicable,

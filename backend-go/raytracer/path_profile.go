@@ -105,14 +105,16 @@ type LossComponent struct {
 }
 
 type PathLossBudget struct {
-	Components          []LossComponent   `json:"components"`
-	TotalMedianLossDB   float64           `json:"total_median_loss_db"`
-	RxDBmP50            float64           `json:"rx_dbm_p50"`
-	RxDBmP90Reliability float64           `json:"rx_dbm_p90_reliability"`
-	RxDBmUpper90        float64           `json:"rx_dbm_upper_90"`
-	ShadowSigmaDB       float64           `json:"shadow_sigma_db"`
-	Definition          string            `json:"definition"`
-	LinkBudget          RFLinkBudgetTerms `json:"link_budget"`
+	Components           []LossComponent   `json:"components"`
+	TotalMedianLossDB    float64           `json:"total_median_loss_db"`
+	RxDBmP50             float64           `json:"rx_dbm_p50"`
+	RxDBmP90Reliability  float64           `json:"rx_dbm_p90_reliability"`
+	RxDBmUpper90         float64           `json:"rx_dbm_upper_90"`
+	ShadowSigmaDB        float64           `json:"shadow_sigma_db"`
+	Definition           string            `json:"definition"`
+	LinkBudget           RFLinkBudgetTerms `json:"link_budget"`
+	ReceiverThreshold    ReceiverThreshold `json:"receiver_threshold"`
+	ReceiverLinkMarginDB float64           `json:"receiver_link_margin_db"`
 }
 
 type ModelApplicability struct {
@@ -141,6 +143,7 @@ type PathProfileResponse struct {
 	LossBudget            PathLossBudget                `json:"loss_budget"`
 	Applicability         ModelApplicability            `json:"applicability"`
 	RFProfile             CellRFProfile                 `json:"rf_profile"`
+	ReceiverThreshold     ReceiverThreshold             `json:"receiver_threshold"`
 	Fidelity              PropagationFidelity           `json:"fidelity"`
 	RFContract            RFContractMetadata            `json:"rf_contract"`
 }
@@ -368,7 +371,8 @@ func AnalyzePathProfileContext(ctx context.Context, request PathProfileRequest, 
 		DominantObstruction: dominant, ObstructionLedger: diffractionDiagnostic.Geometry.Candidates,
 		DiffractionDiagnostic: diffractionDiagnostic, CanonicalComparison: canonicalComparison,
 		Samples: samples, Terrain: terrainMeta, LossBudget: lossBudget,
-		Applicability: PathModelApplicability(request.ModelProfile, request.RFProfile.FrequencyGHz), RFProfile: request.RFProfile, Fidelity: request.Fidelity,
+		Applicability: PathModelApplicability(request.ModelProfile, request.RFProfile.FrequencyGHz), RFProfile: request.RFProfile,
+		ReceiverThreshold: receiverThresholdForProfileOrManual(request.RFProfile), Fidelity: request.Fidelity,
 		RFContract: diagnosticRFContract(&request.RFProfile, request.CalibrationOffsetDB),
 	}, nil
 }
@@ -394,6 +398,7 @@ func PathModelApplicability(profile string, frequencyGHz float64) ModelApplicabi
 
 func pathLossBudget(request PathProfileRequest, distance, bearing float64, dominant *PathObstruction, buildings map[string]*BuildingFootprint, diagnostic *DiffractionDiagnostic) PathLossBudget {
 	profile := request.RFProfile
+	receiverThreshold := receiverThresholdForProfileOrManual(profile)
 	antenna := EvaluateAntennaLink(profile, distance, bearing, request.AzimuthDeg)
 	freeSpace := FreeSpacePathLossMetersGHz(profile.SlantDistanceMeters(distance), profile.FrequencyGHz)
 	pattern := antenna.Pattern.TotalAttenuationDB
@@ -442,6 +447,7 @@ func pathLossBudget(request PathProfileRequest, distance, bearing float64, domin
 	}
 	propagationLoss := freeSpace + diffraction + clutter + vegetation + gas + rain
 	linkBudget := rfLinkBudgetTermsFromAntenna(profile, antenna.Pattern, propagationLoss, freeSpace, wallLoss, request.CalibrationOffsetDB)
+	linkBudget = withReceiverThreshold(linkBudget, profile, &receiverThreshold)
 	total := propagationLoss + pattern + profile.SystemLossDB + profile.PolarizationLossDB - profile.RxAntennaGainDBi + wallLoss + calibrationLoss
 	rxP50 := linkBudget.ReceivedPowerDBm
 	margin := 1.2815515655446004 * request.Fidelity.ShadowSigmaDB
@@ -449,7 +455,7 @@ func pathLossBudget(request PathProfileRequest, distance, bearing float64, domin
 		Components: components, TotalMedianLossDB: round2(total), RxDBmP50: round2(rxP50),
 		RxDBmP90Reliability: round2(rxP50 - margin), RxDBmUpper90: round2(rxP50 + margin), ShadowSigmaDB: round2(request.Fidelity.ShadowSigmaDB),
 		Definition: "P50 is the isolated path-profile planning estimate; the signed link ledger separates conducted TX power, absolute TX gain, relative TX pattern, propagation/building losses, system/polarization losses, RX gain, and calibration. This budget is diagnostic only and never canonical network RF.",
-		LinkBudget: linkBudget,
+		LinkBudget: linkBudget, ReceiverThreshold: receiverThreshold, ReceiverLinkMarginDB: linkBudget.ReceiverLinkMarginDB,
 	}
 }
 

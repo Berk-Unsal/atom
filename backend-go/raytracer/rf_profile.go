@@ -23,53 +23,64 @@ type CellRFProfile struct {
 	// AntennaGainDBi is retained as the stable wire/source alias for the
 	// configured absolute TX boresight gain. New clients may send
 	// tx_antenna_gain_dbi; normalized responses expose both names.
-	AntennaGainDBi         float64 `json:"antenna_gain_dbi"`
-	RxAntennaGainDBi       float64 `json:"rx_antenna_gain_dbi"`
-	SystemLossDB           float64 `json:"system_loss_db"`
-	PolarizationLossDB     float64 `json:"polarization_loss_db"`
-	RadiusMeters           float64 `json:"radius_m"`
-	BeamWidthDeg           float64 `json:"beam_width"`
-	AntennaHeightM         float64 `json:"antenna_height_m"`
-	MechanicalDowntiltDeg  float64 `json:"mechanical_downtilt_deg"`
-	ElectricalDowntiltDeg  float64 `json:"electrical_downtilt_deg"`
-	OrientationDeg         float64 `json:"orientation_deg"`
-	HorizontalPatternID    string  `json:"horizontal_pattern_id"`
-	VerticalPatternID      string  `json:"vertical_pattern_id"`
-	LoadFactor             float64 `json:"load_factor"`
-	ReuseFactor            int     `json:"reuse_factor"`
-	PCI                    *int    `json:"pci,omitempty"`
-	ReceiverHeightM        float64 `json:"receiver_height_m"`
-	ReceiverSensitivityDBm float64 `json:"receiver_sensitivity_dbm"`
+	AntennaGainDBi               float64 `json:"antenna_gain_dbi"`
+	RxAntennaGainDBi             float64 `json:"rx_antenna_gain_dbi"`
+	SystemLossDB                 float64 `json:"system_loss_db"`
+	PolarizationLossDB           float64 `json:"polarization_loss_db"`
+	RadiusMeters                 float64 `json:"radius_m"`
+	BeamWidthDeg                 float64 `json:"beam_width"`
+	AntennaHeightM               float64 `json:"antenna_height_m"`
+	MechanicalDowntiltDeg        float64 `json:"mechanical_downtilt_deg"`
+	ElectricalDowntiltDeg        float64 `json:"electrical_downtilt_deg"`
+	OrientationDeg               float64 `json:"orientation_deg"`
+	HorizontalPatternID          string  `json:"horizontal_pattern_id"`
+	VerticalPatternID            string  `json:"vertical_pattern_id"`
+	LoadFactor                   float64 `json:"load_factor"`
+	ReuseFactor                  int     `json:"reuse_factor"`
+	PCI                          *int    `json:"pci,omitempty"`
+	ReceiverHeightM              float64 `json:"receiver_height_m"`
+	ReceiverSensitivityDBm       float64 `json:"receiver_sensitivity_dbm"`
+	ReceiverSensitivityMode      string  `json:"receiver_sensitivity_mode"`
+	ReceiverNoiseBandwidthHz     float64 `json:"receiver_noise_bandwidth_hz"`
+	ReceiverNoiseBandwidthSource string  `json:"receiver_noise_bandwidth_source,omitempty"`
+	ReceiverNoiseFigureDB        float64 `json:"receiver_noise_figure_db"`
+	ReceiverRequiredSNRDB        float64 `json:"receiver_required_snr_db"`
+	ReceiverMarginDB             float64 `json:"receiver_margin_db"`
 }
 
 type CellRFProfileInput struct {
-	SchemaVersion          *int     `json:"schema_version"`
-	NetworkTech            *string  `json:"network_tech"`
-	PropagationModelID     *string  `json:"propagation_model"`
-	FrequencyGHz           *float64 `json:"frequency_ghz"`
-	Band                   *string  `json:"band"`
-	BandwidthMHz           *float64 `json:"bandwidth_mhz"`
-	ChannelID              *string  `json:"channel_id"`
-	DuplexMode             *string  `json:"duplex_mode"`
-	TxPowerDBm             *float64 `json:"tx_power_dbm"`
-	TxAntennaGainDBi       *float64 `json:"tx_antenna_gain_dbi"`
-	AntennaGainDBi         *float64 `json:"antenna_gain_dbi"`
-	RxAntennaGainDBi       *float64 `json:"rx_antenna_gain_dbi"`
-	SystemLossDB           *float64 `json:"system_loss_db"`
-	PolarizationLossDB     *float64 `json:"polarization_loss_db"`
-	RadiusMeters           *float64 `json:"radius_m"`
-	BeamWidthDeg           *float64 `json:"beam_width"`
-	AntennaHeightM         *float64 `json:"antenna_height_m"`
-	MechanicalDowntiltDeg  *float64 `json:"mechanical_downtilt_deg"`
-	ElectricalDowntiltDeg  *float64 `json:"electrical_downtilt_deg"`
-	OrientationDeg         *float64 `json:"orientation_deg"`
-	HorizontalPatternID    *string  `json:"horizontal_pattern_id"`
-	VerticalPatternID      *string  `json:"vertical_pattern_id"`
-	LoadFactor             *float64 `json:"load_factor"`
-	ReuseFactor            *int     `json:"reuse_factor"`
-	PCI                    *int     `json:"pci"`
-	ReceiverHeightM        *float64 `json:"receiver_height_m"`
-	ReceiverSensitivityDBm *float64 `json:"receiver_sensitivity_dbm"`
+	SchemaVersion            *int     `json:"schema_version"`
+	NetworkTech              *string  `json:"network_tech"`
+	PropagationModelID       *string  `json:"propagation_model"`
+	FrequencyGHz             *float64 `json:"frequency_ghz"`
+	Band                     *string  `json:"band"`
+	BandwidthMHz             *float64 `json:"bandwidth_mhz"`
+	ChannelID                *string  `json:"channel_id"`
+	DuplexMode               *string  `json:"duplex_mode"`
+	TxPowerDBm               *float64 `json:"tx_power_dbm"`
+	TxAntennaGainDBi         *float64 `json:"tx_antenna_gain_dbi"`
+	AntennaGainDBi           *float64 `json:"antenna_gain_dbi"`
+	RxAntennaGainDBi         *float64 `json:"rx_antenna_gain_dbi"`
+	SystemLossDB             *float64 `json:"system_loss_db"`
+	PolarizationLossDB       *float64 `json:"polarization_loss_db"`
+	RadiusMeters             *float64 `json:"radius_m"`
+	BeamWidthDeg             *float64 `json:"beam_width"`
+	AntennaHeightM           *float64 `json:"antenna_height_m"`
+	MechanicalDowntiltDeg    *float64 `json:"mechanical_downtilt_deg"`
+	ElectricalDowntiltDeg    *float64 `json:"electrical_downtilt_deg"`
+	OrientationDeg           *float64 `json:"orientation_deg"`
+	HorizontalPatternID      *string  `json:"horizontal_pattern_id"`
+	VerticalPatternID        *string  `json:"vertical_pattern_id"`
+	LoadFactor               *float64 `json:"load_factor"`
+	ReuseFactor              *int     `json:"reuse_factor"`
+	PCI                      *int     `json:"pci"`
+	ReceiverHeightM          *float64 `json:"receiver_height_m"`
+	ReceiverSensitivityDBm   *float64 `json:"receiver_sensitivity_dbm"`
+	ReceiverSensitivityMode  *string  `json:"receiver_sensitivity_mode"`
+	ReceiverNoiseBandwidthHz *float64 `json:"receiver_noise_bandwidth_hz"`
+	ReceiverNoiseFigureDB    *float64 `json:"receiver_noise_figure_db"`
+	ReceiverRequiredSNRDB    *float64 `json:"receiver_required_snr_db"`
+	ReceiverMarginDB         *float64 `json:"receiver_margin_db"`
 }
 
 func DefaultCellRFProfile(networkTech string, frequencyGHz, txPowerDBm, radiusMeters, beamWidthDeg, bandwidthMHz, loadFactor float64, reuseFactor int) CellRFProfile {
@@ -104,29 +115,35 @@ func DefaultCellRFProfile(networkTech string, frequencyGHz, txPowerDBm, radiusMe
 		// DefaultCellRFProfile is retained as the source-compatible legacy
 		// constructor used by direct Go callers and historical fixtures. API
 		// request constructors use DefaultPlanningCellRFProfile below.
-		PropagationModelID:     CanonicalRFModelID,
-		FrequencyGHz:           frequencyGHz,
-		Band:                   DefaultBandForTechnology(networkTech),
-		BandwidthMHz:           bandwidthMHz,
-		ChannelID:              "CH-1",
-		DuplexMode:             DefaultDuplexModeForTechnology(networkTech),
-		TxPowerDBm:             txPowerDBm,
-		AntennaGainDBi:         DefaultAntennaGainDBi,
-		RxAntennaGainDBi:       DefaultRxAntennaGainDBi,
-		SystemLossDB:           DefaultSystemLossDB,
-		PolarizationLossDB:     DefaultPolarizationLossDB,
-		RadiusMeters:           radiusMeters,
-		BeamWidthDeg:           beamWidthDeg,
-		AntennaHeightM:         DefaultAntennaHeightM,
-		MechanicalDowntiltDeg:  DefaultMechanicalDowntiltDeg,
-		ElectricalDowntiltDeg:  DefaultElectricalDowntiltDeg,
-		OrientationDeg:         DefaultOrientationDeg,
-		HorizontalPatternID:    "ideal-sector",
-		VerticalPatternID:      "flat",
-		LoadFactor:             loadFactor,
-		ReuseFactor:            reuseFactor,
-		ReceiverHeightM:        DefaultReceiverHeightM,
-		ReceiverSensitivityDBm: DefaultReceiverSensitivityDBm,
+		PropagationModelID:           CanonicalRFModelID,
+		FrequencyGHz:                 frequencyGHz,
+		Band:                         DefaultBandForTechnology(networkTech),
+		BandwidthMHz:                 bandwidthMHz,
+		ChannelID:                    "CH-1",
+		DuplexMode:                   DefaultDuplexModeForTechnology(networkTech),
+		TxPowerDBm:                   txPowerDBm,
+		AntennaGainDBi:               DefaultAntennaGainDBi,
+		RxAntennaGainDBi:             DefaultRxAntennaGainDBi,
+		SystemLossDB:                 DefaultSystemLossDB,
+		PolarizationLossDB:           DefaultPolarizationLossDB,
+		RadiusMeters:                 radiusMeters,
+		BeamWidthDeg:                 beamWidthDeg,
+		AntennaHeightM:               DefaultAntennaHeightM,
+		MechanicalDowntiltDeg:        DefaultMechanicalDowntiltDeg,
+		ElectricalDowntiltDeg:        DefaultElectricalDowntiltDeg,
+		OrientationDeg:               DefaultOrientationDeg,
+		HorizontalPatternID:          "ideal-sector",
+		VerticalPatternID:            "flat",
+		LoadFactor:                   loadFactor,
+		ReuseFactor:                  reuseFactor,
+		ReceiverHeightM:              DefaultReceiverHeightM,
+		ReceiverSensitivityDBm:       DefaultReceiverSensitivityDBm,
+		ReceiverSensitivityMode:      DefaultReceiverSensitivityMode,
+		ReceiverNoiseBandwidthHz:     bandwidthMHz * 1e6,
+		ReceiverNoiseBandwidthSource: ReceiverNoiseBandwidthSourceChannelBandwidth,
+		ReceiverNoiseFigureDB:        DefaultReceiverNoiseFigureDB,
+		ReceiverRequiredSNRDB:        DefaultReceiverRequiredSNRDB,
+		ReceiverMarginDB:             DefaultReceiverMarginDB,
 	}
 }
 
@@ -148,32 +165,41 @@ func (input *CellRFProfileInput) WithDefaults(defaults CellRFProfile) CellRFProf
 		antennaGainDBi = *input.TxAntennaGainDBi
 	}
 	profile := CellRFProfile{
-		SchemaVersion:          valueOr(input.SchemaVersion, defaults.SchemaVersion),
-		NetworkTech:            valueOr(input.NetworkTech, defaults.NetworkTech),
-		PropagationModelID:     valueOr(input.PropagationModelID, defaults.PropagationModelID),
-		FrequencyGHz:           valueOr(input.FrequencyGHz, defaults.FrequencyGHz),
-		Band:                   valueOr(input.Band, defaults.Band),
-		BandwidthMHz:           valueOr(input.BandwidthMHz, defaults.BandwidthMHz),
-		ChannelID:              valueOr(input.ChannelID, defaults.ChannelID),
-		DuplexMode:             valueOr(input.DuplexMode, defaults.DuplexMode),
-		TxPowerDBm:             valueOr(input.TxPowerDBm, defaults.TxPowerDBm),
-		AntennaGainDBi:         antennaGainDBi,
-		RxAntennaGainDBi:       valueOr(input.RxAntennaGainDBi, defaults.RxAntennaGainDBi),
-		SystemLossDB:           valueOr(input.SystemLossDB, defaults.SystemLossDB),
-		PolarizationLossDB:     valueOr(input.PolarizationLossDB, defaults.PolarizationLossDB),
-		RadiusMeters:           valueOr(input.RadiusMeters, defaults.RadiusMeters),
-		BeamWidthDeg:           valueOr(input.BeamWidthDeg, defaults.BeamWidthDeg),
-		AntennaHeightM:         valueOr(input.AntennaHeightM, defaults.AntennaHeightM),
-		MechanicalDowntiltDeg:  valueOr(input.MechanicalDowntiltDeg, defaults.MechanicalDowntiltDeg),
-		ElectricalDowntiltDeg:  valueOr(input.ElectricalDowntiltDeg, defaults.ElectricalDowntiltDeg),
-		OrientationDeg:         valueOr(input.OrientationDeg, defaults.OrientationDeg),
-		HorizontalPatternID:    valueOr(input.HorizontalPatternID, defaults.HorizontalPatternID),
-		VerticalPatternID:      valueOr(input.VerticalPatternID, defaults.VerticalPatternID),
-		LoadFactor:             valueOr(input.LoadFactor, defaults.LoadFactor),
-		ReuseFactor:            valueOr(input.ReuseFactor, defaults.ReuseFactor),
-		PCI:                    input.PCI,
-		ReceiverHeightM:        valueOr(input.ReceiverHeightM, defaults.ReceiverHeightM),
-		ReceiverSensitivityDBm: valueOr(input.ReceiverSensitivityDBm, defaults.ReceiverSensitivityDBm),
+		SchemaVersion:                valueOr(input.SchemaVersion, defaults.SchemaVersion),
+		NetworkTech:                  valueOr(input.NetworkTech, defaults.NetworkTech),
+		PropagationModelID:           valueOr(input.PropagationModelID, defaults.PropagationModelID),
+		FrequencyGHz:                 valueOr(input.FrequencyGHz, defaults.FrequencyGHz),
+		Band:                         valueOr(input.Band, defaults.Band),
+		BandwidthMHz:                 valueOr(input.BandwidthMHz, defaults.BandwidthMHz),
+		ChannelID:                    valueOr(input.ChannelID, defaults.ChannelID),
+		DuplexMode:                   valueOr(input.DuplexMode, defaults.DuplexMode),
+		TxPowerDBm:                   valueOr(input.TxPowerDBm, defaults.TxPowerDBm),
+		AntennaGainDBi:               antennaGainDBi,
+		RxAntennaGainDBi:             valueOr(input.RxAntennaGainDBi, defaults.RxAntennaGainDBi),
+		SystemLossDB:                 valueOr(input.SystemLossDB, defaults.SystemLossDB),
+		PolarizationLossDB:           valueOr(input.PolarizationLossDB, defaults.PolarizationLossDB),
+		RadiusMeters:                 valueOr(input.RadiusMeters, defaults.RadiusMeters),
+		BeamWidthDeg:                 valueOr(input.BeamWidthDeg, defaults.BeamWidthDeg),
+		AntennaHeightM:               valueOr(input.AntennaHeightM, defaults.AntennaHeightM),
+		MechanicalDowntiltDeg:        valueOr(input.MechanicalDowntiltDeg, defaults.MechanicalDowntiltDeg),
+		ElectricalDowntiltDeg:        valueOr(input.ElectricalDowntiltDeg, defaults.ElectricalDowntiltDeg),
+		OrientationDeg:               valueOr(input.OrientationDeg, defaults.OrientationDeg),
+		HorizontalPatternID:          valueOr(input.HorizontalPatternID, defaults.HorizontalPatternID),
+		VerticalPatternID:            valueOr(input.VerticalPatternID, defaults.VerticalPatternID),
+		LoadFactor:                   valueOr(input.LoadFactor, defaults.LoadFactor),
+		ReuseFactor:                  valueOr(input.ReuseFactor, defaults.ReuseFactor),
+		PCI:                          input.PCI,
+		ReceiverHeightM:              valueOr(input.ReceiverHeightM, defaults.ReceiverHeightM),
+		ReceiverSensitivityDBm:       valueOr(input.ReceiverSensitivityDBm, defaults.ReceiverSensitivityDBm),
+		ReceiverSensitivityMode:      valueOr(input.ReceiverSensitivityMode, defaults.ReceiverSensitivityMode),
+		ReceiverNoiseBandwidthHz:     valueOr(input.ReceiverNoiseBandwidthHz, defaults.ReceiverNoiseBandwidthHz),
+		ReceiverNoiseBandwidthSource: defaults.ReceiverNoiseBandwidthSource,
+		ReceiverNoiseFigureDB:        valueOr(input.ReceiverNoiseFigureDB, defaults.ReceiverNoiseFigureDB),
+		ReceiverRequiredSNRDB:        valueOr(input.ReceiverRequiredSNRDB, defaults.ReceiverRequiredSNRDB),
+		ReceiverMarginDB:             valueOr(input.ReceiverMarginDB, defaults.ReceiverMarginDB),
+	}
+	if input.ReceiverNoiseBandwidthHz != nil {
+		profile.ReceiverNoiseBandwidthSource = ReceiverNoiseBandwidthSourceExplicit
 	}
 	if input.PCI == nil {
 		profile.PCI = defaults.PCI
@@ -189,6 +215,14 @@ func (profile CellRFProfile) normalized() CellRFProfile {
 	profile.DuplexMode = strings.ToLower(strings.TrimSpace(profile.DuplexMode))
 	profile.HorizontalPatternID = strings.ToLower(strings.TrimSpace(profile.HorizontalPatternID))
 	profile.VerticalPatternID = strings.ToLower(strings.TrimSpace(profile.VerticalPatternID))
+	profile.ReceiverSensitivityMode = strings.ToLower(strings.TrimSpace(profile.ReceiverSensitivityMode))
+	if profile.ReceiverSensitivityMode == "" {
+		profile.ReceiverSensitivityMode = ReceiverSensitivityModeManual
+	}
+	profile.ReceiverNoiseBandwidthSource = strings.ToLower(strings.TrimSpace(profile.ReceiverNoiseBandwidthSource))
+	if profile.ReceiverNoiseBandwidthSource == "" && profile.ReceiverNoiseBandwidthHz > 0 {
+		profile.ReceiverNoiseBandwidthSource = ReceiverNoiseBandwidthSourceExplicit
+	}
 	if profile.PropagationModelID == "" {
 		profile.PropagationModelID = DefaultPropagationModelID(profile.FrequencyGHz)
 	}
@@ -278,8 +312,29 @@ func ValidateCellRFProfile(profile CellRFProfile, analysisOnly bool) string {
 	if !finiteInRange(profile.ReceiverHeightM, MinReceiverHeightM, MaxReceiverHeightM) {
 		return "rf_profile.receiver_height_m is outside the supported range"
 	}
-	if !finiteInRange(profile.ReceiverSensitivityDBm, MinReceiverSensitivityDBm, MaxReceiverSensitivityDBm) {
-		return "rf_profile.receiver_sensitivity_dbm is outside the supported range"
+	if !oneOf(profile.ReceiverSensitivityMode, ReceiverSensitivityModeManual, ReceiverSensitivityModeDerived) {
+		return "rf_profile.receiver_sensitivity_mode must be manual or derived"
+	}
+	if profile.ReceiverSensitivityMode == ReceiverSensitivityModeManual {
+		if !finiteInRange(profile.ReceiverSensitivityDBm, MinReceiverSensitivityDBm, MaxReceiverSensitivityDBm) {
+			return "rf_profile.receiver_sensitivity_dbm is outside the supported range"
+		}
+	} else {
+		if !finiteInRange(profile.ReceiverNoiseBandwidthHz, MinReceiverNoiseBandwidthHz, MaxReceiverNoiseBandwidthHz) {
+			return "rf_profile.receiver_noise_bandwidth_hz is outside the supported range"
+		}
+		if !finiteInRange(profile.ReceiverNoiseFigureDB, MinReceiverNoiseFigureDB, MaxReceiverNoiseFigureDB) {
+			return "rf_profile.receiver_noise_figure_db is outside the supported range"
+		}
+		if !finiteInRange(profile.ReceiverRequiredSNRDB, MinReceiverRequiredSNRDB, MaxReceiverRequiredSNRDB) {
+			return "rf_profile.receiver_required_snr_db is outside the supported range"
+		}
+		if !finiteInRange(profile.ReceiverMarginDB, MinReceiverMarginDB, MaxReceiverMarginDB) {
+			return "rf_profile.receiver_margin_db is outside the supported range"
+		}
+		if !oneOf(profile.ReceiverNoiseBandwidthSource, ReceiverNoiseBandwidthSourceExplicit, ReceiverNoiseBandwidthSourceChannelBandwidth) {
+			return "rf_profile.receiver_noise_bandwidth_source is unsupported"
+		}
 	}
 	return ""
 }

@@ -42,6 +42,7 @@ type NetworkOptimizationRequestInput struct {
 type InterferenceRequestInput struct {
 	NetworkTech         string              `json:"network_tech"`
 	Towers              []TowerRequestInput `json:"towers"`
+	ServingCellID       *string             `json:"serving_cell_id"`
 	RadiusMeters        *float64            `json:"radius_m"`
 	FrequencyGHz        *float64            `json:"frequency_ghz"`
 	TxPowerDBm          *float64            `json:"tx_power_dbm"`
@@ -195,6 +196,7 @@ func (input InterferenceRequestInput) ToRequest() InterferenceRequest {
 	return InterferenceRequest{
 		NetworkTech:         networkTech,
 		Towers:              towers,
+		ServingCellID:       strings.TrimSpace(valueOr(input.ServingCellID, "")),
 		RadiusMeters:        globalRadius,
 		FrequencyGHz:        frequencyGHz,
 		TxPowerDBm:          globalPower,

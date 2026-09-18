@@ -29,11 +29,12 @@ type CoverageSurfaceRequest struct {
 }
 
 type CoverageSurfaceResponse struct {
-	Grid       CoverageRasterGrid       `json:"grid"`
-	Contours   SurfaceFeatureCollection `json:"contours"`
-	Stats      CoverageSurfaceStats     `json:"stats"`
-	Model      CoverageSurfaceModel     `json:"model"`
-	RFContract RFContractMetadata       `json:"rf_contract"`
+	Grid              CoverageRasterGrid       `json:"grid"`
+	Contours          SurfaceFeatureCollection `json:"contours"`
+	Stats             CoverageSurfaceStats     `json:"stats"`
+	Model             CoverageSurfaceModel     `json:"model"`
+	ReceiverThreshold ReceiverThreshold        `json:"receiver_threshold"`
+	RFContract        RFContractMetadata       `json:"rf_contract"`
 }
 
 type CoverageRasterGrid struct {
@@ -56,16 +57,18 @@ type CoverageSurfaceStats struct {
 	MaximumDBm                *float64  `json:"max_dbm"`
 	ThresholdsDBm             []float64 `json:"thresholds_dbm"`
 	ReceiverSensitivityDBm    float64   `json:"receiver_sensitivity_dbm"`
+	ReceiverSensitivityMode   string    `json:"receiver_sensitivity_mode"`
 }
 
 type CoverageSurfaceModel struct {
-	Type                string   `json:"type"`
-	ValueSemantics      string   `json:"value_semantics"`
-	NoDataMeaning       string   `json:"nodata_meaning"`
-	UsesSensitivityMask bool     `json:"uses_sensitivity_mask"`
-	LOSClassifierID     string   `json:"los_classifier_id,omitempty"`
-	TerrainStatus       string   `json:"terrain_status,omitempty"`
-	Assumptions         []string `json:"assumptions"`
+	Type                  string   `json:"type"`
+	ValueSemantics        string   `json:"value_semantics"`
+	NoDataMeaning         string   `json:"nodata_meaning"`
+	UsesSensitivityMask   bool     `json:"uses_sensitivity_mask"`
+	LOSClassifierID       string   `json:"los_classifier_id,omitempty"`
+	TerrainStatus         string   `json:"terrain_status,omitempty"`
+	ReceiverThresholdRule string   `json:"receiver_threshold_rule"`
+	Assumptions           []string `json:"assumptions"`
 }
 
 type SurfaceFeatureCollection struct {
@@ -126,6 +129,8 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 	if profile.SchemaVersion == 0 {
 		profile = DefaultCellRFProfile(NetworkTechnologyForFrequency(req.Simulation.FrequencyGHz), req.Simulation.FrequencyGHz, req.Simulation.TxPowerDBm, req.Simulation.RadiusMeters, req.Simulation.BeamWidthDeg, 0, 0, 0)
 	}
+	profile = profile.normalized()
+	receiverThreshold := receiverThresholdForProfileOrManual(profile)
 	radiusMeters := profile.RadiusMeters
 	width := int(math.Ceil((2*radiusMeters)/req.CellSizeMeters)) + 1
 	height := width
@@ -172,13 +177,14 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 				LOSState:            losState, EndpointCase: endpointCase,
 				LOSClassification:     losClassification,
 				BuildingDataAvailable: pathGeometry.available, WallEventCount: wallEventCount,
+				ReceiverThreshold: &receiverThreshold,
 			})
 			signal := propagation.ReceivedPowerDBm
 			signal = roundOne(signal)
 			values[row*width+column] = signal
 			minimum, maximum = math.Min(minimum, signal), math.Max(maximum, signal)
 			validCount++
-			if signal <= profile.ReceiverSensitivityDBm {
+			if !ReceiverUsableSignal(signal, receiverThreshold.SensitivityDBm) {
 				belowSensitivityCount++
 			}
 		}
@@ -196,7 +202,8 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 		NoDataCellCount:           len(values) - validCount,
 		BelowSensitivityCellCount: belowSensitivityCount,
 		ThresholdsDBm:             thresholds,
-		ReceiverSensitivityDBm:    profile.ReceiverSensitivityDBm,
+		ReceiverSensitivityDBm:    receiverThreshold.SensitivityDBm,
+		ReceiverSensitivityMode:   receiverThreshold.Mode,
 	}
 	if validCount > 0 {
 		stats.MinimumDBm, stats.MaximumDBm = floatPointer(roundOne(minimum)), floatPointer(roundOne(maximum))
@@ -208,12 +215,13 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 	return CoverageSurfaceResponse{
 		Grid: grid, Contours: surfaceContours(grid, thresholds), Stats: stats,
 		Model: CoverageSurfaceModel{
-			Type:                surfaceType,
-			ValueSemantics:      "raw_received_power_dbm",
-			NoDataMeaning:       "radius or beam geometry exclusion; weak numeric values are retained",
-			UsesSensitivityMask: false,
-			LOSClassifierID:     classifierIDForProfile(profile),
-			TerrainStatus:       terrainStatusForProfile(profile),
+			Type:                  surfaceType,
+			ValueSemantics:        "raw_received_power_dbm",
+			NoDataMeaning:         "radius or beam geometry exclusion; weak numeric values are retained",
+			UsesSensitivityMask:   false,
+			LOSClassifierID:       classifierIDForProfile(profile),
+			TerrainStatus:         terrainStatusForProfile(profile),
+			ReceiverThresholdRule: "raw cell values are retained; below-sensitivity is a statistic using strict received_power_dbm > effective sensitivity, and NoData remains geometry exclusion",
 			Assumptions: []string{
 				"Grid centers are evaluated with the selected cell profile and shared propagation evaluator; the response contract identifies the applied model or explicit legacy fallback.",
 				"The urban_short_range model uses footprint-height-los-v1 centerline roof classification; known heights can clear a footprint while unknown heights remain conservative NLOS, and no legacy wall-event dB is added to empirical NLOS path loss.",
@@ -222,7 +230,8 @@ func GenerateCoverageSurfaceContext(ctx context.Context, req CoverageSurfaceRequ
 				"The regular surface does not apply receiver sensitivity as a mask and does not apply the point-to-point terrain-profile or environmental sensitivity components.",
 			},
 		},
-		RFContract: rfContractForProfile(&profile, req.Simulation.CalibrationOffsetDB),
+		ReceiverThreshold: receiverThreshold,
+		RFContract:        rfContractForProfile(&profile, req.Simulation.CalibrationOffsetDB),
 	}, nil
 }
 

@@ -59,6 +59,11 @@ const (
 	DefaultOrientationDeg              = 0
 	DefaultReceiverHeightM             = 1.5
 	DefaultReceiverSensitivityDBm      = -115
+	DefaultReceiverSensitivityMode     = "manual"
+	DefaultReceiverNoiseBandwidthHz    = 100000000
+	DefaultReceiverNoiseFigureDB       = 7
+	DefaultReceiverRequiredSNRDB       = 3
+	DefaultReceiverMarginDB            = 0
 	MaxRFProfileTextBytes              = 64
 	MinBandwidthMHz                    = 0.1
 	MaxBandwidthMHz                    = 2000
@@ -82,6 +87,14 @@ const (
 	MaxReceiverHeightM                 = 100
 	MinReceiverSensitivityDBm          = -180
 	MaxReceiverSensitivityDBm          = -20
+	MinReceiverNoiseBandwidthHz        = 1
+	MaxReceiverNoiseBandwidthHz        = 2000000000
+	MinReceiverNoiseFigureDB           = 0
+	MaxReceiverNoiseFigureDB           = 20
+	MinReceiverRequiredSNRDB           = -100
+	MaxReceiverRequiredSNRDB           = 100
+	MinReceiverMarginDB                = -100
+	MaxReceiverMarginDB                = 100
 )
 
 func NetworkTechnologyForFrequency(frequencyGHz float64) string {

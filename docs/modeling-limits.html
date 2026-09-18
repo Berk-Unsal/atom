@@ -135,7 +135,9 @@ adds one standard O2I facade term at zero indoor depth; it is not indoor
 or whole-building coverage. The point-to-point path profile remains an
 isolated advanced diagnostic with model id
 <code>path-profile-diagnostic-v1</code>. Read the Concept 4F.1 design
-note for the centerline rule and audit.</p>
+note for the centerline rule and audit, and the Concept 4G.2
+receiver-noise note for the effective per-cell receiver threshold and
+link-margin contract.</p>
 <h2 id="rf-semantic-contract">RF Semantic Contract</h2>
 <table>
 <thead>
@@ -198,9 +200,12 @@ vector or stochastic model</td>
 </tr>
 <tr>
 <td>Receiver sensitivity</td>
-<td>Per-cell static-ray termination threshold</td>
-<td>Read <code>rf_profile.receiver_sensitivity_dbm</code> from the
-effective cell profile</td>
+<td>Per-cell static-ray termination and usable-carrier admission
+threshold</td>
+<td><code>manual</code> reads
+<code>rf_profile.receiver_sensitivity_dbm</code>; <code>derived</code>
+uses the returned <code>receiver_threshold</code> from noise bandwidth,
+noise figure, required SNR, and receiver margin</td>
 </tr>
 <tr>
 <td>Usable signal</td>
@@ -230,13 +235,17 @@ radius/beam geometry exclusion</td>
 <td>Quality classification after serving/interferer formation</td>
 <td><code>RSRP &gt;= -110 dBm</code> <strong>and</strong>
 <code>SINR &gt;= 0 dB</code> <strong>and</strong>
-<code>RSRQ &gt;= -20 dB</code></td>
+<code>RSRQ &gt;= -20 dB</code>, independent of receiver sensitivity</td>
 </tr>
 </tbody>
 </table>
 <p>The building and interference thresholds above are current planning
 defaults. They are intentionally separate from each cell's receiver
-sensitivity. The canonical ledger is
+sensitivity. In derived mode,
+<code>Sensitivity = -174 dBm/Hz + 10 log10(B_noise_Hz) + NF + RequiredSNR + ReceiverMargin</code>;
+the <code>-174 dBm/Hz</code> value is a rounded 290 K reference
+convention and the selected planning SNR/margin are not UE or 3GPP
+conformance parameters. The canonical ledger is
 <code>P_rx = P_tx_conducted + G_tx_boresight - A_tx_pattern + G_rx - L_system - L_polarization + calibration - L_propagation - L_building</code>.
 A global calibration offset is signed: positive dB raises predicted
 received power. The historical <code>eirp_dbm</code> field is retained
@@ -247,7 +256,9 @@ conducted power or as boresight EIRP.</p>
 <li>Per-cell coordinates, azimuth, technology/frequency/bandwidth,
 interference channel, beam width, radius, conducted TX power, absolute
 antenna gain, relative pattern, antenna and receiver heights, downtilts,
-orientation, pattern preset, sensitivity, and load</li>
+orientation, pattern preset, receiver sensitivity mode, manual
+sensitivity, noise bandwidth, noise figure, required SNR, receiver
+margin, and load</li>
 <li>Explicit propagation model selection and the requested/applied model
 identity</li>
 <li>Free-space path loss (FSPL)</li>
@@ -269,6 +280,9 @@ explicit</li>
 <li>Deterministic POI and residential-demand enrichment for scoring</li>
 <li>Co-channel cell power, load, reuse, thermal noise, and
 resource-block presets for interference analysis</li>
+<li>A shared thermal-noise arithmetic helper with distinct receiver
+noise-equivalent bandwidth and interference per-resource-element
+bandwidth semantics</li>
 <li>Optional COG/GeoTIFF ground elevation, building-height obstruction,
 LOS/Fresnel geometry, and one dominant single knife-edge approximation
 in the isolated point-to-point path-profile workflow</li>
@@ -291,19 +305,24 @@ effects are explicit sensitivity inputs when enabled</li>
 upload/interpolation, array factor, codebooks, and per-frequency
 hardware calibration</li>
 <li>MIMO layers, beamforming codebooks, stochastic polarization,
-UE/device orientation, or receiver radiation patterns. A scalar RX gain
-and scalar polarization loss are the only new receiver-side terms.</li>
+UE/device orientation, or receiver radiation patterns. A scalar RX gain,
+scalar polarization loss, and deterministic noise-limited receiver
+threshold are the receiver-side terms; no UE implementation model is
+implied.</li>
 <li>Dynamic scheduling, mobility, handover margins, and UE
 implementation behavior</li>
 <li>Uplink interference and adjacent-channel leakage</li>
 </ul>
 <p>Cells outside their configured beam or radius contribute no signal in
-the current model. Static rays terminate when modeled power is at or
-below the effective per-cell receiver sensitivity; coverage surfaces
-retain those valid below-sensitivity values instead of converting them
-to NoData. This sharp planning boundary explains why samples can show no
-signal immediately outside a sector even when a real antenna might
-contribute sidelobe energy.</p>
+the current model. Static rays terminate as usable rays when modeled
+power is at or below the effective per-cell receiver sensitivity;
+coverage surfaces retain those valid below-sensitivity values instead of
+converting them to NoData. Building-entry outdoor service remains the
+separate raw-power <code>&gt; -100 dBm</code> rule, and post-threshold
+geometry is retained only where needed for that independent building
+accounting. This sharp planning boundary explains why samples can show
+no usable signal immediately outside a sector even when a real antenna
+might contribute sidelobe energy.</p>
 <p>The <code>ideal-sector</code>, <code>cosine-sector</code>,
 <code>omni</code>, <code>flat</code>, <code>panel-10deg</code>, and
 <code>panel-20deg</code> choices are deterministic analytic presets, not
@@ -322,8 +341,9 @@ timing, PCI planning, or band-specific protocol behavior.</p>
 <p>LTE RSRP and RSRQ are CRS-style planning estimates. 5G values are
 modeled SS-RSRP and SS-RSRQ estimates. SINR, RSSI, RSRP, and RSRQ are
 derived from deterministic carrier powers and standardized
-resource-block concepts; they are not sampled from UE or PHY measurement
-reports.</p>
+resource-block concepts; their per-RE thermal noise remains separate
+from the receiver noise-equivalent bandwidth and is not sampled from UE
+or PHY measurement reports.</p>
 <p>An SINR near <code>0 dB</code> is expected when the serving cell and
 a co-channel interferer arrive at similar power and noise is
 comparatively small. A no-signal sample means no configured cell
@@ -393,6 +413,17 @@ UMa path-loss subset as <code>urban_short_range</code>, without claiming
 full 3GPP channel-model conformance. Measurement and calibration
 behavior is represented by <code>/api/measurements/evaluate</code>;
 there is no standalone calibration endpoint in this matrix.</p>
+<p>Concept 4H.1 adds inspectable interference bookkeeping, but it
+remains a planning approximation: total-carrier propagation power is
+normalized to a common reference-resource basis, LTE/NR signal-resource
+density and scheduler timing are not modeled,
+adjacent-channel/partial-overlap selectivity is deferred, and each
+cell's configured radius is only a finite analysis horizon. The declared
+power ledger separates serving admission from non-serving interference
+eligibility, while exact co-channel rules, thermal-noise bandwidth,
+serviceability thresholds, and failure reasons are returned so results
+are auditable. See the Concept 4H.1 interference and radio-quality
+note.</p>
 <h2 id="reference-and-applicability-foundation">Reference and
 Applicability Foundation</h2>
 <p>Concept 4B adds an independent, human-auditable fixture corpus at
@@ -403,7 +434,11 @@ corpus covers FSPL, slant-distance link budgets, antenna-pattern
 attenuation and beam boundaries, dBm/mW and thermal-noise arithmetic,
 RSRP/SINR arithmetic, Fresnel radius, knife-edge loss, exact polygon
 boundary cases, sensitivity termination, raw received-power surfaces,
-and point-sampled path-profile behavior. Expected values are
+and point-sampled path-profile behavior. Concept 4G.2 adds independent
+receiver fixtures and a gated 2.6/28 GHz sensitivity matrix in
+<code>backend-go/raytracer/receiver_noise_test.go</code>, including
+bandwidth, noise-figure, SNR, margin, per-cell, surface, building,
+propagation, and interference separation checks. Expected values are
 independently calculated fixtures; the tests compare them with the
 existing implementation without changing its equations.</p>
 <p>The metadata catalog in
@@ -425,8 +460,10 @@ static, surface, and network RF evaluation accept 6G profiles;
 interference, measurement evaluation, and site recommendations remain
 restricted; path-profile 6G is research-only. Interference
 serviceability uses separate RSRP/SINR/RSRQ thresholds, not receiver
-sensitivity or building service. This catalog is descriptive and does
-not dispatch a new propagation model.</p>
+sensitivity or building service. Receiver sensitivity is a strict
+carrier-admission/usability gate and is not added as another
+interference-noise term. This catalog is descriptive and does not
+dispatch a new propagation model.</p>
 <p>Network responses intentionally expose separate score
 representations. <code>stats.network_score</code> is the legacy raw
 aggregate of weighted domain metrics; it may be much larger than 100.
@@ -448,6 +485,7 @@ measurements.</p>
 <li><a href="./architecture.html">System architecture</a></li>
 <li><a href="./algorithms.html">RF algorithms</a></li>
 <li><a href="./api.html">REST API</a></li>
+<li>Concept 4G.2 receiver noise and sensitivity</li>
 </ul>
       </div>
     </article>

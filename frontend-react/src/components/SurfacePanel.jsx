@@ -35,12 +35,14 @@ export default function SurfacePanel({ disabled, isLoading, onExport, onOptionsC
       {surface?.stats ? (
         <div className="surface-summary">
           <span><small>Grid</small><strong>{surface.grid?.width} × {surface.grid?.height}</strong></span>
-        <span><small>Valid raw cells</small><strong>{surface.stats.valid_cell_count?.toLocaleString()}</strong></span>
-        <span><small>Below sensitivity</small><strong>{surface.stats.below_sensitivity_cell_count?.toLocaleString() ?? "—"}</strong></span>
+          <span><small>Valid raw cells</small><strong>{surface.stats.valid_cell_count?.toLocaleString()}</strong></span>
+          <span><small>Below sensitivity</small><strong>{surface.stats.below_sensitivity_cell_count?.toLocaleString() ?? "—"}</strong></span>
+          <span><small>Receiver threshold</small><strong>{surface.receiver_threshold?.mode ?? surface.stats.receiver_sensitivity_mode ?? "manual"} · {formatSurfacePower(surface.receiver_threshold?.sensitivity_dbm ?? surface.stats.receiver_sensitivity_dbm)} dBm</strong></span>
           <span><small>Range</small><strong>{formatSurfacePower(surface.stats.min_dbm ?? surface.stats.minimum_dbm)}–{formatSurfacePower(surface.stats.max_dbm ?? surface.stats.maximum_dbm)} dBm</strong></span>
           <span><small>Isolines</small><strong>{surface.contours?.features?.length?.toLocaleString() ?? 0}</strong></span>
         </div>
       ) : null}
+      {surface?.receiver_threshold ? <p className="data-note">The raster keeps raw received power values. “Below sensitivity” is a strict received power &gt; effective threshold statistic; NoData remains geometry exclusion.</p> : null}
       <div className="surface-exports">
         <button type="button" disabled={!surface} onClick={() => onExport("geotiff")}><Download size={14} />GeoTIFF</button>
         <button type="button" disabled={!surface} onClick={() => onExport("geojson")}><Download size={14} />Contours</button>

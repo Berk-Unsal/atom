@@ -1,0 +1,83 @@
+{
+  "concept": "4G.2",
+  "title": "Receiver noise, sensitivity, and link-quality foundation pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "git_ref": "f40bba9",
+  "worktree_note": "Concept 4G.1 changes are present and intentionally preserved; no Concept 4G.2 production changes were present when this artifact was captured.",
+  "validation": {
+    "real_backend_acceptance": {
+      "command": "ATOM_REAL_E2E=1 ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline npm run test:e2e",
+      "result": "36 tests: 27 passed, 9 skipped"
+    },
+    "canonical_optimization": {
+      "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_BENCHMARK=1 go test ./raytracer -run TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled -count=1 -v",
+      "result": "pass; optimizer elapsed 61.25 s"
+    },
+    "canonical_building_entry": {
+      "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_BUILDING_ENTRY=1 go test ./raytracer -run TestCanonicalAnkaraBuildingEntryAnalysisIsDeterministicWhenDatasetIsEnabled -count=1 -v",
+      "result": "pass; relevant=1488 residential=899 outdoor=521 low=521 high=194 links=698"
+    },
+    "canonical_height_audit": {
+      "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_HEIGHT_AUDIT=1 go test ./raytracer -run TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled -count=1 -v",
+      "result": "pass; 432 audited paths; transitions los_to_los=29 nlos_to_nlos=248 unknown_to_unknown=155"
+    }
+  },
+  "receiver_contract_before_change": {
+    "mode": "implicit_manual",
+    "receiver_sensitivity_dbm": -115,
+    "usable_signal_boundary": "strict received_power_dbm > receiver_sensitivity_dbm",
+    "controlled_links_dbm": {
+      "one_db_above": -114,
+      "exact": -115,
+      "one_db_below": -116
+    },
+    "derived_inputs": "not represented"
+  },
+  "canonical_six_cell_28ghz": {
+    "tower_ids": ["LTE-35084", "LTE-35104", "LTE-35877", "LTE-313100", "LTE-313110", "LTE-322828"],
+    "manual_profile": {
+      "mode": "implicit_manual",
+      "sensitivity_dbm": -115,
+      "bandwidth_mhz": 100,
+      "recommended_azimuths_deg": [70, 20, 130, 160, 290, 110],
+      "pareto_frontier_size": 6,
+      "baseline": {"demand": 185, "residential": 28, "reach": 16013.3051, "overlap": 0.098361, "score": 33.7894},
+      "optimized": {"demand": 555, "residential": 43, "reach": 19548.691, "overlap": 0, "score": 41.1715}
+    }
+  },
+  "representative_links": {
+    "2.6ghz_100m_los_rx_dbm": -33.982918,
+    "2.6ghz_400m_nlos_rx_dbm": -45.805631,
+    "28ghz_100m_los_rx_dbm": -76.626611,
+    "28ghz_400m_nlos_rx_dbm": -88.449324
+  },
+  "surface": {
+    "valid_cell_count": 267,
+    "below_sensitivity_cell_count": 34,
+    "minimum_dbm": -506,
+    "maximum_dbm": -33.8,
+    "center_dbm": -33.8,
+    "nodata_semantics": "radius/beam geometry exclusion only"
+  },
+  "interference": {
+    "signal_samples": 307,
+    "serviceable_samples": 179,
+    "serviceable_pct": 18.1,
+    "avg_rsrp_dbm": -100.4,
+    "p10_rsrp_dbm": -117,
+    "avg_sinr_db": 14.3,
+    "p10_sinr_db": -0.8,
+    "noise_semantics": "per-RE thermal noise from SCS plus request noise figure; separate from receiver sensitivity"
+  },
+  "building_entry": {
+    "relevant_buildings": 1488,
+    "residential_buildings": 899,
+    "outdoor_serviceable_buildings": 521,
+    "low_loss_serviceable_buildings": 521,
+    "high_loss_serviceable_buildings": 194,
+    "candidate_cell_link_evaluations": 698,
+    "building_service_threshold_dbm": -100,
+    "receiver_sensitivity_dbm": -115
+  }
+}

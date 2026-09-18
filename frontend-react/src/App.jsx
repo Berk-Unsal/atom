@@ -57,7 +57,7 @@ import {
   resolveSelectedParetoSolutionId,
   OPTIMIZATION_OBJECTIVES,
 } from "./utils/optimizationConfig.js";
-import { resolveRFProfile, rfProfileOverrideFromProperties, validateRFProfile } from "./utils/rfProfile.js";
+import { effectiveReceiverSensitivityDbm, resolveRFProfile, rfProfileOverrideFromProperties, validateRFProfile } from "./utils/rfProfile.js";
 import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
 import { compactRecommendationResponse } from "./utils/recommendations.js";
 import {
@@ -1017,12 +1017,6 @@ export default function App() {
     () => rayCellIDs.map((cellID) => ({ id: cellID, label: `Cell ${cellID}` })),
     [rayCellIDs],
   );
-  const selectedMapReceiverSensitivityDBm = useMemo(() => {
-    const candidateTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
-    const index = candidateTowers.findIndex((tower) => String(cellIDForTower(tower)) === String(selectedMapCellId));
-    const tower = candidateTowers[index >= 0 ? index : 0];
-    return tower ? resolveRFProfile(tower, settings, index >= 0 ? index : 0).receiverSensitivityDbm : -115;
-  }, [planningMode, selectedMapCellId, selectedNetworkTowers, selectedTower, settings]);
   const currentCoverageSurfaceRequest = useMemo(() => {
     if (!selectedTower) return null;
     const surfaceSettings = coverageSurfaceSettingsFor(selectedTower, settings, planningMode, networkAzimuths);
@@ -1045,6 +1039,24 @@ export default function App() {
   const signalSurfaceState = coverageSurfaceStatus === COVERAGE_SURFACE_STATUS.READY && !coverageSurfaceIsCurrent
     ? (planDirty ? COVERAGE_SURFACE_STATUS.UNAVAILABLE : COVERAGE_SURFACE_STATUS.AVAILABLE)
     : coverageSurfaceStatus;
+  const selectedMapReceiverSensitivityDBm = useMemo(() => {
+    const selectedFeature = (simulation.geojson?.features ?? []).find((feature) => {
+      const properties = feature.properties ?? {};
+      return selectedMapCellId === null || selectedMapCellId === undefined
+        ? false
+        : String(properties.cell_id ?? properties.network_tower_id ?? "") === String(selectedMapCellId);
+    });
+    const featureThreshold = Number(selectedFeature?.properties?.link_budget?.effective_receiver_sensitivity_dbm);
+    if (Number.isFinite(featureThreshold)) return featureThreshold;
+    const surfaceThreshold = Number(renderedCoverageSurface?.receiver_threshold?.sensitivity_dbm);
+    if (Number.isFinite(surfaceThreshold)) return surfaceThreshold;
+    const responseThreshold = Number(simulation.receiver_threshold?.sensitivity_dbm);
+    if (Number.isFinite(responseThreshold)) return responseThreshold;
+    const candidateTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
+    const index = candidateTowers.findIndex((tower) => String(cellIDForTower(tower)) === String(selectedMapCellId));
+    const tower = candidateTowers[index >= 0 ? index : 0];
+    return tower ? effectiveReceiverSensitivityDbm(resolveRFProfile(tower, settings, index >= 0 ? index : 0)) : -115;
+  }, [planningMode, renderedCoverageSurface, selectedMapCellId, selectedNetworkTowers, selectedTower, settings, simulation]);
   useEffect(() => {
     setSelectedMapCellId((current) => rayCellIDs.includes(String(current)) ? current : rayCellIDs[0] ?? null);
   }, [rayCellIDs]);
@@ -2697,12 +2709,22 @@ function InterferenceInspector({ payload }) {
     <div className="inspector-grid">
       <MiniDatum label="Serving cell" value={properties.serving_cell_id ?? "No signal"} />
       <MiniDatum label="Channel" value={properties.channel_id ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Serving carrier power" value={formatMetric(properties.serving_received_carrier_power_dbm, "dBm")} />
       <MiniDatum label="RSRP" value={formatMetric(properties.rsrp_dbm, "dBm")} />
       <MiniDatum label="SINR" value={formatMetric(properties.sinr_db, "dB")} />
       <MiniDatum label="RSRQ" value={formatMetric(properties.rsrq_db, "dB")} />
       <MiniDatum label="RSSI" value={formatMetric(properties.rssi_dbm, "dBm")} />
+      <MiniDatum label="Thermal noise" value={formatMetric(properties.thermal_noise_dbm, "dBm")} />
+      <MiniDatum label="Desired power" value={formatMetric(properties.desired_signal_power_mw, "mW")} />
+      <MiniDatum label="Interference power" value={formatMetric(properties.interference_power_mw, "mW")} />
+      <MiniDatum label="Noise power" value={formatMetric(properties.thermal_noise_power_mw, "mW")} />
+      <MiniDatum label="Receiver threshold" value={properties.receiver_threshold ? `${properties.receiver_threshold.mode ?? "manual"} · ${formatMetric(properties.receiver_threshold.sensitivity_dbm, "dBm")}` : UNAVAILABLE_VALUE} />
+      <MiniDatum label="Receiver margin" value={formatMetric(properties.receiver_link_margin_db, "dB")} />
       <MiniDatum label="Strongest interferer" value={properties.strongest_interferer_id ?? "Noise-limited"} />
       <MiniDatum label="Interference" value={formatMetric(properties.interference_dbm, "dBm")} />
+      <MiniDatum label="Interferers" value={(properties.interferer_count ?? 0).toLocaleString()} />
+      <MiniDatum label="Selection" value={properties.serving_selection_mode ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Serviceability" value={properties.serviceability_status ?? UNAVAILABLE_VALUE} />
       <MiniDatum label="Walls" value={(properties.wall_count ?? 0).toLocaleString()} />
       <MiniDatum label="Quality" value={formatScenario(properties.quality_class ?? "no_signal")} />
       {properties.building_id ? (
@@ -3956,7 +3978,8 @@ function DataPanel({
         </div>
         <ul className="assumption-list">
           <li>{appMeta?.model_id === "urban_short_range" ? "Urban baseline uses 3GPP UMa LOS/NLOS path loss with a shared 2D footprint classifier; legacy wall loss is not added to empirical NLOS." : "Canonical link budget uses absolute TX/gain/system/calibration terms plus FSPL, building loss, and relative horizontal/vertical pattern attenuation."}</li>
-          <li>Building service is raw received power &gt; −100 dBm; receiver sensitivity is per effective cell and interference uses separate RSRP/SINR/RSRQ thresholds.</li>
+          <li>Receiver sensitivity defaults to Manual at −115 dBm per effective cell. Derived mode uses −174 dBm/Hz + 10 log₁₀(B<sub>noise</sub>) + NF + required SNR + receiver margin; interference remains a separate RSRP/SINR/RSRQ model.</li>
+          <li>Building service is raw received power &gt; −100 dBm. Receiver link margin is raw received power minus the effective receiver threshold; it is not a fade margin.</li>
           <li>Fast fading, diffraction, sidelobes, MIMO scheduling, and UE measurement effects are outside the current model.</li>
         </ul>
       </section>

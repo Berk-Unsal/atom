@@ -183,6 +183,71 @@ func TestInterferenceRoutePreservesExplicitZeroNoiseFigure(t *testing.T) {
 	}
 }
 
+func TestInterferenceRouteExposesRadioQualityContract(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	registerInterferenceRoute(router, raytracer.EmptyBuildingIndex())
+	body := `{
+		"network_tech":"4g",
+		"serving_cell_id":"a",
+		"towers":[
+			{"id":"a","tower_lon":32.85,"tower_lat":39.92,"azimuth":90},
+			{"id":"b","tower_lon":32.851,"tower_lat":39.92,"azimuth":90}
+		],
+		"frequency_ghz":2.6,
+		"radius_m":100,
+		"tx_power_dbm":30,
+		"beam_width":120,
+		"bandwidth_mhz":20,
+		"load_factor":1,
+		"reuse_factor":1,
+		"noise_figure_db":7,
+		"sample_spacing_m":40
+	}`
+	req := httptest.NewRequest(http.MethodPost, "/api/interference", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", recorder.Code, recorder.Body.String())
+	}
+	var payload raytracer.InterferenceResponse
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if payload.Model.ScenarioFingerprint == "" || payload.Model.ScenarioSchemaVersion != raytracer.ScenarioFingerprintSchemaVersion {
+		t.Fatalf("missing scenario identity: %+v", payload.Model)
+	}
+	if payload.Model.CoChannelEligibilityRule == "" || len(payload.Model.RadioQualityReferences) < 2 {
+		t.Fatalf("missing radio-quality model contract: %+v", payload.Model)
+	}
+	if len(payload.Model.InterferenceHorizonMeters) != 2 || payload.Model.InterferenceHorizonSource != raytracer.RadioQualityInterferenceHorizonSource {
+		t.Fatalf("missing interference horizon contract: %+v", payload.Model)
+	}
+	var signal *raytracer.InterferenceProperties
+	for index := range payload.GeoJSON.Features {
+		candidate := &payload.GeoJSON.Features[index].Properties
+		if candidate.RSRPDBm != nil {
+			signal = candidate
+			break
+		}
+	}
+	if signal == nil {
+		t.Fatal("response did not contain a valid signal feature")
+	}
+	if signal.ServingSelectionMode != "explicit_cell_id" || signal.ServingCellID != "a" || len(signal.PowerLedger) != 2 {
+		t.Fatalf("serving selection/ledger = %+v", signal)
+	}
+	if signal.ServingReceivedCarrierPowerDBm == nil || signal.DesiredSignalPowerMW == nil || signal.ThermalNoisePowerMW == nil {
+		t.Fatalf("missing power ledger terms: %+v", signal)
+	}
+	for _, entry := range signal.PowerLedger {
+		if entry.Eligible && !entry.ServingEligible {
+			t.Fatalf("eligible route fixture ledger entry was not serving-admitted: %+v", entry)
+		}
+	}
+}
+
 func TestRequestBodyLimitReturns413(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()

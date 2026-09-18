@@ -134,7 +134,12 @@ export const DEFAULT_RF_PROFILE = Object.freeze({
   "reuseFactor": 1,
   "pci": null,
   "receiverHeightM": 1.5,
-  "receiverSensitivityDbm": -115
+  "receiverSensitivityDbm": -115,
+  "receiverSensitivityMode": "manual",
+  "receiverNoiseBandwidthHz": 100000000,
+  "receiverNoiseFigureDb": 7,
+  "receiverRequiredSnrDb": 3,
+  "receiverMarginDb": 0
 });
 
 export const RF_PROFILE_OPTIONS = Object.freeze({
@@ -160,6 +165,16 @@ export const RF_PROFILE_OPTIONS = Object.freeze({
     {
       "id": "3gpp-single-element",
       "label": "3GPP single element (reference)"
+    }
+  ],
+  "receiverSensitivityModes": [
+    {
+      "id": "manual",
+      "label": "Manual"
+    },
+    {
+      "id": "derived",
+      "label": "Derived"
     }
   ],
   "verticalPatterns": [
@@ -232,7 +247,15 @@ export const POLICY_LIMITS = Object.freeze({
   "receiver_height_m_min": 0.1,
   "receiver_height_m_max": 100,
   "receiver_sensitivity_dbm_min": -180,
-  "receiver_sensitivity_dbm_max": -20
+  "receiver_sensitivity_dbm_max": -20,
+  "receiver_noise_bandwidth_hz_min": 1,
+  "receiver_noise_bandwidth_hz_max": 2000000000,
+  "receiver_noise_figure_db_min": 0,
+  "receiver_noise_figure_db_max": 20,
+  "receiver_required_snr_db_min": -100,
+  "receiver_required_snr_db_max": 100,
+  "receiver_margin_db_min": -100,
+  "receiver_margin_db_max": 100
 });
 
 export function networkTechnologyForFrequency(frequencyGHz) {

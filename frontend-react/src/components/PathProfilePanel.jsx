@@ -99,6 +99,8 @@ export function PathProfileResult({ profile }) {
   const selectedEdge = diagnostic.selected_edge;
   const diagnosticAvailable = diagnostic.available === true;
   const linkBudget = profile?.loss_budget?.link_budget ?? diagnostic.link_budget ?? {};
+  const receiverThreshold = profile?.receiver_threshold ?? profile?.loss_budget?.receiver_threshold ?? {};
+  const receiverMargin = profile?.loss_budget?.receiver_link_margin_db ?? linkBudget.receiver_link_margin_db;
   return (
     <section className="path-profile-result" aria-live="polite">
       <div className="path-profile-summary">
@@ -158,6 +160,21 @@ export function PathProfileResult({ profile }) {
       </section>
 
       {Object.keys(linkBudget).length > 0 ? <LinkBudgetLedger ledger={linkBudget} /> : null}
+
+      {receiverThreshold.mode ? (
+        <section className="receiver-threshold-card" aria-label="Receiver sensitivity threshold">
+          <div className="diagnostic-section-heading"><span>RECEIVER SENSITIVITY</span><small>{receiverThreshold.mode} mode · strict received power &gt; threshold</small></div>
+          <div className="diagnostic-metrics">
+            <span><small>Effective threshold</small><strong>{formatNumber(receiverThreshold.sensitivity_dbm, 1)} dBm</strong></span>
+            <span><small>Link margin at P50</small><strong>{formatNumber(receiverMargin, 1)} dB</strong></span>
+            {receiverThreshold.noise_bandwidth_hz !== undefined ? <span><small>Noise bandwidth</small><strong>{formatNumber(Number(receiverThreshold.noise_bandwidth_hz) / 1e6, 1)} MHz</strong></span> : null}
+            {receiverThreshold.noise_figure_db !== undefined ? <span><small>Noise figure</small><strong>{formatNumber(receiverThreshold.noise_figure_db, 1)} dB</strong></span> : null}
+            {receiverThreshold.required_snr_db !== undefined ? <span><small>Required SNR</small><strong>{formatNumber(receiverThreshold.required_snr_db, 1)} dB</strong></span> : null}
+            {receiverThreshold.receiver_margin_db !== undefined ? <span><small>Receiver margin</small><strong>{formatNumber(receiverThreshold.receiver_margin_db, 1)} dB</strong></span> : null}
+          </div>
+          <p className="data-note">{(receiverThreshold.assumptions ?? []).join(" · ")}</p>
+        </section>
+      ) : null}
 
       <details className="profile-loss-details">
         <summary>Supplemental path-profile loss budget</summary>

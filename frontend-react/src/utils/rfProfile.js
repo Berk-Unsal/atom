@@ -3,6 +3,7 @@ import {
   DEFAULT_SIMULATION,
   NETWORK_TECHNOLOGIES,
   POLICY_LIMITS,
+  RF_PROFILE_OPTIONS,
   RF_PROFILE_SCHEMA_VERSION,
   networkTechnologyForFrequency,
 } from "../generated/policy.js";
@@ -11,6 +12,7 @@ const DUPLEX_MODES = new Set(["fdd", "tdd", "sdl", "sul"]);
 const HORIZONTAL_PATTERNS = new Set(["ideal-sector", "cosine-sector", "omni", "3gpp-single-element"]);
 const VERTICAL_PATTERNS = new Set(["flat", "panel-10deg", "panel-20deg"]);
 const PROPAGATION_MODELS = new Set(["legacy_fspl_walls", "urban_short_range", "research_sub_thz"]);
+const RECEIVER_SENSITIVITY_MODES = new Set((RF_PROFILE_OPTIONS.receiverSensitivityModes ?? []).map((mode) => mode.id));
 
 export function resolveRFProfile(tower = {}, settings = DEFAULT_SIMULATION, index = 0) {
   const override = tower.rfProfile ?? {};
@@ -31,16 +33,17 @@ export function resolveRFProfile(tower = {}, settings = DEFAULT_SIMULATION, inde
     override.reuseFactor,
     integerNumber(settings.reuseFactor, DEFAULT_RF_PROFILE.reuseFactor),
   );
+  const bandwidthMHz = finiteNumber(
+    override.bandwidthMHz,
+    explicitTechnology ? technology.default_bandwidth_mhz : finiteNumber(settings.interferenceBandwidthMHz, technology.default_bandwidth_mhz),
+  );
   return {
     schemaVersion: RF_PROFILE_SCHEMA_VERSION,
     networkTech,
     propagationModelID,
     frequencyGHz,
     band: cleanText(override.band, technology.default_band),
-    bandwidthMHz: finiteNumber(
-      override.bandwidthMHz,
-      explicitTechnology ? technology.default_bandwidth_mhz : finiteNumber(settings.interferenceBandwidthMHz, technology.default_bandwidth_mhz),
-    ),
+    bandwidthMHz,
     channelId: cleanText(override.channelId, `CH-${index % Math.max(reuseFactor, 1) + 1}`),
     duplexMode: cleanText(override.duplexMode, technology.default_duplex_mode).toLowerCase(),
     txPowerDbm: finiteNumber(override.txPowerDbm, settings.txPowerDbm),
@@ -61,6 +64,32 @@ export function resolveRFProfile(tower = {}, settings = DEFAULT_SIMULATION, inde
     pci: optionalInteger(override.pci),
     receiverHeightM: finiteNumber(override.receiverHeightM, DEFAULT_RF_PROFILE.receiverHeightM),
     receiverSensitivityDbm: finiteNumber(override.receiverSensitivityDbm, DEFAULT_RF_PROFILE.receiverSensitivityDbm),
+    receiverSensitivityMode: cleanText(
+      override.receiverSensitivityMode ?? override.receiver_sensitivity_mode,
+      DEFAULT_RF_PROFILE.receiverSensitivityMode,
+    ).toLowerCase(),
+    receiverNoiseBandwidthHz: finiteNumber(
+      override.receiverNoiseBandwidthHz ?? override.receiver_noise_bandwidth_hz,
+      bandwidthMHz * 1e6,
+    ),
+    receiverNoiseBandwidthSource: cleanText(
+      override.receiverNoiseBandwidthSource ?? override.receiver_noise_bandwidth_source,
+      override.receiverNoiseBandwidthHz !== undefined || override.receiver_noise_bandwidth_hz !== undefined
+        ? "explicit_receiver_noise_bandwidth_hz"
+        : "channel_bandwidth_approximation",
+    ).toLowerCase(),
+    receiverNoiseFigureDb: finiteNumber(
+      override.receiverNoiseFigureDb ?? override.receiver_noise_figure_db,
+      finiteNumber(settings.noiseFigureDb, DEFAULT_RF_PROFILE.receiverNoiseFigureDb),
+    ),
+    receiverRequiredSnrDb: finiteNumber(
+      override.receiverRequiredSnrDb ?? override.receiver_required_snr_db,
+      DEFAULT_RF_PROFILE.receiverRequiredSnrDb,
+    ),
+    receiverMarginDb: finiteNumber(
+      override.receiverMarginDb ?? override.receiver_margin_db,
+      DEFAULT_RF_PROFILE.receiverMarginDb,
+    ),
   };
 }
 
@@ -93,6 +122,11 @@ export function rfProfileToPayload(profile) {
     pci: profile.pci,
     receiver_height_m: profile.receiverHeightM,
     receiver_sensitivity_dbm: profile.receiverSensitivityDbm,
+    receiver_sensitivity_mode: profile.receiverSensitivityMode,
+    receiver_noise_bandwidth_hz: profile.receiverNoiseBandwidthHz,
+    receiver_noise_figure_db: profile.receiverNoiseFigureDb,
+    receiver_required_snr_db: profile.receiverRequiredSnrDb,
+    receiver_margin_db: profile.receiverMarginDb,
   };
 }
 
@@ -127,7 +161,17 @@ export function validateRFProfile(profile) {
     checkIntegerRange(errors, "pci", profile.pci, limits.pci_min, profile.networkTech === "4g" ? limits.pci_lte_max : limits.pci_nr_max);
   }
   checkRange(errors, "receiverHeightM", profile.receiverHeightM, limits.receiver_height_m_min, limits.receiver_height_m_max);
-  checkRange(errors, "receiverSensitivityDbm", profile.receiverSensitivityDbm, limits.receiver_sensitivity_dbm_min, limits.receiver_sensitivity_dbm_max);
+  if (!RECEIVER_SENSITIVITY_MODES.has(profile.receiverSensitivityMode)) {
+    errors.receiverSensitivityMode = "Unsupported receiver sensitivity mode.";
+  }
+  if (profile.receiverSensitivityMode === "manual") {
+    checkRange(errors, "receiverSensitivityDbm", profile.receiverSensitivityDbm, limits.receiver_sensitivity_dbm_min, limits.receiver_sensitivity_dbm_max);
+  } else if (profile.receiverSensitivityMode === "derived") {
+    checkRange(errors, "receiverNoiseBandwidthHz", profile.receiverNoiseBandwidthHz, limits.receiver_noise_bandwidth_hz_min, limits.receiver_noise_bandwidth_hz_max);
+    checkRange(errors, "receiverNoiseFigureDb", profile.receiverNoiseFigureDb, limits.receiver_noise_figure_db_min, limits.receiver_noise_figure_db_max);
+    checkRange(errors, "receiverRequiredSnrDb", profile.receiverRequiredSnrDb, limits.receiver_required_snr_db_min, limits.receiver_required_snr_db_max);
+    checkRange(errors, "receiverMarginDb", profile.receiverMarginDb, limits.receiver_margin_db_min, limits.receiver_margin_db_max);
+  }
   return errors;
 }
 
@@ -189,7 +233,25 @@ export function rfProfileOverrideFromProperties(properties = {}) {
     pci: read("pci"),
     receiverHeightM: read("receiver_height_m", "receiverHeightM"),
     receiverSensitivityDbm: read("receiver_sensitivity_dbm", "receiverSensitivityDbm"),
+    receiverSensitivityMode: read("receiver_sensitivity_mode", "receiverSensitivityMode"),
+    receiverNoiseBandwidthHz: read("receiver_noise_bandwidth_hz", "receiverNoiseBandwidthHz"),
+    receiverNoiseBandwidthSource: read("receiver_noise_bandwidth_source", "receiverNoiseBandwidthSource"),
+    receiverNoiseFigureDb: read("receiver_noise_figure_db", "receiverNoiseFigureDb"),
+    receiverRequiredSnrDb: read("receiver_required_snr_db", "receiverRequiredSnrDb"),
+    receiverMarginDb: read("receiver_margin_db", "receiverMarginDb"),
   }).filter(([, value]) => value !== undefined));
+}
+
+export function effectiveReceiverSensitivityDbm(profile = {}) {
+  if (profile.receiverSensitivityMode !== "derived") return Number(profile.receiverSensitivityDbm);
+  const bandwidthHz = Number(profile.receiverNoiseBandwidthHz);
+  const noiseFigureDb = Number(profile.receiverNoiseFigureDb);
+  const requiredSnrDb = Number(profile.receiverRequiredSnrDb);
+  const marginDb = Number(profile.receiverMarginDb);
+  if (![bandwidthHz, noiseFigureDb, requiredSnrDb, marginDb].every(Number.isFinite) || bandwidthHz <= 0) {
+    return Number(profile.receiverSensitivityDbm);
+  }
+  return -174 + 10 * Math.log10(bandwidthHz) + noiseFigureDb + requiredSnrDb + marginDb;
 }
 
 function checkText(errors, key, value) {

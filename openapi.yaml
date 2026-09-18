@@ -514,7 +514,7 @@ components:
         warnings: { type: array, items: { type: string } }
     RFProfile:
       type: object
-      description: Complete per-cell RF contract. Omitted properties inherit the enclosing request defaults; normalized responses include every property. tx_power_dbm is conducted transmitter output, antenna_gain_dbi is the stable legacy alias for absolute TX boresight gain, and receiver_sensitivity_dbm is the per-cell usable-reach/ray-termination threshold, not the building-service or interference-serviceability threshold.
+      description: Complete per-cell RF contract. Omitted properties inherit the enclosing request defaults; normalized responses include every property. tx_power_dbm is conducted transmitter output, antenna_gain_dbi is the stable legacy alias for absolute TX boresight gain, and receiver_sensitivity_dbm is the legacy/manual per-cell threshold. When receiver_sensitivity_mode is derived, the effective threshold is returned in ReceiverThreshold and is computed from receiver_noise_bandwidth_hz, receiver_noise_figure_db, receiver_required_snr_db, and receiver_margin_db. Receiver noise bandwidth is distinct from interference SCS/resource-element bandwidth.
       properties:
         schema_version: { type: integer, const: 1, default: 1 }
         network_tech: { type: string, enum: [4g, 5g, 6g] }
@@ -543,10 +543,33 @@ components:
         pci: { type: [integer, "null"], minimum: 0, maximum: 1007, description: LTE profiles are limited to 503; NR profiles are limited to 1007. }
         receiver_height_m: { type: number, minimum: 0.1, maximum: 100 }
         receiver_sensitivity_dbm: { type: number, minimum: -180, maximum: -20 }
+        receiver_sensitivity_mode: { type: string, enum: [manual, derived], default: manual, description: Manual preserves the configured receiver_sensitivity_dbm; derived resolves a deterministic noise-limited threshold. }
+        receiver_noise_bandwidth_hz: { type: number, minimum: 1, maximum: 2000000000, description: Independent receiver noise-equivalent bandwidth in Hz; in derived mode only. It is not the interference SCS or resource-element bandwidth. }
+        receiver_noise_bandwidth_source: { type: string, enum: [explicit_receiver_noise_bandwidth_hz, channel_bandwidth_approximation], readOnly: true, description: Response provenance of the derived receiver noise bandwidth; omitted from requests and ignored in manual mode. }
+        receiver_noise_figure_db: { type: number, minimum: 0, maximum: 20, description: Deterministic receiver noise figure used only by the derived threshold. }
+        receiver_required_snr_db: { type: number, minimum: -100, maximum: 100, description: Explicit planning SNR term; not a throughput, coding, modulation, or 3GPP conformance parameter. }
+        receiver_margin_db: { type: number, minimum: -100, maximum: 100, description: Explicit deterministic receiver planning margin. }
+    ReceiverThreshold:
+      type: object
+      required: [mode, sensitivity_dbm, noise_bandwidth_source, assumptions, applicability]
+      description: "Resolved per-cell receiver usability threshold. Equality is not usable: received_power_dbm must be strictly greater than sensitivity_dbm. Derived values use the rounded -174 dBm/Hz, 290 K reference convention and exclude network interference."
+      properties:
+        mode: { type: string, enum: [manual, derived] }
+        sensitivity_dbm: { type: number }
+        noise_density_dbm_hz: { type: number, description: Rounded thermal noise density reference in dBm/Hz; present in derived mode. }
+        noise_bandwidth_hz: { type: number, description: Effective receiver noise bandwidth; present in derived mode. }
+        noise_bandwidth_source: { type: string, enum: [not_applicable, explicit_receiver_noise_bandwidth_hz, channel_bandwidth_approximation] }
+        thermal_noise_dbm: { type: number }
+        noise_figure_db: { type: number }
+        noise_floor_dbm: { type: number }
+        required_snr_db: { type: number }
+        receiver_margin_db: { type: number }
+        assumptions: { type: array, items: { type: string } }
+        applicability: { type: string }
     RFLinkBudgetTerms:
       type: object
       description: Inspectable signed link ledger. EIRPDBm/eirp_dbm is retained as a historical effective-transmit alias; use boresight_eirp_dbm and directional_eirp_dbm for explicit EIRP semantics.
-      required: [tx_power_dbm, tx_antenna_gain_dbi, antenna_gain_dbi, boresight_eirp_dbm, directional_eirp_dbm, rx_antenna_gain_dbi, system_loss_db, polarization_loss_db, calibration_offset_db, eirp_dbm, fspl_db, propagation_loss_db, building_loss_db, tx_pattern_attenuation_db, horizontal_pattern_attenuation_db, vertical_pattern_attenuation_db, pattern_attenuation_db, total_loss_db, received_power_dbm]
+      required: [tx_power_dbm, tx_antenna_gain_dbi, antenna_gain_dbi, boresight_eirp_dbm, directional_eirp_dbm, rx_antenna_gain_dbi, system_loss_db, polarization_loss_db, calibration_offset_db, eirp_dbm, fspl_db, propagation_loss_db, building_loss_db, tx_pattern_attenuation_db, horizontal_pattern_attenuation_db, vertical_pattern_attenuation_db, pattern_attenuation_db, total_loss_db, received_power_dbm, receiver_sensitivity_mode, effective_receiver_sensitivity_dbm, receiver_link_margin_db]
       properties:
         tx_power_dbm: { type: number, description: Conducted TX power before absolute TX gain. }
         tx_antenna_gain_dbi: { type: number, description: Absolute TX boresight gain. }
@@ -567,9 +590,12 @@ components:
         pattern_attenuation_db: { type: number }
         total_loss_db: { type: number, description: Propagation + building + TX pattern + system + polarization − RX gain; calibration is separate. }
         received_power_dbm: { type: number }
+        receiver_sensitivity_mode: { type: string, enum: [manual, derived] }
+        effective_receiver_sensitivity_dbm: { type: number, description: Resolved per-cell receiver threshold used for usability/reach termination. }
+        receiver_link_margin_db: { type: number, description: received_power_dbm minus effective_receiver_sensitivity_dbm. }
     RFContractMetadata:
       type: object
-      required: [model_id, model_description, deterministic, propagation_dimensions, link_budget_equation, boresight_eirp_equation, directional_eirp_equation, tx_power_semantics, tx_gain_semantics, rx_gain_semantics, polarization_semantics, system_loss_semantics, receiver_sensitivity_scope, building_service_threshold_dbm, building_service_rule, propagation_reach_definition, surface_definition, surface_nodata_definition, interference_serviceability_rule, interference_rsrp_threshold_dbm, interference_sinr_threshold_db, interference_rsrq_threshold_db, calibration_definition, endpoint_scope, antenna_pattern_uses_hard_beam]
+      required: [model_id, model_description, deterministic, propagation_dimensions, link_budget_equation, boresight_eirp_equation, directional_eirp_equation, tx_power_semantics, tx_gain_semantics, rx_gain_semantics, polarization_semantics, system_loss_semantics, receiver_sensitivity_scope, receiver_sensitivity_equation, receiver_noise_semantics, building_service_threshold_dbm, building_service_rule, propagation_reach_definition, surface_definition, surface_nodata_definition, interference_serviceability_rule, interference_rsrp_threshold_dbm, interference_sinr_threshold_db, interference_rsrq_threshold_db, calibration_definition, endpoint_scope, antenna_pattern_uses_hard_beam]
       properties:
         model_id: { type: string }
         model_description: { type: string }
@@ -606,6 +632,8 @@ components:
         relative_attenuation_terms: { type: array, items: { type: string } }
         propagation_terms: { type: array, items: { type: string } }
         receiver_sensitivity_scope: { type: string }
+        receiver_sensitivity_equation: { type: string }
+        receiver_noise_semantics: { type: string }
         building_service_threshold_dbm: { type: number }
         building_service_rule: { type: string }
         propagation_reach_definition: { type: string }
@@ -620,13 +648,14 @@ components:
         endpoint_scope: { type: string }
     EffectiveCellRFProfile:
       type: object
-      required: [id, tower_lon, tower_lat, azimuth_deg, rf_profile]
+      required: [id, tower_lon, tower_lat, azimuth_deg, rf_profile, receiver_threshold]
       properties:
         id: { type: string }
         tower_lon: { type: number }
         tower_lat: { type: number }
         azimuth_deg: { type: number }
         rf_profile: { $ref: "#/components/schemas/RFProfile" }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
     RFRequestDefaults:
       type: object
       required: [rays, radius_m, frequency_ghz, tx_power_dbm, beam_width, rf_profile]
@@ -644,11 +673,12 @@ components:
         rf_profile: { $ref: "#/components/schemas/RFProfile" }
     SimulationResponse:
       type: object
-      required: [geojson, stats, rf_profile, rf_contract]
+      required: [geojson, stats, rf_profile, receiver_threshold, rf_contract]
       properties:
         geojson: { $ref: "#/components/schemas/FeatureCollection", description: "Ray features expose los_state, los_classifier_id, los_classification_basis, terrain_status, los_classification evidence, and a signed link_budget when the urban height-aware classifier applies." }
         stats: { type: object, additionalProperties: true }
         rf_profile: { $ref: "#/components/schemas/RFProfile" }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
     LOSBuildingInterval:
       type: object
@@ -702,10 +732,11 @@ components:
         limitations: { type: array, items: { type: string } }
     CoverageGapResponse:
       type: object
-      required: [geojson, stats, rf_contract]
+      required: [geojson, stats, receiver_threshold, rf_contract]
       properties:
         geojson: { $ref: "#/components/schemas/FeatureCollection" }
         stats: { type: object, additionalProperties: true }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
     BuildingEntryApplicability:
       type: object
@@ -807,6 +838,11 @@ components:
         high_loss_rx_just_inside_dbm: { type: number }
         high_loss_serviceable: { type: boolean }
         receiver_sensitivity_dbm: { type: number }
+        receiver_sensitivity_mode: { type: string, enum: [manual, derived] }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
+        outdoor_receiver_link_margin_db: { type: number }
+        low_loss_receiver_link_margin_db: { type: number }
+        high_loss_receiver_link_margin_db: { type: number }
         building_service_threshold_dbm: { type: number, const: -100 }
         material_evidence: { $ref: "#/components/schemas/BuildingEntryMaterialEvidence" }
         selected_entry_profile: { type: string, enum: [low_loss, high_loss, unknown] }
@@ -1030,13 +1066,14 @@ components:
         objective_status: { type: object, additionalProperties: { $ref: "#/components/schemas/OptimizationObjectiveStatus" } }
     NetworkOptimizationCellConfiguration:
       type: object
-      required: [id, tower_lon, tower_lat, azimuth_deg, rf_profile]
+      required: [id, tower_lon, tower_lat, azimuth_deg, rf_profile, receiver_threshold]
       properties:
         id: { type: string }
         tower_lon: { type: number, minimum: -180, maximum: 180 }
         tower_lat: { type: number, minimum: -90, maximum: 90 }
         azimuth_deg: { type: number, minimum: 0, maximum: 360 }
         rf_profile: { $ref: "#/components/schemas/RFProfile" }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
     NetworkOptimizationParameters:
       type: object
       required: [rays, radius_m, frequency_ghz, tx_power_dbm, beam_width]
@@ -1075,11 +1112,13 @@ components:
         adjusted_parameters: { type: array, items: { type: string } }
     NetworkOptimizedTower:
       type: object
+      required: [id, optimal_azimuth, score, rf_profile, receiver_threshold]
       properties:
         id: { type: string }
         optimal_azimuth: { type: number }
         score: { type: number, description: Legacy per-cell raw score retained for compatibility. }
         rf_profile: { $ref: "#/components/schemas/RFProfile" }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
     NetworkParetoSolution:
       type: object
       properties:
@@ -1092,7 +1131,7 @@ components:
         explanation: { type: string }
     NetworkOptimizationResponse:
       type: object
-      required: [optimized_towers, stats, optimization_domain, optimization, pareto_frontier, request_defaults, effective_cell_profiles, rf_contract]
+      required: [optimized_towers, stats, optimization_domain, optimization, pareto_frontier, request_defaults, effective_cell_profiles, rf_contract, scenario_fingerprint, scenario_schema_version]
       properties:
         optimized_towers: { type: array, items: { $ref: "#/components/schemas/NetworkOptimizedTower" } }
         stats: { $ref: "#/components/schemas/NetworkOptimizationStats" }
@@ -1104,6 +1143,8 @@ components:
         optimization: { $ref: "#/components/schemas/OptimizationOutcome" }
         pareto_frontier: { type: array, items: { $ref: "#/components/schemas/NetworkParetoSolution" } }
         baseline: { $ref: "#/components/schemas/NetworkOptimizationSolution", description: Exact selected-cell configuration and prepared-domain metrics entering optimize-network. }
+        scenario_fingerprint: { type: string, description: Stable canonical identity for RF inputs, priorities, and hard constraints; excludes runtime and presentation state. }
+        scenario_schema_version: { type: string, const: atom-scenario-v1 }
     NetworkCellExplanationRequest:
       type: object
       required: [solution_id, cell_id, baseline, solution]
@@ -1171,6 +1212,7 @@ components:
           required: [network_tech, towers]
           properties:
             network_tech: { type: string, enum: [4g, 5g] }
+            serving_cell_id: { type: string, description: Optional explicit serving cell. When omitted, the strongest eligible RSRP cell is selected; a weaker explicit serving cell remains valid for diagnostic what-if analysis. }
             bandwidth_mhz: { type: number }
             load_factor: { type: number, exclusiveMinimum: 0, maximum: 1, default: 0.7 }
             reuse_factor: { type: integer, enum: [1, 3], default: 1 }
@@ -1299,7 +1341,7 @@ components:
             thresholds_dbm: { type: array, minItems: 1, maxItems: 10, uniqueItems: true, items: { type: number, minimum: -180, maximum: 0 } }
     CoverageSurfaceResponse:
       type: object
-      required: [grid, contours, stats, model, rf_contract]
+      required: [grid, contours, stats, model, receiver_threshold, rf_contract]
       properties:
         grid:
           type: object
@@ -1325,6 +1367,7 @@ components:
             min_dbm: { type: [number, "null"] }
             max_dbm: { type: [number, "null"] }
             receiver_sensitivity_dbm: { type: number, description: Effective selected-cell receiver threshold; not a surface mask. }
+            receiver_sensitivity_mode: { type: string, enum: [manual, derived] }
         model:
           type: object
           required: [type, value_semantics, nodata_meaning, uses_sensitivity_mask]
@@ -1336,20 +1379,22 @@ components:
             los_classifier_id: { type: string, description: "Shared urban classifier ID when urban_short_range is selected." }
             terrain_status: { type: string, enum: [terrain_available, terrain_unavailable] }
             assumptions: { type: array, items: { type: string } }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
     OptimizeAzimuthResponse:
       type: object
-      required: [optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, rf_contract]
+      required: [optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, receiver_threshold, rf_contract]
       properties:
         optimal_azimuth: { type: number }
         propagation_reach_score: { type: number, description: Aggregate usable-ray reach score; coverage_score remains a compatibility alias. }
         coverage_score: { type: number, description: Compatibility alias for propagation_reach_score. }
         demand_score: { type: number }
         residential_score: { type: number }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
     PathProfileResponse:
       type: object
-      required: [rf_contract, geometric_los, fresnel_clearance, obstruction_ledger, diffraction_diagnostic, canonical_comparison]
+      required: [rf_contract, geometric_los, fresnel_clearance, obstruction_ledger, diffraction_diagnostic, canonical_comparison, receiver_threshold]
       properties:
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
         terrain: { $ref: "#/components/schemas/TerrainMetadata" }
@@ -1366,11 +1411,12 @@ components:
         loss_budget: { $ref: "#/components/schemas/PathLossBudget", description: "Supplemental isolated path-profile budget; not canonical network RF." }
         applicability: { type: object, additionalProperties: true }
         rf_profile: { $ref: "#/components/schemas/RFProfile" }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
         fidelity: { type: object, additionalProperties: true }
       additionalProperties: true
     PathLossBudget:
       type: object
-      required: [components, total_median_loss_db, rx_dbm_p50, rx_dbm_p90_reliability, rx_dbm_upper_90, shadow_sigma_db, definition, link_budget]
+      required: [components, total_median_loss_db, rx_dbm_p50, rx_dbm_p90_reliability, rx_dbm_upper_90, shadow_sigma_db, definition, link_budget, receiver_threshold, receiver_link_margin_db]
       properties:
         components: { type: array, items: { type: object, additionalProperties: true } }
         total_median_loss_db: { type: number, description: Signed compatibility total including calibration and RX-gain effect. }
@@ -1380,6 +1426,8 @@ components:
         shadow_sigma_db: { type: number }
         definition: { type: string }
         link_budget: { $ref: "#/components/schemas/RFLinkBudgetTerms" }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
+        receiver_link_margin_db: { type: number }
     FresnelClearanceDiagnostics:
       type: object
       required: [minimum_ratio, threshold_ratio, status, classification_independent, note]
@@ -1477,25 +1525,139 @@ components:
         diagnostic_rx_dbm: { type: [number, "null"] }
         diagnostic_minus_canonical_db: { type: [number, "null"] }
         note: { type: string }
+    RadioQualityReference:
+      type: object
+      required: [id, revision, sections, url, applicability]
+      properties:
+        id: { type: string }
+        revision: { type: string }
+        sections: { type: string }
+        url: { type: string, format: uri }
+        applicability: { type: string }
+    InterferencePowerLedgerEntry:
+      type: object
+      required: [cell_id, network_tech, channel_id, frequency_ghz, bandwidth_mhz, load_factor, channel_match, eligible, serving_eligible]
+      properties:
+        cell_id: { type: string }
+        role: { type: string, enum: [serving, interferer, candidate] }
+        network_tech: { type: string, enum: [4g, 5g] }
+        channel_id: { type: string }
+        frequency_ghz: { type: number }
+        bandwidth_mhz: { type: number }
+        received_carrier_power_dbm: { type: [number, "null"] }
+        rsrp_dbm: { type: [number, "null"] }
+        normalized_power_mw: { type: [number, "null"], minimum: 0 }
+        loaded_power_mw: { type: [number, "null"], minimum: 0 }
+        load_factor: { type: number, exclusiveMinimum: 0, maximum: 1 }
+        channel_match: { type: boolean }
+        eligible: { type: boolean, description: Finite in-horizon propagation candidate with a usable linear reference-resource power; it is the eligibility basis for interference evaluation, not serving admission. }
+        serving_eligible: { type: boolean, description: Strict received_carrier_power_dbm > the cell's effective receiver sensitivity; only serving selection uses this gate. }
+        exclusion_reason: { type: string, description: Examples include outside_radius, antenna_ineligible, below_receiver_sensitivity, below_numeric_floor, different_technology, different_channel, different_frequency, different_bandwidth, and unsupported_configuration. below_receiver_sensitivity does not remove a finite non-serving cell from interference summation. }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
+        receiver_link_margin_db: { type: [number, "null"] }
+    InterferenceFeatureProperties:
+      type: object
+      required: [sample_id, quality_class, serviceable, interference_limited, wall_count, contributing_cells, interferer_count]
+      properties:
+        sample_id: { type: string }
+        serving_cell_id: { type: string }
+        channel_id: { type: string }
+        serving_received_carrier_power_dbm: { type: [number, "null"], description: Propagation final power integrated over the configured carrier; it is not RSRP until the declared conversion is applied. }
+        desired_signal_power_mw: { type: [number, "null"], minimum: 0, description: Serving RSRP/reference-resource power in the linear domain. }
+        interference_power_mw: { type: [number, "null"], minimum: 0, description: Sum of load-scaled eligible co-channel reference-resource powers. }
+        thermal_noise_power_mw: { type: [number, "null"], minimum: 0 }
+        thermal_noise_dbm: { type: [number, "null"] }
+        interference_noise_bandwidth_hz: { type: number }
+        noise_bandwidth_source: { type: string, const: subcarrier_spacing_resource }
+        rsrp_dbm: { type: [number, "null"] }
+        sinr_db: { type: [number, "null"] }
+        rsrq_db: { type: [number, "null"] }
+        rssi_dbm: { type: [number, "null"] }
+        interference_dbm: { type: [number, "null"] }
+        quality_class: { type: string }
+        serviceable: { type: boolean }
+        interference_limited: { type: boolean }
+        wall_count: { type: integer, minimum: 0 }
+        contributing_cells: { type: integer, minimum: 0 }
+        interferer_count: { type: integer, minimum: 0 }
+        serving_selection_mode: { type: string, enum: [automatic_strongest_eligible, explicit_cell_id] }
+        serving_selection_metric: { type: string, const: rsrp_dbm }
+        rsrp_kind: { type: string }
+        rsrp_conversion_id: { type: string, const: uniform-carrier-to-reference-resource-v1 }
+        rsrp_conversion_description: { type: string }
+        serviceability_status: { type: string }
+        serviceability_failures: { type: array, items: { type: string } }
+        power_ledger: { type: array, items: { $ref: "#/components/schemas/InterferencePowerLedgerEntry" } }
+        receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
+        receiver_link_margin_db: { type: [number, "null"] }
+        link_budget: { $ref: "#/components/schemas/RFLinkBudgetTerms" }
+    InterferenceStats:
+      type: object
+      required: [sample_count, signal_samples, valid_sample_count, no_signal_count, serviceable_samples, serviceable_pct, interference_limited_count, interference_limited_pct, serviceable_fraction, outage_by_reason, per_serving_cell]
+      properties:
+        sample_count: { type: integer, minimum: 0 }
+        signal_samples: { type: integer, minimum: 0 }
+        valid_sample_count: { type: integer, minimum: 0 }
+        no_signal_count: { type: integer, minimum: 0 }
+        serviceable_samples: { type: integer, minimum: 0 }
+        serviceable_pct: { type: number, minimum: 0, maximum: 100 }
+        serviceable_fraction: { type: [number, "null"], minimum: 0, maximum: 1 }
+        interference_limited_count: { type: integer, minimum: 0 }
+        interference_limited_pct: { type: number, minimum: 0, maximum: 100 }
+        avg_sinr_db: { type: [number, "null"] }
+        p10_sinr_db: { type: [number, "null"] }
+        median_sinr_db: { type: [number, "null"] }
+        avg_rsrp_dbm: { type: [number, "null"] }
+        p10_rsrp_dbm: { type: [number, "null"] }
+        avg_rsrq_db: { type: [number, "null"] }
+        p10_rsrq_db: { type: [number, "null"] }
+        outage_by_reason: { type: object, additionalProperties: { type: integer, minimum: 0 } }
+        per_serving_cell: { type: array, items: { type: object, additionalProperties: true } }
     InterferenceModel:
       type: object
-      required: [request_defaults, effective_cell_profiles, rf_contract, rsrp_threshold_dbm, sinr_threshold_db, rsrq_threshold_db, serviceability_rule]
+      required: [request_defaults, effective_cell_profiles, interference_horizon_meters, interference_horizon_source, interference_horizon_semantics, rf_contract, rsrp_threshold_dbm, sinr_threshold_db, rsrq_threshold_db, serviceability_rule, receiver_threshold_rule, receiver_noise_semantics, serving_selection_mode, serving_selection_metric, co_channel_eligibility_rule, carrier_power_semantics, resource_basis, resource_elements_per_rb, interference_noise_bandwidth_hz, noise_bandwidth_source, rsrp_kind, rsrp_conversion_id, load_assumption, adjacent_channel_model, partial_overlap_model, optimization_coupling, serviceability_policy_id, threshold_provenance, radio_quality_references, scenario_fingerprint, scenario_schema_version]
       properties:
         request_defaults: { $ref: "#/components/schemas/RFRequestDefaults" }
         effective_cell_profiles: { type: array, items: { $ref: "#/components/schemas/EffectiveCellRFProfile" } }
+        interference_horizon_meters: { type: array, items: { type: number, minimum: 0 }, description: Per-cell finite analysis horizons aligned with effective_cell_profiles; these are not physical zero-power boundaries. }
+        interference_horizon_source: { type: string, const: effective_cell_profile.radius_m }
+        interference_horizon_semantics: { type: string }
         rf_contract: { $ref: "#/components/schemas/RFContractMetadata" }
         profiles: { type: array, items: { $ref: "#/components/schemas/RFProfile" } }
         rsrp_threshold_dbm: { type: number, const: -110 }
         sinr_threshold_db: { type: number, const: 0 }
         rsrq_threshold_db: { type: number, const: -20 }
         serviceability_rule: { type: string }
+        receiver_threshold_rule: { type: string }
+        receiver_noise_semantics: { type: string }
+        serving_selection_mode: { type: string }
+        serving_selection_metric: { type: string, const: rsrp_dbm }
+        co_channel_eligibility_rule: { type: string }
+        carrier_power_semantics: { type: string }
+        resource_basis: { type: string }
+        resource_elements_per_rb: { type: integer, const: 12 }
+        interference_noise_bandwidth_hz: { type: number, minimum: 0 }
+        noise_bandwidth_source: { type: string, const: subcarrier_spacing_resource }
+        rsrp_kind: { type: string }
+        rsrp_conversion_id: { type: string, const: uniform-carrier-to-reference-resource-v1 }
+        rsrp_conversion_description: { type: string }
+        rssi_rsrq_semantics: { type: string }
+        load_assumption: { type: string }
+        adjacent_channel_model: { type: string, const: excluded }
+        partial_overlap_model: { type: string, const: deferred }
+        optimization_coupling: { type: string }
+        serviceability_policy_id: { type: string }
+        threshold_provenance: { type: string }
+        radio_quality_references: { type: array, items: { $ref: "#/components/schemas/RadioQualityReference" } }
+        scenario_fingerprint: { type: string }
+        scenario_schema_version: { type: string, const: atom-scenario-v1 }
     InterferenceResponse:
       type: object
       required: [geojson, demand_geojson, stats, model]
       properties:
-        geojson: { $ref: "#/components/schemas/FeatureCollection", description: "Sample properties include los_state, los_classifier_id, los_classification_basis, terrain_status, and los_classification evidence for serving cells." }
+        geojson: { $ref: "#/components/schemas/InterferenceFeatureCollection", description: "Sample properties include the inspectable radio-quality power ledger and propagation evidence for serving cells." }
         demand_geojson: { $ref: "#/components/schemas/FeatureCollection" }
-        stats: { type: object, additionalProperties: true }
+        stats: { $ref: "#/components/schemas/InterferenceStats" }
         model: { $ref: "#/components/schemas/InterferenceModel" }
     MeasurementResponse:
       type: object
@@ -1543,6 +1705,20 @@ components:
             numberReturned: { type: integer, minimum: 0, maximum: 5000 }
             limit: { type: integer, minimum: 1, maximum: 5000 }
             offset: { type: integer, minimum: 0 }
+    InterferenceFeatureCollection:
+      type: object
+      required: [type, features]
+      properties:
+        type: { type: string, const: FeatureCollection }
+        features:
+          type: array
+          items:
+            type: object
+            required: [type, properties, geometry]
+            properties:
+              type: { type: string, const: Feature }
+              properties: { $ref: "#/components/schemas/InterferenceFeatureProperties" }
+              geometry: { type: object, additionalProperties: true }
     FeatureCollection:
       type: object
       required: [type, features]

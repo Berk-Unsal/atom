@@ -177,7 +177,8 @@ RF-derived facade-entry estimate for the selected buildings and
 cells</li>
 <li><code>POST /api/interference</code> returns
 <code>{ geojson, demand_geojson, stats, model }</code>, with defaults,
-effective profiles, and threshold metadata in <code>model</code></li>
+effective profiles, per-cell finite interference horizons, and threshold
+metadata in <code>model</code></li>
 <li><code>POST /api/optimize-azimuth</code> returns
 <code>{ optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, rf_contract }</code></li>
 <li><code>POST /api/recommend-sites</code> returns a baseline plus
@@ -221,6 +222,25 @@ Boresight and directional EIRP are exposed separately in link-budget
 diagnostics; the historical <code>eirp_dbm</code> field is retained as
 an effective-transmit compatibility alias, not a replacement for
 conducted power.</p>
+<p>Receiver sensitivity is a per-cell usability threshold.
+<code>receiver_sensitivity_mode</code> defaults to <code>manual</code>
+and preserves <code>receiver_sensitivity_dbm</code> (default
+<code>-115 dBm</code>). In opt-in <code>derived</code> mode, the
+effective threshold is
+<code>-174 dBm/Hz + 10 log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db + receiver_required_snr_db + receiver_margin_db</code>,
+using the rounded 290 K reference convention.
+<code>receiver_noise_bandwidth_hz</code> is independent of interference
+SCS/resource-element bandwidth. The response returns
+<code>receiver_threshold</code>, including the selected mode, effective
+threshold, derived terms when applicable, bandwidth provenance,
+assumptions, and applicability. <code>receiver_link_margin_db</code> is
+raw received power minus that threshold; strict
+<code>received_power_dbm &gt; sensitivity_dbm</code> is required for
+serving admission. In <code>/api/interference</code>, a finite
+non-serving signal below sensitivity remains an eligible co-channel
+interferer; <code>eligible</code> and <code>serving_eligible</code> are
+separate ledger fields. See the Concept 4G.2 receiver-noise note for the
+complete equation and separation contract.</p>
 <p>The analytic compatibility presets keep their established formulas
 and hard-sector eligibility. The optional
 <code>3gpp-single-element</code> preset is a full-azimuth,
@@ -280,9 +300,10 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;reuse_factor&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;pci&quot;</span><span class="fu">:</span> <span class="dv">321</span><span class="fu">,</span></span>
 <span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_height_m&quot;</span><span class="fu">:</span> <span class="fl">1.5</span><span class="fu">,</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_sensitivity_dbm&quot;</span><span class="fu">:</span> <span class="dv">-110</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_sensitivity_dbm&quot;</span><span class="fu">:</span> <span class="dv">-110</span><span class="fu">,</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_sensitivity_mode&quot;</span><span class="fu">:</span> <span class="st">&quot;manual&quot;</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <table>
 <thead>
 <tr>
@@ -330,7 +351,10 @@ orientation <code>0–&lt;360°</code></td>
 </tr>
 <tr>
 <td>Receiver</td>
-<td>sensitivity <code>-180–-20 dBm</code></td>
+<td>manual sensitivity <code>-180–-20 dBm</code>; or derived mode with
+noise bandwidth <code>1 Hz–2 GHz</code>, noise figure
+<code>0–20 dB</code>, required SNR <code>-100–100 dB</code>, and
+receiver margin <code>-100–100 dB</code></td>
 </tr>
 </tbody>
 </table>
@@ -339,7 +363,9 @@ imported vendor radiation diagrams. <code>3gpp-single-element</code> is
 a bounded standards-derived reference cut, not a 3GPP array,
 beamforming, or MIMO model. No tabulated/vendor pattern upload is
 exposed in this phase. Interference analysis remains limited to 4G and
-5G even though propagation accepts the 6G research profile.</p>
+5G even though propagation accepts the 6G research profile. The selected
+receiver SNR and margin are planning inputs, not throughput, coding,
+modulation, or UE conformance parameters.</p>
 <hr />
 <h2 id="endpoints">Endpoints</h2>
 <h3 id="health-check">Health Check</h3>
@@ -401,17 +427,20 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb6-1"><a href="
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;building_service_threshold_dbm&quot;</span><span class="fu">:</span> <span class="dv">-100</span><span class="fu">,</span></span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;propagation_reach_definition&quot;</span><span class="fu">:</span> <span class="st">&quot;usable receiver-power reach&quot;</span><span class="fu">,</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;surface_nodata_definition&quot;</span><span class="fu">:</span> <span class="st">&quot;radius/beam geometry exclusion; below-sensitivity values remain numeric&quot;</span><span class="fu">,</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interference_rsrp_threshold_dbm&quot;</span><span class="fu">:</span> <span class="dv">-110</span><span class="fu">,</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interference_sinr_threshold_db&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interference_rsrq_threshold_db&quot;</span><span class="fu">:</span> <span class="dv">-20</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;technology_capabilities&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;dataset&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;ankara-open-planning&quot;</span><span class="fu">,</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;2026.07&quot;</span><span class="fu">,</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;crs&quot;</span><span class="fu">:</span> <span class="st">&quot;EPSG:4326&quot;</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_sensitivity_scope&quot;</span><span class="fu">:</span> <span class="st">&quot;effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile&quot;</span><span class="fu">,</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_sensitivity_equation&quot;</span><span class="fu">:</span> <span class="st">&quot;manual: configured receiver_sensitivity_dbm; derived: -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db + receiver_required_snr_db + receiver_margin_db&quot;</span><span class="fu">,</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;receiver_noise_semantics&quot;</span><span class="fu">:</span> <span class="st">&quot;receiver noise-equivalent bandwidth is separate from interference SCS/resource-element noise and network interference&quot;</span><span class="fu">,</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interference_rsrp_threshold_dbm&quot;</span><span class="fu">:</span> <span class="dv">-110</span><span class="fu">,</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interference_sinr_threshold_db&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interference_rsrq_threshold_db&quot;</span><span class="fu">:</span> <span class="dv">-20</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;technology_capabilities&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;dataset&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;ankara-open-planning&quot;</span><span class="fu">,</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;2026.07&quot;</span><span class="fu">,</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;crs&quot;</span><span class="fu">:</span> <span class="st">&quot;EPSG:4326&quot;</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <hr />
 <h3 id="get-buildings">Get Buildings</h3>
 <p><strong>Endpoint</strong>: <code>GET /api/buildings</code></p>
@@ -592,8 +621,10 @@ conservative NLOS; no legacy wall-event dB is added to the empirical
 NLOS formula. It is a raw single-cell received-power surface: valid
 below-sensitivity values remain numeric,
 <code>uses_sensitivity_mask</code> is false, and NoData means only
-radius/beam geometry exclusion. It does not apply the terrain-profile or
-environmental sensitivity components.</p>
+radius/beam geometry exclusion. The response exposes the effective
+<code>receiver_threshold</code>; sensitivity changes the
+below-sensitivity statistic but does not clip the raw grid. It does not
+apply the terrain-profile or environmental sensitivity components.</p>
 <hr />
 <h3 id="simulate-propagation">Simulate Propagation</h3>
 <p><strong>Endpoint</strong>: <code>POST /api/simulate</code></p>
@@ -796,8 +827,9 @@ baseline, the shared <code>outdoor_los_classifier_id</code>,
 <code>outdoor_los_classification</code> evidence; the target building is
 excluded from the outdoor leg, <code>outdoor_rx_at_facade_dbm</code>,
 <code>outdoor_wall_loss_db: 0</code>, both entry losses, both
-just-inside powers, separate receiver-sensitivity and building-service
-thresholds, and material evidence.
+just-inside powers, the effective <code>receiver_threshold</code> and
+receiver link margins, separate receiver-sensitivity and
+building-service thresholds, and material evidence.
 <code>diagnostics.http_requests_required</code> is <code>1</code>; the
 frontend caches the response under an RF-derived source key.</p>
 <p>The low-loss and high-loss values are deterministic scenarios, not
@@ -873,7 +905,9 @@ sector</li>
 evaluator, analytic pattern terms, and explicit applicability/fallback
 semantics</li>
 <li>The building-service threshold is <code>-100 dBm</code> and is
-separate from per-cell receiver sensitivity</li>
+separate from per-cell receiver sensitivity; outdoor service uses raw
+power while low/high entry serviceability uses the effective receiver
+threshold</li>
 <li>Returned point features are sorted by demand, then by weakest
 estimated signal</li>
 </ul>
@@ -891,16 +925,17 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb16-1"><a href=
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;cell-1&quot;</span><span class="fu">,</span> <span class="dt">&quot;tower_lon&quot;</span><span class="fu">:</span> <span class="fl">32.8541</span><span class="fu">,</span> <span class="dt">&quot;tower_lat&quot;</span><span class="fu">:</span> <span class="fl">39.9208</span><span class="fu">,</span> <span class="dt">&quot;azimuth&quot;</span><span class="fu">:</span> <span class="dv">45</span> <span class="fu">}</span><span class="ot">,</span></span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;cell-2&quot;</span><span class="fu">,</span> <span class="dt">&quot;tower_lon&quot;</span><span class="fu">:</span> <span class="fl">32.8581</span><span class="fu">,</span> <span class="dt">&quot;tower_lat&quot;</span><span class="fu">:</span> <span class="fl">39.9218</span><span class="fu">,</span> <span class="dt">&quot;azimuth&quot;</span><span class="fu">:</span> <span class="dv">225</span> <span class="fu">}</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">400</span><span class="fu">,</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="dv">28</span><span class="fu">,</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tx_power_dbm&quot;</span><span class="fu">:</span> <span class="dv">30</span><span class="fu">,</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">120</span><span class="fu">,</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bandwidth_mhz&quot;</span><span class="fu">:</span> <span class="dv">100</span><span class="fu">,</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;load_factor&quot;</span><span class="fu">:</span> <span class="fl">0.7</span><span class="fu">,</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;reuse_factor&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;noise_figure_db&quot;</span><span class="fu">:</span> <span class="dv">7</span><span class="fu">,</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sample_spacing_m&quot;</span><span class="fu">:</span> <span class="dv">40</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;serving_cell_id&quot;</span><span class="fu">:</span> <span class="st">&quot;cell-1&quot;</span><span class="fu">,</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">400</span><span class="fu">,</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="dv">28</span><span class="fu">,</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tx_power_dbm&quot;</span><span class="fu">:</span> <span class="dv">30</span><span class="fu">,</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;beam_width&quot;</span><span class="fu">:</span> <span class="dv">120</span><span class="fu">,</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bandwidth_mhz&quot;</span><span class="fu">:</span> <span class="dv">100</span><span class="fu">,</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;load_factor&quot;</span><span class="fu">:</span> <span class="fl">0.7</span><span class="fu">,</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;reuse_factor&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;noise_figure_db&quot;</span><span class="fu">:</span> <span class="dv">7</span><span class="fu">,</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sample_spacing_m&quot;</span><span class="fu">:</span> <span class="dv">40</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>The request accepts 2–6 unique cells. LTE bandwidths are
 <code>1.4</code>, <code>3</code>, <code>5</code>, <code>10</code>,
 <code>15</code>, or <code>20</code> MHz; 5G NR bandwidths are
@@ -914,16 +949,24 @@ for the 6G research profile.</p>
 serving/interferer context.</li>
 <li><code>demand_geojson</code>: up to 500 affected demand-building
 centroids.</li>
-<li><code>stats</code>: average and P10 radio quality, serviceable area,
-interference-limited area, affected demand, and per-cell summaries.
+<li><code>stats</code>: average, P10, and median radio quality,
+serviceable area/fraction, interference-limited area, outage-by-reason
+counts, affected demand, and per-cell summaries.
 <code>valid_sample_count</code> reports the number of samples with
-usable measurements; average and P10 fields are <code>null</code> when
-that count is zero.</li>
+usable measurements; aggregate fields are <code>null</code> when that
+count is zero.</li>
 <li><code>model</code>: bandwidth, SCS, resource blocks, load, reuse,
-effective spacing, request defaults, effective per-cell profiles, and
-explicit modeling assumptions. It also reports serviceability thresholds
-of <code>RSRP &gt;= -110 dBm</code>, <code>SINR &gt;= 0 dB</code>, and
-<code>RSRQ &gt;= -20 dB</code>.</li>
+effective spacing, request defaults, effective per-cell profiles with
+receiver thresholds, and explicit modeling assumptions. It also reports
+the carrier-power/reference-resource conversion, exact co-channel rule,
+serving-selection mode, interference noise bandwidth/source, receiver
+admission rule, and separate per-RE noise semantics.</li>
+<li>Each sample exposes a power ledger with raw
+<code>received_carrier_power_dbm</code>, desired/interference/noise mW,
+normalized RSRP, eligibility/exclusion reasons, serviceability failures,
+and a deterministic scenario fingerprint. <code>serving_cell_id</code>
+is optional; when omitted, the strongest eligible RSRP cell is
+selected.</li>
 </ul>
 <p>Results are deterministic planning estimates, not measurements
 reported by a UE or live radio network.</p>

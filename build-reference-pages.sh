@@ -57,6 +57,10 @@ build_page concept-4f2-diffraction-diagnostic.md concept-4f2-diffraction-diagnos
   "P.526-aligned single-edge diffraction reference math, obstruction ledgers, known-height applicability, canonical comparison, and diagnostic boundaries."
 build_page concept-4g1-antenna-link-budget.md concept-4g1-antenna-link-budget.html "Concept 4G.1 Antenna and Link Budget" "Model reference" \
   "Conducted-power and EIRP semantics, shared antenna evaluation, explicit link-budget terms, reference-pattern behavior, diagnostics, and compatibility evidence."
+build_page concept-4g2-receiver-noise-sensitivity.md concept-4g2-receiver-noise-sensitivity.html "Concept 4G.2 Receiver Noise and Sensitivity" "Model reference" \
+  "Deterministic thermal-noise-derived receiver thresholds, strict link usability, per-cell metadata, bandwidth semantics, integration boundaries, and canonical comparison evidence."
+build_page concept-4h1-interference-radio-quality.md concept-4h1-interference-radio-quality.html "Concept 4H.1 Interference and Radio Quality" "Model reference" \
+  "Inspectable received-carrier power, serving-cell selection, co-channel eligibility, resource normalization, thermal noise, planning radio-quality metrics, diagnostics, and deterministic fingerprints."
 build_page bug-fixes.md bug-fixes.html "Bug-Fix Register" "Quality history" \
   "Prioritized confirmed defects, user impact, root causes, corrections, and regression evidence for A.T.O.M releases."
 build_page ../CHANGELOG.md changelog.html "Changelog" "Release history" \

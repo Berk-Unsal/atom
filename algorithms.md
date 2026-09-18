@@ -25,6 +25,22 @@ The height-aware branch keeps the equations above unchanged and changes only the
 
 The separate [`Concept 4E design note`](concept-4e-building-entry.md) evaluates a representative building facade in one batched analysis. It first evaluates the Concept 4D outdoor baseline to the facade, then subtracts the deterministic median O2I external-wall term from [3GPP TR 38.901 V19.4.0, §7.4.3.1](https://www.etsi.org/deliver/etsi_tr/138900_138999/138901/19.04.00_60/tr_138901v190400p.pdf). Indoor depth is fixed at zero, so no interior loss, room/floor geometry, or whole-building claim is produced. Outdoor NLOS does not receive a second legacy wall loss. At 28 GHz the standard low/high terms are evaluated from the glass/concrete compositions; at 2.6 GHz the single-frequency 20 dB compatibility value is used for both API scenarios. Material tags are evidence only, and the deterministic median omits random shadow-fading draws.
 
+## Concept 4G.2: Receiver Noise and Sensitivity
+
+[`Concept 4G.2`](concept-4g2-receiver-noise-sensitivity.md) adds a deterministic receiver usability contract while preserving the manual `-115 dBm` default. Manual mode uses the configured per-cell threshold. Opt-in derived mode uses the rounded 290 K reference `-174 dBm/Hz` and evaluates:
+
+```text
+Nfloor = -174 + 10 log10(B_noise_Hz) + NF_dB
+Sensitivity = Nfloor + RequiredSNR_dB + ReceiverMargin_dB
+RxMargin = ReceivedPower_dBm - Sensitivity_dBm
+```
+
+Usability is strict (`received_power_dbm > sensitivity_dbm`). Noise-equivalent receiver bandwidth is independent of interference SCS/resource-element bandwidth. The same resolved threshold is surfaced in link diagnostics, static reach, building-entry indoor scenarios, surfaces, interference carrier admission, optimization, and reports, while building service (`> -100 dBm`), raw surface values, and interference RSRP/SINR/RSRQ serviceability retain their separate semantics. See the standalone note for equations, references, canonical evidence, and non-claims.
+
+## Concept 4H.1: Interference and Radio Quality
+
+[`Concept 4H.1`](concept-4h1-interference-radio-quality.md) formalizes the existing interference path as an inspectable planning contract. Propagation first returns total received carrier power. The path then applies a declared uniform full-carrier-to-reference-resource conversion, sums desired/interfering powers in mW on that same basis, and adds independent `kTB` thermal noise at the serving subcarrier spacing. RSRP, RSSI, RSRQ, and SINR are labeled planning approximations rather than UE measurements. Serving selection, exact co-channel matching, deterministic load, serving-only receiver-sensitivity admission, finite per-cell interference horizons, failure reasons, a per-cell power ledger, and a scenario fingerprint are returned with the result. Radio-quality diagnostics never feed the canonical propagation-only optimizer.
+
 ## Radio Frequency Physics Foundation
 
 ### Free-Space Path Loss (FSPL)

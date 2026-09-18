@@ -40,7 +40,7 @@ Most responses are **JSON**. Explicit GIS export representations use GeoJSON, CS
 - `POST /api/simulate` returns `{ geojson, stats, rf_profile, rf_contract }`
 - `POST /api/coverage-gaps` returns `{ geojson, stats, rf_contract }`
 - `POST /api/building-entry-analysis` returns one batched, RF-derived facade-entry estimate for the selected buildings and cells
-- `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`, with defaults, effective profiles, and threshold metadata in `model`
+- `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`, with defaults, effective profiles, per-cell finite interference horizons, and threshold metadata in `model`
 - `POST /api/optimize-azimuth` returns `{ optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, rf_contract }`
 - `POST /api/recommend-sites` returns a baseline plus ranked candidate records and GeoJSON
 - `POST /api/measurements/evaluate` returns residual GeoJSON, subgroup diagnostics, uncertainty, and spatially validated bias guidance
@@ -53,6 +53,8 @@ Error responses use a simple object with an `error` message.
 Single-sector requests accept `rf_profile` at the request root. Network, interference, recommendation, and measurement requests accept it independently inside every `towers[]` item. Legacy top-level fields remain defaults; an explicit nested property overrides its top-level/default counterpart only for that cell. Normalized simulation, optimized-tower, recommendation, measurement, and interference-model responses include resolved profiles for reproducibility. Network-shaped responses also expose `request_defaults` separately from `effective_cell_profiles`; a request default is not evidence that every cell used that value.
 
 The request profile accepts `propagation_model: urban_short_range | legacy_fspl_walls | research_sub_thz`. The default is `urban_short_range` at 2.6/28 GHz and `research_sub_thz` at 140 GHz. `tx_power_dbm` is conducted transmitter power; `tx_antenna_gain_dbi` is the preferred absolute TX boresight gain field, while `antenna_gain_dbi` remains a stable compatibility alias. Pattern attenuation is relative to boresight and is never another gain. `rx_antenna_gain_dbi` is an explicit scalar receiver gain with a backward-compatible default of `0 dBi`; `polarization_loss_db` is an explicit deterministic mismatch loss with a default of `0 dB`. Positive calibration dB raises predicted received power. The signed link contract is `P_rx = P_tx_conducted + G_tx_boresight - A_tx_pattern + G_rx - L_system - L_polarization + calibration - L_propagation - L_building`. Boresight and directional EIRP are exposed separately in link-budget diagnostics; the historical `eirp_dbm` field is retained as an effective-transmit compatibility alias, not a replacement for conducted power.
+
+Receiver sensitivity is a per-cell usability threshold. `receiver_sensitivity_mode` defaults to `manual` and preserves `receiver_sensitivity_dbm` (default `-115 dBm`). In opt-in `derived` mode, the effective threshold is `-174 dBm/Hz + 10 log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db + receiver_required_snr_db + receiver_margin_db`, using the rounded 290 K reference convention. `receiver_noise_bandwidth_hz` is independent of interference SCS/resource-element bandwidth. The response returns `receiver_threshold`, including the selected mode, effective threshold, derived terms when applicable, bandwidth provenance, assumptions, and applicability. `receiver_link_margin_db` is raw received power minus that threshold; strict `received_power_dbm > sensitivity_dbm` is required for serving admission. In `/api/interference`, a finite non-serving signal below sensitivity remains an eligible co-channel interferer; `eligible` and `serving_eligible` are separate ledger fields. See the [Concept 4G.2 receiver-noise note](concept-4g2-receiver-noise-sensitivity.md) for the complete equation and separation contract.
 
 The analytic compatibility presets keep their established formulas and hard-sector eligibility. The optional `3gpp-single-element` preset is a full-azimuth, single-element reference shape based on 3GPP TR 38.901 §7.3/Table 7.3-1; it has no array factor, beamforming, codebook, sidelobe dataset, or MIMO behavior. Mechanical and electrical downtilt remain separate inputs but combine as `mechanical + electrical` for the current deterministic patterns; positive mechanical downtilt points the boresight downward. See the [Concept 4G.1 antenna and link-budget note](concept-4g1-antenna-link-budget.md) for the complete contract and comparison fixtures. The [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md) covers height evidence and terrain status; the [Concept 4D design note](concept-4d-urban-propagation.md) remains the propagation applicability and equation reference; and the [Concept 4E building-entry note](concept-4e-building-entry.md) covers facade-entry estimation.
 
@@ -90,7 +92,8 @@ For `urban_short_range`, explicit OSM `height` is reported as `observed_tag`, `b
     "reuse_factor": 1,
     "pci": 321,
     "receiver_height_m": 1.5,
-    "receiver_sensitivity_dbm": -110
+    "receiver_sensitivity_dbm": -110,
+    "receiver_sensitivity_mode": "manual"
   }
 }
 ```
@@ -103,9 +106,9 @@ For `urban_short_range`, explicit OSM `height` is reported as `observed_tag`, `b
 | Geometry | radius `25–5000 m`; beam `10–360°`; antenna height `0.5–300 m`; receiver height `0.1–100 m`; orientation `0–<360°` |
 | Tilt/pattern | mechanical/electrical tilt `-30–90°`; horizontal `ideal-sector`, `cosine-sector`, `omni`, or `3gpp-single-element`; vertical `flat`, `panel-10deg`, or `panel-20deg` |
 | Interference | load `>0–1`; reuse `1–12`; optional PCI `0–503` for LTE or `0–1007` for NR |
-| Receiver | sensitivity `-180–-20 dBm` |
+| Receiver | manual sensitivity `-180–-20 dBm`; or derived mode with noise bandwidth `1 Hz–2 GHz`, noise figure `0–20 dB`, required SNR `-100–100 dB`, and receiver margin `-100–100 dB` |
 
-The profile pattern IDs are deterministic planning presets, not imported vendor radiation diagrams. `3gpp-single-element` is a bounded standards-derived reference cut, not a 3GPP array, beamforming, or MIMO model. No tabulated/vendor pattern upload is exposed in this phase. Interference analysis remains limited to 4G and 5G even though propagation accepts the 6G research profile.
+The profile pattern IDs are deterministic planning presets, not imported vendor radiation diagrams. `3gpp-single-element` is a bounded standards-derived reference cut, not a 3GPP array, beamforming, or MIMO model. No tabulated/vendor pattern upload is exposed in this phase. Interference analysis remains limited to 4G and 5G even though propagation accepts the 6G research profile. The selected receiver SNR and margin are planning inputs, not throughput, coding, modulation, or UE conformance parameters.
 
 ---
 
@@ -175,6 +178,9 @@ Returns the running application and model versions, build commit, supported tech
     "building_service_threshold_dbm": -100,
     "propagation_reach_definition": "usable receiver-power reach",
     "surface_nodata_definition": "radius/beam geometry exclusion; below-sensitivity values remain numeric",
+    "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+    "receiver_sensitivity_equation": "manual: configured receiver_sensitivity_dbm; derived: -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db + receiver_required_snr_db + receiver_margin_db",
+    "receiver_noise_semantics": "receiver noise-equivalent bandwidth is separate from interference SCS/resource-element noise and network interference",
     "interference_rsrp_threshold_dbm": -110,
     "interference_sinr_threshold_db": 0,
     "interference_rsrq_threshold_db": -20
@@ -333,7 +339,7 @@ The default JSON response contains a CRS84 row-major raster (`grid`), marching-s
 - `?f=geojson` for isoline GeoJSON
 - `?f=csv` for valid grid-center longitude, latitude, and received power
 
-The surface uses the selected propagation model, antenna-pattern, and calibration terms. For `urban_short_range`, known roof heights can clear footprint intersections and unknown heights remain conservative NLOS; no legacy wall-event dB is added to the empirical NLOS formula. It is a raw single-cell received-power surface: valid below-sensitivity values remain numeric, `uses_sensitivity_mask` is false, and NoData means only radius/beam geometry exclusion. It does not apply the terrain-profile or environmental sensitivity components.
+The surface uses the selected propagation model, antenna-pattern, and calibration terms. For `urban_short_range`, known roof heights can clear footprint intersections and unknown heights remain conservative NLOS; no legacy wall-event dB is added to the empirical NLOS formula. It is a raw single-cell received-power surface: valid below-sensitivity values remain numeric, `uses_sensitivity_mask` is false, and NoData means only radius/beam geometry exclusion. The response exposes the effective `receiver_threshold`; sensitivity changes the below-sensitivity statistic but does not clip the raw grid. It does not apply the terrain-profile or environmental sensitivity components.
 
 ---
 
@@ -478,8 +484,9 @@ the shared `outdoor_los_classifier_id`, `outdoor_los_classification_basis`,
 `outdoor_terrain_status`, and detailed `outdoor_los_classification` evidence;
 the target building is excluded from the outdoor leg,
 `outdoor_rx_at_facade_dbm`, `outdoor_wall_loss_db: 0`, both entry losses, both
-just-inside powers, separate receiver-sensitivity and building-service
-thresholds, and material evidence. `diagnostics.http_requests_required` is
+just-inside powers, the effective `receiver_threshold` and receiver link
+margins, separate receiver-sensitivity and building-service thresholds, and
+material evidence. `diagnostics.http_requests_required` is
 `1`; the frontend caches the response under an RF-derived source key.
 
 The low-loss and high-loss values are deterministic scenarios, not confidence
@@ -560,7 +567,7 @@ Uses the same payload as `POST /api/simulate`.
 - Candidate buildings must have `demand_weight + residential_demand > 0`
 - The building centroid must be inside the requested radius and beam sector
 - Received power is estimated with the selected shared propagation evaluator, analytic pattern terms, and explicit applicability/fallback semantics
-- The building-service threshold is `-100 dBm` and is separate from per-cell receiver sensitivity
+- The building-service threshold is `-100 dBm` and is separate from per-cell receiver sensitivity; outdoor service uses raw power while low/high entry serviceability uses the effective receiver threshold
 - Returned point features are sorted by demand, then by weakest estimated signal
 
 ---
@@ -578,6 +585,7 @@ Calculate planning-grade LTE or NR RSRP, SINR, RSRQ, RSSI, serving-cell, and str
     { "id": "cell-1", "tower_lon": 32.8541, "tower_lat": 39.9208, "azimuth": 45 },
     { "id": "cell-2", "tower_lon": 32.8581, "tower_lat": 39.9218, "azimuth": 225 }
   ],
+  "serving_cell_id": "cell-1",
   "radius_m": 400,
   "frequency_ghz": 28,
   "tx_power_dbm": 30,
@@ -596,8 +604,9 @@ The response contains:
 
 - `geojson`: up to 3,000 grid samples with radio KPIs and serving/interferer context.
 - `demand_geojson`: up to 500 affected demand-building centroids.
-- `stats`: average and P10 radio quality, serviceable area, interference-limited area, affected demand, and per-cell summaries. `valid_sample_count` reports the number of samples with usable measurements; average and P10 fields are `null` when that count is zero.
-- `model`: bandwidth, SCS, resource blocks, load, reuse, effective spacing, request defaults, effective per-cell profiles, and explicit modeling assumptions. It also reports serviceability thresholds of `RSRP >= -110 dBm`, `SINR >= 0 dB`, and `RSRQ >= -20 dB`.
+- `stats`: average, P10, and median radio quality, serviceable area/fraction, interference-limited area, outage-by-reason counts, affected demand, and per-cell summaries. `valid_sample_count` reports the number of samples with usable measurements; aggregate fields are `null` when that count is zero.
+- `model`: bandwidth, SCS, resource blocks, load, reuse, effective spacing, request defaults, effective per-cell profiles with receiver thresholds, and explicit modeling assumptions. It also reports the carrier-power/reference-resource conversion, exact co-channel rule, serving-selection mode, interference noise bandwidth/source, receiver admission rule, and separate per-RE noise semantics.
+- Each sample exposes a power ledger with raw `received_carrier_power_dbm`, desired/interference/noise mW, normalized RSRP, eligibility/exclusion reasons, serviceability failures, and a deterministic scenario fingerprint. `serving_cell_id` is optional; when omitted, the strongest eligible RSRP cell is selected.
 
 Results are deterministic planning estimates, not measurements reported by a UE or live radio network.
 

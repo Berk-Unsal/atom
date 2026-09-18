@@ -25,10 +25,10 @@ Project history is local to the browser. A.T.O.M does not provide accounts, shar
 
 - Place cells manually on the map, drag editable cells, edit coordinates, duplicate or delete them, and import bounded CSV or GeoJSON inventories.
 - Search the inventory and select cells without losing their per-cell overrides.
-- Configure technology, band, frequency, bandwidth, channel, duplex mode, conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and receiver sensitivity independently for every cell.
+- Configure technology, band, frequency, bandwidth, channel, duplex mode, conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and either manual receiver sensitivity or a derived receiver mode with noise bandwidth, noise figure, required SNR, and receiver margin independently for every cell.
 - Validate technology/frequency compatibility and all numeric/text limits before RF execution.
 - Persist the complete inventory and profile overrides in schema-v2 project drafts and scenarios; schema-v1 files remain importable.
-- Include resolved per-cell profiles in simulation, network, interference, recommendation, measurement, and planning-report contracts.
+- Include resolved per-cell profiles and effective receiver-threshold metadata in simulation, network, interference, recommendation, measurement, and planning-report contracts.
 
 Legacy top-level RF controls remain request defaults. A nested `rf_profile` overrides those defaults for its cell, so older API clients continue to work while heterogeneous networks can be modeled explicitly.
 
@@ -52,7 +52,7 @@ The urban mode applies the 3GPP UMa LOS/NLOS median path-loss formula after shar
 
 The `ideal-sector`, `cosine-sector`, and panel presets preserve their deterministic analytic equations and hard beam eligibility. The optional `3gpp-single-element` preset is a full-azimuth single-element reference based on [3GPP TR 38.901 §7.3/Table 7.3-1](https://www.etsi.org/deliver/etsi_tr/138900_138999/138901/19.04.00_60/tr_138901v190400p.pdf); it combines bounded horizontal and vertical cuts with a 30 dB cap and does not model an array factor, beamforming, MIMO, codebooks, vendor diagrams, or measured sidelobes. Positive mechanical downtilt points the antenna boresight downward; mechanical and electrical tilt remain distinct inputs and sum for the current analytic/reference evaluation.
 
-The selected `urban_short_range` model uses deterministic height-aware footprint centerline obstruction with explicit height provenance. It does not use terrain in the current Ankara network evaluator, Fresnel clearance, diffraction, reflection-heavy multipath, fast fading, MIMO scheduling, or uplink behavior; unknown building heights are conservative NLOS. A separate `path-profile-diagnostic-v1` point-to-point workflow adds terrain/building profiles, LOS and Fresnel classification, material-specific wall planning losses, and an explicitly selected single knife-edge approximation; its result is isolated from network RF. See the [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md).
+The selected `urban_short_range` model uses deterministic height-aware footprint centerline obstruction with explicit height provenance. It does not use terrain in the current Ankara network evaluator, Fresnel clearance, diffraction, reflection-heavy multipath, fast fading, MIMO scheduling, or uplink behavior; unknown building heights are conservative NLOS. Static usable reach applies the effective per-cell receiver threshold strictly. A separate `path-profile-diagnostic-v1` point-to-point workflow adds terrain/building profiles, LOS and Fresnel classification, material-specific wall planning losses, and an explicitly selected single knife-edge approximation; its result is isolated from network RF. See the [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md) and the [Concept 4G.2 receiver-noise note](concept-4g2-receiver-noise-sensitivity.md).
 
 ### 2.5D Path Profiles And Fidelity
 
@@ -82,7 +82,7 @@ The selected `urban_short_range` model uses deterministic height-aware footprint
 ## Analytical Surfaces And GIS Interchange
 
 - Evaluates bounded regular received-power grids with a 100,000-cell ceiling and produces unsmoothed marching-square isolines.
-- Returns a raw single-cell received-power surface: valid cells below receiver sensitivity remain numeric, while NoData is reserved for radius/beam geometry exclusion.
+- Returns a raw single-cell received-power surface: valid cells below receiver sensitivity remain numeric, while NoData is reserved for radius/beam geometry exclusion; the effective threshold is metadata/statistics, not a mask.
 - Renders the raster below the cell/measurement overlays with opacity and minimum-display-threshold controls.
 - Exports the regular grid as float32 EPSG:4326 GeoTIFF, valid grid cells as CSV, and isolines as GeoJSON.
 - Queries building footprints through mandatory viewport `bbox`, pagination, a 50 km diagonal ceiling, and a 5,000-feature page ceiling; outputs GeoJSON or CSV/WKT.
@@ -93,13 +93,15 @@ The selected `urban_short_range` model uses deterministic height-aware footprint
 
 Planning-grade 4G and 5G interference analysis calculates:
 
-- Serving-cell selection by strongest modeled RSRP.
+- Serving-cell selection by strongest modeled RSRP, or an explicit serving-cell diagnostic override.
 - RSRP, SINR, RSRQ, RSSI, noise, strongest interferer, and contributing-cell count.
 - Co-channel loading and reuse-factor behavior using linear power addition.
 - Adaptive spatial sampling capped to keep requests bounded.
 - Serviceable, interference-limited, and affected-demand statistics.
 - SINR, RSRP, and RSRQ map surfaces with threshold-specific legends.
 - Uses separate serviceability thresholds (`RSRP >= -110 dBm`, `SINR >= 0 dB`, `RSRQ >= -20 dB`), not receiver sensitivity or the `-100 dBm` building-service threshold.
+- Keeps receiver noise-equivalent bandwidth and per-RE interference noise separate; receiver sensitivity gates carrier admission but is not added as a second SINR noise term.
+- Exposes raw received carrier power separately from planning RSRP, a linear-domain desired/interference/noise ledger, exact co-channel exclusion reasons, and deterministic scenario fingerprints.
 
 Near-equal co-channel powers can correctly produce SINR near `0 dB`; the Inspector explains this and other no-signal or poor-quality states.
 
@@ -163,7 +165,7 @@ It is a planning overlay, not an LTE/EPC model or a complete bundled Open5GS dep
 
 ## Deliberately Out Of Scope
 
-- Full 3D reflection-heavy ray tracing, multiple-obstacle diffraction, fading, and MIMO scheduling.
+- Full 3D reflection-heavy ray tracing, multiple-obstacle diffraction, fading, MIMO scheduling, PHY/MCS/throughput modeling, and UE conformance sensitivity validation.
 - Live network control, LTE/EPC integration, and 6G Core integration.
 - Cloud accounts, multi-user collaboration, and hosted project storage.
 - Guessed cost, fiber, equity, or emergency-priority scoring without authoritative data.

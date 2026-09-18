@@ -90,6 +90,9 @@ Physics page contents">
       <li><a href="#concept-4h1-interference-and-radio-quality"
       id="toc-concept-4h1-interference-and-radio-quality">Concept 4H.1:
       Interference and Radio Quality</a></li>
+      <li><a href="#concept-4h2-interference-aware-optimization"
+      id="toc-concept-4h2-interference-aware-optimization">Concept 4H.2:
+      Interference-Aware Optimization</a></li>
       <li><a href="#radio-frequency-physics-foundation"
       id="toc-radio-frequency-physics-foundation">Radio Frequency
       Physics Foundation</a></li>
@@ -219,6 +222,30 @@ serving-only receiver-sensitivity admission, finite per-cell
 interference horizons, failure reasons, a per-cell power ledger, and a
 scenario fingerprint are returned with the result. Radio-quality
 diagnostics never feed the canonical propagation-only optimizer.</p>
+<h2 id="concept-4h2-interference-aware-optimization">Concept 4H.2:
+Interference-Aware Optimization</h2>
+<p><code>Concept 4H.2</code> adds the optional
+<code>radio_quality</code> soft objective. It evaluates the existing
+4H.1 planning policy (<code>RSRP &gt;= -110 dBm</code>,
+<code>SINR &gt;= 0 dB</code>, <code>RSRQ &gt;= -20 dB</code>) over one
+fixed, candidate-independent row-major union grid. The serviceable
+fraction is a stable utility; no-carrier points remain denominator
+failures. A positive priority adds the utility to composite ranking and
+Pareto dominance, while a zero priority leaves the propagation-only
+candidate, score, recommendation, and Pareto dimensions unchanged.
+Stored raw candidate metrics support local priority reranking and the
+same fixed-domain counterfactual used by per-cell explanations.</p>
+<p>The optimizer prepares geometry once and keeps the candidate hot loop
+compact: azimuth-dependent antenna/link evaluation, automatic strongest
+eligible serving selection, exact co-channel linear power summation,
+thermal noise, and aggregate serviceability/outage/percentile metrics.
+It does not call the public interference endpoint per candidate. The
+reported result is conditional on the finite per-cell effective-radius
+compatibility horizon and is not a network-wide interference,
+throughput, MCS, scheduler, indoor, adjacent channel, or 140 GHz model.
+The 140 GHz research profile returns
+<code>unsupported_radio_quality_model</code> and renormalizes available
+objectives.</p>
 <h2 id="radio-frequency-physics-foundation">Radio Frequency Physics
 Foundation</h2>
 <h3 id="free-space-path-loss-fspl">Free-Space Path Loss (FSPL)</h3>

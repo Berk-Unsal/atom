@@ -424,6 +424,24 @@ eligibility, while exact co-channel rules, thermal-noise bandwidth,
 serviceability thresholds, and failure reasons are returned so results
 are auditable. See the Concept 4H.1 interference and radio-quality
 note.</p>
+<p>Concept 4H.2 optionally couples that contract to optimization through
+the <code>radio_quality</code> objective. The utility is the fraction of
+a deterministic fixed sampled union domain that meets the combined
+RSRP/SINR/RSRQ planning policy. No-carrier samples remain failures in
+the denominator, and the domain does not change with azimuth, coverage,
+serviceability, or Pareto membership. The domain is sampled rather than
+a continuous-area integral. Its interference is bounded by each cell's
+effective <code>rf_profile.radius_m</code>; this is a declared
+compatibility horizon, not physical zero power outside the radius and
+not a claim of network-wide interference completeness. Radio quality is
+disabled by default, does not change the existing optimizer when its
+priority is zero, and does not redefine demand, residential,
+building-entry, or raw signal-surface semantics. The 140 GHz research
+profile is unavailable for this objective with reason
+<code>unsupported_radio_quality_model</code>. See the Concept 4H.2
+optimization note for the fixed-domain contract, Pareto/reranking
+behavior, performance architecture, policy/horizon limitations, and
+canonical enabled experiment.</p>
 <h2 id="reference-and-applicability-foundation">Reference and
 Applicability Foundation</h2>
 <p>Concept 4B adds an independent, human-auditable fixture corpus at

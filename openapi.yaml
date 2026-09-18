@@ -969,12 +969,12 @@ components:
         objectives:
           type: array
           minItems: 1
-          maxItems: 4
+          maxItems: 5
           items:
             type: object
             required: [id, weight]
             properties:
-              id: { type: string, enum: [demand, residential, coverage, overlap] }
+              id: { type: string, enum: [demand, residential, coverage, overlap, radio_quality] }
               weight: { type: number, minimum: 0, maximum: 100, description: User-facing objective priority; normalized_weights in the response are used for scoring. }
         constraints: { $ref: "#/components/schemas/OptimizationConstraints" }
     OptimizationConstraints:
@@ -1001,14 +1001,50 @@ components:
         covered_units: { type: integer, minimum: 0 }
         overlap_buildings: { type: integer, minimum: 0 }
         overlap_ratio: { type: number, minimum: 0, maximum: 1 }
+        radio_quality_total_samples: { type: integer, minimum: 0, description: Fixed candidate-independent radio-quality denominator. No-carrier and unavailable samples remain in this count. }
+        radio_quality_serviceable_samples: { type: integer, minimum: 0, description: Fixed-domain samples meeting the combined RSRP, SINR, and RSRQ planning policy. }
+        radio_quality_serviceable_fraction: { type: number, minimum: 0, maximum: 1, description: Stable radio-quality utility equal to serviceable samples divided by the fixed-domain sample count. }
+        radio_quality_p10_sinr_db: { type: [number, "null"], description: Diagnostic p10 SINR over samples with an eligible serving carrier; not an optimization objective. }
+        radio_quality_median_sinr_db: { type: [number, "null"], description: Diagnostic median SINR over samples with an eligible serving carrier; not an optimization objective. }
+        radio_quality_p10_rsrp_dbm: { type: [number, "null"], description: Diagnostic p10 serving RSRP over samples with an eligible serving carrier. }
+        radio_quality_median_rsrp_dbm: { type: [number, "null"], description: Diagnostic median serving RSRP over samples with an eligible serving carrier. }
+        radio_quality_p10_rsrq_db: { type: [number, "null"], description: Diagnostic p10 serving RSRQ over samples with an eligible serving carrier. }
+        radio_quality_median_rsrq_db: { type: [number, "null"], description: Diagnostic median serving RSRQ over samples with an eligible serving carrier. }
+        radio_quality_outage_by_reason: { type: object, additionalProperties: { type: integer, minimum: 0 }, description: Aggregate fixed-domain failures by no_carrier, rsrp_failed, sinr_failed, rsrq_failed, multiple_failures, or unavailable_configuration. }
+        radio_quality_serving_cell_samples: { type: object, additionalProperties: { type: integer, minimum: 0 }, description: Serving-cell distribution across samples with an eligible serving carrier. }
+    OptimizationRadioQualityMetadata:
+      type: object
+      properties:
+        enabled: { type: boolean, description: True when radio_quality has a positive configured priority. }
+        available: { type: boolean, description: False when the selected technology or configuration has no supported radio-quality evaluator. }
+        reason: { type: string, description: Unavailability or unevaluated reason; unsupported_radio_quality_model is used for unsupported technology/configuration. }
+        radio_quality_domain_id: { type: string, description: Deterministic identity of the fixed sampled union domain. }
+        radio_quality_domain_description: { type: string, description: Explains that the domain is a deterministic grid estimate, not a continuous-area integral. }
+        radio_quality_sample_count: { type: integer, minimum: 0 }
+        radio_quality_sample_spacing_m: { type: number, minimum: 0 }
+        radio_quality_sample_ordering: { type: string, description: Deterministic row-major grid ordering. }
+        radio_quality_domain_source: { type: string, enum: [interference_compatibility_grid_union] }
+        interference_horizon_mode: { type: string, enum: [per_cell_effective_radius] }
+        interference_horizon_description: { type: string, description: Finite per-cell compatibility horizon; outside_radius is not physical zero RF power. }
+        interference_horizon_meters: { type: array, items: { type: number, minimum: 0 } }
+        radio_quality_policy_id: { type: string }
+        radio_quality_rsrp_threshold_dbm: { type: number }
+        radio_quality_sinr_threshold_db: { type: number }
+        radio_quality_rsrq_threshold_db: { type: number }
+        radio_quality_serviceability_rule: { type: string }
+        radio_quality_serving_selection_mode: { type: string }
+        radio_quality_serving_selection_metric: { type: string }
+        radio_quality_co_channel_eligibility_rule: { type: string }
+        interference_horizon_bounded: { type: boolean }
     NetworkOptimizationUtilities:
       type: object
-      required: [demand, residential, coverage, overlap]
+      required: [demand, residential, coverage, overlap, radio_quality]
       properties:
         demand: { type: number, minimum: 0, maximum: 1 }
         residential: { type: number, minimum: 0, maximum: 1 }
         coverage: { type: number, minimum: 0, maximum: 1 }
         overlap: { type: number, minimum: 0, maximum: 1, description: 1 minus the relevant overlap ratio. }
+        radio_quality: { type: number, minimum: 0, maximum: 1, description: Fixed-domain radio-quality serviceable fraction; null is represented through objective_status when unavailable. }
     NetworkOptimizationContribution:
       type: object
       required: [utility, weight, contribution]
@@ -1018,12 +1054,13 @@ components:
         contribution: { type: number, minimum: 0, maximum: 1 }
     NetworkOptimizationBreakdown:
       type: object
-      required: [demand, residential, coverage, overlap]
+      required: [demand, residential, coverage, overlap, radio_quality]
       properties:
         demand: { $ref: "#/components/schemas/NetworkOptimizationContribution" }
         residential: { $ref: "#/components/schemas/NetworkOptimizationContribution" }
         coverage: { $ref: "#/components/schemas/NetworkOptimizationContribution" }
         overlap: { $ref: "#/components/schemas/NetworkOptimizationContribution" }
+        radio_quality: { $ref: "#/components/schemas/NetworkOptimizationContribution" }
     OptimizationDomainMetadata:
       type: object
       required: [source, selected_cell_count, radius_policy, relevant_building_entities, relevant_demand_entities, relevant_residential_entities]
@@ -1035,6 +1072,12 @@ components:
         relevant_building_entities: { type: integer, minimum: 0 }
         relevant_demand_entities: { type: integer, minimum: 0 }
         relevant_residential_entities: { type: integer, minimum: 0 }
+        radio_quality_domain_id: { type: string }
+        radio_quality_domain_description: { type: string }
+        radio_quality_sample_count: { type: integer, minimum: 0 }
+        radio_quality_sample_spacing_m: { type: number, minimum: 0 }
+        interference_horizon_mode: { type: string }
+        interference_horizon_description: { type: string }
     OptimizationObjectiveStatus:
       type: object
       required: [available, configured_priority, effective_weight, utility, contribution]
@@ -1110,6 +1153,7 @@ components:
         recommended: { type: boolean }
         violations: { type: array, items: { type: string } }
         adjusted_parameters: { type: array, items: { type: string } }
+        radio_quality: { $ref: "#/components/schemas/OptimizationRadioQualityMetadata" }
     NetworkOptimizedTower:
       type: object
       required: [id, optimal_azimuth, score, rf_profile, receiver_threshold]
@@ -1172,12 +1216,13 @@ components:
         violations: { type: array, items: { type: string } }
     NetworkCellExplanationDelta:
       type: object
-      required: [served_demand_weight, residential_covered, propagation_reach_score, propagation_reach_ratio, overlap_buildings, overlap_ratio, covered_units]
+      required: [served_demand_weight, residential_covered, propagation_reach_score, propagation_reach_ratio, radio_quality_serviceable_fraction, overlap_buildings, overlap_ratio, covered_units]
       properties:
         served_demand_weight: { type: number, description: Selected raw metric minus the baseline-reverted raw metric. }
         residential_covered: { type: integer, description: Selected raw metric minus the baseline-reverted raw metric. }
         propagation_reach_score: { type: number, description: Selected raw metric minus the baseline-reverted raw metric. }
         propagation_reach_ratio: { type: number, description: Selected utility minus the baseline-reverted utility; present as percentage points in the UI. }
+        radio_quality_serviceable_fraction: { type: number, description: Selected fixed-domain serviceability fraction minus the baseline-reverted fraction; present as percentage points in the UI when evaluated. }
         overlap_buildings: { type: integer, description: Selected raw metric minus the baseline-reverted raw metric; lower is preferred. }
         overlap_ratio: { type: number, description: Selected raw metric minus the baseline-reverted raw metric; lower is preferred and positive values are worse. }
         covered_units: { type: integer, description: Selected raw metric minus the baseline-reverted raw metric; informational only. }

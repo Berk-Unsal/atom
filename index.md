@@ -17,6 +17,7 @@ Use the [documentation hub](index.html) for the maintained browser experience. I
 - [Concept 4G.1 antenna and link-budget foundation](concept-4g1-antenna-link-budget.md): conducted-power/EIRP semantics, absolute gain versus relative pattern attenuation, shared antenna evaluation, explicit RX/polarization terms, reference single-element behavior, diagnostics, and compatibility evidence.
 - [Concept 4G.2 receiver noise and sensitivity](concept-4g2-receiver-noise-sensitivity.html): deterministic `kTB`-based thresholds, manual compatibility mode, strict link margin, bandwidth provenance, per-cell integration, interference separation, and canonical comparison evidence.
 - [Concept 4H.1 interference and radio quality](concept-4h1-interference-radio-quality.html): inspectable carrier/reference-resource power, serving selection, exact co-channel eligibility, thermal noise, planning RSRP/RSRQ/SINR semantics, outage diagnostics, and scenario fingerprints.
+- [Concept 4H.2 interference-aware optimization](concept-4h2-radio-quality-optimization.html): opt-in fixed-domain radio-quality serviceability objective, denominator/no-carrier semantics, Pareto and reranking behavior, finite horizon, compatibility evidence, and canonical enabled experiment.
 - [API reference](api.html) and [OpenAPI contract](openapi.yaml): documented REST interfaces and response behavior.
 - [Bug-fix register](bug-fixes.html): confirmed defects, priority, correction, and regression evidence.
 

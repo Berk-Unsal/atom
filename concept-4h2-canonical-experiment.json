@@ -1,0 +1,107 @@
+{
+  "concept": "4H.2",
+  "title": "Interference-aware optimization canonical enabled experiment",
+  "captured_at": "2026-09-18",
+  "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_RADIO_QUALITY=1 go test ./raytracer -run TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled -count=1 -v",
+  "priority_vector": {
+    "demand": 40,
+    "residential": 20,
+    "coverage": 20,
+    "overlap": 10,
+    "radio_quality": 10
+  },
+  "disabled_mode_compatibility": {
+    "scenario_fingerprint": "network-def2ab8c875ff267a6e7969d297216f0",
+    "baseline_score": 33.7894,
+    "optimized_score": 41.1715,
+    "recommended_solution_id": "70.0,20.0,130.0,160.0,290.0,110.0",
+    "pareto_frontier_size": 6,
+    "raw_metrics_unchanged": true,
+    "fingerprint_change_explanation": "The post-4H.2 identity serializes radio-quality schema, policy, fixed-domain, horizon, and disabled-state semantics."
+  },
+  "scenario_fingerprint": "network-2768b7368d4aee0ab8d5193e2b2659b1",
+  "radio_quality_domain": {
+    "domain_id": "radio-quality-domain-7b3808d8abb263278a42b8f0d5c425d0",
+    "source": "interference_compatibility_grid_union",
+    "sample_count": 1556,
+    "sample_spacing_m": 40,
+    "sample_ordering": "row-major grid row then column",
+    "horizon_mode": "per_cell_effective_radius",
+    "horizon_meters": [400, 400, 400, 400, 400, 400]
+  },
+  "determinism": {
+    "first_runtime_ms": 22856.6,
+    "second_runtime_ms": 26779.1,
+    "identical_baseline_stats": true,
+    "identical_recommended_stats": true,
+    "identical_objective_metadata": true,
+    "identical_pareto_frontier": true,
+    "identical_fingerprint": true
+  },
+  "baseline": {
+    "composite_score": 0.201703,
+    "score": 20.1703,
+    "served_demand_weight": 185,
+    "residential_covered": 28,
+    "propagation_reach_score": 16013.3051,
+    "overlap_ratio": 0.098361,
+    "radio_quality_total_samples": 1556,
+    "radio_quality_serviceable_samples": 181,
+    "radio_quality_serviceable_fraction": 0.116324,
+    "radio_quality_p10_sinr_db": -1.1648,
+    "radio_quality_median_sinr_db": 31.0914,
+    "radio_quality_outage_by_reason": {
+      "no_carrier": 1351,
+      "rsrp_failed": 3,
+      "sinr_failed": 0,
+      "rsrq_failed": 0,
+      "multiple_failures": 21,
+      "unavailable_configuration": 0
+    }
+  },
+  "recommended": {
+    "solution_id": "70.0,20.0,130.0,160.0,290.0,110.0",
+    "composite_score": 0.274234,
+    "score": 27.4234,
+    "served_demand_weight": 555,
+    "residential_covered": 43,
+    "propagation_reach_score": 19548.691,
+    "overlap_ratio": 0,
+    "radio_quality_total_samples": 1556,
+    "radio_quality_serviceable_samples": 235,
+    "radio_quality_serviceable_fraction": 0.151028,
+    "radio_quality_p10_sinr_db": -22.8768,
+    "radio_quality_median_sinr_db": 31.6102,
+    "radio_quality_outage_by_reason": {
+      "no_carrier": 1272,
+      "rsrp_failed": 9,
+      "sinr_failed": 0,
+      "rsrq_failed": 0,
+      "multiple_failures": 40,
+      "unavailable_configuration": 0
+    }
+  },
+  "pareto_frontier_size": 11,
+  "tradeoff_representative": {
+    "higher_reach": {
+      "solution_id": "70.0,20.0,130.0,160.0,290.0,110.0",
+      "propagation_reach_score": 19548.691,
+      "radio_quality_serviceable_fraction": 0.151028
+    },
+    "higher_radio_quality": {
+      "solution_id": "70.0,20.0,130.0,320.0,290.0,110.0",
+      "propagation_reach_score": 18856.9876,
+      "radio_quality_serviceable_fraction": 0.152314
+    }
+  },
+  "limitations": {
+    "policy_id": "planning-default-v1",
+    "rsrp_threshold_dbm": -110,
+    "sinr_threshold_db": 0,
+    "rsrq_threshold_db": -20,
+    "horizon_is_network_wide": false,
+    "alternative_horizon_run": false,
+    "alternative_policy_run": false,
+    "unsupported_technology": "140 GHz research_sub_thz returns unsupported_radio_quality_model"
+  }
+}

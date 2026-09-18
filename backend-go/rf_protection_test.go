@@ -106,6 +106,9 @@ func TestCombinedSectorRouteIsProtected(t *testing.T) {
 	if _, protected := expensiveRFRoutes["/api/analyze-sector"]; !protected {
 		t.Fatal("combined sector analysis route is missing RF protection")
 	}
+	if _, protected := expensiveRFRoutes["/api/sub-thz-p1411-reference"]; !protected {
+		t.Fatal("P.1411 reference route is missing RF protection")
+	}
 }
 
 func TestRFProtectionAppliesComputationDeadline(t *testing.T) {

@@ -1,0 +1,64 @@
+{
+  "artifact": "concept-4i3-external-evidence",
+  "schema_version": 1,
+  "purpose": "Metadata-only registrations for already audited 100-200 GHz literature. No numeric samples are copied, digitized, or redistributed here.",
+  "numeric_samples_imported": false,
+  "redistribution_policy": "metadata_only/no numeric data",
+  "entries": [
+    {
+      "id": "brooklyn_140_142_ghz",
+      "citation": "Xing and Rappaport, propagation measurements and channel characterization around 140/142 GHz in Brooklyn",
+      "url": "https://arxiv.org/abs/2103.01151",
+      "frequency_scope_ghz": [140, 142],
+      "use": "external_validation_sanity_only",
+      "numeric_samples_imported": false,
+      "license_or_data_availability": "metadata only; redistribution not established",
+      "transfer_claim": "none; no Ankara transfer claim"
+    },
+    {
+      "id": "shakya_sub_thz_channel_measurements",
+      "citation": "Shakya et al., sub-THz channel measurement study",
+      "url": "https://doi.org/10.1109/TAP.2024.3366581",
+      "frequency_scope_ghz": [100, 200],
+      "use": "external_validation_sanity_only",
+      "numeric_samples_imported": false,
+      "license_or_data_availability": "metadata only; redistribution not established",
+      "transfer_claim": "none; no Ankara transfer claim"
+    },
+    {
+      "id": "de_beelde_d_band",
+      "citation": "De Beelde et al., D-band propagation measurement evidence",
+      "url": "https://biblio.ugent.be/publication/01GQHEC5QMYV683Z0225CYYWVD",
+      "frequency_scope_ghz": [110, 170],
+      "use": "external_validation_sanity_only",
+      "numeric_samples_imported": false,
+      "license_or_data_availability": "metadata only; redistribution not established",
+      "transfer_claim": "none; no Ankara transfer claim"
+    },
+    {
+      "id": "sun_sensors_sub_thz",
+      "citation": "Sun et al., sub-THz channel/sensor measurement evidence",
+      "url": "https://www.mdpi.com/1424-8220/22/24/9734",
+      "frequency_scope_ghz": [100, 200],
+      "use": "external_validation_sanity_only",
+      "numeric_samples_imported": false,
+      "license_or_data_availability": "metadata only; redistribution not established",
+      "transfer_claim": "none; no Ankara transfer claim"
+    },
+    {
+      "id": "ju_spatial_consistency",
+      "citation": "Ju et al., spatial consistency/channel modeling evidence relevant to measurement grouping",
+      "url": "https://arxiv.org/abs/2103.05496",
+      "frequency_scope_ghz": [100, 200],
+      "use": "external_validation_sanity_only",
+      "numeric_samples_imported": false,
+      "license_or_data_availability": "metadata only; redistribution not established",
+      "transfer_claim": "none; no Ankara transfer claim"
+    }
+  ],
+  "limitations": [
+    "No source is treated as an Ankara measurement campaign.",
+    "No plot was digitized and no numeric observation was invented from a figure or abstract.",
+    "A future import must establish access, license, quantity semantics, antenna basis, calibration, coordinates, labels, and duplicate-beam handling before entering validation metrics."
+  ]
+}

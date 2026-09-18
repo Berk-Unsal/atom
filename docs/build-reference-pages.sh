@@ -63,6 +63,20 @@ build_page concept-4h1-interference-radio-quality.md concept-4h1-interference-ra
   "Inspectable received-carrier power, serving-cell selection, co-channel eligibility, resource normalization, thermal noise, planning radio-quality metrics, diagnostics, and deterministic fingerprints."
 build_page concept-4h2-radio-quality-optimization.md concept-4h2-radio-quality-optimization.html "Concept 4H.2 Interference-Aware Optimization" "Model reference" \
   "An optional fixed-domain radio-quality objective for deterministic multi-cell optimization, with explicit denominator, horizon, policy, Pareto, compatibility, and performance semantics."
+build_page concept-4i1-140ghz-audit.md concept-4i1-140ghz-audit.html "Concept 4I.1 140 GHz Applicability Audit" "Scientific audit" \
+  "A read-only audit of the 140 GHz research planning profile, authoritative reference applicability, independent atmospheric and material terms, transferability, and the future roadmap."
+build_page concept-4i2a-atmospheric-reference.md concept-4i2a-atmospheric-reference.html "Concept 4I.2A Atmospheric Reference" "Scientific reference" \
+  "An opt-in, non-canonical Sub-THz atmospheric component ledger using P.525-5, P.676-13, P.838-3, and local-fog P.840-9 terms."
+build_page concept-4i2b-p1411-reference.md concept-4i2b-p1411-reference.html "Concept 4I.2B P.1411 Candidate Reference" "Scientific reference" \
+  "Applicability-gated ITU-R P.1411-13 Table 4 candidate rows, 140 GHz envelopes, provenance, median-only statistics, isolated comparisons, and Ankara readiness."
+build_page concept-4i3-measurement-validation.md concept-4i3-measurement-validation.html "Concept 4I.3 Measurement Validation" "Scientific validation" \
+  "Versioned measurement campaigns, quantity semantics, reference-model adapters, deterministic calibration and spatial holdouts, evidence readiness, and the Ankara measurement gap."
+build_page concept-4i4-material-facade-reference.md concept-4i4-material-facade-reference.html "Concept 4I.4 Material and Facade Reference" "Scientific reference" \
+  "An isolated ITU-R P.2040-4 homogeneous slab ledger with explicit electrical properties, TE/TM coefficients, applicability, numerical stability, controlled fixtures, and non-combined heuristic comparison."
+build_page concept-4i5a-reflection-audit.md concept-4i5a-reflection-audit.html "Concept 4I.5A Specular Reflection Audit" "Scientific audit" \
+  "A read-only 140 GHz single-bounce specular reflection audit covering image geometry, path spreading, P.2040 coefficient composition, facade evidence, roughness, visibility, Ankara readiness, and a gated 4I.5B contract."
+build_page concept-4i5b-specular-reflection-reference.md concept-4i5b-specular-reflection-reference.html "Concept 4I.5B Specular Reflection Reference" "Scientific reference" \
+  "An isolated single-bounce image-source reference with explicit finite-facade geometry, P.2040 TE/TM interface or slab coefficients, visibility, Fresnel and far-field evidence, and a non-combined reflected-path link budget."
 build_page bug-fixes.md bug-fixes.html "Bug-Fix Register" "Quality history" \
   "Prioritized confirmed defects, user impact, root causes, corrections, and regression evidence for A.T.O.M releases."
 build_page ../CHANGELOG.md changelog.html "Changelog" "Release history" \

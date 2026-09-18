@@ -193,6 +193,89 @@ test.beforeEach(async ({ page }) => {
         geojson: { type: "FeatureCollection", features: [] },
         stats: { gap_pct: 0, gap_buildings: 0, candidate_buildings: 8 },
       },
+      "/api/sub-thz-material-reference": {
+        schema_version: 1,
+        model_id: "p2040_material_slab_reference_v1",
+        model_version: "v1",
+        status: "applicable",
+        readiness: "reference_only",
+        promoted: false,
+        reference: { revision: "ITU-R P.2040-4 (2025-09)" },
+        material: {
+          material_id: "glass_100_400",
+          name: "Glass",
+          source: "p2040_reference",
+          classification: "reference_material",
+          property_source: "p2040_reference",
+          frequency_range_ghz: [100, 400],
+          relative_permittivity: 6.5767,
+          conductivity_s_per_m: 1.7113767,
+          loss_tangent: 0.0334,
+          complex_relative_permittivity: { real: 6.5767, imaginary: -0.2198 },
+          thickness_m: 0.01,
+          thickness_provenance: "user_declared",
+        },
+        geometry: { frequency_ghz: 140, incidence_angle_deg: 0, polarization: "TE" },
+        media: { incident: { name: "air" }, exit: { name: "air" } },
+        applicability: { status: "applicable" },
+        ledger: {
+          reflection_coefficient: { real: -0.411, imaginary: 0.0147 },
+          transmission_coefficient: { real: 0.230, imaginary: 0.035 },
+          reflected_power_fraction: 0.169165,
+          transmitted_power_fraction: 0.054365,
+          absorbed_power_fraction: 0.77647,
+          interface_reflection_power_fraction: 0.19281,
+          transmission_loss_db: 12.646834,
+          multiple_internal_reflections_included: true,
+        },
+        comparison: { historical_research_heuristic_db: 80, slab_transmission_loss_db: 12.646834, combined: false },
+        property_provenance: { material_properties: "p2040_reference" },
+        fingerprint: "material-reference-e2e",
+        assumptions: [],
+        limitations: [],
+      },
+      "/api/sub-thz-reflection-reference": {
+        schema_version: 1,
+        model: "single_bounce_specular_reflection_reference_v1",
+        model_id: "single_bounce_specular_reflection_reference_v1",
+        model_version: "v1",
+        readiness: "reference_only",
+        canonical: false,
+        network_coupled: false,
+        multipath_combined: false,
+        coherent_multipath_combined: false,
+        status: "qualified_reference",
+        applicability: {
+          status: "qualified_reference",
+          reasons: [],
+          qualifications: ["roughness_unknown", "antenna_far_field_unknown"],
+        },
+        geometry: {
+          reflection_point_enu: { x: 0, y: 0, z: 10 },
+          d1_m: 70.710678,
+          d2_m: 70.710678,
+          total_reflected_path_length_m: 141.421356,
+          incidence_angle_deg: 45,
+          reflection_angle_deg: 45,
+        },
+        material: {
+          reflection_coefficient: { real: -0.451416, imaginary: 0, power_fraction: 0.203777 },
+        },
+        spreading: { fspl_reflected_path_db: 118.380644, two_leg_fspl_composition: false },
+        link_budget: { reflected_path_reference_power_dbm: -95.2891 },
+        antennas: {
+          tx: { departure_azimuth_deg: 315, departure_elevation_deg: 0 },
+          rx: { arrival_look_azimuth_deg: 225, arrival_look_elevation_deg: 0 },
+        },
+        visibility: { leg1_visibility: { status: "visible" }, leg2_visibility: { status: "visible" } },
+        diffuse_scattering_modelled: false,
+        atmosphere_composition_supported: false,
+        direct_path_calculated: false,
+        exclusions: [],
+        assumptions: ["One explicit finite facade"],
+        limitations: [],
+        fingerprint: "specular-reflection-reference-e2e",
+      },
       "/api/optimize-network": networkOptimization,
     };
     if (url.pathname === "/api/explain-network-cell") {
@@ -309,6 +392,55 @@ test("keeps propagation actions clear of the vertical path profile", async ({ pa
   expect(pathProfileBox).not.toBeNull();
   expect((navigationBox.y + navigationBox.height) - (activeToolBox.y + activeToolBox.height)).toBeGreaterThanOrEqual(6);
   expect(pathProfileBox.y - (optimizeBox.y + optimizeBox.height)).toBeGreaterThanOrEqual(8);
+});
+
+test("runs the isolated material reference from RF Diagnostics", async ({ page }) => {
+  const materialRequests = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/api/sub-thz-material-reference")) materialRequests.push(request);
+  });
+
+  await page.goto("/");
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+  await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  const materialReference = page.getByRole("region", { name: "Material and facade interaction reference" });
+  await expect(materialReference).toBeVisible();
+  await expect(page.getByText(/Material reference only — not used by network simulation/i)).toBeVisible();
+  await materialReference.getByRole("button", { name: "Run material reference" }).click();
+  await expect(materialReference.getByText("No — side by side")).toBeVisible();
+  await expect(materialReference.getByText("reference_only", { exact: true })).toBeVisible();
+  expect(materialRequests).toHaveLength(1);
+  expect(materialRequests[0].postDataJSON()).toMatchObject({
+    schema_version: 1,
+    material_source: "p2040_reference",
+    material_id: "glass_100_400",
+    frequency_ghz: 140,
+  });
+});
+
+test("runs the isolated specular reflection reference from RF Diagnostics", async ({ page }) => {
+  const reflectionRequests = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/api/sub-thz-reflection-reference")) reflectionRequests.push(request);
+  });
+
+  await page.goto("/");
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+  await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  const reflectionReference = page.getByRole("region", { name: "Specular reflection reference" });
+  await expect(reflectionReference).toBeVisible();
+  await expect(reflectionReference.getByText(/single_bounce_specular_reflection_reference_v1/i)).toBeVisible();
+  await expect(reflectionReference.getByText(/not used by network simulation/i)).toBeVisible();
+  await reflectionReference.getByRole("button", { name: "Evaluate reflected path" }).click();
+  await expect(reflectionReference.getByText("qualified_reference", { exact: true })).toBeVisible();
+  await expect(reflectionReference.getByText("118.381 dB")).toBeVisible();
+  expect(reflectionRequests).toHaveLength(1);
+  expect(reflectionRequests[0].postDataJSON()).toMatchObject({
+    schema_version: 1,
+    frequency_ghz: 140,
+    polarization: "TE",
+    coordinate_frame: { mode: "local_enu" },
+  });
 });
 
 test("explores a retained Pareto alternative without another RF request", async ({ page }) => {

@@ -22,6 +22,11 @@ const (
 
 var expensiveRFRoutes = map[string]struct{}{
 	"/api/path-profile":                         {},
+	"/api/sub-thz-reference":                    {},
+	"/api/sub-thz-p1411-reference":              {},
+	"/api/sub-thz-validation":                   {},
+	"/api/sub-thz-material-reference":           {},
+	"/api/sub-thz-reflection-reference":         {},
 	"/api/coverage-surface":                     {},
 	"/api/processes/batch-experiment/execution": {},
 	"/api/analyze-sector":                       {},

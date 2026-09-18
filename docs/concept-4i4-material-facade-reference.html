@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="An isolated ITU-R P.2040-4
+homogeneous slab ledger with explicit electrical properties, TE/TM
+coefficients, applicability, numerical stability, controlled fixtures,
+and non-combined heuristic comparison." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4I.4 Material and Facade
+Reference | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4I.4
+Material and Facade Reference page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#boundary-and-invariance"
+      id="toc-boundary-and-invariance">Boundary and invariance</a></li>
+      <li><a href="#authoritative-source-audit"
+      id="toc-authoritative-source-audit">Authoritative source
+      audit</a></li>
+      <li><a href="#smallest-auditable-scope"
+      id="toc-smallest-auditable-scope">Smallest auditable
+      scope</a></li>
+      <li><a href="#electrical-property-contract"
+      id="toc-electrical-property-contract">Electrical-property
+      contract</a></li>
+      <li><a href="#thickness-and-geometry"
+      id="toc-thickness-and-geometry">Thickness and geometry</a></li>
+      <li><a href="#complex-interface-and-slab-implementation"
+      id="toc-complex-interface-and-slab-implementation">Complex
+      interface and slab implementation</a></li>
+      <li><a href="#field-power-reflection-and-absorption-ledger"
+      id="toc-field-power-reflection-and-absorption-ledger">Field,
+      power, reflection, and absorption ledger</a></li>
+      <li><a href="#numerical-stability"
+      id="toc-numerical-stability">Numerical stability</a></li>
+      <li><a href="#controlled-fixtures-and-sensitivity"
+      id="toc-controlled-fixtures-and-sensitivity">Controlled fixtures
+      and sensitivity</a></li>
+      <li><a href="#comparison-to-the-unchanged-80-db-heuristic"
+      id="toc-comparison-to-the-unchanged-80-db-heuristic">Comparison to
+      the unchanged 80 dB heuristic</a></li>
+      <li><a href="#api-contract" id="toc-api-contract">API
+      contract</a></li>
+      <li><a href="#4i3-measurement-adapter"
+      id="toc-4i3-measurement-adapter">4I.3 measurement adapter</a></li>
+      <li><a href="#fingerprint-and-performance"
+      id="toc-fingerprint-and-performance">Fingerprint and
+      performance</a></li>
+      <li><a href="#readiness-and-gaps"
+      id="toc-readiness-and-gaps">Readiness and gaps</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Scientific reference</span>
+        <h1>Concept 4I.4 Material and Facade Reference</h1>
+        <p>An isolated ITU-R P.2040-4 homogeneous slab ledger with
+explicit electrical properties, TE/TM coefficients, applicability,
+numerical stability, controlled fixtures, and non-combined heuristic
+comparison.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4i4-material-facade-reference.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Concept 4I.4 adds an isolated, non-canonical reference evaluator for
+one finite homogeneous material slab. Its model identifier is
+p2040_material_slab_reference_v1, and its only production-facing
+interface is:</p>
+<pre><code>POST /api/sub-thz-material-reference</code></pre>
+<p>The UI lives under RF Diagnostics and states, prominently:
+<strong>Material reference only — not used by network
+simulation.</strong></p>
+<h2 id="boundary-and-invariance">Boundary and invariance</h2>
+<p>The evaluator is a research/reference ledger. It is not called by
+canonical propagation, research_sub_thz, P.1411, P.526, atmospheric,
+building-entry, interference, radio-quality, coverage-surface, or
+optimization code. It does not change the existing research_sub_thz rule
+of 80 dB per wall event at sub-THz frequencies, and it never adds a
+P.2040 result to that heuristic.</p>
+<p>The pre-change behavior is frozen in <a
+href="concept-4i4-pre-change-baseline.json">concept-4i4-pre-change-baseline.json</a>.
+The post-change evidence is in <a
+href="concept-4i4-post-change-comparison.json">concept-4i4-post-change-comparison.json</a>.
+The target is exact invariance for canonical 2.6 GHz and 28 GHz, the 140
+GHz research_sub_thz profile, 4I.2A, 4I.2B, P.526, building entry,
+interference/radio quality, and the 4H.2 optimizer.</p>
+<p>There is no automatic material physics from OSM tags. A
+building-material label can remain useful metadata, but the endpoint
+requires an explicit material row or a user-defined electrical property
+and an explicit thickness. There is no universal wall default.</p>
+<h2 id="authoritative-source-audit">Authoritative source audit</h2>
+<p>The implementation is based on the current in-force <a
+href="https://www.itu.int/rec/R-REC-P.2040-4-202509-I/en">ITU-R P.2040-4
+recommendation page</a> and its <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf">official
+2025-09 PDF</a>. P.2040-4 covers 1 MHz–450 GHz, but a material row is
+only applicable over its own Table 3 range.</p>
+<p>The audited clauses are:</p>
+<ul>
+<li>Annex 1 §2.1.2, equations (9)–(16): complex permittivity, loss,
+conductivity, loss tangent, and complex refractive index.</li>
+<li>Annex 1 §2.1.4, equations (28)–(29): frequency-dependent empirical
+property forms.</li>
+<li>Annex 1 §2.2.1, equations (30)–(38): Snell geometry, TE/TM interface
+field coefficients, and power-flux correction.</li>
+<li>Annex 1 §2.2.2.1, equations (39)–(42): recursive multilayer
+formulation and internal reflections.</li>
+<li>Annex 1 §2.2.2.2, equations (43a)–(44): simplified single-layer slab
+formulation.</li>
+<li>§3, equations (57)–(59) and Table 3: material-row coefficients and
+the conductivity/complex-loss conversion.</li>
+</ul>
+<p>The response carries these clauses, the revision, and both official
+URLs so a result cannot be mistaken for an unreferenced empirical wall
+number.</p>
+<h2 id="smallest-auditable-scope">Smallest auditable scope</h2>
+<p>The implemented scope is a plane wave incident on a single finite,
+homogeneous, isotropic, non-magnetic slab between explicitly declared
+incident and exit media. Both exterior media are inputs; air is not
+silently assumed by the API, although the UI provides explicit air
+defaults.</p>
+<p>Normal and oblique incidence are supported for TE and TM
+polarization. The UI uses the source terminology directly: TE means
+electric field perpendicular to the plane of incidence; TM means
+electric field parallel to it. The API does not map “horizontal” or
+“vertical” labels to TE/TM.</p>
+<p>Multilayer construction is deferred. Roughness, diffuse scattering,
+air gaps, frames, coatings, moisture corrections, spatially varying
+thickness, and multiple slabs are not inferred. This keeps the returned
+ledger auditable and prevents an apparent material result from becoming
+a whole-facade claim.</p>
+<h2 id="electrical-property-contract">Electrical-property contract</h2>
+<p>P.2040 Table 3 rows are represented by separate stable IDs when
+frequency ranges overlap. The full supported catalog, coefficients, and
+ranges are in <a
+href="concept-4i4-material-applicability.json">concept-4i4-material-applicability.json</a>.
+It includes the concrete, brick, plasterboard, wood, glass, clear
+acrylic, ceiling-board, chipboard, and plywood rows that cover at least
+one requested frequency. Metal is not included as a preset because this
+implementation does not accept a metal row without explicit 140 GHz
+coverage.</p>
+<p>For a Table 3 row, the evaluator applies:</p>
+<pre><code>εr′ = a fGHz^b
+σ  = c fGHz^d
+εr″ = 17.98 σ / fGHz
+εrc = εr′ − j εr″
+tanδ = εr″ / εr′</code></pre>
+<p>For user-defined materials, exactly one of these forms is
+accepted:</p>
+<ol type="1">
+<li>real relative permittivity plus conductivity;</li>
+<li>real relative permittivity plus loss tangent; or</li>
+<li>complex relative permittivity expressed as real part plus positive
+imaginary-loss magnitude.</li>
+</ol>
+<p>The response stores the signed complex value as real − j
+imaginary_loss, while the input JSON calls the magnitude imaginary_loss
+to avoid a sign-convention ambiguity. Redundant inconsistent forms are
+rejected. User-defined output is classified as user_assumption, even
+when its property source says measured or manufacturer; the
+property-source field remains visible.</p>
+<p>Every returned electrical property has provenance through the
+material source/property source, the Table 3 row and coefficients when
+applicable, or the user-declared source and provenance note.
+User-provided incident and exit media also retain their property source.
+No OSM tag is treated as a physical measurement.</p>
+<h2 id="thickness-and-geometry">Thickness and geometry</h2>
+<p>Thickness is required in the request and is never defaulted to “one
+wall.” It is bounded, finite, non-negative, and returned with
+thickness_provenance. The controlled fixtures use
+controlled_reference_fixture; ordinary user runs use user_declared.</p>
+<p>Incidence angle is measured from the interface normal. 0° is normal
+incidence. Values at or above grazing incidence are rejected. A
+user-declared angle can run without map geometry. A geometry_derived
+angle is accepted only when facade_normal_provenance documents a
+reliable normal; otherwise validation fails. The current UI
+intentionally remains user-angle-only because reliable ray/facade
+intersection selection is a separate workstream.</p>
+<p>The geometry ledger contains frequency, free-space wavelength, angle
+convention, angle source, polarization, facade-normal provenance, and
+geometry mode. It does not claim a building intersection or a selected
+ray unless a future adapter supplies that evidence.</p>
+<h2 id="complex-interface-and-slab-implementation">Complex interface and
+slab implementation</h2>
+<p>For the selected polarization, the evaluator computes complex
+refractive indices, Snell angles, and the two interface reflection
+coefficients. At the first interface, the TE field coefficient is:</p>
+<pre><code>rTE = (n1 cosθ1 − n2 cosθ2) / (n1 cosθ1 + n2 cosθ2)</code></pre>
+<p>The TM coefficient uses the source-consistent admittance form:</p>
+<pre><code>rTM = (n2 cosθ1 − n1 cosθ2) / (n2 cosθ1 + n1 cosθ2)</code></pre>
+<p>For slab phase thickness:</p>
+<pre><code>q = k0 d n2 cosθ2</code></pre>
+<p>The returned slab reflection includes the internal round trip:</p>
+<pre><code>R = (r01 + r12 exp(−2j q)) /
+    (1 + r01 r12 exp(−2j q))</code></pre>
+<p>The field transmission coefficient is evaluated with the
+corresponding two-interface numerator and the same internal-reflection
+denominator. The implementation keeps complex coefficients until power
+conversion; it does not replace a lossy material with a real refractive
+index or an attenuation-only scalar.</p>
+<h2 id="field-power-reflection-and-absorption-ledger">Field, power,
+reflection, and absorption ledger</h2>
+<p>The response distinguishes:</p>
+<ul>
+<li>complex reflection coefficient R;</li>
+<li>complex transmission coefficient T;</li>
+<li>first-interface reflection power;</li>
+<li>total reflected power |R|²;</li>
+<li>transmitted power after the declared exterior-medium power-flux
+correction;</li>
+<li>absorbed power as 1 − reflected − transmitted when the passive
+balance is within tolerance;</li>
+<li>transmission loss −10 log10(transmitted_power_fraction).</li>
+</ul>
+<p>The first-interface reflection is intentionally not presented as
+total slab reflection. Interference and internal reflections can change
+total reflected power, especially for thin slabs and oblique incidence.
+A power-balance warning is returned if the finite calculation falls
+outside the passive tolerance.</p>
+<p>The response includes complex propagation constant and normal phase
+thickness, plus the angles in the incident, slab, and exit media.
+multiple_internal_reflections_included is explicit. This prevents a
+field coefficient, a reflected fraction, and a transmission-loss number
+from being conflated.</p>
+<h2 id="numerical-stability">Numerical stability</h2>
+<p>All complex intermediates and exported scalar values are checked for
+finite values. The internal round-trip exponential is evaluated from its
+logarithmic magnitude and phase. When a transmission amplitude is below
+the representable numeric floor, the response does not emit zero, NaN,
+or Inf; it returns status=below_numeric_floor and a lower-bound
+transmission loss. The comparison object keeps this lower bound distinct
+from a finite slab_transmission_loss_db.</p>
+<p>The controlled numeric fixture is a 10 m concrete slab at 140 GHz. It
+must return a finite lower-bound state and JSON-marshallable values. A
+zero-thickness slab between identical media is a regression identity:
+reflected power is zero, transmitted power is one, and absorbed power is
+zero within tolerance.</p>
+<h2 id="controlled-fixtures-and-sensitivity">Controlled fixtures and
+sensitivity</h2>
+<p><a
+href="concept-4i4-controlled-fixtures.json">concept-4i4-controlled-fixtures.json</a>
+records:</p>
+<ul>
+<li>140 GHz concrete, brick, glass, and wood single-slab rows;</li>
+<li>frequency points 28, 60, 100, 140, and 200 GHz where the selected
+row is valid;</li>
+<li>explicit out-of-range brick behavior at 60 GHz;</li>
+<li>140 GHz glass thicknesses from 1 mm through 200 mm;</li>
+<li>TE/TM angle sweeps at 0°, 15°, 30°, 45°, 60°, and 75°;</li>
+<li>user-defined property sensitivity for relative permittivities 2, 4,
+and 8;</li>
+<li>zero-thickness, numeric-floor, metal, and geometry-provenance
+boundary cases.</li>
+</ul>
+<p>The earlier 4I.1 audit has an independent material fixture with
+different slab-loss values. Those values are preserved in the artifact
+as a comparison-only discrepancy. 4I.4 does not silently promote them to
+equation goldens; it exposes the signed-complex property conversion,
+Fresnel coefficients, power correction, and internal-reflection ledger
+used by the new evaluator. This makes reconciliation reviewable.</p>
+<h2 id="comparison-to-the-unchanged-80-db-heuristic">Comparison to the
+unchanged 80 dB heuristic</h2>
+<p><a
+href="concept-4i4-reference-comparison.json">concept-4i4-reference-comparison.json</a>
+compares one declared slab loss beside the historical research_sub_thz
+value of 80 dB per wall event. The comparison is explicitly
+combined=false. It is not added to the slab loss, not added to the
+research profile, not used as a calibration target, and not sent into a
+network path-loss budget.</p>
+<p>The illustrative 140 GHz equation-ledger values are approximately
+12.65 dB for 10 mm glass, 99.10 dB for 100 mm wood, 228.06 dB for 200 mm
+brick, and 456.97 dB for 200 mm concrete. These are plane-wave slab
+values, not building-entry predictions. They demonstrate why material,
+thickness, angle, and construction structure must remain explicit.</p>
+<h2 id="api-contract">API contract</h2>
+<p>A minimal request is:</p>
+<pre><code>{
+  &quot;schema_version&quot;: 1,
+  &quot;frequency_ghz&quot;: 140,
+  &quot;material_source&quot;: &quot;p2040_reference&quot;,
+  &quot;material_id&quot;: &quot;glass_100_400&quot;,
+  &quot;thickness_m&quot;: 0.01,
+  &quot;thickness_provenance&quot;: &quot;user_declared&quot;,
+  &quot;incidence_angle_deg&quot;: 0,
+  &quot;polarization&quot;: &quot;TE&quot;,
+  &quot;incident_medium&quot;: {
+    &quot;name&quot;: &quot;air&quot;,
+    &quot;relative_permittivity&quot;: 1,
+    &quot;conductivity_s_per_m&quot;: 0,
+    &quot;property_source&quot;: &quot;user_declared&quot;
+  },
+  &quot;exit_medium&quot;: {
+    &quot;name&quot;: &quot;air&quot;,
+    &quot;relative_permittivity&quot;: 1,
+    &quot;conductivity_s_per_m&quot;: 0,
+    &quot;property_source&quot;: &quot;user_declared&quot;
+  }
+}</code></pre>
+<p>Valid material-range failures are returned as an auditable 200
+response with status=material_frequency_out_of_range, no slab ledger,
+and no extrapolated properties. Invalid schema, angle, polarization,
+medium, or redundant-property inputs return 400. The endpoint is
+RF-protected and subject to the existing request deadline/concurrency
+controls.</p>
+<h2 id="4i3-measurement-adapter">4I.3 measurement adapter</h2>
+<p>The optional MaterialCharacterizationRecord adapter accepts a
+declared measured coupon/slab transmission-loss record and computes
+measured-minus-predicted residuals against this isolated evaluator. It
+is not a MeasurementCampaign, is not added to the shared propagation
+adapter list, and cannot alter measurement RMSE, calibration, readiness,
+radio quality, or optimization. No fabricated campaign or numeric field
+campaign is included.</p>
+<p>The material adapter returns readiness=reference_only and
+promoted=false. A future material campaign would need traceable coupon
+geometry, thickness, frequency, angle, polarization, exterior media,
+moisture/temperature, fixture calibration, uncertainty, and
+repeatability before it could support any broader inference.</p>
+<h2 id="fingerprint-and-performance">Fingerprint and performance</h2>
+<p>The deterministic material fingerprint includes schema version, model
+ID/version, P.2040 revision, frequency, material source and row or user
+properties, thickness and thickness provenance, incidence angle,
+polarization, incident/exit media, and supplied geometry provenance. It
+excludes timestamps, runtime, UI state, file paths, and server identity.
+The material-characterization adapter adds record ID, measured value,
+measurement source, and measurement provenance to a separate
+fingerprint.</p>
+<p>A single evaluation and small controlled sweeps are the intended
+workload. The endpoint does not run in a network hot loop, on every ray,
+or inside optimization. Multilayer and geometry-backed facade
+integration remain future work with separate performance and evidence
+contracts.</p>
+<h2 id="readiness-and-gaps">Readiness and gaps</h2>
+<p>Readiness remains reference_only. No promotion path is implemented.
+The principal gaps are:</p>
+<ul>
+<li>no Ankara 140 GHz material-coupon or facade-entry campaign in the
+repository;</li>
+<li>no validated moisture, temperature, roughness, scattering, frame,
+coating, or air-gap model;</li>
+<li>no reliable automatic facade-normal/ray-interaction selector;</li>
+<li>no multilayer or whole-building transfer model;</li>
+<li>no P.2109 extrapolation;</li>
+<li>no evidence that a Table 3 row represents a particular Ankara
+construction product;</li>
+<li>no device/antenna/receiver validation attached to slab
+coefficients.</li>
+</ul>
+<p>The correct next step is traceable measurement and independent
+review, not replacing the 80 dB planning heuristic or silently summing
+this reference into network simulation.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

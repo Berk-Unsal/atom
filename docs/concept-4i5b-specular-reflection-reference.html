@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="An isolated single-bounce
+image-source reference with explicit finite-facade geometry, P.2040
+TE/TM interface or slab coefficients, visibility, Fresnel and far-field
+evidence, and a non-combined reflected-path link budget." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4I.5B Specular Reflection
+Reference | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4I.5B
+Specular Reflection Reference page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#model-identity-and-boundary"
+      id="toc-model-identity-and-boundary">Model identity and
+      boundary</a></li>
+      <li><a href="#applicability-and-status"
+      id="toc-applicability-and-status">Applicability and
+      status</a></li>
+      <li><a href="#explicit-input-contract"
+      id="toc-explicit-input-contract">Explicit input contract</a></li>
+      <li><a href="#metric-coordinate-frame"
+      id="toc-metric-coordinate-frame">Metric coordinate frame</a></li>
+      <li><a href="#image-source-geometry"
+      id="toc-image-source-geometry">Image-source geometry</a></li>
+      <li><a href="#tetm-basis-and-phase"
+      id="toc-tetm-basis-and-phase">TE/TM basis and phase</a></li>
+      <li><a href="#p2040-interface-and-finite-slab"
+      id="toc-p2040-interface-and-finite-slab">P.2040 interface and
+      finite slab</a></li>
+      <li><a href="#roughness-and-specularity"
+      id="toc-roughness-and-specularity">Roughness and
+      specularity</a></li>
+      <li><a href="#fresnel-evidence" id="toc-fresnel-evidence">Fresnel
+      evidence</a></li>
+      <li><a href="#antenna-far-field-evidence"
+      id="toc-antenna-far-field-evidence">Antenna far-field
+      evidence</a></li>
+      <li><a href="#two-leg-visibility"
+      id="toc-two-leg-visibility">Two-leg visibility</a></li>
+      <li><a href="#spreading-and-fspl"
+      id="toc-spreading-and-fspl">Spreading and FSPL</a></li>
+      <li><a href="#antenna-directions"
+      id="toc-antenna-directions">Antenna directions</a></li>
+      <li><a href="#reflected-path-link-budget"
+      id="toc-reflected-path-link-budget">Reflected-path link
+      budget</a></li>
+      <li><a href="#exclusions-and-non-combination-rules"
+      id="toc-exclusions-and-non-combination-rules">Exclusions and
+      non-combination rules</a></li>
+      <li><a href="#controlled-140-ghz-fixture"
+      id="toc-controlled-140-ghz-fixture">Controlled 140 GHz
+      fixture</a></li>
+      <li><a href="#api-and-frontend-surface"
+      id="toc-api-and-frontend-surface">API and frontend
+      surface</a></li>
+      <li><a href="#validation-and-invariance"
+      id="toc-validation-and-invariance">Validation and
+      invariance</a></li>
+      <li><a href="#scalability-and-promotion-gate"
+      id="toc-scalability-and-promotion-gate">Scalability and promotion
+      gate</a></li>
+      <li><a href="#deferred-work" id="toc-deferred-work">Deferred
+      work</a></li>
+      <li><a href="#required-artifacts"
+      id="toc-required-artifacts">Required artifacts</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Scientific reference</span>
+        <h1>Concept 4I.5B Specular Reflection Reference</h1>
+        <p>An isolated single-bounce image-source reference with
+explicit finite-facade geometry, P.2040 TE/TM interface or slab
+coefficients, visibility, Fresnel and far-field evidence, and a
+non-combined reflected-path link budget.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4i5b-specular-reflection-reference.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Concept 4I.5B adds an isolated, opt-in diagnostic for one explicitly
+declared specular reflection from one finite vertical planar facade. It
+is a reference ledger for RF engineers and reviewers, not a new
+propagation mode. The public model ID is
+<code>single_bounce_specular_reflection_reference_v1</code>, the
+readiness is <code>reference_only</code>, and the route is
+<code>POST /api/sub-thz-reflection-reference</code>.</p>
+<h2 id="model-identity-and-boundary">Model identity and boundary</h2>
+<p>The response always exposes <code>schema_version: 1</code>,
+<code>model_id</code>, <code>model_version: v1</code>,
+<code>readiness: reference_only</code>, <code>canonical: false</code>,
+<code>network_coupled: false</code>,
+<code>multipath_combined: false</code>, and
+<code>coherent_multipath_combined: false</code>. The evaluator is called
+only by the new route and direct unit tests; it is not dispatched by
+<code>/api/simulate</code>, coverage, interference, radio quality,
+building entry, recommendation, or either optimizer.</p>
+<p>The route evaluates one declared Tx, Rx, facade segment, material
+declaration, polarization, terrain mode, and link budget. It does not
+select a reflector, search for a best path, create a direct path, sum
+multipath, or promote a result into a canonical/network profile.</p>
+<h2 id="applicability-and-status">Applicability and status</h2>
+<p><code>applicable_reference</code> means the explicit geometry,
+material, visibility, antenna, and evidence gates pass without a
+qualification. <code>qualified_reference</code> means a reflected-path
+result is available but one or more evidence items remain qualified,
+such as unknown roughness, unknown antenna far-field status, local-ENU
+visibility assumptions, or surveyed terrain not being available in the
+active dataset. <code>inapplicable</code> means a required gate fails;
+examples include a specular point outside the finite facade segment, an
+unknown vertical extent, a blocked leg, unsupported material frequency,
+or zero reflection at the numeric floor.</p>
+<p>The response keeps the reason and qualification arrays separate. A
+qualification is not silently converted into a measured fact, and an
+inapplicable result does not manufacture received power.</p>
+<h2 id="explicit-input-contract">Explicit input contract</h2>
+<p>The request requires:</p>
+<ul>
+<li>frequency in <code>0.001–450 GHz</code>;</li>
+<li>Tx and Rx metric positions or WGS84 longitude/latitude plus explicit
+height;</li>
+<li>antenna mode and absolute gain, either on each antenna or as an
+explicit link-budget fallback;</li>
+<li>a finite facade <code>start</code>/<code>end</code>, geometry
+provenance, and either a unit outward normal or a polygon context from
+which the exterior normal can be derived;</li>
+<li>optional but explicit facade <code>base_z</code> and
+<code>top_z</code>; omitting either preserves an
+<code>inapplicable</code> vertical-extent result;</li>
+<li>material source, media, polarization (<code>TE</code> or
+<code>TM</code> only), terrain mode, and conducted transmitter
+power;</li>
+<li>an interface or finite-slab material mode.</li>
+</ul>
+<p>No material default, facade height, antenna aperture, roughness, or
+atmosphere is invented. Generic <code>H</code>/<code>V</code> labels are
+rejected rather than silently mapped to TE/TM.</p>
+<h2 id="metric-coordinate-frame">Metric coordinate frame</h2>
+<p>Image geometry is never performed in longitude/latitude degrees. A
+<code>local_enu</code> request uses the supplied metric coordinates
+directly. A geographic request is transformed into a local ENU frame
+using an explicit WGS84 origin (or the Tx point when no origin is
+supplied), with east/north distances derived from the local latitude and
+Earth radius; endpoint heights remain the vertical coordinate. The
+response records the coordinate-system, projection, origin, transform
+description, and origin provenance.</p>
+<h2 id="image-source-geometry">Image-source geometry</h2>
+<p>For a facade plane point <code>P0</code>, unit outward normal
+<code>n</code>, Tx point <code>T</code>, and Rx point <code>R</code>,
+the evaluator forms the mirrored transmitter</p>
+<pre class="text"><code>T&#39; = T − 2 n (n · (T − P0))</code></pre>
+<p>and intersects <code>T' → R</code> with the plane. The returned
+<code>image_intersection_t</code>, facade-segment parameter, reflection
+point, mirrored Tx, <code>d1</code>, <code>d2</code>, total path length,
+image path length, and image/path difference make the construction
+auditable. The point must be on the finite horizontal facade segment and
+within the declared vertical bounds. A point outside the segment,
+outside the vertical extent, or a degenerate/non-finite leg is
+inapplicable.</p>
+<p>The incident vector is <code>k_i = normalize(S − T)</code> and the
+reflected vector is <code>k_r = normalize(R − S)</code>. The
+implementation checks <code>k_r = k_i − 2(k_i · n)n</code> and reports
+the specular equality error. Incidence and reflection angles are
+measured from the facade normal with <code>acos(abs(k · n))</code>; both
+are returned in degrees.</p>
+<h2 id="tetm-basis-and-phase">TE/TM basis and phase</h2>
+<p>The deterministic local basis is:</p>
+<pre class="text"><code>s = normalize(n × k_i)       (TE)
+p = normalize(s × k_i)       (TM)</code></pre>
+<p>At normal incidence, TE uses projected ENU up (falling back to
+projected ENU north if necessary), then TM follows from the cross
+product. The response returns both basis vectors, the convention, and
+the normal-incidence flag. The complex P.2040 field coefficient is
+preserved as real part, imaginary part, magnitude, phase in
+radians/degrees, and power fraction. Phase is evidence; it is not
+discarded and is not combined with another path.</p>
+<h2 id="p2040-interface-and-finite-slab">P.2040 interface and finite
+slab</h2>
+<p><code>material.mode: interface</code> evaluates the front interface
+coefficient once. <code>material.mode: finite_slab</code> requires
+explicit thickness, thickness provenance, coherent phase treatment
+(<code>coherent</code> or <code>coherent_total_slab</code>), incident
+medium, and exit medium. The finite slab reuses the isolated P.2040
+material ledger and includes internal reflections in the total complex
+coefficient. The response exposes both the total coefficient and the
+first-interface coefficient.</p>
+<p>The P.2040 material source may be an explicit covered reference row
+or an explicit user-declared electrical-property form. User properties
+retain their source and provenance. Inferred properties are rejected. A
+P.2040 row outside its documented frequency range is reported as
+inapplicable; it is never extrapolated.</p>
+<p>The returned reflection power term is exactly
+<code>10 log10(|Γ|²)</code> and is applied once. The historical
+<code>research_sub_thz</code> wall heuristic is excluded and is never
+added to the P.2040 coefficient or link budget.</p>
+<h2 id="roughness-and-specularity">Roughness and specularity</h2>
+<p>Optional RMS roughness produces the qualitative Rayleigh-style
+parameter</p>
+<pre class="text"><code>g = 4π · rms_roughness / λ · cos(incidence_angle)</code></pre>
+<p><code>g &lt; 0.3</code> is reported as <code>supported_smooth</code>;
+larger values produce <code>rough_surface_warning</code>; omitted
+roughness produces <code>unknown</code>. This is a qualification only.
+Diffuse scattering, BRDF, edge diffraction, curvature, and a diffuse
+power budget are not modeled; <code>diffuse_scattering_modelled</code>
+is always false.</p>
+<h2 id="fresnel-evidence">Fresnel evidence</h2>
+<p>The response reports the scalar first-zone radius</p>
+<pre class="text"><code>r_F = sqrt(λ d1 d2 / (d1 + d2))</code></pre>
+<p>and compares it qualitatively with available horizontal and vertical
+reflector extent. It reports whether both extents are known and whether
+the finite facade is smaller than the scalar zone. No hard aperture rule
+or hidden edge-diffraction loss is introduced.</p>
+<h2 id="antenna-far-field-evidence">Antenna far-field evidence</h2>
+<p>Physical aperture is accepted only when explicitly supplied. The
+diagnostic computes, per relevant leg,</p>
+<pre class="text"><code>R_ff ≈ 2D² / λ</code></pre>
+<p>and compares <code>d1</code> with the Tx bound and <code>d2</code>
+with the Rx bound. Gain is never reverse-engineered into aperture.
+Missing aperture produces <code>far_field_status: unknown</code>; a
+failing explicit aperture comparison produces a warning
+qualification.</p>
+<h2 id="two-leg-visibility">Two-leg visibility</h2>
+<p>The Tx-to-reflector and reflector-to-Rx legs are evaluated
+independently. The route accepts explicit ENU obstruction polygons for
+controlled or user-scoped checks and can inspect the active dataset when
+the request is geographic. Positive-length interior penetration blocks a
+leg. A zero-length contact at the selected reflector endpoint is exempt
+only when the object is explicitly marked as the reflector; a reflector
+polygon that penetrates a leg remains blocking. Unknown building height
+produces unknown visibility rather than an invented roof height.</p>
+<p>The local-ENU controlled fixture has no dataset projection, so its
+response records a visible result with an explicit local-ENU visibility
+qualification. Surveyed terrain records dataset availability or an
+explicit unavailable qualification; flat mode records the relative-datum
+assumption.</p>
+<h2 id="spreading-and-fspl">Spreading and FSPL</h2>
+<p>The reflected path is one physical path with
+<code>L = d1 + d2</code>. The only spreading term is</p>
+<pre class="text"><code>FSPL(L) = 20 log10(4π L / λ)</code></pre>
+<p>The response sets <code>two_leg_fspl_composition: false</code> and
+records the image-path equivalent. It never computes
+<code>FSPL(d1) + FSPL(d2)</code>, never applies two independent
+inverse-square factors, and never uses a wall-event heuristic as
+spreading.</p>
+<h2 id="antenna-directions">Antenna directions</h2>
+<p>Tx output contains departure azimuth/elevation toward the reflection
+point. Rx output contains the arrival/look azimuth/elevation from Rx
+toward the reflection point. Directional modes use the existing
+deterministic antenna pattern evaluator, while isotropic/omni modes
+retain zero pattern attenuation. The response exposes absolute gains,
+pattern attenuation, hard-beam eligibility, and the reason for any
+directional exclusion.</p>
+<h2 id="reflected-path-link-budget">Reflected-path link budget</h2>
+<p>The diagnostic returns all ledger terms even when the reflection
+coefficient is zero or below the numeric floor:</p>
+<pre class="text"><code>Pr_ref_dBm = Pt_conducted
+           + Gt_absolute − A_tx_pattern
+           + Gr_absolute − A_rx_pattern
+           − L_system − L_polarization
+           + calibration
+           − FSPL(L)
+           + 10 log10(|Γ|²)</code></pre>
+<p>The reflected-path reference power is omitted when <code>|Γ|²</code>
+is zero/below the numeric floor or the resulting value is non-finite.
+This avoids <code>−Inf</code>/<code>NaN</code> in JSON while preserving
+the reason in applicability. There is no receiver-sensitivity,
+serviceability, interference, or radio-quality decision in this
+ledger.</p>
+<h2 id="exclusions-and-non-combination-rules">Exclusions and
+non-combination rules</h2>
+<p>The response explicitly excludes direct-plus-reflected coherent
+summation, multi-bounce reflection, diffuse scattering, curvature,
+finite-edge diffraction, automatic OSM material inference, atmosphere
+composition, P.1411 composition, P.526 composition, the research 80 dB
+wall addition, and all canonical/network/optimizer coupling.
+<code>canonical</code>, <code>network_coupled</code>,
+<code>multipath_combined</code>,
+<code>coherent_multipath_combined</code>,
+<code>direct_path_calculated</code>, and
+<code>atmosphere_composition_supported</code> remain false.</p>
+<h2 id="controlled-140-ghz-fixture">Controlled 140 GHz fixture</h2>
+<p>The regression fixture uses local ENU coordinates, a facade on
+<code>x=0</code> from <code>y=-10 m</code> to <code>y=10 m</code>,
+<code>z=0–20 m</code>, Tx <code>(50,-50,10)</code>, Rx
+<code>(50,50,10)</code>, unit normal <code>(1,0,0)</code>, 30 dBm
+conducted power, isotropic 0 dBi antennas, air on both sides,
+user-declared lossless <code>εr=4</code>, zero conductivity, flat
+relative-datum terrain, and no roughness or aperture assumption.</p>
+<p>The reflection point is <code>(0,0,10)</code>,
+<code>d1=d2=70.71067811865476 m</code>,
+<code>L=141.4213562373095 m</code>, and both angles are
+<code>45°</code>. At 140 GHz, the total-path FSPL is
+<code>118.38064389208795 dB</code>. TE returns
+<code>Γ=-0.4514162296451364</code>,
+<code>|Γ|²=0.20377661238703051</code>, and
+<code>Pr_ref=-95.28910051020749 dBm</code>; TM returns
+<code>Γ=0.20377661238703063</code>,
+<code>|Γ|²=0.04152490775593412</code>, and
+<code>Pr_ref=-102.19755712832702 dBm</code>.</p>
+<p>The rejected two-leg comparison would be
+<code>FSPL(d1)+FSPL(d2)=224.72008795761664 dB</code>; it is included
+only as a regression guard and is not used by the evaluator.</p>
+<h2 id="api-and-frontend-surface">API and frontend surface</h2>
+<p>The route returns <code>400</code> for malformed or underspecified
+input, <code>429</code>/<code>504</code> through the shared RF route
+handling, and a JSON ledger for valid requests, including inapplicable
+reference outcomes. The OpenAPI contract names the request and response
+schemas. The RF Diagnostics panel uses progressive disclosure: geometry
+and facade evidence first, material/polarization next, then roughness,
+antenna evidence, terrain, and link budget. Its identity and subtitle
+visibly state that the evaluator is isolated and not used by network
+simulation.</p>
+<p>The frontend payload builder emits explicit local ENU coordinates,
+antenna assumptions, facade geometry/provenance, medium properties,
+TE/TM, flat terrain, and link-budget terms. It does not silently bind
+the panel to the active network propagation model.</p>
+<h2 id="validation-and-invariance">Validation and invariance</h2>
+<p>The backend has controlled TE/TM, total-path FSPL, geometry/height
+gate, visibility/self-contact, zero-reflection finite-JSON, fingerprint,
+and finite-slab alias tests. Route tests verify the isolated identity
+and RF protection. The frontend has payload-builder and panel tests. The
+pre-change baseline and post-change comparison artifacts record
+canonical snapshot invariants, including the existing 2.6 GHz, 28 GHz,
+and research 140 GHz identities and values.</p>
+<p>The expected quality commands are:</p>
+<pre class="text"><code>cd backend-go &amp;&amp; go vet ./... &amp;&amp; go test -race ./...
+cd frontend-react &amp;&amp; npm run lint &amp;&amp; npm test -- --run &amp;&amp; npm run build
+python3 docs/validate_docs.py
+python3 scripts/versioning.py check</code></pre>
+<h2 id="scalability-and-promotion-gate">Scalability and promotion
+gate</h2>
+<p>One evaluation is a bounded constant-size
+geometry/material/visibility calculation. Explicit obstruction checks
+are limited to the supplied scope; dataset checks use the existing
+spatial index and do not search candidate reflectors. The result is
+appropriate for a diagnostic request or controlled fixture, not for
+per-pixel network rasterization. No result is promoted to canonical
+propagation or a network optimizer. Promotion would require measured
+specular-path validation, material/facade evidence, roughness and
+aperture distributions, visibility/terrain evidence, direct-path and
+multipath policy, and a separately approved canonical integration
+contract.</p>
+<h2 id="deferred-work">Deferred work</h2>
+<p>Deferred items are explicit: automatic facade candidate selection,
+image geometry over arbitrary non-planar/curved surfaces, edge
+diffraction, diffuse/BRDF scattering, atmospheric composition, coherent
+direct-plus-reflected channels, polarization conversion,
+frequency-dependent roughness statistics, dataset material
+classification, and any canonical/network integration. These are not
+hidden behind the current reference-only status.</p>
+<h2 id="required-artifacts">Required artifacts</h2>
+<p>The corresponding audit package is:</p>
+<ul>
+<li><a
+href="concept-4i5b-pre-change-baseline.json"><code>concept-4i5b-pre-change-baseline.json</code></a></li>
+<li><a
+href="concept-4i5b-controlled-fixtures.json"><code>concept-4i5b-controlled-fixtures.json</code></a></li>
+<li><a
+href="concept-4i5b-reference-comparison.json"><code>concept-4i5b-reference-comparison.json</code></a></li>
+<li><a
+href="concept-4i5b-post-change-comparison.json"><code>concept-4i5b-post-change-comparison.json</code></a></li>
+<li>this design note</li>
+</ul>
+<p>Together they preserve the pre-change identity/value snapshots,
+independently describe the controlled 140 GHz TE/TM fixture, compare the
+reflected-path reference with direct/P.525/P.1411/research alternatives
+without combining them, and record post-change tests plus the unchanged
+canonical/network contract.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

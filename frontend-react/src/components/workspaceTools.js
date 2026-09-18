@@ -19,6 +19,7 @@ export const WORKSPACE_TOOLS = [
 	{ id: "experiments", label: "Experiments", icon: FlaskConical, stage: "simulate" },
 	{ id: "surfaces", label: "Signal surface", icon: Layers3, stage: "simulate" },
   { id: "interference", label: "Interference", icon: Activity, stage: "analyze" },
+  { id: "validation", label: "RF Diagnostics", icon: BarChart3, stage: "analyze" },
   { id: "building-entry", label: "Building entry", icon: Building2, stage: "analyze" },
   { id: "core", label: "5G Core", icon: Server, stage: "analyze" },
   { id: "results", label: "Results", icon: BarChart3, stage: "review" },

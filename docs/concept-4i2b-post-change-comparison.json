@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "concept": "4I.2B",
+  "title": "Post-change isolation, invariance, and real-backend comparison",
+  "captured_at": "2026-09-18",
+  "pre_change_baseline": "concept-4i2b-pre-change-baseline.json",
+  "isolation": {
+    "new_model_family": "itu_r_p1411_table4_candidates_v1",
+    "new_route": "POST /api/sub-thz-p1411-reference",
+    "new_candidate_ids": [
+      "p1411_below_rooftop_los_v1",
+      "p1411_urban_highrise_nlos_v1",
+      "p1411_urban_lowrise_nlos_v1"
+    ],
+    "canonical_dispatch_modified": false,
+    "canonical_network_coupling": false,
+    "canonical_terms_modified": false,
+    "boundary": "The evaluator is reachable only through the dedicated P.1411 route and panel. It is not called by simulate, coverage, coverage gaps, path-profile canonical comparison, interference, radio quality, building entry, or optimization."
+  },
+  "real_backend_acceptance_after_change": {
+    "command": "ATOM_REAL_E2E=1 ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline npm run test:e2e",
+    "result": "27 passed, 9 skipped",
+    "dataset": "161784 building footprints and 451 tower cells",
+    "existing_canonical_workflows_exercised": true,
+    "new_route_smoke_test": "200 OK with all three candidates and one applicable LoS row at explicit 140 GHz high-rise/below-rooftop/LoS scenario"
+  },
+  "real_p1411_observation": {
+    "request": {
+      "frequency_ghz": 140,
+      "transmitter": {"lon": 32.85, "lat": 39.92, "height_m": 25},
+      "receiver": {"lon": 32.8509, "lat": 39.92, "height_m": 1.5},
+      "morphology": "urban_high_rise",
+      "rooftop_relation": "both_below_rooftop",
+      "los_state": "los",
+      "candidate_model_id": "all",
+      "provenance": "user_declared scenario; geometry_derived distance"
+    },
+    "response": {
+      "horizontal_distance_m": 76.83830463717943,
+      "slant_distance_m": 80.35157160576257,
+      "applicable_candidates": ["p1411_below_rooftop_los_v1"],
+      "los_median_path_loss_db": 114.87362110986832,
+      "los_p525_fspl_db": 113.47023144742553,
+      "los_excess_relative_to_fspl_db": 1.403389662442791,
+      "highrise_nlos_reason": "los_state_mismatch",
+      "lowrise_nlos_reasons": ["morphology_mismatch", "los_state_mismatch"],
+      "building_intersection_present": true,
+      "unknown_height_count": 1,
+      "wall_loss_applied": false,
+      "diffraction_applied": false,
+      "fingerprint": "p1411-reference-5bee113c3b18e104d81ada1740548e5203b170bb5e1d30fc28b27cf4c581a28e"
+    }
+  },
+  "invariance_proof": {
+    "method": "The pre-change canonical snapshots are compared with the post-change real-backend acceptance suite and focused package regression tests. No canonical source file was edited for the P.1411 evaluator.",
+    "targets": [
+      {"name": "canonical 2.6 GHz simulation", "status": "unchanged_by_scope_and_real_e2e"},
+      {"name": "canonical 28 GHz simulation", "status": "unchanged_by_scope_and_real_e2e"},
+      {"name": "research_sub_thz 140 GHz simulation", "status": "unchanged_by_scope_and_real_e2e"},
+      {"name": "4H.2 disabled optimization", "status": "unchanged_by_scope_and_package_regression"},
+      {"name": "4H.2 enabled optimization", "status": "unchanged_by_scope_and_package_regression"},
+      {"name": "building entry", "status": "unchanged_by_scope_and_real_e2e"},
+      {"name": "P.526 diffraction diagnostic", "status": "unchanged_by_scope_and_package_regression"},
+      {"name": "4H.1 interference/radio-quality", "status": "unchanged_by_scope_and_package_regression"},
+      {"name": "4I.2A atmospheric reference", "status": "unchanged_by_scope_and_existing_tests"}
+    ],
+    "canonical_behavior_change_claimed": false
+  },
+  "comparison_policy_check": {
+    "p525_added_to_p1411": false,
+    "p676_p838_p840_added_to_p1411": false,
+    "research_80db_added_to_p1411": false,
+    "p526_added_to_p1411": false,
+    "receiver_threshold_applied": false,
+    "candidate_ranking_emitted": false
+  },
+  "validation_commands": [
+    "cd backend-go && go vet ./... && go test -race ./...",
+    "cd core-lab-adapter && go vet ./... && go test -race ./...",
+    "cd frontend-react && npm test -- --run && npm run lint && npm run build",
+    "ATOM_REAL_E2E=1 ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline npm run test:e2e",
+    "sh docs/build-reference-pages.sh",
+    "python3 docs/validate_docs.py",
+    "python3 scripts/versioning.py check",
+    "git diff --check"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "concept": "4I.4",
+  "title": "P.2040 slab versus historical research_sub_thz comparison",
+  "artifact": "reference-comparison",
+  "model_id": "p2040_material_slab_reference_v1",
+  "frequency_ghz": 140,
+  "rows": [
+    {"material_id": "glass_100_400", "thickness_m": 0.01, "slab_transmission_loss_db": 12.6468338363, "historical_heuristic_db_per_event": 80, "difference_slab_minus_heuristic_db": -67.3531661637, "combined": false},
+    {"material_id": "wood_110_330", "thickness_m": 0.1, "slab_transmission_loss_db": 99.1000824446, "historical_heuristic_db_per_event": 80, "difference_slab_minus_heuristic_db": 19.1000824446, "combined": false},
+    {"material_id": "brick_110_330", "thickness_m": 0.2, "slab_transmission_loss_db": 228.055098943, "historical_heuristic_db_per_event": 80, "difference_slab_minus_heuristic_db": 148.055098943, "combined": false},
+    {"material_id": "concrete_110_330", "thickness_m": 0.2, "slab_transmission_loss_db": 456.972062479, "historical_heuristic_db_per_event": 80, "difference_slab_minus_heuristic_db": 376.972062479, "combined": false}
+  ],
+  "not_claimed": [
+    "No whole-building entry loss",
+    "No P.2109 extrapolation",
+    "No automatic multiple-building sum",
+    "No atmospheric, P.1411, P.526, canonical, radio-quality, or optimizer composition",
+    "No conclusion that any slab row is a calibrated Ankara facade value"
+  ],
+  "interpretation": "The comparison exposes material/thickness sensitivity beside the unchanged 80 dB/event compatibility heuristic. It is not a recommendation, ranking, or replacement."
+}

@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="An opt-in, non-canonical Sub-THz
+atmospheric component ledger using P.525-5, P.676-13, P.838-3, and
+local-fog P.840-9 terms." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4I.2A Atmospheric
+Reference | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4I.2A
+Atmospheric Reference page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#1-objective-and-boundary"
+      id="toc-1-objective-and-boundary">1. Objective and
+      boundary</a></li>
+      <li><a href="#2-pre-change-audit" id="toc-2-pre-change-audit">2.
+      Pre-change audit</a></li>
+      <li><a href="#3-stable-model-identity"
+      id="toc-3-stable-model-identity">3. Stable model identity</a></li>
+      <li><a href="#4-route-and-ui-isolation"
+      id="toc-4-route-and-ui-isolation">4. Route and UI
+      isolation</a></li>
+      <li><a href="#5-explicit-geometry" id="toc-5-explicit-geometry">5.
+      Explicit geometry</a></li>
+      <li><a href="#6-p525-5-free-space-baseline"
+      id="toc-6-p525-5-free-space-baseline">6. P.525-5 free-space
+      baseline</a></li>
+      <li><a href="#7-p676-13-gas-method"
+      id="toc-7-p676-13-gas-method">7. P.676-13 gas method</a></li>
+      <li><a href="#8-p838-3-rain-method"
+      id="toc-8-p838-3-rain-method">8. P.838-3 rain method</a></li>
+      <li><a href="#9-p840-9-local-fog-method"
+      id="toc-9-p840-9-local-fog-method">9. P.840-9 local-fog
+      method</a></li>
+      <li><a href="#10-additive-composition"
+      id="toc-10-additive-composition">10. Additive composition</a></li>
+      <li><a href="#11-applicability" id="toc-11-applicability">11.
+      Applicability</a></li>
+      <li><a href="#12-atmospheric-request-contract"
+      id="toc-12-atmospheric-request-contract">12. Atmospheric request
+      contract</a></li>
+      <li><a href="#13-rain-request-contract"
+      id="toc-13-rain-request-contract">13. Rain request
+      contract</a></li>
+      <li><a href="#14-fog-request-contract"
+      id="toc-14-fog-request-contract">14. Fog request contract</a></li>
+      <li><a href="#15-building-obstruction-flag"
+      id="toc-15-building-obstruction-flag">15. Building obstruction
+      flag</a></li>
+      <li><a href="#16-double-counting-policy"
+      id="toc-16-double-counting-policy">16. Double-counting
+      policy</a></li>
+      <li><a href="#17-optional-reference-link-budget"
+      id="toc-17-optional-reference-link-budget">17. Optional reference
+      link budget</a></li>
+      <li><a href="#18-receiver-boundary"
+      id="toc-18-receiver-boundary">18. Receiver boundary</a></li>
+      <li><a href="#19-controlled-fixture-corpus"
+      id="toc-19-controlled-fixture-corpus">19. Controlled fixture
+      corpus</a></li>
+      <li><a href="#20-100-m-ledger" id="toc-20-100-m-ledger">20. 100 m
+      ledger</a></li>
+      <li><a href="#21-400-m-ledger" id="toc-21-400-m-ledger">21. 400 m
+      ledger</a></li>
+      <li><a href="#22-28-versus-140-ghz-comparison"
+      id="toc-22-28-versus-140-ghz-comparison">22. 28 versus 140 GHz
+      comparison</a></li>
+      <li><a href="#23-independent-verification-note"
+      id="toc-23-independent-verification-note">23. Independent
+      verification note</a></li>
+      <li><a href="#24-validation-and-invariance"
+      id="toc-24-validation-and-invariance">24. Validation and
+      invariance</a></li>
+      <li><a href="#25-deferred-work" id="toc-25-deferred-work">25.
+      Deferred work</a></li>
+      <li><a href="#26-limitations-and-next-gate"
+      id="toc-26-limitations-and-next-gate">26. Limitations and next
+      gate</a></li>
+      <li><a href="#implementation-files"
+      id="toc-implementation-files">Implementation files</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Scientific reference</span>
+        <h1>Concept 4I.2A Atmospheric Reference</h1>
+        <p>An opt-in, non-canonical Sub-THz atmospheric component ledger
+using P.525-5, P.676-13, P.838-3, and local-fog P.840-9 terms.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4i2a-atmospheric-reference.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>This change adds <code>sub_thz_atmospheric_reference_v1</code>, an
+opt-in, non-canonical reference evaluator for controlled point-to-point
+atmospheric comparisons. It is deliberately separate from
+<code>research_sub_thz</code>, <code>urban_short_range</code>,
+<code>legacy_fspl_walls</code>, the path-profile diagnostic, network RF,
+radio quality, building entry, and optimization.</p>
+<h2 id="1-objective-and-boundary">1. Objective and boundary</h2>
+<p>The endpoint answers a narrow question: what does a declared
+free-space path plus explicitly supplied atmospheric state contribute
+over a homogeneous terrestrial Tx-to-Rx path? It is a ledger and
+sensitivity tool, not a validated 140 GHz urban propagation model.</p>
+<h2 id="2-pre-change-audit">2. Pre-change audit</h2>
+<p>The pre-change artifact records the existing 2.6 GHz, 28 GHz, 140 GHz
+research, 4H.2, building-entry, and P.526 runtime behavior: <a
+href="concept-4i2a-pre-change-baseline.json">concept-4i2a-pre-change-baseline.json</a>.
+The existing 140 GHz profile remains FSPL plus its historical wall-event
+heuristic; this feature does not rewrite that path.</p>
+<h2 id="3-stable-model-identity">3. Stable model identity</h2>
+<p>The stable response and request identity is
+<code>sub_thz_atmospheric_reference_v1</code>. The route is
+<code>POST /api/sub-thz-reference</code>. The UI labels it “Opt-in,
+non-canonical ledger” and shows the model ID directly.</p>
+<h2 id="4-route-and-ui-isolation">4. Route and UI isolation</h2>
+<p>The route is protected by the existing RF limiter and optional
+<code>RF_API_KEY</code>. The React panel sits beside the existing
+vertical path-profile diagnostic, reuses the selected
+transmitter/receiver geometry only, and owns separate request state. It
+cannot silently alter a sector run, coverage surface, interference
+result, building-entry estimate, or optimizer result.</p>
+<h2 id="5-explicit-geometry">5. Explicit geometry</h2>
+<p>The request requires transmitter and receiver longitude, latitude,
+and height in metres. The response reports horizontal distance, height
+delta, slant distance, path length in kilometres, and the rain-path
+elevation angle. The atmospheric terms are multiplied by slant path
+length, not by a hidden default radius.</p>
+<h2 id="6-p525-5-free-space-baseline">6. P.525-5 free-space
+baseline</h2>
+<p>The implementation calculates
+<code>Lbf = 20 log10(4 pi d / lambda)</code> using
+<code>lambda = c/f</code> and reports the rounded
+<code>32.4 + 20 log10(f_MHz) + 20 log10(d_km)</code> presentation form
+alongside it. See the official <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf">ITU-R
+P.525-5 recommendation</a>. FSPL is included exactly once and is not an
+urban NLOS claim.</p>
+<h2 id="7-p676-13-gas-method">7. P.676-13 gas method</h2>
+<p>The gas ledger implements the Annex 1 line-by-line oxygen and
+water-vapour equations and the dry continuum. It reports oxygen-line,
+dry-continuum, dry-air, water-vapour, total dB/km, and path loss
+separately. Total pressure is an input; dry pressure is explicitly
+derived as total pressure minus water-vapour partial pressure. See <a
+href="https://www.itu.int/rec/R-REC-P.676-13-202208-I/en">ITU-R
+P.676-13</a>.</p>
+<h2 id="8-p838-3-rain-method">8. P.838-3 rain method</h2>
+<p>When enabled, rain uses <code>gamma_R = k R^alpha</code>, with
+P.838-3 curve-fit coefficients, path elevation, and explicit horizontal,
+vertical, circular, or custom linear polarization. Circular polarization
+is represented by the declared 45-degree tilt. The raw specific
+attenuation and path loss are both returned. See <a
+href="https://www.itu.int/rec/R-REC-P.838-3-200503-I/en">ITU-R
+P.838-3</a>.</p>
+<h2 id="9-p840-9-local-fog-method">9. P.840-9 local-fog method</h2>
+<p>When enabled, local fog uses <code>gamma_c = K_l(f,T) rho_l</code>,
+with the P.840 double-Debye water-permittivity coefficient. The request
+supplies local liquid-water density; fog temperature is explicit or
+transparently inherited from the supplied atmosphere temperature. This
+is not a vertical integrated Earth-space cloud column. See <a
+href="https://www.itu.int/rec/R-REC-P.840-9-202308-I/en">ITU-R
+P.840-9</a>.</p>
+<h2 id="10-additive-composition">10. Additive composition</h2>
+<p>The total is <code>FSPL + gas + rain + local fog</code>. Each
+component contains status, reference, method, inclusion, and
+double-counting metadata. Disabled components contribute exactly zero.
+Out-of-scope optional components are reported as
+<code>out_of_scope</code>, not silently extrapolated.</p>
+<h2 id="11-applicability">11. Applicability</h2>
+<p>The reference frequency envelope is 1–1000 GHz. P.838-3 uses its
+1–1000 GHz range. Local-fog P.840-9 sensitivity is limited to 1–200 GHz
+in this implementation. A response can therefore be
+<code>applicable</code>, <code>partial</code>, or <code>fspl_only</code>
+while preserving the component-level status.</p>
+<h2 id="12-atmospheric-request-contract">12. Atmospheric request
+contract</h2>
+<p>Enabled atmosphere requires pressure in hPa, temperature in kelvin,
+and water-vapour density in g/m³. The API does not infer Ankara weather,
+standard humidity, altitude profiles, radiosonde data, or a weather
+station from the dataset.</p>
+<h2 id="13-rain-request-contract">13. Rain request contract</h2>
+<p>Rain is disabled unless <code>rain.enabled</code> is true and a rain
+rate is supplied. Rain rate is instantaneous homogeneous path input. The
+implementation does not claim annual availability, does not ingest P.837
+statistics, and does not apply a terrestrial effective-path reduction
+factor.</p>
+<h2 id="14-fog-request-contract">14. Fog request contract</h2>
+<p>Local fog is disabled by default. Enabling it requires local
+liquid-water density. P.840’s local specific coefficient is used for the
+supplied terrestrial path; no cloud-column integration, cloud
+climatology, or vertical profile is inferred.</p>
+<h2 id="15-building-obstruction-flag">15. Building obstruction flag</h2>
+<p>If the active building index is available, the evaluator records
+intersected building IDs, including endpoint-in-building evidence. The
+result is <code>flag_only_no_propagation_loss</code>: no wall, material,
+rooftop-screen, Fresnel, diffraction, or penetration term is added. If
+the index is unavailable, the atmospheric result remains usable while
+obstruction status is explicitly unknown.</p>
+<h2 id="16-double-counting-policy">16. Double-counting policy</h2>
+<p>The response states that the ledger must not be added to
+<code>research_sub_thz</code>, <code>urban_short_range</code>,
+<code>legacy_fspl_walls</code>, the path-profile sensitivity budget, a
+P.526 diagnostic, building entry, interference, coverage, or
+optimization. A caller must select one propagation baseline and one
+atmospheric source for a comparison, not sum parallel diagnostic
+products.</p>
+<h2 id="17-optional-reference-link-budget">17. Optional reference link
+budget</h2>
+<p>An explicit link-budget block can combine conducted TX power, TX
+gain, TX pattern loss, system loss, polarization loss, RX gain,
+calibration, and the reference total path loss. Every term is returned
+in a signed ledger. No antenna hardware default is injected into this
+block.</p>
+<h2 id="18-receiver-boundary">18. Receiver boundary</h2>
+<p>The reference link budget reports received power only. It never
+applies receiver sensitivity, noise bandwidth, SINR, RSRP, RSRQ,
+serviceability, coverage, demand, or an optimization score. The response
+carries <code>receiver_threshold_applied: false</code> and
+<code>serviceability_evaluated: false</code> where the optional ledger
+is present.</p>
+<h2 id="19-controlled-fixture-corpus">19. Controlled fixture corpus</h2>
+<p>The machine-readable fixture corpus is <a
+href="concept-4i2a-controlled-fixtures.json">concept-4i2a-controlled-fixtures.json</a>.
+It includes the six-distance sweep, 28-versus-140 comparison, P.676
+density sensitivity, P.838 rain-rate sensitivity, P.840 fog-density
+sensitivity, and the invariance contract.</p>
+<h2 id="20-100-m-ledger">20. 100 m ledger</h2>
+<p>For the controlled 140 GHz case (25 m TX, 1.5 m RX, 1013.25 hPa,
+288.15 K, 7.5 g/m³, 25 mm/h circular rain, 0.5 g/m³ local fog), the
+102.724 m slant path gives FSPL 115.603795 dB, gas 0.094039 dB, rain
+1.307710 dB, fog 0.357881 dB, and total 117.363424 dB. The corresponding
+all-term 28 GHz total is 102.094775 dB.</p>
+<h2 id="21-400-m-ledger">21. 400 m ledger</h2>
+<p>At the 400 m horizontal fixture (400.690 m slant), the same 140 GHz
+terms are FSPL 127.426508 dB, gas 0.366811 dB, rain 5.100903 dB, fog
+1.395963 dB, and total 134.290184 dB. The 28 GHz total is 115.281890 dB.
+These are controlled path sensitivities, not urban coverage
+predictions.</p>
+<h2 id="22-28-versus-140-ghz-comparison">22. 28 versus 140 GHz
+comparison</h2>
+<p>With identical geometry, P.525 FSPL increases by 13.979400 dB from 28
+to 140 GHz, exactly <code>20 log10(140/28)</code>. The all-term total
+difference is larger because P.676, P.838, and P.840 coefficients are
+frequency dependent; that increase must not be described as an urban
+morphology loss.</p>
+<h2 id="23-independent-verification-note">23. Independent verification
+note</h2>
+<p>The earlier 4I.1 fixture recorded approximately 0.867224 dB/km for
+the 7.5 g/m³ gas row. The new implementation independently evaluates the
+published line tables and yields 0.915449 dB/km under the explicit
+total-pressure convention. The earlier value is retained as an observed
+audit comparison, not copied into production expectations. This
+difference is documented so a future standards review can resolve
+version, pressure, or approximation provenance rather than hiding
+it.</p>
+<h2 id="24-validation-and-invariance">24. Validation and invariance</h2>
+<p>The backend includes independent numerical and route tests for P.525
+geometry, P.676, P.838, P.840, building-flag non-additivity, optional
+link-budget boundaries, validation, and deterministic fingerprints.
+Frontend tests cover explicit payload construction. Existing canonical
+Go, frontend, and real-backend acceptance suites are rerun as invariance
+evidence.</p>
+<h2 id="25-deferred-work">25. Deferred work</h2>
+<p>Not included here: P.837 annual statistics ingestion, rain
+effective-path/reduction modeling, altitude-dependent atmospheric
+integration, radiosonde profiles, weather grids, site-calibrated
+gas/fog/rain validation, P.2040 material transmission, P.526 coupling,
+multiple-edge diffraction, urban reflection/scattering/multipath,
+antenna hardware patterns, and any canonical network model
+replacement.</p>
+<h2 id="26-limitations-and-next-gate">26. Limitations and next gate</h2>
+<p>This is a standards-oriented reference ledger over a homogeneous
+straight path. It is useful for auditable component comparison and
+sensitivity analysis, especially at 28, 100, 140, and 300 GHz, but it is
+not evidence of service, availability, indoor penetration, NLOS
+behavior, or an operator-grade 140 GHz channel model. Any future
+canonical integration requires measured/calibrated data, explicit path
+integration policy, site-specific obstruction/material evidence, and a
+separate invariance review.</p>
+<h2 id="implementation-files">Implementation files</h2>
+<ul>
+<li><code>backend-go/raytracer/sub_thz_atmospheric_reference.go</code>:
+request contract, standards calculations, ledger, applicability,
+obstruction flag, link budget, fingerprint.</li>
+<li><code>backend-go/sub_thz_reference_route.go</code>: isolated Gin
+route.</li>
+<li><code>frontend-react/src/components/SubTHZReferencePanel.jsx</code>:
+opt-in UI.</li>
+<li><code>frontend-react/src/utils/requestPayloads.js</code>: explicit
+payload builder.</li>
+<li><code>docs/openapi.yaml</code>, <code>docs/api.md</code>,
+<code>docs/architecture.md</code>, and
+<code>docs/modeling-limits.md</code>: public contract and scope.</li>
+</ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

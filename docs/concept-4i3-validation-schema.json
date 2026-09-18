@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://urban-ray-tracer.example/docs/concept-4i3-validation-schema.json",
+  "title": "A.T.O.M. Concept 4I.3 Measurement Evidence Validation Contract",
+  "description": "Versioned, isolated measurement-campaign evidence contract. This contract is diagnostic and does not alter canonical network RF.",
+  "schema_version": 1,
+  "model_family": "measurement_evidence_validation_v1",
+  "endpoint": "POST /api/sub-thz-validation",
+  "additionalProperties": false,
+  "required": ["schema_version", "operation", "campaigns"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "operation": {"enum": ["validate_campaign", "compare_models", "calibrate_bias", "spatial_holdout"]},
+    "model_ids": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"enum": ["p525_fspl", "sub_thz_atmospheric_reference_v1", "p1411_below_rooftop_los_v1", "p1411_urban_highrise_nlos_v1", "p1411_urban_lowrise_nlos_v1", "research_sub_thz", "p526-single-edge-v1"]}},
+    "campaigns": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"$ref": "#/$defs/campaign"}},
+    "strategy": {"$ref": "#/$defs/strategy"},
+    "include_predictions": {"type": "boolean"}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "coordinate": {"type": "number", "minimum": -180, "maximum": 180},
+    "campaign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "campaign_id", "frequency_range_ghz", "measurements"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "campaign_id": {"$ref": "#/$defs/identifier"},
+        "campaign_version": {"type": "string", "maxLength": 128},
+        "title": {"type": "string", "maxLength": 512},
+        "source": {"$ref": "#/$defs/source"},
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "frequency_range_ghz": {"type": "object", "additionalProperties": false, "required": ["min_ghz", "max_ghz"], "properties": {"min_ghz": {"type": "number", "exclusiveMinimum": 0}, "max_ghz": {"type": "number", "exclusiveMinimum": 0}}},
+        "environment": {"$ref": "#/$defs/environment"},
+        "equipment": {"type": "object"},
+        "antenna_setup": {"$ref": "#/$defs/antenna_setup"},
+        "calibration": {"$ref": "#/$defs/calibration"},
+        "weather": {"$ref": "#/$defs/weather"},
+        "sites": {"type": "array", "items": {"$ref": "#/$defs/site"}},
+        "measurements": {"type": "array", "maxItems": 5000, "items": {"$ref": "#/$defs/measurement"}},
+        "limitations": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "source": {"type": "object", "properties": {"citation": {"type": "string"}, "doi": {"type": "string"}, "url": {"type": "string", "format": "uri"}, "license": {"type": "string"}, "data_availability": {"type": "string"}, "dataset_version": {"type": "string"}}},
+    "provenance": {"type": "object", "properties": {"source_type": {"enum": ["external_publication", "local_field", "synthetic_controlled", "vendor", "unknown"]}, "collected_by": {"type": "string"}, "imported_by": {"type": "string"}, "metadata_url": {"type": "string", "format": "uri"}, "imported_at": {"type": "string", "format": "date-time"}}},
+    "environment": {"type": "object", "properties": {"environment_type": {"type": "string"}, "morphology": {"type": "string"}, "morphology_source": {"type": "string"}, "rooftop_relation": {"type": "string"}, "rooftop_source": {"type": "string"}, "los_state": {"type": "string"}, "los_source": {"type": "string"}}},
+    "antenna_setup": {"type": "object", "properties": {"tx_gain_dbi": {"type": "number"}, "rx_gain_dbi": {"type": "number"}, "beamwidth_deg": {"type": "number", "exclusiveMinimum": 0, "maximum": 360}, "polarization": {"type": "string"}, "directionality": {"enum": ["best_directional", "arbitrary_directional", "synthesized_omnidirectional", "unknown"]}, "comparison_basis": {"enum": ["isotropic_equivalent_path_loss", "directional_path_loss", "synthesized_omnidirectional_path_loss", "unknown"]}}},
+    "calibration": {"type": "object", "properties": {"conducted_tx_power_dbm": {"type": "number"}, "tx_cable_loss_db": {"type": "number"}, "rx_cable_loss_db": {"type": "number"}, "receiver_calibration_applied": {"type": "boolean"}, "noise_floor_dbm": {"type": "number"}, "detectable_power_floor_dbm": {"type": "number"}}},
+    "weather": {"type": "object", "properties": {"temperature_k": {"type": "number"}, "pressure_hpa": {"type": "number"}, "relative_humidity_pct": {"type": "number", "minimum": 0, "maximum": 100}, "water_vapour_density_g_m3": {"type": "number", "minimum": 0}, "rain_rate_mm_h": {"type": "number", "minimum": 0}, "rain_known": {"type": "boolean"}, "fog_liquid_water_density_g_m3": {"type": "number", "minimum": 0}, "fog_known": {"type": "boolean"}, "source": {"type": "string"}}},
+    "site": {"type": "object", "additionalProperties": false, "required": ["site_id"], "properties": {"site_id": {"$ref": "#/$defs/identifier"}, "name": {"type": "string"}, "lon": {"type": "number", "minimum": -180, "maximum": 180}, "lat": {"type": "number", "minimum": -90, "maximum": 90}, "morphology": {"type": "string"}, "morphology_source": {"type": "string"}, "rooftop_relation": {"type": "string"}, "rooftop_source": {"type": "string"}}},
+    "endpoint": {"type": "object", "additionalProperties": false, "properties": {"lon": {"type": "number", "minimum": -180, "maximum": 180}, "lat": {"type": "number", "minimum": -90, "maximum": 90}, "height_m": {"type": "number", "minimum": 0}, "conducted_power_dbm": {"type": "number"}}},
+    "labels": {"type": "object", "properties": {"los_nlos": {"type": "string"}, "los_nlos_source": {"type": "string"}, "morphology": {"type": "string"}, "morphology_source": {"type": "string"}, "rooftop_relation": {"type": "string"}, "rooftop_relation_source": {"type": "string"}}},
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["measurement_id", "tx", "rx", "measurement_quantity"],
+      "properties": {
+        "measurement_id": {"$ref": "#/$defs/identifier"}, "location_pair_id": {"$ref": "#/$defs/identifier"}, "beam_id": {"$ref": "#/$defs/identifier"}, "site_id": {"$ref": "#/$defs/identifier"},
+        "tx": {"$ref": "#/$defs/endpoint"}, "rx": {"$ref": "#/$defs/endpoint"}, "frequency_ghz": {"type": "number", "exclusiveMinimum": 0}, "bandwidth_hz": {"type": "number", "exclusiveMinimum": 0},
+        "measured_received_power_dbm": {"type": "number"}, "measured_path_loss_db": {"type": "number"}, "measured_path_gain_db": {"type": "number"}, "value_db": {"type": "number"},
+        "measurement_quantity": {"enum": ["received_power", "path_loss", "path_gain", "de_embedded_path_loss", "directional_path_loss", "omnidirectional_equivalent_path_loss", "another"]},
+        "quantity_definition": {"type": "string"}, "antenna_gain_embedded": {"type": "boolean"}, "cable_loss_embedded": {"type": "boolean"}, "calibration_applied": {"type": "boolean"},
+        "tx_conducted_power_dbm": {"type": "number"}, "tx_gain_dbi": {"type": "number"}, "rx_gain_dbi": {"type": "number"}, "tx_cable_loss_db": {"type": "number"}, "rx_cable_loss_db": {"type": "number"},
+        "directionality": {"enum": ["best_directional", "arbitrary_directional", "synthesized_omnidirectional", "unknown"]}, "antenna_comparison_basis": {"enum": ["isotropic_equivalent_path_loss", "directional_path_loss", "synthesized_omnidirectional_path_loss", "unknown"]},
+        "labels": {"$ref": "#/$defs/labels"}, "weather": {"$ref": "#/$defs/weather"}, "timestamp": {"type": "string", "format": "date-time"},
+        "detection": {"type": "object", "properties": {"status": {"enum": ["observed", "below_detection_limit", "not_detected"]}, "detection_limit_dbm": {"type": "number"}}},
+        "geometry": {"type": "object", "properties": {"direct_3d_distance_m": {"type": "number", "exclusiveMinimum": 0}, "street_width_m": {"type": "number"}, "wall_event_count": {"type": "integer", "minimum": 0}, "diffraction_loss_db": {"type": "number", "minimum": 0}, "source": {"type": "string"}}}
+      }
+    },
+    "strategy": {"type": "object", "additionalProperties": false, "properties": {"method": {"enum": ["all_samples", "explicit_groups", "spatial_grid", "leave_one_site_out", "leave_one_campaign_out"]}, "group_by": {"enum": ["site_id", "location_pair_id", "campaign_id"]}, "calibration_group_ids": {"type": "array", "items": {"type": "string"}}, "validation_group_ids": {"type": "array", "items": {"type": "string"}}, "spatial_cell_size_m": {"type": "number", "exclusiveMinimum": 0}, "minimum_separation_m": {"type": "number", "exclusiveMinimum": 0}}}
+  },
+  "quantity_semantics": {
+    "canonical_domain": "path_loss_db",
+    "residual": "measured_path_loss_db - predicted_path_loss_db",
+    "received_power_normalization": "PL = Pt_conducted + Gt + Gr - Ltx - Lrx - Pr_received",
+    "path_gain_normalization": "PL = - path_gain_db",
+    "directional_policy": "best/arbitrary directional beams remain ambiguous unless the campaign explicitly supplies a synthesized-omni or isotropic-equivalent basis",
+    "censoring_policy": "below_detection_limit and not_detected records are counted but excluded from ordinary residual metrics",
+    "normalization_policy": "all required power, gain, cable, calibration, antenna-basis, and quantity semantics must be explicit; no defaults are inferred"
+  },
+  "readiness_policy": {
+    "production_candidate_allowed": false,
+    "promotion_gate": ["numeric evidence provenance", "quantity/calibration completeness", "deterministic spatial/site/campaign holdouts", "trend and common-sample review", "independent review outside this endpoint"]
+  }
+}

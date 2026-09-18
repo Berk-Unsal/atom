@@ -180,6 +180,11 @@ func main() {
 	registerDatasetRoutes(router, datasets, strings.TrimSpace(os.Getenv("DATASET_ADMIN_API_KEY")))
 	registerExperimentRoutes(router, experiments, datasets)
 	registerPathProfileRoute(router, datasets)
+	registerSubTHZReferenceRoute(router, datasets)
+	registerSubTHZP1411ReferenceRoute(router, datasets)
+	registerSubTHZValidationRoute(router)
+	registerSubTHZMaterialReferenceRoute(router)
+	registerSubTHZReflectionReferenceRoute(router, datasets)
 	registerCoverageSurfaceRoute(router, datasets)
 	router.POST("/api/analyze-sector", func(c *gin.Context) {
 		var input raytracer.StaticSimulationRequestInput
@@ -565,7 +570,7 @@ func registerFrontendRoutes(router *gin.Engine, distPath string, indexPath strin
 				"service": "A.T.O.M API",
 				"routes": []string{
 					"/healthz", "/readyz", "/api/meta", "/api/datasets", "/api/datasets/switch", "/api/towers", "/api/buildings", "/api/buildings/summary",
-					"/api/conformance", "/api/collections", "/api/collections/buildings", "/api/collections/buildings/items", "/api/path-profile", "/api/coverage-surface", "/api/processes/batch-experiment", "/api/processes/batch-experiment/execution", "/api/jobs/:jobID", "/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network", "/api/explain-network-cell",
+					"/api/conformance", "/api/collections", "/api/collections/buildings", "/api/collections/buildings/items", "/api/path-profile", "/api/sub-thz-reference", "/api/sub-thz-p1411-reference", "/api/sub-thz-validation", "/api/sub-thz-material-reference", "/api/coverage-surface", "/api/processes/batch-experiment", "/api/processes/batch-experiment/execution", "/api/jobs/:jobID", "/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network", "/api/explain-network-cell",
 					"/api/optimize-network", "/api/building-entry-analysis", "/api/interference", "/api/recommend-sites", "/api/measurements/evaluate",
 					"/api/core/status", "/api/core/topology", "/api/core/sessions", "/api/core/events", "/api/core/scenario",
 				},

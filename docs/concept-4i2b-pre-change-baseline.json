@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "concept": "4I.2B",
+  "title": "Applicability-gated ITU-R P.1411-13 candidate-model pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "baseline_commit": "d66ad902075402a2df8df413bec63e9a51059561",
+  "worktree_note": "The 4I.2A atmospheric reference and earlier canonical audit artifacts were already present. This artifact records the runtime state before adding the isolated P.1411 candidate evaluator, route, UI, and fixtures.",
+  "real_backend_acceptance": {
+    "command": "ATOM_REAL_E2E=1 ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline npm run test:e2e",
+    "result": "27 passed, 9 skipped",
+    "backend": "real Go backend on http://127.0.0.1:18080",
+    "scope": "existing frontend real-backend acceptance suite before Concept 4I.2B production edits"
+  },
+  "canonical_runtime_snapshots": {
+    "canonical_2_6_ghz": {
+      "endpoint": "POST /api/simulate",
+      "request": {
+        "tower_lon": 32.85,
+        "tower_lat": 39.92,
+        "rays": 8,
+        "radius_m": 100,
+        "frequency_ghz": 2.6,
+        "tx_power_dbm": 30,
+        "azimuth": 90,
+        "beam_width": 360
+      },
+      "model_id": "urban_short_range",
+      "stats": {
+        "blocked_pct": 0,
+        "avg_rx_dbm": -43,
+        "min_range_m": 100,
+        "max_range_m": 100
+      },
+      "first_feature": {
+        "distance_m": 25,
+        "path_loss_db": 70.07902264967872,
+        "wall_loss_db": 0,
+        "signal_dbm": -15.07902264967872,
+        "propagation_model_id": "urban_short_range",
+        "los_state": "los",
+        "applicability_reason": "applicable"
+      }
+    },
+    "canonical_28_ghz": {
+      "endpoint": "POST /api/simulate",
+      "request": {
+        "tower_lon": 32.85,
+        "tower_lat": 39.92,
+        "rays": 8,
+        "radius_m": 100,
+        "frequency_ghz": 28,
+        "tx_power_dbm": 30,
+        "azimuth": 90,
+        "beam_width": 360
+      },
+      "model_id": "urban_short_range",
+      "stats": {
+        "blocked_pct": 12.5,
+        "avg_rx_dbm": -72.1,
+        "min_range_m": 72.3,
+        "max_range_m": 100
+      },
+      "first_feature": {
+        "distance_m": 25,
+        "path_loss_db": 90.72271631710674,
+        "wall_loss_db": 0,
+        "signal_dbm": -35.722716317106745,
+        "propagation_model_id": "urban_short_range",
+        "los_state": "los",
+        "applicability_reason": "applicable"
+      }
+    },
+    "research_sub_thz_140_ghz": {
+      "endpoint": "POST /api/simulate",
+      "request": {
+        "tower_lon": 32.85,
+        "tower_lat": 39.92,
+        "rays": 8,
+        "radius_m": 100,
+        "frequency_ghz": 140,
+        "tx_power_dbm": 30,
+        "azimuth": 90,
+        "beam_width": 360
+      },
+      "model_id": "research_sub_thz",
+      "applied_model_id": "research_sub_thz",
+      "applicability_reason": "research_profile_only",
+      "stats": {
+        "blocked_pct": 87.5,
+        "avg_rx_dbm": -123.6,
+        "min_range_m": 17.6,
+        "max_range_m": 100
+      },
+      "first_feature": {
+        "distance_m": 25,
+        "slant_distance_m": 34.3110769286,
+        "fspl_db": 106.08124770471235,
+        "propagation_loss_db": 106.08124770471235,
+        "wall_loss_db": 0,
+        "signal_dbm": -51.081247704712354,
+        "propagation_model_id": "research_sub_thz"
+      },
+      "composition": "FSPL + max(wall_event_count, 0) * 80 dB at 140 GHz; no gas, rain, fog, material, diffraction, or measured channel term"
+    }
+  },
+  "existing_reference_snapshots": {
+    "concept_4i2a_atmospheric_reference": {
+      "endpoint": "POST /api/sub-thz-reference",
+      "request": {
+        "frequency_ghz": 140,
+        "transmitter": {"lon": 32.85, "lat": 39.92, "height_m": 25},
+        "receiver": {"lon": 32.8509, "lat": 39.92, "height_m": 1.5},
+        "atmosphere": {"enabled": true, "pressure_hpa": 1013.25, "temperature_k": 288.15, "water_vapour_density_g_m3": 7.5},
+        "rain": {"enabled": true, "rain_rate_mm_h": 25, "polarization": "circular", "polarization_tilt_deg": 45},
+        "local_fog": {"enabled": true, "liquid_water_density_g_m3": 0.5, "temperature_k": 288.15}
+      },
+      "response": {
+        "reference_model_id": "sub_thz_atmospheric_reference_v1",
+        "horizontal_distance_m": 76.83830463717943,
+        "slant_distance_m": 80.35157160576257,
+        "fspl_db": 113.47023144742553,
+        "gas_db": 0.0735577398480971,
+        "rain_db": 1.0229000625292286,
+        "local_fog_db": 0.27993683098088384,
+        "total_path_loss_db": 114.84662608078375,
+        "building_intersection_present": true,
+        "wall_loss_applied": false,
+        "diffraction_applied": false,
+        "material_loss_applied": false,
+        "canonical_network_model": false,
+        "receiver_threshold_applied": false,
+        "experiment_fingerprint": "sub-thz-reference-642d0170dd3558ee9c51034ffe0c6751e7113d42bd58195bdf44c517f22f5f64"
+      },
+      "comparison_artifact": "concept-4i2a-post-change-comparison.json"
+    },
+    "concept_4h2_optimizer": {
+      "source": "concept-4f1-canonical-audit.json",
+      "frequency_ghz": 28,
+      "baseline_optimizer": {
+        "network_score": 13509330.8,
+        "pareto_frontier_size": 23
+      },
+      "height_aware_optimizer": {
+        "network_score": 32568641.1,
+        "pareto_frontier_size": 23,
+        "elapsed_seconds": 18.484
+      },
+      "use": "invariance target only; not recomputed or coupled to P.1411"
+    },
+    "p526_diffraction": {
+      "source": "concept-4i2a-pre-change-baseline.json",
+      "endpoint": "POST /api/path-profile",
+      "diagnostic_id": "p526-single-edge-v1",
+      "baseline_model": "free_space",
+      "diffraction_loss_db": null,
+      "canonical_path_loss_db": 118.58,
+      "use": "invariance target only; P.1411 never invokes this diagnostic"
+    }
+  },
+  "invariance_targets": [
+    "canonical 2.6 GHz simulation",
+    "canonical 28 GHz simulation",
+    "research_sub_thz 140 GHz simulation",
+    "4H.2 disabled optimization",
+    "4H.2 enabled optimization",
+    "building entry",
+    "P.526 diffraction diagnostic",
+    "4H.1 interference/radio-quality",
+    "4I.2A atmospheric reference"
+  ],
+  "planned_4i2b_boundary": {
+    "new_route": "POST /api/sub-thz-p1411-reference",
+    "new_model_ids": [
+      "p1411_below_rooftop_los_v1",
+      "p1411_urban_highrise_nlos_v1",
+      "p1411_urban_lowrise_nlos_v1"
+    ],
+    "canonical_dispatch_modified": false,
+    "canonical_network_coupling": false,
+    "composition_policy": "P.1411 median and P.525 comparison are side-by-side reference outputs; P.676/P.838/P.840 and research_sub_thz remain optional alternative comparisons and are never summed into the P.1411 result"
+  }
+}

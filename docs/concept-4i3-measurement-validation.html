@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Versioned measurement campaigns,
+quantity semantics, reference-model adapters, deterministic calibration
+and spatial holdouts, evidence readiness, and the Ankara measurement
+gap." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4I.3 Measurement
+Validation | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4I.3
+Measurement Validation page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#boundary-and-invariance"
+      id="toc-boundary-and-invariance">Boundary and invariance</a></li>
+      <li><a href="#campaign-and-measurement-contract"
+      id="toc-campaign-and-measurement-contract">Campaign and
+      measurement contract</a></li>
+      <li><a href="#reference-adapters"
+      id="toc-reference-adapters">Reference adapters</a></li>
+      <li><a href="#metrics-and-diagnostics"
+      id="toc-metrics-and-diagnostics">Metrics and diagnostics</a></li>
+      <li><a href="#external-evidence-policy"
+      id="toc-external-evidence-policy">External evidence
+      policy</a></li>
+      <li><a href="#synthetic-controls"
+      id="toc-synthetic-controls">Synthetic controls</a></li>
+      <li><a href="#ankara-140-ghz-campaign-gap"
+      id="toc-ankara-140-ghz-campaign-gap">Ankara 140 GHz campaign
+      gap</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Scientific validation</span>
+        <h1>Concept 4I.3 Measurement Validation</h1>
+        <p>Versioned measurement campaigns, quantity semantics,
+reference-model adapters, deterministic calibration and spatial
+holdouts, evidence readiness, and the Ankara measurement gap.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4i3-measurement-validation.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Concept 4I.3 is an isolated evidence ledger for measured path-loss
+campaigns. It establishes the data contract, quantity semantics,
+reference-model adapters, deterministic comparison/holdout diagnostics,
+and a conservative readiness gate. It does not introduce a new
+propagation equation, path-loss exponent, ML model, arbitrary
+regression, or production RF model.</p>
+<h2 id="boundary-and-invariance">Boundary and invariance</h2>
+<p>The workflow is exposed at <code>POST /api/sub-thz-validation</code>.
+It consumes imported campaign JSON and calls only the versioned
+reference adapters. It does not call or mutate the canonical 2.6 GHz, 28
+GHz, <code>research_sub_thz</code>, Concept 4I.2A atmospheric, Concept
+4I.2B P.1411, building-entry, diffraction, interference/radio-quality,
+or optimization result paths. The pre-change audit and invariance
+targets are recorded in <a
+href="concept-4i3-pre-change-baseline.json">concept-4i3-pre-change-baseline.json</a>;
+the post-change comparison is recorded in <a
+href="concept-4i3-post-change-comparison.json">concept-4i3-post-change-comparison.json</a>.</p>
+<p>The legacy <code>/api/measurements/evaluate</code> RSRP workflow
+remains unchanged. Its 4G/5G radio-quality semantics are not silently
+reused as sub-THz path-loss evidence.</p>
+<h2 id="campaign-and-measurement-contract">Campaign and measurement
+contract</h2>
+<p>Every campaign has a schema version, stable campaign ID/version,
+source and provenance, frequency range, equipment/antenna/calibration
+metadata, environment and weather metadata, sites, and measurement
+records. Every record has a stable measurement ID and may carry
+<code>location_pair_id</code> and <code>beam_id</code> so repeated beams
+and correlated observations are visible rather than counted as
+independent evidence.</p>
+<p>The machine-readable contract is <a
+href="concept-4i3-validation-schema.json">concept-4i3-validation-schema.json</a>.
+Coordinates, numeric values, IDs, timestamps, duplicate
+campaign/site/measurement IDs, and enumerations are strictly validated.
+JSON <code>NaN</code>/<code>Infinity</code> are rejected by the decoder
+and all finite numeric fields are range checked.</p>
+<p>The canonical comparison domain is path loss in dB. The residual sign
+is:</p>
+<p><code>residual = measured_path_loss_db - predicted_path_loss_db</code></p>
+<p>Received power is normalized only when conducted transmit power,
+transmit/receive gains, cable losses, calibration status, and a
+compatible isotropic-equivalent or synthesized-omnidirectional basis are
+explicit:</p>
+<p><code>PL = Pt_conducted + Gt + Gr - Ltx - Lrx - Pr_received</code></p>
+<p>Path gain is converted as <code>PL = -path_gain_db</code> only with
+explicit quantity, antenna/cable embedding, calibration, and compatible
+basis metadata. Directional or best-beam observations remain ambiguous
+unless a synthesized-omnidirectional or isotropic-equivalent basis is
+supplied. Rx power, path loss, and path gain are never mixed without an
+explicit normalization decision.</p>
+<p>Below-detection and not-detected records are counted as censored and
+excluded from ordinary residual metrics. No censoring threshold is
+converted into a fabricated path-loss value.</p>
+<h2 id="reference-adapters">Reference adapters</h2>
+<p>The shared adapter contract evaluates applicability before residuals
+and returns <code>applicable</code>, <code>inapplicable</code>,
+<code>ambiguous</code>, <code>unsupported</code>, or
+<code>censored</code> status:</p>
+<ul>
+<li><code>p525_fspl</code>: exact wavelength-form P.525 free-space path
+loss at the normalized 3D distance.</li>
+<li><code>sub_thz_atmospheric_reference_v1</code>: the existing opt-in
+P.525/P.676/P.838/P.840 ledger, only when explicit weather and
+rain/fog-known flags exist. Atmospheric totals are side-by-side
+evidence, not additions to an empirical model.</li>
+<li><code>p1411_below_rooftop_los_v1</code>,
+<code>p1411_urban_highrise_nlos_v1</code>, and
+<code>p1411_urban_lowrise_nlos_v1</code>: existing Table 4 row
+implementations with strict frequency, distance, morphology, rooftop,
+and LOS applicability. The empirical sigma is compared with observed
+residual spread; no random fading is sampled.</li>
+<li><code>research_sub_thz</code>: comparison-only <code>140 GHz</code>
+planning profile requiring an explicit wall-event count. Its
+<code>80 dB</code> per-wall heuristic is never inferred or
+calibrated.</li>
+<li><code>p526-single-edge-v1</code>: diagnostic-only adapter requiring
+an explicit obstacle/diffraction loss profile. It is not a canonical
+propagation path.</li>
+</ul>
+<h2 id="metrics-and-diagnostics">Metrics and diagnostics</h2>
+<p>For every applicable common sample set, the response reports count,
+mean bias, median bias, MAE, RMSE, standard deviation, p10, and p90. It
+also reports strata by LOS/NLOS, morphology, distance bin, frequency,
+campaign, and site; residual diagnostics versus log-distance and
+frequency; common-sample pair comparisons; censored counts; and
+directional-basis warnings. No R² score or universal model winner is
+used as a primary decision.</p>
+<p>Calibration is constant-bias-only. A fitted bias is the mean
+calibration-set residual and is applied only to a held-out diagnostic
+comparison. Calibration and validation sets are explicit or
+deterministically separated by site, campaign, location group, or
+spatial component. Status is <code>stable</code>, <code>unstable</code>,
+or <code>insufficient_validation_data</code>; <code>promoted</code> is
+always false.</p>
+<p>Spatial holdout uses deterministic meter cells and connected
+neighboring-cell components so nearby observations cannot leak between
+calibration and validation folds. Leave-one-site-out and
+leave-one-campaign-out are also available. The response contains the
+cell size, minimum-separation policy, fold IDs, counts, and no-leak
+evidence. The validation fingerprint excludes timestamps, runtime, UI
+state, and file paths.</p>
+<h2 id="external-evidence-policy">External evidence policy</h2>
+<p><a
+href="concept-4i3-external-evidence.json">concept-4i3-external-evidence.json</a>
+registers a small set of previously audited 100–200 GHz sources as
+metadata-only references. No numeric sample is redistributed,
+plot-digitized, or invented. A source becomes a numeric campaign only
+after access/license, quantity semantics, antenna basis, calibration,
+geometry, labels, and duplicate-beam policy are established.</p>
+<h2 id="synthetic-controls">Synthetic controls</h2>
+<p><a
+href="concept-4i3-synthetic-validation.json">concept-4i3-synthetic-validation.json</a>
+covers exact P.525, a controlled +5 dB bias, exact P.1411 median
+evaluation, deterministic residual statistics, spatial-region offset,
+censored observations, and directional ambiguity. These fixtures test
+implementation behavior; they are not field validation.</p>
+<h2 id="ankara-140-ghz-campaign-gap">Ankara 140 GHz campaign gap</h2>
+<p>The current repository contains no redistributable Ankara 140 GHz
+measurement campaign. A future campaign must capture, per link:</p>
+<ul>
+<li>georeferenced Tx/Rx coordinates and antenna heights, plus the
+coordinate reference system;</li>
+<li>exact carrier frequency, bandwidth, waveform/sounding configuration,
+timestamp, and synchronization state;</li>
+<li>conducted Tx power, Tx/Rx cable losses, receiver calibration state,
+noise/detection floor, receiver dynamic range, and hardware
+identifiers;</li>
+<li>antenna gain/pattern metadata, beam pointing/beamwidth,
+polarization, beam ID, and whether the value is directional, best-beam,
+isotropic-equivalent, or synthesized omni;</li>
+<li>received power/path loss/path gain quantity with an explicit
+definition and embedded-gain/cable-loss flags;</li>
+<li>LOS/NLOS, morphology, rooftop relation, street width/corner,
+building/roof intersections, wall events, terrain/vegetation, and the
+source/provenance of each label;</li>
+<li>temperature, pressure, humidity/water vapour, rain and fog
+observations with explicit known/unknown flags.</li>
+</ul>
+<p>Until that gap is closed, the readiness taxonomy remains
+<code>reference_only</code>, <code>synthetic_controlled_only</code>, or
+<code>diagnostic_only</code>; Concept 4I.3 has no
+<code>production_candidate</code> state.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

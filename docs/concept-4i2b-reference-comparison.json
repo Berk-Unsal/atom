@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "concept": "4I.2B",
+  "title": "140 GHz side-by-side reference comparison",
+  "captured_at": "2026-09-18",
+  "path_context": {
+    "frequency_ghz": 140,
+    "horizontal_distance_m": 76.83830463717943,
+    "slant_distance_m": 80.35157160576257,
+    "tx_height_m": 25,
+    "rx_height_m": 1.5,
+    "morphology": "urban_high_rise",
+    "rooftop_relation": "both_below_rooftop",
+    "los_state": "los",
+    "scenario_provenance": "user_declared",
+    "interpretation": "Controlled side-by-side references only. These outputs are deliberately not summed into one path-loss number."
+  },
+  "references": [
+    {
+      "id": "p1411_below_rooftop_los_v1",
+      "family": "ITU-R P.1411-13 Table 4 empirical candidate",
+      "status": "applicable_when_explicit_scenario_is_accepted",
+      "median_path_loss_db": 114.87362110986834,
+      "p525_fspl_db": 113.47023144742556,
+      "excess_relative_to_fspl_db": 1.40338966244278,
+      "sigma_db": 4.91,
+      "included_terms": ["P.1411 Table 4 equation (1) median"],
+      "excluded_terms": ["P.525 addition", "P.676", "P.838", "P.840", "80 dB wall events", "P.526", "receiver threshold"],
+      "reference": "ITU-R P.1411-13 §4.1.1 Table 4",
+      "source_url": "https://www.itu.int/rec/R-REC-P.1411-13-202509-I/en"
+    },
+    {
+      "id": "sub_thz_atmospheric_reference_v1",
+      "family": "A.T.O.M. Concept 4I.2A componentized atmospheric reference",
+      "status": "comparison_only",
+      "free_space_db": 113.47023144742553,
+      "gas_db": 0.0735577398480971,
+      "rain_db": 1.0229000625292286,
+      "local_fog_db": 0.27993683098088384,
+      "total_path_loss_db": 114.84662608078375,
+      "included_terms": ["P.525 wavelength-form FSPL", "P.676 gas", "P.838 rain", "P.840 local fog"],
+      "excluded_terms": ["P.1411 empirical row", "80 dB wall events", "P.526", "receiver threshold"],
+      "canonical_network_coupling": false,
+      "reference": "A.T.O.M. Concept 4I.2A",
+      "source_artifact": "concept-4i2a-post-change-comparison.json"
+    },
+    {
+      "id": "research_sub_thz",
+      "family": "A.T.O.M. research planning profile",
+      "status": "comparison_only",
+      "free_space_db": 113.47023144742553,
+      "wall_event_count": 1,
+      "wall_loss_db": 80,
+      "total_path_loss_db": 193.47023144742553,
+      "included_terms": ["existing research_sub_thz FSPL", "80 dB per wall event"],
+      "excluded_terms": ["P.1411 empirical row", "P.676", "P.838", "P.840", "P.526", "material/interface physics"],
+      "canonical_network_coupling": true,
+      "canonical_note": "This is the existing research profile used by POST /api/simulate at 140 GHz; the P.1411 endpoint does not call or alter it."
+    },
+    {
+      "id": "p525_fspl_only",
+      "family": "ITU-R P.525-5 mathematical baseline",
+      "status": "comparison_baseline",
+      "fspl_db": 113.47023144742556,
+      "included_terms": ["exact wavelength-form FSPL"],
+      "excluded_terms": ["urban morphology", "rooftop relation", "NLoS excess", "atmosphere", "building loss"],
+      "reference": "ITU-R P.525-5",
+      "source_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf"
+    }
+  ],
+  "external_sanity_comparisons": [
+    {
+      "study": "Xing and Rappaport, IEEE ICC 2021",
+      "scope": "140/142 GHz Brooklyn urban microcell measurements",
+      "url": "https://arxiv.org/abs/2103.01151",
+      "use": "sanity_and_transferability_only",
+      "calibration_or_validation": false
+    },
+    {
+      "study": "Shakya et al., IEEE TAP 2024",
+      "scope": "142/73/28 GHz Brooklyn and Manhattan measurements",
+      "url": "https://doi.org/10.1109/TAP.2024.3366581",
+      "use": "sanity_and_transferability_only",
+      "calibration_or_validation": false
+    },
+    {
+      "study": "De Beelde et al., IEEE WCL 2022",
+      "scope": "120–165 GHz D-band measurements",
+      "url": "https://biblio.ugent.be/publication/01GQHEC5QMYV683Z0225CYYWVD",
+      "use": "sanity_and_transferability_only",
+      "calibration_or_validation": false
+    },
+    {
+      "study": "Sun et al., Sensors 2022",
+      "scope": "138–163.2 GHz 100–800 m LOS measurements",
+      "url": "https://www.mdpi.com/1424-8220/22/24/9734",
+      "use": "sanity_and_transferability_only",
+      "calibration_or_validation": false
+    },
+    {
+      "study": "Ju et al., spatial consistency study",
+      "scope": "Spatially consistent high-frequency channel behavior",
+      "url": "https://arxiv.org/abs/2103.05496",
+      "use": "future_spatial_consistency_context",
+      "calibration_or_validation": false
+    }
+  ],
+  "double_counting_rules": [
+    "Do not add P.525 FSPL to a P.1411 median; compare only.",
+    "Do not add the 4I.2A atmospheric total to P.1411 unless a future calibrated model explicitly proves the empirical row excludes the same atmosphere.",
+    "Do not add the research_sub_thz 80 dB wall-event term to P.1411.",
+    "Do not add P.526 diffraction, building-entry, material, or receiver-threshold terms to the P.1411 candidate output.",
+    "No reference in this artifact is a 140 GHz Ankara coverage or serviceability result."
+  ]
+}

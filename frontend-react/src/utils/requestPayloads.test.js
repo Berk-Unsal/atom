@@ -9,6 +9,9 @@ import {
   buildNetworkCellExplanationPayload,
   buildNetworkOptimizationPayload,
   buildPathProfilePayload,
+  buildP1411ReferencePayload,
+  buildSpecularReflectionReferencePayload,
+  buildSubTHZReferencePayload,
   buildRecommendationPayload,
 } from "./requestPayloads.js";
 
@@ -101,6 +104,91 @@ describe("interference request payload", () => {
         shadow_sigma_db: 7,
       },
     });
+  });
+
+  it("keeps the sub-THz atmospheric reference opt-in and explicit", () => {
+    const payload = buildSubTHZReferencePayload(towers[0], [32.851, 39.921], settings, {
+      frequencyGHz: 140,
+      txHeightM: 25,
+      rxHeightM: 1.5,
+      pressureHpa: 1013.25,
+      temperatureK: 288.15,
+      waterVapourDensityGm3: 7.5,
+      rainEnabled: true,
+      rainRateMmh: 25,
+      rainPolarization: "circular",
+      localFogEnabled: false,
+      localFogDensityGm3: 0.5,
+      linkBudgetEnabled: false,
+    });
+
+    expect(payload).toMatchObject({
+      frequency_ghz: 140,
+      transmitter: { lon: 32.85, lat: 39.92, height_m: 25 },
+      receiver: { lon: 32.851, lat: 39.921, height_m: 1.5 },
+      atmosphere: { enabled: true, pressure_hpa: 1013.25, temperature_k: 288.15, water_vapour_density_g_m3: 7.5 },
+      rain: { enabled: true, rain_rate_mm_h: 25, polarization: "circular" },
+      local_fog: { enabled: false },
+    });
+    expect(payload).not.toHaveProperty("link_budget");
+  });
+
+  it("builds an explicit, isolated P.1411 candidate request", () => {
+    const payload = buildP1411ReferencePayload(towers[0], [32.851, 39.921], settings, {
+      frequencyGHz: 140,
+      txHeightM: 25,
+      rxHeightM: 1.5,
+      morphology: "urban_high_rise",
+      rooftopRelation: "both_below_rooftop",
+      losState: "los",
+      candidateModelID: "all",
+      includeAtmosphericComparison: true,
+      pressureHpa: 1013.25,
+      temperatureK: 288.15,
+      waterVapourDensityGm3: 7.5,
+      includeResearchComparison: true,
+      researchWallEventCount: 1,
+    });
+
+    expect(payload).toMatchObject({
+      frequency_ghz: 140,
+      transmitter: { lon: 32.85, lat: 39.92, height_m: 25 },
+      receiver: { lon: 32.851, lat: 39.921, height_m: 1.5 },
+      morphology: "urban_high_rise",
+      rooftop_relation: "both_below_rooftop",
+      los_state: "los",
+      candidate_model_id: "all",
+      provenance: { morphology: "user_declared", rooftop_relation: "user_declared", los_state: "user_declared" },
+      research_wall_event_count: 1,
+    });
+    expect(payload.atmospheric_reference).toMatchObject({
+      frequency_ghz: 140,
+      atmosphere: { enabled: true, pressure_hpa: 1013.25, temperature_k: 288.15, water_vapour_density_g_m3: 7.5 },
+    });
+  });
+
+  it("builds an explicit local-ENU one-bounce reflection request without network fields", () => {
+    const payload = buildSpecularReflectionReferencePayload({
+      frequencyGHz: 140,
+      tx: { x: 50, y: -50, z: 10, gainDBi: 0, antennaMode: "isotropic" },
+      rx: { x: 50, y: 50, z: 10, gainDBi: 0, antennaMode: "isotropic" },
+      facade: { startX: 0, startY: -10, endX: 0, endY: 10, planeX: 0, planeY: 0, baseZ: 0, topZ: 20, normalX: 1, normalY: 0, normalZ: 0 },
+      material: { mode: "interface", materialSource: "user_defined", relativePermittivity: 4, conductivitySPerM: 0 },
+      polarization: "TE",
+      terrainMode: "flat_ground_relative_datum",
+      linkBudget: { ptConductedDbm: 30 },
+    });
+
+    expect(payload).toMatchObject({
+      schema_version: 1,
+      coordinate_frame: { mode: "local_enu" },
+      tx: { position: { x: 50, y: -50, z: 10 }, antenna: { mode: "isotropic", absolute_gain_dbi: 0 } },
+      facade: { base_z: 0, top_z: 20, outward_normal: { x: 1, y: 0, z: 0 } },
+      material: { mode: "interface", material_source: "user_defined", user_material: { relative_permittivity: 4, conductivity_s_per_m: 0 } },
+      link_budget: { pt_conducted_dbm: 30 },
+    });
+    expect(payload).not.toHaveProperty("model_profile");
+    expect(payload).not.toHaveProperty("rf_profile");
   });
 
   it("attaches calibration campaign provenance to measurement evaluation", () => {

@@ -42,6 +42,214 @@ export function buildPathProfilePayload(selectedTower, receiver, settings, optio
   };
 }
 
+export function buildSubTHZReferencePayload(selectedTower, receiver, settings, options = {}) {
+  const rainEnabled = Boolean(options.rainEnabled);
+  const localFogEnabled = Boolean(options.localFogEnabled);
+  const payload = {
+    frequency_ghz: Number(options.frequencyGHz),
+    transmitter: {
+      lon: Number(selectedTower.coordinates[0]),
+      lat: Number(selectedTower.coordinates[1]),
+      height_m: Number(options.txHeightM),
+    },
+    receiver: {
+      lon: Number(receiver[0]),
+      lat: Number(receiver[1]),
+      height_m: Number(options.rxHeightM),
+    },
+    atmosphere: {
+      enabled: true,
+      pressure_hpa: Number(options.pressureHpa),
+      temperature_k: Number(options.temperatureK),
+      water_vapour_density_g_m3: Number(options.waterVapourDensityGm3),
+    },
+    rain: {
+      enabled: rainEnabled,
+      rain_rate_mm_h: Number(options.rainRateMmh),
+      polarization: options.rainPolarization ?? "circular",
+      polarization_tilt_deg: Number(options.rainPolarizationTiltDeg ?? 45),
+    },
+    local_fog: {
+      enabled: localFogEnabled,
+      liquid_water_density_g_m3: Number(options.localFogDensityGm3),
+      temperature_k: Number(options.localFogTemperatureK ?? options.temperatureK),
+    },
+  };
+  if (options.linkBudgetEnabled) {
+    payload.link_budget = {
+      conducted_tx_power_dbm: Number(options.conductedTxPowerDbm),
+      tx_gain_dbi: Number(options.txGainDbi),
+      rx_gain_dbi: Number(options.rxGainDbi),
+      tx_pattern_attenuation_db: Number(options.txPatternAttenuationDb),
+      system_loss_db: Number(options.systemLossDb),
+      polarization_loss_db: Number(options.polarizationLossDb),
+      calibration_offset_db: Number(options.calibrationOffsetDb),
+    };
+  }
+  return payload;
+}
+
+export function buildP1411ReferencePayload(selectedTower, receiver, settings, options = {}) {
+  const frequencyGHz = Number(options.frequencyGHz);
+  const txHeightM = Number(options.txHeightM);
+  const rxHeightM = Number(options.rxHeightM);
+  const payload = {
+    frequency_ghz: frequencyGHz,
+    transmitter: {
+      lon: Number(selectedTower.coordinates[0]),
+      lat: Number(selectedTower.coordinates[1]),
+      height_m: txHeightM,
+    },
+    receiver: {
+      lon: Number(receiver[0]),
+      lat: Number(receiver[1]),
+      height_m: rxHeightM,
+    },
+    morphology: options.morphology ?? "unknown",
+    rooftop_relation: options.rooftopRelation ?? "unknown",
+    los_state: options.losState ?? "unknown",
+    candidate_model_id: options.candidateModelID ?? "all",
+    provenance: {
+      frequency_ghz: options.frequencyProvenance ?? "user_declared",
+      distance_m: options.distanceProvenance ?? "geometry_derived",
+      tx_height_m: options.txHeightProvenance ?? "user_declared",
+      rx_height_m: options.rxHeightProvenance ?? "user_declared",
+      morphology: options.morphologyProvenance ?? "user_declared",
+      rooftop_relation: options.rooftopProvenance ?? "user_declared",
+      los_state: options.losProvenance ?? "user_declared",
+    },
+  };
+
+  if (options.includeAtmosphericComparison) {
+    payload.atmospheric_reference = {
+      frequency_ghz: frequencyGHz,
+      transmitter: { ...payload.transmitter },
+      receiver: { ...payload.receiver },
+      atmosphere: {
+        enabled: true,
+        pressure_hpa: Number(options.pressureHpa),
+        temperature_k: Number(options.temperatureK),
+        water_vapour_density_g_m3: Number(options.waterVapourDensityGm3),
+      },
+      rain: {
+        enabled: false,
+        rain_rate_mm_h: 0,
+        polarization: "circular",
+        polarization_tilt_deg: 45,
+      },
+      local_fog: {
+        enabled: false,
+        liquid_water_density_g_m3: 0,
+        temperature_k: Number(options.temperatureK),
+      },
+    };
+  }
+  if (options.includeResearchComparison) {
+    payload.research_wall_event_count = Number(options.researchWallEventCount ?? 0);
+  }
+  return payload;
+}
+
+export function buildSpecularReflectionReferencePayload(options = {}) {
+  const numberOr = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
+  const tx = options.tx ?? {};
+  const rx = options.rx ?? {};
+  const facade = options.facade ?? {};
+  const material = options.material ?? {};
+  const linkBudget = options.linkBudget ?? {};
+  const materialSource = material.materialSource ?? "user_defined";
+  const incidentMedium = material.incidentMedium ?? { name: "air", relativePermittivity: 1, conductivitySPerM: 0, propertySource: "user_declared" };
+  const exitMedium = material.exitMedium ?? { name: "air", relativePermittivity: 1, conductivitySPerM: 0, propertySource: "user_declared" };
+  const payload = {
+    schema_version: 1,
+    frequency_ghz: numberOr(options.frequencyGHz, 140),
+    coordinate_frame: { mode: options.coordinateFrameMode ?? "local_enu" },
+    tx: {
+      position: { x: numberOr(tx.x), y: numberOr(tx.y), z: numberOr(tx.z) },
+      antenna: {
+        mode: tx.antennaMode ?? "isotropic",
+        absolute_gain_dbi: numberOr(tx.gainDBi),
+        ...(tx.patternID ? { pattern_id: tx.patternID } : {}),
+        ...(tx.boresightAzimuthDeg !== undefined ? { boresight_azimuth_deg: numberOr(tx.boresightAzimuthDeg) } : {}),
+        ...(tx.boresightElevationDeg !== undefined ? { boresight_elevation_deg: numberOr(tx.boresightElevationDeg) } : {}),
+        ...(tx.beamWidthDeg !== undefined ? { beam_width_deg: numberOr(tx.beamWidthDeg) } : {}),
+        ...(tx.apertureM !== undefined && tx.apertureM !== "" ? { aperture_m: numberOr(tx.apertureM) } : {}),
+      },
+    },
+    rx: {
+      position: { x: numberOr(rx.x), y: numberOr(rx.y), z: numberOr(rx.z) },
+      antenna: {
+        mode: rx.antennaMode ?? "isotropic",
+        absolute_gain_dbi: numberOr(rx.gainDBi),
+        ...(rx.patternID ? { pattern_id: rx.patternID } : {}),
+        ...(rx.boresightAzimuthDeg !== undefined ? { boresight_azimuth_deg: numberOr(rx.boresightAzimuthDeg) } : {}),
+        ...(rx.boresightElevationDeg !== undefined ? { boresight_elevation_deg: numberOr(rx.boresightElevationDeg) } : {}),
+        ...(rx.beamWidthDeg !== undefined ? { beam_width_deg: numberOr(rx.beamWidthDeg) } : {}),
+        ...(rx.apertureM !== undefined && rx.apertureM !== "" ? { aperture_m: numberOr(rx.apertureM) } : {}),
+      },
+    },
+    facade: {
+      start: { x: numberOr(facade.startX), y: numberOr(facade.startY), z: 0 },
+      end: { x: numberOr(facade.endX), y: numberOr(facade.endY), z: 0 },
+      plane_point: { x: numberOr(facade.planeX), y: numberOr(facade.planeY), z: 0 },
+      outward_normal: { x: numberOr(facade.normalX, 1), y: numberOr(facade.normalY), z: numberOr(facade.normalZ) },
+      geometry_provenance: facade.geometryProvenance ?? "user_declared",
+      normal_provenance: facade.normalProvenance ?? "user_declared",
+      height_provenance: facade.heightProvenance ?? "user_declared",
+      ...(facade.baseZ !== "" && facade.baseZ !== undefined ? { base_z: numberOr(facade.baseZ) } : {}),
+      ...(facade.topZ !== "" && facade.topZ !== undefined ? { top_z: numberOr(facade.topZ) } : {}),
+      ...(facade.reflectingObjectID ? { reflecting_object_id: facade.reflectingObjectID } : {}),
+    },
+    material: {
+      mode: material.mode ?? "interface",
+      material_source: materialSource,
+      ...(materialSource === "p2040_reference" ? { material_id: material.materialID ?? "concrete_110_330" } : {
+        user_material: {
+          name: material.name ?? "user-declared facade material",
+          property_source: material.propertySource ?? "user_declared",
+          relative_permittivity: numberOr(material.relativePermittivity, 4),
+          conductivity_s_per_m: numberOr(material.conductivitySPerM),
+          ...(material.provenanceNote ? { provenance_note: material.provenanceNote } : {}),
+        },
+      }),
+      incident_medium: {
+        name: incidentMedium.name,
+        relative_permittivity: numberOr(incidentMedium.relativePermittivity, 1),
+        conductivity_s_per_m: numberOr(incidentMedium.conductivitySPerM),
+        property_source: incidentMedium.propertySource ?? "user_declared",
+      },
+      exit_medium: {
+        name: exitMedium.name,
+        relative_permittivity: numberOr(exitMedium.relativePermittivity, 1),
+        conductivity_s_per_m: numberOr(exitMedium.conductivitySPerM),
+        property_source: exitMedium.propertySource ?? "user_declared",
+      },
+      ...(material.mode === "finite_slab" ? {
+        thickness_m: numberOr(material.thicknessM),
+        thickness_provenance: material.thicknessProvenance ?? "user_declared",
+        phase_coherence: material.phaseCoherence ?? "coherent_total_slab",
+      } : {}),
+      ...(material.provenance ? { provenance: material.provenance } : {}),
+    },
+    polarization: options.polarization ?? "TE",
+    terrain: { mode: options.terrainMode ?? "flat_ground_relative_datum", provenance: options.terrainProvenance ?? "user_declared" },
+    link_budget: {
+      pt_conducted_dbm: numberOr(linkBudget.ptConductedDBm, 30),
+      ...(linkBudget.txGainDBi !== undefined ? { tx_gain_dbi: numberOr(linkBudget.txGainDBi) } : {}),
+      ...(linkBudget.rxGainDBi !== undefined ? { rx_gain_dbi: numberOr(linkBudget.rxGainDBi) } : {}),
+      tx_pattern_attenuation_db: numberOr(linkBudget.txPatternAttenuationDB),
+      rx_pattern_attenuation_db: numberOr(linkBudget.rxPatternAttenuationDB),
+      system_loss_db: numberOr(linkBudget.systemLossDB),
+      polarization_loss_db: numberOr(linkBudget.polarizationLossDB),
+      calibration_db: numberOr(linkBudget.calibrationDB),
+    },
+  };
+  if (options.rmsRoughnessM !== undefined && options.rmsRoughnessM !== "") {
+    payload.rms_roughness_m = numberOr(options.rmsRoughnessM);
+  }
+  return payload;
+}
+
 export function buildCoverageSurfacePayload(selectedTower, settings, options = {}, profileIndex = 0) {
   return {
     ...buildSimulationPayload(selectedTower, settings, profileIndex),

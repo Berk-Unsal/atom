@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="A read-only audit of the 140 GHz
+research planning profile, authoritative reference applicability,
+independent atmospheric and material terms, transferability, and the
+future roadmap." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4I.1 140 GHz Applicability
+Audit | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4I.1 140
+GHz Applicability Audit page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#1-current-research_sub_thz-equation-and-heuristics"
+      id="toc-1-current-research_sub_thz-equation-and-heuristics">1.
+      Current <code>research_sub_thz</code> equation and
+      heuristics</a></li>
+      <li><a href="#2-current-140-ghz-baseline-values"
+      id="toc-2-current-140-ghz-baseline-values">2. Current 140 GHz
+      baseline values</a></li>
+      <li><a href="#3-authoritative-referenceversion-table"
+      id="toc-3-authoritative-referenceversion-table">3. Authoritative
+      reference/version table</a></li>
+      <li><a href="#4-3gpp-tr-38901-applicability-conclusion"
+      id="toc-4-3gpp-tr-38901-applicability-conclusion">4. 3GPP TR
+      38.901 applicability conclusion</a></li>
+      <li><a href="#5-p1411-13-clause-level-applicability-findings"
+      id="toc-5-p1411-13-clause-level-applicability-findings">5.
+      P.1411-13 clause-level applicability findings</a></li>
+      <li><a href="#6-p525--fspl-findings"
+      id="toc-6-p525--fspl-findings">6. P.525 / FSPL findings</a></li>
+      <li><a href="#7-p676-gaseous-attenuation-findings"
+      id="toc-7-p676-gaseous-attenuation-findings">7. P.676 gaseous
+      attenuation findings</a></li>
+      <li><a href="#8-p838-rain-findings"
+      id="toc-8-p838-rain-findings">8. P.838 rain findings</a></li>
+      <li><a href="#9-p837-climatology-requirements"
+      id="toc-9-p837-climatology-requirements">9. P.837 climatology
+      requirements</a></li>
+      <li><a href="#10-p840-cloudfog-findings"
+      id="toc-10-p840-cloudfog-findings">10. P.840 cloud/fog
+      findings</a></li>
+      <li><a href="#11-p2040-material-findings"
+      id="toc-11-p2040-material-findings">11. P.2040 material
+      findings</a></li>
+      <li><a href="#12-p2108-clutter-conclusion"
+      id="toc-12-p2108-clutter-conclusion">12. P.2108 clutter
+      conclusion</a></li>
+      <li><a href="#13-p2109-building-entry-conclusion"
+      id="toc-13-p2109-building-entry-conclusion">13. P.2109
+      building-entry conclusion</a></li>
+      <li><a href="#14-p526-diffraction-conclusion"
+      id="toc-14-p526-diffraction-conclusion">14. P.526 diffraction
+      conclusion</a></li>
+      <li><a href="#15-current-80-db-wall-heuristic-assessment"
+      id="toc-15-current-80-db-wall-heuristic-assessment">15. Current 80
+      dB wall-heuristic assessment</a></li>
+      <li><a href="#16-antenna-assumptions-at-140-ghz"
+      id="toc-16-antenna-assumptions-at-140-ghz">16. Antenna assumptions
+      at 140 GHz</a></li>
+      <li><a href="#17-receiver-assumptions-at-140-ghz"
+      id="toc-17-receiver-assumptions-at-140-ghz">17. Receiver
+      assumptions at 140 GHz</a></li>
+      <li><a href="#18-radio-quality-unsupported-state-confirmation"
+      id="toc-18-radio-quality-unsupported-state-confirmation">18.
+      Radio-quality unsupported-state confirmation</a></li>
+      <li><a href="#19-peer-reviewed-100200-ghz-measurement-survey"
+      id="toc-19-peer-reviewed-100200-ghz-measurement-survey">19.
+      Peer-reviewed 100–200 GHz measurement survey</a></li>
+      <li><a href="#20-ankara-transferability-assessment"
+      id="toc-20-ankara-transferability-assessment">20. Ankara
+      transferability assessment</a></li>
+      <li><a href="#21-10400-m-mechanism-magnitude-comparison"
+      id="toc-21-10400-m-mechanism-magnitude-comparison">21. 10–400 m
+      mechanism-magnitude comparison</a></li>
+      <li><a href="#22-28-ghz-versus-140-ghz-controlled-comparison"
+      id="toc-22-28-ghz-versus-140-ghz-controlled-comparison">22. 28 GHz
+      versus 140 GHz controlled comparison</a></li>
+      <li><a href="#23-double-counting-matrix"
+      id="toc-23-double-counting-matrix">23. Double-counting
+      matrix</a></li>
+      <li><a href="#24-required-environmentaldata-inputs"
+      id="toc-24-required-environmentaldata-inputs">24. Required
+      environmental/data inputs</a></li>
+      <li><a href="#25-current-model-gap-analysis"
+      id="toc-25-current-model-gap-analysis">25. Current model gap
+      analysis</a></li>
+      <li><a href="#26-proposed-future-140-ghz-model-architecture"
+      id="toc-26-proposed-future-140-ghz-model-architecture">26.
+      Proposed future 140 GHz model architecture</a></li>
+      <li><a href="#27-recommended-concept-4i2-scope"
+      id="toc-27-recommended-concept-4i2-scope">27. Recommended Concept
+      4I.2 scope</a></li>
+      <li><a href="#28-proposed-remaining-4i-roadmap"
+      id="toc-28-proposed-remaining-4i-roadmap">28. Proposed remaining
+      4I roadmap</a></li>
+      <li><a href="#29-tests-and-invariance-validation"
+      id="toc-29-tests-and-invariance-validation">29. Tests and
+      invariance validation</a></li>
+      <li><a href="#30-files-changed" id="toc-30-files-changed">30.
+      Files changed</a></li>
+      <li><a href="#31-unresolved-scientific-questions"
+      id="toc-31-unresolved-scientific-questions">31. Unresolved
+      scientific questions</a></li>
+      <li><a href="#32-explicit-non-claims"
+      id="toc-32-explicit-non-claims">32. Explicit non-claims</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Scientific audit</span>
+        <h1>Concept 4I.1 140 GHz Applicability Audit</h1>
+        <p>A read-only audit of the 140 GHz research planning profile,
+authoritative reference applicability, independent atmospheric and
+material terms, transferability, and the future roadmap.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4i1-140ghz-audit.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Audit date: 2026-09-18<br />
+Baseline commit:
+<code>d66ad902075402a2df8df413bec63e9a51059561</code><br />
+Decision: read-only scientific and architectural audit. No production RF
+equation, model dispatch, optimizer, or radio-quality behavior is
+changed.</p>
+<p>The machine-readable evidence is kept beside this report:</p>
+<ul>
+<li><a href="concept-4i1-pre-change-140ghz-baseline.json">pre-change
+baseline</a></li>
+<li><a href="concept-4i1-140ghz-applicability.json">reference
+applicability audit</a></li>
+<li><a href="concept-4i1-140ghz-controlled-fixtures.json">controlled
+atmospheric/material/FSPL/diffraction fixtures</a></li>
+</ul>
+<h2 id="1-current-research_sub_thz-equation-and-heuristics">1. Current
+<code>research_sub_thz</code> equation and heuristics</h2>
+<p>The runtime dispatch in <a
+href="../backend-go/raytracer/propagation_model.go"><code>propagation_model.go</code></a>
+selects <code>research_sub_thz</code> for
+<code>frequency_ghz &gt;= 100</code>. Its applicability check only
+requires <code>100 &lt;= f &lt;= 300 GHz</code> and a positive finite
+distance. It returns <code>research_profile_only</code> and does not
+claim standards conformance.</p>
+<p>The evaluator delegates to the legacy term helper:</p>
+<pre class="text"><code>slant_distance = hypot(max(d_ground, 0), h_tx - h_rx)
+FSPL_current = 20 log10(max(slant_distance, 1 m))
+                + 20 log10(f_GHz) + 32.45
+wall_loss = max(wall_event_count, 0) * penetration_loss(f)
+penetration_loss(f &gt;= 100 GHz) = 80 dB/event
+total_path_loss = FSPL_current + wall_loss + antenna_pattern_attenuation</code></pre>
+<p>The link ledger then applies the existing antenna, system,
+polarization, calibration, and receiver terms.
+<code>research_sub_thz</code> does not calculate an empirical sub-THz
+path-loss exponent, gas, rain, cloud/fog, clutter, vegetation, material
+interaction, reflection, scattering, or channel impulse response. It
+also does not consume the LOS label or building height in its numeric
+terms.</p>
+<h2 id="2-current-140-ghz-baseline-values">2. Current 140 GHz baseline
+values</h2>
+<p>The baseline uses the production planning defaults with an omni/flat
+controlled pattern: 30 dBm conducted TX power, 25 dBi TX gain, 0 dBi RX
+gain, 25 m TX height, 1.5 m RX height, zero
+system/polarization/calibration loss, 400 m radius, and manual -115 dBm
+receiver sensitivity.</p>
+<p>At 10/25/50/100/200/400 m ground distance, the slant distances are
+25.539186/34.311077/55.247172/102.724145/201.375892/400.689718 m.
+Current FSPL is
+103.516702/106.081248/110.218762/115.606011/121.452710/127.428725
+dB.</p>
+<p>The geometry audit is deliberately repetitive because it exposes the
+current behavior:</p>
+<table>
+<thead>
+<tr>
+<th>Geometry input</th>
+<th style="text-align: right;">Wall events</th>
+<th style="text-align: right;">100 m total path loss</th>
+<th style="text-align: right;">100 m received power</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clear LOS</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">115.606011 dB</td>
+<td style="text-align: right;">-60.606011 dBm</td>
+</tr>
+<tr>
+<td>Footprint NLOS</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">195.606011 dB</td>
+<td style="text-align: right;">-140.606011 dBm</td>
+</tr>
+<tr>
+<td>One boundary crossing</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">195.606011 dB</td>
+<td style="text-align: right;">-140.606011 dBm</td>
+</tr>
+<tr>
+<td>Two boundary crossings</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">275.606011 dB</td>
+<td style="text-align: right;">-220.606011 dBm</td>
+</tr>
+<tr>
+<td>Known-height blocker</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">195.606011 dB</td>
+<td style="text-align: right;">-140.606011 dBm</td>
+</tr>
+<tr>
+<td>Unknown-height blocker</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">195.606011 dB</td>
+<td style="text-align: right;">-140.606011 dBm</td>
+</tr>
+</tbody>
+</table>
+<p>The one-event curve is
+-128.516702/-131.081248/-135.218762/-140.606011/-146.452710/-152.428725
+dBm across the six distances; the two-event curve is 80 dB lower. The
+full values and states are in the baseline artifact.</p>
+<h2 id="3-authoritative-referenceversion-table">3. Authoritative
+reference/version table</h2>
+<table>
+<thead>
+<tr>
+<th>Reference</th>
+<th>Version inspected</th>
+<th>140 GHz status</th>
+<th>Audit use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.itu.int/rec/r-rec-p.525">ITU-R P.525</a></td>
+<td>P.525-5 (2024-11)</td>
+<td>FSPL baseline</td>
+<td>Free-space term only</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.1411-13-202509-I/en">ITU-R
+P.1411</a></td>
+<td>P.1411-13 (2025-09)</td>
+<td>Model-dependent</td>
+<td>Table 4 bounded candidate; other rows audited below</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.676-13-202208-I/en">ITU-R
+P.676</a></td>
+<td>P.676-13 (2022-08)</td>
+<td>Applicable atmospheric term</td>
+<td>Gas sensitivity fixture</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.838-3-200503-I/en">ITU-R
+P.838</a></td>
+<td>P.838-3 (2005-03)</td>
+<td>Applicable specific rain term</td>
+<td>Rain sensitivity fixture</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.837/en">ITU-R
+P.837</a></td>
+<td>P.837-8 (2025-09)</td>
+<td>Climate/statistics input</td>
+<td>Required for availability, not path loss itself</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.840-9-202308-I/en">ITU-R
+P.840</a></td>
+<td>P.840-9 (2023-08)</td>
+<td>Applicable to 140 GHz within 1–200 GHz</td>
+<td>Cloud/fog term with geometry caveat</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.2040-4-202509-I/en">ITU-R
+P.2040</a></td>
+<td>P.2040-4 (2025-09)</td>
+<td>Material rows cover 140 GHz</td>
+<td>Material/interface method, not building entry</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.526-16-202511-I/en">ITU-R
+P.526</a></td>
+<td>P.526-16 (2025-11)</td>
+<td>Isolated-edge math applicable</td>
+<td>Existing diagnostic only</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.2108/en">ITU-R
+P.2108</a></td>
+<td>P.2108-1 (2021-09)</td>
+<td>Out of range at 140 GHz</td>
+<td>No clutter extrapolation</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.2109-2-202308-I/en">ITU-R
+P.2109</a></td>
+<td>P.2109-2 (2023-08)</td>
+<td>Out of range at 140 GHz</td>
+<td>No building-entry extrapolation</td>
+</tr>
+<tr>
+<td><a href="https://www.itu.int/rec/R-REC-P.1238-13-202509-I/en">ITU-R
+P.1238</a></td>
+<td>P.1238-13 (2025-09)</td>
+<td>Indoor scope includes 140 GHz</td>
+<td>Future indoor workstream only</td>
+</tr>
+<tr>
+<td><a
+href="https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=3173">3GPP
+TR 38.901</a></td>
+<td>V19.4.0 (2026-06-23)</td>
+<td>Out of range; 0.5–100 GHz</td>
+<td>No 140 GHz 3GPP claim</td>
+</tr>
+</tbody>
+</table>
+<p>The exact URLs, clauses, and machine-readable classifications are in
+the applicability artifact.</p>
+<h2 id="4-3gpp-tr-38901-applicability-conclusion">4. 3GPP TR 38.901
+applicability conclusion</h2>
+<p>TR 38.901 V19.4.0 remains a 0.5–100 GHz channel-model study. Its
+UMa/UMi formulas do not become 140 GHz models by extrapolating the
+frequency variable. Therefore the existing
+<code>urban_short_range</code> model must remain inapplicable at 140
+GHz, and <code>research_sub_thz</code> must not be described as a 3GPP
+extension or conformance implementation.</p>
+<h2 id="5-p1411-13-clause-level-applicability-findings">5. P.1411-13
+clause-level applicability findings</h2>
+<p>P.1411-13’s main scope reaches 300 GHz, but its individual models are
+not uniformly extended to 300 GHz. The relevant clause-level outcome
+is:</p>
+<ul>
+<li>§4.1.1 Table 4 below-rooftop site-general LOS: the row covers
+0.45–300 GHz and has a 5–660 m base-distance range. Its 140 GHz footnote
+recommends use up to 500 m for 82–159 GHz. This is a conditional
+candidate for 10–400 m only when both terminals and the morphology
+satisfy the below-rooftop site-general scenario.</li>
+<li>§4.1.1 Table 4 urban high-rise NLOS: the row covers 0.8–159 GHz and
+has a 20–715 m base range; its 140 GHz footnote limits the
+recommendation to 150 m. It is not applicable at 10 m and does not cover
+200/400 m at 140 GHz.</li>
+<li>§4.1.1 Table 4 urban low-rise/suburban NLOS: the row covers 0.45–255
+GHz and has a 10–250 m base range; its 140 GHz footnote limits the
+recommendation to 150 m. It is a conditional 10–100 m candidate, not a
+200/400 m 140 GHz NLOS model.</li>
+<li>§4.2.1 Table 8 above-rooftop rows are 2.2–73 GHz for the listed LOS
+case and 2.2–66.5 GHz for the listed urban high-rise NLOS case. They do
+not support the default 25 m base station at 140 GHz.</li>
+<li>§4.1.3 street-corner and §4.3 low-height models are tied to
+lower-frequency measurement ranges; they are out of range at 140
+GHz.</li>
+<li>§3.2 makes scene data a prerequisite: building structure and height,
+vegetation, and sufficiently resolved geometry are not optional details
+for a site-specific interpretation.</li>
+</ul>
+<p>This is the central audit result: P.1411 provides a bounded
+below-rooftop statistical lead, not a general 140 GHz arbitrary-geometry
+NLOS model for A.T.O.M.</p>
+<h2 id="6-p525--fspl-findings">6. P.525 / FSPL findings</h2>
+<p>P.525-5 equation (5) is the physical free-space identity, and
+equation (6) presents the familiar logarithmic form. Using the same
+height-adjusted slant distances as A.T.O.M, the P.525-5 32.4
+presentation is 0.05 dB below the project’s 32.45 rounded constant at
+every distance. That difference is immaterial to the audit, but it is
+recorded rather than silently calling the project constant exact.</p>
+<p>P.525 supplies no urban building, rooftop, clutter, material, or NLOS
+term. It is a valid base term for a future componentized model and
+cannot justify the current 80 dB event or a 140 GHz urban coverage
+claim.</p>
+<h2 id="7-p676-gaseous-attenuation-findings">7. P.676 gaseous
+attenuation findings</h2>
+<p>Using the P.676-13 line-by-line equations at 140 GHz, 15 °C, 1013
+hPa, and controlled water-vapour densities of 3.5/7.5/15 g/m³ gives
+total specific attenuation of 0.379049/0.867224/1.998286 dB/km. At the
+middle case, gas contributes 0.086722 dB over 100 m and 0.346890 dB over
+400 m. Oxygen is only about 0.017761 dB/km in that case; water vapour
+dominates.</p>
+<p>The term is not zero, but it is much smaller than the current 80 dB
+event over the audited distances. A future implementation would need
+explicit pressure, temperature, humidity/water-vapour density or
+vertical profile, and a declared terrestrial path integration rule. It
+must not be added to an empirical model without checking whether that
+model already reflects atmospheric conditions.</p>
+<h2 id="8-p838-rain-findings">8. P.838 rain findings</h2>
+<p>At 140 GHz, circular-equivalent polarization, and a horizontal-path
+controlled example, P.838-3 gives
+<code>gamma_R = 1.561638 R^0.651858</code> dB/km. Raw short-path
+attenuation at 25 mm/h is 1.273031 dB over 100 m and 5.092122 dB over
+400 m; at 50 mm/h it is 2.000173/8.000693 dB. These are
+specific-attenuation path values, not annual outage predictions.</p>
+<p>Rain availability needs an effective terrestrial
+path-length/reduction treatment and a climate/rate distribution. P.838
+alone does not provide Ankara annual percentages, and
+<code>research_sub_thz</code> currently supplies neither rain rate nor
+reduction factor.</p>
+<h2 id="9-p837-climatology-requirements">9. P.837 climatology
+requirements</h2>
+<p>P.837-8 supplies 1-minute rain-rate statistics and methods for
+deriving them from maps or local measurements. A defensible annual or
+percentage-time 140 GHz result would need Ankara location/climate data,
+time percentage, local gauge quality or map provenance, and a path
+reduction/availability convention. The current project has no automatic
+meteorological ingest; a user-entered deterministic rain rate can only
+be a controlled sensitivity scenario.</p>
+<h2 id="10-p840-cloudfog-findings">10. P.840 cloud/fog findings</h2>
+<p>At 140 GHz and 15 °C, the P.840 double-Debye coefficient is
+approximately 6.967800 dB/km per g/m³ of liquid water. Controlled
+local-fog examples of 0.05 and 0.5 g/m³ therefore give 0.034839/0.348390
+dB over 100 m and 0.139356/1.393560 dB over 400 m.</p>
+<p>P.840 is principally an Earth-space slant-path recommendation using
+integrated cloud liquid water. Those horizontal numbers are a
+transparent local-fog sensitivity calculation, not a license to apply a
+vertical cloud column to every urban link. A future terrestrial
+implementation needs local liquid-water density/path geometry and must
+keep cloud/fog separate from gas and rain.</p>
+<h2 id="11-p2040-material-findings">11. P.2040 material findings</h2>
+<p>P.2040-4 Table 3 contains indicative high-frequency material rows
+covering 140 GHz for concrete, brick, wood, glass, and other materials.
+Annex 1 equations (39)–(44) require complex electrical properties,
+thickness/layer structure, incidence angle, polarization, and interface
+geometry.</p>
+<p>The independent normal-incidence single-slab fixtures illustrate the
+scale sensitivity: 20 cm concrete is about 453.4 dB, 20 cm brick about
+225.0 dB, 10 cm wood about 97.8 dB, and 1 cm glass about 8.6 dB under
+the selected rows. These are plane-wave slab transmission results
+without free-space spreading and are not building-entry predictions.
+They show why a material label or one universal 80 dB event is
+insufficient.</p>
+<p>Metal has no 140 GHz Table 3 material row in this reference, and the
+listed ranges are indicative measurement ranges, not a universal
+guarantee for every construction product. P.2040 is therefore a future
+material/interface foundation, not a current production
+substitution.</p>
+<h2 id="12-p2108-clutter-conclusion">12. P.2108 clutter conclusion</h2>
+<p>P.2108-1 is out of range at 140 GHz: its terrestrial
+terminal-in-clutter route ends at 67 GHz and its
+Earth-space/aeronautical route ends at 100 GHz. It must not be
+extrapolated. Its double-counting guidance is still architecturally
+useful: if a future path model already contains whole-path clutter, a
+separate clutter loss must not be attached again.</p>
+<h2 id="13-p2109-building-entry-conclusion">13. P.2109 building-entry
+conclusion</h2>
+<p>P.2109-2 estimates building entry loss only to 100 GHz. It is out of
+range at 140 GHz, so it cannot support the current
+<code>research_sub_thz</code> wall event or a future 140 GHz
+facade-entry claim. P.2040 may supply a component-level material
+calculation, but an aggregate 140 GHz building-entry distribution needs
+measurements covering the relevant facade types, thicknesses, angles,
+moisture, and antenna geometry.</p>
+<h2 id="14-p526-diffraction-conclusion">14. P.526 diffraction
+conclusion</h2>
+<p>The existing <a
+href="../backend-go/raytracer/diffraction_diagnostic.go"><code>diffraction_diagnostic.go</code></a>
+correctly remains a separate diagnostic. P.526-16 equation (26) gives
+the signed knife-edge parameter and equation (31) gives the project’s
+approximation for <code>v &gt; -0.78</code>. At 140 GHz, a 50 m/50 m
+path has a 2.141 mm wavelength: a 1 m edge above the LOS gives
+<code>v = 6.112216</code> and about 28.560751 dB diagnostic loss.</p>
+<p>That result is mathematically useful and frequency-sensitive, but it
+assumes an isolated known edge. P.526 does not turn unknown-height
+footprint intersections, roof reflection, multiple edges, scattering, or
+urban canyon multipath into a canonical 140 GHz model. The diagnostic
+must never be summed with the 80 dB wall heuristic or a future
+P.1411/measurement NLOS model.</p>
+<h2 id="15-current-80-db-wall-heuristic-assessment">15. Current 80 dB
+wall-heuristic assessment</h2>
+<p>The current rule is a historical conservative planning heuristic: 80
+dB per footprint event at <code>f &gt;= 100 GHz</code>, cumulative
+across events, material-agnostic, and not tied to P.2040 or P.2109. It
+is useful as a visible compatibility envelope because it makes blocked
+140 GHz paths clearly non-serviceable, but it is not physically
+calibrated.</p>
+<p>The controlled comparison is decisive: one event is 80 dB, while the
+selected P.2040 slab examples span about 8.6–453.4 dB. Even those values
+are not directly comparable to building entry because they omit façade
+geometry and whole-building path statistics. The correct classification
+is “unvalidated conservative heuristic,” not “140 GHz penetration
+loss.”</p>
+<h2 id="16-antenna-assumptions-at-140-ghz">16. Antenna assumptions at
+140 GHz</h2>
+<p>The production profile defaults to 25 dBi absolute TX gain and 0 dBi
+scalar RX gain. It uses analytic
+<code>ideal-sector</code>/<code>flat</code> patterns by default; the
+controlled baseline uses <code>omni</code>/<code>flat</code> to isolate
+propagation. The evaluator applies a simple height-adjusted slant
+distance and relative pattern attenuation. It does not model a measured
+140 GHz pattern, physical aperture, array factor, codebook, beam squint,
+pointing error, blockage-induced beam loss, or frequency-dependent
+calibration.</p>
+<p>At 140 GHz, antenna aperture and beam alignment are first-order
+channel assumptions. The present gain/pattern fields are valid planning
+inputs but are not evidence that a practical 140 GHz array or link
+budget has been validated.</p>
+<h2 id="17-receiver-assumptions-at-140-ghz">17. Receiver assumptions at
+140 GHz</h2>
+<p>The baseline carries a 1 GHz configured bandwidth, 7 dB noise figure,
+3 dB required SNR, 0 dB receiver margin, and the existing manual -115
+dBm receiver sensitivity. These values are deterministic application
+defaults, not a 140 GHz receiver specification. The current propagation
+result exposes a threshold and link margin, but no sub-THz front-end,
+implementation loss, phase-noise, ADC, coding, MCS, or UE orientation
+model exists.</p>
+<p>The receiver assumptions must therefore remain visibly separate from
+propagation applicability. A future 140 GHz model needs a device/link
+budget with bandwidth, noise figure, implementation margin, antenna
+gain, and sensitivity provenance matched to the measurement
+hardware.</p>
+<h2 id="18-radio-quality-unsupported-state-confirmation">18.
+Radio-quality unsupported-state confirmation</h2>
+<p>The existing radio-quality contract marks the 140 GHz research
+profile as <code>unsupported_radio_quality_model</code> in <a
+href="../backend-go/raytracer/radio_quality_contract.go"><code>radio_quality_contract.go</code></a>.
+Concept 4H.2 already treats 140 GHz <code>research_sub_thz</code> as
+unavailable for the radio-quality objective. This audit does not add
+RSRP/RSRQ/SINR, throughput, scheduler, PHY, or UE semantics at 140
+GHz.</p>
+<h2 id="19-peer-reviewed-100200-ghz-measurement-survey">19.
+Peer-reviewed 100–200 GHz measurement survey</h2>
+<p>Useful evidence exists, but it is scenario-specific:</p>
+<ul>
+<li>Xing and Rappaport’s <a href="https://arxiv.org/abs/2103.01151">IEEE
+ICC 2021 140/142 GHz urban-microcell campaign</a> supplies directional
+and synthesized omnidirectional LOS/NLOS models and foliage measurements
+in downtown Brooklyn, at roughly 100 m terrestrial scale with some
+configurations reported around 117 m. It is strong evidence for
+measurement-backed profiles, not an Ankara-wide coefficient.</li>
+<li>Shakya et al.’s <a
+href="https://doi.org/10.1109/TAP.2024.3366581">IEEE TAP 2024 comparison
+at 142, 73, and 28 GHz</a> covers outdoor open squares and streets in
+Brooklyn/Manhattan, with 142 GHz links around 24–117 m. It is valuable
+cross-frequency and morphology evidence, but not a 400 m arbitrary-NLOS
+model.</li>
+<li>De Beelde et al.’s <a
+href="https://biblio.ugent.be/publication/01GQHEC5QMYV683Z0225CYYWVD">IEEE
+WCL 2022 D-band study</a> spans 120–165 GHz and reports LOS/NLOS angular
+loss, angular spread, and facade reflection behavior for
+fixed-wireless-access scenarios. It supplies mechanism priors and
+hardware/geometry lessons rather than Ankara coefficients.</li>
+<li>Sun et al.’s <a
+href="https://www.mdpi.com/1424-8220/22/24/9734">Sensors 2022 D-band
+measurement study</a> covers 138–163.2 GHz and 100–800 m clear-weather
+LOS road/campus links. It is a useful 100/200/400 m scale comparison,
+but narrow-beam LOS conditions do not transfer to footprint NLOS.</li>
+<li>Ju et al.’s <a href="https://arxiv.org/abs/2103.05496">142 GHz
+spatial-consistency measurements</a> provide a short outdoor route with
+3 m receiver spacing. They support future spatial-correlation work, not
+a universal path-loss term.</li>
+</ul>
+<h2 id="20-ankara-transferability-assessment">20. Ankara transferability
+assessment</h2>
+<p>Transferability is low without a campaign matched to Ankara’s
+building morphology, roof heights, street widths, façade materials,
+vegetation, terrain, antenna heights, beam patterns, weather, and route
+sampling. Brooklyn/Manhattan open-street results can motivate a
+hypothesis; they cannot validate a default for Ankara footprints with
+unknown heights and a 25 m transmitter.</p>
+<p>The P.1411 data requirements reinforce this boundary. A future
+site-specific 140 GHz study should preserve high-resolution geometry and
+height provenance, stratify by morphology, and use spatial holdout
+locations. Randomly mixing nearby samples would overstate
+transferability because sub-THz shadowing and beam visibility are
+spatially correlated.</p>
+<h2 id="21-10400-m-mechanism-magnitude-comparison">21. 10–400 m
+mechanism-magnitude comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Term / controlled condition</th>
+<th style="text-align: right;">10 m</th>
+<th style="text-align: right;">100 m</th>
+<th style="text-align: right;">400 m</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>140 GHz current FSPL with default height</td>
+<td style="text-align: right;">103.517 dB</td>
+<td style="text-align: right;">115.606 dB</td>
+<td style="text-align: right;">127.429 dB</td>
+<td>Production base term</td>
+</tr>
+<tr>
+<td>P.676 gas, 7.5 g/m³ water vapour</td>
+<td style="text-align: right;">0.009 dB</td>
+<td style="text-align: right;">0.087 dB</td>
+<td style="text-align: right;">0.347 dB</td>
+<td>Small but explicit</td>
+</tr>
+<tr>
+<td>P.838 rain, 25 mm/h</td>
+<td style="text-align: right;">0.127 dB</td>
+<td style="text-align: right;">1.273 dB</td>
+<td style="text-align: right;">5.092 dB</td>
+<td>Raw, unreduced path value</td>
+</tr>
+<tr>
+<td>P.840 thick local fog, 0.5 g/m³</td>
+<td style="text-align: right;">0.035 dB</td>
+<td style="text-align: right;">0.348 dB</td>
+<td style="text-align: right;">1.394 dB</td>
+<td>Horizontal sensitivity interpretation</td>
+</tr>
+<tr>
+<td>One current wall event</td>
+<td style="text-align: right;">80 dB</td>
+<td style="text-align: right;">80 dB</td>
+<td style="text-align: right;">80 dB</td>
+<td>Distance-independent heuristic</td>
+</tr>
+<tr>
+<td>Two current wall events</td>
+<td style="text-align: right;">160 dB</td>
+<td style="text-align: right;">160 dB</td>
+<td style="text-align: right;">160 dB</td>
+<td>Cumulative heuristic</td>
+</tr>
+<tr>
+<td>P.526 1 m isolated edge, 50 m + 50 m geometry</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">28.561 dB at the specified geometry</td>
+<td style="text-align: right;">—</td>
+<td>Diagnostic, not a distance curve</td>
+</tr>
+</tbody>
+</table>
+<p>P.2040 material transmission is interaction-dominated rather than a
+smooth distance term: the selected illustrative 1 cm glass slab is 8.556
+dB while 20 cm concrete is 453.398 dB. Thickness and construction
+details dominate.</p>
+<h2 id="22-28-ghz-versus-140-ghz-controlled-comparison">22. 28 GHz
+versus 140 GHz controlled comparison</h2>
+<p>At the same height-adjusted distances, project FSPL is 13.9794 dB
+higher at 140 GHz than at 28 GHz, exactly <code>20 log10(140/28)</code>.
+At 100 m, the controlled project FSPL values are 101.626611 dB at 28 GHz
+and 115.606011 dB at 140 GHz. The existing 28 GHz UMa LOS fixture is
+101.199956 dB at 100 m because it is an empirical UMa formula, not the
+legacy FSPL term.</p>
+<p>The difference in model confidence is more important than the 13.98
+dB frequency delta: 28 GHz has a bounded <code>urban_short_range</code>
+subset with explicit 3GPP-derived applicability, while 140 GHz currently
+has a research-only FSPL-plus-heuristic envelope.</p>
+<h2 id="23-double-counting-matrix">23. Double-counting matrix</h2>
+<p>The machine-readable matrix records the full pairwise decisions. The
+governing rules are:</p>
+<ul>
+<li>Choose either P.525 FSPL or a P.1411 path-loss row as the base
+model; do not add both.</li>
+<li>P.676, P.838, and P.840 can be additive components only when their
+inputs and the base model’s environmental basis are explicit.</li>
+<li>Do not attach P.2108 to a path model that already includes
+whole-path clutter; P.2108 is out of range at 140 GHz anyway.</li>
+<li>Choose an aggregate building-entry model or a componentized P.2040
+facade model; do not add P.2109 and P.2040 as independent losses.</li>
+<li>Keep P.526 as an alternative diagnostic, never an extra loss on top
+of current or future NLOS.</li>
+<li>Treat P.837 as the statistics source for P.838, not as a second
+attenuation term.</li>
+<li>Do not add the current 80 dB event to any physical material,
+building-entry, diffraction, or measured excess-loss term.</li>
+</ul>
+<h2 id="24-required-environmentaldata-inputs">24. Required
+environmental/data inputs</h2>
+<p>The minimum future input contract is: building polygons and absolute
+heights; roof-edge geometry; terrain or explicit datum; facade
+materials, thickness, layers, moisture, angle, and polarization;
+vegetation; street morphology; pressure, temperature, and water vapour;
+rain-rate statistics and path reduction; cloud/fog liquid water;
+measured TX/RX patterns and aperture/beam state; conducted power and
+calibration; receiver bandwidth, noise figure, sensitivity, and margin;
+and georeferenced 100–200 GHz measurements with
+LOS/NLOS/roof/facade/weather labels.</p>
+<p>Current A.T.O.M has pieces of this contract—footprints, some height
+provenance, optional terrain in the isolated path tool, scalar material
+labels, and analytic antenna/receiver settings—but does not have the
+complete 140 GHz evidence chain.</p>
+<h2 id="25-current-model-gap-analysis">25. Current model gap
+analysis</h2>
+<p>The gaps are structural, not a missing coefficient:</p>
+<ol type="1">
+<li><code>research_sub_thz</code> has no measured distance or morphology
+model.</li>
+<li>The 80 dB event is not tied to material, thickness, angle, or
+uncertainty.</li>
+<li>Footprint NLOS is not the same as above-rooftop, street-corner,
+facade-entry, or reflected NLOS at 140 GHz.</li>
+<li>Unknown building height cannot be converted into validated
+edge/diffraction behavior.</li>
+<li>The default 25 m antenna may violate P.1411’s below-rooftop Table 4
+conditions.</li>
+<li>Atmospheric terms are user-supplied only in the separate
+path-profile diagnostic and are not automatically integrated into the
+network evaluator.</li>
+<li>Antenna and receiver fields are deterministic planning assumptions,
+not calibrated 140 GHz hardware models.</li>
+<li>Radio-quality and optimization semantics intentionally stop at the
+current unsupported state.</li>
+</ol>
+<h2 id="26-proposed-future-140-ghz-model-architecture">26. Proposed
+future 140 GHz model architecture</h2>
+<p>The safe architecture is a provenance-aware component graph, not
+another frequency threshold:</p>
+<pre class="text"><code>applicability gate
+  -&gt; P.525 FSPL base
+  -&gt; optional P.676 gas / P.838 rain / P.840 cloud-fog components
+  -&gt; geometry branch: bounded P.1411 Table 4 OR calibrated measured residual
+  -&gt; optional P.2040 facade/material interaction
+  -&gt; separate P.526 known-edge diagnostic
+  -&gt; measured/calibrated antenna and receiver ledger
+  -&gt; uncertainty, provenance, and double-counting checks</code></pre>
+<p>Every component should return its reference, clause, input
+provenance, validity envelope, uncertainty, and whether it already
+includes another component. P.1411 Table 4 should be one bounded
+candidate branch, not a universal dispatch rule. Above-rooftop and
+building-entry branches need their own evidence.</p>
+<h2 id="27-recommended-concept-4i2-scope">27. Recommended Concept 4I.2
+scope</h2>
+<p>The first 4I.2 increment should be an opt-in, non-canonical 140 GHz
+reference experiment that evaluates P.525 plus explicitly supplied
+P.676/P.838/P.840 terms and returns a full ledger. It should not replace
+<code>research_sub_thz</code>, alter optimizer scores, or create
+radio-quality outputs.</p>
+<p>The next bounded increment can implement P.1411 Table 4 rows with
+explicit below-rooftop/morphology/distance checks. Promotion to a
+production default should wait for 100–200 GHz measurement fixtures,
+spatial holdout validation, antenna calibration, uncertainty reporting,
+and a double-counting audit.</p>
+<h2 id="28-proposed-remaining-4i-roadmap">28. Proposed remaining 4I
+roadmap</h2>
+<table>
+<thead>
+<tr>
+<th>Future concept</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4I.2</td>
+<td>Componentized 140 GHz reference experiment; applicability-gated
+P.1411 Table 4 candidate</td>
+</tr>
+<tr>
+<td>4I.3</td>
+<td>Measurement fixture schema, campaign provenance, calibration, and
+spatial holdout validation</td>
+</tr>
+<tr>
+<td>4I.4</td>
+<td>Conditional facade/material and known-edge mechanisms with
+thickness/angle/layer inputs</td>
+</tr>
+<tr>
+<td>4I.5</td>
+<td>Morphology-stratified empirical residual, blockage, and reflection
+model</td>
+</tr>
+<tr>
+<td>4I.6</td>
+<td>Only if evidence supports it: bounded network-planning integration
+with separate 140 GHz link semantics</td>
+</tr>
+</tbody>
+</table>
+<p>Full ray tracing, automatic weather/clutter/material datasets,
+above-rooftop standard claims, optimizer integration, and 140 GHz
+radio-quality semantics remain deferred.</p>
+<h2 id="29-tests-and-invariance-validation">29. Tests and invariance
+validation</h2>
+<p>The audit test <a
+href="../backend-go/raytracer/concept_4i1_capture_test.go"><code>concept_4i1_capture_test.go</code></a>
+passes and asserts the captured slant distances, FSPL, 80 dB/event rule,
+dispatch identity, no-fallback state, receiver threshold, and equality
+of one-event geometry cases. Existing diffraction tests continue to
+assert that the P.526 diagnostic is available only with known height,
+remains research-only at 140 GHz, and does not mutate canonical
+propagation.</p>
+<p>Validation performed for this audit:</p>
+<pre class="text"><code>cd backend-go &amp;&amp; go test ./raytracer -run TestConcept4I1ResearchProfileBaselineAndInvariance -count=1 -v  # pass
+jq empty docs/concept-4i1-pre-change-140ghz-baseline.json                              # pass
+jq empty docs/concept-4i1-140ghz-applicability.json                                    # pass
+jq empty docs/concept-4i1-140ghz-controlled-fixtures.json                              # pass</code></pre>
+<p>The final full-suite and documentation validation commands are
+recorded in the delivery summary. No production RF behavior changed
+during this audit.</p>
+<h2 id="30-files-changed">30. Files changed</h2>
+<ul>
+<li><code>docs/concept-4i1-pre-change-140ghz-baseline.json</code> —
+exact pre-audit runtime values.</li>
+<li><code>docs/concept-4i1-140ghz-applicability.json</code> —
+authoritative versions, clause/model applicability, double-counting,
+evidence survey, inputs, and roadmap.</li>
+<li><code>docs/concept-4i1-140ghz-controlled-fixtures.json</code> —
+independent FSPL, atmospheric, material, and diffraction fixtures.</li>
+<li><code>docs/concept-4i1-140ghz-audit.md</code> — this report.</li>
+<li><code>backend-go/raytracer/concept_4i1_capture_test.go</code> —
+audit-only invariance regression test; no production package behavior
+changed.</li>
+<li>Documentation hub/build/changelog entries make the report
+discoverable; generated HTML is a presentation artifact of this Markdown
+report.</li>
+</ul>
+<h2 id="31-unresolved-scientific-questions">31. Unresolved scientific
+questions</h2>
+<ol type="1">
+<li>Which Ankara morphologies should define a 140 GHz P.1411-compatible
+below-rooftop subset?</li>
+<li>How should roof-edge diffraction, facade reflection, scattering, and
+blockage be partitioned without double counting?</li>
+<li>What material moisture/thickness distributions apply to Ankara
+construction at 140 GHz?</li>
+<li>What antenna physical aperture, beam codebook, pointing, and
+receiver calibration represent the intended product?</li>
+<li>Can 100–200 GHz measurements support a stable model beyond 150 m for
+each morphology, or should 200/400 m remain LOS/FWA-only?</li>
+<li>How should weather and cloud/fog be represented for short horizontal
+paths and what availability percentage is required?</li>
+<li>What spatial holdout size is sufficient for independent validation
+of shadowing and beam visibility?</li>
+<li>Which receiver/link budget should define any future 140 GHz
+radio-quality contract?</li>
+</ol>
+<h2 id="32-explicit-non-claims">32. Explicit non-claims</h2>
+<p>This audit does not claim that A.T.O.M implements a standardized,
+validated, or production-ready 140 GHz/6G propagation model. It does not
+claim 3GPP TR 38.901 coverage at 140 GHz, a universal P.1411 140 GHz
+urban-NLOS extension, P.2109 building-entry validity, P.2108 clutter
+validity, automatic P.837 weather statistics, material-specific wall
+loss from the 80 dB event, full P.526 urban diffraction, measured/vendor
+antenna behavior, a validated receiver, LTE/NR/6G radio quality,
+throughput, scheduler, MCS, UE, or array-beamforming behavior. The
+honest current boundary is <code>research_sub_thz</code> as a
+deterministic research planning envelope plus separate
+diagnostic/reference calculations.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

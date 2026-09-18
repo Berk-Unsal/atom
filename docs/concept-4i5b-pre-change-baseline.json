@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "concept": "4I.5B",
+  "title": "Single-bounce specular reflection reference pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "baseline_commit": "d66ad902075402a2df8df413bec63e9a51059561",
+  "worktree_note": "The shared worktree contains the completed 4I.1–4I.5A reference work and unrelated pre-existing edits. No 4I.5B evaluator, route, UI panel, or reflection-power ledger existed when this artifact was captured.",
+  "before_change": {
+    "model_id": "single_bounce_specular_reflection_reference_v1",
+    "implemented": false,
+    "route": false,
+    "ui": false,
+    "automatic_reflection_search": false,
+    "canonical_reflection_composition": false,
+    "direct_reflected_multipath_sum": false
+  },
+  "canonical_snapshots": {
+    "canonical_2_6_ghz": {
+      "source": "docs/concept-4i4-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "model_id": "urban_short_range",
+      "stats": {"blocked_pct": 0, "avg_rx_dbm": -43, "min_range_m": 100, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "path_loss_db": 70.07902264967872, "wall_loss_db": 0, "signal_dbm": -15.07902264967872}
+    },
+    "canonical_28_ghz": {
+      "source": "docs/concept-4i4-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "model_id": "urban_short_range",
+      "stats": {"blocked_pct": 12.5, "avg_rx_dbm": -72.1, "min_range_m": 72.3, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "path_loss_db": 90.72271631710674, "wall_loss_db": 0, "signal_dbm": -35.722716317106745}
+    },
+    "research_sub_thz_140_ghz": {
+      "source": "docs/concept-4i4-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "model_id": "research_sub_thz",
+      "wall_loss_rule_db_per_event": 80,
+      "stats": {"blocked_pct": 87.5, "avg_rx_dbm": -123.6, "min_range_m": 17.6, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "slant_distance_m": 34.3110769286, "fspl_db": 106.08124770471235, "wall_loss_db": 0, "signal_dbm": -51.081247704712354}
+    },
+    "concept_4i2a_atmospheric_reference": "docs/concept-4i2a-post-change-comparison.json",
+    "concept_4i2b_p1411_reference": "docs/concept-4i2b-reference-comparison.json",
+    "concept_4i3_measurement_validation": "docs/concept-4i3-post-change-comparison.json",
+    "concept_4i4_material_reference": "docs/concept-4i4-post-change-comparison.json",
+    "p526_diagnostic": "docs/concept-4f1-canonical-audit.json",
+    "building_entry": "docs/concept-4e-building-entry.md",
+    "interference_radio_quality": "docs/concept-4h1-interference-radio-quality.md",
+    "optimizer": "docs/concept-4h2-radio-quality-optimization.md"
+  },
+  "baseline_commands": {
+    "backend_go_test": {"command": "cd backend-go && go test ./...", "status": "passed"},
+    "frontend_unit_workflow": {"command": "cd frontend-react && npm test -- --run", "status": "passed", "test_files": 32, "tests": 182},
+    "version_check": {"command": "python3 scripts/versioning.py check", "status": "passed", "version": "0.7.0"}
+  },
+  "invariance_contract": [
+    "canonical 2.6 GHz",
+    "canonical 28 GHz",
+    "research_sub_thz 140 GHz",
+    "4I.2A atmosphere",
+    "4I.2B P.1411",
+    "4I.3 measurement validation",
+    "4I.4 material/slab reference",
+    "P.526",
+    "building entry",
+    "interference",
+    "radio quality",
+    "4H.2 optimizer"
+  ],
+  "interpretation": "This baseline freezes the pre-4I.5B boundary. The new diagnostic must be additive and opt-in; it must not modify /api/simulate, canonical model fingerprints, research_sub_thz, atmospheric/P.1411/P.526 references, building entry, interference, radio quality, or optimization."
+}

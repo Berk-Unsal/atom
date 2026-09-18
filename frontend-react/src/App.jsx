@@ -16,11 +16,16 @@ import {
 import ControlPanel from "./components/ControlPanel.jsx";
 import ExperimentPanel from "./components/ExperimentPanel.jsx";
 import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
+import MeasurementValidationPanel from "./components/MeasurementValidationPanel.jsx";
+import MaterialReferencePanel from "./components/MaterialReferencePanel.jsx";
 import BuildingEntryPanel from "./components/BuildingEntryPanel.jsx";
 import InventoryPanel from "./components/InventoryPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
 import PathProfilePanel from "./components/PathProfilePanel.jsx";
+import P1411CandidatePanel from "./components/P1411CandidatePanel.jsx";
+import SpecularReflectionReferencePanel from "./components/SpecularReflectionReferencePanel.jsx";
+import SubTHZReferencePanel from "./components/SubTHZReferencePanel.jsx";
 import SurfacePanel from "./components/SurfacePanel.jsx";
 import {
   CommandBar,
@@ -84,6 +89,9 @@ import {
   buildNetworkCellExplanationPayload,
   buildNetworkOptimizationPayload,
   buildPathProfilePayload,
+  buildP1411ReferencePayload,
+  buildSpecularReflectionReferencePayload,
+  buildSubTHZReferencePayload,
   buildRecommendationPayload,
   buildSimulationPayload,
   buildCoverageSurfaceSourceKey,
@@ -187,6 +195,11 @@ export default function App() {
   const [isSelectingPathEndpoint, setIsSelectingPathEndpoint] = useState(false);
   const [pathProfileEndpoint, setPathProfileEndpoint] = useState(null);
   const [pathProfile, setPathProfile] = useState(null);
+  const [subTHZReference, setSubTHZReference] = useState(null);
+  const [p1411Reference, setP1411Reference] = useState(null);
+  const [specularReflectionReference, setSpecularReflectionReference] = useState(null);
+  const [measurementValidation, setMeasurementValidation] = useState(null);
+  const [materialReference, setMaterialReference] = useState(null);
   const [coverageSurface, setCoverageSurface] = useState(null);
   const [coverageSurfaceRequest, setCoverageSurfaceRequest] = useState(null);
   const [coverageSurfaceCellId, setCoverageSurfaceCellId] = useState(null);
@@ -307,6 +320,11 @@ export default function App() {
   const isRecommendingSites = activeRFTask === "recommendation";
   const isEvaluatingMeasurements = activeRFTask === "measurements";
   const isAnalyzingPathProfile = activeRFTask === "path_profile";
+  const isAnalyzingSubTHZReference = activeRFTask === "sub_thz_reference";
+  const isAnalyzingP1411Reference = activeRFTask === "p1411_reference";
+  const isAnalyzingSpecularReflectionReference = activeRFTask === "specular_reflection_reference";
+  const isAnalyzingMeasurementValidation = activeRFTask === "sub_thz_validation";
+  const isAnalyzingMaterialReference = activeRFTask === "sub_thz_material";
   const isGeneratingSurface = activeRFTask === "coverage_surface";
 
   const showUndoNotice = useCallback((message, onUndo) => {
@@ -587,6 +605,128 @@ export default function App() {
       }
     }
   }, [pathProfileEndpoint, requests, selectedTower, settings]);
+
+  const analyzeSubTHZReference = useCallback(async (options) => {
+    if (!selectedTower || !pathProfileEndpoint) {
+      setError("Select a transmitter cell and receiver point first");
+      return;
+    }
+    const request = requests.begin("sub-thz-reference");
+    setActiveRFTask("sub_thz_reference");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/sub-thz-reference",
+        buildSubTHZReferencePayload(selectedTower, pathProfileEndpoint, settings, options),
+        "Sub-THz atmospheric reference failed",
+        request.signal,
+      );
+      if (request.isCurrent()) setSubTHZReference(payload);
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [pathProfileEndpoint, requests, selectedTower, settings]);
+
+  const analyzeP1411Reference = useCallback(async (options) => {
+    if (!selectedTower || !pathProfileEndpoint) {
+      setError("Select a transmitter cell and receiver point first");
+      return;
+    }
+    const request = requests.begin("p1411-reference");
+    setActiveRFTask("p1411_reference");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/sub-thz-p1411-reference",
+        buildP1411ReferencePayload(selectedTower, pathProfileEndpoint, settings, options),
+        "P.1411 candidate reference failed",
+        request.signal,
+      );
+      if (request.isCurrent()) setP1411Reference(payload);
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [pathProfileEndpoint, requests, selectedTower, settings]);
+
+  const analyzeMeasurementValidation = useCallback(async ({ campaigns, operation, modelIDs, strategy, include_predictions }) => {
+    if (!Array.isArray(campaigns) || campaigns.length === 0) {
+      setError("Load at least one measurement campaign first");
+      return;
+    }
+    const request = requests.begin("sub-thz-validation");
+    setActiveRFTask("sub_thz_validation");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/sub-thz-validation",
+        { schema_version: 1, operation, model_ids: modelIDs, campaigns, strategy, include_predictions },
+        "Measurement validation failed",
+        request.signal,
+      );
+      if (request.isCurrent()) setMeasurementValidation(payload);
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [requests]);
+
+  const analyzeMaterialReference = useCallback(async (options) => {
+    const request = requests.begin("sub-thz-material-reference");
+    setActiveRFTask("sub_thz_material");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/sub-thz-material-reference",
+        options,
+        "Material reference failed",
+        request.signal,
+      );
+      if (request.isCurrent()) setMaterialReference(payload);
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [requests]);
+
+  const analyzeSpecularReflectionReference = useCallback(async (options) => {
+    const request = requests.begin("specular-reflection-reference");
+    setActiveRFTask("specular_reflection_reference");
+    setError("");
+    try {
+      const payload = await postJSON(
+        "/api/sub-thz-reflection-reference",
+        buildSpecularReflectionReferencePayload(options),
+        "Specular reflection reference failed",
+        request.signal,
+      );
+      if (request.isCurrent()) setSpecularReflectionReference(payload);
+    } catch (requestError) {
+      if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
+    } finally {
+      if (request.isCurrent()) {
+        setActiveRFTask(null);
+        request.finish();
+      }
+    }
+  }, [requests]);
 
   const clearCoverageSurface = useCallback(() => {
     requests.cancel("coverage-surface");
@@ -1303,11 +1443,20 @@ export default function App() {
 
   const invalidatePlanResults = useCallback(() => {
     requests.cancel("rf");
+    requests.cancel("sub-thz-validation");
+    requests.cancel("sub-thz-material-reference");
+    requests.cancel("specular-reflection-reference");
     requests.cancel("path-profile");
+    requests.cancel("sub-thz-reference");
+    requests.cancel("p1411-reference");
     requests.cancel("coverage-surface");
     requests.cancel("building-entry");
     setActiveRFTask(null);
     setPathProfile(null);
+    setSubTHZReference(null);
+    setP1411Reference(null);
+    setMaterialReference(null);
+    setSpecularReflectionReference(null);
     setOptimizationDiagnostics(null);
     resetNetworkArtifacts();
     clearRenderedAnalysis();
@@ -1323,10 +1472,19 @@ export default function App() {
 			restoredProjectRef.current = null;
 			setWorkspaceRestored(false);
 			requests.cancel("rf");
+			requests.cancel("sub-thz-validation");
+			requests.cancel("sub-thz-material-reference");
+			requests.cancel("specular-reflection-reference");
 			requests.cancel("path-profile");
+			requests.cancel("sub-thz-reference");
+			requests.cancel("p1411-reference");
 			requests.cancel("coverage-surface");
 			setActiveRFTask(null);
 			setPathProfile(null);
+			setSubTHZReference(null);
+			setP1411Reference(null);
+			setMaterialReference(null);
+			setSpecularReflectionReference(null);
 			setPathProfileEndpoint(null);
 			setTowers([]);
 			setSelectedTower(null);
@@ -1447,11 +1605,14 @@ export default function App() {
 
   const selectPathEndpoint = useCallback((coordinates) => {
     if (!Array.isArray(coordinates) || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) return;
+    requests.cancel("p1411-reference");
     setPathProfileEndpoint(coordinates);
     setPathProfile(null);
+    setSubTHZReference(null);
+    setP1411Reference(null);
     setIsSelectingPathEndpoint(false);
     setSelectionNotice("Receiver selected. Analyze the path to build its vertical profile.");
-  }, []);
+  }, [requests]);
 
 	const placeInventoryCell = useCallback((coordinates) => {
 		const used = new Set(towers.map((tower) => tower.id));
@@ -1913,6 +2074,8 @@ export default function App() {
               ? "Recommending"
               : isEvaluatingMeasurements
                 ? "Validating"
+                : isAnalyzingMaterialReference
+                  ? "Evaluating reference"
                 : activeRFTask === "building_entry"
                   ? "Estimating entry"
             : planDirty
@@ -2005,6 +2168,10 @@ export default function App() {
       reason: interferenceUnavailableReason,
       badge: hasInterferenceData ? "•" : interferenceUnavailableReason ? "!" : null,
       tone: hasInterferenceData ? "success" : "warning",
+    },
+    validation: {
+      badge: measurementValidation || materialReference || specularReflectionReference ? "•" : null,
+      tone: measurementValidation || materialReference || specularReflectionReference ? "success" : undefined,
     },
     "building-entry": {
       badge: currentBuildingEntryAnalysis ? "•" : null,
@@ -2283,6 +2450,7 @@ export default function App() {
     experiments: "Queued parameter sweeps, fingerprints, and Pareto comparison",
 	    surfaces: "Received signal surface, contours, and GIS exports",
 	    interference: "Co-channel load and radio-quality assumptions",
+	    validation: "Measurement, material, and facade reference diagnostics",
 	    "building-entry": "Estimated service just inside representative building facades",
 	    core: "Xn, N2, N3, sessions, and lab scenarios",
     results: "Focused analysis from the latest RF operation",
@@ -2497,6 +2665,22 @@ export default function App() {
                 selectedTower={selectedTower}
                 settings={settings}
               />
+              <SubTHZReferencePanel
+                endpoint={pathProfileEndpoint}
+                isAnalyzing={isAnalyzingSubTHZReference}
+                onAnalyze={analyzeSubTHZReference}
+                reference={subTHZReference}
+                selectedTower={selectedTower}
+                settings={settings}
+              />
+              <P1411CandidatePanel
+                endpoint={pathProfileEndpoint}
+                isAnalyzing={isAnalyzingP1411Reference}
+                onAnalyze={analyzeP1411Reference}
+                reference={p1411Reference}
+                selectedTower={selectedTower}
+                settings={settings}
+              />
             </>
           ) : null}
 
@@ -2517,6 +2701,26 @@ export default function App() {
               surfaceError={coverageSurfaceError}
               surfaceState={signalSurfaceState}
             />
+          ) : null}
+
+          {drawerMode === "tool" && activeTool === "validation" ? (
+            <>
+              <MeasurementValidationPanel
+                analysis={measurementValidation}
+                isAnalyzing={isAnalyzingMeasurementValidation}
+                onRun={analyzeMeasurementValidation}
+              />
+              <MaterialReferencePanel
+                analysis={materialReference}
+                isAnalyzing={isAnalyzingMaterialReference}
+                onRun={analyzeMaterialReference}
+              />
+              <SpecularReflectionReferencePanel
+                analysis={specularReflectionReference}
+                isAnalyzing={isAnalyzingSpecularReflectionReference}
+                onRun={analyzeSpecularReflectionReference}
+              />
+            </>
           ) : null}
 
 			{drawerMode === "tool" && activeTool === "inventory" ? (

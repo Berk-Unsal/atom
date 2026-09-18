@@ -168,6 +168,76 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
+  /api/sub-thz-reference:
+    post:
+      summary: Evaluate the opt-in non-canonical Sub-THz atmospheric reference ledger
+      description: Uses explicit Tx/Rx coordinates and heights with P.525-5 free-space loss, optional P.676-13 gas, optional P.838-3 instantaneous rain, and optional local-fog P.840-9 sensitivity. It never changes canonical network RF or evaluates receiver serviceability.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SubTHZAtmosphericReferenceRequest" } } } }
+      responses:
+        "200":
+          description: Auditable component ledger, applicability, obstruction flag, optional reference Rx ledger, and deterministic fingerprint
+          content: { application/json: { schema: { $ref: "#/components/schemas/SubTHZAtmosphericReferenceResponse" } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/sub-thz-p1411-reference:
+    post:
+      summary: Evaluate isolated ITU-R P.1411-13 Table 4 candidate rows
+      description: Returns strict, applicability-gated below-rooftop LoS/NLoS candidates at the requested frequency and 3D distance. P.525 is comparison-only; optional 4I.2A atmospheric and research_sub_thz calculations are comparison-only and are never summed or dispatched into canonical RF.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/P1411ReferenceRequest" } } } }
+      responses:
+        "200":
+          description: Candidate rows, applicability reasons, median-only outputs, P.525 comparison, obstruction evidence, alternative comparisons, and deterministic fingerprint
+          content: { application/json: { schema: { $ref: "#/components/schemas/P1411ReferenceResponse" } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/sub-thz-validation:
+    post:
+      summary: Validate isolated measurement evidence and deterministic holdouts
+      description: Evaluates versioned campaign records in a canonical path-loss domain with applicability-first model adapters, common-sample metrics, constant-bias diagnostics, and deterministic spatial/site/campaign holdouts. It never changes canonical RF and never returns a production candidate.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SubTHZValidationRequest" } } } }
+      responses:
+        "200":
+          description: Measurement status ledger, metrics, calibration/holdout diagnostics, fingerprint, and readiness taxonomy
+          content: { application/json: { schema: { $ref: "#/components/schemas/SubTHZValidationResponse" } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/sub-thz-material-reference:
+    post:
+      summary: Evaluate isolated ITU-R P.2040-4 material slab reference
+      description: Evaluates one explicitly declared homogeneous finite slab with strict Table 3 material ranges, complex TE/TM interface/slab coefficients, power fractions, and numerical-state reporting. This endpoint is reference-only and never changes canonical propagation, research_sub_thz, building entry, interference, radio quality, or optimization.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MaterialReferenceRequest" } } } }
+      responses:
+        "200":
+          description: Auditable material properties, geometry, complex slab ledger, applicability, separate heuristic comparison, and deterministic fingerprint. Out-of-range material rows return 200 with no extrapolated slab ledger.
+          content: { application/json: { schema: { $ref: "#/components/schemas/MaterialReferenceResponse" } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
+  /api/sub-thz-reflection-reference:
+    post:
+      summary: Evaluate one isolated single-bounce specular reflection
+      description: Evaluates an explicitly declared finite vertical facade with image-source geometry, TE/TM P.2040 interface or finite-slab coefficient, two-leg visibility, Fresnel/far-field evidence, and one reflected-path P.525 spreading term. The result is reference-only and never changes canonical propagation, network RF, multipath, atmosphere, P.1411/P.526, or optimization.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SpecularReflectionReferenceRequest" } } } }
+      responses:
+        "200":
+          description: Applicability-gated reflected-path geometry, coefficient, evidence, visibility, antenna directions, and link-budget ledger
+          content: { application/json: { schema: { $ref: "#/components/schemas/SpecularReflectionReferenceResponse" } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/coverage-surface:
     post:
       summary: Generate a regular received-power raster and isolines
@@ -1459,6 +1529,659 @@ components:
         receiver_threshold: { $ref: "#/components/schemas/ReceiverThreshold" }
         fidelity: { type: object, additionalProperties: true }
       additionalProperties: true
+    SubTHZReferencePoint:
+      type: object
+      required: [lon, lat, height_m]
+      properties:
+        lon: { type: number, minimum: -180, maximum: 180 }
+        lat: { type: number, minimum: -90, maximum: 90 }
+        height_m: { type: number, minimum: 0, maximum: 10000 }
+    SubTHZReferenceAtmosphere:
+      type: object
+      required: [enabled]
+      properties:
+        enabled: { type: boolean, default: true }
+        pressure_hpa: { type: number, minimum: 300, maximum: 1100, description: Total barometric pressure; dry pressure is derived by subtracting water-vapour partial pressure. }
+        temperature_k: { type: number, minimum: 180, maximum: 330 }
+        water_vapour_density_g_m3: { type: number, minimum: 0, maximum: 100 }
+    SubTHZReferenceEndpoint:
+      type: object
+      required: [location, height_m]
+      properties:
+        location:
+          type: object
+          required: [lon, lat]
+          properties:
+            lon: { type: number, minimum: -180, maximum: 180 }
+            lat: { type: number, minimum: -90, maximum: 90 }
+        height_m: { type: number, minimum: 0, maximum: 10000 }
+    SubTHZReferenceRain:
+      type: object
+      properties:
+        enabled: { type: boolean, default: false }
+        rain_rate_mm_h: { type: number, minimum: 0, maximum: 500 }
+        polarization: { type: string, enum: [horizontal, vertical, circular, linear], default: circular }
+        polarization_tilt_deg: { type: number, minimum: 0, maximum: 90, default: 45 }
+    SubTHZReferenceLocalFog:
+      type: object
+      properties:
+        enabled: { type: boolean, default: false }
+        liquid_water_density_g_m3: { type: number, minimum: 0, maximum: 5 }
+        temperature_k: { type: number, minimum: 180, maximum: 330, description: Falls back to atmosphere.temperature_k only when omitted and local fog is enabled. }
+    SubTHZReferenceLinkBudgetInput:
+      type: object
+      description: Optional explicit reference-only link budget. Omitted fields are neutral zero-valued terms; no receiver threshold is inferred.
+      properties:
+        conducted_tx_power_dbm: { type: number }
+        tx_gain_dbi: { type: number }
+        rx_gain_dbi: { type: number }
+        tx_pattern_attenuation_db: { type: number, minimum: 0 }
+        system_loss_db: { type: number, minimum: 0 }
+        polarization_loss_db: { type: number, minimum: 0 }
+        calibration_offset_db: { type: number }
+    SubTHZAtmosphericReferenceRequest:
+      type: object
+      required: [frequency_ghz, transmitter, receiver, atmosphere]
+      properties:
+        frequency_ghz: { type: number, minimum: 1, maximum: 1000 }
+        transmitter: { $ref: "#/components/schemas/SubTHZReferencePoint" }
+        receiver: { $ref: "#/components/schemas/SubTHZReferencePoint" }
+        atmosphere: { $ref: "#/components/schemas/SubTHZReferenceAtmosphere" }
+        rain: { $ref: "#/components/schemas/SubTHZReferenceRain" }
+        local_fog: { $ref: "#/components/schemas/SubTHZReferenceLocalFog" }
+        link_budget: { $ref: "#/components/schemas/SubTHZReferenceLinkBudgetInput" }
+    P1411ReferenceProvenance:
+      type: object
+      properties:
+        frequency_ghz: { type: string, enum: [user_declared, dataset_measured, dataset_derived, geometry_classifier, geometry_derived, unknown] }
+        distance_m: { type: string, enum: [user_declared, dataset_measured, dataset_derived, geometry_classifier, geometry_derived, unknown] }
+        tx_height_m: { type: string, enum: [user_declared, dataset_measured, dataset_derived, geometry_classifier, geometry_derived, unknown] }
+        rx_height_m: { type: string, enum: [user_declared, dataset_measured, dataset_derived, geometry_classifier, geometry_derived, unknown] }
+        morphology: { type: string, enum: [user_declared, dataset_measured, dataset_derived, geometry_classifier, geometry_derived, unknown] }
+        rooftop_relation: { type: string, enum: [user_declared, dataset_measured, dataset_derived, geometry_classifier, geometry_derived, unknown] }
+        los_state: { type: string, enum: [user_declared, dataset_measured, dataset_derived, geometry_classifier, geometry_derived, unknown] }
+    P1411ReferenceRequest:
+      type: object
+      required: [frequency_ghz, transmitter, receiver, morphology, rooftop_relation, los_state]
+      properties:
+        frequency_ghz: { type: number, exclusiveMinimum: 0, description: Candidate rows independently gate 0.45–300 GHz; positive values outside those row ranges return inapplicable candidates without extrapolation. }
+        transmitter: { $ref: "#/components/schemas/SubTHZReferencePoint" }
+        receiver: { $ref: "#/components/schemas/SubTHZReferencePoint" }
+        morphology: { type: string, enum: [urban_high_rise, urban_low_rise, suburban, unknown] }
+        rooftop_relation: { type: string, enum: [both_below_rooftop, one_above_one_below, both_above_rooftop, unknown] }
+        los_state: { type: string, enum: [los, nlos, unknown] }
+        candidate_model_id: { type: string, enum: [all, p1411_below_rooftop_los_v1, p1411_urban_highrise_nlos_v1, p1411_urban_lowrise_nlos_v1], default: all }
+        provenance: { $ref: "#/components/schemas/P1411ReferenceProvenance" }
+        atmospheric_reference: { $ref: "#/components/schemas/SubTHZAtmosphericReferenceRequest", description: Explicit optional 4I.2A comparison using the same frequency and endpoints; never summed into P.1411. }
+        research_wall_event_count: { type: integer, minimum: 0, maximum: 1000, description: Optional current research_sub_thz comparison count at 140 GHz; never summed into P.1411. }
+    P1411ReferenceResponse:
+      type: object
+      required: [reference_model_id, reference, revision, section, table, reference_url, reference_pdf_url, requested_model_id, candidates, applicable_candidates, comparison_notes, scene_context, obstruction, limitations, fingerprint]
+      properties:
+        reference_model_id: { type: string, const: itu_r_p1411_table4_candidates_v1 }
+        reference: { type: string, const: ITU-R P.1411-13 }
+        revision: { type: string, const: 2025-09 }
+        section: { type: string, const: 4.1.1 }
+        table: { type: string, const: Table 4 }
+        reference_url: { type: string, format: uri }
+        reference_pdf_url: { type: string, format: uri }
+        requested_model_id: { type: string }
+        applicable_candidates: { type: array, items: { type: string } }
+        candidates:
+          type: array
+          items:
+            type: object
+            required: [model_id, reference, revision, section, table, row, applicability, inputs, model, uncertainty, p525_comparison, external_atmospheric_composition, research_sub_thz_comparison, obstruction, limitations, non_claims]
+            additionalProperties: true
+        comparison_notes: { type: array, items: { type: string } }
+        scene_context: { type: object, additionalProperties: true }
+        obstruction: { type: object, additionalProperties: true }
+        limitations: { type: array, items: { type: string } }
+        fingerprint: { type: string, pattern: "^p1411-reference-" }
+    SubTHZValidationRequest:
+      type: object
+      additionalProperties: false
+      required: [schema_version, operation, campaigns]
+      properties:
+        schema_version: { type: integer, const: 1 }
+        operation: { type: string, enum: [validate_campaign, compare_models, calibrate_bias, spatial_holdout] }
+        model_ids: { type: array, maxItems: 8, uniqueItems: true, items: { type: string, enum: [p525_fspl, sub_thz_atmospheric_reference_v1, p1411_below_rooftop_los_v1, p1411_urban_highrise_nlos_v1, p1411_urban_lowrise_nlos_v1, research_sub_thz, p526-single-edge-v1] } }
+        campaigns: { type: array, minItems: 1, maxItems: 8, items: { $ref: "#/components/schemas/MeasurementCampaign" } }
+        strategy: { $ref: "#/components/schemas/ValidationStrategy" }
+        include_predictions: { type: boolean }
+    ValidationStrategy:
+      type: object
+      additionalProperties: false
+      properties:
+        method: { type: string, enum: [all_samples, explicit_groups, spatial_grid, leave_one_site_out, leave_one_campaign_out] }
+        group_by: { type: string, enum: [site_id, location_pair_id, campaign_id] }
+        calibration_group_ids: { type: array, items: { type: string } }
+        validation_group_ids: { type: array, items: { type: string } }
+        spatial_cell_size_m: { type: number, exclusiveMinimum: 0 }
+        minimum_separation_m: { type: number, exclusiveMinimum: 0 }
+    MeasurementCampaign:
+      type: object
+      additionalProperties: true
+      required: [schema_version, campaign_id, frequency_range_ghz, measurements]
+      properties:
+        schema_version: { type: integer, const: 1 }
+        campaign_id: { type: string, pattern: "^[A-Za-z0-9._:-]{1,128}$" }
+        campaign_version: { type: string }
+        provenance: { type: object, additionalProperties: true }
+        frequency_range_ghz: { type: object, required: [min_ghz, max_ghz], properties: { min_ghz: { type: number }, max_ghz: { type: number } } }
+        antenna_setup: { type: object, additionalProperties: true }
+        calibration: { type: object, additionalProperties: true }
+        weather: { type: object, additionalProperties: true }
+        sites: { type: array, items: { type: object, additionalProperties: true } }
+        measurements: { type: array, maxItems: 5000, items: { $ref: "#/components/schemas/MeasurementRecord" } }
+    MeasurementRecord:
+      type: object
+      additionalProperties: true
+      required: [measurement_id, tx, rx, measurement_quantity]
+      properties:
+        measurement_id: { type: string, pattern: "^[A-Za-z0-9._:-]{1,128}$" }
+        location_pair_id: { type: string }
+        beam_id: { type: string }
+        site_id: { type: string }
+        tx: { type: object, additionalProperties: true }
+        rx: { type: object, additionalProperties: true }
+        frequency_ghz: { type: number, exclusiveMinimum: 0 }
+        measured_received_power_dbm: { type: number }
+        measured_path_loss_db: { type: number }
+        measured_path_gain_db: { type: number }
+        measurement_quantity: { type: string, enum: [received_power, path_loss, path_gain, de_embedded_path_loss, directional_path_loss, omnidirectional_equivalent_path_loss, another] }
+        quantity_definition: { type: string }
+        antenna_gain_embedded: { type: boolean }
+        cable_loss_embedded: { type: boolean }
+        calibration_applied: { type: boolean }
+        labels: { type: object, additionalProperties: true }
+        weather: { type: object, additionalProperties: true }
+        detection: { type: object, additionalProperties: true }
+        geometry: { type: object, additionalProperties: true }
+    ValidationMetric:
+      type: object
+      required: [count, mean_bias_db, median_bias_db, mae_db, rmse_db, std_db, p10_db, p90_db]
+      properties:
+        count: { type: integer }
+        mean_bias_db: { type: number }
+        median_bias_db: { type: number }
+        mae_db: { type: number }
+        rmse_db: { type: number }
+        std_db: { type: number }
+        p10_db: { type: number }
+        p90_db: { type: number }
+    SubTHZValidationResponse:
+      type: object
+      required: [schema_version, operation, model_family, validation_fingerprint, campaigns, models, readiness]
+      properties:
+        schema_version: { type: integer, const: 1 }
+        operation: { type: string }
+        model_family: { type: string, const: measurement_evidence_validation_v1 }
+        validation_fingerprint: { type: string, pattern: "^validation-" }
+        campaigns: { type: array, items: { type: object, additionalProperties: true } }
+        models: { type: array, items: { type: object, required: [model_id, model_version, status_counts, metric], additionalProperties: true } }
+        common_sample_comparisons: { type: array, items: { type: object, additionalProperties: true } }
+        holdout: { type: object, additionalProperties: true }
+        readiness: { type: object, required: [classification, production_candidate, gate_status, required_gates], additionalProperties: true }
+        assumptions: { type: array, items: { type: string } }
+        limitations: { type: array, items: { type: string } }
+    MaterialReferenceCoefficientSet:
+      type: object
+      required: [a, b, c, d]
+      properties:
+        a: { type: number }
+        b: { type: number }
+        c: { type: number }
+        d: { type: number }
+    MaterialReferenceComplexInput:
+      type: object
+      additionalProperties: false
+      required: [real, imaginary_loss]
+      properties:
+        real: { type: number, exclusiveMinimum: 0 }
+        imaginary_loss: { type: number, minimum: 0 }
+    MaterialReferenceMedium:
+      type: object
+      additionalProperties: false
+      required: [name, relative_permittivity, conductivity_s_per_m, property_source]
+      properties:
+        name: { type: string, minLength: 1 }
+        relative_permittivity: { type: number, exclusiveMinimum: 0 }
+        conductivity_s_per_m: { type: number, minimum: 0 }
+        property_source: { type: string, enum: [p2040_reference, measured, manufacturer, user_declared, inferred, unknown] }
+        provenance_note: { type: string }
+    MaterialReferenceUserMaterial:
+      type: object
+      additionalProperties: false
+      required: [name, property_source]
+      properties:
+        name: { type: string, minLength: 1 }
+        property_source: { type: string, enum: [p2040_reference, measured, manufacturer, user_declared, inferred, unknown] }
+        reference_table: { type: string }
+        frequency_range_ghz: { type: array, minItems: 2, maxItems: 2, items: { type: number, minimum: 0.001, maximum: 450 } }
+        relative_permittivity: { type: number, exclusiveMinimum: 0 }
+        conductivity_s_per_m: { type: number, minimum: 0 }
+        loss_tangent: { type: number, minimum: 0 }
+        complex_relative_permittivity: { $ref: "#/components/schemas/MaterialReferenceComplexInput" }
+        provenance_note: { type: string }
+      description: "Exactly one electrical-property form is accepted: permittivity plus conductivity, permittivity plus loss tangent, or complex relative permittivity."
+      oneOf:
+        - required: [relative_permittivity, conductivity_s_per_m]
+        - required: [relative_permittivity, loss_tangent]
+        - required: [complex_relative_permittivity]
+    MaterialReferenceGeometryContext:
+      type: object
+      additionalProperties: false
+      properties:
+        incidence_angle_source: { type: string, enum: [user_declared, geometry_derived] }
+        facade_normal_provenance: { type: string }
+        intersections_detected: { type: integer, minimum: 0 }
+        selected_interaction_id: { type: string }
+    MaterialReferenceRequest:
+      type: object
+      additionalProperties: false
+      required: [schema_version, frequency_ghz, material_source, thickness_m, incidence_angle_deg, polarization, incident_medium, exit_medium]
+      properties:
+        schema_version: { type: integer, const: 1 }
+        frequency_ghz: { type: number, minimum: 0.001, maximum: 450 }
+        material_source: { type: string, enum: [p2040_reference, user_defined] }
+        material_id: { type: string, description: Required for p2040_reference; IDs and ranges are in concept-4i4-material-applicability.json. }
+        user_material: { $ref: "#/components/schemas/MaterialReferenceUserMaterial" }
+        thickness_m: { type: number, minimum: 0, maximum: 1000 }
+        thickness_provenance: { type: string, enum: [user_declared, controlled_reference_fixture] }
+        incidence_angle_deg: { type: number, minimum: 0, exclusiveMaximum: 90 }
+        polarization: { type: string, enum: [TE, TM] }
+        incident_medium: { $ref: "#/components/schemas/MaterialReferenceMedium" }
+        exit_medium: { $ref: "#/components/schemas/MaterialReferenceMedium" }
+        geometry_context: { $ref: "#/components/schemas/MaterialReferenceGeometryContext" }
+    MaterialReferenceComplexOutput:
+      type: object
+      required: [real, imaginary, magnitude, phase_deg]
+      properties:
+        real: { type: number }
+        imaginary: { type: number }
+        magnitude: { type: number, minimum: 0 }
+        phase_deg: { type: number }
+    MaterialReferenceCitation:
+      type: object
+      required: [recommendation, revision, url, pdf_url, sections, equations, scope]
+      properties:
+        recommendation: { type: string, const: ITU-R P.2040-4 }
+        revision: { type: string, const: ITU-R P.2040-4 (2025-09) }
+        url: { type: string, format: uri }
+        pdf_url: { type: string, format: uri }
+        annex: { type: string }
+        sections: { type: array, items: { type: string } }
+        equations: { type: array, items: { type: string } }
+        scope: { type: string }
+    MaterialReferenceMaterialOutput:
+      type: object
+      required: [material_id, name, source, classification, property_source, thickness_m, thickness_provenance]
+      properties:
+        material_id: { type: string }
+        name: { type: string }
+        source: { type: string, enum: [p2040_reference, user_defined] }
+        classification: { type: string, enum: [reference_material, user_assumption] }
+        property_source: { type: string }
+        reference_table: { type: string }
+        frequency_range_ghz: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
+        coefficients: { $ref: "#/components/schemas/MaterialReferenceCoefficientSet" }
+        relative_permittivity: { type: number }
+        conductivity_s_per_m: { type: number }
+        loss_tangent: { type: number }
+        complex_relative_permittivity: { $ref: "#/components/schemas/MaterialReferenceComplexOutput" }
+        thickness_m: { type: number, minimum: 0 }
+        thickness_provenance: { type: string }
+        provenance_note: { type: string }
+    MaterialReferenceMediumOutput:
+      type: object
+      required: [name, relative_permittivity, conductivity_s_per_m, property_source]
+      properties:
+        name: { type: string }
+        relative_permittivity: { type: number }
+        conductivity_s_per_m: { type: number }
+        property_source: { type: string }
+    MaterialReferenceGeometryOutput:
+      type: object
+      required: [frequency_ghz, wavelength_m, incidence_angle_deg, incidence_angle_source, angle_convention, polarization, facade_normal_provenance, geometry_mode]
+      properties:
+        frequency_ghz: { type: number }
+        wavelength_m: { type: number }
+        incidence_angle_deg: { type: number }
+        incidence_angle_source: { type: string }
+        angle_convention: { type: string }
+        polarization: { type: string, enum: [TE, TM] }
+        facade_normal_provenance: { type: string }
+        geometry_mode: { type: string }
+    MaterialReferenceSlabLedger:
+      type: object
+      required: [interface_reflection_power_fraction, reflected_power_fraction, power_flux_correction, numeric_state, multiple_internal_reflections_included, angles]
+      properties:
+        reflection_coefficient: { $ref: "#/components/schemas/MaterialReferenceComplexOutput" }
+        transmission_coefficient: { $ref: "#/components/schemas/MaterialReferenceComplexOutput" }
+        first_interface_reflection_coefficient: { $ref: "#/components/schemas/MaterialReferenceComplexOutput" }
+        interface_reflection_power_fraction: { type: number, minimum: 0 }
+        reflected_power_fraction: { type: number, minimum: 0 }
+        transmitted_power_fraction: { type: number, minimum: 0 }
+        absorbed_power_fraction: { type: number, minimum: 0 }
+        power_flux_correction: { type: number, exclusiveMinimum: 0 }
+        transmission_loss_db: { type: number, minimum: 0 }
+        lower_bound_transmission_loss_db: { type: number, minimum: 0 }
+        numeric_state: { type: string, enum: [applicable, below_numeric_floor, power_balance_warning] }
+        multiple_internal_reflections_included: { type: boolean, const: true }
+        angles:
+          type: object
+          required: [incident_deg, slab_deg, exit_deg]
+          properties:
+            incident_deg: { type: number }
+            slab_deg: { type: number }
+            exit_deg: { type: number }
+        propagation_constant: { $ref: "#/components/schemas/MaterialReferenceComplexOutput" }
+        normal_phase_thickness: { $ref: "#/components/schemas/MaterialReferenceComplexOutput" }
+    MaterialReferenceApplicability:
+      type: object
+      required: [status, angle_range_deg, supported_polarizations]
+      properties:
+        status: { type: string, enum: [applicable, material_frequency_out_of_range, below_numeric_floor, power_balance_warning] }
+        reasons: { type: array, items: { type: string } }
+        frequency_range_ghz: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
+        angle_range_deg: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
+        supported_polarizations: { type: array, items: { type: string, enum: [TE, TM] } }
+    MaterialReferenceComparison:
+      type: object
+      required: [historical_research_heuristic_db, combined, interpretation]
+      properties:
+        historical_research_heuristic_db: { type: number, const: 80 }
+        slab_transmission_loss_db: { type: number }
+        slab_lower_bound_transmission_loss_db: { type: number }
+        difference_from_heuristic_db: { type: number }
+        combined: { type: boolean, const: false }
+        interpretation: { type: string }
+    MaterialReferenceResponse:
+      type: object
+      required: [schema_version, model_id, model_version, status, readiness, promoted, reference, material, geometry, media, applicability, comparison, property_provenance, fingerprint, assumptions, limitations]
+      properties:
+        schema_version: { type: integer, const: 1 }
+        model_id: { type: string, const: p2040_material_slab_reference_v1 }
+        model_version: { type: string, const: v1 }
+        status: { type: string, enum: [applicable, material_frequency_out_of_range, below_numeric_floor, power_balance_warning] }
+        readiness: { type: string, const: reference_only }
+        promoted: { type: boolean, const: false }
+        reference: { $ref: "#/components/schemas/MaterialReferenceCitation" }
+        material: { $ref: "#/components/schemas/MaterialReferenceMaterialOutput" }
+        geometry: { $ref: "#/components/schemas/MaterialReferenceGeometryOutput" }
+        media:
+          type: object
+          required: [incident, exit]
+          properties:
+            incident: { $ref: "#/components/schemas/MaterialReferenceMediumOutput" }
+            exit: { $ref: "#/components/schemas/MaterialReferenceMediumOutput" }
+        applicability: { $ref: "#/components/schemas/MaterialReferenceApplicability" }
+        ledger: { $ref: "#/components/schemas/MaterialReferenceSlabLedger" }
+        comparison: { $ref: "#/components/schemas/MaterialReferenceComparison" }
+        property_provenance: { type: object, additionalProperties: { type: string } }
+        fingerprint: { type: string, pattern: "^material-reference-" }
+        assumptions: { type: array, items: { type: string } }
+        limitations: { type: array, items: { type: string } }
+    SpecularReflectionReferenceVector:
+      type: object
+      additionalProperties: false
+      required: [x, y, z]
+      properties:
+        x: { type: number }
+        y: { type: number }
+        z: { type: number }
+    SpecularReflectionReferencePosition:
+      type: object
+      additionalProperties: false
+      properties:
+        x: { type: number }
+        y: { type: number }
+        z: { type: number }
+        lon: { type: number, minimum: -180, maximum: 180 }
+        lat: { type: number, minimum: -90, maximum: 90 }
+        coordinates: { type: array, minItems: 2, maxItems: 3, items: { type: number } }
+        enu: { $ref: "#/components/schemas/SpecularReflectionReferenceVector" }
+      description: Explicit local ENU x/y/z or WGS84 lon/lat plus height. Coordinates are accepted as [x,y,z] in local mode or [lon,lat,z] in geographic mode.
+    SpecularReflectionReferenceFrame:
+      type: object
+      additionalProperties: false
+      properties:
+        mode: { type: string, enum: [local_enu, geographic_enu] }
+        origin: { $ref: "#/components/schemas/SpecularReflectionReferencePosition" }
+    SpecularReflectionReferenceAntenna:
+      type: object
+      additionalProperties: false
+      required: [mode]
+      properties:
+        mode: { type: string, enum: [isotropic, omni, directional, existing_4g1] }
+        absolute_gain_dbi: { type: number }
+        gain_dbi: { type: number, description: Compatibility alias for absolute_gain_dbi. }
+        pattern_id: { type: string }
+        boresight_azimuth_deg: { type: number }
+        boresight_elevation_deg: { type: number }
+        beam_width_deg: { type: number, exclusiveMinimum: 0, maximum: 360 }
+        aperture_m: { type: number, exclusiveMinimum: 0, description: Physical aperture used only for R_ff≈2D²/λ evidence; gain is never reverse-engineered into aperture. }
+        assumption: { type: string }
+    SpecularReflectionReferenceEndpoint:
+      type: object
+      additionalProperties: false
+      required: [position, antenna]
+      properties:
+        position: { $ref: "#/components/schemas/SpecularReflectionReferencePosition" }
+        height_m: { type: number, minimum: 0 }
+        antenna: { $ref: "#/components/schemas/SpecularReflectionReferenceAntenna" }
+    SpecularReflectionReferencePolygonContext:
+      type: object
+      additionalProperties: false
+      required: [vertices]
+      properties:
+        vertices: { type: array, minItems: 3, items: { $ref: "#/components/schemas/SpecularReflectionReferencePosition" } }
+        role: { type: string, enum: [exterior, hole] }
+    SpecularReflectionReferenceFacade:
+      type: object
+      additionalProperties: false
+      required: [start, end, geometry_provenance]
+      properties:
+        start: { $ref: "#/components/schemas/SpecularReflectionReferencePosition" }
+        end: { $ref: "#/components/schemas/SpecularReflectionReferencePosition" }
+        segment_start: { $ref: "#/components/schemas/SpecularReflectionReferencePosition" }
+        segment_end: { $ref: "#/components/schemas/SpecularReflectionReferencePosition" }
+        plane_point: { $ref: "#/components/schemas/SpecularReflectionReferencePosition" }
+        outward_normal: { $ref: "#/components/schemas/SpecularReflectionReferenceVector" }
+        normal_provenance: { type: string }
+        geometry_provenance: { type: string, minLength: 1 }
+        base_z: { type: number }
+        top_z: { type: number }
+        height_provenance: { type: string }
+        reflecting_object_id: { type: string }
+        polygon_context: { $ref: "#/components/schemas/SpecularReflectionReferencePolygonContext" }
+      description: One finite horizontal edge of a vertical planar facade. Declare a unit outward normal or an exterior polygon context; do not infer facade height.
+    SpecularReflectionReferenceLinkBudget:
+      type: object
+      additionalProperties: false
+      required: [pt_conducted_dbm]
+      properties:
+        pt_conducted_dbm: { type: number }
+        tx_gain_dbi: { type: number }
+        rx_gain_dbi: { type: number }
+        tx_pattern_attenuation_db: { type: number, minimum: 0 }
+        rx_pattern_attenuation_db: { type: number, minimum: 0 }
+        system_loss_db: { type: number, minimum: 0 }
+        polarization_loss_db: { type: number, minimum: 0 }
+        calibration_db: { type: number }
+    SpecularReflectionReferenceMaterial:
+      type: object
+      additionalProperties: false
+      required: [material_source, incident_medium, exit_medium]
+      properties:
+        mode: { type: string, enum: [interface, finite_slab] }
+        reflection_mode: { type: string, enum: [interface, finite_slab], description: Compatibility alias for mode. }
+        material_source: { type: string, enum: [p2040_reference, user_defined] }
+        material_id: { type: string }
+        user_material: { $ref: "#/components/schemas/MaterialReferenceUserMaterial" }
+        incident_medium: { $ref: "#/components/schemas/MaterialReferenceMedium" }
+        exit_medium: { $ref: "#/components/schemas/MaterialReferenceMedium" }
+        thickness_m: { type: number, minimum: 0, maximum: 1000 }
+        thickness_provenance: { type: string }
+        phase_coherence: { type: string, enum: [coherent, coherent_total_slab] }
+        provenance: { type: string }
+      description: Explicit P.2040 reference row or user-declared electrical properties. Inferred material properties are not accepted. finite_slab requires thickness and coherent phase treatment.
+    SpecularReflectionReferenceTerrain:
+      type: object
+      additionalProperties: false
+      required: [mode]
+      properties:
+        mode: { type: string, enum: [surveyed_or_dataset_terrain, flat_ground_relative_datum] }
+        provenance: { type: string }
+    SpecularReflectionReferenceObstacle:
+      type: object
+      additionalProperties: false
+      required: [id, polygon, base_z, top_z]
+      properties:
+        id: { type: string, minLength: 1 }
+        polygon: { type: array, minItems: 3, items: { $ref: "#/components/schemas/SpecularReflectionReferencePosition" } }
+        base_z: { type: number }
+        top_z: { type: number }
+        reflector: { type: boolean }
+    SpecularReflectionReferenceRequest:
+      type: object
+      additionalProperties: false
+      required: [schema_version, frequency_ghz, tx, rx, facade, material, polarization, terrain, link_budget]
+      properties:
+        schema_version: { type: integer, const: 1 }
+        frequency_ghz: { type: number, minimum: 0.001, maximum: 450 }
+        coordinate_frame: { $ref: "#/components/schemas/SpecularReflectionReferenceFrame" }
+        tx: { $ref: "#/components/schemas/SpecularReflectionReferenceEndpoint" }
+        rx: { $ref: "#/components/schemas/SpecularReflectionReferenceEndpoint" }
+        facade: { $ref: "#/components/schemas/SpecularReflectionReferenceFacade" }
+        material: { $ref: "#/components/schemas/SpecularReflectionReferenceMaterial" }
+        polarization: { type: string, enum: [TE, TM], description: Generic H/V labels are rejected; declare the incidence-plane basis explicitly. }
+        terrain: { $ref: "#/components/schemas/SpecularReflectionReferenceTerrain" }
+        link_budget: { $ref: "#/components/schemas/SpecularReflectionReferenceLinkBudget" }
+        rms_roughness_m: { type: number, minimum: 0 }
+        obstructions: { type: array, items: { $ref: "#/components/schemas/SpecularReflectionReferenceObstacle" } }
+    SpecularReflectionReferenceCoefficient:
+      type: object
+      required: [real, imaginary, magnitude, phase_rad, phase_deg, power_fraction]
+      properties:
+        real: { type: number }
+        imaginary: { type: number }
+        magnitude: { type: number, minimum: 0 }
+        phase_rad: { type: number }
+        phase_deg: { type: number }
+        power_fraction: { type: number, minimum: 0, maximum: 1 }
+        reflection_loss_db: { type: number, minimum: 0 }
+    SpecularReflectionReferenceResponse:
+      type: object
+      required: [schema_version, model, model_id, model_version, readiness, promoted, production_candidate, canonical, network_coupled, multipath_combined, coherent_multipath_combined, status, applicability, geometry, facade, material, visibility, antennas, spreading, link_budget, evidence, diffuse_scattering_modelled, atmosphere_composition_supported, direct_path_calculated, exclusions, assumptions, limitations, fingerprint]
+      properties:
+        schema_version: { type: integer, const: 1 }
+        model: { type: string, const: single_bounce_specular_reflection_reference_v1 }
+        model_id: { type: string, const: single_bounce_specular_reflection_reference_v1 }
+        model_version: { type: string, const: v1 }
+        readiness: { type: string, const: reference_only }
+        promoted: { type: boolean, const: false }
+        production_candidate: { type: boolean, const: false }
+        canonical: { type: boolean, const: false }
+        network_coupled: { type: boolean, const: false }
+        multipath_combined: { type: boolean, const: false }
+        coherent_multipath_combined: { type: boolean, const: false }
+        status: { type: string, enum: [applicable_reference, qualified_reference, inapplicable] }
+        applicability:
+          type: object
+          required: [status]
+          properties:
+            status: { type: string, enum: [applicable_reference, qualified_reference, inapplicable] }
+            reasons: { type: array, items: { type: string } }
+            qualifications: { type: array, items: { type: string } }
+        geometry: { type: object, additionalProperties: true }
+        facade: { type: object, additionalProperties: true }
+        material:
+          type: object
+          additionalProperties: true
+          properties:
+            reflection_coefficient: { $ref: "#/components/schemas/SpecularReflectionReferenceCoefficient" }
+            interface_coefficient: { $ref: "#/components/schemas/SpecularReflectionReferenceCoefficient" }
+        visibility: { type: object, additionalProperties: true }
+        antennas: { type: object, additionalProperties: true }
+        spreading:
+          type: object
+          required: [wavelength_m, total_reflected_path_length_m, fspl_reflected_path_db, formula, two_leg_fspl_composition]
+          properties:
+            wavelength_m: { type: number }
+            total_reflected_path_length_m: { type: number }
+            fspl_reflected_path_db: { type: number }
+            formula: { type: string }
+            two_leg_fspl_composition: { type: boolean, const: false }
+        link_budget: { type: object, additionalProperties: true }
+        evidence: { type: object, additionalProperties: true }
+        diffuse_scattering_modelled: { type: boolean, const: false }
+        atmosphere_composition_supported: { type: boolean, const: false }
+        direct_path_calculated: { type: boolean, const: false }
+        exclusions: { type: array, items: { type: string } }
+        assumptions: { type: array, items: { type: string } }
+        limitations: { type: array, items: { type: string } }
+        fingerprint: { type: string, pattern: "^specular-reflection-reference-" }
+    SubTHZReferenceComponentStatus:
+      type: object
+      required: [id, label, enabled, included, applicability, reference, additive_to_fspl, existing_terms_not_included, double_counting_boundary, note]
+      properties:
+        id: { type: string }
+        label: { type: string }
+        enabled: { type: boolean }
+        included: { type: boolean }
+        applicability: { type: string, enum: [included, disabled, out_of_scope] }
+        reference: { type: string }
+        reference_url: { type: string, format: uri }
+        additive_to_fspl: { type: boolean }
+        existing_terms_not_included: { type: array, items: { type: string } }
+        double_counting_boundary: { type: string }
+        note: { type: string }
+    SubTHZAtmosphericReferenceResponse:
+      type: object
+      required: [reference_model_id, description, frequency_ghz, transmitter, receiver, geometry, fspl, gas, rain, local_fog, total, obstruction, applicability, assumptions, limitations, double_counting_boundaries, experiment_fingerprint]
+      properties:
+        reference_model_id: { type: string, const: sub_thz_atmospheric_reference_v1 }
+        description: { type: string }
+        frequency_ghz: { type: number }
+        transmitter: { $ref: "#/components/schemas/SubTHZReferenceEndpoint" }
+        receiver: { $ref: "#/components/schemas/SubTHZReferenceEndpoint" }
+        geometry:
+          type: object
+          required: [horizontal_distance_m, slant_distance_m, path_length_km, tx_height_m, rx_height_m, height_delta_m, rain_path_elevation_deg]
+          properties:
+            horizontal_distance_m: { type: number }
+            slant_distance_m: { type: number }
+            path_length_km: { type: number }
+            tx_height_m: { type: number }
+            rx_height_m: { type: number }
+            height_delta_m: { type: number }
+            rain_path_elevation_deg: { type: number }
+        fspl: { type: object, additionalProperties: true }
+        gas: { type: object, additionalProperties: true }
+        rain: { type: object, additionalProperties: true }
+        local_fog: { type: object, additionalProperties: true }
+        total: { type: object, additionalProperties: true }
+        obstruction: { type: object, additionalProperties: true }
+        reference_link_budget: { type: object, additionalProperties: true }
+        applicability:
+          type: object
+          required: [status, model_id, frequency_ghz, frequency_in_scope, frequency_range_ghz, components, reference_path_type, canonical_network_coupling, note]
+          properties:
+            status: { type: string, enum: [applicable, partial, fspl_only] }
+            model_id: { type: string, const: sub_thz_atmospheric_reference_v1 }
+            frequency_ghz: { type: number }
+            frequency_in_scope: { type: boolean }
+            frequency_range_ghz: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
+            components: { type: array, items: { $ref: "#/components/schemas/SubTHZReferenceComponentStatus" } }
+            reference_path_type: { type: string }
+            canonical_network_coupling: { type: boolean, const: false }
+            note: { type: string }
+        assumptions: { type: array, items: { type: string } }
+        limitations: { type: array, items: { type: string } }
+        double_counting_boundaries: { type: array, items: { type: string } }
+        experiment_fingerprint: { type: string }
     PathLossBudget:
       type: object
       required: [components, total_median_loss_db, rx_dbm_p50, rx_dbm_p90_reliability, rx_dbm_upper_90, shadow_sigma_db, definition, link_budget, receiver_threshold, receiver_link_margin_db]

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "concept": "4I.2A",
+  "title": "Post-change isolation and real-backend comparison",
+  "artifact": "post-change-comparison",
+  "captured_at": "2026-09-18",
+  "pre_change_baseline": "concept-4i2a-pre-change-baseline.json",
+  "isolation": {
+    "new_model_id": "sub_thz_atmospheric_reference_v1",
+    "new_route": "POST /api/sub-thz-reference",
+    "canonical_dispatch_modified": false,
+    "canonical_network_coupling": false,
+    "canonical_terms_modified": false,
+    "boundary": "The new evaluator is reachable only through its dedicated route and propagation tool panel; it is not called by simulate, coverage, interference, building entry, or optimization."
+  },
+  "real_backend_acceptance_after_change": {
+    "command": "ATOM_REAL_E2E=1 ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline npm run test:e2e",
+    "result": "27 passed, 9 skipped",
+    "dataset": "161784 building footprints and 451 tower cells",
+    "existing_canonical_workflows_exercised": true
+  },
+  "isolated_reference_observation": {
+    "request": {
+      "frequency_ghz": 140,
+      "transmitter": {"lon": 32.85, "lat": 39.92, "height_m": 25},
+      "receiver": {"lon": 32.8509, "lat": 39.92, "height_m": 1.5},
+      "atmosphere": {"enabled": true, "pressure_hpa": 1013.25, "temperature_k": 288.15, "water_vapour_density_g_m3": 7.5},
+      "rain": {"enabled": true, "rain_rate_mm_h": 25, "polarization": "circular", "polarization_tilt_deg": 45},
+      "local_fog": {"enabled": true, "liquid_water_density_g_m3": 0.5, "temperature_k": 288.15}
+    },
+    "response": {
+      "reference_model_id": "sub_thz_atmospheric_reference_v1",
+      "horizontal_distance_m": 76.83830463717943,
+      "slant_distance_m": 80.35157160576257,
+      "fspl_db": 113.47023144742553,
+      "gas_db": 0.0735577398480971,
+      "rain_db": 1.0229000625292286,
+      "local_fog_db": 0.27993683098088384,
+      "total_path_loss_db": 114.84662608078375,
+      "building_intersection_present": true,
+      "wall_loss_applied": false,
+      "diffraction_applied": false,
+      "material_loss_applied": false,
+      "canonical_network_model": false,
+      "receiver_threshold_applied": false,
+      "experiment_fingerprint": "sub-thz-reference-642d0170dd3558ee9c51034ffe0c6751e7113d42bd58195bdf44c517f22f5f64"
+    }
+  },
+  "interpretation": "The post-change real endpoint produces the isolated standards ledger and flags the dataset obstruction without converting it into wall, diffraction, or material loss. The pre-change canonical baseline remains the comparison reference; this artifact does not promote the new ledger into canonical RF."
+}

@@ -134,10 +134,12 @@ building-entry fields. The separate Concept 4E building-entry analysis
 adds one standard O2I facade term at zero indoor depth; it is not indoor
 or whole-building coverage. The point-to-point path profile remains an
 isolated advanced diagnostic with model id
-<code>path-profile-diagnostic-v1</code>. Read the Concept 4F.1 design
-note for the centerline rule and audit, and the Concept 4G.2
-receiver-noise note for the effective per-cell receiver threshold and
-link-margin contract.</p>
+<code>path-profile-diagnostic-v1</code>. The separate Concept 4I.2A
+atmospheric reference is an opt-in standards ledger and is never
+silently added to any network model. Read the Concept 4F.1 design note
+for the centerline rule and audit, and the Concept 4G.2 receiver-noise
+note for the effective per-cell receiver threshold and link-margin
+contract.</p>
 <h2 id="rf-semantic-contract">RF Semantic Contract</h2>
 <table>
 <thead>
@@ -288,6 +290,10 @@ LOS/Fresnel geometry, and one dominant single knife-edge approximation
 in the isolated point-to-point path-profile workflow</li>
 <li>Optional, user-entered material, clutter, vegetation, gas, rain, and
 shadow-sensitivity components in that path-profile workflow</li>
+<li>Separate opt-in <code>sub_thz_atmospheric_reference_v1</code>
+component ledger for explicit P.525-5 free space, P.676-13 gas, P.838-3
+rain, and local-fog P.840-9 sensitivity; this ledger is not a canonical
+propagation model and does not make serviceability decisions</li>
 </ul>
 <p>The same request and dataset produce the same RF result. Core Lab
 scenario state does not modify propagation or interference
@@ -405,6 +411,58 @@ P.2040-4</a>, <a href="https://www.itu.int/rec/R-REC-P.676/en">ITU-R
 P.676</a>, and <a href="https://www.itu.int/rec/R-REC-P.838/en">ITU-R
 P.838</a>, respectively. They are not automatic implementations driven
 by surveyed construction or current meteorological data.</p>
+<p>The isolated Concept 4I.2B candidate reference evaluates three
+non-canonical P.1411-13 §4.1.1 Table 4 rows at their strict frequency
+and distance envelopes: below-rooftop LoS (5–500 m at 140 GHz), urban
+high-rise NLoS (20–150 m), and urban low-rise/suburban NLoS (10–150 m).
+It requires explicit morphology, both-below-rooftop relation, LoS/NLoS
+state, and provenance. It returns the Table 4 median and sigma metadata
+only; P.525, atmospheric, research wall, diffraction, material, and
+receiver terms remain comparisons or separate diagnostics. The endpoint
+is not called by canonical simulation, coverage, interference, building
+entry, radio quality, or optimization. See Concept 4I.2B.</p>
+<p>Concept 4I.3 adds an isolated measurement-evidence ledger at
+<code>/api/sub-thz-validation</code>. It requires explicit campaign,
+quantity, antenna-basis, calibration, geometry, weather, and label
+provenance before normalizing observations into path loss. Its residual
+is measured minus predicted path loss; censored and
+directional-incompatible observations remain visible but do not enter
+ordinary metrics. P.525, the atmospheric reference, P.1411 rows, the
+comparison-only research profile, and the P.526 diagnostic are evaluated
+through a shared adapter contract. Constant-bias calibration and
+deterministic spatial/site/campaign holdouts are diagnostic only, and
+the response has no production-candidate state. The repository registers
+external literature metadata without importing or inventing numeric
+samples. See Concept 4I.3.</p>
+<p>Concept 4I.4 adds a separate
+<code>p2040_material_slab_reference_v1</code> endpoint at
+<code>/api/sub-thz-material-reference</code>. It evaluates one
+explicitly declared homogeneous slab with P.2040-4 complex material
+properties, TE/TM Fresnel coefficients, internal reflections, power
+fractions, and strict Table 3 frequency ranges. Thickness, angle,
+polarization, exterior media, and property provenance are required;
+metal without a covered row, multilayer construction, OSM material
+physics, P.2109 extrapolation, and whole-building entry are excluded.
+Its side-by-side 80 dB/event comparison is never summed and the result
+remains <code>reference_only</code>. See Concept 4I.4.</p>
+<p>Concept 4I.5B adds the isolated
+<code>single_bounce_specular_reflection_reference_v1</code> endpoint at
+<code>/api/sub-thz-reflection-reference</code>. It requires explicit
+Tx/Rx geometry and heights, a finite vertical planar facade with
+normal/geometry/height provenance, TE or TM polarization, explicit
+P.2040 interface or coherent finite-slab material inputs, and a declared
+terrain mode. Image-source geometry is evaluated in metric ENU
+coordinates; Tx-to-reflector and reflector-to-Rx visibility are checked
+independently; the only spreading term is P.525 FSPL over
+<code>L=d1+d2</code>; and the P.2040 field coefficient power is applied
+exactly once. Roughness, Fresnel footprint, and physical-aperture
+far-field are evidence gates, not invented corrections. Direct paths,
+coherent multipath, diffuse scattering, atmosphere, P.1411/P.526
+composition, the research 80 dB wall heuristic, canonical RF, and
+optimization remain excluded. The result is <code>reference_only</code>
+and may be <code>applicable_reference</code>,
+<code>qualified_reference</code>, or <code>inapplicable</code>. See
+Concept 4I.5B.</p>
 <p>The reference catalog also records <a
 href="https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=3173">3GPP
 TR 38.901 V19.4.0 (2026-06-23)</a> as a comparison scope for 0.5–100 GHz

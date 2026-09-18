@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "concept": "4I.5B",
+  "title": "Single-bounce reflection reference comparison ledger",
+  "artifact": "reference-comparison",
+  "captured_at": "2026-09-19",
+  "fixture": "controlled_140ghz_te",
+  "frequency_ghz": 140,
+  "geometry": {
+    "direct_tx_rx_distance_m": 100,
+    "reflected_total_path_m": 141.4213562373095,
+    "reflection_point": [0, 0, 10],
+    "material": "user-declared lossless epsilon_r=4 interface, air to air"
+  },
+  "rows": [
+    {
+      "id": "single_bounce_specular_reflection_reference_v1",
+      "kind": "implemented_reference",
+      "path": "one image-source reflected path",
+      "value_db": 118.38064389208795,
+      "reflection_power_fraction": 0.20377661238703051,
+      "reflected_path_reference_power_dbm": -95.28910051020749,
+      "combined": false,
+      "interpretation": "P.525 spreading over L=d1+d2 with one TE coefficient applied once; not total network received power."
+    },
+    {
+      "id": "p525_direct_comparison",
+      "kind": "comparison_only",
+      "path": "direct Tx-to-Rx free-space path",
+      "value_db": 115.37034393544813,
+      "combined": false,
+      "interpretation": "Geometry comparison only. The reflection endpoint does not calculate or sum this direct path."
+    },
+    {
+      "id": "p525_reflected_path_comparison",
+      "kind": "comparison_only",
+      "path": "P.525 wavelength-form FSPL over reflected total path",
+      "value_db": 118.38064389208795,
+      "combined": false,
+      "interpretation": "Matches the selected spreading term; P.525 is not a second additive loss."
+    },
+    {
+      "id": "p1411_candidate_reference",
+      "kind": "not_evaluated",
+      "path": "P.1411 Table 4 candidate rows",
+      "value_db": null,
+      "combined": false,
+      "status": "inapplicable_without_explicit_morphology_rooftop_relation_los_state_provenance",
+      "interpretation": "P.1411 is not composed with the image-source result and is not a substitute for facade geometry."
+    },
+    {
+      "id": "research_sub_thz_wall_heuristic",
+      "kind": "comparison_only",
+      "path": "historical 80 dB per-wall-event heuristic",
+      "value_db": 80,
+      "combined": false,
+      "interpretation": "Retained as a separate compatibility comparison only; never added to FSPL or Gamma."
+    },
+    {
+      "id": "rejected_two_fspl",
+      "kind": "rejected",
+      "path": "FSPL(d1)+FSPL(d2)",
+      "value_db": 224.72008795761664,
+      "combined": false,
+      "rejection_reason": "two independent point-to-point power factors are not the selected ideal planar image-source model"
+    }
+  ],
+  "composition_contract": {
+    "selected_equation": "Pr_ref_dBm=Pt_conducted+Gt_absolute−A_tx_pattern+Gr_absolute−A_rx_pattern−L_system−L_polarization+calibration−FSPL(L)+10log10(|Gamma|^2)",
+    "direct_plus_reflected_coherent_sum": false,
+    "p1411_added": false,
+    "p526_added": false,
+    "atmosphere_added": false,
+    "research_wall_added": false,
+    "two_leg_fspl_added": false
+  }
+}

@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="A read-only 140 GHz single-bounce
+specular reflection audit covering image geometry, path spreading,
+P.2040 coefficient composition, facade evidence, roughness, visibility,
+Ankara readiness, and a gated 4I.5B contract." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 4I.5A Specular Reflection
+Audit | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 4I.5A
+Specular Reflection Audit page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#1-sourcereference-audit"
+      id="toc-1-sourcereference-audit">1. Source/reference
+      audit</a></li>
+      <li><a href="#2-image-method-geometry"
+      id="toc-2-image-method-geometry">2. Image-method geometry</a></li>
+      <li><a href="#3-correct-spreading-formulation"
+      id="toc-3-correct-spreading-formulation">3. Correct spreading
+      formulation</a></li>
+      <li><a href="#4-p2040-γ-composition"
+      id="toc-4-p2040-γ-composition">4. P.2040 <code>Γ</code>
+      composition</a></li>
+      <li><a href="#5-interface-versus-slab-reflection"
+      id="toc-5-interface-versus-slab-reflection">5. Interface versus
+      slab reflection</a></li>
+      <li><a href="#6-fieldpower-semantics"
+      id="toc-6-fieldpower-semantics">6. Field/power semantics</a></li>
+      <li><a href="#7-antenna-departurearrival-treatment"
+      id="toc-7-antenna-departurearrival-treatment">7. Antenna
+      departure/arrival treatment</a></li>
+      <li><a href="#8-tetm-basis" id="toc-8-tetm-basis">8. TE/TM
+      basis</a></li>
+      <li><a href="#9-facade-plane-assumptions"
+      id="toc-9-facade-plane-assumptions">9. Facade-plane
+      assumptions</a></li>
+      <li><a href="#10-normal-orientation"
+      id="toc-10-normal-orientation">10. Normal orientation</a></li>
+      <li><a href="#11-vertical-reflection-point"
+      id="toc-11-vertical-reflection-point">11. Vertical reflection
+      point</a></li>
+      <li><a href="#12-finite-segment-and-height-checks"
+      id="toc-12-finite-segment-and-height-checks">12. Finite segment
+      and height checks</a></li>
+      <li><a href="#13-two-leg-visibility"
+      id="toc-13-two-leg-visibility">13. Two-leg visibility</a></li>
+      <li><a href="#14-terrain-requirement"
+      id="toc-14-terrain-requirement">14. Terrain requirement</a></li>
+      <li><a href="#15-roughnessspecularity-at-140-ghz"
+      id="toc-15-roughnessspecularity-at-140-ghz">15.
+      Roughness/specularity at 140 GHz</a></li>
+      <li><a href="#16-diffuse-scattering-boundary"
+      id="toc-16-diffuse-scattering-boundary">16. Diffuse-scattering
+      boundary</a></li>
+      <li><a href="#17-reflector-size-and-fresnel-zone"
+      id="toc-17-reflector-size-and-fresnel-zone">17. Reflector size and
+      Fresnel zone</a></li>
+      <li><a href="#18-far-field-assumptions"
+      id="toc-18-far-field-assumptions">18. Far-field
+      assumptions</a></li>
+      <li><a href="#19-atmospheric-composition"
+      id="toc-19-atmospheric-composition">19. Atmospheric
+      composition</a></li>
+      <li><a href="#20-p1411-separation"
+      id="toc-20-p1411-separation">20. P.1411 separation</a></li>
+      <li><a href="#21-p526-separation" id="toc-21-p526-separation">21.
+      P.526 separation</a></li>
+      <li><a href="#22-coherent-multipath-limitation"
+      id="toc-22-coherent-multipath-limitation">22. Coherent-multipath
+      limitation</a></li>
+      <li><a href="#23-controlled-140-ghz-derivation"
+      id="toc-23-controlled-140-ghz-derivation">23. Controlled 140 GHz
+      derivation</a></li>
+      <li><a href="#24-ankara-readiness"
+      id="toc-24-ankara-readiness">24. Ankara readiness</a></li>
+      <li><a href="#25-measurement-requirements"
+      id="toc-25-measurement-requirements">25. Measurement
+      requirements</a></li>
+      <li><a href="#26-4i5b-gono-go-decision"
+      id="toc-26-4i5b-gono-go-decision">26. 4I.5B go/no-go
+      decision</a></li>
+      <li><a href="#27-proposed-4i5b-contract-if-promoted"
+      id="toc-27-proposed-4i5b-contract-if-promoted">27. Proposed 4I.5B
+      contract if promoted</a></li>
+      <li><a href="#28-invariance-validation"
+      id="toc-28-invariance-validation">28. Invariance
+      validation</a></li>
+      <li><a href="#29-files-changed" id="toc-29-files-changed">29.
+      Files changed</a></li>
+      <li><a href="#30-remaining-scientific-limitations"
+      id="toc-30-remaining-scientific-limitations">30. Remaining
+      scientific limitations</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Scientific audit</span>
+        <h1>Concept 4I.5A Specular Reflection Audit</h1>
+        <p>A read-only 140 GHz single-bounce specular reflection audit
+covering image geometry, path spreading, P.2040 coefficient composition,
+facade evidence, roughness, visibility, Ankara readiness, and a gated
+4I.5B contract.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-4i5a-reflection-audit.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Status: read-only scientific and architectural audit. No production
+reflection evaluator, network coupling, canonical propagation change, or
+<code>research_sub_thz</code> change is introduced here.</p>
+<p>The defensible conclusion is deliberately narrow:</p>
+<blockquote>
+<p>A single reflected-path diagnostic is defensible only with explicitly
+supplied facade/material geometry.</p>
+</blockquote>
+<p>The smallest useful follow-up is therefore an isolated, opt-in
+reference for one finite planar facade and one reflected path. It is not
+a ray tracer, a whole-building model, a P.1411 replacement, or a
+direct-plus-reflected network-power result.</p>
+<p>The machine-readable evidence is in <a
+href="concept-4i5a-reflection-applicability.json">the applicability
+contract</a>, <a href="concept-4i5a-controlled-derivation.json">the
+controlled derivation</a>, <a
+href="concept-4i5a-ankara-readiness.json">the Ankara readiness
+audit</a>, and <a href="concept-4i5a-pre-change-baseline.json">the
+pre-change baseline</a>.</p>
+<h2 id="1-sourcereference-audit">1. Source/reference audit</h2>
+<p>The physical reference boundary is assembled from authoritative ITU-R
+material plus a geometry reference and 140 GHz measurement evidence:</p>
+<ul>
+<li><a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf">ITU-R
+P.2040-4 (2025-09)</a>, §2.2.1–§2.2.2 and equations (34)–(44): planar
+homogeneous-interface and finite-slab complex TE/TM coefficients. Its
+plane-wave coefficient methods do not include free-space spreading.</li>
+<li><a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf">ITU-R
+P.1411-13 (2025-09)</a>, §3.2, §4, §5 and §6: site-data accuracy, urban
+scenario applicability, statistical transmission loss, multipath, and
+polarization boundaries. It does not turn an arbitrary footprint edge
+into a deterministic 140 GHz facade solver.</li>
+<li><a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf">ITU-R
+P.525-5 (2024-11)</a>, §4–§6: free-space field behavior and
+<code>L_FS=20 log10(4πd/λ)</code>.</li>
+<li><a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1410-4-200702-S!!PDF-E.pdf">ITU-R
+P.1410-4 (2007-02)</a>, §2.1.2 and equations (1)–(14): an official urban
+single-bounce reflection option, ideal-mirror image-path power, and a
+separate finite-facet diffuse-scatter treatment. This is a
+geometry/spreading analogue, not a calibrated 140 GHz facade
+standard.</li>
+<li><a
+href="https://www.itu.int/dms_pub/itu-r/opb/hdb/R-HDB-27-1996-PDF-E.pdf">ITU
+Radiocommunication Handbook (1996)</a>, reflection/scattering roughness
+discussion around pp. 87–89: Rayleigh roughness parameter
+<code>g=4πσ_h sin(φ_g)/λ</code> and the coherent/diffuse boundary.</li>
+<li><a
+href="https://academic.oup.com/gji/article/151/2/534/616767">Application
+of exact image theory to electromagnetic wave propagation</a>:
+planar-interface image construction. It is used for geometry/boundary
+reasoning, not as a complete finite-facade power model.</li>
+<li><a href="https://arxiv.org/abs/1908.09765">Xing et al., Indoor
+Wireless Channel Properties at Millimeter Wave and Sub-Terahertz
+Frequencies</a>: measured 28/73/140 GHz material reflection/scattering
+behavior. The evidence is indoor and material-specific, so it cannot be
+transplanted to Ankara exteriors without measurements.</li>
+</ul>
+<p>The source roles are kept separate: P.2040 supplies <code>Γ</code>,
+P.525 supplies ideal path spreading, P.1410 supplies a useful official
+urban-reflection analogue, and P.1411/P.526/4I.2A remain alternative or
+separately integrated model families.</p>
+<h2 id="2-image-method-geometry">2. Image-method geometry</h2>
+<p>Use a local ENU coordinate system and a declared vertical plane:</p>
+<pre class="text"><code>plane:          n · (x - p0) = 0,       |n| = 1
+mirrored Tx:    Tx_i = Tx - 2 n [n · (Tx - p0)]
+intersection:   S = Tx_i + t (Rx - Tx_i)
+t:              -n · (Tx_i - p0) / n · (Rx - Tx_i)
+d1:             |Tx - S|
+d2:             |S - Rx|
+L:              d1 + d2 = |Tx_i - Rx|</code></pre>
+<p>The denominator must be finite and non-zero, <code>0 ≤ t ≤ 1</code>,
+and the point must lie on the finite facade segment. With the actual
+three-dimensional vectors, <code>acos(|k_i·n|)</code> equals
+<code>acos(|k_r·n|)</code>. The controlled tests verify this for normal
+and oblique cases.</p>
+<p>The image construction is a candidate path geometry. It does not, by
+itself, prove that a finite facade is large, smooth, or visible enough
+to support the ideal-plane field approximation.</p>
+<h2 id="3-correct-spreading-formulation">3. Correct spreading
+formulation</h2>
+<p>For an ideal infinite or sufficiently large planar specular reflector
+with a dimensionless field coefficient, the defensible first reference
+is:</p>
+<pre class="text"><code>E_ref ∝ Γ exp(-j k L) / L
+P_ref ∝ |Γ|² (λ / (4πL))²
+FSPL_ref = 20 log10(4πL/λ),  L=d1+d2</code></pre>
+<p><code>FSPL(d1)+FSPL(d2)</code> is rejected for this scope. It applies
+two independent point-to-point power factors, duplicates the free-space
+constants, and produces a <code>1/(d1 d2)^2</code> dependence without a
+finite-area or RCS normalization. It can belong to a different
+finite-facet/diffuse/RCS formulation only when that model supplies the
+missing area and scattering normalization.</p>
+<p>The finite-facet case is not silently folded into the image method.
+If the relevant Fresnel footprint is not covered by a known facade, the
+result is qualified or inapplicable rather than “corrected” by an
+arbitrary reflector area.</p>
+<h2 id="4-p2040-γ-composition">4. P.2040 <code>Γ</code> composition</h2>
+<p>The coefficient enters once:</p>
+<pre class="text"><code>field: E_ref = E_propagation(L) Γ_TE/TM exp(-j k L) × directional terms
+power: P_ref = P_propagation(L) |Γ_TE/TM|² × directional power terms</code></pre>
+<p>A future implementation must not apply a complex coefficient and then
+subtract a separate reflection-loss dB value again. If direct and
+reflected paths are ever combined, the fields—not the already-reduced
+powers—must be added.</p>
+<p><code>Γ</code> is selected from the actual incidence angle, medium
+properties, and polarization. The first implementation should accept
+explicit TE or TM. Arbitrary user polarization requires vector
+decomposition and transport; H/V labels are not intrinsically TE/TM.</p>
+<h2 id="5-interface-versus-slab-reflection">5. Interface versus slab
+reflection</h2>
+<p>Use the front-interface coefficient when the declared surface is
+effectively semi-infinite/opaque or the rear interface cannot be
+supported coherently. Use the finite-slab total coefficient only when
+thickness, rear medium, layer stack, incidence angle, polarization,
+phase convention, and coherence are all explicit.</p>
+<p>At 140 GHz, millimetre-scale thickness and roughness are not
+negligible. Construction variation, moisture, coatings, air gaps,
+multilayers, and thickness variation can make a nominal slab phase
+meaningless. The diagnostic must therefore expose
+<code>interface_only</code> or <code>slab_coherence_unknown</code>; it
+must never silently choose the 4I.4 slab path for an unlabeled
+footprint.</p>
+<h2 id="6-fieldpower-semantics">6. Field/power semantics</h2>
+<p>The isolated reference output is a single reflected-path
+received-power estimate:</p>
+<pre class="text"><code>Pr_ref_dBm = Pt_dBm + Gt_dBi(S) + Gr_dBi(S)
+             - FSPL(L) + 10 log10(|Γ|²)
+             + explicitly declared, non-duplicated terms</code></pre>
+<p>The expression is a reference power for one path. It is not
+whole-building entry loss, not a P.1411 median, not a P.526 excess loss,
+and not total received power in a multipath channel.</p>
+<h2 id="7-antenna-departurearrival-treatment">7. Antenna
+departure/arrival treatment</h2>
+<p>The direct-path bearing must not be reused. The directions are:</p>
+<pre class="text"><code>Tx departure: normalize(S - Tx)
+Rx look/arrival: normalize(S - Rx)</code></pre>
+<p>The future adapter would evaluate the Tx pattern at the departure
+azimuth/elevation and the Rx pattern at its look direction, with
+separate relative pattern loss and absolute gain terms. Concept 4G.1
+provides bounded analytic pattern behavior, but it does not provide a
+measured 140 GHz aperture, array codebook, or beamforming model. The
+diagnostic must report those limitations rather than infer a 3D array
+response.</p>
+<h2 id="8-tetm-basis">8. TE/TM basis</h2>
+<p>For incident direction <code>k_i=normalize(S-Tx)</code> and normal
+<code>n</code>, the incidence plane is <code>span(k_i,n)</code>. A
+deterministic basis is:</p>
+<pre class="text"><code>s / TE = normalize(cross(n, k_i))
+p / TM = normalize(cross(s, k_i))</code></pre>
+<p>The sign convention is arbitrary but must be stable. At normal
+incidence the plane is not unique; select a documented projected ENU
+axis and note that TE/TM amplitudes are equal. An arbitrary polarization
+vector must be decomposed against this basis and transported across
+reflection; the smallest honest first scope requires explicit TE or
+TM.</p>
+<h2 id="9-facade-plane-assumptions">9. Facade-plane assumptions</h2>
+<p>A 2D building footprint edge supplies a horizontal tangent and a
+candidate horizontal normal. It does not prove a physical vertical wall
+plane, a base elevation, a trusted top elevation, a setback, an
+overhang, an opening/window plane, a material surface, a thickness, or a
+roughness spectrum.</p>
+<p>Treating an edge as a facade therefore requires an explicit
+declaration that it is an exterior wall line, vertical and locally
+straight over the relevant Fresnel zone, with a selected reflecting side
+and a known or declared vertical extent. The current loader also retains
+outer rings only and does not retain hole boundaries as facade
+semantics.</p>
+<h2 id="10-normal-orientation">10. Normal orientation</h2>
+<p>Project the ring to local ENU metres and calculate signed shoelace
+area. For an exterior ring with positive (CCW) area, the outward normal
+of edge <code>(dx,dy)</code> is <code>(dy,-dx)</code>; for a negative
+(CW) exterior ring it is <code>(-dy,dx)</code>. Validate the result
+against an interior point and reject ambiguous or degenerate rings.</p>
+<p>Holes are not exterior facade segments. MultiPolygon components are
+tested independently. The test-only audit fixture covers clockwise and
+counter-clockwise rings and keeps holes/multipart behavior explicit; no
+production geometry loader is changed here.</p>
+<h2 id="11-vertical-reflection-point">11. Vertical reflection point</h2>
+<p>For a vertical facade, mirroring changes horizontal position but
+preserves the mirrored source <code>z</code>. The three-dimensional line
+intersection produces <code>S.z</code>; the candidate is valid only
+if:</p>
+<pre class="text"><code>base_z ≤ S.z ≤ top_z</code></pre>
+<p>with both bounds trusted or explicitly declared. If height is
+missing, return <code>vertical_extent_status=unknown</code>. The current
+display fallback of 9 m is never accepted as proof.</p>
+<h2 id="12-finite-segment-and-height-checks">12. Finite segment and
+height checks</h2>
+<p>The infinite-plane intersection is insufficient. The horizontal
+segment parameter must satisfy <code>[0,1]</code>; otherwise return
+<code>specular_point_outside_facade_segment</code>. A known height must
+similarly contain <code>S.z</code>; otherwise return
+<code>specular_point_outside_vertical_extent</code>. The controlled
+derivation includes:</p>
+<ul>
+<li>A: normal incidence;</li>
+<li>B: oblique reflection;</li>
+<li>C: point outside the segment;</li>
+<li>D: wall too short vertically;</li>
+<li>E: unknown wall height;</li>
+<li>H: TE/TM contrast;</li>
+<li>I: zero reflection;</li>
+<li>J: high reflection.</li>
+</ul>
+<p>F and G are independent-leg obstruction fixtures described in the
+derivation artifact and are reserved for the same audit-only visibility
+harness; neither is a production path implementation.</p>
+<h2 id="13-two-leg-visibility">13. Two-leg visibility</h2>
+<p>Check both <code>Tx→S</code> and <code>S→Rx</code> independently
+using deterministic 4F.1-style interval and grazing semantics. The
+reflecting building may be exempted only at the endpoint <code>S</code>.
+A positive-length penetration behind <code>S</code>, a non-endpoint
+tangent/grazing contact, or an unrelated building crossing either leg
+blocks the candidate. Direct-path visibility is not a substitute for
+either reflected-leg test.</p>
+<p>This audit defines the visibility contract but does not add a
+production obstruction walker or reflection route.</p>
+<h2 id="14-terrain-requirement">14. Terrain requirement</h2>
+<p>Terrain affects the facade base, endpoint heights, and obstruction
+tests. The current Ankara manifest has no terrain layer, so the result
+is explicitly <code>terrain_unavailable</code>. A later controlled
+reference may use <code>flat_ground_relative_datum</code> only when the
+caller declares it; that is an assumption, not measured elevation.</p>
+<h2 id="15-roughnessspecularity-at-140-ghz">15. Roughness/specularity at
+140 GHz</h2>
+<p>At 140 GHz, <code>λ=2.1413747 mm</code>. The Rayleigh-style audit
+criterion is:</p>
+<pre class="text"><code>g = 4π σ_h / λ × sin(grazing angle)
+  = 4π σ_h / λ × cos(incidence angle)</code></pre>
+<p>The smooth reference is <code>g&lt;0.3</code>, with RMS height
+measured within the relevant first Fresnel zone. The corresponding
+approximate RMS limits are 0.0511 mm at 0°, 0.0723 mm at 45°, 0.1022 mm
+at 60°, and 0.1975 mm at 75° incidence. These are criteria, not Ankara
+measurements.</p>
+<p>RMS height alone is not enough for a diffuse partition: correlation
+length/texture, surface tilt, curvature, and construction variation may
+matter. If roughness is unknown, return
+<code>specularity_evidence=unknown</code> and qualify the result. Do not
+invent roughness from OSM building type.</p>
+<h2 id="16-diffuse-scattering-boundary">16. Diffuse-scattering
+boundary</h2>
+<p>Diffuse scattering is not implemented. It may become material when
+roughness violates the smooth-surface criterion or when the facade is
+corrugated, porous, textured, or composed of unresolved facets. A future
+diffuse model would require at least RMS height, correlation length or
+surface PSD/BRDF, finite facet dimensions, incident/observation
+geometry, and a polarization-aware or explicitly scalar model.</p>
+<p>P.1410 provides a useful separate scalar diffuse-scatter discussion
+but warns that phase and polarization are not retained; it cannot be
+added to a coherent total-power result without an explicit
+incoherent/bandwidth policy. The audit contract therefore reports
+<code>diffuse_scattering_modelled=false</code>.</p>
+<h2 id="17-reflector-size-and-fresnel-zone">17. Reflector size and
+Fresnel zone</h2>
+<p>For the image path, a first scalar Fresnel radius is:</p>
+<pre class="text"><code>r_F = sqrt(λ d1 d2 / (d1+d2))</code></pre>
+<p>At 140 GHz this gives 0.2314 m for 50/50 m, 0.3272 m for 100/100 m,
+0.4627 m for 200/200 m, 0.2121 m for 30/70 m, and 0.1388 m for 10/90 m.
+The real footprint is an angle-dependent elliptical/phase zone. A future
+diagnostic should compare known facade segment and vertical extent with
+the relevant zone and qualify finite-edge cases; it should not invent a
+universal minimum surface area.</p>
+<h2 id="18-far-field-assumptions">18. Far-field assumptions</h2>
+<p>P.525’s spherical-wave <code>1/r</code> behavior and the
+geometric-optics plane-wave coefficient require an appropriate distance
+regime. For a physical antenna aperture <code>D</code>, a standard bound
+is approximately <code>R_ff=2D²/λ</code>. At 140 GHz the bounds are 9.34
+m for <code>D=0.1 m</code>, 37.36 m for <code>D=0.2 m</code>, and 84.06
+m for <code>D=0.3 m</code>.</p>
+<p>If physical aperture is unknown, antenna far-field validity cannot be
+proven. Gain must not be reverse-engineered into an aperture unless that
+is an explicit controlled bound. The facade must also be locally planar
+and sufficiently extended; curvature is a separate gate.</p>
+<h2 id="19-atmospheric-composition">19. Atmospheric composition</h2>
+<p>The 4I.2A specific-loss ledger can be applied to a later reflected
+reference only as a separately declared path component. Integrate leg 1
+and leg 2 independently:</p>
+<pre class="text"><code>A_atm_total = A_leg1 + A_leg2</code></pre>
+<p>For homogeneous conditions this equals the specific attenuation times
+<code>d1+d2</code>; for variable profiles, each leg needs its own path
+integration. The direct Tx–Rx atmospheric ledger must not be silently
+reused for a broken path. No atmospheric integration is added in
+4I.5A.</p>
+<h2 id="20-p1411-separation">20. P.1411 separation</h2>
+<p>P.1411’s statistical median/basic-transmission-loss family and a
+deterministic single-bounce facade path are alternative model branches.
+The statistical measurement basis may already contain reflection and
+multipath effects. A future UI may show side-by-side values, but must
+not add a deterministic reflected path to a P.1411 median without
+calibration evidence.</p>
+<h2 id="21-p526-separation">21. P.526 separation</h2>
+<p>P.526 diffraction remains an alternative mechanism. Do not add a
+P.526 diffraction loss to the same isolated reflected ray. A total urban
+multipath model would need a separate field-based mechanism that owns
+both paths and their phase/coherence rules; that is explicitly outside
+4I.5B’s first scope.</p>
+<h2 id="22-coherent-multipath-limitation">22. Coherent-multipath
+limitation</h2>
+<p>If direct and reflected paths are combined, the correct expression
+is:</p>
+<pre class="text"><code>E_total = E_direct + E_reflected</code></pre>
+<p>not a power sum. It requires path-length phase, reflection phase,
+antenna phase, polarization vectors, spatial coherence, and bandwidth
+averaging. At 140 GHz, a 1 mm path error changes phase by approximately
+168.1°. A 1 GHz bandwidth has a free-space coherence-length scale of
+about 0.3 m, but averaging is not automatic.</p>
+<p>This is a stop for canonical coherent multipath. The first safe
+architecture is an isolated <code>reflected_path_reference_power</code>
+result.</p>
+<h2 id="23-controlled-140-ghz-derivation">23. Controlled 140 GHz
+derivation</h2>
+<p>The full hand-checkable fixture uses:</p>
+<pre class="text"><code>facade: x=0, outward normal +x, exterior x&gt;0
+segment: y∈[-10,10] m, z∈[0,20] m
+Tx: (50,-50,10) m
+Rx: (50,50,10) m
+f: 140 GHz, Pt=30 dBm, isotropic Tx/Rx, no other losses
+material: user-declared lossless semi-infinite εr=4, air incident medium</code></pre>
+<p>The mirrored Tx is <code>(-50,-50,10)</code>, so
+<code>S=(0,0,10)</code>, <code>d1=d2=70.710678 m</code>,
+<code>L=141.421356 m</code>, and both angles are 45°. P.525 spreading is
+118.380644 dB. The rejected two-FSPL sum is 224.720088 dB.</p>
+<p>For TE, <code>Γ=-0.4514162296451364</code>,
+<code>|Γ|²=0.20377661238703051</code>, reflection loss is
+6.9084566181195415 dB, and the isolated reference received power is
+-95.28910051020749 dBm. For TM, <code>Γ=0.20377661238703063</code>,
+<code>|Γ|²=0.04152490775593412</code>, reflection loss is
+13.81691323623908 dB, and the isolated reference received power is
+-102.19755712832702 dBm.</p>
+<p>This controlled material is not a calibrated Ankara facade and the
+result is not direct-plus-reflected power.</p>
+<h2 id="24-ankara-readiness">24. Ankara readiness</h2>
+<p>The current pack contains 161,784 loader-visible footprints and
+936,651 outer-ring segments. Only 6,074 footprints (3.75%) have observed
+or levels-derived height evidence, covering 49,137 segments (5.25%).
+Material tags are absent; thickness, roughness, terrain, surveyed facade
+planes, and morphology/rooftop relations are absent.</p>
+<p>An audit-only sample of six known towers, 72 full-azimuth rays each,
+and 400 m radius found 6,368 mathematical finite-edge image
+intersections across 430 of 432 paths and 2,113 footprint IDs. Only 777
+candidates had height evidence under a declared flat relative datum;
+zero were terrain-anchored and zero had material evidence.</p>
+<p>These counts are readiness evidence only. They are not viable
+reflected links, coverage, or specularity evidence. The details and
+reproducible command are in <a
+href="concept-4i5a-ankara-readiness.json">the readiness JSON</a>.</p>
+<h2 id="25-measurement-requirements">25. Measurement requirements</h2>
+<p>A reflection campaign intended to promote the reference would need,
+per observation:</p>
+<ul>
+<li>exact Tx/Rx coordinates and heights, time, orientation, and
+coordinate uncertainty;</li>
+<li>facade segment coordinates, plane normal, base/top height,
+curvature/setback, and reflector extent;</li>
+<li>material identity, layer stack, thickness, moisture/state, and
+electrical-property provenance;</li>
+<li>RMS roughness within the relevant Fresnel zone plus
+texture/correlation information;</li>
+<li>Tx/Rx antenna patterns, apertures, boresight, beam
+direction/codebook state, polarization, and cable/system
+calibration;</li>
+<li>carrier frequency, bandwidth, waveform, phase reference, dynamic
+range, and averaging policy;</li>
+<li>direct-path suppression or spatial/temporal separation method, with
+a measured reflected-path power quantity definition;</li>
+<li>weather and atmospheric state sufficient for a separate
+P.676/P.838/P.840 path ledger;</li>
+<li>repeated angles/distances and spatial holdouts so a material/facade
+result is not fit and evaluated on the same sample.</li>
+</ul>
+<p>No campaign is invented by this audit. The existing 4I.3 validation
+foundation is the appropriate place for its versioned evidence once
+measurements exist.</p>
+<h2 id="26-4i5b-gono-go-decision">26. 4I.5B go/no-go decision</h2>
+<p>Decision: <strong>GO with hard gates for an isolated reference-only
+diagnostic; NO for canonical or network-coupled reflected
+propagation.</strong></p>
+<p>The path-spreading equation is unambiguous for the declared
+ideal-planar branch, and P.2040 <code>Γ</code> composes cleanly once in
+field/power form. The model is useful as an inspectable reference when
+facade geometry and material inputs are explicit. It is not ready to
+auto-populate from the current Ankara pack.</p>
+<p>The following remain hard stops: missing finite facade evidence,
+fallback-only height, unknown terrain when terrain matters, unknown
+material/thickness for the selected mode, unknown roughness when a
+specular claim is made, unproven two-leg visibility, missing TE/TM
+basis, and any request to produce direct-plus-reflected coherent network
+power.</p>
+<h2 id="27-proposed-4i5b-contract-if-promoted">27. Proposed 4I.5B
+contract if promoted</h2>
+<pre class="text"><code>model_id: single_bounce_specular_reflection_reference_v1
+status: opt-in, reference_only
+scope: one planar vertical facade, one finite segment, one reflected path
+inputs: Tx/Rx ENU positions and heights, facade point/normal/segment/base/top,
+        explicit interface or slab material contract, incidence polarization TE/TM,
+        antenna direction/pattern inputs, terrain/flat-datum declaration
+geometry: image-method S, d1, d2, L with finite segment and height gates
+spreading: P.525 FSPL(L) / image-source field
+material: one P.2040 complex field coefficient, |Γ|² once in power
+visibility: independent Tx→S and S→Rx checks with endpoint exemption only
+output: isolated reflected_path_reference_power plus applicability/reason ledger
+excluded: diffuse scattering, curvature solver, multi-bounce paths, direct+reflected
+          coherent sum, P.1411/P.526 addition, 80 dB heuristic addition,
+          automatic OSM material inference, network/optimizer coupling</code></pre>
+<p>The first implementation should reject or qualify missing evidence
+rather than substitute generic values.</p>
+<h2 id="28-invariance-validation">28. Invariance validation</h2>
+<p>The required exact invariance set is:</p>
+<ol type="1">
+<li>2.6 GHz canonical propagation;</li>
+<li>28 GHz canonical propagation;</li>
+<li><code>research_sub_thz</code> 140 GHz dispatch and 80 dB/event
+heuristic;</li>
+<li>4I.2A atmospheric reference;</li>
+<li>4I.2B P.1411 reference;</li>
+<li>4I.3 measurement validation;</li>
+<li>4I.4 material/slab reference;</li>
+<li>P.526 diagnostic;</li>
+<li>building entry;</li>
+<li>interference;</li>
+<li>radio quality;</li>
+<li>4H.2 optimizer and Pareto outputs.</li>
+</ol>
+<p>4I.5A changes only documentation, generated reference-page metadata,
+changelog/index text, and a test-only audit harness. No production RF
+file is changed by this concept.</p>
+<h2 id="29-files-changed">29. Files changed</h2>
+<p>New audit artifacts:</p>
+<ul>
+<li><code>docs/concept-4i5a-pre-change-baseline.json</code></li>
+<li><code>docs/concept-4i5a-reflection-audit.md</code></li>
+<li><code>docs/concept-4i5a-reflection-applicability.json</code></li>
+<li><code>docs/concept-4i5a-controlled-derivation.json</code></li>
+<li><code>docs/concept-4i5a-ankara-readiness.json</code></li>
+<li><code>backend-go/raytracer/concept_4i5a_reflection_audit_test.go</code>
+(test-only geometry/readiness fixtures)</li>
+</ul>
+<p>Documentation registration, if generated, is limited to the
+reference-page build list, documentation index/changelog, and generated
+HTML/search artifacts. No production evaluator, route, UI control, or RF
+engine is added.</p>
+<h2 id="30-remaining-scientific-limitations">30. Remaining scientific
+limitations</h2>
+<p>This audit does not establish facade curvature, finite-aperture
+physical optics, edge diffraction, diffuse BRDF, multilayer/moisture
+variability, measured 140 GHz antenna phase, spatial coherence, or
+Ankara material transferability. It does not establish that a footprint
+edge is a physical reflector, and it does not convert sparse OSM/levels
+height tags into surveyed wall geometry.</p>
+<p>The conclusion is therefore intentionally bounded: 4I.5B is
+scientifically defensible only as a separately labeled, evidence-gated,
+single reflected-path reference with explicit facade/material geometry.
+It must remain outside canonical propagation,
+<code>research_sub_thz</code>, P.1411, P.526, atmosphere, building
+entry, interference, radio quality, and optimization until independent
+validation justifies any broader composition.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

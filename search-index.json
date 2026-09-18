@@ -263,7 +263,7 @@
       "page": "API Reference",
       "title": "Response Format",
       "url": "./api.html#response-format",
-      "text": "Most responses are JSON . Explicit GIS export representations use GeoJSON, CSV, or GeoTIFF as documented below: GET /healthz returns a liveness status object GET /readyz returns dependency readiness GET /api/meta returns application, default propagation model catalog, RF semantic contract, capability matrix, and active dataset identity GET /api/datasets returns installed packs and the active manifest ID GET /api/buildings and GET /api/towers return raw GeoJSON; bounded clients should prefer /api/collections/buildings/items GET /api/collections/buildings/items returns viewport-bounded building GeoJSON or CSV POST /api/analyze-sector returns { simulation, coverage_gaps } from one shared ray-profile computation POST /api/path-profile returns an inspectable 2.5D vertical profile, geometric/Fresnel evidence, an obstruction ledger, a P.526-aligned diffraction diagnostic, and an alternative canonical UMa comparison POST /api/coverage-surface returns a compact regular raster, isolines, statistics, and model assumptions, or an export representation POST /api/simulate returns { geojson, stats, rf_profile, rf_contract } POST /api/coverage-gaps returns { geojson, stats, rf_contract } POST /api/building-entry-analysis returns one batched, RF-derived facade-entry estimate for the selected buildings and cells POST /api/interference returns { geojson, demand_geojson, stats, model } , with defaults, effective profiles, per-cell finite interference horizons, and threshold metadata in model POST /api/optimize-azimuth returns { optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, rf_contract } POST /api/recommend-sites returns a baseline plus ranked candidate records and GeoJSON POST /api/measurements/evaluate returns residual GeoJSON, subgroup diagnostics, uncertainty, and spatially validated bias guidance /api/processes/batch-experiment and /api/jobs/{jobID} expose asynchronous experiment execution, progress, results, and cancellation Error responses use a simple object with an error message."
+      "text": "Most responses are JSON . Explicit GIS export representations use GeoJSON, CSV, or GeoTIFF as documented below: GET /healthz returns a liveness status object GET /readyz returns dependency readiness GET /api/meta returns application, default propagation model catalog, RF semantic contract, capability matrix, and active dataset identity GET /api/datasets returns installed packs and the active manifest ID GET /api/buildings and GET /api/towers return raw GeoJSON; bounded clients should prefer /api/collections/buildings/items GET /api/collections/buildings/items returns viewport-bounded building GeoJSON or CSV POST /api/analyze-sector returns { simulation, coverage_gaps } from one shared ray-profile computation POST /api/path-profile returns an inspectable 2.5D vertical profile, geometric/Fresnel evidence, an obstruction ledger, a P.526-aligned diffraction diagnostic, and an alternative canonical UMa comparison POST /api/sub-thz-reference returns the opt-in, non-canonical sub_thz_atmospheric_reference_v1 ledger with P.525-5 FSPL, optional P.676-13 gas, optional P.838-3 rain, optional local-fog P.840-9 sensitivity, obstruction metadata, and an optional reference-only link budget POST /api/sub-thz-material-reference returns the isolated p2040_material_slab_reference_v1 ledger with explicit complex material properties, TE/TM coefficients, slab power fractions, applicability, numeric state, and a separate 80 dB comparison POST /api/sub-thz-reflection-reference returns the isolated single_bounce_specular_reflection_reference_v1 image-source geometry, TE/TM P.2040 coefficient, two-leg visibility, finite-facade evidence, and reflected-path link-budget ledger POST /api/sub-thz-validation returns isolated measurement-campaign validation, common-sample model comparisons, constant-bias diagnostics, deterministic holdouts, and readiness gates POST /api/coverage-surface returns a compact regular raster, isolines, statistics, and model assumptions, or an export representation POST /api/simulate returns { geojson, stats, rf_profile, rf_contract } POST /api/coverage-gaps returns { geojson, stats, rf_contract } POST /api/building-entry-analysis returns one batched, RF-derived facade-entry estimate for the selected buildings and cells POST /api/interference returns { geojson, demand_geojson, stats, model } , with defaults, effective profiles, per-cell finite interference horizon"
     },
     {
       "page": "API Reference",
@@ -324,6 +324,36 @@
       "title": "Analyze A 2.5D Path Profile",
       "url": "./api.html#analyze-a-25d-path-profile",
       "text": "Endpoint : POST /api/path-profile { \"transmitter\" : { \"lon\" : 32.8541 , \"lat\" : 39.9208 }, \"receiver\" : { \"lon\" : 32.861 , \"lat\" : 39.924 }, \"sample_spacing_m\" : 10 , \"model_profile\" : \"urban-short-range\" , \"azimuth\" : 45 , \"rf_profile\" : { \"network_tech\" : \"5g\" , \"frequency_ghz\" : 28 , \"antenna_height_m\" : 30 , \"receiver_height_m\" : 1.5 }, \"fidelity\" : { \"building_loss_mode\" : \"screen-diffraction\" , \"diffraction_model\" : \"single-knife-edge\" , \"default_wall_material\" : \"concrete\" , \"clutter_specific_attenuation_db_per_km\" : 0 , \"vegetation_depth_m\" : 0 , \"vegetation_specific_attenuation_db_per_m\" : 0 , \"gas_specific_attenuation_db_per_km\" : 0 , \"rain_specific_attenuation_db_per_km\" : 0 , \"shadow_sigma_db\" : 6 } } The response contains sampled terrain/building elevations, endpoint height above ground, geometric LOS, separate 60% Fresnel evidence, a complete entry/exit obstruction ledger, the P.526-aligned p526-single-edge-v1 diagnostic, canonical UMa comparison where applicable, component losses, P50 and shadow-sensitivity bounds, and an applicability statement. The diagnostic requires explicit or levels-derived obstruction height; generic fallback-height candidates return obstruction_height_unavailable . It carries rf_contract.model_id: \"path-profile-diagnostic-v1\" to make the isolated scope explicit; canonical UMa NLOS and FSPL plus explicit diffraction are alternative calculations and are never summed. It does not alter canonical network RF. terrain-profile accepts 0.03–6 GHz, urban-short-range accepts 0.3–100 GHz, and research-sub-thz is explicitly outside those ITU-R profile ranges; a 140 GHz knife-edge result is mathematical research diagnostic only. COG/GeoTIFF support is limited to north-up EPSG:4326, one-band integer/float samples, none/DEFLATE compression, and supported integer predictors. The response lists these limitations."
+    },
+    {
+      "page": "API Reference",
+      "title": "Evaluate the Sub-THz Atmospheric Reference",
+      "url": "./api.html#evaluate-the-sub-thz-atmospheric-reference",
+      "text": "Endpoint : POST /api/sub-thz-reference This is a separate, opt-in, non-canonical reference endpoint. It requires explicit transmitter and receiver coordinates/heights and explicit atmosphere values when gas is enabled. Rain and local fog are disabled unless their blocks are enabled. The response reports sub_thz_atmospheric_reference_v1 , a deterministic fingerprint, P.525 wavelength-form FSPL, separate P.676 oxygen/water/dry-continuum terms, P.838 rain coefficients and path loss, P.840 local-fog coefficient and path loss, total composition, component applicability, assumptions, limitations, and double-counting boundaries. { \"frequency_ghz\" : 140 , \"transmitter\" : { \"lon\" : 32.8541 , \"lat\" : 39.9208 , \"height_m\" : 25 }, \"receiver\" : { \"lon\" : 32.861 , \"lat\" : 39.924 , \"height_m\" : 1.5 }, \"atmosphere\" : { \"enabled\" : true , \"pressure_hpa\" : 1013.25 , \"temperature_k\" : 288.15 , \"water_vapour_density_g_m3\" : 7.5 }, \"rain\" : { \"enabled\" : false }, \"local_fog\" : { \"enabled\" : false } } The optional link_budget block calculates a reference received power from explicit conducted TX power, TX/RX gains, pattern/system/polarization losses, and calibration. It does not apply receiver sensitivity or serviceability. Building intersections are flagged when the active dataset is available, but no wall, material, diffraction, or roof-screen loss is added. See Concept 4I.2A and the controlled fixtures ."
+    },
+    {
+      "page": "API Reference",
+      "title": "Evaluate ITU-R P.1411-13 Table 4 Candidate Rows",
+      "url": "./api.html#evaluate-itu-r-p1411-13-table-4-candidate-rows",
+      "text": "Endpoint : POST /api/sub-thz-p1411-reference This isolated endpoint evaluates the three supported non-canonical P.1411-13 §4.1.1 Table 4 candidates: below-rooftop LoS, urban high-rise NLoS, and urban low-rise/suburban NLoS. The request must carry explicit frequency, flat Tx/Rx coordinates and heights, morphology, rooftop relation, LoS/NLoS state, and provenance. The current-frequency effective envelopes at 140 GHz are 5–500 m, 20–150 m, and 10–150 m respectively. { \"frequency_ghz\" : 140 , \"transmitter\" : { \"lon\" : 32.8541 , \"lat\" : 39.9208 , \"height_m\" : 25 }, \"receiver\" : { \"lon\" : 32.861 , \"lat\" : 39.924 , \"height_m\" : 1.5 }, \"morphology\" : \"urban_high_rise\" , \"rooftop_relation\" : \"both_below_rooftop\" , \"los_state\" : \"los\" , \"candidate_model_id\" : \"all\" , \"provenance\" : { \"frequency_ghz\" : \"user_declared\" , \"distance_m\" : \"geometry_derived\" , \"tx_height_m\" : \"user_declared\" , \"rx_height_m\" : \"user_declared\" , \"morphology\" : \"user_declared\" , \"rooftop_relation\" : \"user_declared\" , \"los_state\" : \"user_declared\" } } An unknown morphology, rooftop relation, or path state is inapplicable and has no median loss. The 25 m/1.5 m profile defaults are not rooftop evidence. The response reports the exact P.1411 median equation and intermediate terms, Table 4 sigma metadata with random_sampling: false , applicability reasons, exact wavelength-form P.525 FSPL comparison, obstruction/height evidence, limitations, and a deterministic fingerprint. P.525 is comparison-only; it is never added to the P.1411 value. The optional atmospheric_reference block requests a same-path Concept 4I.2A comparison only. The optional research_wall_event_count requests the current 140 GHz research_sub_thz comparison only. Neither alternative is summed into P.1411, and this endpoint never changes canonical simulation, coverage, interference, radio quality, building entry, or optimization. See Concept 4I.2B, the applicability contract , and the controlled fixtures ."
+    },
+    {
+      "page": "API Reference",
+      "title": "Validate Measurement Evidence and Spatial Holdouts",
+      "url": "./api.html#validate-measurement-evidence-and-spatial-holdouts",
+      "text": "Endpoint : POST /api/sub-thz-validation This isolated endpoint accepts versioned campaign JSON and evaluates a shared canonical path-loss quantity against p525_fspl , the opt-in atmospheric reference, P.1411 candidate rows, the comparison-only research_sub_thz profile, and the P.526 diagnostic when the requested evidence is meaningful. It is not connected to canonical propagation, coverage, building entry, diffraction, interference/radio quality, or optimization. The residual is always measured_path_loss_db - predicted_path_loss_db . Received-power normalization requires explicit conducted TX power, antenna gains, cable losses, calibration state, and an isotropic-equivalent or synthesized-omni basis. Directional/best-beam observations remain ambiguous without that basis. Censored observations are counted but excluded from ordinary metrics. The response includes count, mean bias, median, MAE, RMSE, standard deviation, p10/p90, strata by scenario/distance/frequency/campaign/site, residual trend diagnostics, common-sample comparisons, P.1411 sigma comparison, atmospheric availability, censored counts, a deterministic fingerprint, and a conservative readiness taxonomy. calibrate_bias fits only a constant bias on explicit deterministic calibration sets and reports stable , unstable , or insufficient_validation_data ; promoted and production_candidate are always false. See Concept 4I.3, the schema contract , and the synthetic controls ."
+    },
+    {
+      "page": "API Reference",
+      "title": "Evaluate the P.2040 Material and Facade Reference",
+      "url": "./api.html#evaluate-the-p2040-material-and-facade-reference",
+      "text": "Endpoint : POST /api/sub-thz-material-reference This is an isolated, non-canonical material/interface reference. It evaluates one finite homogeneous slab between explicitly declared incident and exit media using the current ITU-R P.2040-4 property, interface, and slab equations. It does not infer physics from OSM material tags, apply a universal thickness, estimate whole-building entry loss, extrapolate P.2109, or contribute to network simulation. { \"schema_version\" : 1 , \"frequency_ghz\" : 140 , \"material_source\" : \"p2040_reference\" , \"material_id\" : \"glass_100_400\" , \"thickness_m\" : 0.01 , \"thickness_provenance\" : \"user_declared\" , \"incidence_angle_deg\" : 0 , \"polarization\" : \"TE\" , \"incident_medium\" : { \"name\" : \"air\" , \"relative_permittivity\" : 1 , \"conductivity_s_per_m\" : 0 , \"property_source\" : \"user_declared\" }, \"exit_medium\" : { \"name\" : \"air\" , \"relative_permittivity\" : 1 , \"conductivity_s_per_m\" : 0 , \"property_source\" : \"user_declared\" } } Reference rows use their own enforced Table 3 frequency range; a row outside its range returns a 200 response with status=material_frequency_out_of_range , no slab ledger, and no extrapolated properties. User-defined materials are classified as user_assumption , retain property provenance, and must provide exactly one electrical-property form: real permittivity plus conductivity, real permittivity plus loss tangent, or real plus positive imaginary-loss magnitude. TE and TM are supported directly; horizontal/vertical labels are not silently mapped. Angle 0° is normal and grazing values are rejected. A geometry-derived angle requires reliable facade-normal provenance. The response returns model/revision citations, resolved electrical properties, material range, thickness/provenance, geometry, complex reflection/transmission coefficients, first-interface and total reflected power, transmitted and absorbed fractions, transmission loss, internal-reflection state, finite/numeric-floor state, assumptions, limitations, and a deterministic fingerprint. The historical research_sub_thz 80 dB/event heuristic appears only as a side-by-side comparison with combined=false ; it is never added to the slab result or any network result. See Concept 4I.4, the applicability contract , and the controlled fixtures ."
+    },
+    {
+      "page": "API Reference",
+      "title": "Evaluate a Single-Bounce Specular Reflection Reference",
+      "url": "./api.html#evaluate-a-single-bounce-specular-reflection-reference",
+      "text": "Endpoint : POST /api/sub-thz-reflection-reference This opt-in endpoint evaluates one explicitly declared specular reflection from one finite vertical planar facade. It is a reference-only image-source diagnostic with model_id=single_bounce_specular_reflection_reference_v1 ; it is not a propagation model and is not dispatched by canonical simulation, coverage, interference, radio quality, building entry, recommendation, or optimization. The request must provide explicit Tx/Rx positions and heights, antenna modes/gains, facade start/end and geometry provenance, a unit normal or polygon context, material source/media, TE or TM polarization, terrain mode, and conducted transmitter power. Local ENU coordinates are preferred for controlled fixtures; geographic input is transformed to a documented local metric ENU frame. Facade base/top elevations are never invented. reflection_mode is accepted as an alias for material.mode . { \"schema_version\" : 1 , \"frequency_ghz\" : 140 , \"coordinate_frame\" : { \"mode\" : \"local_enu\" }, \"tx\" : { \"position\" : { \"x\" : 50 , \"y\" : -50 , \"z\" : 10 }, \"antenna\" : { \"mode\" : \"isotropic\" , \"absolute_gain_dbi\" : 0 } }, \"rx\" : { \"position\" : { \"x\" : 50 , \"y\" : 50 , \"z\" : 10 }, \"antenna\" : { \"mode\" : \"isotropic\" , \"absolute_gain_dbi\" : 0 } }, \"facade\" : { \"start\" : { \"x\" : 0 , \"y\" : -10 , \"z\" : 0 }, \"end\" : { \"x\" : 0 , \"y\" : 10 , \"z\" : 0 }, \"plane_point\" : { \"x\" : 0 , \"y\" : 0 , \"z\" : 0 }, \"outward_normal\" : { \"x\" : 1 , \"y\" : 0 , \"z\" : 0 }, \"geometry_provenance\" : \"user_declared\" , \"normal_provenance\" : \"user_declared\" , \"height_provenance\" : \"user_declared\" , \"base_z\" : 0 , \"top_z\" : 20 }, \"material\" : { \"mode\" : \"interface\" , \"material_source\" : \"user_defined\" , \"user_material\" : { \"name\" : \"declared facade material\" , \"property_source\" : \"user_declared\" , \"relative_permittivity\" : 4 , \"conductivity_s_per_m\" : 0 }, \"incident_medium\" : { \"name\" : \"air\" , \"relative_permittivity\" : 1 , \"conductivity_s_per_m\" : 0 , \"property_source\" : \"user_declared\" }, \"exit_medium\" : { \"name\" : \"air\" , \"relative_permittivity\" : 1 , \"conductivity_s_per_m\" : 0 , \"property_source\" : \"user_declared\" } }, \"polarization\" : \"TE\" , \"terrain\" : { \"mode\" : \"flat_ground_relative_datum\" , \"provenance\" : \"user_declared\" }, \"link_budget\" : { \"pt_conducted_dbm\" : 30 } } The image construction mirrors Tx across the facade plane and intersects the mirrored Tx-to-Rx line with th"
     },
     {
       "page": "API Reference",
@@ -545,7 +575,7 @@
       "page": "System Architecture",
       "title": "Go + Gin service",
       "url": "./architecture.html#runtime-heading",
-      "text": "HTTP boundary CORS, 1 MiB body limit, readiness/liveness, JSON binding, pointer-aware defaults, and validation. RF capacity limiter Two concurrent RF requests by default; saturated requests return 429 with Retry-After. Propagation engine Sector ray sampling, FSPL, antenna gain, polygon intersections, wall loss, and segment GeoJSON. Planning engines Coverage gaps, azimuth sweep, network evaluation, network optimization, candidate recommendation, and overlap scoring. Interference engine Adaptive grid, serving-cell choice, linear power sums, RSRP, SINR, RSRQ, RSSI, and demand impact. Measurement evaluator Predicts 4G/5G RSRP at uploaded points, reports residual error, and offers holdout-tested global bias correction. Core Lab proxy 5G-only status, topology, sessions, events, and scenario requests with a 1.5 second adapter timeout."
+      "text": "HTTP boundary CORS, 1 MiB body limit, readiness/liveness, JSON binding, pointer-aware defaults, and validation. RF capacity limiter Two concurrent RF requests by default; saturated requests return 429 with Retry-After. Propagation engine Sector ray sampling, FSPL, antenna gain, polygon intersections, wall loss, and segment GeoJSON. Planning engines Coverage gaps, azimuth sweep, network evaluation, network optimization, candidate recommendation, and overlap scoring. Interference engine Adaptive grid, serving-cell choice, linear power sums, RSRP, SINR, RSRQ, RSSI, and demand impact. Measurement evaluator Predicts 4G/5G RSRP at uploaded points, reports residual error, and offers holdout-tested global bias correction. Measurement evidence ledger Isolated versioned campaigns, quantity normalization, applicability-first reference adapters, deterministic holdouts, and conservative readiness diagnostics at /api/sub-thz-validation . Core Lab proxy 5G-only status, topology, sessions, events, and scenario requests with a 1.5 second adapter timeout."
     },
     {
       "page": "System Architecture",
@@ -785,7 +815,7 @@
       "page": "Changelog",
       "title": "Added",
       "url": "./changelog.html#added",
-      "text": "Add Concept 4F.1 deterministic height-aware urban_short_range centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts. Add Concept 4F.2 p526-single-edge-v1 diffraction diagnostics with independent P.526-16 reference fixtures, known-height obstruction ledgers, deterministic roof-edge selection, canonical UMa comparison, Fresnel separation, restrained Path Profile UI, and no network/optimizer/surface/interference/building-entry coupling. Add Concept 4G.1 explicit conducted-power/EIRP semantics, absolute TX gain versus relative antenna-pattern attenuation, shared antenna evaluation, scalar RX gain and deterministic polarization-loss terms, a bounded 3GPP single-element reference preset, signed link-budget diagnostics, and compatibility regression evidence without adding array, beamforming, noise, or stochastic polarization behavior. Add Concept 4G.2 deterministic receiver noise and sensitivity foundation with manual compatibility mode, opt-in kTB -based per-cell thresholds, strict link margin and usable-reach semantics, explicit bandwidth provenance, separate building/interference behavior, UI/API/report contracts, and canonical comparison evidence without adding PHY, MCS, throughput, or UE-conformance behavior. Add Concept 4H.1 inspectable interference and radio-quality bookkeeping with raw received-carrier power, explicit serving selection, exact co-channel eligibility, linear desired/interference/noise ledgers, planning RSRP/RSRQ/SINR semantics, outage reasons, scenario fingerprints, API/report/UI diagnostics, and canonical compatibility evidence without coupling radio KPIs into optimization. Add Concept 4H.2 optional interference-aware optimization with a fixed candidate-independent radio-quality domain, denominator-complete serviceability fraction, stable utility, Pareto/reranking/explainability/report/UI integration, explicit finite-horizon and policy metadata, 2.6 GHz support, 140 GHz unavailability, canonical disabled-mode invariance, and deterministic enabled-mode evidence without hard radio constraints, MCS, scheduler, or traffic simulation."
+      "text": "Add Concept 4F.1 deterministic height-aware urban_short_range centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts. Add Concept 4F.2 p526-single-edge-v1 diffraction diagnostics with independent P.526-16 reference fixtures, known-height obstruction ledgers, deterministic roof-edge selection, canonical UMa comparison, Fresnel separation, restrained Path Profile UI, and no network/optimizer/surface/interference/building-entry coupling. Add Concept 4G.1 explicit conducted-power/EIRP semantics, absolute TX gain versus relative antenna-pattern attenuation, shared antenna evaluation, scalar RX gain and deterministic polarization-loss terms, a bounded 3GPP single-element reference preset, signed link-budget diagnostics, and compatibility regression evidence without adding array, beamforming, noise, or stochastic polarization behavior. Add Concept 4G.2 deterministic receiver noise and sensitivity foundation with manual compatibility mode, opt-in kTB -based per-cell thresholds, strict link margin and usable-reach semantics, explicit bandwidth provenance, separate building/interference behavior, UI/API/report contracts, and canonical comparison evidence without adding PHY, MCS, throughput, or UE-conformance behavior. Add Concept 4H.1 inspectable interference and radio-quality bookkeeping with raw received-carrier power, explicit serving selection, exact co-channel eligibility, linear desired/interference/noise ledgers, planning RSRP/RSRQ/SINR semantics, outage reasons, scenario fingerprints, API/report/UI diagnostics, and canonical compatibility evidence without coupling radio KPIs into optimization. Add Concept 4H.2 optional interference-aware optimization with a fixed candidate-independent radio-quality domain, denominator-complete serviceability fraction, stable utility, Pareto/reranking/explainability/report/UI integration, explicit finite-horizon and policy metadata, 2.6 GHz support, 140 GHz unavailability, canonical disabled-mode invariance, and deterministic enabled-mode evidence without hard radio constraints, MCS, scheduler, or traffic simulation. Add Concept 4I.1 read-only 140 GHz/sub-THz applicability audit with exact research_sub_"
     },
     {
       "page": "Changelog",
@@ -1326,6 +1356,900 @@
       "title": "Related references",
       "url": "./concept-4h2-radio-quality-optimization.html#related-references",
       "text": "Concept 4H.1 interference and radio quality Algorithms and RF physics Modeling limits OpenAPI contract"
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "Concept 4I.1 140 GHz Applicability Audit",
+      "url": "./concept-4i1-140ghz-audit.html",
+      "text": "A read-only audit of the 140 GHz research planning profile, authoritative reference applicability, independent atmospheric and material terms, transferability, and the future roadmap. View Markdown source System architecture Audit date: 2026-09-18 Baseline commit: d66ad902075402a2df8df413bec63e9a51059561 Decision: read-only scientific and architectural audit. No production RF equation, model dispatch, optimizer, or radio-quality behavior is changed. The machine-readable evidence is kept beside this report: pre-change baseline reference applicability audit controlled atmospheric/material/FSPL/diffraction fixtures"
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "1. Current research_sub_thz equation and heuristics",
+      "url": "./concept-4i1-140ghz-audit.html#1-current-research_sub_thz-equation-and-heuristics",
+      "text": "The runtime dispatch in propagation_model.go selects research_sub_thz for frequency_ghz >= 100 . Its applicability check only requires 100 <= f <= 300 GHz and a positive finite distance. It returns research_profile_only and does not claim standards conformance. The evaluator delegates to the legacy term helper: slant_distance = hypot(max(d_ground, 0), h_tx - h_rx) FSPL_current = 20 log10(max(slant_distance, 1 m)) + 20 log10(f_GHz) + 32.45 wall_loss = max(wall_event_count, 0) * penetration_loss(f) penetration_loss(f >= 100 GHz) = 80 dB/event total_path_loss = FSPL_current + wall_loss + antenna_pattern_attenuation The link ledger then applies the existing antenna, system, polarization, calibration, and receiver terms. research_sub_thz does not calculate an empirical sub-THz path-loss exponent, gas, rain, cloud/fog, clutter, vegetation, material interaction, reflection, scattering, or channel impulse response. It also does not consume the LOS label or building height in its numeric terms."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "2. Current 140 GHz baseline values",
+      "url": "./concept-4i1-140ghz-audit.html#2-current-140-ghz-baseline-values",
+      "text": "The baseline uses the production planning defaults with an omni/flat controlled pattern: 30 dBm conducted TX power, 25 dBi TX gain, 0 dBi RX gain, 25 m TX height, 1.5 m RX height, zero system/polarization/calibration loss, 400 m radius, and manual -115 dBm receiver sensitivity. At 10/25/50/100/200/400 m ground distance, the slant distances are 25.539186/34.311077/55.247172/102.724145/201.375892/400.689718 m. Current FSPL is 103.516702/106.081248/110.218762/115.606011/121.452710/127.428725 dB. The geometry audit is deliberately repetitive because it exposes the current behavior: Geometry input Wall events 100 m total path loss 100 m received power Clear LOS 0 115.606011 dB -60.606011 dBm Footprint NLOS 1 195.606011 dB -140.606011 dBm One boundary crossing 1 195.606011 dB -140.606011 dBm Two boundary crossings 2 275.606011 dB -220.606011 dBm Known-height blocker 1 195.606011 dB -140.606011 dBm Unknown-height blocker 1 195.606011 dB -140.606011 dBm The one-event curve is -128.516702/-131.081248/-135.218762/-140.606011/-146.452710/-152.428725 dBm across the six distances; the two-event curve is 80 dB lower. The full values and states are in the baseline artifact."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "3. Authoritative reference/version table",
+      "url": "./concept-4i1-140ghz-audit.html#3-authoritative-referenceversion-table",
+      "text": "Reference Version inspected 140 GHz status Audit use ITU-R P.525 P.525-5 (2024-11) FSPL baseline Free-space term only ITU-R P.1411 P.1411-13 (2025-09) Model-dependent Table 4 bounded candidate; other rows audited below ITU-R P.676 P.676-13 (2022-08) Applicable atmospheric term Gas sensitivity fixture ITU-R P.838 P.838-3 (2005-03) Applicable specific rain term Rain sensitivity fixture ITU-R P.837 P.837-8 (2025-09) Climate/statistics input Required for availability, not path loss itself ITU-R P.840 P.840-9 (2023-08) Applicable to 140 GHz within 1–200 GHz Cloud/fog term with geometry caveat ITU-R P.2040 P.2040-4 (2025-09) Material rows cover 140 GHz Material/interface method, not building entry ITU-R P.526 P.526-16 (2025-11) Isolated-edge math applicable Existing diagnostic only ITU-R P.2108 P.2108-1 (2021-09) Out of range at 140 GHz No clutter extrapolation ITU-R P.2109 P.2109-2 (2023-08) Out of range at 140 GHz No building-entry extrapolation ITU-R P.1238 P.1238-13 (2025-09) Indoor scope includes 140 GHz Future indoor workstream only 3GPP TR 38.901 V19.4.0 (2026-06-23) Out of range; 0.5–100 GHz No 140 GHz 3GPP claim The exact URLs, clauses, and machine-readable classifications are in the applicability artifact."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "4. 3GPP TR 38.901 applicability conclusion",
+      "url": "./concept-4i1-140ghz-audit.html#4-3gpp-tr-38901-applicability-conclusion",
+      "text": "TR 38.901 V19.4.0 remains a 0.5–100 GHz channel-model study. Its UMa/UMi formulas do not become 140 GHz models by extrapolating the frequency variable. Therefore the existing urban_short_range model must remain inapplicable at 140 GHz, and research_sub_thz must not be described as a 3GPP extension or conformance implementation."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "5. P.1411-13 clause-level applicability findings",
+      "url": "./concept-4i1-140ghz-audit.html#5-p1411-13-clause-level-applicability-findings",
+      "text": "P.1411-13’s main scope reaches 300 GHz, but its individual models are not uniformly extended to 300 GHz. The relevant clause-level outcome is: §4.1.1 Table 4 below-rooftop site-general LOS: the row covers 0.45–300 GHz and has a 5–660 m base-distance range. Its 140 GHz footnote recommends use up to 500 m for 82–159 GHz. This is a conditional candidate for 10–400 m only when both terminals and the morphology satisfy the below-rooftop site-general scenario. §4.1.1 Table 4 urban high-rise NLOS: the row covers 0.8–159 GHz and has a 20–715 m base range; its 140 GHz footnote limits the recommendation to 150 m. It is not applicable at 10 m and does not cover 200/400 m at 140 GHz. §4.1.1 Table 4 urban low-rise/suburban NLOS: the row covers 0.45–255 GHz and has a 10–250 m base range; its 140 GHz footnote limits the recommendation to 150 m. It is a conditional 10–100 m candidate, not a 200/400 m 140 GHz NLOS model. §4.2.1 Table 8 above-rooftop rows are 2.2–73 GHz for the listed LOS case and 2.2–66.5 GHz for the listed urban high-rise NLOS case. They do not support the default 25 m base station at 140 GHz. §4.1.3 street-corner and §4.3 low-height models are tied to lower-frequency measurement ranges; they are out of range at 140 GHz. §3.2 makes scene data a prerequisite: building structure and height, vegetation, and sufficiently resolved geometry are not optional details for a site-specific interpretation. This is the central audit result: P.1411 provides a bounded below-rooftop statistical lead, not a general 140 GHz arbitrary-geometry NLOS model for A.T.O.M."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "6. P.525 / FSPL findings",
+      "url": "./concept-4i1-140ghz-audit.html#6-p525--fspl-findings",
+      "text": "P.525-5 equation (5) is the physical free-space identity, and equation (6) presents the familiar logarithmic form. Using the same height-adjusted slant distances as A.T.O.M, the P.525-5 32.4 presentation is 0.05 dB below the project’s 32.45 rounded constant at every distance. That difference is immaterial to the audit, but it is recorded rather than silently calling the project constant exact. P.525 supplies no urban building, rooftop, clutter, material, or NLOS term. It is a valid base term for a future componentized model and cannot justify the current 80 dB event or a 140 GHz urban coverage claim."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "7. P.676 gaseous attenuation findings",
+      "url": "./concept-4i1-140ghz-audit.html#7-p676-gaseous-attenuation-findings",
+      "text": "Using the P.676-13 line-by-line equations at 140 GHz, 15 °C, 1013 hPa, and controlled water-vapour densities of 3.5/7.5/15 g/m³ gives total specific attenuation of 0.379049/0.867224/1.998286 dB/km. At the middle case, gas contributes 0.086722 dB over 100 m and 0.346890 dB over 400 m. Oxygen is only about 0.017761 dB/km in that case; water vapour dominates. The term is not zero, but it is much smaller than the current 80 dB event over the audited distances. A future implementation would need explicit pressure, temperature, humidity/water-vapour density or vertical profile, and a declared terrestrial path integration rule. It must not be added to an empirical model without checking whether that model already reflects atmospheric conditions."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "8. P.838 rain findings",
+      "url": "./concept-4i1-140ghz-audit.html#8-p838-rain-findings",
+      "text": "At 140 GHz, circular-equivalent polarization, and a horizontal-path controlled example, P.838-3 gives gamma_R = 1.561638 R^0.651858 dB/km. Raw short-path attenuation at 25 mm/h is 1.273031 dB over 100 m and 5.092122 dB over 400 m; at 50 mm/h it is 2.000173/8.000693 dB. These are specific-attenuation path values, not annual outage predictions. Rain availability needs an effective terrestrial path-length/reduction treatment and a climate/rate distribution. P.838 alone does not provide Ankara annual percentages, and research_sub_thz currently supplies neither rain rate nor reduction factor."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "9. P.837 climatology requirements",
+      "url": "./concept-4i1-140ghz-audit.html#9-p837-climatology-requirements",
+      "text": "P.837-8 supplies 1-minute rain-rate statistics and methods for deriving them from maps or local measurements. A defensible annual or percentage-time 140 GHz result would need Ankara location/climate data, time percentage, local gauge quality or map provenance, and a path reduction/availability convention. The current project has no automatic meteorological ingest; a user-entered deterministic rain rate can only be a controlled sensitivity scenario."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "10. P.840 cloud/fog findings",
+      "url": "./concept-4i1-140ghz-audit.html#10-p840-cloudfog-findings",
+      "text": "At 140 GHz and 15 °C, the P.840 double-Debye coefficient is approximately 6.967800 dB/km per g/m³ of liquid water. Controlled local-fog examples of 0.05 and 0.5 g/m³ therefore give 0.034839/0.348390 dB over 100 m and 0.139356/1.393560 dB over 400 m. P.840 is principally an Earth-space slant-path recommendation using integrated cloud liquid water. Those horizontal numbers are a transparent local-fog sensitivity calculation, not a license to apply a vertical cloud column to every urban link. A future terrestrial implementation needs local liquid-water density/path geometry and must keep cloud/fog separate from gas and rain."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "11. P.2040 material findings",
+      "url": "./concept-4i1-140ghz-audit.html#11-p2040-material-findings",
+      "text": "P.2040-4 Table 3 contains indicative high-frequency material rows covering 140 GHz for concrete, brick, wood, glass, and other materials. Annex 1 equations (39)–(44) require complex electrical properties, thickness/layer structure, incidence angle, polarization, and interface geometry. The independent normal-incidence single-slab fixtures illustrate the scale sensitivity: 20 cm concrete is about 453.4 dB, 20 cm brick about 225.0 dB, 10 cm wood about 97.8 dB, and 1 cm glass about 8.6 dB under the selected rows. These are plane-wave slab transmission results without free-space spreading and are not building-entry predictions. They show why a material label or one universal 80 dB event is insufficient. Metal has no 140 GHz Table 3 material row in this reference, and the listed ranges are indicative measurement ranges, not a universal guarantee for every construction product. P.2040 is therefore a future material/interface foundation, not a current production substitution."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "12. P.2108 clutter conclusion",
+      "url": "./concept-4i1-140ghz-audit.html#12-p2108-clutter-conclusion",
+      "text": "P.2108-1 is out of range at 140 GHz: its terrestrial terminal-in-clutter route ends at 67 GHz and its Earth-space/aeronautical route ends at 100 GHz. It must not be extrapolated. Its double-counting guidance is still architecturally useful: if a future path model already contains whole-path clutter, a separate clutter loss must not be attached again."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "13. P.2109 building-entry conclusion",
+      "url": "./concept-4i1-140ghz-audit.html#13-p2109-building-entry-conclusion",
+      "text": "P.2109-2 estimates building entry loss only to 100 GHz. It is out of range at 140 GHz, so it cannot support the current research_sub_thz wall event or a future 140 GHz facade-entry claim. P.2040 may supply a component-level material calculation, but an aggregate 140 GHz building-entry distribution needs measurements covering the relevant facade types, thicknesses, angles, moisture, and antenna geometry."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "14. P.526 diffraction conclusion",
+      "url": "./concept-4i1-140ghz-audit.html#14-p526-diffraction-conclusion",
+      "text": "The existing diffraction_diagnostic.go correctly remains a separate diagnostic. P.526-16 equation (26) gives the signed knife-edge parameter and equation (31) gives the project’s approximation for v > -0.78 . At 140 GHz, a 50 m/50 m path has a 2.141 mm wavelength: a 1 m edge above the LOS gives v = 6.112216 and about 28.560751 dB diagnostic loss. That result is mathematically useful and frequency-sensitive, but it assumes an isolated known edge. P.526 does not turn unknown-height footprint intersections, roof reflection, multiple edges, scattering, or urban canyon multipath into a canonical 140 GHz model. The diagnostic must never be summed with the 80 dB wall heuristic or a future P.1411/measurement NLOS model."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "15. Current 80 dB wall-heuristic assessment",
+      "url": "./concept-4i1-140ghz-audit.html#15-current-80-db-wall-heuristic-assessment",
+      "text": "The current rule is a historical conservative planning heuristic: 80 dB per footprint event at f >= 100 GHz , cumulative across events, material-agnostic, and not tied to P.2040 or P.2109. It is useful as a visible compatibility envelope because it makes blocked 140 GHz paths clearly non-serviceable, but it is not physically calibrated. The controlled comparison is decisive: one event is 80 dB, while the selected P.2040 slab examples span about 8.6–453.4 dB. Even those values are not directly comparable to building entry because they omit façade geometry and whole-building path statistics. The correct classification is “unvalidated conservative heuristic,” not “140 GHz penetration loss.”"
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "16. Antenna assumptions at 140 GHz",
+      "url": "./concept-4i1-140ghz-audit.html#16-antenna-assumptions-at-140-ghz",
+      "text": "The production profile defaults to 25 dBi absolute TX gain and 0 dBi scalar RX gain. It uses analytic ideal-sector / flat patterns by default; the controlled baseline uses omni / flat to isolate propagation. The evaluator applies a simple height-adjusted slant distance and relative pattern attenuation. It does not model a measured 140 GHz pattern, physical aperture, array factor, codebook, beam squint, pointing error, blockage-induced beam loss, or frequency-dependent calibration. At 140 GHz, antenna aperture and beam alignment are first-order channel assumptions. The present gain/pattern fields are valid planning inputs but are not evidence that a practical 140 GHz array or link budget has been validated."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "17. Receiver assumptions at 140 GHz",
+      "url": "./concept-4i1-140ghz-audit.html#17-receiver-assumptions-at-140-ghz",
+      "text": "The baseline carries a 1 GHz configured bandwidth, 7 dB noise figure, 3 dB required SNR, 0 dB receiver margin, and the existing manual -115 dBm receiver sensitivity. These values are deterministic application defaults, not a 140 GHz receiver specification. The current propagation result exposes a threshold and link margin, but no sub-THz front-end, implementation loss, phase-noise, ADC, coding, MCS, or UE orientation model exists. The receiver assumptions must therefore remain visibly separate from propagation applicability. A future 140 GHz model needs a device/link budget with bandwidth, noise figure, implementation margin, antenna gain, and sensitivity provenance matched to the measurement hardware."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "18. Radio-quality unsupported-state confirmation",
+      "url": "./concept-4i1-140ghz-audit.html#18-radio-quality-unsupported-state-confirmation",
+      "text": "The existing radio-quality contract marks the 140 GHz research profile as unsupported_radio_quality_model in radio_quality_contract.go . Concept 4H.2 already treats 140 GHz research_sub_thz as unavailable for the radio-quality objective. This audit does not add RSRP/RSRQ/SINR, throughput, scheduler, PHY, or UE semantics at 140 GHz."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "19. Peer-reviewed 100–200 GHz measurement survey",
+      "url": "./concept-4i1-140ghz-audit.html#19-peer-reviewed-100200-ghz-measurement-survey",
+      "text": "Useful evidence exists, but it is scenario-specific: Xing and Rappaport’s IEEE ICC 2021 140/142 GHz urban-microcell campaign supplies directional and synthesized omnidirectional LOS/NLOS models and foliage measurements in downtown Brooklyn, at roughly 100 m terrestrial scale with some configurations reported around 117 m. It is strong evidence for measurement-backed profiles, not an Ankara-wide coefficient. Shakya et al.’s IEEE TAP 2024 comparison at 142, 73, and 28 GHz covers outdoor open squares and streets in Brooklyn/Manhattan, with 142 GHz links around 24–117 m. It is valuable cross-frequency and morphology evidence, but not a 400 m arbitrary-NLOS model. De Beelde et al.’s IEEE WCL 2022 D-band study spans 120–165 GHz and reports LOS/NLOS angular loss, angular spread, and facade reflection behavior for fixed-wireless-access scenarios. It supplies mechanism priors and hardware/geometry lessons rather than Ankara coefficients. Sun et al.’s Sensors 2022 D-band measurement study covers 138–163.2 GHz and 100–800 m clear-weather LOS road/campus links. It is a useful 100/200/400 m scale comparison, but narrow-beam LOS conditions do not transfer to footprint NLOS. Ju et al.’s 142 GHz spatial-consistency measurements provide a short outdoor route with 3 m receiver spacing. They support future spatial-correlation work, not a universal path-loss term."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "20. Ankara transferability assessment",
+      "url": "./concept-4i1-140ghz-audit.html#20-ankara-transferability-assessment",
+      "text": "Transferability is low without a campaign matched to Ankara’s building morphology, roof heights, street widths, façade materials, vegetation, terrain, antenna heights, beam patterns, weather, and route sampling. Brooklyn/Manhattan open-street results can motivate a hypothesis; they cannot validate a default for Ankara footprints with unknown heights and a 25 m transmitter. The P.1411 data requirements reinforce this boundary. A future site-specific 140 GHz study should preserve high-resolution geometry and height provenance, stratify by morphology, and use spatial holdout locations. Randomly mixing nearby samples would overstate transferability because sub-THz shadowing and beam visibility are spatially correlated."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "21. 10–400 m mechanism-magnitude comparison",
+      "url": "./concept-4i1-140ghz-audit.html#21-10400-m-mechanism-magnitude-comparison",
+      "text": "Term / controlled condition 10 m 100 m 400 m Interpretation 140 GHz current FSPL with default height 103.517 dB 115.606 dB 127.429 dB Production base term P.676 gas, 7.5 g/m³ water vapour 0.009 dB 0.087 dB 0.347 dB Small but explicit P.838 rain, 25 mm/h 0.127 dB 1.273 dB 5.092 dB Raw, unreduced path value P.840 thick local fog, 0.5 g/m³ 0.035 dB 0.348 dB 1.394 dB Horizontal sensitivity interpretation One current wall event 80 dB 80 dB 80 dB Distance-independent heuristic Two current wall events 160 dB 160 dB 160 dB Cumulative heuristic P.526 1 m isolated edge, 50 m + 50 m geometry — 28.561 dB at the specified geometry — Diagnostic, not a distance curve P.2040 material transmission is interaction-dominated rather than a smooth distance term: the selected illustrative 1 cm glass slab is 8.556 dB while 20 cm concrete is 453.398 dB. Thickness and construction details dominate."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "22. 28 GHz versus 140 GHz controlled comparison",
+      "url": "./concept-4i1-140ghz-audit.html#22-28-ghz-versus-140-ghz-controlled-comparison",
+      "text": "At the same height-adjusted distances, project FSPL is 13.9794 dB higher at 140 GHz than at 28 GHz, exactly 20 log10(140/28) . At 100 m, the controlled project FSPL values are 101.626611 dB at 28 GHz and 115.606011 dB at 140 GHz. The existing 28 GHz UMa LOS fixture is 101.199956 dB at 100 m because it is an empirical UMa formula, not the legacy FSPL term. The difference in model confidence is more important than the 13.98 dB frequency delta: 28 GHz has a bounded urban_short_range subset with explicit 3GPP-derived applicability, while 140 GHz currently has a research-only FSPL-plus-heuristic envelope."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "23. Double-counting matrix",
+      "url": "./concept-4i1-140ghz-audit.html#23-double-counting-matrix",
+      "text": "The machine-readable matrix records the full pairwise decisions. The governing rules are: Choose either P.525 FSPL or a P.1411 path-loss row as the base model; do not add both. P.676, P.838, and P.840 can be additive components only when their inputs and the base model’s environmental basis are explicit. Do not attach P.2108 to a path model that already includes whole-path clutter; P.2108 is out of range at 140 GHz anyway. Choose an aggregate building-entry model or a componentized P.2040 facade model; do not add P.2109 and P.2040 as independent losses. Keep P.526 as an alternative diagnostic, never an extra loss on top of current or future NLOS. Treat P.837 as the statistics source for P.838, not as a second attenuation term. Do not add the current 80 dB event to any physical material, building-entry, diffraction, or measured excess-loss term."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "24. Required environmental/data inputs",
+      "url": "./concept-4i1-140ghz-audit.html#24-required-environmentaldata-inputs",
+      "text": "The minimum future input contract is: building polygons and absolute heights; roof-edge geometry; terrain or explicit datum; facade materials, thickness, layers, moisture, angle, and polarization; vegetation; street morphology; pressure, temperature, and water vapour; rain-rate statistics and path reduction; cloud/fog liquid water; measured TX/RX patterns and aperture/beam state; conducted power and calibration; receiver bandwidth, noise figure, sensitivity, and margin; and georeferenced 100–200 GHz measurements with LOS/NLOS/roof/facade/weather labels. Current A.T.O.M has pieces of this contract—footprints, some height provenance, optional terrain in the isolated path tool, scalar material labels, and analytic antenna/receiver settings—but does not have the complete 140 GHz evidence chain."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "25. Current model gap analysis",
+      "url": "./concept-4i1-140ghz-audit.html#25-current-model-gap-analysis",
+      "text": "The gaps are structural, not a missing coefficient: research_sub_thz has no measured distance or morphology model. The 80 dB event is not tied to material, thickness, angle, or uncertainty. Footprint NLOS is not the same as above-rooftop, street-corner, facade-entry, or reflected NLOS at 140 GHz. Unknown building height cannot be converted into validated edge/diffraction behavior. The default 25 m antenna may violate P.1411’s below-rooftop Table 4 conditions. Atmospheric terms are user-supplied only in the separate path-profile diagnostic and are not automatically integrated into the network evaluator. Antenna and receiver fields are deterministic planning assumptions, not calibrated 140 GHz hardware models. Radio-quality and optimization semantics intentionally stop at the current unsupported state."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "26. Proposed future 140 GHz model architecture",
+      "url": "./concept-4i1-140ghz-audit.html#26-proposed-future-140-ghz-model-architecture",
+      "text": "The safe architecture is a provenance-aware component graph, not another frequency threshold: applicability gate -> P.525 FSPL base -> optional P.676 gas / P.838 rain / P.840 cloud-fog components -> geometry branch: bounded P.1411 Table 4 OR calibrated measured residual -> optional P.2040 facade/material interaction -> separate P.526 known-edge diagnostic -> measured/calibrated antenna and receiver ledger -> uncertainty, provenance, and double-counting checks Every component should return its reference, clause, input provenance, validity envelope, uncertainty, and whether it already includes another component. P.1411 Table 4 should be one bounded candidate branch, not a universal dispatch rule. Above-rooftop and building-entry branches need their own evidence."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "27. Recommended Concept 4I.2 scope",
+      "url": "./concept-4i1-140ghz-audit.html#27-recommended-concept-4i2-scope",
+      "text": "The first 4I.2 increment should be an opt-in, non-canonical 140 GHz reference experiment that evaluates P.525 plus explicitly supplied P.676/P.838/P.840 terms and returns a full ledger. It should not replace research_sub_thz , alter optimizer scores, or create radio-quality outputs. The next bounded increment can implement P.1411 Table 4 rows with explicit below-rooftop/morphology/distance checks. Promotion to a production default should wait for 100–200 GHz measurement fixtures, spatial holdout validation, antenna calibration, uncertainty reporting, and a double-counting audit."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "28. Proposed remaining 4I roadmap",
+      "url": "./concept-4i1-140ghz-audit.html#28-proposed-remaining-4i-roadmap",
+      "text": "Future concept Scope 4I.2 Componentized 140 GHz reference experiment; applicability-gated P.1411 Table 4 candidate 4I.3 Measurement fixture schema, campaign provenance, calibration, and spatial holdout validation 4I.4 Conditional facade/material and known-edge mechanisms with thickness/angle/layer inputs 4I.5 Morphology-stratified empirical residual, blockage, and reflection model 4I.6 Only if evidence supports it: bounded network-planning integration with separate 140 GHz link semantics Full ray tracing, automatic weather/clutter/material datasets, above-rooftop standard claims, optimizer integration, and 140 GHz radio-quality semantics remain deferred."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "29. Tests and invariance validation",
+      "url": "./concept-4i1-140ghz-audit.html#29-tests-and-invariance-validation",
+      "text": "The audit test concept_4i1_capture_test.go passes and asserts the captured slant distances, FSPL, 80 dB/event rule, dispatch identity, no-fallback state, receiver threshold, and equality of one-event geometry cases. Existing diffraction tests continue to assert that the P.526 diagnostic is available only with known height, remains research-only at 140 GHz, and does not mutate canonical propagation. Validation performed for this audit: cd backend-go && go test ./raytracer -run TestConcept4I1ResearchProfileBaselineAndInvariance -count=1 -v # pass jq empty docs/concept-4i1-pre-change-140ghz-baseline.json # pass jq empty docs/concept-4i1-140ghz-applicability.json # pass jq empty docs/concept-4i1-140ghz-controlled-fixtures.json # pass The final full-suite and documentation validation commands are recorded in the delivery summary. No production RF behavior changed during this audit."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "30. Files changed",
+      "url": "./concept-4i1-140ghz-audit.html#30-files-changed",
+      "text": "docs/concept-4i1-pre-change-140ghz-baseline.json — exact pre-audit runtime values. docs/concept-4i1-140ghz-applicability.json — authoritative versions, clause/model applicability, double-counting, evidence survey, inputs, and roadmap. docs/concept-4i1-140ghz-controlled-fixtures.json — independent FSPL, atmospheric, material, and diffraction fixtures. docs/concept-4i1-140ghz-audit.md — this report. backend-go/raytracer/concept_4i1_capture_test.go — audit-only invariance regression test; no production package behavior changed. Documentation hub/build/changelog entries make the report discoverable; generated HTML is a presentation artifact of this Markdown report."
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "31. Unresolved scientific questions",
+      "url": "./concept-4i1-140ghz-audit.html#31-unresolved-scientific-questions",
+      "text": "Which Ankara morphologies should define a 140 GHz P.1411-compatible below-rooftop subset? How should roof-edge diffraction, facade reflection, scattering, and blockage be partitioned without double counting? What material moisture/thickness distributions apply to Ankara construction at 140 GHz? What antenna physical aperture, beam codebook, pointing, and receiver calibration represent the intended product? Can 100–200 GHz measurements support a stable model beyond 150 m for each morphology, or should 200/400 m remain LOS/FWA-only? How should weather and cloud/fog be represented for short horizontal paths and what availability percentage is required? What spatial holdout size is sufficient for independent validation of shadowing and beam visibility? Which receiver/link budget should define any future 140 GHz radio-quality contract?"
+    },
+    {
+      "page": "Concept 4I.1 140 GHz Applicability Audit",
+      "title": "32. Explicit non-claims",
+      "url": "./concept-4i1-140ghz-audit.html#32-explicit-non-claims",
+      "text": "This audit does not claim that A.T.O.M implements a standardized, validated, or production-ready 140 GHz/6G propagation model. It does not claim 3GPP TR 38.901 coverage at 140 GHz, a universal P.1411 140 GHz urban-NLOS extension, P.2109 building-entry validity, P.2108 clutter validity, automatic P.837 weather statistics, material-specific wall loss from the 80 dB event, full P.526 urban diffraction, measured/vendor antenna behavior, a validated receiver, LTE/NR/6G radio quality, throughput, scheduler, MCS, UE, or array-beamforming behavior. The honest current boundary is research_sub_thz as a deterministic research planning envelope plus separate diagnostic/reference calculations."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "Concept 4I.2A Atmospheric Reference",
+      "url": "./concept-4i2a-atmospheric-reference.html",
+      "text": "An opt-in, non-canonical Sub-THz atmospheric component ledger using P.525-5, P.676-13, P.838-3, and local-fog P.840-9 terms. View Markdown source System architecture This change adds sub_thz_atmospheric_reference_v1 , an opt-in, non-canonical reference evaluator for controlled point-to-point atmospheric comparisons. It is deliberately separate from research_sub_thz , urban_short_range , legacy_fspl_walls , the path-profile diagnostic, network RF, radio quality, building entry, and optimization."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "1. Objective and boundary",
+      "url": "./concept-4i2a-atmospheric-reference.html#1-objective-and-boundary",
+      "text": "The endpoint answers a narrow question: what does a declared free-space path plus explicitly supplied atmospheric state contribute over a homogeneous terrestrial Tx-to-Rx path? It is a ledger and sensitivity tool, not a validated 140 GHz urban propagation model."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "2. Pre-change audit",
+      "url": "./concept-4i2a-atmospheric-reference.html#2-pre-change-audit",
+      "text": "The pre-change artifact records the existing 2.6 GHz, 28 GHz, 140 GHz research, 4H.2, building-entry, and P.526 runtime behavior: concept-4i2a-pre-change-baseline.json . The existing 140 GHz profile remains FSPL plus its historical wall-event heuristic; this feature does not rewrite that path."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "3. Stable model identity",
+      "url": "./concept-4i2a-atmospheric-reference.html#3-stable-model-identity",
+      "text": "The stable response and request identity is sub_thz_atmospheric_reference_v1 . The route is POST /api/sub-thz-reference . The UI labels it “Opt-in, non-canonical ledger” and shows the model ID directly."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "4. Route and UI isolation",
+      "url": "./concept-4i2a-atmospheric-reference.html#4-route-and-ui-isolation",
+      "text": "The route is protected by the existing RF limiter and optional RF_API_KEY . The React panel sits beside the existing vertical path-profile diagnostic, reuses the selected transmitter/receiver geometry only, and owns separate request state. It cannot silently alter a sector run, coverage surface, interference result, building-entry estimate, or optimizer result."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "5. Explicit geometry",
+      "url": "./concept-4i2a-atmospheric-reference.html#5-explicit-geometry",
+      "text": "The request requires transmitter and receiver longitude, latitude, and height in metres. The response reports horizontal distance, height delta, slant distance, path length in kilometres, and the rain-path elevation angle. The atmospheric terms are multiplied by slant path length, not by a hidden default radius."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "6. P.525-5 free-space baseline",
+      "url": "./concept-4i2a-atmospheric-reference.html#6-p525-5-free-space-baseline",
+      "text": "The implementation calculates Lbf = 20 log10(4 pi d / lambda) using lambda = c/f and reports the rounded 32.4 + 20 log10(f_MHz) + 20 log10(d_km) presentation form alongside it. See the official ITU-R P.525-5 recommendation . FSPL is included exactly once and is not an urban NLOS claim."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "7. P.676-13 gas method",
+      "url": "./concept-4i2a-atmospheric-reference.html#7-p676-13-gas-method",
+      "text": "The gas ledger implements the Annex 1 line-by-line oxygen and water-vapour equations and the dry continuum. It reports oxygen-line, dry-continuum, dry-air, water-vapour, total dB/km, and path loss separately. Total pressure is an input; dry pressure is explicitly derived as total pressure minus water-vapour partial pressure. See ITU-R P.676-13 ."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "8. P.838-3 rain method",
+      "url": "./concept-4i2a-atmospheric-reference.html#8-p838-3-rain-method",
+      "text": "When enabled, rain uses gamma_R = k R^alpha , with P.838-3 curve-fit coefficients, path elevation, and explicit horizontal, vertical, circular, or custom linear polarization. Circular polarization is represented by the declared 45-degree tilt. The raw specific attenuation and path loss are both returned. See ITU-R P.838-3 ."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "9. P.840-9 local-fog method",
+      "url": "./concept-4i2a-atmospheric-reference.html#9-p840-9-local-fog-method",
+      "text": "When enabled, local fog uses gamma_c = K_l(f,T) rho_l , with the P.840 double-Debye water-permittivity coefficient. The request supplies local liquid-water density; fog temperature is explicit or transparently inherited from the supplied atmosphere temperature. This is not a vertical integrated Earth-space cloud column. See ITU-R P.840-9 ."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "10. Additive composition",
+      "url": "./concept-4i2a-atmospheric-reference.html#10-additive-composition",
+      "text": "The total is FSPL + gas + rain + local fog . Each component contains status, reference, method, inclusion, and double-counting metadata. Disabled components contribute exactly zero. Out-of-scope optional components are reported as out_of_scope , not silently extrapolated."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "11. Applicability",
+      "url": "./concept-4i2a-atmospheric-reference.html#11-applicability",
+      "text": "The reference frequency envelope is 1–1000 GHz. P.838-3 uses its 1–1000 GHz range. Local-fog P.840-9 sensitivity is limited to 1–200 GHz in this implementation. A response can therefore be applicable , partial , or fspl_only while preserving the component-level status."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "12. Atmospheric request contract",
+      "url": "./concept-4i2a-atmospheric-reference.html#12-atmospheric-request-contract",
+      "text": "Enabled atmosphere requires pressure in hPa, temperature in kelvin, and water-vapour density in g/m³. The API does not infer Ankara weather, standard humidity, altitude profiles, radiosonde data, or a weather station from the dataset."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "13. Rain request contract",
+      "url": "./concept-4i2a-atmospheric-reference.html#13-rain-request-contract",
+      "text": "Rain is disabled unless rain.enabled is true and a rain rate is supplied. Rain rate is instantaneous homogeneous path input. The implementation does not claim annual availability, does not ingest P.837 statistics, and does not apply a terrestrial effective-path reduction factor."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "14. Fog request contract",
+      "url": "./concept-4i2a-atmospheric-reference.html#14-fog-request-contract",
+      "text": "Local fog is disabled by default. Enabling it requires local liquid-water density. P.840’s local specific coefficient is used for the supplied terrestrial path; no cloud-column integration, cloud climatology, or vertical profile is inferred."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "15. Building obstruction flag",
+      "url": "./concept-4i2a-atmospheric-reference.html#15-building-obstruction-flag",
+      "text": "If the active building index is available, the evaluator records intersected building IDs, including endpoint-in-building evidence. The result is flag_only_no_propagation_loss : no wall, material, rooftop-screen, Fresnel, diffraction, or penetration term is added. If the index is unavailable, the atmospheric result remains usable while obstruction status is explicitly unknown."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "16. Double-counting policy",
+      "url": "./concept-4i2a-atmospheric-reference.html#16-double-counting-policy",
+      "text": "The response states that the ledger must not be added to research_sub_thz , urban_short_range , legacy_fspl_walls , the path-profile sensitivity budget, a P.526 diagnostic, building entry, interference, coverage, or optimization. A caller must select one propagation baseline and one atmospheric source for a comparison, not sum parallel diagnostic products."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "17. Optional reference link budget",
+      "url": "./concept-4i2a-atmospheric-reference.html#17-optional-reference-link-budget",
+      "text": "An explicit link-budget block can combine conducted TX power, TX gain, TX pattern loss, system loss, polarization loss, RX gain, calibration, and the reference total path loss. Every term is returned in a signed ledger. No antenna hardware default is injected into this block."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "18. Receiver boundary",
+      "url": "./concept-4i2a-atmospheric-reference.html#18-receiver-boundary",
+      "text": "The reference link budget reports received power only. It never applies receiver sensitivity, noise bandwidth, SINR, RSRP, RSRQ, serviceability, coverage, demand, or an optimization score. The response carries receiver_threshold_applied: false and serviceability_evaluated: false where the optional ledger is present."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "19. Controlled fixture corpus",
+      "url": "./concept-4i2a-atmospheric-reference.html#19-controlled-fixture-corpus",
+      "text": "The machine-readable fixture corpus is concept-4i2a-controlled-fixtures.json . It includes the six-distance sweep, 28-versus-140 comparison, P.676 density sensitivity, P.838 rain-rate sensitivity, P.840 fog-density sensitivity, and the invariance contract."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "20. 100 m ledger",
+      "url": "./concept-4i2a-atmospheric-reference.html#20-100-m-ledger",
+      "text": "For the controlled 140 GHz case (25 m TX, 1.5 m RX, 1013.25 hPa, 288.15 K, 7.5 g/m³, 25 mm/h circular rain, 0.5 g/m³ local fog), the 102.724 m slant path gives FSPL 115.603795 dB, gas 0.094039 dB, rain 1.307710 dB, fog 0.357881 dB, and total 117.363424 dB. The corresponding all-term 28 GHz total is 102.094775 dB."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "21. 400 m ledger",
+      "url": "./concept-4i2a-atmospheric-reference.html#21-400-m-ledger",
+      "text": "At the 400 m horizontal fixture (400.690 m slant), the same 140 GHz terms are FSPL 127.426508 dB, gas 0.366811 dB, rain 5.100903 dB, fog 1.395963 dB, and total 134.290184 dB. The 28 GHz total is 115.281890 dB. These are controlled path sensitivities, not urban coverage predictions."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "22. 28 versus 140 GHz comparison",
+      "url": "./concept-4i2a-atmospheric-reference.html#22-28-versus-140-ghz-comparison",
+      "text": "With identical geometry, P.525 FSPL increases by 13.979400 dB from 28 to 140 GHz, exactly 20 log10(140/28) . The all-term total difference is larger because P.676, P.838, and P.840 coefficients are frequency dependent; that increase must not be described as an urban morphology loss."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "23. Independent verification note",
+      "url": "./concept-4i2a-atmospheric-reference.html#23-independent-verification-note",
+      "text": "The earlier 4I.1 fixture recorded approximately 0.867224 dB/km for the 7.5 g/m³ gas row. The new implementation independently evaluates the published line tables and yields 0.915449 dB/km under the explicit total-pressure convention. The earlier value is retained as an observed audit comparison, not copied into production expectations. This difference is documented so a future standards review can resolve version, pressure, or approximation provenance rather than hiding it."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "24. Validation and invariance",
+      "url": "./concept-4i2a-atmospheric-reference.html#24-validation-and-invariance",
+      "text": "The backend includes independent numerical and route tests for P.525 geometry, P.676, P.838, P.840, building-flag non-additivity, optional link-budget boundaries, validation, and deterministic fingerprints. Frontend tests cover explicit payload construction. Existing canonical Go, frontend, and real-backend acceptance suites are rerun as invariance evidence."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "25. Deferred work",
+      "url": "./concept-4i2a-atmospheric-reference.html#25-deferred-work",
+      "text": "Not included here: P.837 annual statistics ingestion, rain effective-path/reduction modeling, altitude-dependent atmospheric integration, radiosonde profiles, weather grids, site-calibrated gas/fog/rain validation, P.2040 material transmission, P.526 coupling, multiple-edge diffraction, urban reflection/scattering/multipath, antenna hardware patterns, and any canonical network model replacement."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "26. Limitations and next gate",
+      "url": "./concept-4i2a-atmospheric-reference.html#26-limitations-and-next-gate",
+      "text": "This is a standards-oriented reference ledger over a homogeneous straight path. It is useful for auditable component comparison and sensitivity analysis, especially at 28, 100, 140, and 300 GHz, but it is not evidence of service, availability, indoor penetration, NLOS behavior, or an operator-grade 140 GHz channel model. Any future canonical integration requires measured/calibrated data, explicit path integration policy, site-specific obstruction/material evidence, and a separate invariance review."
+    },
+    {
+      "page": "Concept 4I.2A Atmospheric Reference",
+      "title": "Implementation files",
+      "url": "./concept-4i2a-atmospheric-reference.html#implementation-files",
+      "text": "backend-go/raytracer/sub_thz_atmospheric_reference.go : request contract, standards calculations, ledger, applicability, obstruction flag, link budget, fingerprint. backend-go/sub_thz_reference_route.go : isolated Gin route. frontend-react/src/components/SubTHZReferencePanel.jsx : opt-in UI. frontend-react/src/utils/requestPayloads.js : explicit payload builder. docs/openapi.yaml , docs/api.md , docs/architecture.md , and docs/modeling-limits.md : public contract and scope."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "Concept 4I.2B P.1411 Candidate Reference",
+      "url": "./concept-4i2b-p1411-reference.html",
+      "text": "Applicability-gated ITU-R P.1411-13 Table 4 candidate rows, 140 GHz envelopes, provenance, median-only statistics, isolated comparisons, and Ankara readiness. View Markdown source System architecture Status: isolated scientific reference implementation, captured 2026-09-18. Source: ITU-R P.1411-13 (2025-09) , official PDF . The machine-readable artifacts are the applicability contract , independent controlled fixtures , side-by-side comparison , and pre-change runtime baseline ."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "Decision boundary",
+      "url": "./concept-4i2b-p1411-reference.html#decision-boundary",
+      "text": "Concept 4I.2B adds a dedicated POST /api/sub-thz-p1411-reference endpoint and a propagation diagnostics panel. It implements only three non-canonical candidates from §4.1.1 Table 4. The evaluator is never called by simulate, coverage surfaces, coverage gaps, interference, radio quality, building entry, or either optimizer. The result is a bounded P.1411 median/basic-transmission-loss reference. It does not claim a calibrated 140 GHz channel model, Ankara coverage, receiver serviceability, or canonical network support."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "Source and equation audit",
+      "url": "./concept-4i2b-p1411-reference.html#source-and-equation-audit",
+      "text": "P.1411-13 §4.1.1 defines the site-general model as: Lb(d,f) = 10 alpha log10(d) + beta + 10 gamma log10(f) dB d is the 3D direct distance between terminals in metres and f is GHz. The production evaluator calculates that median only. The source's zero-mean Gaussian N(0, sigma) statistical variation is returned as sigma_db metadata; no random sample, fading realization, percentile, or automatic margin is generated. The exact P.1411 rows implemented are: Candidate Table 4 row Frequency General distance 140 GHz effective distance Morphology Roof relation State α β γ σ p1411_below_rooftop_los_v1 Urban high-rise, urban low-rise/suburban, LoS 0.45–300 GHz 5–660 m 5–500 m high-rise, low-rise, suburban both below rooftop LoS 2.07 31.23 2.06 4.91 dB p1411_urban_highrise_nlos_v1 Urban high-rise, NLoS 0.8–159 GHz 20–715 m 20–150 m high-rise both below rooftop NLoS 3.73 16.02 2.26 7.62 dB p1411_urban_lowrise_nlos_v1 Urban low-rise/suburban, NLoS 0.45–255 GHz 10–250 m 10–150 m low-rise, suburban both below rooftop NLoS 4.52 6.04 2.14 8.02 dB The 140 GHz limits apply the Table 4 footnotes exactly: footnote (1) gives the LoS 500 m recommendation for 82 < f <= 159 GHz; footnote (2) gives high-rise NLoS 150 m for the same band; footnote (3) gives low-rise/suburban NLoS 150 m for 73 < f <= 159 GHz. A request outside the current row's effective envelope is returned as inapplicable with no path-loss value and no extrapolation. The initial set deliberately excludes the Residential NLoS Table 4 row. Above-rooftop Table 8 rows are also excluded because their listed frequency ranges do not support this 140 GHz candidate set."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "Applicability gates and provenance",
+      "url": "./concept-4i2b-p1411-reference.html#applicability-gates-and-provenance",
+      "text": "Every request carries frequency, flat Tx/Rx coordinates and heights, morphology, rooftop relation, LoS/NLoS state, and a provenance block. Supported provenance sources are user_declared, dataset_measured, dataset_derived, geometry_classifier, geometry_derived, and unknown. The defaults are intentionally conservative: frequency and endpoint heights default to user_declared; 3D distance defaults to geometry_derived; morphology, rooftop relation, and LoS state default to unknown and therefore cannot produce an applicable candidate; the candidate requires explicit both_below_rooftop; antenna heights do not infer this relation; the existing 4F.1 classifier is not silently mapped to a P.1411 row; a user-declared research scenario is allowed, but its provenance is visible in the response. The response exposes reason codes such as frequency_out_of_range, distance_out_of_range, morphology_mismatch, morphology_unknown, rooftop_relation_mismatch, rooftop_relation_unknown, los_state_mismatch, los_state_unknown, insufficient_scene_evidence, and unsupported_geometry."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "What the response contains",
+      "url": "./concept-4i2b-p1411-reference.html#what-the-response-contains",
+      "text": "POST /api/sub-thz-p1411-reference returns all three candidates by default, or one requested candidate when candidate_model_id is selected. It includes: reference identity, revision, section, table, requested row, applicable row IDs, and a deterministic fingerprint; scene inputs, horizontal distance, 3D direct/slant distance, height delta, and provenance; general Table 4 bounds and current-frequency effective distance bounds; coefficients, equation, logarithmic intermediate terms, and median path loss only when applicable; sigma, distribution interpretation, random_sampling: false, and no hidden wall loss; exact wavelength-form P.525 FSPL at the same slant distance and P1411 - P525 excess only; building intersections plus known/unknown height evidence as audit context only; comparison-only summaries for the 4I.2A atmospheric reference and current research_sub_thz profile when explicitly requested; limitations and non-claims. No candidate is labeled best, recommended, calibrated, or canonical. The panel intentionally shows candidates side by side."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "P.525 and double-counting boundary",
+      "url": "./concept-4i2b-p1411-reference.html#p525-and-double-counting-boundary",
+      "text": "P.525 FSPL is a comparison baseline, not an additive term. The API uses the wavelength identity 20 log10(4 pi d / lambda) with lambda = c / (f GHz × 1e9). The reported difference is: excess_relative_to_fspl_db = P1411_median_db - P525_fspl_db The output does not add P.525 to P.1411. It also does not add the existing 80 dB research_sub_thz event heuristic, P.676 gas, P.838 rain, P.840 fog, P.526 diffraction, building-entry, material, receiver threshold, or radio-quality terms."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "Side-by-side alternatives",
+      "url": "./concept-4i2b-p1411-reference.html#side-by-side-alternatives",
+      "text": "The 4I.2A sub_thz_atmospheric_reference_v1 ledger remains a separate explicit calculation. If requested, the response reports its P.525, P.676, P.838, and P.840 components and total as comparison_only; it never composes those values with the P.1411 median. Atmospheric inputs are not silently sent by the UI. The current research_sub_thz profile remains the existing /api/simulate planning profile. Its optional side-by-side comparison can show FSPL + 80 dB × wall_event_count at 140 GHz, but that value is never added to P.1411. The comparison artifact records the P.1411 LoS candidate, atmospheric reference, research profile, and P.525 baseline independently. P.526 remains the existing isolated knife-edge diagnostic. It is not invoked from this endpoint. The earlier 4I.1 survey remains the external sanity/transferability boundary, not a validation dataset."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "Independent 140 GHz fixtures",
+      "url": "./concept-4i2b-p1411-reference.html#independent-140-ghz-fixtures",
+      "text": "The controlled fixture artifact contains boundary cases and independently computed values. Representative medians are: Candidate 10 m 25 m 100 m 150 m 400 m 140 GHz effective max Below-rooftop LoS 96.140238 dB 104.377596 dB 116.840238 dB — 129.302879 dB 500 m Urban high-rise NLoS — — 139.122494 dB 145.690698 dB — 150 m Urban low-rise/suburban NLoS 97.167140 dB 115.154028 dB 142.367140 dB 150.326465 dB — 150 m The out-of-envelope examples are LoS 501 m, high-rise NLoS 151 m, and low-rise/suburban NLoS 151 m. Frequency boundary examples include 0.45 GHz LoS, 0.8 GHz high-rise NLoS, 255 GHz low-rise/suburban NLoS, and 0.44/300.01 GHz rejected union boundaries."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "Ankara readiness",
+      "url": "./concept-4i2b-p1411-reference.html#ankara-readiness",
+      "text": "The current Ankara pack contains 161,784 building footprints and 451 towers. Height evidence is sparse: 1,108 observed tags (0.68%), 4,966 levels-derived (3.07%), 155,710 fallback-only (96.25%), and no unavailable records. Only 6,074 footprints (3.75%) have explicit or levels-derived height evidence. Fallback-only values are not roof evidence. The existing Concept 4F.1 audit covers a deterministic sample of 6 cells × 72 rays at a 400 m radius: 432 reference paths, 25 m Tx, 1.5 m Rx, with terrain unavailable. The current data has no morphology taxonomy and no provable both-below-rooftop relation, so the automatic fully applicable count is reported as zero. The 432 paths are readiness evidence, not coverage or candidate-link validation. The artifact does not fabricate morphology-conditioned NLoS counts."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "External sanity and transferability boundary",
+      "url": "./concept-4i2b-p1411-reference.html#external-sanity-and-transferability-boundary",
+      "text": "The 4I.1 audit records peer-reviewed 100–200 GHz evidence including Xing/Rappaport at 140/142 GHz in a Brooklyn urban microcell, Shakya et al. across 28/73/142 GHz, De Beelde et al. across 120–165 GHz D-band, Sun et al. across 138–163.2 GHz LOS, and Ju et al. on spatial consistency. These studies are useful sanity/transferability comparisons only. They do not calibrate the P.1411 row for Ankara and are not silently used by the evaluator."
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "Validation and performance",
+      "url": "./concept-4i2b-p1411-reference.html#validation-and-performance",
+      "text": "The implementation adds unit and route tests for independent coefficient fixtures, frequency and distance boundaries, strict scenario/provenance gates, P.525 deltas, deterministic fingerprints, optional comparison isolation, unknown-height obstruction context, explicit optional atmospheric inputs, and route protection. It performs one bounded geometry evidence pass per request and does not alter the canonical ray/coverage/optimization hot paths. The broader quality gate remains: cd backend-go && go vet ./... && go test -race ./... cd core-lab-adapter && go vet ./... && go test -race ./... cd frontend-react && npm test -- --run && npm run lint && npm run build sh docs/build-reference-pages.sh python3 docs/validate_docs.py python3 scripts/versioning.py check"
+    },
+    {
+      "page": "Concept 4I.2B P.1411 Candidate Reference",
+      "title": "Deferred 4I.3 work",
+      "url": "./concept-4i2b-p1411-reference.html#deferred-4i3-work",
+      "text": "Future work remains explicitly deferred: measurement-backed 100–200 GHz calibration and validation; site-specific morphology and rooftop evidence; weather/profile integration; spatial consistency and beam/antenna validation; optional P.2040 material/interface and P.526 studies; and any canonical 140 GHz coverage or radio-quality promotion. Those changes require a new evidence and invariance plan rather than a silent extension of Concept 4I.2B."
+    },
+    {
+      "page": "Concept 4I.3 Measurement Validation",
+      "title": "Concept 4I.3 Measurement Validation",
+      "url": "./concept-4i3-measurement-validation.html",
+      "text": "Versioned measurement campaigns, quantity semantics, reference-model adapters, deterministic calibration and spatial holdouts, evidence readiness, and the Ankara measurement gap. View Markdown source System architecture Concept 4I.3 is an isolated evidence ledger for measured path-loss campaigns. It establishes the data contract, quantity semantics, reference-model adapters, deterministic comparison/holdout diagnostics, and a conservative readiness gate. It does not introduce a new propagation equation, path-loss exponent, ML model, arbitrary regression, or production RF model."
+    },
+    {
+      "page": "Concept 4I.3 Measurement Validation",
+      "title": "Boundary and invariance",
+      "url": "./concept-4i3-measurement-validation.html#boundary-and-invariance",
+      "text": "The workflow is exposed at POST /api/sub-thz-validation . It consumes imported campaign JSON and calls only the versioned reference adapters. It does not call or mutate the canonical 2.6 GHz, 28 GHz, research_sub_thz , Concept 4I.2A atmospheric, Concept 4I.2B P.1411, building-entry, diffraction, interference/radio-quality, or optimization result paths. The pre-change audit and invariance targets are recorded in concept-4i3-pre-change-baseline.json ; the post-change comparison is recorded in concept-4i3-post-change-comparison.json . The legacy /api/measurements/evaluate RSRP workflow remains unchanged. Its 4G/5G radio-quality semantics are not silently reused as sub-THz path-loss evidence."
+    },
+    {
+      "page": "Concept 4I.3 Measurement Validation",
+      "title": "Campaign and measurement contract",
+      "url": "./concept-4i3-measurement-validation.html#campaign-and-measurement-contract",
+      "text": "Every campaign has a schema version, stable campaign ID/version, source and provenance, frequency range, equipment/antenna/calibration metadata, environment and weather metadata, sites, and measurement records. Every record has a stable measurement ID and may carry location_pair_id and beam_id so repeated beams and correlated observations are visible rather than counted as independent evidence. The machine-readable contract is concept-4i3-validation-schema.json . Coordinates, numeric values, IDs, timestamps, duplicate campaign/site/measurement IDs, and enumerations are strictly validated. JSON NaN / Infinity are rejected by the decoder and all finite numeric fields are range checked. The canonical comparison domain is path loss in dB. The residual sign is: residual = measured_path_loss_db - predicted_path_loss_db Received power is normalized only when conducted transmit power, transmit/receive gains, cable losses, calibration status, and a compatible isotropic-equivalent or synthesized-omnidirectional basis are explicit: PL = Pt_conducted + Gt + Gr - Ltx - Lrx - Pr_received Path gain is converted as PL = -path_gain_db only with explicit quantity, antenna/cable embedding, calibration, and compatible basis metadata. Directional or best-beam observations remain ambiguous unless a synthesized-omnidirectional or isotropic-equivalent basis is supplied. Rx power, path loss, and path gain are never mixed without an explicit normalization decision. Below-detection and not-detected records are counted as censored and excluded from ordinary residual metrics. No censoring threshold is converted into a fabricated path-loss value."
+    },
+    {
+      "page": "Concept 4I.3 Measurement Validation",
+      "title": "Reference adapters",
+      "url": "./concept-4i3-measurement-validation.html#reference-adapters",
+      "text": "The shared adapter contract evaluates applicability before residuals and returns applicable , inapplicable , ambiguous , unsupported , or censored status: p525_fspl : exact wavelength-form P.525 free-space path loss at the normalized 3D distance. sub_thz_atmospheric_reference_v1 : the existing opt-in P.525/P.676/P.838/P.840 ledger, only when explicit weather and rain/fog-known flags exist. Atmospheric totals are side-by-side evidence, not additions to an empirical model. p1411_below_rooftop_los_v1 , p1411_urban_highrise_nlos_v1 , and p1411_urban_lowrise_nlos_v1 : existing Table 4 row implementations with strict frequency, distance, morphology, rooftop, and LOS applicability. The empirical sigma is compared with observed residual spread; no random fading is sampled. research_sub_thz : comparison-only 140 GHz planning profile requiring an explicit wall-event count. Its 80 dB per-wall heuristic is never inferred or calibrated. p526-single-edge-v1 : diagnostic-only adapter requiring an explicit obstacle/diffraction loss profile. It is not a canonical propagation path."
+    },
+    {
+      "page": "Concept 4I.3 Measurement Validation",
+      "title": "Metrics and diagnostics",
+      "url": "./concept-4i3-measurement-validation.html#metrics-and-diagnostics",
+      "text": "For every applicable common sample set, the response reports count, mean bias, median bias, MAE, RMSE, standard deviation, p10, and p90. It also reports strata by LOS/NLOS, morphology, distance bin, frequency, campaign, and site; residual diagnostics versus log-distance and frequency; common-sample pair comparisons; censored counts; and directional-basis warnings. No R² score or universal model winner is used as a primary decision. Calibration is constant-bias-only. A fitted bias is the mean calibration-set residual and is applied only to a held-out diagnostic comparison. Calibration and validation sets are explicit or deterministically separated by site, campaign, location group, or spatial component. Status is stable , unstable , or insufficient_validation_data ; promoted is always false. Spatial holdout uses deterministic meter cells and connected neighboring-cell components so nearby observations cannot leak between calibration and validation folds. Leave-one-site-out and leave-one-campaign-out are also available. The response contains the cell size, minimum-separation policy, fold IDs, counts, and no-leak evidence. The validation fingerprint excludes timestamps, runtime, UI state, and file paths."
+    },
+    {
+      "page": "Concept 4I.3 Measurement Validation",
+      "title": "External evidence policy",
+      "url": "./concept-4i3-measurement-validation.html#external-evidence-policy",
+      "text": "concept-4i3-external-evidence.json registers a small set of previously audited 100–200 GHz sources as metadata-only references. No numeric sample is redistributed, plot-digitized, or invented. A source becomes a numeric campaign only after access/license, quantity semantics, antenna basis, calibration, geometry, labels, and duplicate-beam policy are established."
+    },
+    {
+      "page": "Concept 4I.3 Measurement Validation",
+      "title": "Synthetic controls",
+      "url": "./concept-4i3-measurement-validation.html#synthetic-controls",
+      "text": "concept-4i3-synthetic-validation.json covers exact P.525, a controlled +5 dB bias, exact P.1411 median evaluation, deterministic residual statistics, spatial-region offset, censored observations, and directional ambiguity. These fixtures test implementation behavior; they are not field validation."
+    },
+    {
+      "page": "Concept 4I.3 Measurement Validation",
+      "title": "Ankara 140 GHz campaign gap",
+      "url": "./concept-4i3-measurement-validation.html#ankara-140-ghz-campaign-gap",
+      "text": "The current repository contains no redistributable Ankara 140 GHz measurement campaign. A future campaign must capture, per link: georeferenced Tx/Rx coordinates and antenna heights, plus the coordinate reference system; exact carrier frequency, bandwidth, waveform/sounding configuration, timestamp, and synchronization state; conducted Tx power, Tx/Rx cable losses, receiver calibration state, noise/detection floor, receiver dynamic range, and hardware identifiers; antenna gain/pattern metadata, beam pointing/beamwidth, polarization, beam ID, and whether the value is directional, best-beam, isotropic-equivalent, or synthesized omni; received power/path loss/path gain quantity with an explicit definition and embedded-gain/cable-loss flags; LOS/NLOS, morphology, rooftop relation, street width/corner, building/roof intersections, wall events, terrain/vegetation, and the source/provenance of each label; temperature, pressure, humidity/water vapour, rain and fog observations with explicit known/unknown flags. Until that gap is closed, the readiness taxonomy remains reference_only , synthetic_controlled_only , or diagnostic_only ; Concept 4I.3 has no production_candidate state."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Concept 4I.4 Material and Facade Reference",
+      "url": "./concept-4i4-material-facade-reference.html",
+      "text": "An isolated ITU-R P.2040-4 homogeneous slab ledger with explicit electrical properties, TE/TM coefficients, applicability, numerical stability, controlled fixtures, and non-combined heuristic comparison. View Markdown source System architecture Concept 4I.4 adds an isolated, non-canonical reference evaluator for one finite homogeneous material slab. Its model identifier is p2040_material_slab_reference_v1, and its only production-facing interface is: POST /api/sub-thz-material-reference The UI lives under RF Diagnostics and states, prominently: Material reference only — not used by network simulation."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Boundary and invariance",
+      "url": "./concept-4i4-material-facade-reference.html#boundary-and-invariance",
+      "text": "The evaluator is a research/reference ledger. It is not called by canonical propagation, research_sub_thz, P.1411, P.526, atmospheric, building-entry, interference, radio-quality, coverage-surface, or optimization code. It does not change the existing research_sub_thz rule of 80 dB per wall event at sub-THz frequencies, and it never adds a P.2040 result to that heuristic. The pre-change behavior is frozen in concept-4i4-pre-change-baseline.json . The post-change evidence is in concept-4i4-post-change-comparison.json . The target is exact invariance for canonical 2.6 GHz and 28 GHz, the 140 GHz research_sub_thz profile, 4I.2A, 4I.2B, P.526, building entry, interference/radio quality, and the 4H.2 optimizer. There is no automatic material physics from OSM tags. A building-material label can remain useful metadata, but the endpoint requires an explicit material row or a user-defined electrical property and an explicit thickness. There is no universal wall default."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Authoritative source audit",
+      "url": "./concept-4i4-material-facade-reference.html#authoritative-source-audit",
+      "text": "The implementation is based on the current in-force ITU-R P.2040-4 recommendation page and its official 2025-09 PDF . P.2040-4 covers 1 MHz–450 GHz, but a material row is only applicable over its own Table 3 range. The audited clauses are: Annex 1 §2.1.2, equations (9)–(16): complex permittivity, loss, conductivity, loss tangent, and complex refractive index. Annex 1 §2.1.4, equations (28)–(29): frequency-dependent empirical property forms. Annex 1 §2.2.1, equations (30)–(38): Snell geometry, TE/TM interface field coefficients, and power-flux correction. Annex 1 §2.2.2.1, equations (39)–(42): recursive multilayer formulation and internal reflections. Annex 1 §2.2.2.2, equations (43a)–(44): simplified single-layer slab formulation. §3, equations (57)–(59) and Table 3: material-row coefficients and the conductivity/complex-loss conversion. The response carries these clauses, the revision, and both official URLs so a result cannot be mistaken for an unreferenced empirical wall number."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Smallest auditable scope",
+      "url": "./concept-4i4-material-facade-reference.html#smallest-auditable-scope",
+      "text": "The implemented scope is a plane wave incident on a single finite, homogeneous, isotropic, non-magnetic slab between explicitly declared incident and exit media. Both exterior media are inputs; air is not silently assumed by the API, although the UI provides explicit air defaults. Normal and oblique incidence are supported for TE and TM polarization. The UI uses the source terminology directly: TE means electric field perpendicular to the plane of incidence; TM means electric field parallel to it. The API does not map “horizontal” or “vertical” labels to TE/TM. Multilayer construction is deferred. Roughness, diffuse scattering, air gaps, frames, coatings, moisture corrections, spatially varying thickness, and multiple slabs are not inferred. This keeps the returned ledger auditable and prevents an apparent material result from becoming a whole-facade claim."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Electrical-property contract",
+      "url": "./concept-4i4-material-facade-reference.html#electrical-property-contract",
+      "text": "P.2040 Table 3 rows are represented by separate stable IDs when frequency ranges overlap. The full supported catalog, coefficients, and ranges are in concept-4i4-material-applicability.json . It includes the concrete, brick, plasterboard, wood, glass, clear acrylic, ceiling-board, chipboard, and plywood rows that cover at least one requested frequency. Metal is not included as a preset because this implementation does not accept a metal row without explicit 140 GHz coverage. For a Table 3 row, the evaluator applies: εr′ = a fGHz^b σ = c fGHz^d εr″ = 17.98 σ / fGHz εrc = εr′ − j εr″ tanδ = εr″ / εr′ For user-defined materials, exactly one of these forms is accepted: real relative permittivity plus conductivity; real relative permittivity plus loss tangent; or complex relative permittivity expressed as real part plus positive imaginary-loss magnitude. The response stores the signed complex value as real − j imaginary_loss, while the input JSON calls the magnitude imaginary_loss to avoid a sign-convention ambiguity. Redundant inconsistent forms are rejected. User-defined output is classified as user_assumption, even when its property source says measured or manufacturer; the property-source field remains visible. Every returned electrical property has provenance through the material source/property source, the Table 3 row and coefficients when applicable, or the user-declared source and provenance note. User-provided incident and exit media also retain their property source. No OSM tag is treated as a physical measurement."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Thickness and geometry",
+      "url": "./concept-4i4-material-facade-reference.html#thickness-and-geometry",
+      "text": "Thickness is required in the request and is never defaulted to “one wall.” It is bounded, finite, non-negative, and returned with thickness_provenance. The controlled fixtures use controlled_reference_fixture; ordinary user runs use user_declared. Incidence angle is measured from the interface normal. 0° is normal incidence. Values at or above grazing incidence are rejected. A user-declared angle can run without map geometry. A geometry_derived angle is accepted only when facade_normal_provenance documents a reliable normal; otherwise validation fails. The current UI intentionally remains user-angle-only because reliable ray/facade intersection selection is a separate workstream. The geometry ledger contains frequency, free-space wavelength, angle convention, angle source, polarization, facade-normal provenance, and geometry mode. It does not claim a building intersection or a selected ray unless a future adapter supplies that evidence."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Complex interface and slab implementation",
+      "url": "./concept-4i4-material-facade-reference.html#complex-interface-and-slab-implementation",
+      "text": "For the selected polarization, the evaluator computes complex refractive indices, Snell angles, and the two interface reflection coefficients. At the first interface, the TE field coefficient is: rTE = (n1 cosθ1 − n2 cosθ2) / (n1 cosθ1 + n2 cosθ2) The TM coefficient uses the source-consistent admittance form: rTM = (n2 cosθ1 − n1 cosθ2) / (n2 cosθ1 + n1 cosθ2) For slab phase thickness: q = k0 d n2 cosθ2 The returned slab reflection includes the internal round trip: R = (r01 + r12 exp(−2j q)) / (1 + r01 r12 exp(−2j q)) The field transmission coefficient is evaluated with the corresponding two-interface numerator and the same internal-reflection denominator. The implementation keeps complex coefficients until power conversion; it does not replace a lossy material with a real refractive index or an attenuation-only scalar."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Field, power, reflection, and absorption ledger",
+      "url": "./concept-4i4-material-facade-reference.html#field-power-reflection-and-absorption-ledger",
+      "text": "The response distinguishes: complex reflection coefficient R; complex transmission coefficient T; first-interface reflection power; total reflected power |R|²; transmitted power after the declared exterior-medium power-flux correction; absorbed power as 1 − reflected − transmitted when the passive balance is within tolerance; transmission loss −10 log10(transmitted_power_fraction). The first-interface reflection is intentionally not presented as total slab reflection. Interference and internal reflections can change total reflected power, especially for thin slabs and oblique incidence. A power-balance warning is returned if the finite calculation falls outside the passive tolerance. The response includes complex propagation constant and normal phase thickness, plus the angles in the incident, slab, and exit media. multiple_internal_reflections_included is explicit. This prevents a field coefficient, a reflected fraction, and a transmission-loss number from being conflated."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Numerical stability",
+      "url": "./concept-4i4-material-facade-reference.html#numerical-stability",
+      "text": "All complex intermediates and exported scalar values are checked for finite values. The internal round-trip exponential is evaluated from its logarithmic magnitude and phase. When a transmission amplitude is below the representable numeric floor, the response does not emit zero, NaN, or Inf; it returns status=below_numeric_floor and a lower-bound transmission loss. The comparison object keeps this lower bound distinct from a finite slab_transmission_loss_db. The controlled numeric fixture is a 10 m concrete slab at 140 GHz. It must return a finite lower-bound state and JSON-marshallable values. A zero-thickness slab between identical media is a regression identity: reflected power is zero, transmitted power is one, and absorbed power is zero within tolerance."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Controlled fixtures and sensitivity",
+      "url": "./concept-4i4-material-facade-reference.html#controlled-fixtures-and-sensitivity",
+      "text": "concept-4i4-controlled-fixtures.json records: 140 GHz concrete, brick, glass, and wood single-slab rows; frequency points 28, 60, 100, 140, and 200 GHz where the selected row is valid; explicit out-of-range brick behavior at 60 GHz; 140 GHz glass thicknesses from 1 mm through 200 mm; TE/TM angle sweeps at 0°, 15°, 30°, 45°, 60°, and 75°; user-defined property sensitivity for relative permittivities 2, 4, and 8; zero-thickness, numeric-floor, metal, and geometry-provenance boundary cases. The earlier 4I.1 audit has an independent material fixture with different slab-loss values. Those values are preserved in the artifact as a comparison-only discrepancy. 4I.4 does not silently promote them to equation goldens; it exposes the signed-complex property conversion, Fresnel coefficients, power correction, and internal-reflection ledger used by the new evaluator. This makes reconciliation reviewable."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Comparison to the unchanged 80 dB heuristic",
+      "url": "./concept-4i4-material-facade-reference.html#comparison-to-the-unchanged-80-db-heuristic",
+      "text": "concept-4i4-reference-comparison.json compares one declared slab loss beside the historical research_sub_thz value of 80 dB per wall event. The comparison is explicitly combined=false. It is not added to the slab loss, not added to the research profile, not used as a calibration target, and not sent into a network path-loss budget. The illustrative 140 GHz equation-ledger values are approximately 12.65 dB for 10 mm glass, 99.10 dB for 100 mm wood, 228.06 dB for 200 mm brick, and 456.97 dB for 200 mm concrete. These are plane-wave slab values, not building-entry predictions. They demonstrate why material, thickness, angle, and construction structure must remain explicit."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "API contract",
+      "url": "./concept-4i4-material-facade-reference.html#api-contract",
+      "text": "A minimal request is: { \"schema_version\": 1, \"frequency_ghz\": 140, \"material_source\": \"p2040_reference\", \"material_id\": \"glass_100_400\", \"thickness_m\": 0.01, \"thickness_provenance\": \"user_declared\", \"incidence_angle_deg\": 0, \"polarization\": \"TE\", \"incident_medium\": { \"name\": \"air\", \"relative_permittivity\": 1, \"conductivity_s_per_m\": 0, \"property_source\": \"user_declared\" }, \"exit_medium\": { \"name\": \"air\", \"relative_permittivity\": 1, \"conductivity_s_per_m\": 0, \"property_source\": \"user_declared\" } } Valid material-range failures are returned as an auditable 200 response with status=material_frequency_out_of_range, no slab ledger, and no extrapolated properties. Invalid schema, angle, polarization, medium, or redundant-property inputs return 400. The endpoint is RF-protected and subject to the existing request deadline/concurrency controls."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "4I.3 measurement adapter",
+      "url": "./concept-4i4-material-facade-reference.html#4i3-measurement-adapter",
+      "text": "The optional MaterialCharacterizationRecord adapter accepts a declared measured coupon/slab transmission-loss record and computes measured-minus-predicted residuals against this isolated evaluator. It is not a MeasurementCampaign, is not added to the shared propagation adapter list, and cannot alter measurement RMSE, calibration, readiness, radio quality, or optimization. No fabricated campaign or numeric field campaign is included. The material adapter returns readiness=reference_only and promoted=false. A future material campaign would need traceable coupon geometry, thickness, frequency, angle, polarization, exterior media, moisture/temperature, fixture calibration, uncertainty, and repeatability before it could support any broader inference."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Fingerprint and performance",
+      "url": "./concept-4i4-material-facade-reference.html#fingerprint-and-performance",
+      "text": "The deterministic material fingerprint includes schema version, model ID/version, P.2040 revision, frequency, material source and row or user properties, thickness and thickness provenance, incidence angle, polarization, incident/exit media, and supplied geometry provenance. It excludes timestamps, runtime, UI state, file paths, and server identity. The material-characterization adapter adds record ID, measured value, measurement source, and measurement provenance to a separate fingerprint. A single evaluation and small controlled sweeps are the intended workload. The endpoint does not run in a network hot loop, on every ray, or inside optimization. Multilayer and geometry-backed facade integration remain future work with separate performance and evidence contracts."
+    },
+    {
+      "page": "Concept 4I.4 Material and Facade Reference",
+      "title": "Readiness and gaps",
+      "url": "./concept-4i4-material-facade-reference.html#readiness-and-gaps",
+      "text": "Readiness remains reference_only. No promotion path is implemented. The principal gaps are: no Ankara 140 GHz material-coupon or facade-entry campaign in the repository; no validated moisture, temperature, roughness, scattering, frame, coating, or air-gap model; no reliable automatic facade-normal/ray-interaction selector; no multilayer or whole-building transfer model; no P.2109 extrapolation; no evidence that a Table 3 row represents a particular Ankara construction product; no device/antenna/receiver validation attached to slab coefficients. The correct next step is traceable measurement and independent review, not replacing the 80 dB planning heuristic or silently summing this reference into network simulation."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "Concept 4I.5A Specular Reflection Audit",
+      "url": "./concept-4i5a-reflection-audit.html",
+      "text": "A read-only 140 GHz single-bounce specular reflection audit covering image geometry, path spreading, P.2040 coefficient composition, facade evidence, roughness, visibility, Ankara readiness, and a gated 4I.5B contract. View Markdown source System architecture Status: read-only scientific and architectural audit. No production reflection evaluator, network coupling, canonical propagation change, or research_sub_thz change is introduced here. The defensible conclusion is deliberately narrow: A single reflected-path diagnostic is defensible only with explicitly supplied facade/material geometry. The smallest useful follow-up is therefore an isolated, opt-in reference for one finite planar facade and one reflected path. It is not a ray tracer, a whole-building model, a P.1411 replacement, or a direct-plus-reflected network-power result. The machine-readable evidence is in the applicability contract , the controlled derivation , the Ankara readiness audit , and the pre-change baseline ."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "1. Source/reference audit",
+      "url": "./concept-4i5a-reflection-audit.html#1-sourcereference-audit",
+      "text": "The physical reference boundary is assembled from authoritative ITU-R material plus a geometry reference and 140 GHz measurement evidence: ITU-R P.2040-4 (2025-09) , §2.2.1–§2.2.2 and equations (34)–(44): planar homogeneous-interface and finite-slab complex TE/TM coefficients. Its plane-wave coefficient methods do not include free-space spreading. ITU-R P.1411-13 (2025-09) , §3.2, §4, §5 and §6: site-data accuracy, urban scenario applicability, statistical transmission loss, multipath, and polarization boundaries. It does not turn an arbitrary footprint edge into a deterministic 140 GHz facade solver. ITU-R P.525-5 (2024-11) , §4–§6: free-space field behavior and L_FS=20 log10(4πd/λ) . ITU-R P.1410-4 (2007-02) , §2.1.2 and equations (1)–(14): an official urban single-bounce reflection option, ideal-mirror image-path power, and a separate finite-facet diffuse-scatter treatment. This is a geometry/spreading analogue, not a calibrated 140 GHz facade standard. ITU Radiocommunication Handbook (1996) , reflection/scattering roughness discussion around pp. 87–89: Rayleigh roughness parameter g=4πσ_h sin(φ_g)/λ and the coherent/diffuse boundary. Application of exact image theory to electromagnetic wave propagation : planar-interface image construction. It is used for geometry/boundary reasoning, not as a complete finite-facade power model. Xing et al., Indoor Wireless Channel Properties at Millimeter Wave and Sub-Terahertz Frequencies : measured 28/73/140 GHz material reflection/scattering behavior. The evidence is indoor and material-specific, so it cannot be transplanted to Ankara exteriors without measurements. The source roles are kept separate: P.2040 supplies Γ , P.525 supplies ideal path spreading, P.1410 supplies a useful official urban-reflection analogue, and P.1411/P.526/4I.2A remain alternative or separately integrated model families."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "2. Image-method geometry",
+      "url": "./concept-4i5a-reflection-audit.html#2-image-method-geometry",
+      "text": "Use a local ENU coordinate system and a declared vertical plane: plane: n · (x - p0) = 0, |n| = 1 mirrored Tx: Tx_i = Tx - 2 n [n · (Tx - p0)] intersection: S = Tx_i + t (Rx - Tx_i) t: -n · (Tx_i - p0) / n · (Rx - Tx_i) d1: |Tx - S| d2: |S - Rx| L: d1 + d2 = |Tx_i - Rx| The denominator must be finite and non-zero, 0 ≤ t ≤ 1 , and the point must lie on the finite facade segment. With the actual three-dimensional vectors, acos(|k_i·n|) equals acos(|k_r·n|) . The controlled tests verify this for normal and oblique cases. The image construction is a candidate path geometry. It does not, by itself, prove that a finite facade is large, smooth, or visible enough to support the ideal-plane field approximation."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "3. Correct spreading formulation",
+      "url": "./concept-4i5a-reflection-audit.html#3-correct-spreading-formulation",
+      "text": "For an ideal infinite or sufficiently large planar specular reflector with a dimensionless field coefficient, the defensible first reference is: E_ref ∝ Γ exp(-j k L) / L P_ref ∝ |Γ|² (λ / (4πL))² FSPL_ref = 20 log10(4πL/λ), L=d1+d2 FSPL(d1)+FSPL(d2) is rejected for this scope. It applies two independent point-to-point power factors, duplicates the free-space constants, and produces a 1/(d1 d2)^2 dependence without a finite-area or RCS normalization. It can belong to a different finite-facet/diffuse/RCS formulation only when that model supplies the missing area and scattering normalization. The finite-facet case is not silently folded into the image method. If the relevant Fresnel footprint is not covered by a known facade, the result is qualified or inapplicable rather than “corrected” by an arbitrary reflector area."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "4. P.2040 Γ composition",
+      "url": "./concept-4i5a-reflection-audit.html#4-p2040-γ-composition",
+      "text": "The coefficient enters once: field: E_ref = E_propagation(L) Γ_TE/TM exp(-j k L) × directional terms power: P_ref = P_propagation(L) |Γ_TE/TM|² × directional power terms A future implementation must not apply a complex coefficient and then subtract a separate reflection-loss dB value again. If direct and reflected paths are ever combined, the fields—not the already-reduced powers—must be added. Γ is selected from the actual incidence angle, medium properties, and polarization. The first implementation should accept explicit TE or TM. Arbitrary user polarization requires vector decomposition and transport; H/V labels are not intrinsically TE/TM."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "5. Interface versus slab reflection",
+      "url": "./concept-4i5a-reflection-audit.html#5-interface-versus-slab-reflection",
+      "text": "Use the front-interface coefficient when the declared surface is effectively semi-infinite/opaque or the rear interface cannot be supported coherently. Use the finite-slab total coefficient only when thickness, rear medium, layer stack, incidence angle, polarization, phase convention, and coherence are all explicit. At 140 GHz, millimetre-scale thickness and roughness are not negligible. Construction variation, moisture, coatings, air gaps, multilayers, and thickness variation can make a nominal slab phase meaningless. The diagnostic must therefore expose interface_only or slab_coherence_unknown ; it must never silently choose the 4I.4 slab path for an unlabeled footprint."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "6. Field/power semantics",
+      "url": "./concept-4i5a-reflection-audit.html#6-fieldpower-semantics",
+      "text": "The isolated reference output is a single reflected-path received-power estimate: Pr_ref_dBm = Pt_dBm + Gt_dBi(S) + Gr_dBi(S) - FSPL(L) + 10 log10(|Γ|²) + explicitly declared, non-duplicated terms The expression is a reference power for one path. It is not whole-building entry loss, not a P.1411 median, not a P.526 excess loss, and not total received power in a multipath channel."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "7. Antenna departure/arrival treatment",
+      "url": "./concept-4i5a-reflection-audit.html#7-antenna-departurearrival-treatment",
+      "text": "The direct-path bearing must not be reused. The directions are: Tx departure: normalize(S - Tx) Rx look/arrival: normalize(S - Rx) The future adapter would evaluate the Tx pattern at the departure azimuth/elevation and the Rx pattern at its look direction, with separate relative pattern loss and absolute gain terms. Concept 4G.1 provides bounded analytic pattern behavior, but it does not provide a measured 140 GHz aperture, array codebook, or beamforming model. The diagnostic must report those limitations rather than infer a 3D array response."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "8. TE/TM basis",
+      "url": "./concept-4i5a-reflection-audit.html#8-tetm-basis",
+      "text": "For incident direction k_i=normalize(S-Tx) and normal n , the incidence plane is span(k_i,n) . A deterministic basis is: s / TE = normalize(cross(n, k_i)) p / TM = normalize(cross(s, k_i)) The sign convention is arbitrary but must be stable. At normal incidence the plane is not unique; select a documented projected ENU axis and note that TE/TM amplitudes are equal. An arbitrary polarization vector must be decomposed against this basis and transported across reflection; the smallest honest first scope requires explicit TE or TM."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "9. Facade-plane assumptions",
+      "url": "./concept-4i5a-reflection-audit.html#9-facade-plane-assumptions",
+      "text": "A 2D building footprint edge supplies a horizontal tangent and a candidate horizontal normal. It does not prove a physical vertical wall plane, a base elevation, a trusted top elevation, a setback, an overhang, an opening/window plane, a material surface, a thickness, or a roughness spectrum. Treating an edge as a facade therefore requires an explicit declaration that it is an exterior wall line, vertical and locally straight over the relevant Fresnel zone, with a selected reflecting side and a known or declared vertical extent. The current loader also retains outer rings only and does not retain hole boundaries as facade semantics."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "10. Normal orientation",
+      "url": "./concept-4i5a-reflection-audit.html#10-normal-orientation",
+      "text": "Project the ring to local ENU metres and calculate signed shoelace area. For an exterior ring with positive (CCW) area, the outward normal of edge (dx,dy) is (dy,-dx) ; for a negative (CW) exterior ring it is (-dy,dx) . Validate the result against an interior point and reject ambiguous or degenerate rings. Holes are not exterior facade segments. MultiPolygon components are tested independently. The test-only audit fixture covers clockwise and counter-clockwise rings and keeps holes/multipart behavior explicit; no production geometry loader is changed here."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "11. Vertical reflection point",
+      "url": "./concept-4i5a-reflection-audit.html#11-vertical-reflection-point",
+      "text": "For a vertical facade, mirroring changes horizontal position but preserves the mirrored source z . The three-dimensional line intersection produces S.z ; the candidate is valid only if: base_z ≤ S.z ≤ top_z with both bounds trusted or explicitly declared. If height is missing, return vertical_extent_status=unknown . The current display fallback of 9 m is never accepted as proof."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "12. Finite segment and height checks",
+      "url": "./concept-4i5a-reflection-audit.html#12-finite-segment-and-height-checks",
+      "text": "The infinite-plane intersection is insufficient. The horizontal segment parameter must satisfy [0,1] ; otherwise return specular_point_outside_facade_segment . A known height must similarly contain S.z ; otherwise return specular_point_outside_vertical_extent . The controlled derivation includes: A: normal incidence; B: oblique reflection; C: point outside the segment; D: wall too short vertically; E: unknown wall height; H: TE/TM contrast; I: zero reflection; J: high reflection. F and G are independent-leg obstruction fixtures described in the derivation artifact and are reserved for the same audit-only visibility harness; neither is a production path implementation."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "13. Two-leg visibility",
+      "url": "./concept-4i5a-reflection-audit.html#13-two-leg-visibility",
+      "text": "Check both Tx→S and S→Rx independently using deterministic 4F.1-style interval and grazing semantics. The reflecting building may be exempted only at the endpoint S . A positive-length penetration behind S , a non-endpoint tangent/grazing contact, or an unrelated building crossing either leg blocks the candidate. Direct-path visibility is not a substitute for either reflected-leg test. This audit defines the visibility contract but does not add a production obstruction walker or reflection route."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "14. Terrain requirement",
+      "url": "./concept-4i5a-reflection-audit.html#14-terrain-requirement",
+      "text": "Terrain affects the facade base, endpoint heights, and obstruction tests. The current Ankara manifest has no terrain layer, so the result is explicitly terrain_unavailable . A later controlled reference may use flat_ground_relative_datum only when the caller declares it; that is an assumption, not measured elevation."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "15. Roughness/specularity at 140 GHz",
+      "url": "./concept-4i5a-reflection-audit.html#15-roughnessspecularity-at-140-ghz",
+      "text": "At 140 GHz, λ=2.1413747 mm . The Rayleigh-style audit criterion is: g = 4π σ_h / λ × sin(grazing angle) = 4π σ_h / λ × cos(incidence angle) The smooth reference is g<0.3 , with RMS height measured within the relevant first Fresnel zone. The corresponding approximate RMS limits are 0.0511 mm at 0°, 0.0723 mm at 45°, 0.1022 mm at 60°, and 0.1975 mm at 75° incidence. These are criteria, not Ankara measurements. RMS height alone is not enough for a diffuse partition: correlation length/texture, surface tilt, curvature, and construction variation may matter. If roughness is unknown, return specularity_evidence=unknown and qualify the result. Do not invent roughness from OSM building type."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "16. Diffuse-scattering boundary",
+      "url": "./concept-4i5a-reflection-audit.html#16-diffuse-scattering-boundary",
+      "text": "Diffuse scattering is not implemented. It may become material when roughness violates the smooth-surface criterion or when the facade is corrugated, porous, textured, or composed of unresolved facets. A future diffuse model would require at least RMS height, correlation length or surface PSD/BRDF, finite facet dimensions, incident/observation geometry, and a polarization-aware or explicitly scalar model. P.1410 provides a useful separate scalar diffuse-scatter discussion but warns that phase and polarization are not retained; it cannot be added to a coherent total-power result without an explicit incoherent/bandwidth policy. The audit contract therefore reports diffuse_scattering_modelled=false ."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "17. Reflector size and Fresnel zone",
+      "url": "./concept-4i5a-reflection-audit.html#17-reflector-size-and-fresnel-zone",
+      "text": "For the image path, a first scalar Fresnel radius is: r_F = sqrt(λ d1 d2 / (d1+d2)) At 140 GHz this gives 0.2314 m for 50/50 m, 0.3272 m for 100/100 m, 0.4627 m for 200/200 m, 0.2121 m for 30/70 m, and 0.1388 m for 10/90 m. The real footprint is an angle-dependent elliptical/phase zone. A future diagnostic should compare known facade segment and vertical extent with the relevant zone and qualify finite-edge cases; it should not invent a universal minimum surface area."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "18. Far-field assumptions",
+      "url": "./concept-4i5a-reflection-audit.html#18-far-field-assumptions",
+      "text": "P.525’s spherical-wave 1/r behavior and the geometric-optics plane-wave coefficient require an appropriate distance regime. For a physical antenna aperture D , a standard bound is approximately R_ff=2D²/λ . At 140 GHz the bounds are 9.34 m for D=0.1 m , 37.36 m for D=0.2 m , and 84.06 m for D=0.3 m . If physical aperture is unknown, antenna far-field validity cannot be proven. Gain must not be reverse-engineered into an aperture unless that is an explicit controlled bound. The facade must also be locally planar and sufficiently extended; curvature is a separate gate."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "19. Atmospheric composition",
+      "url": "./concept-4i5a-reflection-audit.html#19-atmospheric-composition",
+      "text": "The 4I.2A specific-loss ledger can be applied to a later reflected reference only as a separately declared path component. Integrate leg 1 and leg 2 independently: A_atm_total = A_leg1 + A_leg2 For homogeneous conditions this equals the specific attenuation times d1+d2 ; for variable profiles, each leg needs its own path integration. The direct Tx–Rx atmospheric ledger must not be silently reused for a broken path. No atmospheric integration is added in 4I.5A."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "20. P.1411 separation",
+      "url": "./concept-4i5a-reflection-audit.html#20-p1411-separation",
+      "text": "P.1411’s statistical median/basic-transmission-loss family and a deterministic single-bounce facade path are alternative model branches. The statistical measurement basis may already contain reflection and multipath effects. A future UI may show side-by-side values, but must not add a deterministic reflected path to a P.1411 median without calibration evidence."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "21. P.526 separation",
+      "url": "./concept-4i5a-reflection-audit.html#21-p526-separation",
+      "text": "P.526 diffraction remains an alternative mechanism. Do not add a P.526 diffraction loss to the same isolated reflected ray. A total urban multipath model would need a separate field-based mechanism that owns both paths and their phase/coherence rules; that is explicitly outside 4I.5B’s first scope."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "22. Coherent-multipath limitation",
+      "url": "./concept-4i5a-reflection-audit.html#22-coherent-multipath-limitation",
+      "text": "If direct and reflected paths are combined, the correct expression is: E_total = E_direct + E_reflected not a power sum. It requires path-length phase, reflection phase, antenna phase, polarization vectors, spatial coherence, and bandwidth averaging. At 140 GHz, a 1 mm path error changes phase by approximately 168.1°. A 1 GHz bandwidth has a free-space coherence-length scale of about 0.3 m, but averaging is not automatic. This is a stop for canonical coherent multipath. The first safe architecture is an isolated reflected_path_reference_power result."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "23. Controlled 140 GHz derivation",
+      "url": "./concept-4i5a-reflection-audit.html#23-controlled-140-ghz-derivation",
+      "text": "The full hand-checkable fixture uses: facade: x=0, outward normal +x, exterior x>0 segment: y∈[-10,10] m, z∈[0,20] m Tx: (50,-50,10) m Rx: (50,50,10) m f: 140 GHz, Pt=30 dBm, isotropic Tx/Rx, no other losses material: user-declared lossless semi-infinite εr=4, air incident medium The mirrored Tx is (-50,-50,10) , so S=(0,0,10) , d1=d2=70.710678 m , L=141.421356 m , and both angles are 45°. P.525 spreading is 118.380644 dB. The rejected two-FSPL sum is 224.720088 dB. For TE, Γ=-0.4514162296451364 , |Γ|²=0.20377661238703051 , reflection loss is 6.9084566181195415 dB, and the isolated reference received power is -95.28910051020749 dBm. For TM, Γ=0.20377661238703063 , |Γ|²=0.04152490775593412 , reflection loss is 13.81691323623908 dB, and the isolated reference received power is -102.19755712832702 dBm. This controlled material is not a calibrated Ankara facade and the result is not direct-plus-reflected power."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "24. Ankara readiness",
+      "url": "./concept-4i5a-reflection-audit.html#24-ankara-readiness",
+      "text": "The current pack contains 161,784 loader-visible footprints and 936,651 outer-ring segments. Only 6,074 footprints (3.75%) have observed or levels-derived height evidence, covering 49,137 segments (5.25%). Material tags are absent; thickness, roughness, terrain, surveyed facade planes, and morphology/rooftop relations are absent. An audit-only sample of six known towers, 72 full-azimuth rays each, and 400 m radius found 6,368 mathematical finite-edge image intersections across 430 of 432 paths and 2,113 footprint IDs. Only 777 candidates had height evidence under a declared flat relative datum; zero were terrain-anchored and zero had material evidence. These counts are readiness evidence only. They are not viable reflected links, coverage, or specularity evidence. The details and reproducible command are in the readiness JSON ."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "25. Measurement requirements",
+      "url": "./concept-4i5a-reflection-audit.html#25-measurement-requirements",
+      "text": "A reflection campaign intended to promote the reference would need, per observation: exact Tx/Rx coordinates and heights, time, orientation, and coordinate uncertainty; facade segment coordinates, plane normal, base/top height, curvature/setback, and reflector extent; material identity, layer stack, thickness, moisture/state, and electrical-property provenance; RMS roughness within the relevant Fresnel zone plus texture/correlation information; Tx/Rx antenna patterns, apertures, boresight, beam direction/codebook state, polarization, and cable/system calibration; carrier frequency, bandwidth, waveform, phase reference, dynamic range, and averaging policy; direct-path suppression or spatial/temporal separation method, with a measured reflected-path power quantity definition; weather and atmospheric state sufficient for a separate P.676/P.838/P.840 path ledger; repeated angles/distances and spatial holdouts so a material/facade result is not fit and evaluated on the same sample. No campaign is invented by this audit. The existing 4I.3 validation foundation is the appropriate place for its versioned evidence once measurements exist."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "26. 4I.5B go/no-go decision",
+      "url": "./concept-4i5a-reflection-audit.html#26-4i5b-gono-go-decision",
+      "text": "Decision: GO with hard gates for an isolated reference-only diagnostic; NO for canonical or network-coupled reflected propagation. The path-spreading equation is unambiguous for the declared ideal-planar branch, and P.2040 Γ composes cleanly once in field/power form. The model is useful as an inspectable reference when facade geometry and material inputs are explicit. It is not ready to auto-populate from the current Ankara pack. The following remain hard stops: missing finite facade evidence, fallback-only height, unknown terrain when terrain matters, unknown material/thickness for the selected mode, unknown roughness when a specular claim is made, unproven two-leg visibility, missing TE/TM basis, and any request to produce direct-plus-reflected coherent network power."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "27. Proposed 4I.5B contract if promoted",
+      "url": "./concept-4i5a-reflection-audit.html#27-proposed-4i5b-contract-if-promoted",
+      "text": "model_id: single_bounce_specular_reflection_reference_v1 status: opt-in, reference_only scope: one planar vertical facade, one finite segment, one reflected path inputs: Tx/Rx ENU positions and heights, facade point/normal/segment/base/top, explicit interface or slab material contract, incidence polarization TE/TM, antenna direction/pattern inputs, terrain/flat-datum declaration geometry: image-method S, d1, d2, L with finite segment and height gates spreading: P.525 FSPL(L) / image-source field material: one P.2040 complex field coefficient, |Γ|² once in power visibility: independent Tx→S and S→Rx checks with endpoint exemption only output: isolated reflected_path_reference_power plus applicability/reason ledger excluded: diffuse scattering, curvature solver, multi-bounce paths, direct+reflected coherent sum, P.1411/P.526 addition, 80 dB heuristic addition, automatic OSM material inference, network/optimizer coupling The first implementation should reject or qualify missing evidence rather than substitute generic values."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "28. Invariance validation",
+      "url": "./concept-4i5a-reflection-audit.html#28-invariance-validation",
+      "text": "The required exact invariance set is: 2.6 GHz canonical propagation; 28 GHz canonical propagation; research_sub_thz 140 GHz dispatch and 80 dB/event heuristic; 4I.2A atmospheric reference; 4I.2B P.1411 reference; 4I.3 measurement validation; 4I.4 material/slab reference; P.526 diagnostic; building entry; interference; radio quality; 4H.2 optimizer and Pareto outputs. 4I.5A changes only documentation, generated reference-page metadata, changelog/index text, and a test-only audit harness. No production RF file is changed by this concept."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "29. Files changed",
+      "url": "./concept-4i5a-reflection-audit.html#29-files-changed",
+      "text": "New audit artifacts: docs/concept-4i5a-pre-change-baseline.json docs/concept-4i5a-reflection-audit.md docs/concept-4i5a-reflection-applicability.json docs/concept-4i5a-controlled-derivation.json docs/concept-4i5a-ankara-readiness.json backend-go/raytracer/concept_4i5a_reflection_audit_test.go (test-only geometry/readiness fixtures) Documentation registration, if generated, is limited to the reference-page build list, documentation index/changelog, and generated HTML/search artifacts. No production evaluator, route, UI control, or RF engine is added."
+    },
+    {
+      "page": "Concept 4I.5A Specular Reflection Audit",
+      "title": "30. Remaining scientific limitations",
+      "url": "./concept-4i5a-reflection-audit.html#30-remaining-scientific-limitations",
+      "text": "This audit does not establish facade curvature, finite-aperture physical optics, edge diffraction, diffuse BRDF, multilayer/moisture variability, measured 140 GHz antenna phase, spatial coherence, or Ankara material transferability. It does not establish that a footprint edge is a physical reflector, and it does not convert sparse OSM/levels height tags into surveyed wall geometry. The conclusion is therefore intentionally bounded: 4I.5B is scientifically defensible only as a separately labeled, evidence-gated, single reflected-path reference with explicit facade/material geometry. It must remain outside canonical propagation, research_sub_thz , P.1411, P.526, atmosphere, building entry, interference, radio quality, and optimization until independent validation justifies any broader composition."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Concept 4I.5B Specular Reflection Reference",
+      "url": "./concept-4i5b-specular-reflection-reference.html",
+      "text": "An isolated single-bounce image-source reference with explicit finite-facade geometry, P.2040 TE/TM interface or slab coefficients, visibility, Fresnel and far-field evidence, and a non-combined reflected-path link budget. View Markdown source System architecture Concept 4I.5B adds an isolated, opt-in diagnostic for one explicitly declared specular reflection from one finite vertical planar facade. It is a reference ledger for RF engineers and reviewers, not a new propagation mode. The public model ID is single_bounce_specular_reflection_reference_v1 , the readiness is reference_only , and the route is POST /api/sub-thz-reflection-reference ."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Model identity and boundary",
+      "url": "./concept-4i5b-specular-reflection-reference.html#model-identity-and-boundary",
+      "text": "The response always exposes schema_version: 1 , model_id , model_version: v1 , readiness: reference_only , canonical: false , network_coupled: false , multipath_combined: false , and coherent_multipath_combined: false . The evaluator is called only by the new route and direct unit tests; it is not dispatched by /api/simulate , coverage, interference, radio quality, building entry, recommendation, or either optimizer. The route evaluates one declared Tx, Rx, facade segment, material declaration, polarization, terrain mode, and link budget. It does not select a reflector, search for a best path, create a direct path, sum multipath, or promote a result into a canonical/network profile."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Applicability and status",
+      "url": "./concept-4i5b-specular-reflection-reference.html#applicability-and-status",
+      "text": "applicable_reference means the explicit geometry, material, visibility, antenna, and evidence gates pass without a qualification. qualified_reference means a reflected-path result is available but one or more evidence items remain qualified, such as unknown roughness, unknown antenna far-field status, local-ENU visibility assumptions, or surveyed terrain not being available in the active dataset. inapplicable means a required gate fails; examples include a specular point outside the finite facade segment, an unknown vertical extent, a blocked leg, unsupported material frequency, or zero reflection at the numeric floor. The response keeps the reason and qualification arrays separate. A qualification is not silently converted into a measured fact, and an inapplicable result does not manufacture received power."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Explicit input contract",
+      "url": "./concept-4i5b-specular-reflection-reference.html#explicit-input-contract",
+      "text": "The request requires: frequency in 0.001–450 GHz ; Tx and Rx metric positions or WGS84 longitude/latitude plus explicit height; antenna mode and absolute gain, either on each antenna or as an explicit link-budget fallback; a finite facade start / end , geometry provenance, and either a unit outward normal or a polygon context from which the exterior normal can be derived; optional but explicit facade base_z and top_z ; omitting either preserves an inapplicable vertical-extent result; material source, media, polarization ( TE or TM only), terrain mode, and conducted transmitter power; an interface or finite-slab material mode. No material default, facade height, antenna aperture, roughness, or atmosphere is invented. Generic H / V labels are rejected rather than silently mapped to TE/TM."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Metric coordinate frame",
+      "url": "./concept-4i5b-specular-reflection-reference.html#metric-coordinate-frame",
+      "text": "Image geometry is never performed in longitude/latitude degrees. A local_enu request uses the supplied metric coordinates directly. A geographic request is transformed into a local ENU frame using an explicit WGS84 origin (or the Tx point when no origin is supplied), with east/north distances derived from the local latitude and Earth radius; endpoint heights remain the vertical coordinate. The response records the coordinate-system, projection, origin, transform description, and origin provenance."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Image-source geometry",
+      "url": "./concept-4i5b-specular-reflection-reference.html#image-source-geometry",
+      "text": "For a facade plane point P0 , unit outward normal n , Tx point T , and Rx point R , the evaluator forms the mirrored transmitter T' = T − 2 n (n · (T − P0)) and intersects T' → R with the plane. The returned image_intersection_t , facade-segment parameter, reflection point, mirrored Tx, d1 , d2 , total path length, image path length, and image/path difference make the construction auditable. The point must be on the finite horizontal facade segment and within the declared vertical bounds. A point outside the segment, outside the vertical extent, or a degenerate/non-finite leg is inapplicable. The incident vector is k_i = normalize(S − T) and the reflected vector is k_r = normalize(R − S) . The implementation checks k_r = k_i − 2(k_i · n)n and reports the specular equality error. Incidence and reflection angles are measured from the facade normal with acos(abs(k · n)) ; both are returned in degrees."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "TE/TM basis and phase",
+      "url": "./concept-4i5b-specular-reflection-reference.html#tetm-basis-and-phase",
+      "text": "The deterministic local basis is: s = normalize(n × k_i) (TE) p = normalize(s × k_i) (TM) At normal incidence, TE uses projected ENU up (falling back to projected ENU north if necessary), then TM follows from the cross product. The response returns both basis vectors, the convention, and the normal-incidence flag. The complex P.2040 field coefficient is preserved as real part, imaginary part, magnitude, phase in radians/degrees, and power fraction. Phase is evidence; it is not discarded and is not combined with another path."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "P.2040 interface and finite slab",
+      "url": "./concept-4i5b-specular-reflection-reference.html#p2040-interface-and-finite-slab",
+      "text": "material.mode: interface evaluates the front interface coefficient once. material.mode: finite_slab requires explicit thickness, thickness provenance, coherent phase treatment ( coherent or coherent_total_slab ), incident medium, and exit medium. The finite slab reuses the isolated P.2040 material ledger and includes internal reflections in the total complex coefficient. The response exposes both the total coefficient and the first-interface coefficient. The P.2040 material source may be an explicit covered reference row or an explicit user-declared electrical-property form. User properties retain their source and provenance. Inferred properties are rejected. A P.2040 row outside its documented frequency range is reported as inapplicable; it is never extrapolated. The returned reflection power term is exactly 10 log10(|Γ|²) and is applied once. The historical research_sub_thz wall heuristic is excluded and is never added to the P.2040 coefficient or link budget."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Roughness and specularity",
+      "url": "./concept-4i5b-specular-reflection-reference.html#roughness-and-specularity",
+      "text": "Optional RMS roughness produces the qualitative Rayleigh-style parameter g = 4π · rms_roughness / λ · cos(incidence_angle) g < 0.3 is reported as supported_smooth ; larger values produce rough_surface_warning ; omitted roughness produces unknown . This is a qualification only. Diffuse scattering, BRDF, edge diffraction, curvature, and a diffuse power budget are not modeled; diffuse_scattering_modelled is always false."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Fresnel evidence",
+      "url": "./concept-4i5b-specular-reflection-reference.html#fresnel-evidence",
+      "text": "The response reports the scalar first-zone radius r_F = sqrt(λ d1 d2 / (d1 + d2)) and compares it qualitatively with available horizontal and vertical reflector extent. It reports whether both extents are known and whether the finite facade is smaller than the scalar zone. No hard aperture rule or hidden edge-diffraction loss is introduced."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Antenna far-field evidence",
+      "url": "./concept-4i5b-specular-reflection-reference.html#antenna-far-field-evidence",
+      "text": "Physical aperture is accepted only when explicitly supplied. The diagnostic computes, per relevant leg, R_ff ≈ 2D² / λ and compares d1 with the Tx bound and d2 with the Rx bound. Gain is never reverse-engineered into aperture. Missing aperture produces far_field_status: unknown ; a failing explicit aperture comparison produces a warning qualification."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Two-leg visibility",
+      "url": "./concept-4i5b-specular-reflection-reference.html#two-leg-visibility",
+      "text": "The Tx-to-reflector and reflector-to-Rx legs are evaluated independently. The route accepts explicit ENU obstruction polygons for controlled or user-scoped checks and can inspect the active dataset when the request is geographic. Positive-length interior penetration blocks a leg. A zero-length contact at the selected reflector endpoint is exempt only when the object is explicitly marked as the reflector; a reflector polygon that penetrates a leg remains blocking. Unknown building height produces unknown visibility rather than an invented roof height. The local-ENU controlled fixture has no dataset projection, so its response records a visible result with an explicit local-ENU visibility qualification. Surveyed terrain records dataset availability or an explicit unavailable qualification; flat mode records the relative-datum assumption."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Spreading and FSPL",
+      "url": "./concept-4i5b-specular-reflection-reference.html#spreading-and-fspl",
+      "text": "The reflected path is one physical path with L = d1 + d2 . The only spreading term is FSPL(L) = 20 log10(4π L / λ) The response sets two_leg_fspl_composition: false and records the image-path equivalent. It never computes FSPL(d1) + FSPL(d2) , never applies two independent inverse-square factors, and never uses a wall-event heuristic as spreading."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Antenna directions",
+      "url": "./concept-4i5b-specular-reflection-reference.html#antenna-directions",
+      "text": "Tx output contains departure azimuth/elevation toward the reflection point. Rx output contains the arrival/look azimuth/elevation from Rx toward the reflection point. Directional modes use the existing deterministic antenna pattern evaluator, while isotropic/omni modes retain zero pattern attenuation. The response exposes absolute gains, pattern attenuation, hard-beam eligibility, and the reason for any directional exclusion."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Reflected-path link budget",
+      "url": "./concept-4i5b-specular-reflection-reference.html#reflected-path-link-budget",
+      "text": "The diagnostic returns all ledger terms even when the reflection coefficient is zero or below the numeric floor: Pr_ref_dBm = Pt_conducted + Gt_absolute − A_tx_pattern + Gr_absolute − A_rx_pattern − L_system − L_polarization + calibration − FSPL(L) + 10 log10(|Γ|²) The reflected-path reference power is omitted when |Γ|² is zero/below the numeric floor or the resulting value is non-finite. This avoids −Inf / NaN in JSON while preserving the reason in applicability. There is no receiver-sensitivity, serviceability, interference, or radio-quality decision in this ledger."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Exclusions and non-combination rules",
+      "url": "./concept-4i5b-specular-reflection-reference.html#exclusions-and-non-combination-rules",
+      "text": "The response explicitly excludes direct-plus-reflected coherent summation, multi-bounce reflection, diffuse scattering, curvature, finite-edge diffraction, automatic OSM material inference, atmosphere composition, P.1411 composition, P.526 composition, the research 80 dB wall addition, and all canonical/network/optimizer coupling. canonical , network_coupled , multipath_combined , coherent_multipath_combined , direct_path_calculated , and atmosphere_composition_supported remain false."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Controlled 140 GHz fixture",
+      "url": "./concept-4i5b-specular-reflection-reference.html#controlled-140-ghz-fixture",
+      "text": "The regression fixture uses local ENU coordinates, a facade on x=0 from y=-10 m to y=10 m , z=0–20 m , Tx (50,-50,10) , Rx (50,50,10) , unit normal (1,0,0) , 30 dBm conducted power, isotropic 0 dBi antennas, air on both sides, user-declared lossless εr=4 , zero conductivity, flat relative-datum terrain, and no roughness or aperture assumption. The reflection point is (0,0,10) , d1=d2=70.71067811865476 m , L=141.4213562373095 m , and both angles are 45° . At 140 GHz, the total-path FSPL is 118.38064389208795 dB . TE returns Γ=-0.4514162296451364 , |Γ|²=0.20377661238703051 , and Pr_ref=-95.28910051020749 dBm ; TM returns Γ=0.20377661238703063 , |Γ|²=0.04152490775593412 , and Pr_ref=-102.19755712832702 dBm . The rejected two-leg comparison would be FSPL(d1)+FSPL(d2)=224.72008795761664 dB ; it is included only as a regression guard and is not used by the evaluator."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "API and frontend surface",
+      "url": "./concept-4i5b-specular-reflection-reference.html#api-and-frontend-surface",
+      "text": "The route returns 400 for malformed or underspecified input, 429 / 504 through the shared RF route handling, and a JSON ledger for valid requests, including inapplicable reference outcomes. The OpenAPI contract names the request and response schemas. The RF Diagnostics panel uses progressive disclosure: geometry and facade evidence first, material/polarization next, then roughness, antenna evidence, terrain, and link budget. Its identity and subtitle visibly state that the evaluator is isolated and not used by network simulation. The frontend payload builder emits explicit local ENU coordinates, antenna assumptions, facade geometry/provenance, medium properties, TE/TM, flat terrain, and link-budget terms. It does not silently bind the panel to the active network propagation model."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Validation and invariance",
+      "url": "./concept-4i5b-specular-reflection-reference.html#validation-and-invariance",
+      "text": "The backend has controlled TE/TM, total-path FSPL, geometry/height gate, visibility/self-contact, zero-reflection finite-JSON, fingerprint, and finite-slab alias tests. Route tests verify the isolated identity and RF protection. The frontend has payload-builder and panel tests. The pre-change baseline and post-change comparison artifacts record canonical snapshot invariants, including the existing 2.6 GHz, 28 GHz, and research 140 GHz identities and values. The expected quality commands are: cd backend-go && go vet ./... && go test -race ./... cd frontend-react && npm run lint && npm test -- --run && npm run build python3 docs/validate_docs.py python3 scripts/versioning.py check"
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Scalability and promotion gate",
+      "url": "./concept-4i5b-specular-reflection-reference.html#scalability-and-promotion-gate",
+      "text": "One evaluation is a bounded constant-size geometry/material/visibility calculation. Explicit obstruction checks are limited to the supplied scope; dataset checks use the existing spatial index and do not search candidate reflectors. The result is appropriate for a diagnostic request or controlled fixture, not for per-pixel network rasterization. No result is promoted to canonical propagation or a network optimizer. Promotion would require measured specular-path validation, material/facade evidence, roughness and aperture distributions, visibility/terrain evidence, direct-path and multipath policy, and a separately approved canonical integration contract."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Deferred work",
+      "url": "./concept-4i5b-specular-reflection-reference.html#deferred-work",
+      "text": "Deferred items are explicit: automatic facade candidate selection, image geometry over arbitrary non-planar/curved surfaces, edge diffraction, diffuse/BRDF scattering, atmospheric composition, coherent direct-plus-reflected channels, polarization conversion, frequency-dependent roughness statistics, dataset material classification, and any canonical/network integration. These are not hidden behind the current reference-only status."
+    },
+    {
+      "page": "Concept 4I.5B Specular Reflection Reference",
+      "title": "Required artifacts",
+      "url": "./concept-4i5b-specular-reflection-reference.html#required-artifacts",
+      "text": "The corresponding audit package is: concept-4i5b-pre-change-baseline.json concept-4i5b-controlled-fixtures.json concept-4i5b-reference-comparison.json concept-4i5b-post-change-comparison.json this design note Together they preserve the pre-change identity/value snapshots, independently describe the controlled 140 GHz TE/TM fixture, compare the reflected-path reference with direct/P.525/P.1411/research alternatives without combining them, and record post-change tests plus the unchanged canonical/network contract."
     },
     {
       "page": "Contributing",
@@ -2141,13 +3065,13 @@
       "page": "Overview",
       "title": "Reference library",
       "url": "./index.html#reference-heading",
-      "text": "Use the focused guides above for orientation, then move into the detailed API, algorithms, deployment, and release history. REST API reference Endpoints and contracts Algorithms and RF physics Equations and geometry Capability details Supported workflows Reading propagation maps Visual interpretation Production deployment Operations guide Dataset Pack Studio Build arbitrary-region packs Modeling limits Confidence boundary Concept 4E building entry Facade-entry model reference Concept 4F.1 height-aware obstruction Centerline roof classifier Concept 4G.1 antenna and link budget Explicit RF term contract FAQ and troubleshooting Common questions Project changelog Releases and updates Contributor guide Development workflow"
+      "text": "Use the focused guides above for orientation, then move into the detailed API, algorithms, deployment, and release history. REST API reference Endpoints and contracts Algorithms and RF physics Equations and geometry Capability details Supported workflows Reading propagation maps Visual interpretation Production deployment Operations guide Dataset Pack Studio Build arbitrary-region packs Modeling limits Confidence boundary Concept 4E building entry Facade-entry model reference Concept 4F.1 height-aware obstruction Centerline roof classifier Concept 4G.1 antenna and link budget Explicit RF term contract Concept 4I.1 140 GHz audit Applicability and evidence boundary Concept 4I.2B P.1411 candidates Strict Table 4 reference gates Concept 4I.3 measurement validation Evidence, calibration, and spatial holdouts FAQ and troubleshooting Common questions Project changelog Releases and updates Contributor guide Development workflow"
     },
     {
       "page": "Modeling Limits",
       "title": "Modeling Limits",
       "url": "./modeling-limits.html",
-      "text": "What the deterministic planning model includes, what it excludes, and how to interpret its outputs responsibly. View Markdown source System architecture A.T.O.M produces deterministic planning estimates. It is designed for comparative RF planning, education, API experimentation, and inspectable scenario analysis. Its outputs are not UE measurements, drive-test results, calibrated link budgets, or a replacement for a commercial propagation tool. The network engine dispatches explicit propagation models. urban_short_range is the deterministic 3GPP UMa LOS/NLOS baseline for 2.6/28 GHz, using the shared height-aware footprint-height-los-v1 centerline classifier; legacy_fspl_walls is the compatibility model and fallback, and research_sub_thz is the explicitly research-only 140 GHz profile. Known heights can clear a footprint, while unknown-height intersections remain conservative NLOS. The current Ankara network has no terrain layer, so height-aware results report terrain_unavailable and use flat-ground relative heights. Its applicability and classification metadata are returned in rf_contract , ray explainability, interference, surface, and building-entry fields. The separate Concept 4E building-entry analysis adds one standard O2I facade term at zero indoor depth; it is not indoor or whole-building coverage. The point-to-point path profile remains an isolated advanced diagnostic with model id path-profile-diagnostic-v1 . Read the Concept 4F.1 design note for the centerline rule and audit, and the Concept 4G.2 receiver-noise note for the effective per-cell receiver threshold and link-margin contract."
+      "text": "What the deterministic planning model includes, what it excludes, and how to interpret its outputs responsibly. View Markdown source System architecture A.T.O.M produces deterministic planning estimates. It is designed for comparative RF planning, education, API experimentation, and inspectable scenario analysis. Its outputs are not UE measurements, drive-test results, calibrated link budgets, or a replacement for a commercial propagation tool. The network engine dispatches explicit propagation models. urban_short_range is the deterministic 3GPP UMa LOS/NLOS baseline for 2.6/28 GHz, using the shared height-aware footprint-height-los-v1 centerline classifier; legacy_fspl_walls is the compatibility model and fallback, and research_sub_thz is the explicitly research-only 140 GHz profile. Known heights can clear a footprint, while unknown-height intersections remain conservative NLOS. The current Ankara network has no terrain layer, so height-aware results report terrain_unavailable and use flat-ground relative heights. Its applicability and classification metadata are returned in rf_contract , ray explainability, interference, surface, and building-entry fields. The separate Concept 4E building-entry analysis adds one standard O2I facade term at zero indoor depth; it is not indoor or whole-building coverage. The point-to-point path profile remains an isolated advanced diagnostic with model id path-profile-diagnostic-v1 . The separate Concept 4I.2A atmospheric reference is an opt-in standards ledger and is never silently added to any network model. Read the Concept 4F.1 design note for the centerline rule and audit, and the Concept 4G.2 receiver-noise note for the effective per-cell receiver threshold and link-margin contract."
     },
     {
       "page": "Modeling Limits",
@@ -2159,7 +3083,7 @@
       "page": "Modeling Limits",
       "title": "What the Model Uses",
       "url": "./modeling-limits.html#what-the-model-uses",
-      "text": "Per-cell coordinates, azimuth, technology/frequency/bandwidth, interference channel, beam width, radius, conducted TX power, absolute antenna gain, relative pattern, antenna and receiver heights, downtilts, orientation, pattern preset, receiver sensitivity mode, manual sensitivity, noise bandwidth, noise figure, required SNR, receiver margin, and load Explicit propagation model selection and the requested/applied model identity Free-space path loss (FSPL) Configured per-cell conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, and calibration One shared antenna evaluator for horizontal/vertical relative attenuation, tilt, orientation, and eligibility across direct links, rays, surfaces, interference, building entry, and optimization Analytic compatibility patterns with hard-sector eligibility, plus the optional full-azimuth 3gpp-single-element reference cut Building-polygon intersections from the local Ankara GeoJSON dataset Frequency-dependent cumulative wall attenuation only in legacy_fspl_walls ; urban empirical NLOS does not receive an additional legacy wall term, and indoor endpoint fallback is explicit Deterministic POI and residential-demand enrichment for scoring Co-channel cell power, load, reuse, thermal noise, and resource-block presets for interference analysis A shared thermal-noise arithmetic helper with distinct receiver noise-equivalent bandwidth and interference per-resource-element bandwidth semantics Optional COG/GeoTIFF ground elevation, building-height obstruction, LOS/Fresnel geometry, and one dominant single knife-edge approximation in the isolated point-to-point path-profile workflow Optional, user-entered material, clutter, vegetation, gas, rain, and shadow-sensitivity components in that path-profile workflow The same request and dataset produce the same RF result. Core Lab scenario state does not modify propagation or interference calculations."
+      "text": "Per-cell coordinates, azimuth, technology/frequency/bandwidth, interference channel, beam width, radius, conducted TX power, absolute antenna gain, relative pattern, antenna and receiver heights, downtilts, orientation, pattern preset, receiver sensitivity mode, manual sensitivity, noise bandwidth, noise figure, required SNR, receiver margin, and load Explicit propagation model selection and the requested/applied model identity Free-space path loss (FSPL) Configured per-cell conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, and calibration One shared antenna evaluator for horizontal/vertical relative attenuation, tilt, orientation, and eligibility across direct links, rays, surfaces, interference, building entry, and optimization Analytic compatibility patterns with hard-sector eligibility, plus the optional full-azimuth 3gpp-single-element reference cut Building-polygon intersections from the local Ankara GeoJSON dataset Frequency-dependent cumulative wall attenuation only in legacy_fspl_walls ; urban empirical NLOS does not receive an additional legacy wall term, and indoor endpoint fallback is explicit Deterministic POI and residential-demand enrichment for scoring Co-channel cell power, load, reuse, thermal noise, and resource-block presets for interference analysis A shared thermal-noise arithmetic helper with distinct receiver noise-equivalent bandwidth and interference per-resource-element bandwidth semantics Optional COG/GeoTIFF ground elevation, building-height obstruction, LOS/Fresnel geometry, and one dominant single knife-edge approximation in the isolated point-to-point path-profile workflow Optional, user-entered material, clutter, vegetation, gas, rain, and shadow-sensitivity components in that path-profile workflow Separate opt-in sub_thz_atmospheric_reference_v1 component ledger for explicit P.525-5 free space, P.676-13 gas, P.838-3 rain, and local-fog P.840-9 sensitivity; this ledger is not a canonical propagation model and does not make serviceability decisions The same request and dataset produce the same RF result. Core Lab scenario state does not modify propagation or interference calculations."
     },
     {
       "page": "Modeling Limits",
@@ -2183,7 +3107,7 @@
       "page": "Modeling Limits",
       "title": "Recommendation Applicability",
       "url": "./modeling-limits.html#recommendation-applicability",
-      "text": "The terrain-profile label is available only from 30 MHz to 6 GHz, matching the frequency scope recorded for the current ITU-R P.1812-8 (2025-09) Recommendation . The runtime profile also requires a terrain-capable path context for that reference scope; missing terrain uses the explicit zero-metre local datum and is not P.1812 conformance. The urban-short-range label is available from 300 MHz to 100 GHz in the current runtime profile. The current ITU-R P.1411-13 (2025-09) Recommendation has a broader 300 MHz to 300 GHz outdoor short-range scope, but A.T.O.M retains its existing 100 GHz runtime ceiling and does not claim full P.1411 implementation. A research sub-THz profile is explicitly outside both standards-based profiles. The isolated Concept 4F.2 single-edge diagnostic is aligned with ITU-R P.526-16 (2025-11), §4.1 equations (26) and (31) . It uses FSPL plus explicit diffraction as an alternative view; it is not summed with canonical UMa NLOS. Explicit height and building:levels evidence are required, while the generic 9 m fallback is unavailable geometry. User-selected material, atmospheric-gas, and rain terms are informed by ITU-R P.2040-4 , ITU-R P.676 , and ITU-R P.838 , respectively. They are not automatic implementations driven by surveyed construction or current meteorological data. The reference catalog also records 3GPP TR 38.901 V19.4.0 (2026-06-23) as a comparison scope for 0.5–100 GHz channel evaluation. The runtime dispatches the documented deterministic UMa path-loss subset as urban_short_range , without claiming full 3GPP channel-model conformance. Measurement and calibration behavior is represented by /api/measurements/evaluate ; there is no standalone calibration endpoint in this matrix. Concept 4H.1 adds inspectable interference bookkeeping, but it remains a planning approximation: total-carrier propagation power is normalized to a common reference-resource basis, LTE/NR signal-resource density and scheduler timing are not modeled, adjacent-channel/partial-overlap selectivity is deferred, and each cell's configured radius is only a finite analysis horizon. The declared power ledger separates serving admission from non-serving interference eligibility, while exact co-channel rules, thermal-noise bandwidth, serviceability thresholds, and failure reasons are returned so results are auditable. See the Concept 4H.1 interference and radio-qua"
+      "text": "The terrain-profile label is available only from 30 MHz to 6 GHz, matching the frequency scope recorded for the current ITU-R P.1812-8 (2025-09) Recommendation . The runtime profile also requires a terrain-capable path context for that reference scope; missing terrain uses the explicit zero-metre local datum and is not P.1812 conformance. The urban-short-range label is available from 300 MHz to 100 GHz in the current runtime profile. The current ITU-R P.1411-13 (2025-09) Recommendation has a broader 300 MHz to 300 GHz outdoor short-range scope, but A.T.O.M retains its existing 100 GHz runtime ceiling and does not claim full P.1411 implementation. A research sub-THz profile is explicitly outside both standards-based profiles. The isolated Concept 4F.2 single-edge diagnostic is aligned with ITU-R P.526-16 (2025-11), §4.1 equations (26) and (31) . It uses FSPL plus explicit diffraction as an alternative view; it is not summed with canonical UMa NLOS. Explicit height and building:levels evidence are required, while the generic 9 m fallback is unavailable geometry. User-selected material, atmospheric-gas, and rain terms are informed by ITU-R P.2040-4 , ITU-R P.676 , and ITU-R P.838 , respectively. They are not automatic implementations driven by surveyed construction or current meteorological data. The isolated Concept 4I.2B candidate reference evaluates three non-canonical P.1411-13 §4.1.1 Table 4 rows at their strict frequency and distance envelopes: below-rooftop LoS (5–500 m at 140 GHz), urban high-rise NLoS (20–150 m), and urban low-rise/suburban NLoS (10–150 m). It requires explicit morphology, both-below-rooftop relation, LoS/NLoS state, and provenance. It returns the Table 4 median and sigma metadata only; P.525, atmospheric, research wall, diffraction, material, and receiver terms remain comparisons or separate diagnostics. The endpoint is not called by canonical simulation, coverage, interference, building entry, radio quality, or optimization. See Concept 4I.2B. Concept 4I.3 adds an isolated measurement-evidence ledger at /api/sub-thz-validation . It requires explicit campaign, quantity, antenna-basis, calibration, geometry, weather, and label provenance before normalizing observations into path loss. Its residual is measured minus predicted path loss; censored and directional-incompatible observations remain visible but do not enter ordinary metrics. "
     },
     {
       "page": "Modeling Limits",

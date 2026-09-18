@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "concept": "4I.1",
+  "title": "Independent 140 GHz atmospheric, material, FSPL, and diffraction audit fixtures",
+  "artifact": "controlled-audit-fixtures",
+  "captured_at": "2026-09-18",
+  "purpose": "Numerical reference terms calculated independently of the production research_sub_thz evaluator. These fixtures are evidence for the audit and are not runtime inputs.",
+  "conventions": {
+    "frequency_ghz": 140,
+    "distances_m": [10, 25, 50, 100, 200, 400],
+    "default_height_delta_m": 23.5,
+    "temperature_c": 15,
+    "temperature_k": 288.15,
+    "pressure_hpa": 1013,
+    "horizontal_rain_path_elevation_deg": 0,
+    "circular_rain_polarization_tilt_deg": 45,
+    "path_length_conversion": "attenuation_db = specific_attenuation_db_per_km * distance_m / 1000",
+    "rounding": "Stored values are rounded to six decimals unless a coefficient is shown with more precision."
+  },
+  "fspl": {
+    "reference": "ITU-R P.525-5 (2024-11), equations (5) and (6)",
+    "reference_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf",
+    "p525_equation_constant_db": 32.4,
+    "project_equation_constant_db": 32.45,
+    "slant_distance_m": [25.539186, 34.311077, 55.247172, 102.724145, 201.375892, 400.689718],
+    "p525_fspl_db_using_slant": [103.466702, 106.031248, 110.168762, 115.556011, 121.402710, 127.378725],
+    "current_project_fspl_db_using_slant": [103.516702, 106.081248, 110.218762, 115.606011, 121.452710, 127.428725],
+    "constant_difference_db": 0.05,
+    "interpretation": "The project uses a rounded 32.45 dB metre/GHz constant, about 0.05 dB above the P.525-5 32.4 presentation. P.525 supplies the free-space baseline only; it is not an urban NLOS model."
+  },
+  "same_geometry_fspl_comparison": {
+    "slant_distance_m": [25.539186, 34.311077, 55.247172, 102.724145, 201.375892, 400.689718],
+    "frequency_28_ghz_current_project_fspl_db": [89.537302, 92.101848, 96.239362, 101.626611, 107.473310, 113.449325],
+    "frequency_140_ghz_current_project_fspl_db": [103.516702, 106.081248, 110.218762, 115.606011, 121.452710, 127.428725],
+    "frequency_delta_db": 13.979400,
+    "interpretation": "The 13.9794 dB difference is 20 log10(140/28), before urban, material, atmospheric, antenna, and receiver terms."
+  },
+  "gaseous_attenuation": {
+    "reference": "ITU-R P.676-13 (2022-08), line-by-line specific attenuation and terrestrial-path treatment",
+    "reference_url": "https://www.itu.int/rec/R-REC-P.676-13-202208-I/en",
+    "method": "P.676-13 line-by-line oxygen and water-vapour line coefficients at 140 GHz; homogeneous controlled path; attenuation is gamma times path length.",
+    "rows": [
+      {
+        "water_vapour_density_g_per_m3": 3.5,
+        "oxygen_db_per_km": 0.017661,
+        "water_vapour_db_per_km": 0.361387,
+        "total_db_per_km": 0.379049,
+        "attenuation_db_100m": 0.037905,
+        "attenuation_db_400m": 0.151619
+      },
+      {
+        "water_vapour_density_g_per_m3": 7.5,
+        "oxygen_db_per_km": 0.017761,
+        "water_vapour_db_per_km": 0.849463,
+        "total_db_per_km": 0.867224,
+        "attenuation_db_100m": 0.086722,
+        "attenuation_db_400m": 0.346890
+      },
+      {
+        "water_vapour_density_g_per_m3": 15,
+        "oxygen_db_per_km": 0.017948,
+        "water_vapour_db_per_km": 1.980337,
+        "total_db_per_km": 1.998286,
+        "attenuation_db_100m": 0.199829,
+        "attenuation_db_400m": 0.799314
+      }
+    ],
+    "interpretation": "Gas is small but non-zero over 10–400 m in these controlled conditions. A production model would need local pressure, temperature, humidity/water-vapour density, and a declared path integration policy."
+  },
+  "rain_attenuation": {
+    "reference": "ITU-R P.838-3 (2005-03), equations (1)–(5)",
+    "reference_url": "https://www.itu.int/rec/R-REC-P.838-3-200503-I/en",
+    "polarization": "circular-equivalent tau = 45 degrees; horizontal-path elevation = 0 degrees",
+    "k": 1.561638,
+    "alpha": 0.651858,
+    "equation": "gamma_R = k * R^alpha, with R in mm/h and gamma_R in dB/km",
+    "rows": [
+      {"rain_rate_mm_per_h": 0, "specific_db_per_km": 0, "attenuation_db_100m": 0, "attenuation_db_400m": 0},
+      {"rain_rate_mm_per_h": 1, "specific_db_per_km": 1.561638, "attenuation_db_100m": 0.156164, "attenuation_db_400m": 0.624655},
+      {"rain_rate_mm_per_h": 5, "specific_db_per_km": 4.458714, "attenuation_db_100m": 0.445871, "attenuation_db_400m": 1.783486},
+      {"rain_rate_mm_per_h": 25, "specific_db_per_km": 12.730306, "attenuation_db_100m": 1.273031, "attenuation_db_400m": 5.092122},
+      {"rain_rate_mm_per_h": 50, "specific_db_per_km": 20.001734, "attenuation_db_100m": 2.000173, "attenuation_db_400m": 8.000693}
+    ],
+    "interpretation": "These are raw specific-attenuation path values. Availability or annual exceedance estimates additionally need P.837 rain-rate statistics and a terrestrial effective-path-length/reduction model; neither is present in research_sub_thz."
+  },
+  "cloud_and_fog": {
+    "reference": "ITU-R P.840-9 (2023-08), specific attenuation coefficient and cloud-liquid-water treatment",
+    "reference_url": "https://www.itu.int/rec/R-REC-P.840-9-202308-I/en",
+    "temperature_c": 15,
+    "specific_attenuation_coefficient_db_per_km_per_g_per_m3": 6.967800,
+    "rows": [
+      {"liquid_water_density_g_per_m3": 0.05, "specific_db_per_km": 0.348390, "attenuation_db_100m": 0.034839, "attenuation_db_400m": 0.139356},
+      {"liquid_water_density_g_per_m3": 0.5, "specific_db_per_km": 3.483900, "attenuation_db_100m": 0.348390, "attenuation_db_400m": 1.393560}
+    ],
+    "interpretation": "P.840 is principally an Earth-space slant-path/cloud-liquid-water recommendation. The horizontal numbers are a controlled local-fog path sensitivity calculation, not a claim that a vertical integrated-column formula can be dropped into an arbitrary urban link."
+  },
+  "material_slab_transmission": {
+    "reference": "ITU-R P.2040-4 (2025-09), Table 3 and Annex 1 equations (39)–(44)",
+    "reference_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf",
+    "method": "Normal-incidence, single homogeneous slab in air using the 110–330 or 100–400 GHz Table 3 material row, complex relative permittivity from conductivity, and the simplified multiple-reflection transmission coefficient. No free-space spreading loss is included.",
+    "rows": [
+      {
+        "material": "concrete",
+        "thickness_m": 0.2,
+        "table3_real_permittivity": 5.17,
+        "conductivity_s_per_m_at_140ghz": 3.166996,
+        "interface_reflection_power": 0.152271,
+        "slab_power_transmission": 4.573081e-46,
+        "slab_transmission_loss_db": 453.397911,
+        "comparison_to_80db_event_db": 373.397911
+      },
+      {
+        "material": "brick",
+        "thickness_m": 0.2,
+        "table3_real_permittivity": 4.15,
+        "conductivity_s_per_m_at_140ghz": 1.413018,
+        "interface_reflection_power": 0.116877,
+        "slab_power_transmission": 3.189492e-23,
+        "slab_transmission_loss_db": 224.962784,
+        "comparison_to_80db_event_db": 144.962784
+      },
+      {
+        "material": "glass",
+        "thickness_m": 0.01,
+        "table3_real_permittivity": 6.5767,
+        "conductivity_s_per_m_at_140ghz": 1.711377,
+        "interface_reflection_power": 0.192810,
+        "slab_power_transmission": 0.139457,
+        "slab_transmission_loss_db": 8.555582,
+        "comparison_to_80db_event_db": -71.444418
+      },
+      {
+        "material": "wood",
+        "thickness_m": 0.1,
+        "table3_real_permittivity": 1.82,
+        "conductivity_s_per_m_at_140ghz": 0.815659,
+        "interface_reflection_power": 0.022409,
+        "slab_power_transmission": 1.661065e-10,
+        "slab_transmission_loss_db": 97.796134,
+        "comparison_to_80db_event_db": 17.796134
+      }
+    ],
+    "interpretation": "The 80 dB event is neither a P.2040 material result nor a defensible universal building-entry value. These slab numbers are intentionally illustrative and sensitive to thickness, angle, layer structure, moisture, and material row selection; they cannot be applied as a whole-building model without site data."
+  },
+  "diffraction_diagnostic": {
+    "reference": "ITU-R P.526-16 (2025-11), section 4.1 equations (26) and (31)",
+    "reference_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.526-16-202511-I!!PDF-E.pdf",
+    "frequency_ghz": 140,
+    "wavelength_m": 0.002141,
+    "geometry": "single isolated edge, d1 = d2 = 50 m, h is signed height above the LOS line",
+    "rows": [
+      {"height_above_los_m": -1, "v": -6.112216, "loss_db": 0},
+      {"height_above_los_m": 0, "v": 0, "loss_db": 6.032852},
+      {"height_above_los_m": 1, "v": 6.112216, "loss_db": 28.560751},
+      {"height_above_los_m": 5, "v": 30.561078, "loss_db": 42.597844}
+    ],
+    "status": "research_only_diagnostic",
+    "non_additivity_rule": "Do not add this FSPL-plus-edge diagnostic to research_sub_thz wall loss or to a future canonical NLOS model.",
+    "limitations": ["single isolated edge", "known height required", "no roof reflection or multiple-edge interaction", "equation (31) approximation rather than a full urban channel solver"]
+  },
+  "fixture_safety": {
+    "production_code_changed": false,
+    "fixture_role": "audit evidence only",
+    "known_incomparabilities": ["P.2040 slab transmission is not building entry loss", "P.838 raw specific attenuation is not annual availability", "P.840 horizontal local-fog sensitivity is not an Earth-space cloud-column result", "P.526 diagnostic is not canonical NLOS"],
+    "current_80db_event": {"one_event_db": 80, "two_event_db": 160, "classification": "historical conservative planning heuristic; unvalidated and material-agnostic"}
+  }
+}

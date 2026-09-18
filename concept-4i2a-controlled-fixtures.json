@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "concept": "4I.2A",
+  "title": "Controlled fixtures for sub_thz_atmospheric_reference_v1",
+  "artifact": "controlled-reference-fixtures",
+  "captured_at": "2026-09-18",
+  "purpose": "Independent numerical fixtures for the opt-in atmospheric reference evaluator; they are not canonical network RF inputs.",
+  "references": {
+    "p525": {"name": "ITU-R P.525-5", "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf", "method": "wavelength-form FSPL equation (5), with the rounded 32.4 dB presentation equation reported separately"},
+    "p676": {"name": "ITU-R P.676-13", "url": "https://www.itu.int/rec/R-REC-P.676-13-202208-I/en", "method": "Annex 1 line-by-line oxygen/water-vapour lines plus dry continuum on a homogeneous terrestrial path"},
+    "p838": {"name": "ITU-R P.838-3", "url": "https://www.itu.int/rec/R-REC-P.838-3-200503-I/en", "method": "equations (1)-(5), circular-equivalent polarization tilt 45 degrees, path elevation from endpoint heights"},
+    "p840": {"name": "ITU-R P.840-9", "url": "https://www.itu.int/rec/R-REC-P.840-9-202308-I/en", "method": "local fog gamma_c = K_l(f,T) rho_l; no integrated cloud column"}
+  },
+  "geometry": {
+    "frequency_ghz": 140,
+    "horizontal_distances_m": [10, 25, 50, 100, 200, 400],
+    "tx_height_m": 25,
+    "rx_height_m": 1.5,
+    "height_delta_m": -23.5,
+    "slant_distances_m": [25.539185578244, 34.311076928596, 55.247171873319, 102.724145165584, 201.375892300941, 400.689717861589]
+  },
+  "p525_fspl_db": {
+    "frequency_28_ghz": [89.535084726450, 92.099630839875, 96.237144872794, 101.624394566770, 107.471093404724, 113.447107810770],
+    "frequency_140_ghz": [103.514484813171, 106.079030926596, 110.216544959515, 115.603794653491, 121.450493491444, 127.426507897490],
+    "frequency_delta_db": 13.979400086720,
+    "interpretation": "The FSPL delta is 20 log10(140/28); it is independent of the atmospheric component settings."
+  },
+  "p676_exact_control": {
+    "pressure_hpa_total": 1013.25,
+    "temperature_k": 288.15,
+    "water_vapour_density_g_m3": 7.5,
+    "dry_pressure_hpa": 1003.277111213659,
+    "oxygen_line_db_per_km": 0.005956182,
+    "dry_continuum_db_per_km": 0.012733146,
+    "dry_air_db_per_km": 0.018689328,
+    "water_vapour_db_per_km": 0.896759348,
+    "total_db_per_km": 0.915448676,
+    "path_loss_db_at_100m_horizontal": 0.094038683,
+    "path_loss_db_at_400m_horizontal": 0.366810872,
+    "prior_4i1_observed_approximation_at_7_5_g_m3": {
+      "total_db_per_km": 0.867224,
+      "relationship": "retained as prior audit observation only; not reused as the exact implementation fixture"
+    }
+  },
+  "p676_density_sensitivity_140_ghz": [
+    {"water_vapour_density_g_m3": 3.5, "oxygen_db_per_km": 0.018780818, "water_vapour_db_per_km": 0.381968970, "total_db_per_km": 0.400749788},
+    {"water_vapour_density_g_m3": 7.5, "oxygen_db_per_km": 0.018689328, "water_vapour_db_per_km": 0.896759348, "total_db_per_km": 0.915448676},
+    {"water_vapour_density_g_m3": 15, "oxygen_db_per_km": 0.018517568, "water_vapour_db_per_km": 2.086900980, "total_db_per_km": 2.105418548}
+  ],
+  "p838_circular_140_ghz": {
+    "k": 1.561638351,
+    "alpha": 0.651857990,
+    "rows": [
+      {"rain_rate_mm_h": 0, "specific_db_per_km": 0, "loss_db_100m_horizontal": 0, "loss_db_400m_horizontal": 0},
+      {"rain_rate_mm_h": 1, "specific_db_per_km": 1.561638351, "loss_db_100m_horizontal": 0.156163835, "loss_db_400m_horizontal": 0.624655341},
+      {"rain_rate_mm_h": 5, "specific_db_per_km": 4.458714328, "loss_db_100m_horizontal": 0.445871433, "loss_db_400m_horizontal": 1.783485731},
+      {"rain_rate_mm_h": 25, "specific_db_per_km": 12.730305607, "loss_db_100m_horizontal": 1.273030561, "loss_db_400m_horizontal": 5.092122243},
+      {"rain_rate_mm_h": 50, "specific_db_per_km": 20.001733537, "loss_db_100m_horizontal": 2.000173354, "loss_db_400m_horizontal": 8.000693415}
+    ]
+  },
+  "p840_local_fog_140_ghz": {
+    "temperature_k": 288.15,
+    "k_l_db_per_km_per_g_m3": 6.967799768,
+    "rows": [
+      {"liquid_water_density_g_m3": 0.05, "specific_db_per_km": 0.348389988, "loss_db_100m_horizontal": 0.034838999, "loss_db_400m_horizontal": 0.139355995},
+      {"liquid_water_density_g_m3": 0.5, "specific_db_per_km": 3.483899884, "loss_db_100m_horizontal": 0.348389988, "loss_db_400m_horizontal": 1.393559954}
+    ]
+  },
+  "distance_sweep_with_all_optional_terms": {
+    "atmosphere": {"pressure_hpa_total": 1013.25, "temperature_k": 288.15, "water_vapour_density_g_m3": 7.5},
+    "rain": {"enabled": true, "rain_rate_mm_h": 25, "polarization": "circular", "tilt_deg": 45},
+    "local_fog": {"enabled": true, "liquid_water_density_g_m3": 0.5, "temperature_k": 288.15},
+    "frequency_28_ghz": [
+      {"horizontal_m": 10, "slant_m": 25.539185578, "fspl_db": 89.535084726, "gas_db": 0.002575524, "rain_db": 0.108501916, "fog_db": 0.005868013, "total_db": 89.652030181},
+      {"horizontal_m": 25, "slant_m": 34.311076929, "fspl_db": 92.099630840, "gas_db": 0.003460135, "rain_db": 0.145768846, "fog_db": 0.007883488, "total_db": 92.256743308},
+      {"horizontal_m": 50, "slant_m": 55.247171873, "fspl_db": 96.237144873, "gas_db": 0.005571456, "rain_db": 0.234714768, "fog_db": 0.012693872, "total_db": 96.490124968},
+      {"horizontal_m": 100, "slant_m": 102.724145166, "fspl_db": 101.624394567, "gas_db": 0.010359318, "rain_db": 0.436418247, "fog_db": 0.023602423, "total_db": 102.094774555},
+      {"horizontal_m": 200, "slant_m": 201.375892301, "fspl_db": 107.471093405, "gas_db": 0.020307951, "rain_db": 0.855535121, "fog_db": 0.046269150, "total_db": 108.393205628},
+      {"horizontal_m": 400, "slant_m": 400.689717862, "fspl_db": 113.447107811, "gas_db": 0.040407952, "rain_db": 1.702309658, "fog_db": 0.092064510, "total_db": 115.281889930}
+    ],
+    "frequency_140_ghz": [
+      {"horizontal_m": 10, "slant_m": 25.539185578, "fspl_db": 103.514484813, "gas_db": 0.023379814, "rain_db": 0.325121637, "fog_db": 0.088975966, "total_db": 103.951962230},
+      {"horizontal_m": 25, "slant_m": 34.311076929, "fspl_db": 106.079030927, "gas_db": 0.031410030, "rain_db": 0.436790495, "fog_db": 0.119536357, "total_db": 106.666767808},
+      {"horizontal_m": 50, "slant_m": 55.247171873, "fspl_db": 110.216544960, "gas_db": 0.050575950, "rain_db": 0.703313382, "fog_db": 0.192475616, "total_db": 111.162909907},
+      {"horizontal_m": 100, "slant_m": 102.724145166, "fspl_db": 115.603794653, "gas_db": 0.094038683, "rain_db": 1.307709761, "fog_db": 0.357880637, "total_db": 117.363423735},
+      {"horizontal_m": 200, "slant_m": 201.375892301, "fspl_db": 121.450493491, "gas_db": 0.184349294, "rain_db": 2.563576651, "fog_db": 0.701573448, "total_db": 124.899992884},
+      {"horizontal_m": 400, "slant_m": 400.689717862, "fspl_db": 127.426507897, "gas_db": 0.366810872, "rain_db": 5.100902562, "fog_db": 1.395962861, "total_db": 134.290184193}
+    ]
+  },
+  "invariance_contract": {
+    "canonical_2_6_ghz": "unchanged",
+    "canonical_28_ghz": "unchanged",
+    "research_sub_thz_140_ghz": "unchanged",
+    "4h2_disabled_and_enabled_optimization": "unchanged",
+    "building_entry": "unchanged",
+    "p526_diagnostic": "unchanged",
+    "4h1_radio_quality": "unchanged",
+    "reason": "The evaluator has a separate route and is not called by canonical dispatch, path-profile, coverage, building-entry, interference, or optimization code."
+  }
+}

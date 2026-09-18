@@ -1,0 +1,25 @@
+{
+  "concept": "4I.3",
+  "schema_version": 1,
+  "post_change_commit": "working-tree",
+  "boundary": {"route": "/api/sub-thz-validation", "model_family": "measurement_evidence_validation_v1", "canonical_propagation_modified": false, "production_candidate_allowed": false},
+  "invariance_targets": ["canonical_2p6ghz", "canonical_28ghz", "research_sub_thz", "concept_4i2a_atmospheric_reference", "concept_4i2b_p1411_reference", "building_entry", "diffraction", "interference_radio_quality", "optimization"],
+  "evidence": {
+    "legacy_measurement_workflow_preserved": true,
+    "new_workflow_isolated": true,
+    "numeric_external_samples_imported": false,
+    "ankara_measurement_campaign_available": false,
+    "synthetic_contract_fixtures": "docs/concept-4i3-synthetic-validation.json",
+    "backend_go_test": "passed",
+    "backend_go_vet": "passed",
+    "backend_go_race": "passed",
+    "frontend_lint": "passed",
+    "frontend_unit_tests": "31 files / 180 tests passed with serialized verification",
+    "frontend_mocked_e2e": "25 passed / 11 skipped",
+    "frontend_real_e2e": "27 passed / 9 skipped; 161784 footprints / 451 towers loaded",
+    "docs_validation": "25 HTML pages / 36 API paths valid",
+    "performance": "100 samples 1.84 ms; 1000 samples 8.34 ms on Apple M4, single P.525 adapter"
+  },
+  "readiness": {"classification": "not_ready_for_production", "production_candidate": false, "required_gates": ["numeric provenance", "quantity and calibration completeness", "deterministic spatial/site/campaign holdouts", "trend and common-sample review", "independent review"]},
+  "validation_commands": ["cd backend-go && go vet ./... && go test -race ./...", "cd frontend-react && npm run lint && npm test -- --run && npm run build", "python3 -m json.tool docs/concept-4i3-validation-schema.json", "python3 scripts/versioning.py check"]
+}

@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "concept": "4I.2A",
+  "title": "Componentized 140 GHz atmospheric reference pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "baseline_commit": "d66ad902075402a2df8df413bec63e9a51059561",
+  "worktree_note": "Concept 4I.1 audit artifacts and tests were already present and are preserved; this artifact records the pre-4I.2A runtime behavior.",
+  "real_backend_acceptance": {
+    "command": "ATOM_REAL_E2E=1 ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline npm run test:e2e",
+    "result": "27 passed, 9 skipped",
+    "backend": "real Go backend on http://127.0.0.1:18080",
+    "scope": "existing frontend real-backend acceptance suite before Concept 4I.2A production edits"
+  },
+  "canonical_2_6_ghz": {
+    "endpoint": "POST /api/simulate",
+    "request": {
+      "tower_lon": 32.85,
+      "tower_lat": 39.92,
+      "rays": 8,
+      "radius_m": 100,
+      "frequency_ghz": 2.6,
+      "tx_power_dbm": 30,
+      "azimuth": 90,
+      "beam_width": 360
+    },
+    "model_id": "urban_short_range",
+    "rf_profile": {
+      "network_tech": "4g",
+      "frequency_ghz": 2.6,
+      "propagation_model": "urban_short_range",
+      "antenna_gain_dbi": 25,
+      "antenna_height_m": 25,
+      "receiver_height_m": 1.5,
+      "receiver_sensitivity_dbm": -115
+    },
+    "stats": {
+      "blocked_pct": 0,
+      "avg_rx_dbm": -43,
+      "min_range_m": 100,
+      "max_range_m": 100
+    },
+    "first_feature": {
+      "distance_m": 25,
+      "path_loss_db": 70.07902264967872,
+      "wall_loss_db": 0,
+      "signal_dbm": -15.07902264967872,
+      "propagation_model_id": "urban_short_range",
+      "los_state": "los",
+      "applicability_reason": "applicable"
+    }
+  },
+  "canonical_28_ghz": {
+    "endpoint": "POST /api/simulate",
+    "request": {
+      "tower_lon": 32.85,
+      "tower_lat": 39.92,
+      "rays": 8,
+      "radius_m": 100,
+      "frequency_ghz": 28,
+      "tx_power_dbm": 30,
+      "azimuth": 90,
+      "beam_width": 360
+    },
+    "model_id": "urban_short_range",
+    "rf_profile": {
+      "network_tech": "5g",
+      "frequency_ghz": 28,
+      "propagation_model": "urban_short_range",
+      "antenna_gain_dbi": 25,
+      "antenna_height_m": 25,
+      "receiver_height_m": 1.5,
+      "receiver_sensitivity_dbm": -115
+    },
+    "stats": {
+      "blocked_pct": 12.5,
+      "avg_rx_dbm": -72.1,
+      "min_range_m": 72.3,
+      "max_range_m": 100
+    },
+    "first_feature": {
+      "distance_m": 25,
+      "path_loss_db": 90.72271631710674,
+      "wall_loss_db": 0,
+      "signal_dbm": -35.722716317106745,
+      "propagation_model_id": "urban_short_range",
+      "los_state": "los",
+      "applicability_reason": "applicable"
+    }
+  },
+  "four_h_two_disabled": {
+    "endpoint": "POST /api/evaluate-network",
+    "frequency_ghz": 28,
+    "radio_quality_weight": 0,
+    "scenario_fingerprint": "network-99c0e814ad1fd432639296a9367b1997",
+    "stats": {
+      "network_score": 1304940.1,
+      "unique_demand_buildings": 1,
+      "unique_residential_buildings": 15,
+      "overlap_buildings": 3,
+      "coverage_score": 1440.1,
+      "raw_metrics": {
+        "served_weighted_demand": 45,
+        "residential_covered": 15,
+        "propagation_reach_score": 1440.0852,
+        "overlap_ratio": 0.130435,
+        "radio_quality_total_samples": 0,
+        "radio_quality_serviceable_samples": 0
+      }
+    },
+    "radio_quality_reason": "disabled",
+    "pareto_frontier_size": 1
+  },
+  "four_h_two_enabled": {
+    "endpoint": "POST /api/evaluate-network",
+    "frequency_ghz": 28,
+    "radio_quality_weight": 30,
+    "scenario_fingerprint": "network-c8b82cc86d8b7dc361d425526e8e7c38",
+    "stats": {
+      "network_score": 1304940.1,
+      "unique_demand_buildings": 1,
+      "unique_residential_buildings": 15,
+      "overlap_buildings": 3,
+      "coverage_score": 1440.1,
+      "raw_metrics": {
+        "served_weighted_demand": 45,
+        "residential_covered": 15,
+        "propagation_reach_score": 1440.0852,
+        "overlap_ratio": 0.130435,
+        "radio_quality_total_samples": 26,
+        "radio_quality_serviceable_samples": 24,
+        "radio_quality_serviceable_fraction": 0.923077,
+        "radio_quality_p10_sinr_db": 6.7434,
+        "radio_quality_median_sinr_db": 24.4412
+      }
+    },
+    "radio_quality": {
+      "enabled": true,
+      "available": true,
+      "reason": "",
+      "sample_count": 26,
+      "sample_spacing_m": 40,
+      "horizon_meters": [100, 100]
+    },
+    "pareto_frontier_size": 1
+  },
+  "current_140_ghz_research_sub_thz": {
+    "endpoint": "POST /api/simulate",
+    "request": {
+      "tower_lon": 32.85,
+      "tower_lat": 39.92,
+      "rays": 8,
+      "radius_m": 100,
+      "frequency_ghz": 140,
+      "tx_power_dbm": 30,
+      "azimuth": 90,
+      "beam_width": 360
+    },
+    "model_id": "research_sub_thz",
+    "applied_model_id": "research_sub_thz",
+    "applicability_reason": "research_profile_only",
+    "stats": {
+      "blocked_pct": 87.5,
+      "avg_rx_dbm": -123.6,
+      "min_range_m": 17.6,
+      "max_range_m": 100
+    },
+    "first_feature": {
+      "distance_m": 25,
+      "slant_distance_m": 34.3110769286,
+      "fspl_db": 106.08124770471235,
+      "propagation_loss_db": 106.08124770471235,
+      "wall_loss_db": 0,
+      "signal_dbm": -51.081247704712354,
+      "propagation_model_id": "research_sub_thz"
+    },
+    "composition": "FSPL + max(wall_event_count, 0) * 80 dB at 140 GHz; no gas, rain, fog, material, diffraction, or measured channel term"
+  },
+  "concept_4f2_diffraction_diagnostic": {
+    "endpoint": "POST /api/path-profile",
+    "request": {
+      "transmitter": {"lon": 32.85, "lat": 39.92},
+      "receiver": {"lon": 32.851, "lat": 39.92},
+      "sample_spacing_m": 10,
+      "model_profile": "urban-short-range",
+      "rf_profile": {"network_tech": "5g", "frequency_ghz": 28}
+    },
+    "distance_m": 85.4,
+    "classification": "building-obstructed",
+    "geometric_los": false,
+    "obstruction": {"building_id": "feature-6946", "height_source": "unavailable"},
+    "diagnostic": {
+      "id": "p526-single-edge-v1",
+      "available": false,
+      "reason": "obstruction_height_unavailable",
+      "reference": "ITU-R P.526-16 §4.1, equations (26) and (31)",
+      "baseline_model": "free_space",
+      "fspl_db": 100.33703760506351,
+      "diffraction_loss_db": null,
+      "diagnostic_total_path_loss_db": null,
+      "diagnostic_rx_dbm": null,
+      "canonical_path_loss_db": 118.58,
+      "canonical_rx_dbm": -63.58
+    }
+  },
+  "invariance_targets": [
+    "canonical 2.6 GHz simulation",
+    "canonical 28 GHz simulation",
+    "research_sub_thz 140 GHz simulation",
+    "4H.2 disabled optimization",
+    "4H.2 enabled optimization",
+    "building entry",
+    "P.526 diffraction diagnostic",
+    "4H.1 interference/radio-quality"
+  ]
+}

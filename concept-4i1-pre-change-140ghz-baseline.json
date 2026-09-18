@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "concept": "4I.1",
+  "title": "140 GHz research_sub_thz pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "baseline_commit": "d66ad902075402a2df8df413bec63e9a51059561",
+  "baseline_working_tree": "clean before audit-only files",
+  "scope": "Read-only capture of the existing Go evaluator before Concept 4I.1 audit artifacts and tests.",
+  "scenario": {
+    "network_tech": "6g",
+    "frequency_ghz": 140,
+    "requested_model": "research_sub_thz",
+    "default_model": "research_sub_thz",
+    "tx_power_dbm": 30,
+    "tx_antenna_gain_dbi": 25,
+    "rx_antenna_gain_dbi": 0,
+    "system_loss_db": 0,
+    "polarization_loss_db": 0,
+    "calibration_offset_db": 0,
+    "antenna_height_m": 25,
+    "receiver_height_m": 1.5,
+    "receiver_sensitivity_dbm": -115,
+    "horizontal_pattern_id": "omni",
+    "vertical_pattern_id": "flat",
+    "radius_m": 400
+  },
+  "source_equation_ledger": {
+    "dispatch": "DefaultPropagationModelID returns research_sub_thz when frequency_ghz >= 100.",
+    "research_evaluator": "research_sub_thz delegates to legacyPropagationTerms and propagationResultFromTerms; it does not use LOS/NLOS, building height, diffraction, gas, rain, cloud, clutter, vegetation, or a measured channel model.",
+    "slant_distance_m": "hypot(max(ground_distance_m, 0), antenna_height_m - receiver_height_m)",
+    "current_fspl_db": "20*log10(max(slant_distance_m, 1)) + 20*log10(frequency_ghz) + 32.45",
+    "current_wall_loss_db": "max(wall_event_count, 0) * PenetrationLossForFrequencyGHz(frequency_ghz)",
+    "current_penetration_rule": "frequency < 10 GHz: 8 dB; 10 <= frequency < 100 GHz: 30 dB; frequency >= 100 GHz: 80 dB per footprint event",
+    "current_total_path_loss_db": "current_fspl_db + current_wall_loss_db + antenna_pattern_attenuation_db",
+    "current_link_budget_dbm": "P_rx = P_tx_conducted + G_tx_boresight - A_tx_pattern + G_rx - L_system - L_polarization + calibration - L_propagation - L_building"
+  },
+  "distances_m": [10, 25, 50, 100, 200, 400],
+  "geometry_cases": [
+    {
+      "id": "clear_los",
+      "los_state": "los",
+      "wall_event_count": 0,
+      "interpretation": "No footprint boundary event; no height obstruction is supplied."
+    },
+    {
+      "id": "footprint_nlos",
+      "los_state": "nlos",
+      "wall_event_count": 1,
+      "interpretation": "One footprint obstruction represented by the legacy event counter."
+    },
+    {
+      "id": "one_boundary_crossing",
+      "los_state": "nlos",
+      "wall_event_count": 1,
+      "interpretation": "One facade/boundary crossing; numerically identical to any one-event case."
+    },
+    {
+      "id": "two_boundary_crossings",
+      "los_state": "nlos",
+      "wall_event_count": 2,
+      "interpretation": "Entry and exit boundaries; the current heuristic sums two independent 80 dB events."
+    },
+    {
+      "id": "known_height_blocker",
+      "los_state": "nlos",
+      "wall_event_count": 1,
+      "interpretation": "Known roof obstruction; the research evaluator does not consume the height evidence."
+    },
+    {
+      "id": "unknown_height_blocker",
+      "los_state": "unknown",
+      "wall_event_count": 1,
+      "interpretation": "Unknown-height footprint obstruction; the research evaluator still applies the event count and does not distinguish this state numerically."
+    }
+  ],
+  "samples": {
+    "slant_distance_m": [25.539186, 34.311077, 55.247172, 102.724145, 201.375892, 400.689718],
+    "free_space_path_loss_db": [103.516702, 106.081248, 110.218762, 115.606011, 121.452710, 127.428725],
+    "by_wall_event_count": {
+      "0": {
+        "wall_loss_db": [0, 0, 0, 0, 0, 0],
+        "total_path_loss_db": [103.516702, 106.081248, 110.218762, 115.606011, 121.452710, 127.428725],
+        "received_power_dbm": [-48.516702, -51.081248, -55.218762, -60.606011, -66.452710, -72.428725]
+      },
+      "1": {
+        "wall_loss_db": [80, 80, 80, 80, 80, 80],
+        "total_path_loss_db": [183.516702, 186.081248, 190.218762, 195.606011, 201.452710, 207.428725],
+        "received_power_dbm": [-128.516702, -131.081248, -135.218762, -140.606011, -146.452710, -152.428725]
+      },
+      "2": {
+        "wall_loss_db": [160, 160, 160, 160, 160, 160],
+        "total_path_loss_db": [263.516702, 266.081248, 270.218762, 275.606011, 281.452710, 287.428725],
+        "received_power_dbm": [-208.516702, -211.081248, -215.218762, -220.606011, -226.452710, -232.428725]
+      }
+    },
+    "all_samples": {
+      "model_id": "research_sub_thz",
+      "applied_model_id": "research_sub_thz",
+      "applicable": true,
+      "fallback_used": false,
+      "applicability_reason": "research_profile_only",
+      "receiver_sensitivity_dbm": -115
+    }
+  },
+  "observations": [
+    "The current profile is numerically FSPL plus a cumulative frequency threshold heuristic; it is not a validated 140 GHz urban channel model.",
+    "At the default 25 m / 1.5 m endpoint heights, the evaluator uses slant distance, so the 10 m ground-distance sample has a 25.539186 m slant distance.",
+    "The LOS label, height-aware obstruction state, and unknown-height state do not change the research_sub_thz numeric result when wall_event_count is held constant.",
+    "One footprint event already places the 100 m sample at -140.606011 dBm under this profile; two events place it at -220.606011 dBm.",
+    "The receiver threshold is returned as the existing manual -115 dBm planning threshold; this is not a 140 GHz receiver or radio-quality validation claim."
+  ],
+  "capture_validation": {
+    "command": "cd backend-go && go test ./raytracer -run TestConcept4I1ResearchProfileBaselineAndInvariance -count=1 -v",
+    "result_at_capture": "pass",
+    "audit_note": "The audit test was added after the baseline commit and asserts these values without changing production RF code."
+  }
+}

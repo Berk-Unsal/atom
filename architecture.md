@@ -100,6 +100,10 @@ The Gin service provides:
 | POST | `/api/simulate` | Segmented directional propagation |
 | POST | `/api/coverage-gaps` | Demand-weighted underserved buildings |
 | POST | `/api/path-profile` | 2.5D terrain/building vertical profile and component losses |
+| POST | `/api/sub-thz-reference` | Opt-in non-canonical P.525/P.676/P.838/P.840 atmospheric reference ledger |
+| POST | `/api/sub-thz-p1411-reference` | Isolated, applicability-gated ITU-R P.1411-13 Table 4 candidate rows and side-by-side comparisons |
+| POST | `/api/sub-thz-validation` | Isolated versioned measurement evidence, common-sample comparison, constant-bias diagnostics, and deterministic holdouts |
+| POST | `/api/sub-thz-material-reference` | Isolated P.2040-4 homogeneous-slab material/interface ledger; never dispatched by network simulation |
 | POST | `/api/coverage-surface` | Regular received-power raster, isolines, and GIS exports |
 | POST | `/api/optimize-azimuth` | Single-sector demand-aware azimuth sweep |
 | POST | `/api/evaluate-network` | Score supplied selected-cell azimuths |
@@ -125,6 +129,8 @@ The offline data pipeline and Dataset Pack Studio prepare runtime files ahead of
 If `ATOM_DATASETS_ROOT` is configured, the server scans only that directory and its immediate children, resolves symlinks beneath the root, and indexes unique manifest IDs. Switching loads and validates a candidate outside the runtime read lock, then atomically replaces the immutable pack pointer. Requests that already captured the previous pointer complete against the old pack; failed validation leaves it active. The API never accepts a dataset filesystem path.
 
 Schema v2 can carry terrain, clutter, building-height, and material layers. The loader validates and exposes them, but the current propagation engines consume only cell and building data.
+
+Concept 4I.4's material reference is intentionally outside this runtime path. It accepts an explicit slab, thickness, angle, polarization, and incident/exit media through its own endpoint; it does not infer physics from the material layer, run per-ray, or contribute to canonical propagation, the research_sub_thz 80 dB/event heuristic, building entry, interference, radio quality, or optimization.
 
 Each RF engine first queries bounded candidates from the R-tree, then applies exact geometry, radius, sector, and intersection tests. This avoids scanning the complete building dataset for every ray or demand point.
 

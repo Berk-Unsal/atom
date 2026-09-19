@@ -97,6 +97,22 @@ class DatasetPackStudioTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "terrain requires --terrain-crs"):
             pack_studio.build_pack(args)
 
+    def test_build_preserves_hgt_tile_basename_for_runtime_bounds(self):
+        terrain = self.root / "N39E032.hgt"
+        terrain.write_bytes(b"fixture")
+        output = self.root / "pack-hgt"
+        args = pack_studio.parser().parse_args([
+            "build", "--id", "hgt-test", "--name", "HGT Test", "--version", "1",
+            "--output", str(output), "--source", "x", "--license", "x", "--confidence", "x",
+            "--towers", str(self.towers), "--buildings", str(self.buildings),
+            "--towers-crs", "EPSG:3857", "--buildings-crs", "EPSG:3857",
+            "--terrain", str(terrain), "--terrain-crs", "EPSG:4326",
+        ])
+        pack_studio.build_pack(args)
+        stored = json.loads((output / "manifest.json").read_text())
+        self.assertEqual(stored["files"]["terrain"], "N39E032.hgt")
+        self.assertTrue((output / "N39E032.hgt").exists())
+
 
 def feature(identifier, geometry_type, coordinates, properties):
     return {"type": "Feature", "id": identifier, "properties": properties, "geometry": {"type": geometry_type, "coordinates": coordinates}}

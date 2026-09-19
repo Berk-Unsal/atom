@@ -50,6 +50,7 @@ type BuildingFootprint struct {
 type BuildingIndex struct {
 	tree       rtree.RTreeG[*BuildingFootprint]
 	footprints []*BuildingFootprint
+	byID       map[string]*BuildingFootprint
 }
 
 type BuildingIndexStats struct {
@@ -355,6 +356,7 @@ func skipJSONValue(decoder *json.Decoder) error {
 func NewBuildingIndex(footprints []*BuildingFootprint) *BuildingIndex {
 	index := &BuildingIndex{
 		footprints: make([]*BuildingFootprint, 0, len(footprints)),
+		byID:       make(map[string]*BuildingFootprint, len(footprints)),
 	}
 
 	for _, footprint := range footprints {
@@ -362,6 +364,9 @@ func NewBuildingIndex(footprints []*BuildingFootprint) *BuildingIndex {
 			continue
 		}
 		index.footprints = append(index.footprints, footprint)
+		if _, exists := index.byID[footprint.ID]; !exists {
+			index.byID[footprint.ID] = footprint
+		}
 		index.tree.Insert(footprint.Bounds.Min(), footprint.Bounds.Max(), footprint)
 	}
 
@@ -384,6 +389,13 @@ func (idx *BuildingIndex) Footprints() []*BuildingFootprint {
 		return nil
 	}
 	return idx.footprints
+}
+
+func (idx *BuildingIndex) BuildingByID(id string) *BuildingFootprint {
+	if idx == nil {
+		return nil
+	}
+	return idx.byID[id]
 }
 
 func (idx *BuildingIndex) SearchBounds(bounds Bounds) []*BuildingFootprint {

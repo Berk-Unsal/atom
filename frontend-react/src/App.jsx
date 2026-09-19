@@ -2856,12 +2856,62 @@ function MapInspector({ selectedMapObject }) {
   return (
     <section className="map-inspector-card" aria-label="Map selection inspector">
       {type === "tower" ? <TowerInspector payload={payload} /> : null}
+      {type === "building" ? <BuildingInspector payload={payload} /> : null}
       {type === "coverage_gap" ? <GapInspector payload={payload} /> : null}
       {type === "communication_path" ? <PathInspector payload={payload} /> : null}
       {type === "interference_sample" ? <InterferenceInspector payload={payload} /> : null}
       {type === "measurement_sample" ? <MeasurementInspector payload={payload} /> : null}
       {type === "site_recommendation" ? <RecommendationInspector payload={payload} /> : null}
     </section>
+  );
+}
+
+function BuildingInspector({ payload }) {
+  const feature = payload?.feature ?? {};
+  const properties = feature.properties ?? {};
+  const buildingID = String(feature.id ?? "").trim();
+  const [state, setState] = useState({ buildingID: "", loading: false, data: null, error: null });
+
+  useEffect(() => {
+    if (!buildingID) {
+      return undefined;
+    }
+    const controller = new AbortController();
+    getJSON(`/api/spatial-evidence/buildings/${encodeURIComponent(buildingID)}`, "Building spatial evidence could not be loaded", controller.signal)
+      .then((data) => setState({ buildingID, loading: false, data, error: null }))
+      .catch((error) => {
+        if (!isAbortError(error)) {
+          setState({ buildingID, loading: false, data: null, error: error?.message ?? "Building spatial evidence is unavailable." });
+        }
+      });
+    return () => controller.abort();
+  }, [buildingID]);
+
+  const evidenceState = state.buildingID === buildingID ? state : { loading: Boolean(buildingID), data: null, error: null };
+  const ledger = evidenceState.data?.height_ledger ?? {};
+  const roof = ledger.selected_roof_elevation ?? {};
+  const base = ledger.base_elevation ?? {};
+  const selectedProvenance = ledger.selected_provenance ?? {};
+  return (
+    <div className="inspector-grid">
+      <MiniDatum label="Building" value={feature.id ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Planning AGL" value={formatMetric(properties.height_m, "m")} />
+      <MiniDatum label="Selected AGL" value={formatMetric(ledger.selected_height_agl_m, "m")} />
+      <MiniDatum label="Evidence class" value={ledger.selected_confidence ?? properties.height_source ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Source" value={selectedProvenance.source ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Source version" value={selectedProvenance.source_version ?? evidenceState.data?.dataset_version ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Ground base" value={formatMetric(base.ground_elevation_m, "m")} />
+      <MiniDatum label="Ground spread" value={formatMetric(base.ground_spread_m, "m")} />
+      <MiniDatum label="Roof elevation" value={formatMetric(roof.roof_elevation_amsl_m, "m")} />
+      <MiniDatum label="Terrain" value={evidenceState.data?.terrain?.kind ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Datum compatibility" value={roof.compatibility ?? evidenceState.data?.terrain?.compatibility ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Conflict" value={ledger.conflict?.status ?? UNAVAILABLE_VALUE} />
+      {!buildingID ? <p className="data-note">Selected building has no stable ID.</p> : null}
+      {evidenceState.loading ? <p className="data-note">Loading spatial-evidence provenance…</p> : null}
+      {evidenceState.error ? <p className="data-note">{evidenceState.error}</p> : null}
+      {roof.reason || base.reason ? <p className="data-note">{roof.reason ?? base.reason}</p> : null}
+      <p className="result-explanation">Spatial evidence is diagnostic only. AGL, terrain, and absolute roof values are not used to change canonical RF behavior from this inspector.</p>
+    </div>
   );
 }
 

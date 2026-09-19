@@ -80,7 +80,7 @@ export default function MapCanvas({
         />
       )}
 
-      {layerVisibility?.buildings ? <ViewportBuildingLayer /> : null}
+      {layerVisibility?.buildings ? <ViewportBuildingLayer onSelectMapObject={onSelectMapObject} selectedMapObject={selectedMapObject} /> : null}
 
       {layerVisibility?.interference === false ? null : (
         <InterferenceLayer
@@ -341,7 +341,7 @@ function pointsAreClose(left, right) {
   return Math.hypot(left.x - right.x, left.y - right.y) <= 26;
 }
 
-function ViewportBuildingLayer() {
+function ViewportBuildingLayer({ onSelectMapObject, selectedMapObject }) {
   const map = useMap();
   const [collection, setCollection] = useState({ type: "FeatureCollection", features: [] });
   const [revision, setRevision] = useState(0);
@@ -385,13 +385,21 @@ function ViewportBuildingLayer() {
     <GeoJSON
       key={revision}
       data={collection}
-      interactive={false}
-      style={(feature) => buildingOverlayStyle(feature?.properties)}
+      style={(feature) => buildingOverlayStyle(feature?.properties, selectedMapObject?.payload?.feature?.id === feature?.id)}
+      onEachFeature={(feature, layer) => {
+        layer.on("click", (event) => {
+          event.originalEvent?.stopPropagation();
+          onSelectMapObject?.({
+            type: "building",
+            payload: { feature },
+          });
+        });
+      }}
     />
   );
 }
 
-function buildingOverlayStyle(properties = {}) {
+function buildingOverlayStyle(properties = {}, selected = false) {
   const materialColors = {
     brick: "#b45309",
     concrete: "#64748b",
@@ -405,8 +413,8 @@ function buildingOverlayStyle(properties = {}) {
     color: materialColors[properties.material] ?? materialColors.unknown,
     fillColor: materialColors[properties.material] ?? materialColors.unknown,
     fillOpacity: Math.min(0.38, 0.08 + Math.max(0, Number.isFinite(height) ? height : 0) / 120),
-    opacity: 0.52,
-    weight: 0.7,
+    opacity: selected ? 0.95 : 0.52,
+    weight: selected ? 2.4 : 0.7,
   };
 }
 

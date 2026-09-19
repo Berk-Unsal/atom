@@ -50,6 +50,22 @@
 			"coverage_ratio": 1.0
 		}
 	},
+	"spatial_evidence": {
+		"schema_version": "atom-spatial-evidence-v1",
+		"matching_policy_version": "footprint-height-match-v1",
+		"source_precedence": [
+			"user_supplied",
+			"lidar_derived",
+			"osm_explicit_height",
+			"external_building_height",
+			"osm_levels_derived",
+			"dsm_minus_dtm",
+			"generic_fallback",
+			"unavailable"
+		],
+		"terrain_interpolation": "bilinear",
+		"datum_transformation_policy": "explicit-compatible-datum-v1"
+	},
   "sha256": {
     "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
     "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"

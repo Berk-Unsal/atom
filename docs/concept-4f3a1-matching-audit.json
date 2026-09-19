@@ -1,0 +1,63 @@
+{
+  "artifact": "matching-audit",
+  "audit": {
+    "centroid_distance_distribution_accepted_m": {
+      "count": 0
+    },
+    "centroid_distance_distribution_all_candidates_m": {
+      "count": 0
+    },
+    "iou_distribution_accepted": {
+      "count": 0
+    },
+    "iou_distribution_all_candidates": {
+      "count": 0
+    },
+    "record_audit": [],
+    "summary": {
+      "accepted_one_to_one_matches": 0,
+      "ambiguous_records": 0,
+      "attached_row_difference_records": 0,
+      "candidate_edges": 0,
+      "different_subdivisions_records": 0,
+      "exact_geometry_matches": 0,
+      "exact_id_matches": 0,
+      "external_records_considered": 0,
+      "high_confidence_iou_matches": 0,
+      "many_to_one_records": 0,
+      "one_to_many_records": 0,
+      "osm_records_indexed": 0,
+      "unique_osm_buildings_gaining_external_evidence": 0,
+      "unmatched_records": 0
+    }
+  },
+  "captured_at": "2026-09-19",
+  "concept": "4F.3A.1",
+  "fingerprint": "pilot-ed25b1f6a5e7c27e44e987f0e7c67f2d8d3b55936b386ce5106b6536ae46eb92",
+  "input": {
+    "osm_records_indexed_for_matching": 0,
+    "osm_source_feature_count": 161626,
+    "positive_normalized_records": 0,
+    "spatial_index": "Shapely STRtree; no external-by-OSM all-pairs scan"
+  },
+  "matching_policy": {
+    "centroid_gate": "candidate-support-only",
+    "exact_id_match": true,
+    "high_confidence_iou": 0.6,
+    "maximum_centroid_distance_m": 30.0,
+    "multiple_plausible_candidates": "ambiguous",
+    "split_merge_policy": "only-defensible-one-to-one-matches-accepted",
+    "version": "footprint-height-match-v1"
+  },
+  "numeric_pilot_status": "not_run_no_positive_heights",
+  "schema_version": 1,
+  "source_release": "2026-08-13",
+  "split_merge_policy": {
+    "accepted": "only exact-ID or single-candidate IoU >= 0.60 with no reverse collision",
+    "attached_row_differences": "ambiguous and rejected",
+    "different_subdivisions": "ambiguous and rejected",
+    "many_to_one": "ambiguous and rejected",
+    "one_to_many": "ambiguous and rejected"
+  },
+  "title": "Ankara external building-height matching audit"
+}

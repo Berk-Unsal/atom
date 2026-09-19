@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "concept": "4F.3A",
+  "title": "Data-foundation quality comparison and diagnostic impact",
+  "artifact": "data-quality-comparison",
+  "captured_at": "2026-09-19",
+  "activation": "diagnostic_only_not_active",
+  "comparison_scope": "Current Ankara pack versus the implemented evidence contract with no external raster or building-height sidecar activated",
+  "coverage_comparison": {
+    "building_footprints": {"before": 161784, "after": 161784, "delta": 0},
+    "terrain_area_coverage_pct": {"before": 0.0, "after": 0.0, "delta": 0.0, "status": "no terrain layer installed"},
+    "explicit_height_count": {"before": 1108, "after": 1108, "delta": 0},
+    "levels_derived_count": {"before": 4966, "after": 4966, "delta": 0},
+    "trusted_or_qualified_height_count": {"before": 6074, "after": 6074, "delta": 0},
+    "trusted_or_qualified_height_pct": {"before": 3.7543885675, "after": 3.7543885675, "delta": 0.0},
+    "fallback_only_count": {"before": 155710, "after": 155710, "delta": 0},
+    "absolute_roof_elevation_count": {"before": 0, "after": 0, "delta": 0, "reason": "no authoritative DTM with a compatible declared datum"}
+  },
+  "path_level_impact": {
+    "sample": {"cells": 6, "rays_per_cell": 72, "paths": 432, "frequency_ghz": 28, "radius_m": 400},
+    "before": {"los_to_los": 29, "los_to_nlos": 0, "nlos_to_los": 0, "nlos_to_nlos": 248, "unknown_to_unknown": 155},
+    "after_diagnostic": {"los_to_los": 29, "los_to_nlos": 0, "nlos_to_los": 0, "nlos_to_nlos": 248, "unknown_to_unknown": 155},
+    "interpretation": "No new source was activated, so the diagnostic contract reports the existing conservative height-aware states. The endpoint is separate from canonical RF dispatch."
+  },
+  "readiness_impact": {
+    "p526": {"before_eligible": 29, "after_diagnostic_eligible": 29, "before_unavailable_unknown_height": 403, "after_diagnostic_unavailable_unknown_height": 403, "canonical_coupling": false},
+    "p1411": {"before_fully_automatic_paths": 0, "after_fully_automatic_paths": 0, "status": "still_not_ready_without_morphology_and_rooftop_relation"},
+    "reflection": {"before_terrain_anchored_candidates": 0, "after_terrain_anchored_candidates": 0, "before_height_evidence_candidates": 777, "after_height_evidence_candidates": 777, "material_blocker": 0, "status": "still_not_ready"}
+  },
+  "controlled_fixtures": [
+    {"id": "A", "case": "flat terrain + known building", "expected": "median ground is stable; compatible roof = ground + AGL"},
+    {"id": "B", "case": "sloped terrain", "expected": "min/median/max/spread are retained; spread above threshold marks base_elevation_uncertain"},
+    {"id": "C", "case": "missing raster", "expected": "unavailable; no fake zero"},
+    {"id": "D", "case": "no-data raster cell", "expected": "no_data, not a measured elevation"},
+    {"id": "E", "case": "DSM versus DTM", "expected": "DSM is surface_only_not_ground; only explicit compatible DSM-DTM yields qualified nDSM evidence"},
+    {"id": "F", "case": "building overlapping multiple pixels", "expected": "robust perimeter/edge-midpoint/centroid samples and spread"},
+    {"id": "G", "case": "external footprint exact match", "expected": "exact match quality"},
+    {"id": "H", "case": "external footprint high-IoU match", "expected": "high_confidence_overlap quality"},
+    {"id": "I", "case": "ambiguous external match", "expected": "ambiguous; never trusted silently"},
+    {"id": "J", "case": "conflicting OSM/external heights", "expected": "selected precedence plus alternatives and review-required conflict"},
+    {"id": "K", "case": "incompatible vertical datum", "expected": "roof fusion rejected as incompatible"},
+    {"id": "L", "case": "fallback-only building", "expected": "fallback_only; no absolute roof elevation without qualified ground and height evidence"}
+  ],
+  "canonical_output_policy": {
+    "canonical_2_6_ghz": "unchanged; see pre-change baseline snapshot",
+    "canonical_28_ghz": "unchanged; see pre-change baseline snapshot",
+    "research_sub_thz": "unchanged",
+    "building_entry": "unchanged",
+    "interference_radio_quality": "unchanged",
+    "optimizer": "unchanged; spatial evidence is not an objective or input",
+    "four_i_reference_diagnostics": "unchanged; spatial evidence only adds separate diagnostic endpoints"
+  },
+  "conclusion": "The foundation is complete, but no coverage improvement is claimed. Promotion is blocked until a legal, datum-audited terrain source and/or a matched external height source produces a measured reduction in fallback-only evidence."
+}

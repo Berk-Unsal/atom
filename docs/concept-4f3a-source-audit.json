@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "concept": "4F.3A",
+  "title": "Terrain and building-height source audit for Ankara/Turkiye",
+  "artifact": "source-audit",
+  "captured_at": "2026-09-19",
+  "method": {
+    "raw_downloads": false,
+    "reason": "The phase selects an ingestion contract before acquiring regional rasters or vendor tiles.",
+    "coordinate_contract": "EPSG:4326 for the current dataset pack and GeoTIFF sampler",
+    "canonical_activation": false,
+    "license_policy": "Record source terms and checksums; do not commit restricted raw source files."
+  },
+  "current_sources": [
+    {
+      "provider": "OpenStreetMap contributors",
+      "dataset": "Embedded Ankara building tags",
+      "resolution": "Vector footprint resolution varies by mapping; no uniform height accuracy",
+      "coverage": "161784 loader-visible footprints; 1108 explicit height tags and 4966 levels-derived records",
+      "vertical_datum": "AGL semantics for height tags; absolute terrain datum unavailable",
+      "data_type": "building height / footprint",
+      "license": "ODbL 1.0 for OSM database data; preserve attribution and source terms",
+      "download_or_api": "Current repository data-pipeline pack; future refresh through an OSM extract/provider",
+      "expected_accuracy": "Not calibrated in this pack; explicit tag is trusted relative evidence, levels are qualified derivation",
+      "update_date": "manifest 2026.07",
+      "ankara_applicability": "Active baseline source; sparse height coverage",
+      "decision": "retain and expose as provenance-aware evidence"
+    }
+  ],
+  "terrain_candidates": [
+    {
+      "provider": "Copernicus Data Space / ESA",
+      "dataset": "Copernicus DEM GLO-30",
+      "resolution": "30 m nominal global elevation grid",
+      "coverage": "Global, including Turkiye/Ankara; tile acquisition was not performed",
+      "vertical_datum": "WGS84 horizontal; EGM2008 vertical reference in the product handbook",
+      "data_type": "DSM / surface model, not bare-earth DTM",
+      "license": "Copernicus Data Space access and product terms must be retained with any acquisition",
+      "download_or_api": "Copernicus Data Space / Sentinel Hub DEM APIs; provider access required",
+      "expected_accuracy": "Use the product handbook quality layers and local validation; no Ankara accuracy claim is made here",
+      "update_date": "Product documentation consulted 2026-09-19",
+      "ankara_applicability": "Useful surface diagnostic candidate; not ground elevation without an explicit DTM/vegetation derivation",
+      "decision": "do not activate as terrain; eligible for diagnostic DSM experiments"
+    },
+    {
+      "provider": "NASA / USGS LP DAAC",
+      "dataset": "NASADEM / SRTM-derived 1 arc-second products",
+      "resolution": "Approximately 30 m; HGT and raster distributions vary by product",
+      "coverage": "Global land coverage in Ankara latitude range",
+      "vertical_datum": "NASADEM void-filled HGT values are documented relative to the EGM96 geoid; SRTM-only float values use the WGS84 ellipsoid",
+      "data_type": "DEM with surface/void-fill semantics requiring local ground validation; not treated as authoritative DTM here",
+      "license": "NASA/USGS distribution terms; retain product attribution and metadata",
+      "download_or_api": "Earthdata/LP DAAC or documented distribution; credentials may be required",
+      "expected_accuracy": "NASADEM guide reports generally sub-8 m performance in sparsely vegetated validation conditions; local urban/vegetation error remains unvalidated",
+      "update_date": "User guide consulted 2026-09-19",
+      "ankara_applicability": "Potential terrain candidate after datum/ground validation; not acquired",
+      "decision": "dem_unspecified until a source-specific DTM contract and Ankara QA exist"
+    },
+    {
+      "provider": "NASA / METI / USGS",
+      "dataset": "ASTER GDEM v3",
+      "resolution": "1 arc-second, approximately 30 m",
+      "coverage": "83 N to 83 S, including Ankara",
+      "vertical_datum": "WGS84 horizontal with EGM96 geoid reference in the user guide",
+      "data_type": "DEM / surface-affected elevation; not promoted to DTM",
+      "license": "NASA Earthdata distribution terms",
+      "download_or_api": "NASA Earthdata; not acquired",
+      "expected_accuracy": "Use provider quality/void metadata and local validation; no project accuracy claim",
+      "update_date": "V3 guide consulted 2026-09-19",
+      "ankara_applicability": "Fallback candidate only; Copernicus/NASA alternatives should be compared before selection",
+      "decision": "not activated"
+    },
+    {
+      "provider": "OpenTopography",
+      "dataset": "Global DEM API/distribution service",
+      "resolution": "Depends on selected SRTM, NASADEM, Copernicus DSM, or other product",
+      "coverage": "API lists global products covering Ankara; exact product tile not selected",
+      "vertical_datum": "Inherited from the selected product; never inferred from the API wrapper",
+      "data_type": "Distribution service, not a new DTM",
+      "license": "Inherited per dataset; API keys/rate limits apply",
+      "download_or_api": "OpenTopography Global DEM API; credentials must not be hard-coded",
+      "expected_accuracy": "Inherited from the selected DEM",
+      "update_date": "Developer documentation consulted 2026-09-19",
+      "ankara_applicability": "Convenient acquisition route after product selection",
+      "decision": "architecture-compatible, source metadata still required"
+    },
+    {
+      "provider": "Republic of Turkiye Ministry of Environment, Urbanization and Climate Change / National Geospatial sources",
+      "dataset": "True ortho, 3D point cloud/building inventory, and DSM/DTM-related national products",
+      "resolution": "Official project pages describe 5–10 cm point-cloud and 10 cm orthophoto/3D products for covered areas; exact Ankara product selection is not public in this repo",
+      "coverage": "Large project areas and authorized services; national/Ankara coverage and current tile access require account/order or institutional authorization",
+      "vertical_datum": "Official project material describes ITRF96 3-degree horizontal systems and orthometric height workflows; exact product metadata must accompany each tile",
+      "data_type": "Potential high-resolution DTM/DSM/building inventory",
+      "license": "Access-controlled/commercial or institutional terms; not redistributable by default",
+      "download_or_api": "National geospatial services/data portal; e-Devlet/account/order/payment or institutional service access",
+      "expected_accuracy": "Potentially highest local value, but product-specific QA and licensing are unresolved",
+      "update_date": "Official project and portal pages consulted 2026-09-19",
+      "ankara_applicability": "Promising authorized source; not suitable for repository activation until access and redistribution are cleared",
+      "decision": "stop-condition for raw acquisition; retain acquisition instructions/metadata only"
+    },
+    {
+      "provider": "Open LiDAR / public point-cloud catalogs",
+      "dataset": "Candidate open LiDAR for Ankara",
+      "resolution": "Unknown; no legally redistributable, Ankara-specific open source confirmed in this audit",
+      "coverage": "Unconfirmed",
+      "vertical_datum": "Unresolved",
+      "data_type": "Potential DTM/DSM",
+      "license": "Unresolved",
+      "download_or_api": "No acquisition performed",
+      "expected_accuracy": "Unresolved",
+      "update_date": "Audit date 2026-09-19",
+      "ankara_applicability": "No suitable source confirmed",
+      "decision": "do not invent coverage or activate"
+    }
+  ],
+  "building_height_candidates": [
+    {
+      "provider": "Microsoft",
+      "dataset": "GlobalMLBuildingFootprints with estimated building heights",
+      "resolution": "Footprint/vector geometry with model-estimated mean height within a polygon; not a surveyed roof surface",
+      "coverage": "Current public link table includes Turkey quadkeys; exact Ankara tile download and match were not performed",
+      "vertical_datum": "Height is above ground; absolute roof datum is not supplied",
+      "data_type": "external building height estimate",
+      "license": "CDLA Permissive 2.0 per project README",
+      "download_or_api": "Country/quadkey link table and blob downloads; acquisition must retain link-table version and file hashes",
+      "expected_accuracy": "Model estimate; project confidence field describes footprint confidence, not height accuracy",
+      "update_date": "README/link table refreshed 2026-08-13; source consulted 2026-09-19",
+      "ankara_applicability": "Promising qualified candidate with Turkey coverage; no measured improvement claimed before exact tile matching and disagreement audit",
+      "decision": "contract supported, not activated"
+    },
+    {
+      "provider": "OSM contributors",
+      "dataset": "height / building:levels tags",
+      "resolution": "Per-feature vector tag, heterogeneous",
+      "coverage": "Current pack: 1108 explicit and 4966 levels-derived records",
+      "vertical_datum": "AGL for building height; no terrain base",
+      "data_type": "explicit AGL height plus levels-derived AGL estimate",
+      "license": "ODbL 1.0",
+      "download_or_api": "Embedded dataset pack",
+      "expected_accuracy": "Explicit tags retain source claims; 3 m/level conversion is a planning assumption",
+      "update_date": "2026.07 pack",
+      "ankara_applicability": "Current active baseline",
+      "decision": "retain with trusted/qualified classes, never collapse to one unqualified float"
+    }
+  ],
+  "selection_result": {
+    "terrain_installed": false,
+    "external_height_dataset_installed": false,
+    "diagnostic_only_sources": ["Copernicus DEM GLO-30 candidate DSM", "Microsoft GlobalMLBuildingFootprints candidate estimated height"],
+    "reason": "No candidate was legally and operationally ready to improve Ankara coverage in this phase without a source-specific tile acquisition, vertical/height QA, matching audit, and license record.",
+    "honest_outcome": "The architecture is ready; Ankara coverage remains unchanged at 0% terrain and 3.75% observed-or-levels height evidence."
+  },
+  "references": [
+    "https://dataspace.copernicus.eu/sites/default/files/media/files/2024-06/geo1988-copernicusdem-spe-002_producthandbook_i5.0.pdf",
+    "https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Data/DEM.html",
+    "https://lpdaac.usgs.gov/documents/1318/NASADEM_User_Guide_V12.pdf",
+    "https://www.earthdata.nasa.gov/s3fs-public/2025-04/ASTGTM_User_Guide_V3.pdf",
+    "https://opentopography.org/developers",
+    "https://wiki.openstreetmap.org/wiki/Height",
+    "https://wiki.openstreetmap.org/wiki/Key:building:levels",
+    "https://github.com/microsoft/GlobalMLBuildingFootprints",
+    "https://cbs.csb.gov.tr/proje-calismalari-i-88743",
+    "https://cbs.csb.gov.tr/proje-calismalari-86194",
+    "https://cbs.csb.gov.tr/haberler/cografi-veriler-mek-nsal-veri-satis-portali-uzerinden-paylasima-acilmistir-169171",
+    "https://www.harita.gov.tr/urunler/yukseklik-verileri-grid/1"
+  ]
+}

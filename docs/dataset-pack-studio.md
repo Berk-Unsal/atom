@@ -62,7 +62,7 @@ Schema v2 retains the required identity, EPSG:4326 bounds, sources, licenses, co
 - Missing-field counts and requested/data coverage bounds.
 - Optional `terrain`, `clutter`, `building_heights`, and `materials` files.
 
-The engine loads and validates optional-layer metadata. A supported north-up EPSG:4326 COG/GeoTIFF terrain layer is sampled by the 2.5D point-to-point path profiler. Fast sectors, interference, optimization, batch runs, and analytical surfaces remain terrain-independent. Clutter and separate height/material sidecar layers are not automatically joined; user-selected path-profile sensitivity inputs must not be interpreted as surveyed layer values.
+The engine loads and validates optional-layer metadata. A supported north-up EPSG:4326 COG/GeoTIFF or explicitly declared standard HGT terrain layer is sampled by the 2.5D point-to-point path profiler. Fast sectors, interference, optimization, batch runs, and analytical surfaces remain terrain-independent. Clutter and separate height/material sidecar layers are not automatically joined; user-selected path-profile sensitivity inputs must not be interpreted as surveyed layer values.
 
 ## Validate And Install
 

@@ -22,19 +22,31 @@ const (
 )
 
 type TerrainMetadata struct {
-	Available          bool      `json:"available"`
-	Status             string    `json:"status"`
-	Source             string    `json:"source,omitempty"`
-	Format             string    `json:"format,omitempty"`
-	CRS                string    `json:"crs,omitempty"`
-	ElevationReference string    `json:"elevation_reference,omitempty"`
-	Width              int       `json:"width,omitempty"`
-	Height             int       `json:"height,omitempty"`
-	Bounds             []float64 `json:"bounds,omitempty"`
-	ResolutionXDeg     float64   `json:"resolution_x_deg,omitempty"`
-	ResolutionYDeg     float64   `json:"resolution_y_deg,omitempty"`
-	NoData             *float64  `json:"nodata,omitempty"`
-	Limitations        []string  `json:"limitations,omitempty"`
+	Available          bool        `json:"available"`
+	Status             string      `json:"status"`
+	Source             string      `json:"source,omitempty"`
+	SourceVersion      string      `json:"source_version,omitempty"`
+	DatasetID          string      `json:"dataset_id,omitempty"`
+	Format             string      `json:"format,omitempty"`
+	CRS                string      `json:"crs,omitempty"`
+	Kind               TerrainKind `json:"kind,omitempty"`
+	ElevationReference string      `json:"elevation_reference,omitempty"`
+	VerticalDatum      string      `json:"vertical_datum,omitempty"`
+	VerticalDatumKind  string      `json:"vertical_datum_kind,omitempty"`
+	GeoidModel         string      `json:"geoid_model,omitempty"`
+	Width              int         `json:"width,omitempty"`
+	Height             int         `json:"height,omitempty"`
+	Bounds             []float64   `json:"bounds,omitempty"`
+	ResolutionXDeg     float64     `json:"resolution_x_deg,omitempty"`
+	ResolutionYDeg     float64     `json:"resolution_y_deg,omitempty"`
+	ResolutionXM       float64     `json:"resolution_x_m,omitempty"`
+	ResolutionYM       float64     `json:"resolution_y_m,omitempty"`
+	RasterType         string      `json:"raster_type,omitempty"`
+	Interpolation      string      `json:"interpolation,omitempty"`
+	AcquisitionEpoch   string      `json:"acquisition_epoch,omitempty"`
+	Authoritative      bool        `json:"authoritative,omitempty"`
+	NoData             *float64    `json:"nodata,omitempty"`
+	Limitations        []string    `json:"limitations,omitempty"`
 }
 
 type TerrainModel interface {
@@ -229,17 +241,38 @@ func LoadGeoTIFFTerrain(path, declaredCRS string) (TerrainModel, error) {
 	limitations := []string{"north-up EPSG:4326 rasters only", "single-band integer or IEEE floating-point samples", "none/DEFLATE compression; predictor 1 or integer predictor 2"}
 	terrain.metadata = TerrainMetadata{
 		Available: true, Status: TerrainStatusAvailable, Source: filepath.Base(path), Format: "cog-geotiff", CRS: crs,
-		ElevationReference: "unspecified; provider must distinguish DTM from DSM before height fusion",
-		Width:              width, Height: height,
+		Kind: TerrainKindDEMUnspecified, ElevationReference: "unspecified; provider must distinguish DTM from DSM before height fusion",
+		VerticalDatum: "unspecified", VerticalDatumKind: VerticalDatumUnknown, RasterType: "north-up",
+		Interpolation: TerrainInterpolationBilinear,
+		Width:         width, Height: height,
 		Bounds:         []float64{originX, originY - float64(height)*scales[1], originX + float64(width)*scales[0], originY},
 		ResolutionXDeg: scales[0], ResolutionYDeg: scales[1], NoData: terrain.nodata, Limitations: limitations,
 	}
+	terrain.metadata.ResolutionXM, terrain.metadata.ResolutionYM = geographicResolutionMeters(terrain.metadata)
+	terrain.metadata.Limitations = appendUniqueString(terrain.metadata.Limitations, "elevation kind and vertical datum must be declared before ground/roof fusion")
 	return terrain, nil
 }
 
 func (terrain *geoTIFFTerrain) Metadata() TerrainMetadata { return terrain.metadata }
 
+// Close releases the reusable raster handle. Dataset runtimes keep an active
+// pack alive for the lifetime of its snapshot; callers that load a terrain for
+// a short-lived diagnostic can close it explicitly through this optional
+// interface.
+func (terrain *geoTIFFTerrain) Close() error {
+	if terrain == nil || terrain.file == nil {
+		return nil
+	}
+	file := terrain.file
+	terrain.file = nil
+	return file.Close()
+}
+
 func (terrain *geoTIFFTerrain) Elevation(point Point) (float64, bool) {
+	return terrain.Sample(point, TerrainInterpolationBilinear)
+}
+
+func (terrain *geoTIFFTerrain) Sample(point Point, interpolation string) (float64, bool) {
 	column := (point.Lon - terrain.originX) / terrain.scaleX
 	row := (terrain.originY - point.Lat) / terrain.scaleY
 	if !terrain.pixelIsPoint {
@@ -248,6 +281,9 @@ func (terrain *geoTIFFTerrain) Elevation(point Point) (float64, bool) {
 	}
 	if column < 0 || row < 0 || column > float64(terrain.width-1) || row > float64(terrain.height-1) {
 		return 0, false
+	}
+	if interpolation == TerrainInterpolationNearest {
+		return terrain.pixel(int(math.Round(column)), int(math.Round(row)))
 	}
 	left, top := int(math.Floor(column)), int(math.Floor(row))
 	right, bottom := min(left+1, terrain.width-1), min(top+1, terrain.height-1)
@@ -306,6 +342,9 @@ func (terrain *geoTIFFTerrain) block(index, width, height int) ([]byte, error) {
 	compressedSize := terrain.blockByteCounts[index]
 	if compressedSize == 0 || compressedSize > maxTerrainBlockBytes {
 		return nil, errors.New("GeoTIFF block byte count is invalid")
+	}
+	if terrain.file == nil {
+		return nil, errors.New("GeoTIFF terrain is closed")
 	}
 	compressed := make([]byte, int(compressedSize))
 	if _, err := terrain.file.ReadAt(compressed, int64(terrain.blockOffsets[index])); err != nil {

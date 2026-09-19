@@ -1,0 +1,74 @@
+{
+  "artifact": "height-agreement",
+  "captured_at": "2026-09-19",
+  "comparison": {
+    "accepted_matches_without_osm_height_evidence": 0,
+    "conflict_audit": {
+      "accepted_matches_against_osm_explicit": 0,
+      "accepted_matches_against_osm_levels_derived": 0,
+      "explicit_large_disagreement_cases": 0,
+      "levels_large_disagreement_cases": 0,
+      "precedence_rule": "OSM explicit wins; external may replace levels-derived or fallback after accepted matching"
+    },
+    "large_disagreement_cases": [],
+    "large_disagreement_count": 0,
+    "large_disagreement_threshold": "max(5m, 25% of selected OSM height)",
+    "osm_explicit": {
+      "absolute_error_m": {
+        "count": 0
+      },
+      "mae_m": null,
+      "matched_count": 0,
+      "p90_absolute_error_m": null,
+      "relative_error_pct": {
+        "count": 0
+      },
+      "rmse_m": null,
+      "signed_difference_external_minus_osm_m": {
+        "count": 0
+      }
+    },
+    "osm_levels_derived": {
+      "absolute_error_m": {
+        "count": 0
+      },
+      "mae_m": null,
+      "matched_count": 0,
+      "p90_absolute_error_m": null,
+      "relative_error_pct": {
+        "count": 0
+      },
+      "rmse_m": null,
+      "signed_difference_external_minus_osm_m": {
+        "count": 0
+      }
+    },
+    "overall": {
+      "absolute_error_m": {
+        "count": 0
+      },
+      "mae_m": null,
+      "matched_count": 0,
+      "p90_absolute_error_m": null,
+      "relative_error_pct": {
+        "count": 0
+      },
+      "rmse_m": null,
+      "signed_difference_external_minus_osm_m": {
+        "count": 0
+      }
+    },
+    "selected_height_semantics": "OSM explicit height tag or 3m-per-level derived AGL comparison; no fallback values included"
+  },
+  "concept": "4F.3A.1",
+  "external_height_semantics": "model-estimated mean height within a building polygon, above ground, in metres; -1 means no height estimate",
+  "numeric_pilot_status": "not_run_no_positive_heights",
+  "schema_version": 1,
+  "source_precedence": {
+    "ambiguous_or_low_iou": "never selected",
+    "external": "may replace levels-derived or fallback only after accepted match quality",
+    "osm_explicit": "wins over external even when external is accepted"
+  },
+  "source_release": "2026-08-13",
+  "title": "Ankara external-versus-OSM height agreement"
+}

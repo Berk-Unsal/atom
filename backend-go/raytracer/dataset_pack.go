@@ -20,20 +20,21 @@ const (
 )
 
 type DatasetManifest struct {
-	SchemaVersion int                     `json:"schema_version"`
-	ID            string                  `json:"id"`
-	Name          string                  `json:"name"`
-	Version       string                  `json:"version"`
-	CRS           string                  `json:"crs"`
-	Bounds        []float64               `json:"bounds"`
-	GeneratedAt   string                  `json:"generated_at"`
-	Sources       []string                `json:"sources"`
-	Licenses      []string                `json:"licenses"`
-	Confidence    string                  `json:"confidence"`
-	Files         DatasetFiles            `json:"files"`
-	SHA256        map[string]string       `json:"sha256"`
-	Layers        map[string]DatasetLayer `json:"layers,omitempty"`
-	Quality       *DatasetQualityReport   `json:"quality,omitempty"`
+	SchemaVersion   int                     `json:"schema_version"`
+	ID              string                  `json:"id"`
+	Name            string                  `json:"name"`
+	Version         string                  `json:"version"`
+	CRS             string                  `json:"crs"`
+	Bounds          []float64               `json:"bounds"`
+	GeneratedAt     string                  `json:"generated_at"`
+	Sources         []string                `json:"sources"`
+	Licenses        []string                `json:"licenses"`
+	Confidence      string                  `json:"confidence"`
+	Files           DatasetFiles            `json:"files"`
+	SHA256          map[string]string       `json:"sha256"`
+	Layers          map[string]DatasetLayer `json:"layers,omitempty"`
+	Quality         *DatasetQualityReport   `json:"quality,omitempty"`
+	SpatialEvidence *DatasetSpatialEvidence `json:"spatial_evidence,omitempty"`
 }
 
 type DatasetFiles struct {
@@ -46,14 +47,30 @@ type DatasetFiles struct {
 }
 
 type DatasetLayer struct {
-	Kind       string `json:"kind"`
-	Format     string `json:"format"`
-	CRS        string `json:"crs"`
-	Units      string `json:"units,omitempty"`
-	Optional   bool   `json:"optional"`
-	Source     string `json:"source,omitempty"`
-	License    string `json:"license,omitempty"`
-	Confidence string `json:"confidence,omitempty"`
+	Kind              string      `json:"kind"`
+	Format            string      `json:"format"`
+	CRS               string      `json:"crs"`
+	Units             string      `json:"units,omitempty"`
+	Optional          bool        `json:"optional"`
+	Source            string      `json:"source,omitempty"`
+	SourceVersion     string      `json:"source_version,omitempty"`
+	License           string      `json:"license,omitempty"`
+	Confidence        string      `json:"confidence,omitempty"`
+	ElevationKind     TerrainKind `json:"elevation_kind,omitempty"`
+	VerticalDatum     string      `json:"vertical_datum,omitempty"`
+	VerticalDatumKind string      `json:"vertical_datum_kind,omitempty"`
+	GeoidModel        string      `json:"geoid_model,omitempty"`
+	ResolutionM       float64     `json:"resolution_m,omitempty"`
+	Interpolation     string      `json:"interpolation,omitempty"`
+	AcquisitionEpoch  string      `json:"acquisition_epoch,omitempty"`
+}
+
+type DatasetSpatialEvidence struct {
+	SchemaVersion             string                    `json:"schema_version"`
+	MatchingPolicyVersion     string                    `json:"matching_policy_version"`
+	SourcePrecedence          []SpatialHeightProvenance `json:"source_precedence"`
+	TerrainInterpolation      string                    `json:"terrain_interpolation"`
+	DatumTransformationPolicy string                    `json:"datum_transformation_policy"`
 }
 
 type DatasetQualityReport struct {
@@ -78,17 +95,18 @@ type DatasetCoverageQA struct {
 }
 
 type DatasetPack struct {
-	Root          string
-	ManifestPath  string
-	TowerPath     string
-	BuildingPath  string
-	LayerPaths    map[string]string
-	Manifest      DatasetManifest
-	Towers        []TowerStation
-	BuildingIndex *BuildingIndex
-	BuildingStats BuildingIndexStats
-	Terrain       TerrainModel
-	TerrainMeta   TerrainMetadata
+	Root            string
+	ManifestPath    string
+	TowerPath       string
+	BuildingPath    string
+	LayerPaths      map[string]string
+	Manifest        DatasetManifest
+	Towers          []TowerStation
+	BuildingIndex   *BuildingIndex
+	BuildingStats   BuildingIndexStats
+	Terrain         TerrainModel
+	TerrainMeta     TerrainMetadata
+	SpatialEvidence DatasetSpatialEvidence
 }
 
 func LoadDatasetPack(root string) (*DatasetPack, error) {
@@ -152,32 +170,57 @@ func LoadDatasetPack(root string) (*DatasetPack, error) {
 	if buildingIndex.Len() == 0 {
 		return nil, errors.New("building dataset contains no valid Polygon features")
 	}
-	terrainMeta := TerrainMetadata{Available: false, Status: TerrainStatusUnavailable, ElevationReference: "unavailable", Limitations: []string{"dataset pack does not include a terrain layer; height-aware network classification uses flat-ground relative heights and no terrain evidence"}}
+	terrainMeta := TerrainMetadata{Available: false, Status: TerrainStatusUnavailable, Kind: TerrainKindDEMUnspecified, VerticalDatumKind: VerticalDatumUnknown, ElevationReference: "unavailable", Limitations: []string{"dataset pack does not include a terrain layer; height-aware network classification uses flat-ground relative heights and no terrain evidence"}}
 	var terrain TerrainModel
 	if terrainPath := layerPaths["terrain"]; terrainPath != "" {
 		layer := manifest.Layers["terrain"]
 		format := strings.ToLower(strings.TrimSpace(layer.Format))
-		if format != "cog" && format != "cog-geotiff" && format != "geotiff" && format != "tiff" {
-			return nil, fmt.Errorf("terrain layer format %q is unsupported; use COG/GeoTIFF", layer.Format)
+		switch format {
+		case "cog", "cog-geotiff", "geotiff", "tiff":
+			terrain, err = LoadGeoTIFFTerrain(terrainPath, layer.CRS)
+		case "hgt", "hgt1", "hgt3":
+			terrain, err = LoadHGTTerrain(terrainPath, layer.CRS)
+		default:
+			return nil, fmt.Errorf("terrain layer format %q is unsupported; use COG/GeoTIFF or HGT", layer.Format)
 		}
-		terrain, err = LoadGeoTIFFTerrain(terrainPath, layer.CRS)
 		if err != nil {
 			return nil, fmt.Errorf("load terrain: %w", err)
 		}
+		declaration := TerrainMetadata{
+			Source: layer.Source, SourceVersion: layer.SourceVersion, DatasetID: manifest.ID,
+			Kind: layer.ElevationKind, VerticalDatum: layer.VerticalDatum,
+			VerticalDatumKind: layer.VerticalDatumKind, GeoidModel: layer.GeoidModel, Interpolation: layer.Interpolation,
+			AcquisitionEpoch: layer.AcquisitionEpoch, ResolutionXM: layer.ResolutionM, ResolutionYM: layer.ResolutionM,
+		}
+		if declaration.SourceVersion == "" {
+			declaration.SourceVersion = manifest.Version
+		}
+		terrain = ApplyTerrainLayerDeclaration(terrain, declaration)
 		terrainMeta = terrain.Metadata()
 	}
+	spatialEvidence := DatasetSpatialEvidence{}
+	if manifest.SpatialEvidence != nil {
+		spatialEvidence = *manifest.SpatialEvidence
+	}
+	if spatialEvidence.SchemaVersion == "" {
+		spatialEvidence = DatasetSpatialEvidence{
+			SchemaVersion: SpatialEvidenceSchemaVersion, MatchingPolicyVersion: SpatialMatchingPolicyVersion,
+			SourcePrecedence: DefaultHeightSourcePrecedence(), TerrainInterpolation: normalizeInterpolation(terrainMeta.Interpolation), DatumTransformationPolicy: SpatialDatumPolicyVersion,
+		}
+	}
 	return &DatasetPack{
-		Root:          root,
-		ManifestPath:  manifestPath,
-		TowerPath:     towerPath,
-		BuildingPath:  buildingPath,
-		LayerPaths:    layerPaths,
-		Manifest:      manifest,
-		Towers:        towers,
-		BuildingIndex: buildingIndex,
-		BuildingStats: buildingStats,
-		Terrain:       terrain,
-		TerrainMeta:   terrainMeta,
+		Root:            root,
+		ManifestPath:    manifestPath,
+		TowerPath:       towerPath,
+		BuildingPath:    buildingPath,
+		LayerPaths:      layerPaths,
+		Manifest:        manifest,
+		Towers:          towers,
+		BuildingIndex:   buildingIndex,
+		BuildingStats:   buildingStats,
+		Terrain:         terrain,
+		TerrainMeta:     terrainMeta,
+		SpatialEvidence: spatialEvidence,
 	}, nil
 }
 
@@ -263,6 +306,15 @@ func validateDatasetManifest(manifest DatasetManifest) error {
 			}
 			if layer != "terrain" && metadata.CRS != "EPSG:4326" {
 				return fmt.Errorf("dataset vector layer %s must use EPSG:4326", layer)
+			}
+			if layer == "terrain" && metadata.ElevationKind != "" {
+				kind := normalizeTerrainKind(metadata.ElevationKind)
+				if kind != metadata.ElevationKind {
+					return fmt.Errorf("terrain elevation_kind must be dtm, dsm, or dem_unspecified")
+				}
+				if kind == TerrainKindDTM && (normalizeVerticalDatumKind(metadata.VerticalDatumKind) == VerticalDatumUnknown || !hasDeclaredVerticalDatum(metadata.VerticalDatum)) {
+					return errors.New("dtm terrain requires an explicit vertical_datum and vertical_datum_kind")
+				}
 			}
 		}
 	}

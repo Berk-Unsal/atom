@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "concept": "4F.3A.2",
+  "title": "GBA.Height Ankara pilot pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-19",
+  "baseline_commit": "bd79766",
+  "worktree_note": "This is the pre-GBA.Height baseline. The worktree already contains the earlier Concept 4F.3A and 4F.3A.1 diagnostic-only changes; this pilot does not treat those unrelated working-tree edits as GBA.Height effects.",
+  "dataset": {
+    "id": "ankara-open-planning",
+    "version": "2026.07",
+    "manifest": "data-pipeline/manifest.json",
+    "crs": "EPSG:4326",
+    "active_aoi_west_south_east_north": [32.45, 39.55, 33.25, 40.25],
+    "tower_cells": 451,
+    "building_features_in_manifest": 161626,
+    "loader_visible_footprints": 161784,
+    "terrain_layer_present": false,
+    "terrain_status": "terrain_unavailable"
+  },
+  "spatial_evidence_foundation": {
+    "schema_version": "atom-spatial-evidence-v1",
+    "active_pack_fingerprint": "spatial-evidence-d41228503a51cc45aa61b170b255b0b6",
+    "matching_policy_version": "footprint-height-match-v1",
+    "source_precedence": [
+      "user_supplied",
+      "lidar_derived",
+      "osm_explicit_height",
+      "external_building_height",
+      "osm_levels_derived",
+      "dsm_minus_dtm",
+      "generic_fallback",
+      "unavailable"
+    ],
+    "terrain_interpolation": "bilinear",
+    "datum_transformation_policy": "explicit-compatible-datum-v1",
+    "canonical_activation": false
+  },
+  "current_loader_height_audit": {
+    "precedence": [
+      "OSM height tag parsed as metres, including supported ft/feet/' suffixes",
+      "building:levels multiplied by 3.0 m and capped at 500 m",
+      "legacy display fallback default-3-storey = 9.0 m"
+    ],
+    "explicit_height_count": 1108,
+    "explicit_height_pct": 0.68,
+    "levels_derived_count": 4966,
+    "levels_derived_pct": 3.07,
+    "fallback_only_count": 155710,
+    "fallback_only_pct": 96.25,
+    "unavailable_count": 0,
+    "trusted_or_qualified_count": 6074,
+    "trusted_or_qualified_pct": 3.75,
+    "fallback_height_m": 9.0,
+    "notes": [
+      "The fallback is a display/legacy value, not roof evidence.",
+      "MultiPolygon outer rings become loader-visible parts while preserving a logical feature ID; holes are not exterior rings."
+    ]
+  },
+  "height_aware_los_audit": {
+    "cells": 6,
+    "rays_per_cell": 72,
+    "paths": 432,
+    "frequency_ghz": 28,
+    "tx_height_m": 25,
+    "rx_height_m": 1.5,
+    "radius_m": 400,
+    "terrain_status": "terrain_unavailable",
+    "transitions": {
+      "los_to_los": 29,
+      "los_to_nlos": 0,
+      "nlos_to_los": 0,
+      "nlos_to_nlos": 248,
+      "unknown_to_unknown": 155,
+      "other": 0
+    }
+  },
+  "p526_readiness": {
+    "paths": 432,
+    "diagnostic_eligible": 29,
+    "unknown_height_ineligible": 403,
+    "geometric_los": 29,
+    "blocked_only_by_unknown_height": 338,
+    "diagnostic_id": "p526-single-edge-v1",
+    "canonical_propagation_coupling": false
+  },
+  "p1411_readiness": {
+    "audited_paths": 432,
+    "fully_automatic_paths": 0,
+    "terrain_available": false,
+    "morphology_taxonomy_present": false,
+    "both_below_rooftop_provable": false,
+    "status": "not_ready",
+    "reference": "docs/concept-4i2b-p1411-applicability.json"
+  },
+  "reflection_readiness": {
+    "sample_paths": 432,
+    "geometry_only_specular_candidates": 6368,
+    "candidates_with_height_evidence": 777,
+    "candidates_with_terrain_anchored_vertical_span": 0,
+    "material_evidence_footprints": 0,
+    "status": "not_ready",
+    "reference": "docs/concept-4i5a-ankara-readiness.json"
+  },
+  "canonical_rf_invariants": {
+    "canonical_2_6_ghz": "unchanged",
+    "canonical_28_ghz": "unchanged",
+    "research_sub_thz_140_ghz": "unchanged",
+    "building_entry": "unchanged",
+    "p526_canonical_status": "unchanged",
+    "p1411": "unchanged",
+    "reflection": "unchanged",
+    "interference": "unchanged",
+    "radio_quality": "unchanged",
+    "optimizer": "unchanged",
+    "canonical_fingerprints": "unchanged"
+  }
+}

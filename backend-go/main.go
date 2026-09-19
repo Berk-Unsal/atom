@@ -178,6 +178,7 @@ func main() {
 		buildingFeatureLimiter.middlewareFor("bounded building feature query"),
 	)
 	registerDatasetRoutes(router, datasets, strings.TrimSpace(os.Getenv("DATASET_ADMIN_API_KEY")))
+	registerSpatialEvidenceRoutes(router, datasets)
 	registerExperimentRoutes(router, experiments, datasets)
 	registerPathProfileRoute(router, datasets)
 	registerSubTHZReferenceRoute(router, datasets)

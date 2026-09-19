@@ -153,6 +153,14 @@ model catalog, RF semantic contract, capability matrix, and active
 dataset identity</li>
 <li><code>GET /api/datasets</code> returns installed packs and the
 active manifest ID</li>
+<li><code>GET /api/spatial-evidence</code> returns active-pack terrain
+semantics, height evidence counts, and the deterministic
+spatial-evidence fingerprint</li>
+<li><code>GET /api/spatial-evidence/buildings/:id</code> returns a
+diagnostic-only building height/base/roof provenance ledger</li>
+<li><code>POST /api/spatial-evidence/path-profile</code> returns
+diagnostic-only terrain samples with source, interpolation, datum, and
+no-data status</li>
 <li><code>GET /api/buildings</code> and <code>GET /api/towers</code>
 return raw GeoJSON; bounded clients should prefer
 <code>/api/collections/buildings/items</code></li>
@@ -609,7 +617,10 @@ ranges; a 140 GHz knife-edge result is mathematical research diagnostic
 only.</p>
 <p>COG/GeoTIFF support is limited to north-up EPSG:4326, one-band
 integer/float samples, none/DEFLATE compression, and supported integer
-predictors. The response lists these limitations.</p>
+predictors. Dataset packs may also declare standard signed big-endian
+1-arc-second or 3-arc-second HGT postings; HGT has no embedded CRS or
+vertical datum and therefore requires explicit pack metadata. The
+response lists these limitations.</p>
 <hr />
 <h3 id="evaluate-the-sub-thz-atmospheric-reference">Evaluate the Sub-THz
 Atmospheric Reference</h3>
@@ -1681,9 +1692,9 @@ implementation does not advertise full standard conformance.</p>
 v2 adds per-layer provenance and confidence,
 geometry/missing-field/coverage QA, and optional terrain, clutter,
 building-height, and material layers. All referenced files require
-SHA-256 hashes. A supported terrain COG/GeoTIFF is consumed by
-<code>/api/path-profile</code>; other optional sidecar layers remain
-metadata until explicitly integrated.</p>
+SHA-256 hashes. A supported terrain COG/GeoTIFF or explicitly declared
+HGT layer is consumed by <code>/api/path-profile</code>; other optional
+sidecar layers remain metadata until explicitly integrated.</p>
 <p><code>GET /api/datasets</code> lists packs discovered at
 <code>ATOM_DATASETS_ROOT</code> itself and its immediate child
 directories:</p>
@@ -1727,29 +1738,45 @@ inspect, repair, reproject, and build arbitrary-region schema-v2 packs
 locally.</p>
 <p>The complete machine-readable contract is available as <a
 href="openapi.yaml"><code>openapi.yaml</code></a>.</p>
+<h3 id="spatial-evidence-diagnostics">Spatial Evidence Diagnostics</h3>
+<p>Concept 4F.3A adds three read-only/diagnostic interfaces. They do not
+change canonical LOS/NLOS, propagation loss, interference, radio
+quality, building entry, or optimization.</p>
+<p><code>GET /api/spatial-evidence</code> reports the active terrain
+declaration (<code>dtm</code>, <code>dsm</code>, or
+<code>dem_unspecified</code>), vertical-datum compatibility, current
+explicit/levels/fallback counts, matching policy, source precedence, and
+<code>spatial_evidence_fingerprint</code>.</p>
+<p><code>GET /api/spatial-evidence/buildings/:id</code> returns
+<code>height_ledger</code>. The ledger keeps
+<code>selected_height_agl_m</code>, <code>selected_provenance</code>,
+evidence class, base <code>ground_elevation_m</code> statistics,
+compatible <code>roof_elevation_amsl_m</code> when an authoritative DTM
+is present, alternative sources, and conflict screening. A generic
+fallback remains <code>fallback_only</code>; DSM and unspecified DEM
+semantics cannot produce a ground base.</p>
+<p><code>POST /api/spatial-evidence/path-profile</code> accepts:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;transmitter&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;lon&quot;</span><span class="fu">:</span> <span class="fl">32.85</span><span class="fu">,</span> <span class="dt">&quot;lat&quot;</span><span class="fu">:</span> <span class="fl">39.92</span><span class="fu">},</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;receiver&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;lon&quot;</span><span class="fu">:</span> <span class="fl">32.851</span><span class="fu">,</span> <span class="dt">&quot;lat&quot;</span><span class="fu">:</span> <span class="fl">39.92</span><span class="fu">},</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;requested_spacing_m&quot;</span><span class="fu">:</span> <span class="dv">10</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>The response contains deterministic path-distance samples. Effective
+spacing is never finer than the largest declared raster resolution. Each
+sample distinguishes <code>measured_or_source</code>,
+<code>interpolated</code>, <code>outside_dataset</code>,
+<code>no_data</code>, and <code>unavailable</code>; no zero terrain is
+synthesized. The response includes
+<code>canonical_activation: diagnostic_only_not_active</code>.</p>
 <h2 id="usage-examples">Usage Examples</h2>
 <h3 id="example-1-get-health-status">Example 1: Get Health Status</h3>
-<div class="sourceCode" id="cb33"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> GET http://localhost:8080/healthz</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> GET http://localhost:8080/healthz</span></code></pre></div>
 <h3 id="example-2-simulate-5g-coverage">Example 2: Simulate 5G
 Coverage</h3>
-<div class="sourceCode" id="cb34"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/api/simulate <span class="dt">\</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lon&quot;: 32.8541,</span></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lat&quot;: 39.9208,</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;rays&quot;: 120,</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;radius_m&quot;: 400,</span></span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;frequency_ghz&quot;: 28,</span></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tx_power_dbm&quot;: 30,</span></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;azimuth&quot;: 90,</span></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;beam_width&quot;: 120</span></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="st">  }&#39;</span></span></code></pre></div>
-<h3 id="example-3-auto-optimize-antenna">Example 3: Auto-Optimize
-Antenna</h3>
 <div class="sourceCode" id="cb35"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/api/optimize-azimuth <span class="dt">\</span></span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/api/simulate <span class="dt">\</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{</span></span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lon&quot;: 32.8541,</span></span>
@@ -1761,9 +1788,10 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href=
 <span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;azimuth&quot;: 90,</span></span>
 <span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;beam_width&quot;: 120</span></span>
 <span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="st">  }&#39;</span></span></code></pre></div>
-<h3 id="example-4-find-coverage-gaps">Example 4: Find Coverage Gaps</h3>
+<h3 id="example-3-auto-optimize-antenna">Example 3: Auto-Optimize
+Antenna</h3>
 <div class="sourceCode" id="cb36"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/api/coverage-gaps <span class="dt">\</span></span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/api/optimize-azimuth <span class="dt">\</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{</span></span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lon&quot;: 32.8541,</span></span>
@@ -1775,87 +1803,101 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href=
 <span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;azimuth&quot;: 90,</span></span>
 <span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;beam_width&quot;: 120</span></span>
 <span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="st">  }&#39;</span></span></code></pre></div>
-<h3 id="example-5-fetch-all-towers">Example 5: Fetch All Towers</h3>
+<h3 id="example-4-find-coverage-gaps">Example 4: Find Coverage Gaps</h3>
 <div class="sourceCode" id="cb37"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> GET <span class="st">&quot;http://localhost:8080/api/towers&quot;</span></span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/api/coverage-gaps <span class="dt">\</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lon&quot;: 32.8541,</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tower_lat&quot;: 39.9208,</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;rays&quot;: 120,</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;radius_m&quot;: 400,</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;frequency_ghz&quot;: 28,</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;tx_power_dbm&quot;: 30,</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;azimuth&quot;: 90,</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;beam_width&quot;: 120</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a><span class="st">  }&#39;</span></span></code></pre></div>
+<h3 id="example-5-fetch-all-towers">Example 5: Fetch All Towers</h3>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> GET <span class="st">&quot;http://localhost:8080/api/towers&quot;</span></span></code></pre></div>
 <hr />
 <h2 id="client-examples">Client Examples</h2>
 <h3 id="go-standard-library">Go Standard Library</h3>
-<div class="sourceCode" id="cb38"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span> main</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="op">(</span></span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;bytes&quot;</span></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;net/http&quot;</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    payload <span class="op">:=</span> <span class="op">[]</span><span class="dt">byte</span><span class="op">(</span><span class="st">`{</span></span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;tower_lon&quot;: 32.8541,</span></span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;tower_lat&quot;: 39.9208,</span></span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;frequency_ghz&quot;: 28,</span></span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;tx_power_dbm&quot;: 30,</span></span>
-<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;rays&quot;: 120,</span></span>
-<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;radius_m&quot;: 400,</span></span>
-<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;azimuth&quot;: 90,</span></span>
-<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;beam_width&quot;: 120</span></span>
-<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a><span class="st">    }`</span><span class="op">)</span></span>
-<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>    request<span class="op">,</span> _ <span class="op">:=</span> http<span class="op">.</span>NewRequest<span class="op">(</span></span>
-<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>        http<span class="op">.</span>MethodPost<span class="op">,</span></span>
-<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;http://localhost:8080/api/simulate&quot;</span><span class="op">,</span></span>
-<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>        bytes<span class="op">.</span>NewReader<span class="op">(</span>payload<span class="op">),</span></span>
-<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">)</span></span>
-<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>    request<span class="op">.</span>Header<span class="op">.</span>Set<span class="op">(</span><span class="st">&quot;Content-Type&quot;</span><span class="op">,</span> <span class="st">&quot;application/json&quot;</span><span class="op">)</span></span>
-<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>    response<span class="op">,</span> err <span class="op">:=</span> http<span class="op">.</span>DefaultClient<span class="op">.</span>Do<span class="op">(</span>request<span class="op">)</span></span>
-<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> err <span class="op">!=</span> <span class="ot">nil</span> <span class="op">{</span></span>
-<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>        <span class="bu">panic</span><span class="op">(</span>err<span class="op">)</span></span>
-<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">defer</span> response<span class="op">.</span>Body<span class="op">.</span>Close<span class="op">()</span></span>
-<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h3 id="python-client">Python Client</h3>
 <div class="sourceCode" id="cb39"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+class="sourceCode go"><code class="sourceCode go"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span> main</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> requests.Session()</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> client.post(</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;http://localhost:8080/api/simulate&#39;</span>,</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    json<span class="op">=</span>{</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tower_lon&#39;</span>: <span class="fl">32.8541</span>,</span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tower_lat&#39;</span>: <span class="fl">39.9208</span>,</span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;rays&#39;</span>: <span class="dv">120</span>,</span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;radius_m&#39;</span>: <span class="dv">400</span>,</span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;frequency_ghz&#39;</span>: <span class="dv">28</span>,</span>
-<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tx_power_dbm&#39;</span>: <span class="dv">30</span>,</span>
-<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;azimuth&#39;</span>: <span class="dv">45</span>,</span>
-<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;beam_width&#39;</span>: <span class="dv">120</span></span>
-<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> response.json()</span>
-<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data[<span class="st">&#39;geojson&#39;</span>])</span></code></pre></div>
-<h3 id="javascript-client">JavaScript Client</h3>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="op">(</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;bytes&quot;</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;net/http&quot;</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    payload <span class="op">:=</span> <span class="op">[]</span><span class="dt">byte</span><span class="op">(</span><span class="st">`{</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;tower_lon&quot;: 32.8541,</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;tower_lat&quot;: 39.9208,</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;frequency_ghz&quot;: 28,</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;tx_power_dbm&quot;: 30,</span></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;rays&quot;: 120,</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;radius_m&quot;: 400,</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;azimuth&quot;: 90,</span></span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;beam_width&quot;: 120</span></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a><span class="st">    }`</span><span class="op">)</span></span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>    request<span class="op">,</span> _ <span class="op">:=</span> http<span class="op">.</span>NewRequest<span class="op">(</span></span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>        http<span class="op">.</span>MethodPost<span class="op">,</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;http://localhost:8080/api/simulate&quot;</span><span class="op">,</span></span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>        bytes<span class="op">.</span>NewReader<span class="op">(</span>payload<span class="op">),</span></span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">)</span></span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a>    request<span class="op">.</span>Header<span class="op">.</span>Set<span class="op">(</span><span class="st">&quot;Content-Type&quot;</span><span class="op">,</span> <span class="st">&quot;application/json&quot;</span><span class="op">)</span></span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a>    response<span class="op">,</span> err <span class="op">:=</span> http<span class="op">.</span>DefaultClient<span class="op">.</span>Do<span class="op">(</span>request<span class="op">)</span></span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> err <span class="op">!=</span> <span class="ot">nil</span> <span class="op">{</span></span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a>        <span class="bu">panic</span><span class="op">(</span>err<span class="op">)</span></span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">defer</span> response<span class="op">.</span>Body<span class="op">.</span>Close<span class="op">()</span></span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="python-client">Python Client</h3>
 <div class="sourceCode" id="cb40"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">function</span> <span class="fu">simulateRF</span>(params) {</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> response <span class="op">=</span> <span class="cf">await</span> <span class="fu">fetch</span>(<span class="st">&#39;http://localhost:8080/api/simulate&#39;</span><span class="op">,</span> {</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">method</span><span class="op">:</span> <span class="st">&#39;POST&#39;</span><span class="op">,</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">headers</span><span class="op">:</span> { <span class="st">&#39;Content-Type&#39;</span><span class="op">:</span> <span class="st">&#39;application/json&#39;</span> }<span class="op">,</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">body</span><span class="op">:</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(params)</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> data <span class="op">=</span> <span class="cf">await</span> response<span class="op">.</span><span class="fu">json</span>()<span class="op">;</span></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> data<span class="op">.</span><span class="at">geojson</span><span class="op">;</span></span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> coverage <span class="op">=</span> <span class="cf">await</span> <span class="fu">simulateRF</span>({</span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tower_lon</span><span class="op">:</span> <span class="fl">32.8541</span><span class="op">,</span></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tower_lat</span><span class="op">:</span> <span class="fl">39.9208</span><span class="op">,</span></span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">rays</span><span class="op">:</span> <span class="dv">120</span><span class="op">,</span></span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">radius_m</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span></span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">frequency_ghz</span><span class="op">:</span> <span class="dv">28</span><span class="op">,</span></span>
-<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tx_power_dbm</span><span class="op">:</span> <span class="dv">30</span><span class="op">,</span></span>
-<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">azimuth</span><span class="op">:</span> <span class="dv">45</span><span class="op">,</span></span>
-<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">beam_width</span><span class="op">:</span> <span class="dv">120</span></span>
-<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> requests.Session()</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> client.post(</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;http://localhost:8080/api/simulate&#39;</span>,</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    json<span class="op">=</span>{</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tower_lon&#39;</span>: <span class="fl">32.8541</span>,</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tower_lat&#39;</span>: <span class="fl">39.9208</span>,</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;rays&#39;</span>: <span class="dv">120</span>,</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;radius_m&#39;</span>: <span class="dv">400</span>,</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;frequency_ghz&#39;</span>: <span class="dv">28</span>,</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;tx_power_dbm&#39;</span>: <span class="dv">30</span>,</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;azimuth&#39;</span>: <span class="dv">45</span>,</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;beam_width&#39;</span>: <span class="dv">120</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> response.json()</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data[<span class="st">&#39;geojson&#39;</span>])</span></code></pre></div>
+<h3 id="javascript-client">JavaScript Client</h3>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">function</span> <span class="fu">simulateRF</span>(params) {</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> response <span class="op">=</span> <span class="cf">await</span> <span class="fu">fetch</span>(<span class="st">&#39;http://localhost:8080/api/simulate&#39;</span><span class="op">,</span> {</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">method</span><span class="op">:</span> <span class="st">&#39;POST&#39;</span><span class="op">,</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">headers</span><span class="op">:</span> { <span class="st">&#39;Content-Type&#39;</span><span class="op">:</span> <span class="st">&#39;application/json&#39;</span> }<span class="op">,</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">body</span><span class="op">:</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(params)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> data <span class="op">=</span> <span class="cf">await</span> response<span class="op">.</span><span class="fu">json</span>()<span class="op">;</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> data<span class="op">.</span><span class="at">geojson</span><span class="op">;</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> coverage <span class="op">=</span> <span class="cf">await</span> <span class="fu">simulateRF</span>({</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tower_lon</span><span class="op">:</span> <span class="fl">32.8541</span><span class="op">,</span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tower_lat</span><span class="op">:</span> <span class="fl">39.9208</span><span class="op">,</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">rays</span><span class="op">:</span> <span class="dv">120</span><span class="op">,</span></span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">radius_m</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span></span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">frequency_ghz</span><span class="op">:</span> <span class="dv">28</span><span class="op">,</span></span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tx_power_dbm</span><span class="op">:</span> <span class="dv">30</span><span class="op">,</span></span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">azimuth</span><span class="op">:</span> <span class="dv">45</span><span class="op">,</span></span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">beam_width</span><span class="op">:</span> <span class="dv">120</span></span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
 <hr />
 <h2 id="capacity-and-rate-limiting">Capacity and Rate Limiting</h2>
 <p>The server allows two RF jobs globally but only one active job per

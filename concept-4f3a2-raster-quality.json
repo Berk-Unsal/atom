@@ -1,0 +1,1548 @@
+{
+  "active_aoi": [
+    32.45,
+    39.55,
+    33.25,
+    40.25
+  ],
+  "concept": "4F.3A.2",
+  "consistent_fields": {
+    "count": true,
+    "crs": true,
+    "dtypes": true,
+    "nodata": true,
+    "offsets": true,
+    "resolution": true,
+    "scales": true
+  },
+  "coverage_audit": {
+    "coverage_pct": {
+      "insufficient_raster_support": 0.37828215398308856,
+      "raster_tile_covered": 100.0,
+      "single_pixel_support": 0.37580972160411413,
+      "total_loader_visible_footprints": 100.0,
+      "usable_external_height": 99.6217178460169,
+      "valid_raster_support": 99.6217178460169
+    },
+    "insufficient_raster_support": 612,
+    "raster_tile_covered": 161784,
+    "single_pixel_support": 608,
+    "total_loader_visible_footprints": 161784,
+    "usable_external_height": 161172,
+    "valid_raster_support": 161172
+  },
+  "crs_semantics": "raster coordinate CRS is recorded per tile; height values are relative and carry no absolute vertical datum",
+  "footprint_sampling": {
+    "edge_pixels_are_not_silently_dropped": true,
+    "geometry_source": "existing OSM footprint layer",
+    "inward_buffer_m": 3.0,
+    "loader_visible_footprints": 161784,
+    "selected_statistic": "max",
+    "selected_strategy": "pixel_center_inside",
+    "small_buildings": "zero center support is insufficient; one positive center pixel is retained with single_pixel_support qualification",
+    "source_features": 161626,
+    "strategies": [
+      "all_intersecting",
+      "pixel_center_inside",
+      "inward_buffered",
+      "robust_interior_quantile"
+    ]
+  },
+  "format": "GeoTIFF",
+  "height_band_semantics": "model-derived normalized surface/object height above ground; band 1",
+  "height_distribution_selected_policy": {
+    "bins": {
+      "0-5m": 22503,
+      "10-20m": 81692,
+      "100-250m": 0,
+      "20-30m": 3336,
+      "250-500m": 0,
+      "30-50m": 1063,
+      "5-10m": 52483,
+      "50-100m": 95,
+      ">=500m": 0
+    },
+    "count": 161172,
+    "max": 80.73323059082031,
+    "mean": 10.121199619941898,
+    "median": 10.299665927886963,
+    "min": 0.006365936249494553,
+    "p01": 0.102864360883832,
+    "p10": 3.931659603118897,
+    "p75": 12.50904655456543,
+    "p90": 14.819597053527831,
+    "p99": 27.701091194152873
+  },
+  "height_units": "metres, inferred from the product's nDSM/height semantics and raster scale/offset; verify scale/offset per tile",
+  "negative_semantics": "negative finite values are rejected as impossible building AGL values and retained in QA counts",
+  "nodata_semantics": "dataset nodata tag is honored; non-finite values are also treated as invalid",
+  "nominal_resolution_m": [
+    3.0,
+    3.0
+  ],
+  "peak_rss_mb": 3837.703125,
+  "product": "GBA.Height",
+  "sampling_runtime": {
+    "footprint_count": 161784,
+    "tile_timings": [
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.004241625000002358,
+        "tile_id": "32.4_39.6_32.6_39.4_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 303,
+        "elapsed_seconds": 0.28405850000000044,
+        "tile_id": "32.4_39.8_32.6_39.6_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 13123,
+        "elapsed_seconds": 7.729855167,
+        "tile_id": "32.4_40.0_32.6_39.8_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0021929159999984904,
+        "tile_id": "32.6_39.6_32.8_39.4_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 3690,
+        "elapsed_seconds": 1.724731416000001,
+        "tile_id": "32.6_39.8_32.8_39.6_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 49925,
+        "elapsed_seconds": 26.314073917,
+        "tile_id": "32.6_40.0_32.8_39.8_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0028023749999945835,
+        "tile_id": "32.8_39.6_33.0_39.4_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 4797,
+        "elapsed_seconds": 2.894385833000001,
+        "tile_id": "32.8_39.8_33.0_39.6_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 77599,
+        "elapsed_seconds": 38.475028375,
+        "tile_id": "32.8_40.0_33.0_39.8_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0030053330000043843,
+        "tile_id": "33.0_39.6_33.2_39.4_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0013459580000017013,
+        "tile_id": "33.0_39.8_33.2_39.6_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 7,
+        "elapsed_seconds": 0.00787212500000578,
+        "tile_id": "33.0_40.0_33.2_39.8_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.001438624999991589,
+        "tile_id": "33.2_39.6_33.4_39.4_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0014233330000053002,
+        "tile_id": "33.2_39.8_33.4_39.6_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0010316250000101945,
+        "tile_id": "33.2_40.0_33.4_39.8_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 291,
+        "elapsed_seconds": 0.28034445800000185,
+        "tile_id": "32.4_40.2_32.6_40.0_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0015764169999954447,
+        "tile_id": "32.4_40.4_32.6_40.2_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 2570,
+        "elapsed_seconds": 1.4436144170000063,
+        "tile_id": "32.6_40.2_32.8_40.0_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0023122079999922107,
+        "tile_id": "32.6_40.4_32.8_40.2_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 9860,
+        "elapsed_seconds": 4.722049499999997,
+        "tile_id": "32.8_40.2_33.0_40.0_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0025699170000024196,
+        "tile_id": "32.8_40.4_33.0_40.2_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0015131249999882357,
+        "tile_id": "33.0_40.2_33.2_40.0_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0014989579999991065,
+        "tile_id": "33.0_40.4_33.2_40.2_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0011027080000047818,
+        "tile_id": "33.2_40.2_33.4_40.0_sr_ss.tif"
+      },
+      {
+        "candidate_footprints": 0,
+        "elapsed_seconds": 0.0009077079999997295,
+        "tile_id": "33.2_40.4_33.4_40.2_sr_ss.tif"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "source_release": "mediaTUM-1782307-current-2026-02-10",
+  "tile_count": 25,
+  "tiles": [
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        447471.0,
+        4360131.0,
+        466521.0,
+        4384650.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8173,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/32.4_39.6_32.6_39.4_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.4_39.6_32.6_39.4_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        447471.0,
+        0.0,
+        -3.0,
+        4384650.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6350
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        447621.0,
+        4382328.0,
+        466617.0,
+        4406847.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8173,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/32.4_39.8_32.6_39.6_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.4_39.8_32.6_39.6_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        447621.0,
+        0.0,
+        -3.0,
+        4406847.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6332
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        447774.0,
+        4404525.0,
+        466713.0,
+        4429044.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8173,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/32.4_40.0_32.6_39.8_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.4_40.0_32.6_39.8_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        447774.0,
+        0.0,
+        -3.0,
+        4429044.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6313
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        464694.0,
+        4360074.0,
+        483687.0,
+        4384551.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8159,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/32.6_39.6_32.8_39.4_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.6_39.6_32.8_39.4_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        464694.0,
+        0.0,
+        -3.0,
+        4384551.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6331
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        464796.0,
+        4382271.0,
+        483735.0,
+        4406748.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8159,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/32.6_39.8_32.8_39.6_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.6_39.8_32.8_39.6_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        464796.0,
+        0.0,
+        -3.0,
+        4406748.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6313
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        464898.0,
+        4404468.0,
+        483783.0,
+        4428945.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8159,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/32.6_40.0_32.8_39.8_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.6_40.0_32.8_39.8_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        464898.0,
+        0.0,
+        -3.0,
+        4428945.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6295
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        481917.0,
+        4360059.0,
+        500859.0,
+        4384491.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8144,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/32.8_39.6_33.0_39.4_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.8_39.6_33.0_39.4_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        481917.0,
+        0.0,
+        -3.0,
+        4384491.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6314
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        481968.0,
+        4382253.0,
+        500856.0,
+        4406688.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8145,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/32.8_39.8_33.0_39.6_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.8_39.8_33.0_39.6_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        481968.0,
+        0.0,
+        -3.0,
+        4406688.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6296
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        482022.0,
+        4404450.0,
+        500856.0,
+        4428888.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8146,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/32.8_40.0_33.0_39.8_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.8_40.0_33.0_39.8_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        482022.0,
+        0.0,
+        -3.0,
+        4428888.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6278
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        499140.0,
+        4360059.0,
+        518082.0,
+        4384491.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8144,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/33.0_39.6_33.2_39.4_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.0_39.6_33.2_39.4_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        499140.0,
+        0.0,
+        -3.0,
+        4384491.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6314
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        499143.0,
+        4382253.0,
+        518031.0,
+        4406688.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8145,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/33.0_39.8_33.2_39.6_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.0_39.8_33.2_39.6_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        499143.0,
+        0.0,
+        -3.0,
+        4406688.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6296
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        499146.0,
+        4404450.0,
+        517980.0,
+        4428888.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8146,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/33.0_40.0_33.2_39.8_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.0_40.0_33.2_39.8_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        499146.0,
+        0.0,
+        -3.0,
+        4428888.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6278
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        516312.0,
+        4360074.0,
+        535305.0,
+        4384551.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8159,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/33.2_39.6_33.4_39.4_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.2_39.6_33.4_39.4_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        516312.0,
+        0.0,
+        -3.0,
+        4384551.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6331
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        516264.0,
+        4382271.0,
+        535203.0,
+        4406748.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8159,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/33.2_39.8_33.4_39.6_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.2_39.8_33.4_39.6_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        516264.0,
+        0.0,
+        -3.0,
+        4406748.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6313
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        516216.0,
+        4404468.0,
+        535104.0,
+        4428945.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8159,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/africa/e030_n40_e035_n35/33.2_40.0_33.4_39.8_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.2_40.0_33.4_39.8_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        516216.0,
+        0.0,
+        -3.0,
+        4428945.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6296
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        447924.0,
+        4426722.0,
+        466809.0,
+        4451241.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8173,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/32.4_40.2_32.6_40.0_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.4_40.2_32.6_40.0_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        447924.0,
+        0.0,
+        -3.0,
+        4451241.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6295
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        448077.0,
+        4448919.0,
+        466908.0,
+        4473441.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8174,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/32.4_40.4_32.6_40.2_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.4_40.4_32.6_40.2_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        448077.0,
+        0.0,
+        -3.0,
+        4473441.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6277
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        465000.0,
+        4426665.0,
+        483831.0,
+        4451145.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8160,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/32.6_40.2_32.8_40.0_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.6_40.2_32.8_40.0_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        465000.0,
+        0.0,
+        -3.0,
+        4451145.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6277
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        465102.0,
+        4448865.0,
+        483879.0,
+        4473345.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8160,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/32.6_40.4_32.8_40.2_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.6_40.4_32.8_40.2_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        465102.0,
+        0.0,
+        -3.0,
+        4473345.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6259
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        482073.0,
+        4426650.0,
+        500853.0,
+        4451085.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8145,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/32.8_40.2_33.0_40.0_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.8_40.2_33.0_40.0_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        482073.0,
+        0.0,
+        -3.0,
+        4451085.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6260
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        482127.0,
+        4448847.0,
+        500850.0,
+        4473285.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8146,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/32.8_40.4_33.0_40.2_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "32.8_40.4_33.0_40.2_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        482127.0,
+        0.0,
+        -3.0,
+        4473285.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6241
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        499149.0,
+        4426650.0,
+        517926.0,
+        4451085.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8145,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/33.0_40.2_33.2_40.0_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.0_40.2_33.2_40.0_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        499149.0,
+        0.0,
+        -3.0,
+        4451085.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6259
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        499149.0,
+        4448847.0,
+        517875.0,
+        4473285.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8146,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/33.0_40.4_33.2_40.2_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.0_40.4_33.2_40.2_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        499149.0,
+        0.0,
+        -3.0,
+        4473285.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6242
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        516171.0,
+        4426665.0,
+        535002.0,
+        4451145.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8160,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/33.2_40.2_33.4_40.0_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.2_40.2_33.4_40.0_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        516171.0,
+        0.0,
+        -3.0,
+        4451145.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6277
+    },
+    {
+      "band_tags": {
+        "1": {}
+      },
+      "bounds": [
+        516123.0,
+        4448865.0,
+        534900.0,
+        4473345.0
+      ],
+      "count": 1,
+      "crs": "EPSG:32636",
+      "dataset_tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "descriptions": [
+        null
+      ],
+      "dtypes": [
+        "float32"
+      ],
+      "height": 8160,
+      "height_band": 1,
+      "nodata": -1.0,
+      "offsets": [
+        0.0
+      ],
+      "path": "./Height/europe/e030_n45_e035_n40/33.2_40.4_33.4_40.2_sr_ss.tif",
+      "resolution": [
+        3.0,
+        3.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "tile_id": "33.2_40.4_33.4_40.2_sr_ss.tif",
+      "transform": [
+        3.0,
+        0.0,
+        516123.0,
+        0.0,
+        -3.0,
+        4473345.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "uncertainty_band": null,
+      "units": [
+        null
+      ],
+      "width": 6259
+    }
+  ],
+  "uncertainty_band_semantics": "per-pixel prediction variance across test-time augmentations; band 2 when present; not a calibrated physical confidence interval",
+  "vertical_quantity": "relative building/object height above local ground (AGL/nDSM-style), not absolute elevation above ellipsoid or orthometric datum",
+  "zero_semantics": "zero is retained as a numeric raster value but is not a usable positive building-height estimate; whether it is nodata is recorded from the GeoTIFF nodata tag"
+}

@@ -38,7 +38,7 @@ The building and interference thresholds above are current planning defaults. Th
 - Deterministic POI and residential-demand enrichment for scoring
 - Co-channel cell power, load, reuse, thermal noise, and resource-block presets for interference analysis
 - A shared thermal-noise arithmetic helper with distinct receiver noise-equivalent bandwidth and interference per-resource-element bandwidth semantics
-- Optional COG/GeoTIFF ground elevation, building-height obstruction, LOS/Fresnel geometry, and one dominant single knife-edge approximation in the isolated point-to-point path-profile workflow
+- Optional COG/GeoTIFF or explicitly declared standard HGT ground elevation, building-height obstruction, LOS/Fresnel geometry, and one dominant single knife-edge approximation in the isolated point-to-point path-profile workflow
 - Optional, user-entered material, clutter, vegetation, gas, rain, and shadow-sensitivity components in that path-profile workflow
 - Separate opt-in `sub_thz_atmospheric_reference_v1` component ledger for explicit P.525-5 free space, P.676-13 gas, P.838-3 rain, and local-fog P.840-9 sensitivity; this ledger is not a canonical propagation model and does not make serviceability decisions
 
@@ -73,7 +73,7 @@ An SINR near `0 dB` is expected when the serving cell and a co-channel interfere
 - Tower locations are a planning dataset derived from OpenCellID-oriented source processing, not an operator inventory.
 - Demand weights use available OSM tags and residential-density enrichment; missing tags reduce semantic confidence.
 - Basemap tiles provide visual context only and do not enter RF calculations.
-- A supported north-up EPSG:4326 COG/GeoTIFF terrain layer is consumed by the point-to-point profile only. The fast sector, interference, optimization, batch, and regular-surface engines do not consume terrain.
+- A supported north-up EPSG:4326 COG/GeoTIFF or standard HGT terrain layer is consumed by the point-to-point profile only. The fast sector, interference, optimization, batch, and regular-surface engines do not consume terrain.
 - Building footprints preserve height provenance: reliable `height` is `observed_tag`, `building:levels` is `derived_from_levels` at 3 m per level, and the explicit 9 m display fallback is `unavailable` roof evidence. Unknown-height urban intersections are conservative NLOS. Material tags are normalized when present; explicit material/environment controls must not be described as surveyed site data.
 - Separate clutter, height, and material sidecar layers are validated as pack metadata but are not automatically spatially joined into all analyses.
 

@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "concept": "4F.3A",
+  "title": "Terrain and building-height data-foundation pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-19",
+  "baseline_commit": "bd79766",
+  "worktree_note": "The worktree was clean before Concept 4F.3A edits. Existing Concept 4F.1, 4F.2, 4I.2B, and 4I.5A artifacts were used as the historical runtime ledger; the opt-in height audit was rerun immediately before this phase.",
+  "dataset": {
+    "id": "ankara-open-planning",
+    "version": "2026.07",
+    "manifest": "data-pipeline/manifest.json",
+    "crs": "EPSG:4326",
+    "tower_cells": 451,
+    "building_features_in_manifest": 161626,
+    "loader_visible_footprints": 161784,
+    "terrain_layer_present": false,
+    "terrain_status": "terrain_unavailable",
+    "terrain_reference": "No terrain layer is installed; flat local relative heights are not measured elevation."
+  },
+  "current_loader_height_audit": {
+    "precedence": [
+      "OSM height tag parsed as metres, including supported ft/feet/' suffixes",
+      "building:levels multiplied by 3.0 m and capped at 500 m",
+      "legacy display fallback default-3-storey = 9.0 m"
+    ],
+    "explicit_height_count": 1108,
+    "explicit_height_pct": 0.68,
+    "levels_derived_count": 4966,
+    "levels_derived_pct": 3.07,
+    "fallback_only_count": 155710,
+    "fallback_only_pct": 96.25,
+    "unavailable_count": 0,
+    "trusted_or_qualified_count": 6074,
+    "trusted_or_qualified_pct": 3.75,
+    "notes": [
+      "Explicit height accepts values from 1 m through 500 m; invalid, missing, or non-positive values fall through.",
+      "The 9 m fallback remains a display/legacy value and is not roof evidence.",
+      "MultiPolygon outer rings become loader-visible parts while preserving a logical feature ID; holes are not retained as exterior rings."
+    ]
+  },
+  "height_aware_los_audit": {
+    "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_HEIGHT_AUDIT=1 go test ./raytracer -run '^TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled$' -count=1 -v",
+    "cells": 6,
+    "rays_per_cell": 72,
+    "paths": 432,
+    "frequency_ghz": 28,
+    "tx_height_m": 25,
+    "rx_height_m": 1.5,
+    "radius_m": 400,
+    "terrain_status": "terrain_unavailable",
+    "transitions": {
+      "los_to_los": 29,
+      "los_to_nlos": 0,
+      "nlos_to_los": 0,
+      "nlos_to_nlos": 248,
+      "unknown_to_unknown": 155,
+      "other": 0
+    }
+  },
+  "p526_readiness": {
+    "paths": 432,
+    "diagnostic_eligible": 29,
+    "unknown_height_ineligible": 403,
+    "geometric_los": 29,
+    "blocked_only_by_unknown_height": 338,
+    "diagnostic_id": "p526-single-edge-v1",
+    "canonical_propagation_coupling": false
+  },
+  "p1411_readiness": {
+    "audited_paths": 432,
+    "fully_automatic_paths": 0,
+    "terrain_available": false,
+    "morphology_taxonomy_present": false,
+    "both_below_rooftop_provable": false,
+    "status": "not_ready",
+    "reference": "docs/concept-4i2b-p1411-applicability.json"
+  },
+  "reflection_readiness": {
+    "sample_paths": 432,
+    "geometry_only_specular_candidates": 6368,
+    "candidates_with_height_evidence": 777,
+    "candidates_with_terrain_anchored_vertical_span": 0,
+    "material_evidence_footprints": 0,
+    "status": "not_ready",
+    "reference": "docs/concept-4i5a-ankara-readiness.json"
+  },
+  "canonical_rf_snapshots": {
+    "canonical_2_6_ghz": {
+      "endpoint": "POST /api/simulate",
+      "model_id": "urban_short_range",
+      "stats": {"blocked_pct": 0, "avg_rx_dbm": -43, "min_range_m": 100, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "path_loss_db": 70.07902264967872, "wall_loss_db": 0, "signal_dbm": -15.07902264967872, "los_state": "los"}
+    },
+    "canonical_28_ghz": {
+      "endpoint": "POST /api/simulate",
+      "model_id": "urban_short_range",
+      "stats": {"blocked_pct": 12.5, "avg_rx_dbm": -72.1, "min_range_m": 72.3, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "path_loss_db": 90.72271631710674, "wall_loss_db": 0, "signal_dbm": -35.722716317106745, "los_state": "los"}
+    },
+    "research_sub_thz_140_ghz": {
+      "endpoint": "POST /api/simulate",
+      "model_id": "research_sub_thz",
+      "stats": {"blocked_pct": 87.5, "avg_rx_dbm": -123.6, "min_range_m": 17.6, "max_range_m": 100},
+      "composition": "FSPL + max(wall_event_count, 0) * 80 dB; unchanged research-only profile"
+    }
+  },
+  "four_h_two_optimizer": {
+    "reference": "docs/concept-4h2-canonical-experiment.json",
+    "disabled_mode_raw_metrics_unchanged": true,
+    "baseline": {"composite_score": 0.201703, "score": 20.1703, "served_demand_weight": 185, "propagation_reach_score": 16013.3051, "radio_quality_serviceable_fraction": 0.116324},
+    "recommended": {"composite_score": 0.274234, "score": 27.4234, "served_demand_weight": 555, "propagation_reach_score": 19548.691, "radio_quality_serviceable_fraction": 0.151028},
+    "canonical_activation": "existing opt-in 4H.2 behavior; not coupled to spatial evidence"
+  },
+  "invariance_targets": [
+    "canonical 2.6 GHz simulation",
+    "canonical 28 GHz simulation",
+    "research_sub_thz 140 GHz simulation",
+    "building entry",
+    "4H.1 interference/radio quality",
+    "4H.2 disabled and enabled optimization",
+    "4I.2A atmospheric reference",
+    "P.526 diffraction diagnostic"
+  ]
+}

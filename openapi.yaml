@@ -74,6 +74,46 @@ paths:
       summary: Building and demand quality summary
       responses:
         "200": { description: Dataset summary }
+  /api/spatial-evidence:
+    get:
+      summary: Active spatial-evidence summary
+      description: Returns terrain kind/datum semantics, current building-height evidence counts, matching policy, precedence, and a deterministic data-foundation fingerprint. This is diagnostic only and never changes canonical RF behavior.
+      responses:
+        "200": { description: Spatial-evidence summary }
+        "503": { description: Active dataset is unavailable }
+  /api/spatial-evidence/buildings/{id}:
+    get:
+      summary: Diagnostic building height/base/roof ledger
+      description: Returns selected AGL height provenance, alternatives/conflicts, footprint terrain samples when an authoritative DTM is available, and compatible absolute roof elevation when safe. DSM and unresolved DEM values cannot become ground.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Building spatial-evidence ledger }
+        "404": { description: Building ID is not present }
+        "503": { description: Active dataset is unavailable }
+  /api/spatial-evidence/path-profile:
+    post:
+      summary: Diagnostic terrain path profile
+      description: Samples terrain evidence between two EPSG:4326 points. Effective spacing is bounded by source raster resolution; no terrain value is synthesized when the source is unavailable.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [transmitter, receiver]
+              properties:
+                transmitter: { $ref: "#/components/schemas/BuildingEntryPoint" }
+                receiver: { $ref: "#/components/schemas/BuildingEntryPoint" }
+                requested_spacing_m: { type: number, exclusiveMinimum: 0, default: 10 }
+      responses:
+        "200": { description: Diagnostic terrain path profile }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "503": { description: Active dataset is unavailable }
   /api/conformance:
     get:
       summary: Spatial-interface standards declaration

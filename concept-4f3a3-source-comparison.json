@@ -1,0 +1,538 @@
+{
+  "aoi": {
+    "bounds_west_south_east_north": [
+      32.45,
+      39.55,
+      33.25,
+      40.25
+    ],
+    "crs": "EPSG:4326"
+  },
+  "comparisons": {
+    "all": {
+      "demeaned_surface_shape_difference_m": {
+        "count": 20000,
+        "mae": 1.9667405065965147,
+        "max": 39.385668359702095,
+        "mean": -0.08787862960063232,
+        "median": -0.00900352442795338,
+        "min": -66.3795405817034,
+        "p01": -7.00662793449134,
+        "p10": -3.199184987540093,
+        "p75": 1.4371823904984353,
+        "p90": 2.8994728762580753,
+        "p99": 6.62598044011851,
+        "rmse": 2.8308571533372073,
+        "within_1m": 7181,
+        "within_3m": 15885,
+        "within_5m": 18737
+      },
+      "fabdem_elevation_distribution_m": {
+        "count": 20000,
+        "max": 1899.2167170057558,
+        "mean": 1097.6263955237712,
+        "median": 1074.317482677197,
+        "min": 752.0010406869156,
+        "p01": 797.9150745882358,
+        "p10": 877.601687087697,
+        "p75": 1200.6731183240536,
+        "p90": 1332.0454403940191,
+        "p99": 1628.3354224963277
+      },
+      "nasadem_elevation_distribution_m": {
+        "count": 20000,
+        "max": 1898.5525307254331,
+        "mean": 1098.247921382318,
+        "median": 1074.8511299061433,
+        "min": 752.4000264305482,
+        "p01": 799.034350469141,
+        "p10": 878.7024844720642,
+        "p75": 1201.146689573153,
+        "p90": 1332.457948989019,
+        "p99": 1626.8193987049074
+      },
+      "qualification": "relative diagnostic only; not an absolute source disagreement",
+      "raw_untransformed_difference_m": {
+        "count": 20000,
+        "max": 38.8520211307557,
+        "mean": -0.621525858547025,
+        "mean_signed": -0.621525858547025,
+        "median": -0.5426507533743461,
+        "min": -66.91318781064979,
+        "p01": -7.540275163437733,
+        "p10": -3.7328322164864858,
+        "p75": 0.9035351615520426,
+        "p90": 2.3658256473116825,
+        "p99": 6.092333211172117
+      },
+      "sample_count": 20000,
+      "source_median_offset_m": -0.5336472289463927,
+      "status": "relative_diagnostic",
+      "within_absolute_thresholds_not_reported": true
+    },
+    "open_grid": {
+      "demeaned_surface_shape_difference_m": {
+        "count": 6000,
+        "mae": 1.5608158090086242,
+        "max": 12.934569538150527,
+        "mean": 0.24977220939668918,
+        "median": 0.2985671547074844,
+        "min": -19.544714402317368,
+        "p01": -5.208267088447558,
+        "p10": -2.170269531035001,
+        "p75": 1.5193195728291187,
+        "p90": 2.6461988415096602,
+        "p99": 5.199478751857519,
+        "rmse": 2.0471231675294566,
+        "within_1m": 2470,
+        "within_3m": 5258,
+        "within_5m": 5844
+      },
+      "fabdem_elevation_distribution_m": {
+        "count": 6000,
+        "max": 1508.0426050717647,
+        "mean": 1108.5013843030717,
+        "median": 1089.1518563560458,
+        "min": 843.7318982648269,
+        "p01": 911.7766633192241,
+        "p10": 977.4314147884879,
+        "p75": 1189.2529431052421,
+        "p90": 1270.8090927299545,
+        "p99": 1412.363779628215
+      },
+      "nasadem_elevation_distribution_m": {
+        "count": 6000,
+        "max": 1505.7446808510444,
+        "mean": 1109.0831705651742,
+        "median": 1089.983414827545,
+        "min": 844.224659706613,
+        "p01": 912.0754565878161,
+        "p10": 977.9893617021272,
+        "p75": 1190.1725584776073,
+        "p90": 1271.173133342154,
+        "p99": 1413.2627804942488
+      },
+      "qualification": "relative diagnostic only; not an absolute source disagreement",
+      "raw_untransformed_difference_m": {
+        "count": 6000,
+        "max": 12.103011066651334,
+        "mean": -0.5817862621025037,
+        "mean_signed": -0.5817862621025037,
+        "median": -0.5329913167917084,
+        "min": -20.37627287381656,
+        "p01": -6.039825559946751,
+        "p10": -3.001828002534194,
+        "p75": 0.6877611013299259,
+        "p90": 1.8146403700104672,
+        "p99": 4.367920280358327
+      },
+      "sample_count": 6000,
+      "source_median_offset_m": -0.8315584714991928,
+      "status": "relative_diagnostic",
+      "within_absolute_thresholds_not_reported": true
+    },
+    "urban_building_centroids": {
+      "demeaned_surface_shape_difference_m": {
+        "count": 5995,
+        "mae": 2.476433785974184,
+        "max": 19.46693828807895,
+        "mean": 1.2609412956215416,
+        "median": 1.4603887513502514,
+        "min": -19.634091747039975,
+        "p01": -6.281441473594435,
+        "p10": -2.299710967123269,
+        "p75": 3.0946053869688512,
+        "p90": 4.564203132736862,
+        "p99": 7.3693073088439895,
+        "rmse": 3.109542428300928,
+        "within_1m": 1428,
+        "within_3m": 3997,
+        "within_5m": 5405
+      },
+      "fabdem_elevation_distribution_m": {
+        "count": 5995,
+        "max": 1333.4423465589673,
+        "mean": 945.787525744185,
+        "median": 924.1954498146306,
+        "min": 784.2015900563792,
+        "p01": 790.3865955758655,
+        "p10": 821.1963226923206,
+        "p75": 1020.8785139385293,
+        "p90": 1095.4952715257366,
+        "p99": 1209.98906838292
+      },
+      "nasadem_elevation_distribution_m": {
+        "count": 5995,
+        "max": 1330.8521494805782,
+        "mean": 948.5400911066728,
+        "median": 928.2089564727397,
+        "min": 784.4776346905239,
+        "p01": 791.6165193182344,
+        "p10": 823.5570796054093,
+        "p75": 1024.4133978239447,
+        "p90": 1098.35245828834,
+        "p99": 1211.3826826049035
+      },
+      "qualification": "relative diagnostic only; not an absolute source disagreement",
+      "raw_untransformed_difference_m": {
+        "count": 5995,
+        "max": 15.453431629969828,
+        "mean": -2.752565362487581,
+        "mean_signed": -2.752565362487581,
+        "median": -2.553117906758871,
+        "min": -23.647598405149097,
+        "p01": -10.294948131703556,
+        "p10": -6.313217625232392,
+        "p75": -0.9189012711402711,
+        "p90": 0.5506964746277397,
+        "p99": 3.3558006507348677
+      },
+      "sample_count": 5995,
+      "source_median_offset_m": -4.013506658109122,
+      "status": "relative_diagnostic",
+      "within_absolute_thresholds_not_reported": true
+    }
+  },
+  "concept": "4F.3A.3",
+  "sampling": {
+    "method": "same-coordinate bilinear sampling from source-native one-degree tiles",
+    "relative_metric_definition": "(FABDEM - its sample median) - (NASADEM - its sample median); surface-shape diagnostic only",
+    "strata": {
+      "all": 20000,
+      "open_grid": 6000,
+      "urban_building_centroids": 6000
+    }
+  },
+  "schema_version": 1,
+  "slope_effect": {
+    "interpretation": "Slope bins organize relative surface-shape disagreement; they are not an accuracy assessment.",
+    "slope_source": "NASADEM four-neighbour finite-difference slope",
+    "status": "relative_diagnostic",
+    "strata": {
+      "0-2deg": {
+        "demeaned_surface_shape_difference_m": {
+          "count": 910,
+          "mae": 1.4352198667618419,
+          "max": 9.780854182937219,
+          "mean": 0.3677465335456678,
+          "median": 0.4762976984104057,
+          "min": -8.443353176296682,
+          "p01": -5.351751412962135,
+          "p10": -1.7347651878222108,
+          "p75": 1.4676262457365965,
+          "p90": 2.5093772963752485,
+          "p99": 4.577298340790277,
+          "rmse": 1.9042616910996493,
+          "within_1m": 385,
+          "within_3m": 827,
+          "within_5m": 891
+        },
+        "qualification": "relative diagnostic only; not an absolute source disagreement",
+        "raw_untransformed_difference_m": {
+          "count": 910,
+          "max": 8.750434239283436,
+          "mean": -0.6626734101081151,
+          "mean_signed": -0.6626734101081151,
+          "median": -0.5541222452433772,
+          "min": -9.473773119950465,
+          "p01": -6.382171356615918,
+          "p10": -2.7651851314759934,
+          "p75": 0.43720630208281364,
+          "p90": 1.4789573527214657,
+          "p99": 3.546878397136494
+        },
+        "sample_count": 910,
+        "within_absolute_thresholds_not_reported": true
+      },
+      "10-20deg": {
+        "demeaned_surface_shape_difference_m": {
+          "count": 1401,
+          "mae": 2.731944220021618,
+          "max": 30.24621894974962,
+          "mean": -1.2681326809731286,
+          "median": -1.1895959409866919,
+          "min": -52.990113885720575,
+          "p01": -10.42912997254166,
+          "p10": -5.247299595680261,
+          "p75": 0.7015811903822851,
+          "p90": 2.672336744159793,
+          "p99": 7.0249690813932375,
+          "rmse": 3.9824778259265607,
+          "within_1m": 363,
+          "within_3m": 915,
+          "within_5m": 1203
+        },
+        "qualification": "relative diagnostic only; not an absolute source disagreement",
+        "raw_untransformed_difference_m": {
+          "count": 1401,
+          "max": 31.103528465965837,
+          "mean": -0.4108231647569096,
+          "mean_signed": -0.4108231647569096,
+          "median": -0.3322864247704729,
+          "min": -52.132804369504356,
+          "p01": -9.57182045632544,
+          "p10": -4.389990079464042,
+          "p75": 1.558890706598504,
+          "p90": 3.529646260376012,
+          "p99": 7.8822785976094565
+        },
+        "sample_count": 1401,
+        "within_absolute_thresholds_not_reported": true
+      },
+      "2-5deg": {
+        "demeaned_surface_shape_difference_m": {
+          "count": 2011,
+          "mae": 1.6776226371020442,
+          "max": 12.395465280671147,
+          "mean": 0.29254397816273636,
+          "median": 0.3425074945854476,
+          "min": -10.41267998553451,
+          "p01": -6.186909117236473,
+          "p10": -2.256745268001964,
+          "p75": 1.6339866544567485,
+          "p90": 2.7376305847520825,
+          "p99": 5.717954568456561,
+          "rmse": 2.2664189116800117,
+          "within_1m": 819,
+          "within_3m": 1721,
+          "within_5m": 1931
+        },
+        "qualification": "relative diagnostic only; not an absolute source disagreement",
+        "raw_untransformed_difference_m": {
+          "count": 2011,
+          "max": 11.457607095362846,
+          "mean": -0.6453142071455643,
+          "mean_signed": -0.6453142071455643,
+          "median": -0.595350690722853,
+          "min": -11.35053817084281,
+          "p01": -7.1247673025447735,
+          "p10": -3.1946034533102647,
+          "p75": 0.696128469148448,
+          "p90": 1.799772399443782,
+          "p99": 4.78009638314826
+        },
+        "sample_count": 2011,
+        "within_absolute_thresholds_not_reported": true
+      },
+      "5-10deg": {
+        "demeaned_surface_shape_difference_m": {
+          "count": 2130,
+          "mae": 2.067583676388387,
+          "max": 29.84544862761527,
+          "mean": -0.2064252145654496,
+          "median": -0.12561290848066164,
+          "min": -66.44724802510859,
+          "p01": -6.593455512303383,
+          "p10": -3.4658682380473467,
+          "p75": 1.3820182121716016,
+          "p90": 2.947816034258449,
+          "p99": 6.614467016956964,
+          "rmse": 3.125964205075122,
+          "within_1m": 730,
+          "within_3m": 1641,
+          "within_5m": 1984
+        },
+        "qualification": "relative diagnostic only; not an absolute source disagreement",
+        "raw_untransformed_difference_m": {
+          "count": 2130,
+          "max": 29.379508842074074,
+          "mean": -0.6723650001066449,
+          "mean_signed": -0.6723650001066449,
+          "median": -0.591552694021857,
+          "min": -66.91318781064979,
+          "p01": -7.059395297844579,
+          "p10": -3.931808023588542,
+          "p75": 0.9160784266304063,
+          "p90": 2.4818762487172537,
+          "p99": 6.148527231415769
+        },
+        "sample_count": 2130,
+        "within_absolute_thresholds_not_reported": true
+      },
+      ">=20deg": {
+        "demeaned_surface_shape_difference_m": {
+          "count": 215,
+          "mae": 3.523807300295058,
+          "max": 19.76238178850258,
+          "mean": -2.127173981865286,
+          "median": -2.1038645263503213,
+          "min": -22.81835232525782,
+          "p01": -13.877795091963467,
+          "p10": -7.001047301024391,
+          "p75": 0.17515213703677546,
+          "p90": 2.710065556378867,
+          "p99": 6.142601902354652,
+          "rmse": 4.712158254086818,
+          "within_1m": 37,
+          "within_3m": 115,
+          "within_5m": 166
+        },
+        "qualification": "relative diagnostic only; not an absolute source disagreement",
+        "raw_untransformed_difference_m": {
+          "count": 215,
+          "max": 22.078645351522255,
+          "mean": 0.1890895811543889,
+          "mean_signed": 0.1890895811543889,
+          "median": 0.21239903666935334,
+          "min": -20.502088762238145,
+          "p01": -11.561531528943792,
+          "p10": -4.684783738004716,
+          "p75": 2.49141570005645,
+          "p90": 5.026329119398542,
+          "p99": 8.458865465374327
+        },
+        "sample_count": 215,
+        "within_absolute_thresholds_not_reported": true
+      }
+    }
+  },
+  "source_order": [
+    "nasadem",
+    "fabdem"
+  ],
+  "urban_effect": {
+    "interpretation": "Differences are datum-mixed raw diagnostics and demeaned shape diagnostics; no building/vegetation bias claim is promoted to truth.",
+    "open": {
+      "demeaned_surface_shape_difference_m": {
+        "count": 6000,
+        "mae": 1.5608158090086242,
+        "max": 12.934569538150527,
+        "mean": 0.24977220939668918,
+        "median": 0.2985671547074844,
+        "min": -19.544714402317368,
+        "p01": -5.208267088447558,
+        "p10": -2.170269531035001,
+        "p75": 1.5193195728291187,
+        "p90": 2.6461988415096602,
+        "p99": 5.199478751857519,
+        "rmse": 2.0471231675294566,
+        "within_1m": 2470,
+        "within_3m": 5258,
+        "within_5m": 5844
+      },
+      "fabdem_elevation_distribution_m": {
+        "count": 6000,
+        "max": 1508.0426050717647,
+        "mean": 1108.5013843030717,
+        "median": 1089.1518563560458,
+        "min": 843.7318982648269,
+        "p01": 911.7766633192241,
+        "p10": 977.4314147884879,
+        "p75": 1189.2529431052421,
+        "p90": 1270.8090927299545,
+        "p99": 1412.363779628215
+      },
+      "nasadem_elevation_distribution_m": {
+        "count": 6000,
+        "max": 1505.7446808510444,
+        "mean": 1109.0831705651742,
+        "median": 1089.983414827545,
+        "min": 844.224659706613,
+        "p01": 912.0754565878161,
+        "p10": 977.9893617021272,
+        "p75": 1190.1725584776073,
+        "p90": 1271.173133342154,
+        "p99": 1413.2627804942488
+      },
+      "qualification": "relative diagnostic only; not an absolute source disagreement",
+      "raw_untransformed_difference_m": {
+        "count": 6000,
+        "max": 12.103011066651334,
+        "mean": -0.5817862621025037,
+        "mean_signed": -0.5817862621025037,
+        "median": -0.5329913167917084,
+        "min": -20.37627287381656,
+        "p01": -6.039825559946751,
+        "p10": -3.001828002534194,
+        "p75": 0.6877611013299259,
+        "p90": 1.8146403700104672,
+        "p99": 4.367920280358327
+      },
+      "sample_count": 6000,
+      "source_median_offset_m": -0.8315584714991928,
+      "status": "relative_diagnostic",
+      "within_absolute_thresholds_not_reported": true
+    },
+    "open_stratum": "AOI grid points not intersecting a repository building footprint",
+    "urban": {
+      "demeaned_surface_shape_difference_m": {
+        "count": 5995,
+        "mae": 2.476433785974184,
+        "max": 19.46693828807895,
+        "mean": 1.2609412956215416,
+        "median": 1.4603887513502514,
+        "min": -19.634091747039975,
+        "p01": -6.281441473594435,
+        "p10": -2.299710967123269,
+        "p75": 3.0946053869688512,
+        "p90": 4.564203132736862,
+        "p99": 7.3693073088439895,
+        "rmse": 3.109542428300928,
+        "within_1m": 1428,
+        "within_3m": 3997,
+        "within_5m": 5405
+      },
+      "fabdem_elevation_distribution_m": {
+        "count": 5995,
+        "max": 1333.4423465589673,
+        "mean": 945.787525744185,
+        "median": 924.1954498146306,
+        "min": 784.2015900563792,
+        "p01": 790.3865955758655,
+        "p10": 821.1963226923206,
+        "p75": 1020.8785139385293,
+        "p90": 1095.4952715257366,
+        "p99": 1209.98906838292
+      },
+      "nasadem_elevation_distribution_m": {
+        "count": 5995,
+        "max": 1330.8521494805782,
+        "mean": 948.5400911066728,
+        "median": 928.2089564727397,
+        "min": 784.4776346905239,
+        "p01": 791.6165193182344,
+        "p10": 823.5570796054093,
+        "p75": 1024.4133978239447,
+        "p90": 1098.35245828834,
+        "p99": 1211.3826826049035
+      },
+      "qualification": "relative diagnostic only; not an absolute source disagreement",
+      "raw_untransformed_difference_m": {
+        "count": 5995,
+        "max": 15.453431629969828,
+        "mean": -2.752565362487581,
+        "mean_signed": -2.752565362487581,
+        "median": -2.553117906758871,
+        "min": -23.647598405149097,
+        "p01": -10.294948131703556,
+        "p10": -6.313217625232392,
+        "p75": -0.9189012711402711,
+        "p90": 0.5506964746277397,
+        "p99": 3.3558006507348677
+      },
+      "sample_count": 5995,
+      "source_median_offset_m": -4.013506658109122,
+      "status": "relative_diagnostic",
+      "within_absolute_thresholds_not_reported": true
+    },
+    "urban_stratum": "building centroids"
+  },
+  "vegetation_effect": {
+    "land_cover_source_present": false,
+    "reason": "The repository pilot has no land-cover/vegetation truth layer; source documentation records vegetation and surface-model limitations, but no vegetation class is inferred from elevation alone.",
+    "status": "not_assessed"
+  },
+  "vertical_datum_gate": {
+    "compatible": false,
+    "cross_source_absolute_comparison": "unavailable",
+    "fabdem": {
+      "vertical_datum": "EGM2008",
+      "vertical_datum_kind": "orthometric"
+    },
+    "nasadem": {
+      "vertical_datum": "EGM96",
+      "vertical_datum_kind": "orthometric"
+    },
+    "reason": "No explicit sourced EGM96-to-EGM2008 transformation was applied; raw differences are not interpreted as source error."
+  }
+}

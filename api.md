@@ -32,6 +32,9 @@ Most responses are **JSON**. Explicit GIS export representations use GeoJSON, CS
 - `GET /readyz` returns dependency readiness
 - `GET /api/meta` returns application, default propagation model catalog, RF semantic contract, capability matrix, and active dataset identity
 - `GET /api/datasets` returns installed packs and the active manifest ID
+- `GET /api/spatial-evidence` returns active-pack terrain semantics, height evidence counts, and the deterministic spatial-evidence fingerprint
+- `GET /api/spatial-evidence/buildings/:id` returns a diagnostic-only building height/base/roof provenance ledger
+- `POST /api/spatial-evidence/path-profile` returns diagnostic-only terrain samples with source, interpolation, datum, and no-data status
 - `GET /api/buildings` and `GET /api/towers` return raw GeoJSON; bounded clients should prefer `/api/collections/buildings/items`
 - `GET /api/collections/buildings/items` returns viewport-bounded building GeoJSON or CSV
 - `POST /api/analyze-sector` returns `{ simulation, coverage_gaps }` from one shared ray-profile computation
@@ -327,7 +330,7 @@ The standalone `/api/simulate` and `/api/coverage-gaps` endpoints remain availab
 
 The response contains sampled terrain/building elevations, endpoint height above ground, geometric LOS, separate 60% Fresnel evidence, a complete entry/exit obstruction ledger, the P.526-aligned `p526-single-edge-v1` diagnostic, canonical UMa comparison where applicable, component losses, P50 and shadow-sensitivity bounds, and an applicability statement. The diagnostic requires explicit or levels-derived obstruction height; generic fallback-height candidates return `obstruction_height_unavailable`. It carries `rf_contract.model_id: "path-profile-diagnostic-v1"` to make the isolated scope explicit; canonical UMa NLOS and FSPL plus explicit diffraction are alternative calculations and are never summed. It does not alter canonical network RF. `terrain-profile` accepts 0.03–6 GHz, `urban-short-range` accepts 0.3–100 GHz, and `research-sub-thz` is explicitly outside those ITU-R profile ranges; a 140 GHz knife-edge result is mathematical research diagnostic only.
 
-COG/GeoTIFF support is limited to north-up EPSG:4326, one-band integer/float samples, none/DEFLATE compression, and supported integer predictors. The response lists these limitations.
+COG/GeoTIFF support is limited to north-up EPSG:4326, one-band integer/float samples, none/DEFLATE compression, and supported integer predictors. Dataset packs may also declare standard signed big-endian 1-arc-second or 3-arc-second HGT postings; HGT has no embedded CRS or vertical datum and therefore requires explicit pack metadata. The response lists these limitations.
 
 ---
 
@@ -1032,7 +1035,7 @@ The process/job resource shape is inspired by OGC API Processes; this implementa
 
 ### Dataset Packs
 
-The backend loads the initial validated pack from `ATOM_DATASET_DIR`. Schema-v1 packs remain compatible. Schema v2 adds per-layer provenance and confidence, geometry/missing-field/coverage QA, and optional terrain, clutter, building-height, and material layers. All referenced files require SHA-256 hashes. A supported terrain COG/GeoTIFF is consumed by `/api/path-profile`; other optional sidecar layers remain metadata until explicitly integrated.
+The backend loads the initial validated pack from `ATOM_DATASET_DIR`. Schema-v1 packs remain compatible. Schema v2 adds per-layer provenance and confidence, geometry/missing-field/coverage QA, and optional terrain, clutter, building-height, and material layers. All referenced files require SHA-256 hashes. A supported terrain COG/GeoTIFF or explicitly declared HGT layer is consumed by `/api/path-profile`; other optional sidecar layers remain metadata until explicitly integrated.
 
 `GET /api/datasets` lists packs discovered at `ATOM_DATASETS_ROOT` itself and its immediate child directories:
 
@@ -1077,6 +1080,26 @@ go run ./cmd/validate-dataset ../data-pipeline
 Use [Dataset Pack Studio](dataset-pack-studio.html) to inspect, repair, reproject, and build arbitrary-region schema-v2 packs locally.
 
 The complete machine-readable contract is available as [`openapi.yaml`](openapi.yaml).
+
+### Spatial Evidence Diagnostics
+
+Concept 4F.3A adds three read-only/diagnostic interfaces. They do not change canonical LOS/NLOS, propagation loss, interference, radio quality, building entry, or optimization.
+
+`GET /api/spatial-evidence` reports the active terrain declaration (`dtm`, `dsm`, or `dem_unspecified`), vertical-datum compatibility, current explicit/levels/fallback counts, matching policy, source precedence, and `spatial_evidence_fingerprint`.
+
+`GET /api/spatial-evidence/buildings/:id` returns `height_ledger`. The ledger keeps `selected_height_agl_m`, `selected_provenance`, evidence class, base `ground_elevation_m` statistics, compatible `roof_elevation_amsl_m` when an authoritative DTM is present, alternative sources, and conflict screening. A generic fallback remains `fallback_only`; DSM and unspecified DEM semantics cannot produce a ground base.
+
+`POST /api/spatial-evidence/path-profile` accepts:
+
+```json
+{
+  "transmitter": {"lon": 32.85, "lat": 39.92},
+  "receiver": {"lon": 32.851, "lat": 39.92},
+  "requested_spacing_m": 10
+}
+```
+
+The response contains deterministic path-distance samples. Effective spacing is never finer than the largest declared raster resolution. Each sample distinguishes `measured_or_source`, `interpolated`, `outside_dataset`, `no_data`, and `unavailable`; no zero terrain is synthesized. The response includes `canonical_activation: diagnostic_only_not_active`.
 
 ## Usage Examples
 

@@ -285,9 +285,10 @@ resource-block presets for interference analysis</li>
 <li>A shared thermal-noise arithmetic helper with distinct receiver
 noise-equivalent bandwidth and interference per-resource-element
 bandwidth semantics</li>
-<li>Optional COG/GeoTIFF ground elevation, building-height obstruction,
-LOS/Fresnel geometry, and one dominant single knife-edge approximation
-in the isolated point-to-point path-profile workflow</li>
+<li>Optional COG/GeoTIFF or explicitly declared standard HGT ground
+elevation, building-height obstruction, LOS/Fresnel geometry, and one
+dominant single knife-edge approximation in the isolated point-to-point
+path-profile workflow</li>
 <li>Optional, user-entered material, clutter, vegetation, gas, rain, and
 shadow-sensitivity components in that path-profile workflow</li>
 <li>Separate opt-in <code>sub_thz_atmospheric_reference_v1</code>
@@ -364,10 +365,10 @@ OpenCellID-oriented source processing, not an operator inventory.</li>
 enrichment; missing tags reduce semantic confidence.</li>
 <li>Basemap tiles provide visual context only and do not enter RF
 calculations.</li>
-<li>A supported north-up EPSG:4326 COG/GeoTIFF terrain layer is consumed
-by the point-to-point profile only. The fast sector, interference,
-optimization, batch, and regular-surface engines do not consume
-terrain.</li>
+<li>A supported north-up EPSG:4326 COG/GeoTIFF or standard HGT terrain
+layer is consumed by the point-to-point profile only. The fast sector,
+interference, optimization, batch, and regular-surface engines do not
+consume terrain.</li>
 <li>Building footprints preserve height provenance: reliable
 <code>height</code> is <code>observed_tag</code>,
 <code>building:levels</code> is <code>derived_from_levels</code> at 3 m

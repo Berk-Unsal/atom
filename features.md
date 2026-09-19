@@ -56,7 +56,7 @@ The selected `urban_short_range` model uses deterministic height-aware footprint
 
 ### 2.5D Path Profiles And Fidelity
 
-- Loads an optional north-up EPSG:4326 COG/GeoTIFF terrain layer lazily by strip/tile and samples it bilinearly.
+- Loads an optional north-up EPSG:4326 COG/GeoTIFF terrain layer lazily by strip/tile, or a declared standard HGT posting layer, and samples it bilinearly.
 - Combines ground elevation, inferred or explicit building height, transmitter/receiver height above ground, direct geometric LOS, 60% first-Fresnel clearance, and a dominant obstruction. Fresnel concern never changes geometric LOS/NLOS.
 - Provides `terrain-profile` (30 MHz–6 GHz), `urban-short-range` (300 MHz–100 GHz), and explicitly out-of-range research profiles. These applicability labels are tracked against [ITU-R P.1812-8 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf) and [ITU-R P.1411-13 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf); the implementation is an inspectable planning approximation, not either complete method.
 - Exposes free-space, antenna-pattern, conducted-power, TX boresight-gain, directional-EIRP, RX-gain, system, polarization, wall, diffraction, clutter, vegetation, atmospheric-gas, rain, calibration, and shadow-sensitivity components rather than hiding them in one total.

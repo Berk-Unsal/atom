@@ -4,6 +4,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-19
+
 ### Added
 
 - Add Concept 4F.1 deterministic height-aware `urban_short_range` centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts.
@@ -176,7 +178,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/Berk-Unsal/atom/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/Berk-Unsal/atom/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Berk-Unsal/atom/compare/v0.4.0...v0.5.0

@@ -27,6 +27,7 @@ type TerrainMetadata struct {
 	Source             string      `json:"source,omitempty"`
 	SourceVersion      string      `json:"source_version,omitempty"`
 	DatasetID          string      `json:"dataset_id,omitempty"`
+	SourceChecksum     string      `json:"source_checksum,omitempty"`
 	Format             string      `json:"format,omitempty"`
 	CRS                string      `json:"crs,omitempty"`
 	Kind               TerrainKind `json:"kind,omitempty"`

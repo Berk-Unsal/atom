@@ -1,0 +1,203 @@
+{
+  "audit_version": "concept-5b-audit-v1",
+  "cache_comparison": {
+    "archive_equivalent": true,
+    "cache_off": {
+      "archive_size": 947,
+      "cache_hits": 0,
+      "requested_evaluations": 1012,
+      "unique_evaluations": 1012
+    },
+    "cache_on": {
+      "archive_size": 947,
+      "cache_hits": 65,
+      "requested_evaluations": 1012,
+      "unique_evaluations": 947
+    }
+  },
+  "memory_measurement": "archive_memory_estimate_bytes is a deterministic upper-bound-style diagnostic estimate; runtime allocations are not identity fields",
+  "quality_cost_start_curve": [
+    {
+      "archive_size": 210,
+      "cache_hits": 115,
+      "pareto_size": 2,
+      "recommended_score": 96.1538,
+      "requested_evaluations": 325,
+      "start_count": 1,
+      "unique_evaluations": 210
+    },
+    {
+      "archive_size": 351,
+      "cache_hits": 191,
+      "pareto_size": 2,
+      "recommended_score": 96.1538,
+      "requested_evaluations": 542,
+      "start_count": 2,
+      "unique_evaluations": 351
+    },
+    {
+      "archive_size": 559,
+      "cache_hits": 308,
+      "pareto_size": 2,
+      "recommended_score": 96.1538,
+      "requested_evaluations": 867,
+      "start_count": 3,
+      "unique_evaluations": 559
+    },
+    {
+      "archive_size": 733,
+      "cache_hits": 351,
+      "pareto_size": 2,
+      "recommended_score": 96.1538,
+      "requested_evaluations": 1084,
+      "start_count": 4,
+      "unique_evaluations": 733
+    }
+  ],
+  "scaling_runs": [
+    {
+      "archive_memory_estimate_bytes": 3168,
+      "cell_count": 1,
+      "deterministic_multistart_v1": {
+        "archive_size": 36,
+        "cache_hits": 220,
+        "incomplete_search": false,
+        "pareto_size": 11,
+        "requested_evaluations": 256,
+        "unique_evaluations": 36
+      },
+      "legacy": {
+        "requested_evaluations": 74,
+        "runtime_seconds": 0.045535,
+        "unique_states": 36
+      },
+      "single_start_until_stable": {
+        "archive_size": 36,
+        "cache_hits": 37,
+        "pareto_size": 11,
+        "requested_evaluations": 73,
+        "unique_evaluations": 36
+      }
+    },
+    {
+      "archive_memory_estimate_bytes": 37968,
+      "cell_count": 2,
+      "deterministic_multistart_v1": {
+        "archive_size": 339,
+        "cache_hits": 241,
+        "incomplete_search": false,
+        "pareto_size": 5,
+        "requested_evaluations": 580,
+        "unique_evaluations": 339
+      },
+      "legacy": {
+        "requested_evaluations": 146,
+        "runtime_seconds": 0.216821708,
+        "unique_states": 106
+      },
+      "single_start_until_stable": {
+        "archive_size": 106,
+        "cache_hits": 39,
+        "pareto_size": 20,
+        "requested_evaluations": 145,
+        "unique_evaluations": 106
+      }
+    },
+    {
+      "archive_memory_estimate_bytes": 95064,
+      "cell_count": 3,
+      "deterministic_multistart_v1": {
+        "archive_size": 699,
+        "cache_hits": 169,
+        "incomplete_search": true,
+        "pareto_size": 2,
+        "requested_evaluations": 868,
+        "unique_evaluations": 699
+      },
+      "legacy": {
+        "requested_evaluations": 218,
+        "runtime_seconds": 0.453374791,
+        "unique_states": 211
+      },
+      "single_start_until_stable": {
+        "archive_size": 210,
+        "cache_hits": 7,
+        "pareto_size": 2,
+        "requested_evaluations": 217,
+        "unique_evaluations": 210
+      }
+    },
+    {
+      "archive_memory_estimate_bytes": 129440,
+      "cell_count": 4,
+      "deterministic_multistart_v1": {
+        "archive_size": 809,
+        "cache_hits": 59,
+        "incomplete_search": true,
+        "pareto_size": 1,
+        "requested_evaluations": 868,
+        "unique_evaluations": 809
+      },
+      "legacy": {
+        "requested_evaluations": 290,
+        "runtime_seconds": 0.848461042,
+        "unique_states": 246
+      },
+      "single_start_until_stable": {
+        "archive_size": 141,
+        "cache_hits": 4,
+        "pareto_size": 25,
+        "requested_evaluations": 145,
+        "unique_evaluations": 141
+      }
+    },
+    {
+      "archive_memory_estimate_bytes": 184552,
+      "cell_count": 5,
+      "deterministic_multistart_v1": {
+        "archive_size": 1003,
+        "cache_hits": 261,
+        "incomplete_search": false,
+        "pareto_size": 5,
+        "requested_evaluations": 1264,
+        "unique_evaluations": 1003
+      },
+      "legacy": {
+        "requested_evaluations": 362,
+        "runtime_seconds": 1.341652875,
+        "unique_states": 320
+      },
+      "single_start_until_stable": {
+        "archive_size": 321,
+        "cache_hits": 40,
+        "pareto_size": 17,
+        "requested_evaluations": 361,
+        "unique_evaluations": 321
+      }
+    },
+    {
+      "archive_memory_estimate_bytes": 248352,
+      "cell_count": 6,
+      "deterministic_multistart_v1": {
+        "archive_size": 1194,
+        "cache_hits": 106,
+        "incomplete_search": true,
+        "pareto_size": 9,
+        "requested_evaluations": 1300,
+        "unique_evaluations": 1194
+      },
+      "legacy": {
+        "requested_evaluations": 434,
+        "runtime_seconds": 1.976631042,
+        "unique_states": 386
+      },
+      "single_start_until_stable": {
+        "archive_size": 351,
+        "cache_hits": 82,
+        "pareto_size": 9,
+        "requested_evaluations": 433,
+        "unique_evaluations": 351
+      }
+    }
+  ]
+}

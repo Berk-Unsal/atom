@@ -1,0 +1,218 @@
+{
+  "fabdem": {
+    "active_aoi": {
+      "bounds_west_south_east_north": [
+        32.45,
+        39.55,
+        33.25,
+        40.25
+      ],
+      "crs": "EPSG:4326"
+    },
+    "artifact": "fabdem-manifest-4f3a5",
+    "captured_at": "2026-09-20",
+    "clearance_source_checksum": "282e46850193bc312390d6fb59598ee049758b4a7bf48f798a9b226b61cca93a",
+    "concept": "4F.3A.5",
+    "primitive_version": "terrain-clearance-primitive-v1",
+    "production_decision": "research-only comparator; not a production dependency",
+    "reproducibility": {
+      "adapter": "terrain_source_pilot.py RasterSource v1 plus Go HGT/GeoTIFF diagnostic adapters",
+      "raw_cache_layout": "<raw_dir>/<relative_raw_path>",
+      "sampling_interpolation": "bilinear",
+      "sha256_algorithm": "SHA-256"
+    },
+    "schema_version": 1,
+    "source": {
+      "acquisition_route": "Public mirror used for tile-level analysis; official Bristol release remains authoritative.",
+      "candidate_kind": "dtm_candidate",
+      "classification": "model-derived bare-earth candidate with building/tree height bias removed from Copernicus GLO-30; research comparator only",
+      "doi": "https://doi.org/10.5523/bris.s5hqmjcdj8yo2ibzi9b4ew3sn",
+      "format": "COG GeoTIFF float32, 3600 x 3600, nodata -9999",
+      "geoid_model": "EGM2008",
+      "horizontal_crs": "EPSG:4326",
+      "license": "CC BY-NC-SA 4.0; non-commercial and ShareAlike terms apply",
+      "license_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/license.txt",
+      "limitations": [
+        "FABDEM is not a production dependency in this phase because its CC BY-NC-SA license requires a separate commercial/use review.",
+        "Its EGM2008 vertical datum is not directly comparable with NASADEM EGM96 without an explicit sourced transformation.",
+        "Bare-earth correction is model-derived and requires local control before authoritative ground use."
+      ],
+      "nominal_resolution": "1 arc-second (~30 m at Ankara latitude)",
+      "official_url": "https://research-information.bris.ac.uk/en/datasets/fabdem-v1-2/",
+      "product": "FABDEM V1-2",
+      "product_id": "FABDEM V1-2",
+      "provider": "University of Bristol",
+      "readme_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/readme.txt",
+      "release": "V1-2",
+      "vertical_datum": "EGM2008",
+      "vertical_datum_kind": "orthometric"
+    },
+    "tile_selection_policy": "all one-degree tiles intersecting AOI; retain one-degree source tiles without cropping; tile edges are sampled with source-native posting semantics",
+    "tiles": [
+      {
+        "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+        "bytes": 35980358,
+        "filename": "N39E032_FABDEM_V1-2.tif",
+        "mirror_url": "https://huggingface.co/buckets/links-ads/fabdem/resolve/tiles/N30E030-N40E040_FABDEM_V1-2/N39E032_FABDEM_V1-2.tif",
+        "official_granule": "N39E032_FABDEM_V1-2",
+        "official_product": "FABDEM V1-2",
+        "official_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/",
+        "raw_subdir": "fabdem",
+        "relative_raw_path": "fabdem/N39E032_FABDEM_V1-2.tif",
+        "sha256": "46d4c5f44ec954892fe1c2ce06e21c004474a67b6f1f3a13557ca96994cca374",
+        "source": "fabdem",
+        "tile_id": "N39E032_FABDEM_V1-2"
+      },
+      {
+        "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+        "bytes": 35660852,
+        "filename": "N39E033_FABDEM_V1-2.tif",
+        "mirror_url": "https://huggingface.co/buckets/links-ads/fabdem/resolve/tiles/N30E030-N40E040_FABDEM_V1-2/N39E033_FABDEM_V1-2.tif",
+        "official_granule": "N39E033_FABDEM_V1-2",
+        "official_product": "FABDEM V1-2",
+        "official_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/",
+        "raw_subdir": "fabdem",
+        "relative_raw_path": "fabdem/N39E033_FABDEM_V1-2.tif",
+        "sha256": "5e6ae05c28d1d0875deeb4f74eb4407bfbd5299e8309dee64f8a5017fb5c6e37",
+        "source": "fabdem",
+        "tile_id": "N39E033_FABDEM_V1-2"
+      },
+      {
+        "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+        "bytes": 38537772,
+        "filename": "N40E032_FABDEM_V1-2.tif",
+        "mirror_url": "https://huggingface.co/buckets/links-ads/fabdem/resolve/tiles/N40E030-N50E040_FABDEM_V1-2/N40E032_FABDEM_V1-2.tif",
+        "official_granule": "N40E032_FABDEM_V1-2",
+        "official_product": "FABDEM V1-2",
+        "official_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/",
+        "raw_subdir": "fabdem",
+        "relative_raw_path": "fabdem/N40E032_FABDEM_V1-2.tif",
+        "sha256": "fcc6387249c3770565aaf84eed7f65c9f426aa7d4c949c05afa1496dd2b45147",
+        "source": "fabdem",
+        "tile_id": "N40E032_FABDEM_V1-2"
+      },
+      {
+        "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+        "bytes": 38674623,
+        "filename": "N40E033_FABDEM_V1-2.tif",
+        "mirror_url": "https://huggingface.co/buckets/links-ads/fabdem/resolve/tiles/N40E030-N50E040_FABDEM_V1-2/N40E033_FABDEM_V1-2.tif",
+        "official_granule": "N40E033_FABDEM_V1-2",
+        "official_product": "FABDEM V1-2",
+        "official_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/",
+        "raw_subdir": "fabdem",
+        "relative_raw_path": "fabdem/N40E033_FABDEM_V1-2.tif",
+        "sha256": "6bb57f3b645d813de139ca96b3d6b5f6b28b68ca8654412e95bc4fa486c90a4f",
+        "source": "fabdem",
+        "tile_id": "N40E033_FABDEM_V1-2"
+      }
+    ]
+  },
+  "nasadem": {
+    "active_aoi": {
+      "bounds_west_south_east_north": [
+        32.45,
+        39.55,
+        33.25,
+        40.25
+      ],
+      "crs": "EPSG:4326"
+    },
+    "artifact": "nasadem-manifest-4f3a5",
+    "captured_at": "2026-09-20",
+    "clearance_source_checksum": "c0a596dc40178443c673ad8cd7f903c072d7b96ee68cf8230183fac6ce4ab8d3",
+    "concept": "4F.3A.5",
+    "primitive_version": "terrain-clearance-primitive-v1",
+    "production_decision": "primary candidate for future evidence only; not installed or activated in canonical RF",
+    "reproducibility": {
+      "adapter": "terrain_source_pilot.py RasterSource v1 plus Go HGT/GeoTIFF diagnostic adapters",
+      "raw_cache_layout": "<raw_dir>/<relative_raw_path>",
+      "sampling_interpolation": "bilinear",
+      "sha256_algorithm": "SHA-256"
+    },
+    "schema_version": 1,
+    "source": {
+      "acquisition_route": "Public mirror used because the official NASA Earthdata URLs require credentials for direct retrieval in this environment.",
+      "candidate_kind": "dem_unspecified",
+      "classification": "merged void-filled elevation DEM; not automatically a bare-earth DTM",
+      "doi": "https://doi.org/10.5067/MEASURES/NASADEM/NASADEM_HGT.001",
+      "format": "official HGT signed big-endian int16; acquired diagnostic mirror as GeoTIFF",
+      "geoid_model": "EGM96",
+      "guide_url": "https://lpdaac.usgs.gov/documents/2237/NASADEM_User_Guide_V13.pdf",
+      "horizontal_crs": "EPSG:4326",
+      "license": "NASA/LP DAAC public-domain/CC0 reuse terms as documented by LP DAAC; citation requested",
+      "license_url": "https://forum.earthdata.nasa.gov/viewtopic.php?t=6648",
+      "limitations": [
+        "HGT layers carry no embedded CRS or vertical-datum metadata; the NASADEM product documentation supplies EGM96 semantics.",
+        "NASADEM is a merged SRTM/ASTER/ICESat-GLAS product with source-dependent void fills and radar/surface residuals.",
+        "Building/vegetation/layover and fill lineage must be audited before assigning authoritative ground semantics."
+      ],
+      "nominal_resolution": "1 arc-second (~30 m at Ankara latitude)",
+      "official_url": "https://www.earthdata.nasa.gov/data/catalog/lpcloud-nasadem-hgt-001",
+      "product": "NASADEM Merged DEM Global 1 arc second V001",
+      "product_id": "NASADEM_HGT.001",
+      "provider": "NASA/JPL/LP DAAC",
+      "release": "V001",
+      "vertical_datum": "EGM96 geoid",
+      "vertical_datum_kind": "orthometric"
+    },
+    "tile_selection_policy": "all one-degree tiles intersecting AOI; retain one-degree source tiles without cropping; tile edges are sampled with source-native posting semantics",
+    "tiles": [
+      {
+        "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+        "bytes": 13044488,
+        "filename": "NASADEM_HGT_n39e032.tif",
+        "mirror_url": "https://opentopography.s3.sdsc.edu/raster/NASADEM/NASADEM_be/NASADEM_HGT_n39e032.tif",
+        "official_granule": "NASADEM_HGT_n39e032",
+        "official_product": "NASADEM_HGT.001",
+        "official_url": "https://www.earthdata.nasa.gov/data/catalog/lpcloud-nasadem-hgt-001",
+        "raw_subdir": "nasadem",
+        "relative_raw_path": "nasadem/NASADEM_HGT_n39e032.tif",
+        "sha256": "87f17c3edf1f9ab4a92d66ce38231b55c4942410537b19d088f4b183e7831859",
+        "source": "nasadem",
+        "tile_id": "NASADEM_HGT_n39e032"
+      },
+      {
+        "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+        "bytes": 13494520,
+        "filename": "NASADEM_HGT_n39e033.tif",
+        "mirror_url": "https://opentopography.s3.sdsc.edu/raster/NASADEM/NASADEM_be/NASADEM_HGT_n39e033.tif",
+        "official_granule": "NASADEM_HGT_n39e033",
+        "official_product": "NASADEM_HGT.001",
+        "official_url": "https://www.earthdata.nasa.gov/data/catalog/lpcloud-nasadem-hgt-001",
+        "raw_subdir": "nasadem",
+        "relative_raw_path": "nasadem/NASADEM_HGT_n39e033.tif",
+        "sha256": "95b83a157a4f518113e7a34238ffe5f3bd05d0083eba351c549384ed67c0568a",
+        "source": "nasadem",
+        "tile_id": "NASADEM_HGT_n39e033"
+      },
+      {
+        "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+        "bytes": 16413745,
+        "filename": "NASADEM_HGT_n40e032.tif",
+        "mirror_url": "https://opentopography.s3.sdsc.edu/raster/NASADEM/NASADEM_be/NASADEM_HGT_n40e032.tif",
+        "official_granule": "NASADEM_HGT_n40e032",
+        "official_product": "NASADEM_HGT.001",
+        "official_url": "https://www.earthdata.nasa.gov/data/catalog/lpcloud-nasadem-hgt-001",
+        "raw_subdir": "nasadem",
+        "relative_raw_path": "nasadem/NASADEM_HGT_n40e032.tif",
+        "sha256": "09548498f07aa0cfa3b0e62384d713c5143b8dd2f483bc61f11891c7691703a6",
+        "source": "nasadem",
+        "tile_id": "NASADEM_HGT_n40e032"
+      },
+      {
+        "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+        "bytes": 16071178,
+        "filename": "NASADEM_HGT_n40e033.tif",
+        "mirror_url": "https://opentopography.s3.sdsc.edu/raster/NASADEM/NASADEM_be/NASADEM_HGT_n40e033.tif",
+        "official_granule": "NASADEM_HGT_n40e033",
+        "official_product": "NASADEM_HGT.001",
+        "official_url": "https://www.earthdata.nasa.gov/data/catalog/lpcloud-nasadem-hgt-001",
+        "raw_subdir": "nasadem",
+        "relative_raw_path": "nasadem/NASADEM_HGT_n40e033.tif",
+        "sha256": "4e6f914be2ba9590886bcb8f18b7d0f2c528ea639b71cf93c5e5599abc13c02f",
+        "source": "nasadem",
+        "tile_id": "NASADEM_HGT_n40e033"
+      }
+    ]
+  }
+}

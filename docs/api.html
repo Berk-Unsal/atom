@@ -159,8 +159,8 @@ spatial-evidence fingerprint</li>
 <li><code>GET /api/spatial-evidence/buildings/:id</code> returns a
 diagnostic-only building height/base/roof provenance ledger</li>
 <li><code>POST /api/spatial-evidence/path-profile</code> returns
-diagnostic-only terrain samples with source, interpolation, datum, and
-no-data status</li>
+diagnostic-only terrain samples plus the reusable radio-minus-terrain
+clearance result; canonical RF remains unaffected</li>
 <li><code>GET /api/buildings</code> and <code>GET /api/towers</code>
 return raw GeoJSON; bounded clients should prefer
 <code>/api/collections/buildings/items</code></li>
@@ -1492,6 +1492,45 @@ than weighted composite score; changing priorities can re-rank the
 stored feasible frontier without another RF evaluation when those
 metrics are available. Up to 25 feasible non-dominated evaluated azimuth
 sets are returned. This version adjusts azimuth only.</p>
+<p>The default optimizer remains the legacy two-pass coordinate search.
+<code>POST /api/optimize-network</code> accepts the explicit opt-in
+<code>search_policy: "deterministic_multistart_coordinate_v1"</code>,
+with optional <code>max_search_passes</code> (default <code>8</code>)
+and <code>max_unique_evaluations</code> (default <code>5000</code>) for
+candidate-state RF evaluations. The existing compatibility tower
+summaries still perform their final per-tower recomputation. The opt-in
+policy evaluates the baseline plus deterministic uniform global
+rotations, descends through the 10-degree azimuth grid until each start
+is stable or a bound is reached, memoizes states within the request, and
+builds the reported Pareto frontier from the union of unique evaluated
+states. Its <code>optimization.search</code> metadata reports starts,
+accepted updates, cache/evaluation counts, archive size, termination
+reasons, and an explicit <code>heuristic_local_search</code> guarantee;
+it does not claim exhaustive or globally optimal search. Because
+weighted priorities affect discovery, a priority change can alter which
+states are found even though the stored archive can still be re-ranked
+without repeating RF evaluation.</p>
+<p>The separate experimental
+<code>search_policy: "deterministic_pareto_archive_search_v1"</code> is
+priority-independent during discovery. It seeds the same four
+deterministic starts, expands every cell's absolute 10-degree
+neighborhood from a FIFO evaluated Pareto archive, and uses only
+feasibility, objective availability, and exact normalized utilities for
+archive admission and expansion. User priorities are applied afterward
+for ranking and recommendation. <code>max_unique_evaluations</code>
+bounds RF states; <code>max_expanded_states</code> (default
+<code>128</code>) and <code>max_search_rounds</code> (default
+<code>16</code>) bound traversal. The response reports
+<code>discovery_fingerprint</code> (which excludes weights),
+<code>ranking_fingerprint</code>, objective availability/set, archive
+policy, active Pareto size, removed states, neighbor/cache counts,
+archive growth, and <code>budget_complete</code>. A budget-limited
+result is explicitly incomplete. The public 25-solution view is selected
+by stable state identity before ranking, so changing priorities can
+reorder or recommend a discovered solution but cannot change that
+bounded membership. This remains a bounded heuristic and must not be
+described as a complete or global Pareto frontier. See the Concept 5C
+audit and its JSON evidence artifacts.</p>
 <p><code>POST /api/optimize-network</code> additionally returns
 <code>baseline</code>, an authoritative compact snapshot of the exact
 normalized selected-cell configuration that entered that optimization
@@ -1760,14 +1799,25 @@ semantics cannot produce a ground base.</p>
 class="sourceCode json"><code class="sourceCode json"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;transmitter&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;lon&quot;</span><span class="fu">:</span> <span class="fl">32.85</span><span class="fu">,</span> <span class="dt">&quot;lat&quot;</span><span class="fu">:</span> <span class="fl">39.92</span><span class="fu">},</span></span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;receiver&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;lon&quot;</span><span class="fu">:</span> <span class="fl">32.851</span><span class="fu">,</span> <span class="dt">&quot;lat&quot;</span><span class="fu">:</span> <span class="fl">39.92</span><span class="fu">},</span></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;requested_spacing_m&quot;</span><span class="fu">:</span> <span class="dv">10</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p>The response contains deterministic path-distance samples. Effective
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;requested_spacing_m&quot;</span><span class="fu">:</span> <span class="dv">30</span><span class="fu">,</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;interpolation&quot;</span><span class="fu">:</span> <span class="st">&quot;bilinear&quot;</span><span class="fu">,</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tx_height_agl_m&quot;</span><span class="fu">:</span> <span class="dv">25</span><span class="fu">,</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rx_height_agl_m&quot;</span><span class="fu">:</span> <span class="fl">1.5</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>The response contains deterministic path-distance samples and exposes
+the same <code>clearance</code> object both as
+<code>profile.clearance</code> and at the top level. Its signed contract
+is <code>clearance_m = radio_elevation_m - terrain_elevation_m</code>;
+endpoints use source-local terrain plus the configured AGL heights, and
+strict-zero classification treats only a minimum below <code>0 m</code>
+as an <code>obstruction_candidate</code>. An optional
+<code>uncertainty_margin_m</code> is diagnostic policy only. Effective
 spacing is never finer than the largest declared raster resolution. Each
 sample distinguishes <code>measured_or_source</code>,
 <code>interpolated</code>, <code>outside_dataset</code>,
 <code>no_data</code>, and <code>unavailable</code>; no zero terrain is
-synthesized. The response includes
+synthesized. The response includes source checksum, vertical datum,
+interpolation, spacing, fingerprint, and
 <code>canonical_activation: diagnostic_only_not_active</code>.</p>
 <h2 id="usage-examples">Usage Examples</h2>
 <h3 id="example-1-get-health-status">Example 1: Get Health Status</h3>

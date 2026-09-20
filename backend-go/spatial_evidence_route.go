@@ -10,9 +10,13 @@ import (
 )
 
 type spatialEvidencePathInput struct {
-	Transmitter       raytracer.Point `json:"transmitter"`
-	Receiver          raytracer.Point `json:"receiver"`
-	RequestedSpacingM float64         `json:"requested_spacing_m"`
+	Transmitter        raytracer.Point `json:"transmitter"`
+	Receiver           raytracer.Point `json:"receiver"`
+	RequestedSpacingM  float64         `json:"requested_spacing_m"`
+	Interpolation      string          `json:"interpolation,omitempty"`
+	TxHeightAGLM       *float64        `json:"tx_height_agl_m,omitempty"`
+	RxHeightAGLM       *float64        `json:"rx_height_agl_m,omitempty"`
+	UncertaintyMarginM *float64        `json:"uncertainty_margin_m,omitempty"`
 }
 
 func registerSpatialEvidenceRoutes(router *gin.Engine, datasets *datasetRuntime) {
@@ -72,20 +76,42 @@ func registerSpatialEvidenceRoutes(router *gin.Engine, datasets *datasetRuntime)
 			return
 		}
 		if input.RequestedSpacingM <= 0 {
-			input.RequestedSpacingM = raytracer.DefaultPathSampleSpacingM
+			input.RequestedSpacingM = 30
 		}
-		sampler, err := raytracer.NewTerrainSampler(pack.Terrain, pack.SpatialEvidence.TerrainInterpolation)
+		interpolation := input.Interpolation
+		if interpolation == "" {
+			interpolation = pack.SpatialEvidence.TerrainInterpolation
+		}
+		if interpolation == "" {
+			interpolation = raytracer.TerrainInterpolationBilinear
+		}
+		interpolation = strings.ToLower(strings.TrimSpace(interpolation))
+		if interpolation != raytracer.TerrainInterpolationNearest && interpolation != raytracer.TerrainInterpolationBilinear {
+			c.JSON(http.StatusUnprocessableEntity, gin.H{"error": "interpolation must be nearest or bilinear"})
+			return
+		}
+		sampler, err := raytracer.NewTerrainSampler(pack.Terrain, interpolation)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		profile, err := raytracer.BuildTerrainPathProfile(input.Transmitter, input.Receiver, sampler, input.RequestedSpacingM)
+		options := raytracer.DefaultTerrainClearanceOptions()
+		options.RequestedSpacingM = input.RequestedSpacingM
+		if input.TxHeightAGLM != nil {
+			options.TxHeightAGLM = *input.TxHeightAGLM
+		}
+		if input.RxHeightAGLM != nil {
+			options.RxHeightAGLM = *input.RxHeightAGLM
+		}
+		options.UncertaintyMarginM = input.UncertaintyMarginM
+		profile, clearance, err := raytracer.BuildTerrainClearanceProfile(input.Transmitter, input.Receiver, sampler, options)
 		if err != nil {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{
 			"profile":              profile,
+			"clearance":            clearance,
 			"terrain":              raytracer.TerrainDeclarationFromMetadata(pack.TerrainMeta),
 			"dataset":              pack.Manifest,
 			"canonical_activation": "diagnostic_only_not_active",

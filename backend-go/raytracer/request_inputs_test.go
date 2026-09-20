@@ -76,6 +76,26 @@ func TestNetworkInputPreservesStableTowerOrder(t *testing.T) {
 	}
 }
 
+func TestNetworkInputCarriesOptInSearchPolicyAndBudgets(t *testing.T) {
+	lonA, latA := 32.85, 39.92
+	lonB, latB := 32.86, 39.93
+	input := NetworkOptimizationRequestInput{
+		Towers: []TowerRequestInput{
+			{ID: "a", TowerLon: &lonA, TowerLat: &latA},
+			{ID: "b", TowerLon: &lonB, TowerLat: &latB},
+		},
+		SearchPolicy:         DeterministicParetoArchiveSearchV1,
+		MaxSearchPasses:      3,
+		MaxUniqueEvaluations: 777,
+		MaxExpandedStates:    19,
+		MaxSearchRounds:      5,
+	}
+	req := input.ToRequest()
+	if req.SearchPolicy != DeterministicParetoArchiveSearchV1 || req.MaxSearchPasses != 3 || req.MaxUniqueEvaluations != 777 || req.MaxExpandedStates != 19 || req.MaxSearchRounds != 5 {
+		t.Fatalf("search controls not preserved: %+v", req)
+	}
+}
+
 func TestNetworkInputRejectsAllZeroOptimizationPriorities(t *testing.T) {
 	lonA, latA := 32.85, 39.92
 	lonB, latB := 32.86, 39.93

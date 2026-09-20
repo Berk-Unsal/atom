@@ -72,6 +72,7 @@ type EvidenceProvenance struct {
 	Source            string                  `json:"source,omitempty"`
 	SourceVersion     string                  `json:"source_version,omitempty"`
 	DatasetID         string                  `json:"dataset_id,omitempty"`
+	SourceChecksum    string                  `json:"source_checksum,omitempty"`
 	Category          SpatialHeightProvenance `json:"category,omitempty"`
 	Derivation        string                  `json:"derivation,omitempty"`
 	VerticalDatum     string                  `json:"vertical_datum,omitempty"`
@@ -128,6 +129,7 @@ type TerrainEvidenceDeclaration struct {
 	VerticalDatum     string      `json:"vertical_datum,omitempty"`
 	VerticalDatumKind string      `json:"vertical_datum_kind"`
 	GeoidModel        string      `json:"geoid_model,omitempty"`
+	SourceChecksum    string      `json:"source_checksum,omitempty"`
 	ResolutionM       float64     `json:"resolution_m,omitempty"`
 	Interpolation     string      `json:"interpolation"`
 	AcquisitionEpoch  string      `json:"acquisition_epoch,omitempty"`
@@ -142,15 +144,16 @@ type TerrainPathSample struct {
 }
 
 type TerrainPathProfile struct {
-	Transmitter          Point               `json:"transmitter"`
-	Receiver             Point               `json:"receiver"`
-	DistanceM            float64             `json:"distance_m"`
-	RequestedSpacingM    float64             `json:"requested_spacing_m"`
-	EffectiveSpacingM    float64             `json:"effective_spacing_m"`
-	SamplingIntervalRule string              `json:"sampling_interval_rule"`
-	Samples              []TerrainPathSample `json:"samples"`
-	Status               string              `json:"status"`
-	Limitations          []string            `json:"limitations,omitempty"`
+	Transmitter          Point                   `json:"transmitter"`
+	Receiver             Point                   `json:"receiver"`
+	DistanceM            float64                 `json:"distance_m"`
+	RequestedSpacingM    float64                 `json:"requested_spacing_m"`
+	EffectiveSpacingM    float64                 `json:"effective_spacing_m"`
+	SamplingIntervalRule string                  `json:"sampling_interval_rule"`
+	Samples              []TerrainPathSample     `json:"samples"`
+	Status               string                  `json:"status"`
+	Limitations          []string                `json:"limitations,omitempty"`
+	Clearance            *TerrainClearanceResult `json:"clearance,omitempty"`
 }
 
 type BuildingBaseElevationResult struct {
@@ -364,7 +367,8 @@ func TerrainDeclarationFromMetadata(metadata TerrainMetadata) TerrainEvidenceDec
 	resolution := math.Max(metadata.ResolutionXM, metadata.ResolutionYM)
 	return TerrainEvidenceDeclaration{
 		Kind: kind, VerticalDatum: metadata.VerticalDatum, VerticalDatumKind: verticalKind,
-		GeoidModel: metadata.GeoidModel, ResolutionM: resolution, Interpolation: normalizeInterpolation(metadata.Interpolation),
+		SourceChecksum: metadata.SourceChecksum,
+		GeoidModel:     metadata.GeoidModel, ResolutionM: resolution, Interpolation: normalizeInterpolation(metadata.Interpolation),
 		AcquisitionEpoch: metadata.AcquisitionEpoch, Authoritative: authoritative, Compatibility: compatibility,
 	}
 }
@@ -375,6 +379,9 @@ func IsAuthoritativeGroundTerrain(metadata TerrainMetadata) bool {
 }
 
 func NewTerrainSampler(model TerrainModel, interpolation string) (*TerrainSampler, error) {
+	if err := validateTerrainInterpolation(strings.ToLower(strings.TrimSpace(interpolation))); err != nil {
+		return nil, err
+	}
 	method := normalizeInterpolation(interpolation)
 	if model == nil {
 		return &TerrainSampler{metadata: TerrainMetadata{Available: false, Status: TerrainStatusUnavailable, Kind: TerrainKindDEMUnspecified, VerticalDatumKind: VerticalDatumUnknown}, interpolation: method}, nil
@@ -450,7 +457,7 @@ func terrainPointInsideMetadataBounds(point Point, metadata TerrainMetadata) boo
 
 func terrainProvenance(metadata TerrainMetadata) EvidenceProvenance {
 	return EvidenceProvenance{
-		Source: metadata.Source, SourceVersion: metadata.SourceVersion, DatasetID: metadata.DatasetID, Derivation: "raster_sample",
+		Source: metadata.Source, SourceVersion: metadata.SourceVersion, DatasetID: metadata.DatasetID, SourceChecksum: metadata.SourceChecksum, Derivation: "raster_sample",
 		VerticalDatum: metadata.VerticalDatum, VerticalDatumKind: normalizeVerticalDatumKind(metadata.VerticalDatumKind), GeoidModel: metadata.GeoidModel,
 		ResolutionM: math.Max(metadata.ResolutionXM, metadata.ResolutionYM), AcquisitionEpoch: metadata.AcquisitionEpoch,
 		EvidenceClass: func() EvidenceClass {
@@ -1119,6 +1126,9 @@ func ApplyTerrainLayerDeclaration(model TerrainModel, metadata TerrainMetadata) 
 	}
 	if metadata.DatasetID != "" {
 		base.DatasetID = metadata.DatasetID
+	}
+	if metadata.SourceChecksum != "" {
+		base.SourceChecksum = metadata.SourceChecksum
 	}
 	if metadata.ElevationReference != "" {
 		base.ElevationReference = metadata.ElevationReference

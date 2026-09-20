@@ -41,6 +41,27 @@ except ImportError:  # pragma: no cover - direct import under another module nam
     assert spec.loader is not None
     spec.loader.exec_module(pilot)
 
+try:
+    from terrain_clearance_primitive import (
+        TerrainClearanceSampleInput,
+        TerrainSourceMetadata,
+        classify_clearance as primitive_classify_clearance,
+        evaluate_terrain_clearance,
+        radio_line_elevation,
+        terrain_clearance_m,
+    )
+except ImportError:  # pragma: no cover - direct import under another module name
+    spec = importlib.util.spec_from_file_location("terrain_clearance_primitive", PIPELINE_DIR / "terrain_clearance_primitive.py")
+    primitive = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(primitive)
+    TerrainClearanceSampleInput = primitive.TerrainClearanceSampleInput
+    TerrainSourceMetadata = primitive.TerrainSourceMetadata
+    primitive_classify_clearance = primitive.classify_clearance
+    evaluate_terrain_clearance = primitive.evaluate_terrain_clearance
+    radio_line_elevation = primitive.radio_line_elevation
+    terrain_clearance_m = primitive.terrain_clearance_m
+
 
 CONCEPT = "4F.3A.4"
 SCHEMA_VERSION = 1
@@ -162,29 +183,21 @@ def metric_distribution(values: list[float]) -> dict:
 
 
 def radio_line(z_tx_radio_m: float, z_rx_radio_m: float, fraction: float) -> float:
-    """Return the straight source-local radio line at u in [0, 1]."""
+    """Compatibility wrapper for the authoritative primitive."""
 
-    if not 0.0 <= fraction <= 1.0:
-        raise ValueError(f"profile fraction outside [0,1]: {fraction}")
-    return (1.0 - fraction) * z_tx_radio_m + fraction * z_rx_radio_m
+    return radio_line_elevation(z_tx_radio_m, z_rx_radio_m, fraction)
 
 
 def signed_clearance(z_radio_m: float, z_terrain_m: float) -> float:
-    """The required sign: positive means radio is above sampled terrain."""
+    """Compatibility wrapper for the authoritative radio-minus-terrain sign."""
 
-    return float(z_radio_m - z_terrain_m)
+    return terrain_clearance_m(z_radio_m, z_terrain_m)
 
 
 def classify_clearance(min_clearance_m: float | None, unavailable: bool, tolerance_m: float = 0.0) -> str:
-    """Classify one complete sampled path without claiming exact obstruction."""
+    """Compatibility wrapper for the primitive's separated policy layer."""
 
-    if unavailable or min_clearance_m is None:
-        return "unavailable"
-    if min_clearance_m < -float(tolerance_m):
-        return "obstruction_candidate"
-    if abs(min_clearance_m) <= float(tolerance_m):
-        return "near_uncertainty_boundary"
-    return "clear"
+    return primitive_classify_clearance(min_clearance_m, unavailable, tolerance_m)
 
 
 def classifier_contract() -> dict:
@@ -216,6 +229,19 @@ def source_tile_for_point(source, point: tuple[float, float]) -> str | None:
     return None
 
 
+def source_resolution_m(source, latitude: float) -> float:
+    """Return the largest native posting dimension available from a source."""
+
+    resolutions = []
+    for tile in getattr(source, "tiles", []):
+        resolution_deg = getattr(tile, "resolution", 0.0)
+        if resolution_deg and math.isfinite(float(resolution_deg)):
+            east_west = float(resolution_deg) * 111_320.0 * math.cos(math.radians(latitude))
+            north_south = float(resolution_deg) * 110_540.0
+            resolutions.extend([east_west, north_south])
+    return max(resolutions, default=0.0)
+
+
 def evaluate_profile(
     source,
     tower_id: str,
@@ -226,9 +252,12 @@ def evaluate_profile(
     spacing_m: float = CANONICAL_SPACING_M,
     interpolation: str = "bilinear",
 ) -> dict:
-    """Evaluate one source-local profile using the exact 4F.3A.4 equation."""
+    """Evaluate one profile through the shared terrain-clearance primitive."""
 
-    steps = max(1, math.ceil(PATH_DISTANCE_M / float(spacing_m)))
+    native_resolution_m = source_resolution_m(source, origin[1])
+    requested_spacing_m = float(spacing_m)
+    bounded_spacing_m = max(requested_spacing_m, native_resolution_m) if native_resolution_m > 0 else requested_spacing_m
+    steps = max(1, math.ceil(PATH_DISTANCE_M / bounded_spacing_m))
     points = []
     terrain_values = []
     for step in range(steps + 1):
@@ -238,38 +267,68 @@ def evaluate_profile(
         terrain_values.append(source.sample(point, interpolation=interpolation))
 
     complete = all(value is not None and math.isfinite(float(value)) for value in terrain_values)
+    effective_spacing_m = PATH_DISTANCE_M / steps
+    source_metadata = TerrainSourceMetadata(
+        source=source.name,
+        source_version=str(source.definition.get("release", "")),
+        dataset_id=str(source.definition.get("product_id", "")),
+        source_checksum=str(getattr(source, "source_checksum", "")),
+        raster_resolution_m=native_resolution_m,
+        interpolation=interpolation,
+        vertical_datum=str(source.definition.get("vertical_datum", "")),
+        datum_kind=str(source.definition.get("vertical_datum_kind", "")),
+        geoid_model=str(source.definition.get("geoid_model", "")),
+    )
+    primitive_samples = [
+        TerrainClearanceSampleInput(
+            index=step,
+            path_distance_m=distance,
+            path_fraction=fraction,
+            lon=point[0],
+            lat=point[1],
+            terrain_elevation_m=float(value) if value is not None and math.isfinite(float(value)) else None,
+            sample_status="valid" if value is not None and math.isfinite(float(value)) else "unavailable",
+            source_tile=source_tile_for_point(source, point),
+        )
+        for (step, distance, fraction, point), value in zip(points, terrain_values)
+    ]
+    clearance_result = evaluate_terrain_clearance(
+        primitive_samples,
+        source=source_metadata,
+        tx_height_agl_m=tx_height_m,
+        rx_height_agl_m=rx_height_m,
+        distance_m=PATH_DISTANCE_M,
+        requested_spacing_m=requested_spacing_m,
+        effective_spacing_m=effective_spacing_m,
+        margin_m=0.0,
+    )
     endpoint_ground = {
         "tx_m": float(terrain_values[0]) if complete else None,
         "rx_m": float(terrain_values[-1]) if complete else None,
     }
     samples = []
     missing_indexes = []
-    z_tx_radio = None
-    z_rx_radio = None
-    if complete:
-        z_tx_radio = endpoint_ground["tx_m"] + tx_height_m
-        z_rx_radio = endpoint_ground["rx_m"] + rx_height_m
-    for (step, distance, fraction, point), terrain_value in zip(points, terrain_values):
+    z_tx_radio = clearance_result.samples[0].radio_elevation_m if clearance_result.samples else None
+    z_rx_radio = clearance_result.samples[-1].radio_elevation_m if clearance_result.samples else None
+    for point_input, primitive_sample in zip(primitive_samples, clearance_result.samples):
+        step, distance, fraction, point = points[point_input.index]
+        clearance = primitive_sample.clearance_m if complete else None
         sample = {
             "index": step,
             "distance_m": distance,
             "fraction_u": fraction,
             "lon": point[0],
             "lat": point[1],
-            "terrain_m": float(terrain_value) if terrain_value is not None else None,
+            "terrain_m": point_input.terrain_elevation_m,
             "source_tile": source_tile_for_point(source, point),
-            "valid": terrain_value is not None and math.isfinite(float(terrain_value)) if terrain_value is not None else False,
-            "z_radio_m": None,
-            "clearance_m": None,
-            "legacy_terrain_minus_radio_m": None,
+            "valid": primitive_sample.valid,
+            "z_radio_m": primitive_sample.radio_elevation_m,
+            "clearance_m": clearance,
+            "terrain_excess_m": -clearance if clearance is not None else None,
+            "legacy_terrain_minus_radio_m": -clearance if clearance is not None else None,
         }
         if not sample["valid"]:
             missing_indexes.append(step)
-        if complete:
-            z_radio = radio_line(z_tx_radio, z_rx_radio, fraction)
-            sample["z_radio_m"] = z_radio
-            sample["clearance_m"] = signed_clearance(z_radio, float(terrain_value))
-            sample["legacy_terrain_minus_radio_m"] = float(terrain_value) - z_radio
         samples.append(sample)
 
     min_index = None
@@ -279,10 +338,18 @@ def evaluate_profile(
     if complete:
         min_index = min(range(len(samples)), key=lambda index: samples[index]["clearance_m"])
         min_clearance = samples[min_index]["clearance_m"]
-        legacy_min_index = min(range(len(samples)), key=lambda index: samples[index]["legacy_terrain_minus_radio_m"])
-        legacy_min = samples[legacy_min_index]["legacy_terrain_minus_radio_m"]
+        legacy_min_index = min(range(len(samples)), key=lambda index: samples[index]["terrain_excess_m"])
+        legacy_min = samples[legacy_min_index]["terrain_excess_m"]
     min_sample = samples[min_index] if min_index is not None else None
-    status = classify_clearance(min_clearance, not complete, 0.0)
+    status = clearance_result.classification
+    primitive_dict = clearance_result.to_dict()
+    legacy_min_location = None
+    if clearance_result.minimum_location == "at_tx":
+        legacy_min_location = "tx_endpoint"
+    elif clearance_result.minimum_location == "at_rx":
+        legacy_min_location = "rx_endpoint"
+    elif clearance_result.minimum_location is not None:
+        legacy_min_location = "interior"
     return {
         "cell_id": tower_id,
         "ray_index": round(bearing_deg / 5.0),
@@ -295,7 +362,8 @@ def evaluate_profile(
         },
         "distance_m": PATH_DISTANCE_M,
         "requested_spacing_m": spacing_m,
-        "effective_spacing_m": PATH_DISTANCE_M / steps,
+        "effective_spacing_m": effective_spacing_m,
+        "source_resolution_m": native_resolution_m,
         "sample_count": len(samples),
         "valid_sample_count": sum(sample["valid"] for sample in samples),
         "interpolation": interpolation,
@@ -330,9 +398,8 @@ def evaluate_profile(
         "min_clearance_index": min_index,
         "min_location_m_from_tx": min_sample["distance_m"] if min_sample else None,
         "min_location_m_from_rx": PATH_DISTANCE_M - min_sample["distance_m"] if min_sample else None,
-        "min_location": (
-            "tx_endpoint" if min_index == 0 else "rx_endpoint" if min_index == len(samples) - 1 else "interior"
-        ) if min_index is not None else None,
+        "min_location": legacy_min_location,
+        "primitive_min_location": clearance_result.minimum_location,
         "min_sample_lon": min_sample["lon"] if min_sample else None,
         "min_sample_lat": min_sample["lat"] if min_sample else None,
         "legacy_signed_min_m": legacy_min,
@@ -340,6 +407,7 @@ def evaluate_profile(
         "legacy_candidate": bool(legacy_min is not None and legacy_min < 0.0),
         "obstruction_candidate": bool(min_clearance is not None and min_clearance < 0.0),
         "status_at_zero_tolerance": status,
+        "clearance_primitive": primitive_dict,
         "samples": samples,
     }
 

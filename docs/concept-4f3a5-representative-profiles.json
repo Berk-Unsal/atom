@@ -1,0 +1,1500 @@
+{
+  "concept": "4F.3A.5",
+  "profiles": [
+    {
+      "available": true,
+      "profile": {
+        "assumptions": [
+          "z_tx_abs = terrain_at_tx + tx_height_agl_m",
+          "z_rx_abs = terrain_at_rx + rx_height_agl_m",
+          "z_radio(u) = z_tx_abs + u * (z_rx_abs - z_tx_abs), for u in [0,1]",
+          "clearance_m = radio_elevation_m - terrain_elevation_m; positive means above terrain",
+          "minimum clearance is the minimum over valid sampled clearances and includes endpoints"
+        ],
+        "bearing_deg": 220.0,
+        "cell_id": "LTE-313100",
+        "classification": "obstruction_candidate",
+        "distance_m": 400.0,
+        "effective_spacing_m": 28.571428571428573,
+        "endpoint": {
+          "distance_m": 400.0,
+          "lat": 39.902644279706976,
+          "lon": 32.86468581150411
+        },
+        "endpoint_clearance_m": {
+          "rx_m": 1.5,
+          "tx_m": 25.0
+        },
+        "endpoint_ground_m": {
+          "rx_m": 955.6697597020795,
+          "tx_m": 940.4336000000009
+        },
+        "endpoint_radio_m": {
+          "rx_m": 957.1697597020795,
+          "tx_m": 965.4336000000009
+        },
+        "fingerprint": "a287954a0a38e4acc2feec8b504908a2fa953dc69ecd32cdfcf3643e499eda6c",
+        "interpolation": "bilinear",
+        "minimum_clearance_distance_from_rx_m": 85.71428571428572,
+        "minimum_clearance_distance_m": 314.2857142857143,
+        "minimum_clearance_m": -4.641654555694913,
+        "minimum_location": "interior",
+        "minimum_sample": {
+          "lat": 39.90323479776737,
+          "lon": 32.86533168862766
+        },
+        "origin": {
+          "lat": 39.9054,
+          "lon": 32.8677
+        },
+        "primitive_version": "terrain-clearance-primitive-v1",
+        "qualifications": [
+          "sampled terrain evidence is constrained by raster resolution and is not an exact continuous terrain-intersection test",
+          "diagnostic-only result; classification is not canonical LOS/NLOS or RF state"
+        ],
+        "ray_index": 44,
+        "requested_spacing_m": 30.0,
+        "rx_height_agl_m": 1.5,
+        "sample_count": 15,
+        "samples": [
+          {
+            "clearance_m": 25.0,
+            "index": 0,
+            "lat": 39.9054,
+            "lon": 32.8677,
+            "path_distance_m": 0.0,
+            "path_fraction": 0.0,
+            "radio_elevation_m": 965.4336000000009,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 940.4336000000009
+          },
+          {
+            "clearance_m": 20.927300294017982,
+            "index": 1,
+            "lat": 39.90520316542412,
+            "lon": 32.86748469278063,
+            "path_distance_m": 28.571428571428573,
+            "path_fraction": 0.07142857142857142,
+            "radio_elevation_m": 964.8433256930065,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 943.9160253989885
+          },
+          {
+            "clearance_m": 16.661005195398957,
+            "index": 2,
+            "lat": 39.905006330450085,
+            "lon": 32.8672693867984,
+            "path_distance_m": 57.142857142857146,
+            "path_fraction": 0.14285714285714285,
+            "radio_elevation_m": 964.2530513860121,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 947.5920461906131
+          },
+          {
+            "clearance_m": 13.766350143243244,
+            "index": 3,
+            "lat": 39.90480949507789,
+            "lon": 32.86705408205331,
+            "path_distance_m": 85.71428571428571,
+            "path_fraction": 0.21428571428571427,
+            "radio_elevation_m": 963.6627770790177,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 949.8964269357745
+          },
+          {
+            "clearance_m": 11.147640294371172,
+            "index": 4,
+            "lat": 39.904612659307546,
+            "lon": 32.86683877854533,
+            "path_distance_m": 114.28571428571429,
+            "path_fraction": 0.2857142857142857,
+            "radio_elevation_m": 963.0725027720233,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 951.9248624776521
+          },
+          {
+            "clearance_m": 8.157097663157856,
+            "index": 5,
+            "lat": 39.904415823139054,
+            "lon": 32.866623476274455,
+            "path_distance_m": 142.85714285714286,
+            "path_fraction": 0.35714285714285715,
+            "radio_elevation_m": 962.4822284650289,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 954.3251308018711
+          },
+          {
+            "clearance_m": 4.701714248361782,
+            "index": 6,
+            "lat": 39.904218986572424,
+            "lon": 32.86640817524067,
+            "path_distance_m": 171.42857142857142,
+            "path_fraction": 0.42857142857142855,
+            "radio_elevation_m": 961.8919541580345,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.1902399096728
+          },
+          {
+            "clearance_m": 3.305332195516371,
+            "index": 7,
+            "lat": 39.90402214960766,
+            "lon": 32.866192875443964,
+            "path_distance_m": 200.0,
+            "path_fraction": 0.5,
+            "radio_elevation_m": 961.3016798510403,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.9963476555239
+          },
+          {
+            "clearance_m": 1.7661722846901284,
+            "index": 8,
+            "lat": 39.90382531224477,
+            "lon": 32.865977576884326,
+            "path_distance_m": 228.57142857142858,
+            "path_fraction": 0.5714285714285714,
+            "radio_elevation_m": 960.7114055440459,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 958.9452332593557
+          },
+          {
+            "clearance_m": -1.3105344776422498,
+            "index": 9,
+            "lat": 39.90362847448375,
+            "lon": 32.865762279561736,
+            "path_distance_m": 257.14285714285717,
+            "path_fraction": 0.6428571428571429,
+            "radio_elevation_m": 960.1211312370515,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 961.4316657146937
+          },
+          {
+            "clearance_m": -4.628952543983132,
+            "index": 10,
+            "lat": 39.90343163632461,
+            "lon": 32.865546983476186,
+            "path_distance_m": 285.7142857142857,
+            "path_fraction": 0.7142857142857143,
+            "radio_elevation_m": 959.5308569300571,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 964.1598094740402
+          },
+          {
+            "clearance_m": -4.641654555694913,
+            "index": 11,
+            "lat": 39.90323479776737,
+            "lon": 32.86533168862766,
+            "path_distance_m": 314.2857142857143,
+            "path_fraction": 0.7857142857142857,
+            "radio_elevation_m": 958.9405826230627,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 963.5822371787576
+          },
+          {
+            "clearance_m": -2.299235591294064,
+            "index": 12,
+            "lat": 39.903037958812,
+            "lon": 32.86511639501616,
+            "path_distance_m": 342.85714285714283,
+            "path_fraction": 0.8571428571428571,
+            "radio_elevation_m": 958.3503083160683,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 960.6495439073624
+          },
+          {
+            "clearance_m": -0.09068886990803549,
+            "index": 13,
+            "lat": 39.902841119458536,
+            "lon": 32.86490110264164,
+            "path_distance_m": 371.42857142857144,
+            "path_fraction": 0.9285714285714286,
+            "radio_elevation_m": 957.7600340090739,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.850722878982
+          },
+          {
+            "clearance_m": 1.5,
+            "index": 14,
+            "lat": 39.902644279706976,
+            "lon": 32.86468581150411,
+            "path_distance_m": 400.0,
+            "path_fraction": 1.0,
+            "radio_elevation_m": 957.1697597020795,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 955.6697597020795
+          }
+        ],
+        "source": "nasadem",
+        "source_candidate_kind": "dem_unspecified",
+        "source_resolution_m": 30.705555555555556,
+        "source_vertical_datum": "EGM96 geoid",
+        "terrain_status": "terrain_available",
+        "tx_height_agl_m": 25.0,
+        "valid_sample_count": 15
+      },
+      "role": "strongest_obstruction",
+      "source": "nasadem"
+    },
+    {
+      "available": true,
+      "profile": {
+        "assumptions": [
+          "z_tx_abs = terrain_at_tx + tx_height_agl_m",
+          "z_rx_abs = terrain_at_rx + rx_height_agl_m",
+          "z_radio(u) = z_tx_abs + u * (z_rx_abs - z_tx_abs), for u in [0,1]",
+          "clearance_m = radio_elevation_m - terrain_elevation_m; positive means above terrain",
+          "minimum clearance is the minimum over valid sampled clearances and includes endpoints"
+        ],
+        "bearing_deg": 95.0,
+        "cell_id": "LTE-313100",
+        "classification": "obstruction_candidate",
+        "distance_m": 400.0,
+        "effective_spacing_m": 28.571428571428573,
+        "endpoint": {
+          "distance_m": 400.0,
+          "lat": 39.905086382108244,
+          "lon": 32.87237156737809
+        },
+        "endpoint_clearance_m": {
+          "rx_m": 1.5,
+          "tx_m": 25.0
+        },
+        "endpoint_ground_m": {
+          "rx_m": 957.0324353312842,
+          "tx_m": 940.4336000000009
+        },
+        "endpoint_radio_m": {
+          "rx_m": 958.5324353312842,
+          "tx_m": 965.4336000000009
+        },
+        "fingerprint": "44a2994507968fd6baf654819e972161f66f83e9a83054e8d35f378cccc76ef8",
+        "interpolation": "bilinear",
+        "minimum_clearance_distance_from_rx_m": 28.571428571428555,
+        "minimum_clearance_distance_m": 371.42857142857144,
+        "minimum_clearance_m": -0.02987941927983684,
+        "minimum_location": "near_rx",
+        "minimum_sample": {
+          "lat": 39.905108789602416,
+          "lon": 32.872037885412404
+        },
+        "origin": {
+          "lat": 39.9054,
+          "lon": 32.8677
+        },
+        "primitive_version": "terrain-clearance-primitive-v1",
+        "qualifications": [
+          "sampled terrain evidence is constrained by raster resolution and is not an exact continuous terrain-intersection test",
+          "diagnostic-only result; classification is not canonical LOS/NLOS or RF state"
+        ],
+        "ray_index": 19,
+        "requested_spacing_m": 30.0,
+        "rx_height_agl_m": 1.5,
+        "sample_count": 15,
+        "samples": [
+          {
+            "clearance_m": 25.0,
+            "index": 0,
+            "lat": 39.9054,
+            "lon": 32.8677,
+            "path_distance_m": 0.0,
+            "path_fraction": 0.0,
+            "radio_elevation_m": 965.4336000000009,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 940.4336000000009
+          },
+          {
+            "clearance_m": 24.990497494016495,
+            "index": 1,
+            "lat": 39.90537760493825,
+            "lon": 32.86803368480238,
+            "path_distance_m": 28.571428571428573,
+            "path_fraction": 0.07142857142857142,
+            "radio_elevation_m": 964.9406596665211,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 939.9501621725046
+          },
+          {
+            "clearance_m": 25.09359791153429,
+            "index": 2,
+            "lat": 39.90535520892014,
+            "lon": 32.868367369386604,
+            "path_distance_m": 57.142857142857146,
+            "path_fraction": 0.14285714285714285,
+            "radio_elevation_m": 964.4477193330414,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 939.3541214215071
+          },
+          {
+            "clearance_m": 25.672187137333935,
+            "index": 3,
+            "lat": 39.90533281194569,
+            "lon": 32.868701053752666,
+            "path_distance_m": 85.71428571428571,
+            "path_fraction": 0.21428571428571427,
+            "radio_elevation_m": 963.9547789995615,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 938.2825918622276
+          },
+          {
+            "clearance_m": 25.819291770419227,
+            "index": 4,
+            "lat": 39.9053104140149,
+            "lon": 32.86903473790056,
+            "path_distance_m": 114.28571428571429,
+            "path_fraction": 0.2857142857142857,
+            "radio_elevation_m": 963.4618386660818,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 937.6425468956626
+          },
+          {
+            "clearance_m": 23.479406694725412,
+            "index": 5,
+            "lat": 39.90528801512775,
+            "lon": 32.86936842183027,
+            "path_distance_m": 142.85714285714286,
+            "path_fraction": 0.35714285714285715,
+            "radio_elevation_m": 962.9688983326021,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 939.4894916378767
+          },
+          {
+            "clearance_m": 18.8500372402558,
+            "index": 6,
+            "lat": 39.90526561528428,
+            "lon": 32.8697021055418,
+            "path_distance_m": 171.42857142857142,
+            "path_fraction": 0.42857142857142855,
+            "radio_elevation_m": 962.4759579991223,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 943.6259207588665
+          },
+          {
+            "clearance_m": 13.479274239905749,
+            "index": 7,
+            "lat": 39.90524321448445,
+            "lon": 32.87003578903512,
+            "path_distance_m": 200.0,
+            "path_fraction": 0.5,
+            "radio_elevation_m": 961.9830176656426,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 948.5037434257368
+          },
+          {
+            "clearance_m": 8.172330003589082,
+            "index": 8,
+            "lat": 39.90522081272829,
+            "lon": 32.87036947231024,
+            "path_distance_m": 228.57142857142858,
+            "path_fraction": 0.5714285714285714,
+            "radio_elevation_m": 961.4900773321627,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 953.3177473285737
+          },
+          {
+            "clearance_m": 5.371964379095971,
+            "index": 9,
+            "lat": 39.905198410015785,
+            "lon": 32.87070315536714,
+            "path_distance_m": 257.14285714285717,
+            "path_fraction": 0.6428571428571429,
+            "radio_elevation_m": 960.997136998683,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 955.625172619587
+          },
+          {
+            "clearance_m": 3.0401302127669396,
+            "index": 10,
+            "lat": 39.90517600634694,
+            "lon": 32.87103683820582,
+            "path_distance_m": 285.7142857142857,
+            "path_fraction": 0.7142857142857143,
+            "radio_elevation_m": 960.5041966652033,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.4640664524363
+          },
+          {
+            "clearance_m": 1.0010090819436073,
+            "index": 11,
+            "lat": 39.90515360172177,
+            "lon": 32.87137052082626,
+            "path_distance_m": 314.2857142857143,
+            "path_fraction": 0.7857142857142857,
+            "radio_elevation_m": 960.0112563317235,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 959.0102472497799
+          },
+          {
+            "clearance_m": 0.046009893306290905,
+            "index": 12,
+            "lat": 39.90513119614026,
+            "lon": 32.87170420322846,
+            "path_distance_m": 342.85714285714283,
+            "path_fraction": 0.8571428571428571,
+            "radio_elevation_m": 959.5183159982437,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 959.4723061049374
+          },
+          {
+            "clearance_m": -0.02987941927983684,
+            "index": 13,
+            "lat": 39.905108789602416,
+            "lon": 32.872037885412404,
+            "path_distance_m": 371.42857142857144,
+            "path_fraction": 0.9285714285714286,
+            "radio_elevation_m": 959.0253756647639,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 959.0552550840438
+          },
+          {
+            "clearance_m": 1.5,
+            "index": 14,
+            "lat": 39.905086382108244,
+            "lon": 32.87237156737809,
+            "path_distance_m": 400.0,
+            "path_fraction": 1.0,
+            "radio_elevation_m": 958.5324353312842,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.0324353312842
+          }
+        ],
+        "source": "nasadem",
+        "source_candidate_kind": "dem_unspecified",
+        "source_resolution_m": 30.705555555555556,
+        "source_vertical_datum": "EGM96 geoid",
+        "terrain_status": "terrain_available",
+        "tx_height_agl_m": 25.0,
+        "valid_sample_count": 15
+      },
+      "role": "weakest_negative_boundary",
+      "source": "nasadem"
+    },
+    {
+      "available": true,
+      "profile": {
+        "assumptions": [
+          "z_tx_abs = terrain_at_tx + tx_height_agl_m",
+          "z_rx_abs = terrain_at_rx + rx_height_agl_m",
+          "z_radio(u) = z_tx_abs + u * (z_rx_abs - z_tx_abs), for u in [0,1]",
+          "clearance_m = radio_elevation_m - terrain_elevation_m; positive means above terrain",
+          "minimum clearance is the minimum over valid sampled clearances and includes endpoints"
+        ],
+        "bearing_deg": 250.0,
+        "cell_id": "LTE-35104",
+        "classification": "obstruction_candidate",
+        "distance_m": 400.0,
+        "effective_spacing_m": 28.571428571428573,
+        "endpoint": {
+          "distance_m": 400.0,
+          "lat": 39.90686957218373,
+          "lon": 32.854093279445536
+        },
+        "endpoint_clearance_m": {
+          "rx_m": 1.5,
+          "tx_m": 25.0
+        },
+        "endpoint_ground_m": {
+          "rx_m": 919.2823715151239,
+          "tx_m": 906.7840000000194
+        },
+        "endpoint_radio_m": {
+          "rx_m": 920.7823715151239,
+          "tx_m": 931.7840000000194
+        },
+        "fingerprint": "669874d2fe356b083f375b84ad33ada41c5138ac4ddb0d68d637340b888a85e8",
+        "interpolation": "bilinear",
+        "minimum_clearance_distance_from_rx_m": 28.571428571428555,
+        "minimum_clearance_distance_m": 371.42857142857144,
+        "minimum_clearance_m": -1.9041461649300118,
+        "minimum_location": "near_rx",
+        "minimum_sample": {
+          "lat": 39.90695746541625,
+          "lon": 32.854408039949796
+        },
+        "origin": {
+          "lat": 39.9081,
+          "lon": 32.8585
+        },
+        "primitive_version": "terrain-clearance-primitive-v1",
+        "qualifications": [
+          "sampled terrain evidence is constrained by raster resolution and is not an exact continuous terrain-intersection test",
+          "diagnostic-only result; classification is not canonical LOS/NLOS or RF state"
+        ],
+        "ray_index": 50,
+        "requested_spacing_m": 30.0,
+        "rx_height_agl_m": 1.5,
+        "sample_count": 15,
+        "samples": [
+          {
+            "clearance_m": 25.0,
+            "index": 0,
+            "lat": 39.9081,
+            "lon": 32.8585,
+            "path_distance_m": 0.0,
+            "path_fraction": 0.0,
+            "radio_elevation_m": 931.7840000000194,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 906.7840000000194
+          },
+          {
+            "clearance_m": 25.062217573839348,
+            "index": 1,
+            "lat": 39.908012117830324,
+            "lon": 32.85818522899656,
+            "path_distance_m": 28.571428571428573,
+            "path_fraction": 0.07142857142857142,
+            "radio_elevation_m": 930.9981693939554,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 905.9359518201161
+          },
+          {
+            "clearance_m": 23.794074732096078,
+            "index": 2,
+            "lat": 39.90792423480965,
+            "lon": 32.85787045880073,
+            "path_distance_m": 57.142857142857146,
+            "path_fraction": 0.14285714285714285,
+            "radio_elevation_m": 930.2123387878916,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 906.4182640557955
+          },
+          {
+            "clearance_m": 21.72192013288145,
+            "index": 3,
+            "lat": 39.90783635093794,
+            "lon": 32.85755568941252,
+            "path_distance_m": 85.71428571428571,
+            "path_fraction": 0.21428571428571427,
+            "radio_elevation_m": 929.4265081818276,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 907.7045880489461
+          },
+          {
+            "clearance_m": 18.346117877309666,
+            "index": 4,
+            "lat": 39.90774846621523,
+            "lon": 32.85724092083193,
+            "path_distance_m": 114.28571428571429,
+            "path_fraction": 0.2857142857142857,
+            "radio_elevation_m": 928.6406775757636,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 910.2945596984539
+          },
+          {
+            "clearance_m": 14.235390315750465,
+            "index": 5,
+            "lat": 39.90766058064152,
+            "lon": 32.85692615305894,
+            "path_distance_m": 142.85714285714286,
+            "path_fraction": 0.35714285714285715,
+            "radio_elevation_m": 927.8548469696996,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 913.6194566539491
+          },
+          {
+            "clearance_m": 9.984776188391834,
+            "index": 6,
+            "lat": 39.9075726942168,
+            "lon": 32.85661138609359,
+            "path_distance_m": 171.42857142857142,
+            "path_fraction": 0.42857142857142855,
+            "radio_elevation_m": 927.0690163636357,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 917.0842401752438
+          },
+          {
+            "clearance_m": 7.191963678874117,
+            "index": 7,
+            "lat": 39.9074848069411,
+            "lon": 32.85629661993586,
+            "path_distance_m": 200.0,
+            "path_fraction": 0.5,
+            "radio_elevation_m": 926.2831857575717,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 919.0912220786976
+          },
+          {
+            "clearance_m": 6.298940833151619,
+            "index": 8,
+            "lat": 39.9073969188144,
+            "lon": 32.85598185458576,
+            "path_distance_m": 228.57142857142858,
+            "path_fraction": 0.5714285714285714,
+            "radio_elevation_m": 925.4973551515077,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 919.1984143183561
+          },
+          {
+            "clearance_m": 6.310000389623383,
+            "index": 9,
+            "lat": 39.907309029836725,
+            "lon": 32.85566709004328,
+            "path_distance_m": 257.14285714285717,
+            "path_fraction": 0.6428571428571429,
+            "radio_elevation_m": 924.7115245454438,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 918.4015241558204
+          },
+          {
+            "clearance_m": 5.922843548485389,
+            "index": 10,
+            "lat": 39.90722114000806,
+            "lon": 32.85535232630845,
+            "path_distance_m": 285.7142857142857,
+            "path_fraction": 0.7142857142857143,
+            "radio_elevation_m": 923.9256939393798,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 918.0028503908944
+          },
+          {
+            "clearance_m": 3.090017260736772,
+            "index": 11,
+            "lat": 39.90713324932843,
+            "lon": 32.85503756338126,
+            "path_distance_m": 314.2857142857143,
+            "path_fraction": 0.7857142857142857,
+            "radio_elevation_m": 923.1398633333158,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 920.049846072579
+          },
+          {
+            "clearance_m": -0.5513640084990357,
+            "index": 12,
+            "lat": 39.90704535779782,
+            "lon": 32.8547228012617,
+            "path_distance_m": 342.85714285714283,
+            "path_fraction": 0.8571428571428571,
+            "radio_elevation_m": 922.3540327272518,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 922.9053967357509
+          },
+          {
+            "clearance_m": -1.9041461649300118,
+            "index": 13,
+            "lat": 39.90695746541625,
+            "lon": 32.854408039949796,
+            "path_distance_m": 371.42857142857144,
+            "path_fraction": 0.9285714285714286,
+            "radio_elevation_m": 921.5682021211879,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 923.472348286118
+          },
+          {
+            "clearance_m": 1.5,
+            "index": 14,
+            "lat": 39.90686957218373,
+            "lon": 32.854093279445536,
+            "path_distance_m": 400.0,
+            "path_fraction": 1.0,
+            "radio_elevation_m": 920.7823715151239,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 919.2823715151239
+          }
+        ],
+        "source": "nasadem",
+        "source_candidate_kind": "dem_unspecified",
+        "source_resolution_m": 30.705555555555556,
+        "source_vertical_datum": "EGM96 geoid",
+        "terrain_status": "terrain_available",
+        "tx_height_agl_m": 25.0,
+        "valid_sample_count": 15
+      },
+      "role": "near_rx",
+      "source": "nasadem"
+    },
+    {
+      "available": true,
+      "profile": {
+        "assumptions": [
+          "z_tx_abs = terrain_at_tx + tx_height_agl_m",
+          "z_rx_abs = terrain_at_rx + rx_height_agl_m",
+          "z_radio(u) = z_tx_abs + u * (z_rx_abs - z_tx_abs), for u in [0,1]",
+          "clearance_m = radio_elevation_m - terrain_elevation_m; positive means above terrain",
+          "minimum clearance is the minimum over valid sampled clearances and includes endpoints"
+        ],
+        "bearing_deg": 220.0,
+        "cell_id": "LTE-313100",
+        "classification": "obstruction_candidate",
+        "distance_m": 400.0,
+        "effective_spacing_m": 28.571428571428573,
+        "endpoint": {
+          "distance_m": 400.0,
+          "lat": 39.902644279706976,
+          "lon": 32.86468581150411
+        },
+        "endpoint_clearance_m": {
+          "rx_m": 1.5,
+          "tx_m": 25.0
+        },
+        "endpoint_ground_m": {
+          "rx_m": 955.6697597020795,
+          "tx_m": 940.4336000000009
+        },
+        "endpoint_radio_m": {
+          "rx_m": 957.1697597020795,
+          "tx_m": 965.4336000000009
+        },
+        "fingerprint": "a287954a0a38e4acc2feec8b504908a2fa953dc69ecd32cdfcf3643e499eda6c",
+        "interpolation": "bilinear",
+        "minimum_clearance_distance_from_rx_m": 85.71428571428572,
+        "minimum_clearance_distance_m": 314.2857142857143,
+        "minimum_clearance_m": -4.641654555694913,
+        "minimum_location": "interior",
+        "minimum_sample": {
+          "lat": 39.90323479776737,
+          "lon": 32.86533168862766
+        },
+        "origin": {
+          "lat": 39.9054,
+          "lon": 32.8677
+        },
+        "primitive_version": "terrain-clearance-primitive-v1",
+        "qualifications": [
+          "sampled terrain evidence is constrained by raster resolution and is not an exact continuous terrain-intersection test",
+          "diagnostic-only result; classification is not canonical LOS/NLOS or RF state"
+        ],
+        "ray_index": 44,
+        "requested_spacing_m": 30.0,
+        "rx_height_agl_m": 1.5,
+        "sample_count": 15,
+        "samples": [
+          {
+            "clearance_m": 25.0,
+            "index": 0,
+            "lat": 39.9054,
+            "lon": 32.8677,
+            "path_distance_m": 0.0,
+            "path_fraction": 0.0,
+            "radio_elevation_m": 965.4336000000009,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 940.4336000000009
+          },
+          {
+            "clearance_m": 20.927300294017982,
+            "index": 1,
+            "lat": 39.90520316542412,
+            "lon": 32.86748469278063,
+            "path_distance_m": 28.571428571428573,
+            "path_fraction": 0.07142857142857142,
+            "radio_elevation_m": 964.8433256930065,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 943.9160253989885
+          },
+          {
+            "clearance_m": 16.661005195398957,
+            "index": 2,
+            "lat": 39.905006330450085,
+            "lon": 32.8672693867984,
+            "path_distance_m": 57.142857142857146,
+            "path_fraction": 0.14285714285714285,
+            "radio_elevation_m": 964.2530513860121,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 947.5920461906131
+          },
+          {
+            "clearance_m": 13.766350143243244,
+            "index": 3,
+            "lat": 39.90480949507789,
+            "lon": 32.86705408205331,
+            "path_distance_m": 85.71428571428571,
+            "path_fraction": 0.21428571428571427,
+            "radio_elevation_m": 963.6627770790177,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 949.8964269357745
+          },
+          {
+            "clearance_m": 11.147640294371172,
+            "index": 4,
+            "lat": 39.904612659307546,
+            "lon": 32.86683877854533,
+            "path_distance_m": 114.28571428571429,
+            "path_fraction": 0.2857142857142857,
+            "radio_elevation_m": 963.0725027720233,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 951.9248624776521
+          },
+          {
+            "clearance_m": 8.157097663157856,
+            "index": 5,
+            "lat": 39.904415823139054,
+            "lon": 32.866623476274455,
+            "path_distance_m": 142.85714285714286,
+            "path_fraction": 0.35714285714285715,
+            "radio_elevation_m": 962.4822284650289,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 954.3251308018711
+          },
+          {
+            "clearance_m": 4.701714248361782,
+            "index": 6,
+            "lat": 39.904218986572424,
+            "lon": 32.86640817524067,
+            "path_distance_m": 171.42857142857142,
+            "path_fraction": 0.42857142857142855,
+            "radio_elevation_m": 961.8919541580345,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.1902399096728
+          },
+          {
+            "clearance_m": 3.305332195516371,
+            "index": 7,
+            "lat": 39.90402214960766,
+            "lon": 32.866192875443964,
+            "path_distance_m": 200.0,
+            "path_fraction": 0.5,
+            "radio_elevation_m": 961.3016798510403,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.9963476555239
+          },
+          {
+            "clearance_m": 1.7661722846901284,
+            "index": 8,
+            "lat": 39.90382531224477,
+            "lon": 32.865977576884326,
+            "path_distance_m": 228.57142857142858,
+            "path_fraction": 0.5714285714285714,
+            "radio_elevation_m": 960.7114055440459,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 958.9452332593557
+          },
+          {
+            "clearance_m": -1.3105344776422498,
+            "index": 9,
+            "lat": 39.90362847448375,
+            "lon": 32.865762279561736,
+            "path_distance_m": 257.14285714285717,
+            "path_fraction": 0.6428571428571429,
+            "radio_elevation_m": 960.1211312370515,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 961.4316657146937
+          },
+          {
+            "clearance_m": -4.628952543983132,
+            "index": 10,
+            "lat": 39.90343163632461,
+            "lon": 32.865546983476186,
+            "path_distance_m": 285.7142857142857,
+            "path_fraction": 0.7142857142857143,
+            "radio_elevation_m": 959.5308569300571,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 964.1598094740402
+          },
+          {
+            "clearance_m": -4.641654555694913,
+            "index": 11,
+            "lat": 39.90323479776737,
+            "lon": 32.86533168862766,
+            "path_distance_m": 314.2857142857143,
+            "path_fraction": 0.7857142857142857,
+            "radio_elevation_m": 958.9405826230627,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 963.5822371787576
+          },
+          {
+            "clearance_m": -2.299235591294064,
+            "index": 12,
+            "lat": 39.903037958812,
+            "lon": 32.86511639501616,
+            "path_distance_m": 342.85714285714283,
+            "path_fraction": 0.8571428571428571,
+            "radio_elevation_m": 958.3503083160683,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 960.6495439073624
+          },
+          {
+            "clearance_m": -0.09068886990803549,
+            "index": 13,
+            "lat": 39.902841119458536,
+            "lon": 32.86490110264164,
+            "path_distance_m": 371.42857142857144,
+            "path_fraction": 0.9285714285714286,
+            "radio_elevation_m": 957.7600340090739,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.850722878982
+          },
+          {
+            "clearance_m": 1.5,
+            "index": 14,
+            "lat": 39.902644279706976,
+            "lon": 32.86468581150411,
+            "path_distance_m": 400.0,
+            "path_fraction": 1.0,
+            "radio_elevation_m": 957.1697597020795,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 955.6697597020795
+          }
+        ],
+        "source": "nasadem",
+        "source_candidate_kind": "dem_unspecified",
+        "source_resolution_m": 30.705555555555556,
+        "source_vertical_datum": "EGM96 geoid",
+        "terrain_status": "terrain_available",
+        "tx_height_agl_m": 25.0,
+        "valid_sample_count": 15
+      },
+      "role": "interior",
+      "source": "nasadem"
+    },
+    {
+      "available": true,
+      "fabdem_profile": {
+        "assumptions": [
+          "z_tx_abs = terrain_at_tx + tx_height_agl_m",
+          "z_rx_abs = terrain_at_rx + rx_height_agl_m",
+          "z_radio(u) = z_tx_abs + u * (z_rx_abs - z_tx_abs), for u in [0,1]",
+          "clearance_m = radio_elevation_m - terrain_elevation_m; positive means above terrain",
+          "minimum clearance is the minimum over valid sampled clearances and includes endpoints"
+        ],
+        "bearing_deg": 220.0,
+        "cell_id": "LTE-313100",
+        "classification": "clear",
+        "distance_m": 400.0,
+        "effective_spacing_m": 28.571428571428573,
+        "endpoint": {
+          "distance_m": 400.0,
+          "lat": 39.902644279706976,
+          "lon": 32.86468581150411
+        },
+        "endpoint_clearance_m": {
+          "rx_m": 1.5,
+          "tx_m": 25.0
+        },
+        "endpoint_ground_m": {
+          "rx_m": 954.127583381071,
+          "tx_m": 937.262972460943
+        },
+        "endpoint_radio_m": {
+          "rx_m": 955.627583381071,
+          "tx_m": 962.262972460943
+        },
+        "fingerprint": "93ca969cf8d714bbce3e937b65cbbea28bf72c168ee1dafae15bfa8fbcc8fe9f",
+        "interpolation": "bilinear",
+        "minimum_clearance_distance_from_rx_m": 57.14285714285717,
+        "minimum_clearance_distance_m": 342.85714285714283,
+        "minimum_clearance_m": 0.7707796155982578,
+        "minimum_location": "interior",
+        "minimum_sample": {
+          "lat": 39.903037958812,
+          "lon": 32.86511639501616
+        },
+        "origin": {
+          "lat": 39.9054,
+          "lon": 32.8677
+        },
+        "primitive_version": "terrain-clearance-primitive-v1",
+        "qualifications": [
+          "sampled terrain evidence is constrained by raster resolution and is not an exact continuous terrain-intersection test",
+          "diagnostic-only result; classification is not canonical LOS/NLOS or RF state"
+        ],
+        "ray_index": 44,
+        "requested_spacing_m": 30.0,
+        "rx_height_agl_m": 1.5,
+        "sample_count": 15,
+        "samples": [
+          {
+            "clearance_m": 25.0,
+            "index": 0,
+            "lat": 39.9054,
+            "lon": 32.8677,
+            "path_distance_m": 0.0,
+            "path_fraction": 0.0,
+            "radio_elevation_m": 962.262972460943,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 937.262972460943
+          },
+          {
+            "clearance_m": 23.665040163362846,
+            "index": 1,
+            "lat": 39.90520316542412,
+            "lon": 32.86748469278063,
+            "path_distance_m": 28.571428571428573,
+            "path_fraction": 0.07142857142857142,
+            "radio_elevation_m": 961.7890160980951,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 938.1239759347322
+          },
+          {
+            "clearance_m": 20.32160496340532,
+            "index": 2,
+            "lat": 39.905006330450085,
+            "lon": 32.8672693867984,
+            "path_distance_m": 57.142857142857146,
+            "path_fraction": 0.14285714285714285,
+            "radio_elevation_m": 961.315059735247,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 940.9934547718417
+          },
+          {
+            "clearance_m": 16.69652102357452,
+            "index": 3,
+            "lat": 39.90480949507789,
+            "lon": 32.86705408205331,
+            "path_distance_m": 85.71428571428571,
+            "path_fraction": 0.21428571428571427,
+            "radio_elevation_m": 960.8411033723991,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 944.1445823488245
+          },
+          {
+            "clearance_m": 14.428680496544189,
+            "index": 4,
+            "lat": 39.904612659307546,
+            "lon": 32.86683877854533,
+            "path_distance_m": 114.28571428571429,
+            "path_fraction": 0.2857142857142857,
+            "radio_elevation_m": 960.367147009551,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 945.9384665130068
+          },
+          {
+            "clearance_m": 10.4246966214439,
+            "index": 5,
+            "lat": 39.904415823139054,
+            "lon": 32.866623476274455,
+            "path_distance_m": 142.85714285714286,
+            "path_fraction": 0.35714285714285715,
+            "radio_elevation_m": 959.893190646703,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 949.4684940252591
+          },
+          {
+            "clearance_m": 8.334218684802295,
+            "index": 6,
+            "lat": 39.904218986572424,
+            "lon": 32.86640817524067,
+            "path_distance_m": 171.42857142857142,
+            "path_fraction": 0.42857142857142855,
+            "radio_elevation_m": 959.419234283855,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 951.0850155990527
+          },
+          {
+            "clearance_m": 5.343860482516789,
+            "index": 7,
+            "lat": 39.90402214960766,
+            "lon": 32.866192875443964,
+            "path_distance_m": 200.0,
+            "path_fraction": 0.5,
+            "radio_elevation_m": 958.945277921007,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 953.6014174384902
+          },
+          {
+            "clearance_m": 4.064668672270955,
+            "index": 8,
+            "lat": 39.90382531224477,
+            "lon": 32.865977576884326,
+            "path_distance_m": 228.57142857142858,
+            "path_fraction": 0.5714285714285714,
+            "radio_elevation_m": 958.471321558159,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 954.4066528858881
+          },
+          {
+            "clearance_m": 2.931074181043641,
+            "index": 9,
+            "lat": 39.90362847448375,
+            "lon": 32.865762279561736,
+            "path_distance_m": 257.14285714285717,
+            "path_fraction": 0.6428571428571429,
+            "radio_elevation_m": 957.997365195311,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 955.0662910142673
+          },
+          {
+            "clearance_m": 1.2833206720833914,
+            "index": 10,
+            "lat": 39.90343163632461,
+            "lon": 32.865546983476186,
+            "path_distance_m": 285.7142857142857,
+            "path_fraction": 0.7142857142857143,
+            "radio_elevation_m": 957.523408832463,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 956.2400881603796
+          },
+          {
+            "clearance_m": 0.8588778581928409,
+            "index": 11,
+            "lat": 39.90323479776737,
+            "lon": 32.86533168862766,
+            "path_distance_m": 314.2857142857143,
+            "path_fraction": 0.7857142857142857,
+            "radio_elevation_m": 957.049452469615,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 956.1905746114221
+          },
+          {
+            "clearance_m": 0.7707796155982578,
+            "index": 12,
+            "lat": 39.903037958812,
+            "lon": 32.86511639501616,
+            "path_distance_m": 342.85714285714283,
+            "path_fraction": 0.8571428571428571,
+            "radio_elevation_m": 956.575496106767,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 955.8047164911687
+          },
+          {
+            "clearance_m": 1.0885485046137546,
+            "index": 13,
+            "lat": 39.902841119458536,
+            "lon": 32.86490110264164,
+            "path_distance_m": 371.42857142857144,
+            "path_fraction": 0.9285714285714286,
+            "radio_elevation_m": 956.1015397439189,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 955.0129912393052
+          },
+          {
+            "clearance_m": 1.5,
+            "index": 14,
+            "lat": 39.902644279706976,
+            "lon": 32.86468581150411,
+            "path_distance_m": 400.0,
+            "path_fraction": 1.0,
+            "radio_elevation_m": 955.627583381071,
+            "sample_status": "valid",
+            "source_tile": "N39E032_FABDEM_V1-2.tif",
+            "terrain_elevation_m": 954.127583381071
+          }
+        ],
+        "source": "fabdem",
+        "source_candidate_kind": "dtm_candidate",
+        "source_resolution_m": 30.705555555555662,
+        "source_vertical_datum": "EGM2008",
+        "terrain_status": "terrain_available",
+        "tx_height_agl_m": 25.0,
+        "valid_sample_count": 15
+      },
+      "nasadem_profile": {
+        "assumptions": [
+          "z_tx_abs = terrain_at_tx + tx_height_agl_m",
+          "z_rx_abs = terrain_at_rx + rx_height_agl_m",
+          "z_radio(u) = z_tx_abs + u * (z_rx_abs - z_tx_abs), for u in [0,1]",
+          "clearance_m = radio_elevation_m - terrain_elevation_m; positive means above terrain",
+          "minimum clearance is the minimum over valid sampled clearances and includes endpoints"
+        ],
+        "bearing_deg": 220.0,
+        "cell_id": "LTE-313100",
+        "classification": "obstruction_candidate",
+        "distance_m": 400.0,
+        "effective_spacing_m": 28.571428571428573,
+        "endpoint": {
+          "distance_m": 400.0,
+          "lat": 39.902644279706976,
+          "lon": 32.86468581150411
+        },
+        "endpoint_clearance_m": {
+          "rx_m": 1.5,
+          "tx_m": 25.0
+        },
+        "endpoint_ground_m": {
+          "rx_m": 955.6697597020795,
+          "tx_m": 940.4336000000009
+        },
+        "endpoint_radio_m": {
+          "rx_m": 957.1697597020795,
+          "tx_m": 965.4336000000009
+        },
+        "fingerprint": "a287954a0a38e4acc2feec8b504908a2fa953dc69ecd32cdfcf3643e499eda6c",
+        "interpolation": "bilinear",
+        "minimum_clearance_distance_from_rx_m": 85.71428571428572,
+        "minimum_clearance_distance_m": 314.2857142857143,
+        "minimum_clearance_m": -4.641654555694913,
+        "minimum_location": "interior",
+        "minimum_sample": {
+          "lat": 39.90323479776737,
+          "lon": 32.86533168862766
+        },
+        "origin": {
+          "lat": 39.9054,
+          "lon": 32.8677
+        },
+        "primitive_version": "terrain-clearance-primitive-v1",
+        "qualifications": [
+          "sampled terrain evidence is constrained by raster resolution and is not an exact continuous terrain-intersection test",
+          "diagnostic-only result; classification is not canonical LOS/NLOS or RF state"
+        ],
+        "ray_index": 44,
+        "requested_spacing_m": 30.0,
+        "rx_height_agl_m": 1.5,
+        "sample_count": 15,
+        "samples": [
+          {
+            "clearance_m": 25.0,
+            "index": 0,
+            "lat": 39.9054,
+            "lon": 32.8677,
+            "path_distance_m": 0.0,
+            "path_fraction": 0.0,
+            "radio_elevation_m": 965.4336000000009,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 940.4336000000009
+          },
+          {
+            "clearance_m": 20.927300294017982,
+            "index": 1,
+            "lat": 39.90520316542412,
+            "lon": 32.86748469278063,
+            "path_distance_m": 28.571428571428573,
+            "path_fraction": 0.07142857142857142,
+            "radio_elevation_m": 964.8433256930065,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 943.9160253989885
+          },
+          {
+            "clearance_m": 16.661005195398957,
+            "index": 2,
+            "lat": 39.905006330450085,
+            "lon": 32.8672693867984,
+            "path_distance_m": 57.142857142857146,
+            "path_fraction": 0.14285714285714285,
+            "radio_elevation_m": 964.2530513860121,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 947.5920461906131
+          },
+          {
+            "clearance_m": 13.766350143243244,
+            "index": 3,
+            "lat": 39.90480949507789,
+            "lon": 32.86705408205331,
+            "path_distance_m": 85.71428571428571,
+            "path_fraction": 0.21428571428571427,
+            "radio_elevation_m": 963.6627770790177,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 949.8964269357745
+          },
+          {
+            "clearance_m": 11.147640294371172,
+            "index": 4,
+            "lat": 39.904612659307546,
+            "lon": 32.86683877854533,
+            "path_distance_m": 114.28571428571429,
+            "path_fraction": 0.2857142857142857,
+            "radio_elevation_m": 963.0725027720233,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 951.9248624776521
+          },
+          {
+            "clearance_m": 8.157097663157856,
+            "index": 5,
+            "lat": 39.904415823139054,
+            "lon": 32.866623476274455,
+            "path_distance_m": 142.85714285714286,
+            "path_fraction": 0.35714285714285715,
+            "radio_elevation_m": 962.4822284650289,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 954.3251308018711
+          },
+          {
+            "clearance_m": 4.701714248361782,
+            "index": 6,
+            "lat": 39.904218986572424,
+            "lon": 32.86640817524067,
+            "path_distance_m": 171.42857142857142,
+            "path_fraction": 0.42857142857142855,
+            "radio_elevation_m": 961.8919541580345,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.1902399096728
+          },
+          {
+            "clearance_m": 3.305332195516371,
+            "index": 7,
+            "lat": 39.90402214960766,
+            "lon": 32.866192875443964,
+            "path_distance_m": 200.0,
+            "path_fraction": 0.5,
+            "radio_elevation_m": 961.3016798510403,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.9963476555239
+          },
+          {
+            "clearance_m": 1.7661722846901284,
+            "index": 8,
+            "lat": 39.90382531224477,
+            "lon": 32.865977576884326,
+            "path_distance_m": 228.57142857142858,
+            "path_fraction": 0.5714285714285714,
+            "radio_elevation_m": 960.7114055440459,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 958.9452332593557
+          },
+          {
+            "clearance_m": -1.3105344776422498,
+            "index": 9,
+            "lat": 39.90362847448375,
+            "lon": 32.865762279561736,
+            "path_distance_m": 257.14285714285717,
+            "path_fraction": 0.6428571428571429,
+            "radio_elevation_m": 960.1211312370515,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 961.4316657146937
+          },
+          {
+            "clearance_m": -4.628952543983132,
+            "index": 10,
+            "lat": 39.90343163632461,
+            "lon": 32.865546983476186,
+            "path_distance_m": 285.7142857142857,
+            "path_fraction": 0.7142857142857143,
+            "radio_elevation_m": 959.5308569300571,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 964.1598094740402
+          },
+          {
+            "clearance_m": -4.641654555694913,
+            "index": 11,
+            "lat": 39.90323479776737,
+            "lon": 32.86533168862766,
+            "path_distance_m": 314.2857142857143,
+            "path_fraction": 0.7857142857142857,
+            "radio_elevation_m": 958.9405826230627,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 963.5822371787576
+          },
+          {
+            "clearance_m": -2.299235591294064,
+            "index": 12,
+            "lat": 39.903037958812,
+            "lon": 32.86511639501616,
+            "path_distance_m": 342.85714285714283,
+            "path_fraction": 0.8571428571428571,
+            "radio_elevation_m": 958.3503083160683,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 960.6495439073624
+          },
+          {
+            "clearance_m": -0.09068886990803549,
+            "index": 13,
+            "lat": 39.902841119458536,
+            "lon": 32.86490110264164,
+            "path_distance_m": 371.42857142857144,
+            "path_fraction": 0.9285714285714286,
+            "radio_elevation_m": 957.7600340090739,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 957.850722878982
+          },
+          {
+            "clearance_m": 1.5,
+            "index": 14,
+            "lat": 39.902644279706976,
+            "lon": 32.86468581150411,
+            "path_distance_m": 400.0,
+            "path_fraction": 1.0,
+            "radio_elevation_m": 957.1697597020795,
+            "sample_status": "valid",
+            "source_tile": "NASADEM_HGT_n39e032.tif",
+            "terrain_elevation_m": 955.6697597020795
+          }
+        ],
+        "source": "nasadem",
+        "source_candidate_kind": "dem_unspecified",
+        "source_resolution_m": 30.705555555555556,
+        "source_vertical_datum": "EGM96 geoid",
+        "terrain_status": "terrain_available",
+        "tx_height_agl_m": 25.0,
+        "valid_sample_count": 15
+      },
+      "qualification": "Paired source-local minima are compared as diagnostic evidence only; EGM96 and EGM2008 are not treated as the same absolute frame.",
+      "role": "nasadem_fabdem_disagreement",
+      "selection_key": {
+        "cell_id": "LTE-313100",
+        "ray_index": 44
+      }
+    }
+  ],
+  "schema_version": 1,
+  "selection_policy": {
+    "interior": "negative candidate with minimum more than 30 m from both endpoints",
+    "nasadem_fabdem_disagreement": "maximum absolute paired source-local minimum difference",
+    "near_rx": "negative candidate with minimum within 30 m of Rx",
+    "strongest_obstruction": "lowest source-local sampled minimum clearance",
+    "weakest_negative_boundary": "negative candidate closest to zero"
+  }
+}

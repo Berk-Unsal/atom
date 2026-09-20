@@ -525,6 +525,9 @@ func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest
 	if validationError := raytracer.ValidateOptimizationConfig(req.Optimization); validationError != "" {
 		return validationError
 	}
+	if validationError := raytracer.ValidateNetworkOptimizationSearchOptions(req); validationError != "" {
+		return validationError
+	}
 	return ""
 }
 

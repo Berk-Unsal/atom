@@ -28,15 +28,20 @@ type TowerRequestInput struct {
 }
 
 type NetworkOptimizationRequestInput struct {
-	Towers              []TowerRequestInput `json:"towers"`
-	Rays                *int                `json:"rays"`
-	RadiusMeters        *float64            `json:"radius_m"`
-	FrequencyGHz        *float64            `json:"frequency_ghz"`
-	TxPowerDBm          *float64            `json:"tx_power_dbm"`
-	BeamWidthDeg        *float64            `json:"beam_width"`
-	PropagationModelID  *string             `json:"propagation_model"`
-	CalibrationOffsetDB *float64            `json:"calibration_offset_db"`
-	Optimization        *OptimizationConfig `json:"optimization"`
+	Towers               []TowerRequestInput `json:"towers"`
+	Rays                 *int                `json:"rays"`
+	RadiusMeters         *float64            `json:"radius_m"`
+	FrequencyGHz         *float64            `json:"frequency_ghz"`
+	TxPowerDBm           *float64            `json:"tx_power_dbm"`
+	BeamWidthDeg         *float64            `json:"beam_width"`
+	PropagationModelID   *string             `json:"propagation_model"`
+	CalibrationOffsetDB  *float64            `json:"calibration_offset_db"`
+	Optimization         *OptimizationConfig `json:"optimization"`
+	SearchPolicy         string              `json:"search_policy"`
+	MaxSearchPasses      int                 `json:"max_search_passes"`
+	MaxUniqueEvaluations int                 `json:"max_unique_evaluations"`
+	MaxExpandedStates    int                 `json:"max_expanded_states"`
+	MaxSearchRounds      int                 `json:"max_search_rounds"`
 }
 
 type InterferenceRequestInput struct {
@@ -134,15 +139,20 @@ func (input NetworkOptimizationRequestInput) ToRequest() NetworkOptimizationRequ
 		})
 	}
 	return NetworkOptimizationRequest{
-		Towers:              towers,
-		Rays:                valueOr(input.Rays, DefaultNetworkOptimizationRays),
-		RadiusMeters:        defaults.RadiusMeters,
-		FrequencyGHz:        defaults.FrequencyGHz,
-		TxPowerDBm:          defaults.TxPowerDBm,
-		BeamWidthDeg:        defaults.BeamWidthDeg,
-		CalibrationOffsetDB: valueOr(input.CalibrationOffsetDB, DefaultCalibrationOffsetDB),
-		RFProfile:           defaults,
-		Optimization:        NormalizeOptimizationConfig(input.Optimization),
+		Towers:               towers,
+		Rays:                 valueOr(input.Rays, DefaultNetworkOptimizationRays),
+		RadiusMeters:         defaults.RadiusMeters,
+		FrequencyGHz:         defaults.FrequencyGHz,
+		TxPowerDBm:           defaults.TxPowerDBm,
+		BeamWidthDeg:         defaults.BeamWidthDeg,
+		CalibrationOffsetDB:  valueOr(input.CalibrationOffsetDB, DefaultCalibrationOffsetDB),
+		RFProfile:            defaults,
+		Optimization:         NormalizeOptimizationConfig(input.Optimization),
+		SearchPolicy:         strings.TrimSpace(input.SearchPolicy),
+		MaxSearchPasses:      input.MaxSearchPasses,
+		MaxUniqueEvaluations: input.MaxUniqueEvaluations,
+		MaxExpandedStates:    input.MaxExpandedStates,
+		MaxSearchRounds:      input.MaxSearchRounds,
 	}
 }
 

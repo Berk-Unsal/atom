@@ -79,15 +79,20 @@ type NetworkTowerRequest struct {
 }
 
 type NetworkOptimizationRequest struct {
-	Towers              []NetworkTowerRequest `json:"towers"`
-	Rays                int                   `json:"rays"`
-	RadiusMeters        float64               `json:"radius_m"`
-	FrequencyGHz        float64               `json:"frequency_ghz"`
-	TxPowerDBm          float64               `json:"tx_power_dbm"`
-	BeamWidthDeg        float64               `json:"beam_width"`
-	CalibrationOffsetDB float64               `json:"calibration_offset_db,omitempty"`
-	RFProfile           CellRFProfile         `json:"rf_profile"`
-	Optimization        OptimizationConfig    `json:"optimization"`
+	Towers               []NetworkTowerRequest `json:"towers"`
+	Rays                 int                   `json:"rays"`
+	RadiusMeters         float64               `json:"radius_m"`
+	FrequencyGHz         float64               `json:"frequency_ghz"`
+	TxPowerDBm           float64               `json:"tx_power_dbm"`
+	BeamWidthDeg         float64               `json:"beam_width"`
+	CalibrationOffsetDB  float64               `json:"calibration_offset_db,omitempty"`
+	RFProfile            CellRFProfile         `json:"rf_profile"`
+	Optimization         OptimizationConfig    `json:"optimization"`
+	SearchPolicy         string                `json:"search_policy,omitempty"`
+	MaxSearchPasses      int                   `json:"max_search_passes,omitempty"`
+	MaxUniqueEvaluations int                   `json:"max_unique_evaluations,omitempty"`
+	MaxExpandedStates    int                   `json:"max_expanded_states,omitempty"`
+	MaxSearchRounds      int                   `json:"max_search_rounds,omitempty"`
 }
 
 type OptimizationObjective struct {
@@ -219,21 +224,22 @@ type NetworkOptimizationResponse struct {
 }
 
 type OptimizationOutcome struct {
-	Objectives            []OptimizationObjective           `json:"objectives"`
-	ConfiguredPriorities  map[string]float64                `json:"configured_priorities"`
-	NormalizedWeights     map[string]float64                `json:"normalized_weights"`
-	EffectiveWeights      map[string]float64                `json:"effective_weights"`
-	ObjectiveStatus       OptimizationObjectiveStatusMap    `json:"objective_status"`
-	Constraints           OptimizationConstraints           `json:"constraints"`
-	ObjectiveScore        float64                           `json:"objective_score"`
-	CompositeScore        float64                           `json:"composite_score"`
-	Score                 float64                           `json:"score"`
-	RecommendedSolutionID string                            `json:"recommended_solution_id,omitempty"`
-	ConstraintsSatisfied  bool                              `json:"constraints_satisfied"`
-	Recommended           bool                              `json:"recommended"`
-	Violations            []string                          `json:"violations"`
-	AdjustedParameters    []string                          `json:"adjusted_parameters"`
-	RadioQuality          *OptimizationRadioQualityMetadata `json:"radio_quality,omitempty"`
+	Objectives            []OptimizationObjective            `json:"objectives"`
+	ConfiguredPriorities  map[string]float64                 `json:"configured_priorities"`
+	NormalizedWeights     map[string]float64                 `json:"normalized_weights"`
+	EffectiveWeights      map[string]float64                 `json:"effective_weights"`
+	ObjectiveStatus       OptimizationObjectiveStatusMap     `json:"objective_status"`
+	Constraints           OptimizationConstraints            `json:"constraints"`
+	ObjectiveScore        float64                            `json:"objective_score"`
+	CompositeScore        float64                            `json:"composite_score"`
+	Score                 float64                            `json:"score"`
+	RecommendedSolutionID string                             `json:"recommended_solution_id,omitempty"`
+	ConstraintsSatisfied  bool                               `json:"constraints_satisfied"`
+	Recommended           bool                               `json:"recommended"`
+	Violations            []string                           `json:"violations"`
+	AdjustedParameters    []string                           `json:"adjusted_parameters"`
+	RadioQuality          *OptimizationRadioQualityMetadata  `json:"radio_quality,omitempty"`
+	Search                *NetworkOptimizationSearchMetadata `json:"search,omitempty"`
 }
 
 type ParetoTowerSetting struct {
@@ -580,6 +586,15 @@ func OptimizeAzimuthContext(ctx context.Context, req StaticSimulationRequest, bu
 }
 
 func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
+	if validationError := ValidateNetworkOptimizationSearchOptions(req); validationError != "" {
+		return NetworkOptimizationResponse{}, fmt.Errorf("%s", validationError)
+	}
+	if normalizeNetworkSearchPolicy(req.SearchPolicy) == DeterministicMultiStartCoordinateV1 {
+		return OptimizeNetworkMultiStartContext(ctx, req, buildings)
+	}
+	if normalizeNetworkSearchPolicy(req.SearchPolicy) == DeterministicParetoArchiveSearchV1 {
+		return OptimizeNetworkParetoArchiveContext(ctx, req, buildings)
+	}
 	NormalizeNetworkOptimizationRequest(&req)
 	scenarioFingerprint := NetworkScenarioFingerprint(req)
 	config := req.Optimization

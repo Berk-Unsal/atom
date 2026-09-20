@@ -187,7 +187,7 @@ func LoadDatasetPack(root string) (*DatasetPack, error) {
 			return nil, fmt.Errorf("load terrain: %w", err)
 		}
 		declaration := TerrainMetadata{
-			Source: layer.Source, SourceVersion: layer.SourceVersion, DatasetID: manifest.ID,
+			Source: layer.Source, SourceVersion: layer.SourceVersion, DatasetID: manifest.ID, SourceChecksum: manifest.SHA256[manifest.Files.Terrain],
 			Kind: layer.ElevationKind, VerticalDatum: layer.VerticalDatum,
 			VerticalDatumKind: layer.VerticalDatumKind, GeoidModel: layer.GeoidModel, Interpolation: layer.Interpolation,
 			AcquisitionEpoch: layer.AcquisitionEpoch, ResolutionXM: layer.ResolutionM, ResolutionYM: layer.ResolutionM,

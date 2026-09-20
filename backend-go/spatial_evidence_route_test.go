@@ -40,7 +40,15 @@ func TestSpatialEvidenceRoutesAreDiagnosticOnly(t *testing.T) {
 	request.Header.Set("Content-Type", "application/json")
 	response = httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	if response.Code != http.StatusOK || !bytes.Contains(response.Body.Bytes(), []byte(`"status":"unavailable"`)) {
+	if response.Code != http.StatusOK || !bytes.Contains(response.Body.Bytes(), []byte(`"status":"unavailable"`)) || !bytes.Contains(response.Body.Bytes(), []byte(`"clearance":`)) || !bytes.Contains(response.Body.Bytes(), []byte(`"canonical_activation":"diagnostic_only_not_active"`)) {
 		t.Fatalf("path response = %d %s", response.Code, response.Body.String())
+	}
+
+	request = httptest.NewRequest(http.MethodPost, "/api/spatial-evidence/path-profile", bytes.NewBufferString(`{"transmitter":{"lon":32.85,"lat":39.92},"receiver":{"lon":32.851,"lat":39.92},"interpolation":"cubic"}`))
+	request.Header.Set("Content-Type", "application/json")
+	response = httptest.NewRecorder()
+	router.ServeHTTP(response, request)
+	if response.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("invalid interpolation response = %d %s", response.Code, response.Body.String())
 	}
 }

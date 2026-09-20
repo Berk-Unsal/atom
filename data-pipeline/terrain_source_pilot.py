@@ -652,7 +652,23 @@ def destination_point(origin: tuple[float, float], bearing_deg: float, distance_
     return math.degrees(lon2), math.degrees(lat2)
 
 
+def legacy_terrain_excess_for_frozen_comparison(terrain_m: float, radio_line_m: float) -> float:
+    """Reproduce the frozen 4F.3A.3 sign inversion for historical evidence only.
+
+    This is intentionally not named or exposed as clearance. New diagnostic
+    callers must use terrain_clearance_primitive.evaluate_terrain_clearance.
+    """
+
+    return float(terrain_m - radio_line_m)
+
+
 def path_profiles(source: RasterSource, tower_by_id: dict[str, tuple[float, float]]) -> dict:
+    """Return the frozen 4F.3A.3 profiles without changing their artifact schema.
+
+    The function remains only so the historical artifact can be reproduced;
+    4F.3A.5 uses the authoritative primitive through terrain_clearance_audit.
+    """
+
     profiles = []
     for cell_id in CANONICAL_SAMPLE_CELLS:
         origin = tower_by_id[cell_id]
@@ -686,12 +702,14 @@ def path_profiles(source: RasterSource, tower_by_id: dict[str, tuple[float, floa
             }
             if len(values) == len(points):
                 tx_ground, rx_ground = values[0][1], values[-1][1]
-                clearances = []
+                legacy_terrain_excesses = []
                 for fraction, terrain_value in values:
                     radio_line = (tx_ground + 25.0) * (1 - fraction) + (rx_ground + 1.5) * fraction
-                    clearances.append(terrain_value - radio_line)
-                profile["terrain_clearance_min_m"] = min(clearances)
-                profile["terrain_obstruction_candidate"] = min(clearances) < 0.0
+                    legacy_terrain_excesses.append(legacy_terrain_excess_for_frozen_comparison(terrain_value, radio_line))
+                # Historical output keys are retained solely to preserve the
+                # before artifact and its explicit sign-inversion evidence.
+                profile["terrain_clearance_min_m"] = min(legacy_terrain_excesses)
+                profile["terrain_obstruction_candidate"] = min(legacy_terrain_excesses) < 0.0
             profiles.append(profile)
     complete = [profile for profile in profiles if profile["valid_sample_count"] == profile["sample_count"]]
     return {

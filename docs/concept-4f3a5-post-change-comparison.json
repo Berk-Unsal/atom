@@ -1,0 +1,261 @@
+{
+  "after_4f3a5_primitive": {
+    "candidate_counts": {
+      "fabdem": 19,
+      "nasadem": 50
+    },
+    "endpoint_signature_m": {
+      "rx": 1.5,
+      "tx": 25.0
+    },
+    "formula": "radio_elevation_m - terrain_elevation_m",
+    "matches_four_f_three_a_four_counts": true,
+    "path_set_fingerprints": {
+      "fabdem": "b8c4d19651178596c3dec9da1f4fe11c8862909831101294865c17557c7d6371",
+      "nasadem": "c7aa2416b9693f3e952a6149e0e62aaa261ae25962222e0606c7d66bd9085eb8"
+    },
+    "primitive_version": "terrain-clearance-primitive-v1"
+  },
+  "before": {
+    "artifact": "docs/concept-4f3a3-terrain-quality.json",
+    "candidate_counts": {
+      "fabdem": 432,
+      "nasadem": 432
+    },
+    "candidate_rule": "minimum < 0",
+    "endpoint_signature_m": {
+      "rx": -1.5,
+      "tx": -25.0
+    },
+    "formula": "terrain_elevation_m - radio_elevation_m",
+    "note": "Retained as the explicit before state; never interpreted as terrain truth or canonical RF behavior."
+  },
+  "canonical_rf_invariance": {
+    "after_snapshots": {
+      "canonical_28_ghz": {
+        "endpoint": "POST /api/simulate",
+        "first_feature": {
+          "distance_m": 25,
+          "los_state": "los",
+          "path_loss_db": 90.72271631710674,
+          "signal_dbm": -35.722716317106745,
+          "wall_loss_db": 0
+        },
+        "model_id": "urban_short_range",
+        "stats": {
+          "avg_rx_dbm": -72.1,
+          "blocked_pct": 12.5,
+          "max_range_m": 100,
+          "min_range_m": 72.3
+        }
+      },
+      "canonical_2_6_ghz": {
+        "endpoint": "POST /api/simulate",
+        "first_feature": {
+          "distance_m": 25,
+          "los_state": "los",
+          "path_loss_db": 70.07902264967872,
+          "signal_dbm": -15.07902264967872,
+          "wall_loss_db": 0
+        },
+        "model_id": "urban_short_range",
+        "stats": {
+          "avg_rx_dbm": -43,
+          "blocked_pct": 0,
+          "max_range_m": 100,
+          "min_range_m": 100
+        }
+      },
+      "research_sub_thz_140_ghz": {
+        "composition": "FSPL + max(wall_event_count, 0) * 80 dB; unchanged research-only profile",
+        "endpoint": "POST /api/simulate",
+        "model_id": "research_sub_thz",
+        "stats": {
+          "avg_rx_dbm": -123.6,
+          "blocked_pct": 87.5,
+          "max_range_m": 100,
+          "min_range_m": 17.6
+        }
+      }
+    },
+    "before_snapshots": {
+      "canonical_28_ghz": {
+        "endpoint": "POST /api/simulate",
+        "first_feature": {
+          "distance_m": 25,
+          "los_state": "los",
+          "path_loss_db": 90.72271631710674,
+          "signal_dbm": -35.722716317106745,
+          "wall_loss_db": 0
+        },
+        "model_id": "urban_short_range",
+        "stats": {
+          "avg_rx_dbm": -72.1,
+          "blocked_pct": 12.5,
+          "max_range_m": 100,
+          "min_range_m": 72.3
+        }
+      },
+      "canonical_2_6_ghz": {
+        "endpoint": "POST /api/simulate",
+        "first_feature": {
+          "distance_m": 25,
+          "los_state": "los",
+          "path_loss_db": 70.07902264967872,
+          "signal_dbm": -15.07902264967872,
+          "wall_loss_db": 0
+        },
+        "model_id": "urban_short_range",
+        "stats": {
+          "avg_rx_dbm": -43,
+          "blocked_pct": 0,
+          "max_range_m": 100,
+          "min_range_m": 100
+        }
+      },
+      "research_sub_thz_140_ghz": {
+        "composition": "FSPL + max(wall_event_count, 0) * 80 dB; unchanged research-only profile",
+        "endpoint": "POST /api/simulate",
+        "model_id": "research_sub_thz",
+        "stats": {
+          "avg_rx_dbm": -123.6,
+          "blocked_pct": 87.5,
+          "max_range_m": 100,
+          "min_range_m": 17.6
+        }
+      }
+    },
+    "explicitly_not_changed": [
+      "canonical LOS/NLOS",
+      "P.526",
+      "P.1411",
+      "reflection",
+      "building entry",
+      "interference",
+      "radio quality",
+      "optimizer",
+      "Pareto outputs",
+      "scenario fingerprints"
+    ],
+    "model_changes": [],
+    "snapshot_equality": {
+      "canonical_28_ghz": true,
+      "canonical_2_6_ghz": true,
+      "research_sub_thz_140_ghz": true
+    },
+    "status": "unchanged_by_construction; terrain primitive is diagnostic-only and canonical dispatch is untouched",
+    "targets": [
+      "canonical 2.6 GHz",
+      "canonical 28 GHz",
+      "research_sub_thz",
+      "4F.1 LOS/NLOS",
+      "P.526",
+      "P.1411",
+      "reflection",
+      "building entry",
+      "interference",
+      "radio quality",
+      "optimizer",
+      "Pareto outputs",
+      "scenario fingerprints"
+    ],
+    "terrain_activation": false,
+    "terrain_status": "terrain_unavailable"
+  },
+  "changed_behavior": [
+    "diagnostic terrain-clearance sign is now radio-minus-terrain",
+    "diagnostic endpoint clearances are +25 m and +1.5 m for the canonical fixture",
+    "diagnostic results expose source-local metadata, samples, classification, and fingerprint"
+  ],
+  "comparison_kind": "diagnostic-only primitive correction; no canonical RF activation",
+  "concept": "4F.3A.5",
+  "independent_4f3a4_corrected_audit": {
+    "artifact": "docs/concept-4f3a4-post-change-comparison.json",
+    "candidate_counts": {
+      "fabdem": 19,
+      "nasadem": 50
+    },
+    "formula": "radio_elevation_m - terrain_elevation_m",
+    "status": "independent recomputation reference",
+    "tolerance_summaries": {
+      "fabdem": {
+        "margin_0_m": {
+          "counts": {
+            "clear": 413,
+            "near_uncertainty_boundary": 0,
+            "obstruction_candidate": 19,
+            "unavailable": 0
+          },
+          "margin_m": 0.0
+        },
+        "margin_1_m": {
+          "counts": {
+            "clear": 387,
+            "near_uncertainty_boundary": 42,
+            "obstruction_candidate": 3,
+            "unavailable": 0
+          },
+          "margin_m": 1.0
+        },
+        "margin_2_m": {
+          "counts": {
+            "clear": 0,
+            "near_uncertainty_boundary": 432,
+            "obstruction_candidate": 0,
+            "unavailable": 0
+          },
+          "margin_m": 2.0
+        },
+        "margin_5_m": {
+          "counts": {
+            "clear": 0,
+            "near_uncertainty_boundary": 432,
+            "obstruction_candidate": 0,
+            "unavailable": 0
+          },
+          "margin_m": 5.0
+        }
+      },
+      "nasadem": {
+        "margin_0_m": {
+          "counts": {
+            "clear": 382,
+            "near_uncertainty_boundary": 0,
+            "obstruction_candidate": 50,
+            "unavailable": 0
+          },
+          "margin_m": 0.0
+        },
+        "margin_1_m": {
+          "counts": {
+            "clear": 348,
+            "near_uncertainty_boundary": 54,
+            "obstruction_candidate": 30,
+            "unavailable": 0
+          },
+          "margin_m": 1.0
+        },
+        "margin_2_m": {
+          "counts": {
+            "clear": 0,
+            "near_uncertainty_boundary": 414,
+            "obstruction_candidate": 18,
+            "unavailable": 0
+          },
+          "margin_m": 2.0
+        },
+        "margin_5_m": {
+          "counts": {
+            "clear": 0,
+            "near_uncertainty_boundary": 432,
+            "obstruction_candidate": 0,
+            "unavailable": 0
+          },
+          "margin_m": 5.0
+        }
+      }
+    }
+  },
+  "recommendation": "Do not begin Concept 4F.3B; terrain remains diagnostic-only and source/uncertainty qualification blockers remain.",
+  "schema_version": 1
+}

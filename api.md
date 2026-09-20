@@ -34,7 +34,7 @@ Most responses are **JSON**. Explicit GIS export representations use GeoJSON, CS
 - `GET /api/datasets` returns installed packs and the active manifest ID
 - `GET /api/spatial-evidence` returns active-pack terrain semantics, height evidence counts, and the deterministic spatial-evidence fingerprint
 - `GET /api/spatial-evidence/buildings/:id` returns a diagnostic-only building height/base/roof provenance ledger
-- `POST /api/spatial-evidence/path-profile` returns diagnostic-only terrain samples with source, interpolation, datum, and no-data status
+- `POST /api/spatial-evidence/path-profile` returns diagnostic-only terrain samples plus the reusable radio-minus-terrain clearance result; canonical RF remains unaffected
 - `GET /api/buildings` and `GET /api/towers` return raw GeoJSON; bounded clients should prefer `/api/collections/buildings/items`
 - `GET /api/collections/buildings/items` returns viewport-bounded building GeoJSON or CSV
 - `POST /api/analyze-sector` returns `{ simulation, coverage_gaps }` from one shared ray-profile computation
@@ -891,6 +891,10 @@ If a domain has no relevant entities for an objective, that objective is reporte
 
 The response also includes `stats.objective_breakdown` for compatibility and `objective_status`, where each objective exposes availability, configured priority, effective weight, and nullable utility/contribution metadata. The contribution sum equals `stats.composite_score` within floating-point tolerance for available objectives. Existing feasibility constraints remain independent of priorities: an infeasible candidate is excluded from the Pareto frontier and cannot be returned as the optimized recommendation. The Pareto frontier is based on available objective utilities rather than weighted composite score; changing priorities can re-rank the stored feasible frontier without another RF evaluation when those metrics are available. Up to 25 feasible non-dominated evaluated azimuth sets are returned. This version adjusts azimuth only.
 
+The default optimizer remains the legacy two-pass coordinate search. `POST /api/optimize-network` accepts the explicit opt-in `search_policy: "deterministic_multistart_coordinate_v1"`, with optional `max_search_passes` (default `8`) and `max_unique_evaluations` (default `5000`) for candidate-state RF evaluations. The existing compatibility tower summaries still perform their final per-tower recomputation. The opt-in policy evaluates the baseline plus deterministic uniform global rotations, descends through the 10-degree azimuth grid until each start is stable or a bound is reached, memoizes states within the request, and builds the reported Pareto frontier from the union of unique evaluated states. Its `optimization.search` metadata reports starts, accepted updates, cache/evaluation counts, archive size, termination reasons, and an explicit `heuristic_local_search` guarantee; it does not claim exhaustive or globally optimal search. Because weighted priorities affect discovery, a priority change can alter which states are found even though the stored archive can still be re-ranked without repeating RF evaluation.
+
+The separate experimental `search_policy: "deterministic_pareto_archive_search_v1"` is priority-independent during discovery. It seeds the same four deterministic starts, expands every cell's absolute 10-degree neighborhood from a FIFO evaluated Pareto archive, and uses only feasibility, objective availability, and exact normalized utilities for archive admission and expansion. User priorities are applied afterward for ranking and recommendation. `max_unique_evaluations` bounds RF states; `max_expanded_states` (default `128`) and `max_search_rounds` (default `16`) bound traversal. The response reports `discovery_fingerprint` (which excludes weights), `ranking_fingerprint`, objective availability/set, archive policy, active Pareto size, removed states, neighbor/cache counts, archive growth, and `budget_complete`. A budget-limited result is explicitly incomplete. The public 25-solution view is selected by stable state identity before ranking, so changing priorities can reorder or recommend a discovered solution but cannot change that bounded membership. This remains a bounded heuristic and must not be described as a complete or global Pareto frontier. See the [Concept 5C audit](concept-5c-pareto-search.md) and its JSON evidence artifacts.
+
 `POST /api/optimize-network` additionally returns `baseline`, an authoritative compact snapshot of the exact normalized selected-cell configuration that entered that optimization execution. It includes each cell's coordinates, original azimuth, resolved RF profile, request-level RF parameters, prepared-domain raw metrics/utilities, and baseline constraint status. It also returns `optimization_run_id`, a stable identity for RF-affecting state that excludes objective priorities. Baseline and Pareto statistics are evaluated through the same prepared domain, so their demand denominator, residential denominator, propagation-reach maximum, overlap semantics, and objective availability are directly comparable. The frontend can re-score both sides with new effective priorities from the stored frontier without repeating RF evaluation. `POST /api/evaluate-network` does not claim an optimization baseline.
 
 ### Explain One Pareto Cell
@@ -1095,11 +1099,14 @@ Concept 4F.3A adds three read-only/diagnostic interfaces. They do not change can
 {
   "transmitter": {"lon": 32.85, "lat": 39.92},
   "receiver": {"lon": 32.851, "lat": 39.92},
-  "requested_spacing_m": 10
+  "requested_spacing_m": 30,
+  "interpolation": "bilinear",
+  "tx_height_agl_m": 25,
+  "rx_height_agl_m": 1.5
 }
 ```
 
-The response contains deterministic path-distance samples. Effective spacing is never finer than the largest declared raster resolution. Each sample distinguishes `measured_or_source`, `interpolated`, `outside_dataset`, `no_data`, and `unavailable`; no zero terrain is synthesized. The response includes `canonical_activation: diagnostic_only_not_active`.
+The response contains deterministic path-distance samples and exposes the same `clearance` object both as `profile.clearance` and at the top level. Its signed contract is `clearance_m = radio_elevation_m - terrain_elevation_m`; endpoints use source-local terrain plus the configured AGL heights, and strict-zero classification treats only a minimum below `0 m` as an `obstruction_candidate`. An optional `uncertainty_margin_m` is diagnostic policy only. Effective spacing is never finer than the largest declared raster resolution. Each sample distinguishes `measured_or_source`, `interpolated`, `outside_dataset`, `no_data`, and `unavailable`; no zero terrain is synthesized. The response includes source checksum, vertical datum, interpolation, spacing, fingerprint, and `canonical_activation: diagnostic_only_not_active`.
 
 ## Usage Examples
 

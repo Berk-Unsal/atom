@@ -69,6 +69,10 @@ build_page concept-4h1-interference-radio-quality.md concept-4h1-interference-ra
   "Inspectable received-carrier power, serving-cell selection, co-channel eligibility, resource normalization, thermal noise, planning radio-quality metrics, diagnostics, and deterministic fingerprints."
 build_page concept-4h2-radio-quality-optimization.md concept-4h2-radio-quality-optimization.html "Concept 4H.2 Interference-Aware Optimization" "Model reference" \
   "An optional fixed-domain radio-quality objective for deterministic multi-cell optimization, with explicit denominator, horizon, policy, Pareto, compatibility, and performance semantics."
+build_page concept-5b-multistart-search.md concept-5b-multistart-search.html "Concept 5B Deterministic Multi-Start Search" "Optimization audit" \
+  "An opt-in deterministic multi-start coordinate search with until-stable termination, request-scoped memoization, archive-based Pareto discovery, explicit budgets, and canonical audit evidence."
+build_page concept-5c-pareto-search.md concept-5c-pareto-search.html "Concept 5C Priority-Independent Pareto Archive Search" "Optimization audit" \
+  "An opt-in bounded multi-objective archive search that discovers candidates without using user priority weights, then reranks the evaluated Pareto trade-offs."
 build_page concept-4i1-140ghz-audit.md concept-4i1-140ghz-audit.html "Concept 4I.1 140 GHz Applicability Audit" "Scientific audit" \
   "A read-only audit of the 140 GHz research planning profile, authoritative reference applicability, independent atmospheric and material terms, transferability, and the future roadmap."
 build_page concept-4i2a-atmospheric-reference.md concept-4i2a-atmospheric-reference.html "Concept 4I.2A Atmospheric Reference" "Scientific reference" \

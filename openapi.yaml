@@ -1055,6 +1055,11 @@ components:
           properties:
             towers: { type: array, minItems: 2, maxItems: 6, items: { $ref: "#/components/schemas/Tower" } }
             optimization: { $ref: "#/components/schemas/OptimizationConfig" }
+            search_policy: { type: string, enum: [legacy_two_pass_coordinate, deterministic_multistart_coordinate_v1, deterministic_pareto_archive_search_v1], default: legacy_two_pass_coordinate, description: Opt-in optimizer discovery policy. Omit this field to preserve the legacy two-pass coordinate search. }
+            max_search_passes: { type: integer, minimum: 0, maximum: 64, default: 8, description: Deterministic multi-start pass budget; zero uses the policy default. }
+            max_unique_evaluations: { type: integer, minimum: 0, maximum: 100000, default: 5000, description: Deterministic multi-start candidate-state RF evaluation budget; zero uses the policy default. Compatibility tower summaries retain their existing final recomputation. }
+            max_expanded_states: { type: integer, minimum: 0, maximum: 5000, default: 128, description: Concept 5C archive expansion budget; zero uses the policy default. }
+            max_search_rounds: { type: integer, minimum: 0, maximum: 64, default: 16, description: Concept 5C archive-search round budget; zero falls back to the policy default or max_search_passes when supplied. }
     BuildingEntryAnalysisRequest:
       allOf:
         - { $ref: "#/components/schemas/CommonRFSettings" }
@@ -1264,6 +1269,96 @@ components:
         violations: { type: array, items: { type: string } }
         adjusted_parameters: { type: array, items: { type: string } }
         radio_quality: { $ref: "#/components/schemas/OptimizationRadioQualityMetadata" }
+        search: { $ref: "#/components/schemas/NetworkOptimizationSearchMetadata", description: Present only when an explicit opt-in search policy is selected. }
+    NetworkOptimizationSearchUpdate:
+      type: object
+      properties:
+        pass: { type: integer, minimum: 1 }
+        cell_id: { type: string }
+        before_azimuth_deg: { type: number }
+        after_azimuth_deg: { type: number }
+        before_score: { type: number, description: Normalized 0-100 score before the accepted move. }
+        after_score: { type: number, description: Normalized 0-100 score after the accepted move. }
+        before_feasible: { type: boolean }
+        after_feasible: { type: boolean }
+        state_fingerprint: { type: string, description: Stable request-scoped state identity. }
+    NetworkOptimizationStartTrace:
+      type: object
+      properties:
+        start_id: { type: string }
+        starting_azimuths: { type: array, items: { type: number } }
+        passes: { type: integer, minimum: 0 }
+        accepted_updates: { type: array, items: { $ref: "#/components/schemas/NetworkOptimizationSearchUpdate" } }
+        requested_evaluations: { type: integer, minimum: 0 }
+        unique_evaluations: { type: integer, minimum: 0 }
+        cache_hits: { type: integer, minimum: 0 }
+        final_azimuths: { type: array, items: { type: number } }
+        final_score: { type: number, minimum: 0, maximum: 100 }
+        final_feasible: { type: boolean }
+        termination_reason: { type: string, enum: [coordinate_stable, repeated_state, evaluation_budget, max_passes, enqueued] }
+        state_trace: { type: array, items: { type: string } }
+    NetworkOptimizationSearchMetadata:
+      type: object
+      properties:
+        search_policy: { type: string, enum: [deterministic_multistart_coordinate_v1, deterministic_pareto_archive_search_v1] }
+        policy: { type: string, enum: [deterministic_multistart_coordinate_v1, deterministic_pareto_archive_search_v1] }
+        search_algorithm: { type: string, enum: [deterministic_coordinate_descent, deterministic_pareto_archive_search] }
+        search_version: { type: string, const: v1 }
+        heuristic: { type: boolean, const: true }
+        exhaustive: { type: boolean, const: false }
+        globally_optimal: { type: boolean, const: false }
+        search_guarantee: { type: string, enum: [heuristic_local_search, bounded_multiobjective_local_search] }
+        multistart_policy: { type: string, const: baseline_plus_uniform_global_rotations_v1 }
+        start_count: { type: integer, minimum: 0 }
+        completed_start_count: { type: integer, minimum: 0 }
+        start_traces: { type: array, items: { $ref: "#/components/schemas/NetworkOptimizationStartTrace" } }
+        evaluation_requests: { type: integer, minimum: 0 }
+        unique_evaluations: { type: integer, minimum: 0 }
+        cache_hits: { type: integer, minimum: 0 }
+        evaluated_archive_size: { type: integer, minimum: 0 }
+        archive_size: { type: integer, minimum: 0, description: Alias for evaluated_archive_size. }
+        feasible_archive_size: { type: integer, minimum: 0 }
+        pareto_size: { type: integer, minimum: 0, maximum: 25 }
+        candidate_discovery_priority_dependent: { type: boolean, description: True for Concept 5B and false for Concept 5C. }
+        incomplete_search: { type: boolean }
+        search_fingerprint: { type: string }
+        max_passes: { type: integer, minimum: 1 }
+        max_unique_evaluations: { type: integer, minimum: 1 }
+        azimuth_step_deg: { type: number, const: 10 }
+        state_key_version: { type: string, const: network-state-v1 }
+        discovery_fingerprint: { type: string, description: Priority-independent candidate-discovery identity; excludes user priority weights. }
+        ranking_fingerprint: { type: string, description: Discovery identity plus priority ranking configuration. }
+        priority_independent_discovery: { type: boolean, const: true }
+        objective_set: { type: array, items: { type: string }, description: Available fixed-domain objective IDs used for exact discovery dominance; user weights are ignored. }
+        objective_availability: { type: object, additionalProperties: { type: object } }
+        start_policy: { type: string, const: multistart-policy-v1 }
+        neighborhood_policy: { type: string, const: absolute_coordinate_grid_v1 }
+        queue_policy: { type: string, const: fifo_round_then_insertion_then_state_key_v1 }
+        stepping_stone_policy: { type: string, const: start_set_plus_archive_admission_v1 }
+        feasibility_policy: { type: string, const: feasible_only_archive;all_deterministic_starts_expand }
+        termination_reason: { type: string, enum: [archive_exhausted, evaluation_budget, max_expanded_states, max_rounds] }
+        budget_complete: { type: boolean }
+        max_expanded_states: { type: integer, minimum: 1 }
+        max_search_rounds: { type: integer, minimum: 1 }
+        expanded_states: { type: integer, minimum: 0 }
+        search_rounds: { type: integer, minimum: 0 }
+        active_pareto_size: { type: integer, minimum: 0 }
+        removed_dominated_count: { type: integer, minimum: 0 }
+        neighbor_requests: { type: integer, minimum: 0 }
+        duplicate_edge_count: { type: integer, minimum: 0 }
+        dominance_comparisons: { type: integer, minimum: 0 }
+        archive_growth: { type: array, items: { $ref: "#/components/schemas/NetworkOptimizationArchiveRound" } }
+    NetworkOptimizationArchiveRound:
+      type: object
+      properties:
+        round: { type: integer, minimum: 0 }
+        total_evaluated: { type: integer, minimum: 0 }
+        feasible_evaluated: { type: integer, minimum: 0 }
+        active_pareto_size: { type: integer, minimum: 0 }
+        removed_dominated_count: { type: integer, minimum: 0 }
+        queued_expansions: { type: integer, minimum: 0 }
+        expanded_states: { type: integer, minimum: 0 }
+        cache_hits: { type: integer, minimum: 0 }
     NetworkOptimizedTower:
       type: object
       required: [id, optimal_azimuth, score, rf_profile, receiver_threshold]

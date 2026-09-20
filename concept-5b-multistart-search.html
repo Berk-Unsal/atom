@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="An opt-in deterministic multi-start
+coordinate search with until-stable termination, request-scoped
+memoization, archive-based Pareto discovery, explicit budgets, and
+canonical audit evidence." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 5B Deterministic Multi-Start
+Search | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 5B
+Deterministic Multi-Start Search page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#decision" id="toc-decision">Decision</a></li>
+      <li><a href="#production-contract"
+      id="toc-production-contract">Production contract</a></li>
+      <li><a href="#evidence" id="toc-evidence">Evidence</a></li>
+      <li><a href="#recommendation"
+      id="toc-recommendation">Recommendation</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Optimization audit</span>
+        <h1>Concept 5B Deterministic Multi-Start Search</h1>
+        <p>An opt-in deterministic multi-start coordinate search with
+until-stable termination, request-scoped memoization, archive-based
+Pareto discovery, explicit budgets, and canonical audit evidence.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-5b-multistart-search.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Audit version: concept-5b-audit-v1</p>
+<h2 id="decision">Decision</h2>
+<p>Concept 5B is implemented as an explicit opt-in policy,
+"deterministic_multistart_coordinate_v1". The legacy two-pass coordinate
+search remains the default and is not promoted. The new path is useful
+for bounded, auditable discovery, but it is still a heuristic local
+search: it is neither exhaustive nor globally optimal, and its
+discovered candidate set is priority-dependent.</p>
+<h2 id="production-contract">Production contract</h2>
+<p>The opt-in policy starts from the authoritative normalized request
+azimuths and three deterministic uniform global rotations (90°, 180°,
+and 270°). Each start follows request cell order and evaluates the
+existing absolute 10° candidate grid. A coordinate move is accepted only
+under the existing feasible-first, strict composite-score comparison. A
+start stops on a full stable pass, repeated state, its pass bound, or
+the request-scoped candidate-state RF-evaluation budget. The archive is
+the ordered union of unique evaluated states, deduplicated by a stable
+cell-ID/azimuth state key; the existing Pareto implementation is applied
+to that archive.</p>
+<p>Response metadata is present only for the opt-in policy. It reports
+algorithm/version, start traces, requested versus unique evaluations,
+cache hits, archive and feasible counts, Pareto size, search
+fingerprint, and explicit heuristic/incomplete-search flags. Priority
+changes are discovery-sensitive; re-ranking the stored frontier is
+distinct from exploring unseen states.</p>
+<h2 id="evidence">Evidence</h2>
+<p>The JSON artifacts in this directory contain the pre-change legacy
+freeze, deterministic start-policy audit, 36×36 exhaustive two-cell
+comparison, restricted 12³ three-cell comparison, synthetic
+interaction/local-optima/plateau/feasibility/Pareto fixtures, Pareto
+archive checks, controlled performance/cost curves, canonical Ankara
+runs when the dataset is available, radio-quality disabled/enabled
+checks, and post-change default invariance.</p>
+<p>The stopping gate is: legacy default exactness, memoization
+equivalence, deterministic repeated execution, archive-based Pareto
+construction, honest budget/termination metadata, practical bounded
+runtime, and no RF/objective/utility/feasibility semantic tuning. The
+audit records each result explicitly; unavailable canonical runs are
+marked unavailable rather than inferred.</p>
+<h2 id="recommendation">Recommendation</h2>
+<p>Keep "deterministic_multistart_coordinate_v1" opt-in for diagnostics
+and controlled experiments. Do not make it the default until a product
+decision accepts its extra evaluation cost and the exhaustive/regret
+evidence justifies a broader quality claim. Do not use “optimal”,
+“global optimum”, or “guaranteed best” for this policy; use “recommended
+candidate”, “best evaluated candidate”, or “Pareto candidate under the
+fixed search policy”.</p>
+<p>Artifacts are rooted in the repository docs directory. Runtime and
+allocation measurements are evidence fields only and are excluded from
+scenario and search fingerprints.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

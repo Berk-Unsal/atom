@@ -1,0 +1,37 @@
+{
+  "concept": "7C",
+  "decision": "separate_additive_indexeddb",
+  "database": "atom-run-history",
+  "database_version": 1,
+  "store": "runs",
+  "key": "run_id",
+  "envelope": {
+    "storage_schema_version": 1,
+    "payload": "Run"
+  },
+  "alternatives": [
+    {
+      "option": "extend_project_workspace",
+      "decision": "rejected",
+      "reason": "would grow ProjectV2 blobs, couple history to workspace compaction/export, and make query/filter behavior harder"
+    },
+    {
+      "option": "workspace_database_migration",
+      "decision": "rejected",
+      "reason": "would add migration risk to the existing workspace database for an additive feature"
+    },
+    {
+      "option": "separate_additive_indexeddb",
+      "decision": "selected",
+      "reason": "isolates schema/version, supports deterministic queries, avoids localStorage history dumps, and preserves 7B/7A workspace compatibility"
+    }
+  ],
+  "invariants_preserved": [
+    "RF request payloads",
+    "optimizer request payloads",
+    "RF and optimizer fingerprints",
+    "ProjectV2 database/store/version",
+    "workspace localStorage fallback behavior",
+    "no server/database/PostGIS/object-storage/auth/remote-job dependency"
+  ]
+}

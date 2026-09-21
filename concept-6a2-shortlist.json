@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2",
+  "artifact": "shortlist",
+  "audit_version": "concept-6a2-external-rf-benchmark-audit-v1",
+  "audited_at": "2026-09-21",
+  "shortlist_policy": "Keep at most three serious candidates for deeper inspection, but do not imply that shortlist membership means benchmark selection.",
+  "shortlisted_candidates": [
+    {
+      "id": "chongqing-macro-5g",
+      "role": "best transmitter-metadata near-candidate",
+      "why_it_survives": "Public raw serving measurements are joined to a public base-station table with coordinates, height, angle, tilt, frequency/channel fields, bandwidth, and numeric transmit-power field; building/DEM products are also present.",
+      "minimum_followups": [
+        "Resolve raw ARFCN versus base downlink/frequency semantics with the authors or source code.",
+        "Establish whether antenna transmit power is conducted output, EIRP, or another reference-plane quantity.",
+        "Recover or document antenna gain/pattern and receiver height/calibration semantics.",
+        "Define the 342 unmapped raw serving rows and the NCI/ECI join policy.",
+        "Confirm aggregation, detection, and route/session semantics before any metric summary."
+      ],
+      "claim_class_if_followups_succeed": "propagation_validation_candidate; still not automatically full_inventory_validation_candidate"
+    },
+    {
+      "id": "vienna-4g-5g-drive-test",
+      "role": "best measurement/environment near-candidate",
+      "why_it_survives": "Large public scanner/phone release has exact LTE B7/2.6 observations, serving identities, WGS84 trajectories, multiple measurement quantities, and building/terrain model context.",
+      "minimum_followups": [
+        "Determine whether any authoritative transmitter configuration beyond inferred location/orientation can be released.",
+        "Keep inferred site/height/azimuth fields explicitly separate from measured truth.",
+        "Document receiver height, antenna chain, detection/censoring, and cross-device calibration semantics.",
+        "Define a deterministic NR NSA serving identity policy.",
+        "Use only selectively downloaded metadata or approved subarchives because the full release is large."
+      ],
+      "claim_class_if_followups_succeed": "propagation_validation_candidate for LTE B7 and relative/quantity claims; not a full inventory candidate without transmitter RF fields"
+    },
+    {
+      "id": "lacn-n79-uav",
+      "role": "geometry/tilt contrast near-candidate",
+      "why_it_survives": "Public measurement CSVs expose serving/detected RSRP/SINR and the README advertises base-station locations, antenna positions, azimuths, and mechanical/electrical tilt across altitude scenarios.",
+      "minimum_followups": [
+        "Obtain the base-station configuration in a parseable, documented format.",
+        "Clarify local coordinate origin, axis convention, and the meaning of each z field.",
+        "Obtain frequency/bandwidth/power/gain/pattern and receiver/timing semantics.",
+        "Resolve dataset rights because no license file was identified.",
+        "Treat n79/4.9 GHz as a non-canonical quantity-validation contrast, not a 2.6/28 benchmark."
+      ],
+      "claim_class_if_followups_succeed": "quantity_validation_only unless complete RF and coordinate provenance is supplied"
+    }
+  ],
+  "not_shortlisted": [
+    {
+      "id": "taltech-mmwave-n258",
+      "reason": "Restricted raw files trigger the access stop condition."
+    },
+    {
+      "id": "mendeley-campus-5g",
+      "reason": "Public description states unavailable transmitter parameters were calibrated against measured RSRP; this is not independent uncalibrated truth."
+    },
+    {
+      "id": "aerpaw-dryad-lte",
+      "reason": "Useful LTE measurement-only release but no matched transmitter inventory or complete RF configuration."
+    },
+    {
+      "id": "powder-cellular-metrics",
+      "reason": "Useful cellular quantity records but no transmitter geometry/configuration and no exact canonical frequency pair."
+    },
+    {
+      "id": "sutd-private-5g",
+      "reason": "Scenario/device measurements lack general transmitter inventory and clear rights metadata."
+    },
+    {
+      "id": "cosmos-wifi-coverage",
+      "reason": "Non-cellular Wi-Fi testbed at 2.412 GHz."
+    },
+    {
+      "id": "mmobile-28ghz-csi",
+      "reason": "28 GHz CSI/channel traces are not cellular serving-cell measurements or inventory truth."
+    }
+  ],
+  "selection_status": "shortlist_only_no_benchmark_selected",
+  "next_decision": "Use the Chongqing record as a conditional future pilot only after metadata reconciliation; do not open 6B or implement an adapter from shortlist membership alone."
+}

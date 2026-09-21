@@ -1,0 +1,34 @@
+{
+  "concept": "7C",
+  "coverage": [
+    {
+      "operation": "simulation",
+      "ui_action": "Run Sector",
+      "request_builder": "buildSimulationPayload",
+      "durable_request": "exact payload sent to /api/analyze-sector",
+      "run_type": "simulation"
+    },
+    {
+      "operation": "single_cell_optimization",
+      "ui_action": "Optimize Azimuth",
+      "request_builder": "buildSimulationPayload",
+      "durable_request": "exact payload sent to /api/optimize-azimuth",
+      "run_type": "optimization"
+    },
+    {
+      "operation": "network_optimization",
+      "ui_action": "Optimize Network",
+      "request_builder": "buildNetworkOptimizationPayload",
+      "durable_request": "exact payload sent to /api/optimize-network",
+      "run_type": "optimization"
+    },
+    {
+      "operation": "future_validation_batch_diagnostic_reference",
+      "request_builder": "domain Run accepts generic run_type values",
+      "durable_request": "repository/query/schema support is additive; UI integration is intentionally deferred",
+      "run_type": ["validation", "batch_experiment", "diagnostic", "reference_evaluation"]
+    }
+  ],
+  "snapshot_fields": ["request_schema", "request", "source_scenario_revision_id", "draft_execution", "draft_differs_from_source", "inventory_revision_id", "dataset_references", "receiver_assumptions", "interference", "optimization", "applied_defaults"],
+  "unsaved_draft_policy": "capture the executed draft exactly; do not force Save Scenario or create visible revision spam"
+}

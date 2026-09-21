@@ -1,0 +1,14 @@
+{
+  "concept": "7C",
+  "measurement_method": "UTF-8 JSON byte length of the physical run envelope after forbidden-field sanitization",
+  "max_run_record_bytes": 524288,
+  "per_record_guard": "prepareRunEnvelope rejects a sanitized record over the limit with run_invalid",
+  "retained": ["request snapshot", "fingerprints", "dataset/model contracts", "compact summaries", "public optimization solutions", "warnings/errors", "artifact references"],
+  "excluded": ["GeoJSON", "full rays", "path arrays", "per-ray samples", "terrain/surface grids", "building overlays", "private optimization ledgers", "raw measurements"],
+  "fixture_evidence": {
+    "repository_test": "runHistoryRepository.test.js strips geojson and retains request rays",
+    "domain_test": "domain.test.js verifies compact simulation/optimization capture and private ledger exclusion",
+    "workspace_growth": "run history is not serialized into ProjectV2 or its localStorage fallback"
+  },
+  "performance_policy": "listRuns loads compact records, filters in memory, and sorts newest-first; the design is suitable for 100/1000 records while history remains user-deletable"
+}

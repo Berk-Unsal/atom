@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Source-independent 2.6/28 GHz RF
+observation semantics, canonical primitive reuse, deterministic
+matching, applicability gates, residual diagnostics, spatial holdouts,
+and conservative readiness." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 6A Canonical RF
+Validation | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 6A
+Canonical RF Validation page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#boundary-and-invariance"
+      id="toc-boundary-and-invariance">Boundary and invariance</a></li>
+      <li><a href="#architecture-and-4i3-reuse"
+      id="toc-architecture-and-4i3-reuse">Architecture and 4I.3
+      reuse</a></li>
+      <li><a href="#schema-and-observed-quantities"
+      id="toc-schema-and-observed-quantities">Schema and observed
+      quantities</a></li>
+      <li><a href="#matching-frequency-geometry-and-applicability"
+      id="toc-matching-frequency-geometry-and-applicability">Matching,
+      frequency, geometry, and applicability</a></li>
+      <li><a href="#canonical-evaluation-and-evidence-fingerprint"
+      id="toc-canonical-evaluation-and-evidence-fingerprint">Canonical
+      evaluation and evidence fingerprint</a></li>
+      <li><a href="#metrics-and-strata"
+      id="toc-metrics-and-strata">Metrics and strata</a></li>
+      <li><a href="#spatial-site-campaign-and-calibration-diagnostics"
+      id="toc-spatial-site-campaign-and-calibration-diagnostics">Spatial,
+      site, campaign, and calibration diagnostics</a></li>
+      <li><a href="#synthetic-controls"
+      id="toc-synthetic-controls">Synthetic controls</a></li>
+      <li><a href="#public-data-audit-and-ankara-campaign"
+      id="toc-public-data-audit-and-ankara-campaign">Public-data audit
+      and Ankara campaign</a></li>
+      <li><a href="#readiness-and-concept-6b-gate"
+      id="toc-readiness-and-concept-6b-gate">Readiness and Concept 6B
+      gate</a></li>
+      <li><a href="#validation-commands-and-files"
+      id="toc-validation-commands-and-files">Validation commands and
+      files</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Scientific validation</span>
+        <h1>Concept 6A Canonical RF Validation</h1>
+        <p>Source-independent 2.6/28 GHz RF observation semantics,
+canonical primitive reuse, deterministic matching, applicability gates,
+residual diagnostics, spatial holdouts, and conservative readiness.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-6a-canonical-rf-validation.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Concept 6A adds an evidence-only validation foundation for the
+production 2.6 GHz and 28 GHz planning profiles. Its result is a
+reproducible validation report, not a new propagation model, a fitted
+UMa equation, a calibrated canonical profile, or an optimizer input.</p>
+<p>The current readiness result is <strong>validation infrastructure
+complete, real-data validation unavailable</strong>. The repository has
+no usable public Ankara/Türkiye measurement campaign in the required
+schema, so no <code>concept-6a-real-data-validation.json</code> artifact
+is created and no real measurement result is claimed.</p>
+<h2 id="boundary-and-invariance">Boundary and invariance</h2>
+<p>The implementation lives in <a
+href="../backend-go/raytracer/canonical_rf_validation.go"><code>canonical_rf_validation.go</code></a>
+and <a
+href="../backend-go/raytracer/canonical_rf_validation_holdout.go"><code>canonical_rf_validation_holdout.go</code></a>.
+It is a library boundary with no normal planning route and no frontend
+statistics panel. A future importer or isolated API can adapt source
+data into the same schema without entering <code>/api/simulate</code>,
+<code>/api/interference</code>, <code>/api/optimize</code>, or
+recommendation workflows.</p>
+<p>Concept 6A does not change:</p>
+<ul>
+<li>the 2.6 GHz or 28 GHz propagation equations, UMa coefficients,
+LOS/NLOS rules, building-entry behavior, or antenna/link-budget
+equations;</li>
+<li>receiver thresholds, sensitivity admission, interference,
+serving-cell selection, RSRP/SINR/RSRQ resource semantics, or
+radio-quality thresholds;</li>
+<li>objective definitions, search policies, Pareto/reranking behavior,
+recommendations, or optimizer scenario fingerprints;</li>
+<li>the research-only <code>research_sub_thz</code> profile, the 4I
+references, terrain-disabled behavior, or any existing measurement
+route.</li>
+</ul>
+<p>The pre-change freeze is in <a
+href="concept-6a-pre-change-baseline.json"><code>concept-6a-pre-change-baseline.json</code></a>,
+and the post-change comparison is in <a
+href="concept-6a-post-change-comparison.json"><code>concept-6a-post-change-comparison.json</code></a>.
+Both record the current UMa contract, antenna and receiver semantics,
+interference/radio-quality contract, optimizer-independent fingerprint,
+and Ankara dataset identity.</p>
+<h2 id="architecture-and-4i3-reuse">Architecture and 4I.3 reuse</h2>
+<p>The flow is:</p>
+<p><code>source adapter → canonical observation schema → deterministic transmitter match → frequency/resource/geometry/applicability gate → shared canonical RF primitive → quantity-specific predicted value → measured − predicted residual → strata/holdout/calibration diagnostics → readiness</code>.</p>
+<p>The existing 4I.3 layer was audited and reused where it is generic:
+schema/version discipline, provenance-first evidence, explicit
+censoring, deterministic spatial defaults, minimum reportable group
+size, holdout vocabulary, fingerprint exclusion of runtime/path/UI
+state, and the conservative calibration/non-promotion policy. The shared
+4I.3 defaults are referenced directly by the Go extension
+(<code>MinimumValidationSamples</code>,
+<code>DefaultSpatialCellSizeM</code>, and
+<code>DefaultSpatialSeparationM</code>).</p>
+<p>4I.3 intentionally normalizes Sub-THz evidence to path loss. Reusing
+that normalizer for 2.6/28 GHz would erase the distinction between
+received power, RSRP, RSSI, SINR, and RSRQ. Concept 6A therefore extends
+the same evidence policy with a quantity-preserving canonical layer
+rather than silently duplicating or weakening the 4I.3 semantics.</p>
+<p>Source independence is represented by
+<code>CanonicalRFValidationAdapter</code>. The included identity adapter
+accepts the canonical schema; source-specific CSV/TSV, GeoJSON, or
+field-tool adapters must map into it and retain source provenance before
+evaluation. No source adapter is allowed to choose a model, strongest
+cell, calibration statistic, or residual-minimizing aggregation.</p>
+<h2 id="schema-and-observed-quantities">Schema and observed
+quantities</h2>
+<p>The machine-readable contract is <a
+href="concept-6a-validation-schema.json"><code>concept-6a-validation-schema.json</code></a>.
+Each observation carries stable observation/campaign/site/session
+identifiers, timestamp, latitude/longitude when available, receiver
+height and height provenance, technology, frequency, band, bandwidth,
+channel, serving-cell identity/PCI, quantity, value,
+device/antenna/calibration identity, motion and sampling metadata,
+aggregation method, provenance, quality flags, LOS/NLOS and outdoor
+labels, detection/censoring status, and radio-resource context.</p>
+<p>The accepted quantities are distinct:</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Comparison domain</th>
+<th>Required interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>received_power_dbm</code></td>
+<td>absolute received power</td>
+<td>shared <code>EvaluatePropagationLink</code> result</td>
+</tr>
+<tr>
+<td><code>rsrp_dbm</code></td>
+<td>reference-signal power</td>
+<td>shared carrier-to-reference-resource conversion; never RSSI</td>
+</tr>
+<tr>
+<td><code>sinr_db</code></td>
+<td>serving SINR</td>
+<td>shared interference/radio-quality primitive with serving, channel,
+bandwidth, resource, and neighbor context</td>
+</tr>
+<tr>
+<td><code>rsrq_db</code></td>
+<td>serving RSRQ</td>
+<td>shared interference/radio-quality primitive with the same context
+requirements</td>
+</tr>
+<tr>
+<td><code>rssi_dbm</code></td>
+<td>wideband RSSI</td>
+<td>kept separate from RSRP and never cross-compared</td>
+</tr>
+<tr>
+<td><code>path_loss_db</code></td>
+<td>propagation-only path loss</td>
+<td>diagnostic propagation comparison, not absolute received-power
+validation</td>
+</tr>
+</tbody>
+</table>
+<p>The residual convention is always:</p>
+<p><code>residual_db = measured_value_db - predicted_value_db</code>.</p>
+<p>Positive residual means the canonical model underpredicts the
+measured quantity. RSSI is never compared with RSRP. Received power is
+never silently converted to path loss, and path loss is never treated as
+absolute received-power evidence.</p>
+<p>Temporal meaning is explicit. <code>raw</code>, <code>mean</code>,
+<code>median</code>, and <code>percentile</code> are accepted
+deterministic aggregation choices;
+<code>AggregateCanonicalRFValues</code> sorts before reducing and
+requires an explicit percentile. The evaluator never selects a statistic
+because it improves a residual.</p>
+<p>Receiver height is required for applicability and carries
+<code>measured</code>, <code>configured</code>, <code>assumed</code>, or
+<code>unknown</code> provenance. There is no silent 1.5 m default.
+Device and antenna effects are retained as evidence metadata; Concept 6A
+does not compensate them. Missing device, antenna, or calibration
+identity downgrades completeness to <code>usable_with_assumptions</code>
+rather than fabricating a correction.</p>
+<h2 id="matching-frequency-geometry-and-applicability">Matching,
+frequency, geometry, and applicability</h2>
+<p>Transmitter matching is deterministic and auditable:</p>
+<ol type="1">
+<li>exact transmitter/serving-cell ID or explicit mapping ID;</li>
+<li>exact PCI, channel, and frequency candidate;</li>
+<li>an explicitly enabled geographic candidate policy with a bounded
+radius and deterministic nearest/tie rule.</li>
+</ol>
+<p>The evaluator never infers the strongest modeled cell as the serving
+transmitter. An unresolved, missing, mismatched, or tied candidate
+remains an explicit exclusion reason.</p>
+<p>Frequency and bandwidth are checked before residuals. 2.6 GHz and 28
+GHz are separate strata and are never pooled into one headline metric.
+RSRP conversion uses the matched profile’s declared
+technology/bandwidth/resource semantics. SINR/RSRQ/RSSI require explicit
+serving identity, channel, bandwidth, resource semantics, and complete
+neighbor/interference context; otherwise the result is
+<code>interference_validation_limited</code> and does not become an
+ordinary residual.</p>
+<p>The canonical UMa applicability gate is evaluated before prediction:
+2.6 or 28 GHz, <code>10 m &lt;= d2D &lt;= 5000 m</code>, valid Tx/Rx
+heights, outdoor-to-outdoor endpoints, and explicit LOS/NLOS. Unknown
+LOS/NLOS, indoor endpoints, frequency mismatch, height gaps, distance
+gaps, and geometry mismatches are excluded with a reason. Where a
+building index is supplied, the existing height-aware path classifier is
+used; otherwise the observation’s declared LOS/NLOS label is retained as
+provenance and passed to the same production link primitive. The
+validator never reimplements the UMa equations.</p>
+<h2 id="canonical-evaluation-and-evidence-fingerprint">Canonical
+evaluation and evidence fingerprint</h2>
+<p>Each applicable observation calls the same
+<code>EvaluatePropagationLink</code> used by production. Radio-quality
+quantities additionally call the existing
+<code>evaluateInterferencePointContext</code>,
+<code>carrierPowerToReferencePower</code>, and
+<code>computeRadioQualityMetrics</code> path. The result records
+measured value, predicted value, residual, applicability, matching
+method/status, assumptions, quantity semantics, receiver threshold,
+resource/interference status, and a propagation fingerprint.</p>
+<p>The validation fingerprint contains dataset ID/version, an
+order-independent observation checksum, adapter/evaluator versions,
+canonical RF scenario identity, matching policy, applicability policy,
+residual convention, censoring policy, spatial strategy, and calibration
+policy. It excludes timestamps, local paths, runtime, memory, and UI
+state. The canonical scenario fingerprint is optimizer-independent and
+cannot be used to alter a planning scenario fingerprint.</p>
+<h2 id="metrics-and-strata">Metrics and strata</h2>
+<p>Every summary reports <code>n</code> together with mean bias, median
+bias, MAE, RMSE, standard deviation, p50/p90/p95 absolute error, and
+residual distribution min/p01/p10/median/p90/p99/max. Tiny groups are
+marked with <code>small_group</code> and never appear without their
+sample count.</p>
+<p>Metrics are available overall and independently by quantity,
+frequency, LOS/NLOS, distance, site, and campaign. The defensible
+distance bins are <code>10–50 m</code>, <code>50–100 m</code>,
+<code>100–200 m</code>, <code>200–400 m</code>, and <code>400 m+</code>;
+below-envelope distances remain applicability exclusions. Unknown
+LOS/NLOS is not silently pooled with LOS or NLOS.</p>
+<p>Explicit left/right/below-detection observations are counted as
+censored and excluded from ordinary residual metrics. A floor such as
+<code>&lt; -120 dBm</code> is not rewritten as
+<code>-120 dBm</code>.</p>
+<h2 id="spatial-site-campaign-and-calibration-diagnostics">Spatial,
+site, campaign, and calibration diagnostics</h2>
+<p>The primary holdout policy is deterministic spatial blocks;
+leave-one-site-out and leave-one-campaign-out are also available.
+Calibration rows within the configured minimum separation of a
+validation block are excluded, and each fold reports IDs, group sets,
+counts, cell size/separation, and no-leak evidence. Random row splitting
+is not the primary validation strategy.</p>
+<p>The uncalibrated baseline is always present. A frequency-specific
+constant bias may be estimated from calibration blocks and applied only
+to held-out diagnostic metrics. Calibration is not stratified by
+LOS/NLOS in 6A, is never applied to production RF, and is never promoted
+by the evaluator. Stability requires independent folds with sufficient
+counts and materially reduced held-out residual structure; a distance
+trend or LOS/NLOS differential therefore fails the scalar-calibration
+gate.</p>
+<p>Propagation/path-loss validation and absolute received-power
+validation are reported as different completeness classes:</p>
+<ul>
+<li><code>complete_for_absolute_validation</code>;</li>
+<li><code>usable_with_assumptions</code>;</li>
+<li><code>propagation_only</code>;</li>
+<li><code>insufficient</code>.</li>
+</ul>
+<p>No readiness state is the bare word “validated.” The available states
+are <code>no_measurement_data</code>,
+<code>insufficient_metadata</code>, <code>validation_only</code>,
+<code>calibration_unstable</code>, <code>calibration_candidate</code>,
+and <code>validated_for_declared_scope</code>; the last state remains
+gated by independent review and reproducible real campaigns.</p>
+<h2 id="synthetic-controls">Synthetic controls</h2>
+<p><a
+href="concept-6a-synthetic-validation.json"><code>concept-6a-synthetic-validation.json</code></a>
+contains six controlled fixtures. The backend tests in <a
+href="../backend-go/raytracer/canonical_rf_validation_test.go"><code>canonical_rf_validation_test.go</code></a>
+also cover serving-cell mismatch, quantity-schema incompatibility,
+frequency mismatch, applicability exclusion, complete radio-quality
+evaluation, and deterministic repeated evaluation.</p>
+<ol type="1">
+<li><strong>Exact canonical residual zero:</strong> values generated by
+the shared primitive produce zero residual.</li>
+<li><strong>Known +5 dB offset:</strong> a held-out constant-bias
+diagnostic recovers +5 dB while <code>promoted</code> and
+<code>calibration_active</code> remain false.</li>
+<li><strong>Distance-dependent error:</strong> a scalar correction
+remains unstable after holdout.</li>
+<li><strong>Spatial error:</strong> a held-out region exposes a
+correction failure.</li>
+<li><strong>LOS/NLOS differential:</strong> opposite stratum offsets
+remain visible; one scalar is inadequate.</li>
+<li><strong>Censored floor:</strong> a below-detection record is counted
+but is not treated as an exact residual.</li>
+</ol>
+<p>These fixtures test implementation behavior only. They are not field
+evidence.</p>
+<h2 id="public-data-audit-and-ankara-campaign">Public-data audit and
+Ankara campaign</h2>
+<p>The source audit is <a
+href="concept-6a-dataset-source-audit.json"><code>concept-6a-dataset-source-audit.json</code></a>.
+Public candidates were checked for raw numeric observations, 2.6/28 GHz
+frequency, geolocation, serving-cell/mapping metadata, resource
+semantics, device/antenna/calibration provenance, and redistribution
+terms. Public LTE/5G datasets do provide useful RSRP/RSRQ/SINR examples,
+but the audited candidates are outside Ankara/Türkiye, outside the exact
+2.6/28 GHz scope, missing transmitter configuration/coordinates or
+complete calibration semantics, or have incomplete license/metadata
+evidence. They are not imported or treated as usable real-data
+validation in this change.</p>
+<p>The field design is in <a
+href="concept-6a-campaign-design.json"><code>concept-6a-campaign-design.json</code></a>.
+A future Ankara campaign should capture synchronized raw and aggregated
+records at both frequencies across independent sites/routes and repeated
+sessions, with georeferenced Tx/Rx coordinates, Tx/Rx heights, explicit
+serving cell/PCI/channel mapping, bandwidth and resource semantics,
+device/antenna/calibration identifiers, LOS/NLOS and outdoor labels,
+neighbor cells for radio quality, detection limits, and complete
+provenance. It should reserve spatial/site/campaign holdouts before any
+calibration decision. No acquisition was performed by Concept 6A.</p>
+<h2 id="readiness-and-concept-6b-gate">Readiness and Concept 6B
+gate</h2>
+<p><a
+href="concept-6a-readiness.json"><code>concept-6a-readiness.json</code></a>
+records <code>no_measurement_data</code>,
+<code>production_candidate: false</code>, and
+<code>calibration_active: false</code>. The permitted interpretation is
+“validation infrastructure complete, real-data validation unavailable.”
+The required Concept 6B gate is independent usable samples, complete
+quantity/device/antenna/calibration/resource metadata, deterministic
+serving-cell mapping, spatial/site/campaign holdouts, stable
+frequency-specific correction if one is proposed, reproducible campaign
+provenance, no configuration bias, and independent review.</p>
+<p>Concept 6A does not implement calibrated canonical RF, UMa
+coefficient fitting, ML/regression, kriging, terrain coupling, P.526
+coupling, 140 GHz coupling, optimizer changes, or a new search policy.
+Those are future decisions and require a separate evidence-backed
+scope.</p>
+<h2 id="validation-commands-and-files">Validation commands and
+files</h2>
+<p>The required backend checks are:</p>
+<pre class="text"><code>cd backend-go &amp;&amp; go test ./...
+cd backend-go &amp;&amp; go test -race ./...
+cd backend-go &amp;&amp; go vet ./...
+python3 -m json.tool docs/concept-6a-validation-schema.json
+python3 scripts/versioning.py check
+git diff --check</code></pre>
+<p>The gated artifact test is:</p>
+<pre class="text"><code>cd backend-go &amp;&amp; ATOM_RUN_CONCEPT_6A_AUDIT=1 go test ./raytracer -run &#39;^TestGenerateConcept6AArtifacts$&#39; -count=1</code></pre>
+<p>Required files are the schema, pre-change baseline, synthetic
+validation, dataset-source audit, campaign design, readiness,
+post-change comparison, and this design note. No real-data artifact
+exists because no source passed the complete-data audit.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

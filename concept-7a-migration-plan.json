@@ -1,0 +1,180 @@
+{
+  "artifact": "concept-7a-migration-plan",
+  "artifact_version": "1.0.0",
+  "status": "planned_not_implemented",
+  "guiding_rule": "Introduce boundaries before moving storage. Preserve the current local-first experience and make every migration reversible.",
+  "database_decision": {
+    "decision": "A+B now: formal local domain model and repository boundary while retaining IndexedDB. Defer C: PostgreSQL/PostGIS implementation. Keep D: object storage as the later large-artifact path.",
+    "why": [
+      "Current single-user local workflow is functional.",
+      "The main risk is mixed state ownership and opaque snapshots, not lack of a database.",
+      "Large datasets/results are better served by file/object boundaries than by a first-pass relational migration.",
+      "Remote persistence would require auth, conflict, retention, and operational decisions not requested in Concept 7A."
+    ],
+    "trigger_postgresql_postgis": [
+      "Multi-user/project sharing is an accepted product requirement.",
+      "Remote durable Runs and job recovery are required.",
+      "Cross-device sync or server-side project queries are required.",
+      "Relational joins, AOI queries, or workspace ownership justify operational database cost."
+    ],
+    "trigger_object_storage": [
+      "Users save coverage surfaces, ray traces, measurement files, or rendered reports for later retrieval.",
+      "Remote datasets exceed local-pack distribution or need content-addressed retention.",
+      "Run outputs must survive process restarts without inflating project metadata."
+    ]
+  },
+  "stages": [
+    {
+      "stage": 0,
+      "name": "Audit and freeze invariants",
+      "status": "completed_by_concept_7a",
+      "scope": [
+        "Capture baseline and worktree attribution",
+        "Inventory state owners and IndexedDB paths",
+        "Define Project, Inventory, ScenarioRevision, Dataset, Run, Artifact, and Report boundaries",
+        "Record storage classification and conceptual schema"
+      ],
+      "production_changes": false,
+      "exit_criteria": [
+        "Requested audit artifacts validate as JSON",
+        "No RF/optimizer/API behavior changed",
+        "Database decision and next phase are explicit"
+      ],
+      "rollback": "Delete only the Concept 7A documentation artifacts; no runtime rollback required."
+    },
+    {
+      "stage": 1,
+      "name": "Formal local domain model",
+      "status": "next",
+      "scope": [
+        "Introduce pure domain types/helpers for Project, Inventory, Scenario, ScenarioRevision, DatasetRef, Run, ArtifactRef, and ReportDefinition",
+        "Keep IndexedDB as the LocalRepository implementation",
+        "Translate the existing ProjectV2 envelope at the repository boundary",
+        "Define canonical resolved-input serialization and explicit null/inherit semantics"
+      ],
+      "out_of_scope": [
+        "PostgreSQL/PostGIS",
+        "Changing current RF requests",
+        "Removing or rewriting existing IndexedDB data in place"
+      ],
+      "compatibility": "Read schema v1/v2 and legacy envelopes; write the current compatible format plus a repository version marker.",
+      "exit_criteria": [
+        "App no longer needs to know IndexedDB key/store details",
+        "ScenarioRevision can reconstruct current RF request inputs",
+        "UI-only state is excluded from domain serialization",
+        "Existing projectStore tests remain green",
+        "Round-trip export/import preserves current behavior"
+      ],
+      "rollback": "Use the existing projectStore directly behind a feature flag or revert the new pure adapters; do not delete local records."
+    },
+    {
+      "stage": 2,
+      "name": "Repository and run boundary",
+      "status": "planned",
+      "scope": [
+        "Add repository interfaces for projects, scenarios, inventories, datasets, runs, artifacts, and reports",
+        "Represent current compute responses as transient Run results",
+        "Store Run metadata in local-first storage only when the user saves or when an audit workflow requests it",
+        "Add explicit Apply as Scenario semantics for optimization solutions"
+      ],
+      "compatibility": "Existing compute endpoints remain stateless and accept the same request DTOs; adapters build resolved requests from domain snapshots.",
+      "exit_criteria": [
+        "A completed optimization can be linked to a Run and selected solution",
+        "Applying a solution creates a new scenario/revision without mutating baseline inventory",
+        "Report generation consumes explicit scenario/run selections",
+        "Failed/cancelled runs have a clear local status model"
+      ],
+      "rollback": "Disable durable Run capture and continue treating responses as session caches; preserve scenario snapshots."
+    },
+    {
+      "stage": 3,
+      "name": "Optional server metadata store",
+      "status": "deferred",
+      "scope": [
+        "Implement PostgreSQL metadata tables from the conceptual schema",
+        "Add PostGIS only for AOI/inventory/geometry queries that need relational spatial operations",
+        "Add server repositories and project/scenario/run API routes",
+        "Keep Go RF runtime and dataset-pack loading independent of database row-per-ray storage"
+      ],
+      "prerequisites": [
+        "Accepted auth/workspace ownership decision",
+        "Conflict policy",
+        "Operational backup/retention plan",
+        "Stable domain repository contract from Stages 1-2"
+      ],
+      "exit_criteria": [
+        "Server repository round trips domain entities",
+        "Local-only mode still works",
+        "Run provenance and dataset references are queryable",
+        "No existing scenario becomes silently stale or rewritten"
+      ],
+      "rollback": "Switch repository selection back to LocalRepository; server records remain read-only and versioned."
+    },
+    {
+      "stage": 4,
+      "name": "Object/file artifact store",
+      "status": "deferred",
+      "scope": [
+        "Add content-addressed object storage abstraction",
+        "Upload dataset packs, measurement sources, coverage surfaces, ray traces, and reports only by explicit retention policy",
+        "Keep metadata and hashes in repository records",
+        "Support local filesystem/MinIO/S3-compatible implementations behind the same interface"
+      ],
+      "exit_criteria": [
+        "Large artifacts are not embedded in project metadata",
+        "Artifact references verify content hash and media type",
+        "Garbage collection respects live Run/report references",
+        "Downloads remain reproducible and permission checked"
+      ],
+      "rollback": "Retain local generated artifacts or recompute from Run inputs; metadata references remain immutable."
+    },
+    {
+      "stage": 5,
+      "name": "Sharing, sync, and collaboration",
+      "status": "future",
+      "scope": [
+        "Workspace/user ownership",
+        "Cross-device sync and outbox",
+        "Conflict UI for project/scenario/inventory revisions",
+        "Server-side job recovery and notifications",
+        "Audit and retention policy"
+      ],
+      "exit_criteria": [
+        "Conflict semantics are testable",
+        "Every mutation is attributable",
+        "Offline and online paths converge without lost scenario revisions",
+        "Deletion and artifact retention are observable"
+      ],
+      "rollback": "Disable sync and operate in local-first mode; no destructive merge is automatic."
+    }
+  ],
+  "conflict_model": {
+    "current": "No distributed conflict model; local persistence revision only orders IndexedDB and localStorage fallback.",
+    "future_single_user": "Last-write local working copy with immutable saved ScenarioRevisions.",
+    "future_multi_device": "Optimistic concurrency on entity/revision version; immutable revisions avoid overwriting prior evidence; conflicts create explicit merge/duplicate choices.",
+    "never_automatic": [
+      "Silently replacing a referenced dataset version",
+      "Mutating a completed Run",
+      "Overwriting an Inventory revision used by a ScenarioRevision",
+      "Deleting an artifact with live references"
+    ]
+  },
+  "deletion_model": {
+    "projects": "Archive first; hard delete only after dependent scenarios/runs/reports/artifacts are handled.",
+    "scenarios": "Archive or tombstone; retain revisions referenced by Runs/reports.",
+    "inventory": "Create a new revision; do not edit historical revision contents.",
+    "runs": "Retain terminal status by policy; do not overwrite.",
+    "artifacts": "Reference-count/mark-and-sweep only after retention and audit checks.",
+    "local_indexeddb": "Logical deletion inside normalized workspace; no separate orphan rows today."
+  },
+  "reproducibility_gate": [
+    "Exact ScenarioRevision or canonical resolved input",
+    "Dataset ids, versions, and content hashes",
+    "Inventory revision and override map",
+    "RF contract/model/engine versions",
+    "Optimizer/search policy and objective/constraint configuration",
+    "Input and output fingerprints",
+    "Required raw evidence/artifact references",
+    "Environment assumptions and warnings"
+  ]
+}

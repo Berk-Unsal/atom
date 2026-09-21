@@ -1,0 +1,163 @@
+{
+  "artifact": "readiness",
+  "audit_version": "concept-6a1-campaign-tooling-v1",
+  "calibration_active": false,
+  "concept": "6A.1",
+  "concept_6b_ready": false,
+  "holdouts": {
+    "calibration_before_holdout": false,
+    "present_in_canonical_response": true,
+    "primary_policy": "spatial_blocks with primary holdout"
+  },
+  "neighbor_interference_readiness": {
+    "complete": false,
+    "state": "blocked_until_serving_resource_and_neighbor_context_are_exported_and_audited"
+  },
+  "production_candidate": false,
+  "quantity_readiness": [
+    {
+      "quantity": "rsrp_dbm",
+      "frequency_ghz": 2.6,
+      "observed_rows": 2,
+      "applicable": 2,
+      "censored": 0,
+      "insufficient_metadata": 0,
+      "inapplicable": 0,
+      "quantity_incompatible": 0,
+      "unresolved_transmitter": 0,
+      "deterministic_mismatch": 0,
+      "suitable_for_validation": true
+    },
+    {
+      "quantity": "rsrp_dbm",
+      "frequency_ghz": 28,
+      "observed_rows": 2,
+      "applicable": 0,
+      "censored": 0,
+      "insufficient_metadata": 2,
+      "inapplicable": 0,
+      "quantity_incompatible": 0,
+      "unresolved_transmitter": 0,
+      "deterministic_mismatch": 0,
+      "suitable_for_validation": false,
+      "blockers": [
+        "no applicable observations",
+        "insufficient metadata remains"
+      ]
+    },
+    {
+      "quantity": "rsrq_db",
+      "frequency_ghz": 2.6,
+      "observed_rows": 2,
+      "applicable": 0,
+      "censored": 0,
+      "insufficient_metadata": 2,
+      "inapplicable": 0,
+      "quantity_incompatible": 0,
+      "unresolved_transmitter": 0,
+      "deterministic_mismatch": 0,
+      "suitable_for_validation": false,
+      "blockers": [
+        "no applicable observations",
+        "insufficient metadata remains",
+        "interference/radio-quality context is not automatically complete"
+      ]
+    },
+    {
+      "quantity": "rsrq_db",
+      "frequency_ghz": 28,
+      "observed_rows": 2,
+      "applicable": 0,
+      "censored": 0,
+      "insufficient_metadata": 2,
+      "inapplicable": 0,
+      "quantity_incompatible": 0,
+      "unresolved_transmitter": 0,
+      "deterministic_mismatch": 0,
+      "suitable_for_validation": false,
+      "blockers": [
+        "no applicable observations",
+        "insufficient metadata remains",
+        "interference/radio-quality context is not automatically complete"
+      ]
+    },
+    {
+      "quantity": "rssi_dbm",
+      "frequency_ghz": 2.6,
+      "observed_rows": 2,
+      "applicable": 0,
+      "censored": 0,
+      "insufficient_metadata": 2,
+      "inapplicable": 0,
+      "quantity_incompatible": 0,
+      "unresolved_transmitter": 0,
+      "deterministic_mismatch": 0,
+      "suitable_for_validation": false,
+      "blockers": [
+        "no applicable observations",
+        "insufficient metadata remains",
+        "interference/radio-quality context is not automatically complete"
+      ]
+    },
+    {
+      "quantity": "sinr_db",
+      "frequency_ghz": 2.6,
+      "observed_rows": 2,
+      "applicable": 0,
+      "censored": 0,
+      "insufficient_metadata": 2,
+      "inapplicable": 0,
+      "quantity_incompatible": 0,
+      "unresolved_transmitter": 0,
+      "deterministic_mismatch": 0,
+      "suitable_for_validation": false,
+      "blockers": [
+        "no applicable observations",
+        "insufficient metadata remains",
+        "interference/radio-quality context is not automatically complete"
+      ]
+    },
+    {
+      "quantity": "sinr_db",
+      "frequency_ghz": 28,
+      "observed_rows": 2,
+      "applicable": 0,
+      "censored": 0,
+      "insufficient_metadata": 2,
+      "inapplicable": 0,
+      "quantity_incompatible": 0,
+      "unresolved_transmitter": 0,
+      "deterministic_mismatch": 0,
+      "suitable_for_validation": false,
+      "blockers": [
+        "no applicable observations",
+        "insufficient metadata remains",
+        "interference/radio-quality context is not automatically complete"
+      ]
+    }
+  ],
+  "raw_checksum": "sha256-c53d1653fed8be74e74b3cb140ae3fceaf4fb6ce0f333a3ae1b1df462efbdb67",
+  "real_data_available": false,
+  "remaining_blockers": [
+    "obtain lawful real receive-side measurements with raw export retained",
+    "complete independent fixed-point and moving route coverage across 2.6 and 28 GHz",
+    "establish deterministic serving-cell-to-transmitter truth and provenance",
+    "capture NR bandwidth/resource metadata or explicitly narrow 28 GHz quantity scope",
+    "complete neighbor/interference context for SINR/RSRQ/RSSI",
+    "review device/antenna/calibration and detection/censoring semantics before any calibration study"
+  ],
+  "schema_version": 1,
+  "selected_collector": {
+    "adapter": "concept-6a1-signal-collector-v1",
+    "format": "SIGNAL_COLLECTOR_TXT_V6",
+    "name": "Signal Collector",
+    "root_required": false
+  },
+  "state": "dry_run_ready_real_data_unavailable",
+  "suitable_for_calibration_study": false,
+  "suitable_for_received_power_validation": false,
+  "suitable_for_rsrp_validation": true,
+  "suitable_for_rsrq_validation": false,
+  "suitable_for_sinr_validation": false,
+  "validation_fingerprint": "canonical-rf-validation-3efa9a3c1a61eb8929179201545e4ff1"
+}

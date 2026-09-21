@@ -1,0 +1,34 @@
+{
+  "6b_gate": [
+    "independent usable measurement samples",
+    "complete quantity/device/antenna/calibration/resource metadata",
+    "deterministic transmitter mapping",
+    "spatial/site/campaign holdouts",
+    "stable frequency-specific correction if any",
+    "reproducible campaign provenance",
+    "no configuration bias",
+    "independent review"
+  ],
+  "allowed_interpretation": "validation infrastructure complete, real-data validation unavailable",
+  "artifact": "readiness",
+  "audit_version": "concept-6a-canonical-rf-validation-v1",
+  "calibration_active": false,
+  "concept": "6A",
+  "evidence": {
+    "Ankara_campaign": "design_only",
+    "canonical_RF_invariance": "required and tested by snapshot comparison",
+    "public_measurement_data": "unavailable",
+    "synthetic_controls": "complete",
+    "validation_infrastructure": "complete"
+  },
+  "forbidden_interpretations": [
+    "validated",
+    "calibrated canonical RF",
+    "production candidate",
+    "measurement-backed optimizer recommendation"
+  ],
+  "production_candidate": false,
+  "schema_version": 1,
+  "state": "no_measurement_data",
+  "validated_for_declared_scope": false
+}

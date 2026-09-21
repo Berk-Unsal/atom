@@ -1,0 +1,1705 @@
+{
+  "artifact": "dry-run-validation",
+  "audit_version": "concept-6a1-campaign-tooling-v1",
+  "canonical_dataset": {
+    "observation_checksum": "sha256-69263d480d87ca66fafed33246b143010c348713981ab69cdabec4e038d851a9",
+    "observation_count": 14,
+    "transmitter_count": 2,
+    "validation_fingerprint": "canonical-rf-validation-3efa9a3c1a61eb8929179201545e4ff1"
+  },
+  "concept": "6A.1",
+  "explicit_limitations": [
+    "the fixture is synthetic and cannot establish field accuracy",
+    "NR V6 rows have frequency and channel identity but no raw bandwidth, so 28 GHz RSRP/RSRQ/SINR remain metadata-blocked",
+    "LTE radio-quality quantities retain source values but are interference-validation-limited because neighbor/resource context is not complete",
+    "no received_power_dbm was fabricated from RSRP and no detection floor was fabricated from empty fields"
+  ],
+  "manifest": {
+    "schema_version": 1,
+    "campaign_id": "ankara-concept-6a1-dry-run",
+    "campaign_version": "2026.09.21",
+    "title": "Ankara Concept 6A.1 synthetic Signal Collector import dry-run",
+    "campaign_date": "2026-09-21",
+    "source_type": "synthetic_controlled",
+    "collection_mode": "handset_field_measurement",
+    "raw_format": "SIGNAL_COLLECTOR_TXT_V6",
+    "session_ids": [
+      "s-fixed-lte",
+      "s-fixed-nr",
+      "s-poor-gps",
+      "s-missing-gps"
+    ],
+    "raw_preservation": {
+      "keep_raw": true,
+      "canonical_output_separate": true,
+      "hash_algorithm": "sha256",
+      "raw_artifact_pattern": "raw/{campaign_id}/{session_id}.signal-collector.txt",
+      "no_overwrite": true
+    },
+    "collector": {
+      "name": "Signal Collector",
+      "version": "1.5.2",
+      "platform": "Android",
+      "hardware_requirements": [
+        "Android handset with LTE/NR modem",
+        "GNSS receiver",
+        "operator SIM/eSIM permitted for the campaign"
+      ],
+      "root_required": false,
+      "export_format": "SIGNAL_COLLECTOR_TXT_V6",
+      "quantities": [
+        "rsrp_dbm",
+        "rsrq_db",
+        "sinr_db",
+        "rssi_dbm",
+        "serving_cell_id",
+        "pci",
+        "earfcn_or_nrarfcn",
+        "band",
+        "frequency_mhz",
+        "gps",
+        "timestamp"
+      ],
+      "serving_identity": [
+        "registered",
+        "connection_status",
+        "cell_id",
+        "nci",
+        "pci",
+        "plmn",
+        "tac"
+      ],
+      "frequency_metadata": [
+        "earfcn",
+        "nrarfcn",
+        "band",
+        "frequency_mhz",
+        "bandwidth for LTE when exported"
+      ],
+      "gps_metadata": [
+        "WGS84 latitude",
+        "WGS84 longitude",
+        "altitude",
+        "horizontal accuracy",
+        "fix timestamp"
+      ],
+      "automation": "manual start/stop export; no unattended upload or cloud dependency",
+      "licensing": "collector export is retained under the campaign operator's permitted use; this fixture is synthetic",
+      "permissions": [
+        "location while collecting",
+        "phone state/cell information",
+        "local file export"
+      ]
+    },
+    "device": {
+      "pseudonymous_id": "handset-pilot-001",
+      "manufacturer": "controlled-fixture",
+      "model": "controlled-fixture-handset",
+      "android_version": "controlled-fixture",
+      "antenna_id": "builtin-rf-001",
+      "antenna_basis": "built-in handset antenna; vendor response is not relabeled as calibrated gain",
+      "calibration_id": "vendor-factory-profile",
+      "calibration_state": "vendor_factory_uncalibrated"
+    },
+    "receiver": {
+      "height_agl_m": 1.8,
+      "height_source": "configured",
+      "antenna_id": "builtin-rf-001",
+      "antenna_basis": "built-in handset antenna",
+      "calibration_id": "vendor-factory-profile",
+      "calibration_state": "vendor_factory_uncalibrated"
+    },
+    "coordinate": {
+      "provider": "GNSS",
+      "crs": "EPSG:4326",
+      "max_accuracy_m": 10,
+      "timezone": "UTC",
+      "normalize_to_utc": true,
+      "poor_position_action": "retain raw accuracy and row, omit unusable coordinates from canonical geometry"
+    },
+    "operator": {
+      "operator_name": "controlled-fixture-operator",
+      "plmn": "28601",
+      "network_context": "receive-side modem observation only; no transmitter-side access",
+      "consent_note": "synthetic fixture; live collection requires operator, site, and participant permissions"
+    },
+    "measurement": {
+      "mode": "fixed_point_and_moving",
+      "sampling_interval_ms": 1000,
+      "fixed_point_window_seconds": 30,
+      "default_motion_state": "stationary",
+      "keep_stationary_separate": true,
+      "aggregation_method": "raw",
+      "preserve_repeated_samples": true,
+      "neighbor_context_complete": false,
+      "censoring_supported": false,
+      "censoring_limitation": "empty or unavailable source fields remain missing; no detection floor is invented and no missing row is called censored",
+      "los_annotation_policy": "required_per_fixed_point_before real validation",
+      "outdoor_annotation_policy": "required_per_fixed_point before real validation"
+    },
+    "detection": {
+      "available": false,
+      "unavailable_representation": "empty source field retained as missing",
+      "invalid_representation": "invalid source field retained as an import issue and excluded from the quantity row",
+      "censoring_representation": "not available in selected V6 export; do not substitute a floor"
+    },
+    "point_annotations": [
+      {
+        "label": "POINT-LTE",
+        "fixed_point_id": "fp-lte-001",
+        "site_id": "site-lte-001",
+        "route_id": "route-fixed-001",
+        "los_nlos": "los",
+        "los_source": "controlled_fixture_annotation",
+        "outdoor": true,
+        "point_window_seconds": 30,
+        "notes": "usable 2.6 GHz receive-side path"
+      },
+      {
+        "label": "POINT-NR",
+        "fixed_point_id": "fp-nr-001",
+        "site_id": "site-nr-001",
+        "route_id": "route-fixed-001",
+        "los_nlos": "los",
+        "los_source": "controlled_fixture_annotation",
+        "outdoor": true,
+        "point_window_seconds": 30,
+        "notes": "28 GHz raw field intentionally omits NR bandwidth"
+      },
+      {
+        "label": "POINT-POOR",
+        "fixed_point_id": "fp-poor-001",
+        "site_id": "site-lte-001",
+        "route_id": "route-fixed-001",
+        "los_nlos": "los",
+        "los_source": "controlled_fixture_annotation",
+        "outdoor": true,
+        "point_window_seconds": 30,
+        "notes": "row retained with poor GNSS accuracy and no fabricated measurement"
+      },
+      {
+        "label": "POINT-MISSING",
+        "fixed_point_id": "fp-missing-001",
+        "site_id": "site-lte-001",
+        "route_id": "route-fixed-001",
+        "los_nlos": "los",
+        "los_source": "controlled_fixture_annotation",
+        "outdoor": true,
+        "point_window_seconds": 30,
+        "notes": "row retained without a location fix and without a fabricated measurement"
+      }
+    ],
+    "known_limitations": [
+      "This file is synthetic controlled data and is not field measurement evidence.",
+      "Signal Collector V6 does not guarantee NR bandwidth or resource metadata; the adapter never copies planning bandwidth into an observation.",
+      "The selected handset export does not establish calibrated absolute received power or a complete neighbor interference context.",
+      "No detection floor or censoring semantics are available in this fixture."
+    ],
+    "privacy": {
+      "personal_identifiers_excluded": [
+        "subscriber name",
+        "phone number",
+        "IMSI",
+        "IMEI",
+        "account identifier",
+        "raw device advertising identifier"
+      ],
+      "cell_identifiers_retained": true,
+      "raw_access": "restricted campaign custodians; export and checksum retained separately from canonical observations",
+      "sharing_policy": "share only pseudonymous, consented, minimum necessary artifacts; do not publish raw identifiers"
+    }
+  },
+  "not_real_measurement_evidence": true,
+  "quality": {
+    "raw_format": "SIGNAL_COLLECTOR_TXT_V6",
+    "raw_sha256": "sha256-c53d1653fed8be74e74b3cb140ae3fceaf4fb6ce0f333a3ae1b1df462efbdb67",
+    "raw_bytes": 3915,
+    "raw_rows": 16,
+    "parsed_rows": 16,
+    "cell_rows": 9,
+    "registered_cell_rows": 6,
+    "neighbor_cell_rows": 3,
+    "ambiguous_serving_groups": 0,
+    "valid_coordinates": 4,
+    "poor_position_rows": 1,
+    "missing_coordinates": 1,
+    "valid_measurement_rows": 14,
+    "missing_measurement_rows": 2,
+    "valid_frequency_rows": 6,
+    "missing_frequency_rows": 0,
+    "receiver_height_known": true,
+    "serving_identity_known": 6,
+    "exact_mappings": 14,
+    "deterministic_mappings": 0,
+    "geographic_candidate_mappings": 0,
+    "unresolved_mappings": 0,
+    "applicable_uma_observations": 2,
+    "censored_observations": 0,
+    "stationary_rows": 14,
+    "moving_rows": 0,
+    "unclassified_motion_rows": 0,
+    "timestamp_skew_rows": 0,
+    "elapsed_realtime_order_issues": 0,
+    "fixed_point_groups": [
+      {
+        "fixed_point_id": "fp-lte-001",
+        "site_id": "site-lte-001",
+        "route_id": "route-fixed-001",
+        "rows": 8,
+        "sessions": 1
+      },
+      {
+        "fixed_point_id": "fp-nr-001",
+        "site_id": "site-nr-001",
+        "route_id": "route-fixed-001",
+        "rows": 6,
+        "sessions": 1
+      }
+    ],
+    "quantity_readiness": [
+      {
+        "quantity": "rsrp_dbm",
+        "frequency_ghz": 2.6,
+        "observed_rows": 2,
+        "applicable": 2,
+        "censored": 0,
+        "insufficient_metadata": 0,
+        "inapplicable": 0,
+        "quantity_incompatible": 0,
+        "unresolved_transmitter": 0,
+        "deterministic_mismatch": 0,
+        "suitable_for_validation": true
+      },
+      {
+        "quantity": "rsrp_dbm",
+        "frequency_ghz": 28,
+        "observed_rows": 2,
+        "applicable": 0,
+        "censored": 0,
+        "insufficient_metadata": 2,
+        "inapplicable": 0,
+        "quantity_incompatible": 0,
+        "unresolved_transmitter": 0,
+        "deterministic_mismatch": 0,
+        "suitable_for_validation": false,
+        "blockers": [
+          "no applicable observations",
+          "insufficient metadata remains"
+        ]
+      },
+      {
+        "quantity": "rsrq_db",
+        "frequency_ghz": 2.6,
+        "observed_rows": 2,
+        "applicable": 0,
+        "censored": 0,
+        "insufficient_metadata": 2,
+        "inapplicable": 0,
+        "quantity_incompatible": 0,
+        "unresolved_transmitter": 0,
+        "deterministic_mismatch": 0,
+        "suitable_for_validation": false,
+        "blockers": [
+          "no applicable observations",
+          "insufficient metadata remains",
+          "interference/radio-quality context is not automatically complete"
+        ]
+      },
+      {
+        "quantity": "rsrq_db",
+        "frequency_ghz": 28,
+        "observed_rows": 2,
+        "applicable": 0,
+        "censored": 0,
+        "insufficient_metadata": 2,
+        "inapplicable": 0,
+        "quantity_incompatible": 0,
+        "unresolved_transmitter": 0,
+        "deterministic_mismatch": 0,
+        "suitable_for_validation": false,
+        "blockers": [
+          "no applicable observations",
+          "insufficient metadata remains",
+          "interference/radio-quality context is not automatically complete"
+        ]
+      },
+      {
+        "quantity": "rssi_dbm",
+        "frequency_ghz": 2.6,
+        "observed_rows": 2,
+        "applicable": 0,
+        "censored": 0,
+        "insufficient_metadata": 2,
+        "inapplicable": 0,
+        "quantity_incompatible": 0,
+        "unresolved_transmitter": 0,
+        "deterministic_mismatch": 0,
+        "suitable_for_validation": false,
+        "blockers": [
+          "no applicable observations",
+          "insufficient metadata remains",
+          "interference/radio-quality context is not automatically complete"
+        ]
+      },
+      {
+        "quantity": "sinr_db",
+        "frequency_ghz": 2.6,
+        "observed_rows": 2,
+        "applicable": 0,
+        "censored": 0,
+        "insufficient_metadata": 2,
+        "inapplicable": 0,
+        "quantity_incompatible": 0,
+        "unresolved_transmitter": 0,
+        "deterministic_mismatch": 0,
+        "suitable_for_validation": false,
+        "blockers": [
+          "no applicable observations",
+          "insufficient metadata remains",
+          "interference/radio-quality context is not automatically complete"
+        ]
+      },
+      {
+        "quantity": "sinr_db",
+        "frequency_ghz": 28,
+        "observed_rows": 2,
+        "applicable": 0,
+        "censored": 0,
+        "insufficient_metadata": 2,
+        "inapplicable": 0,
+        "quantity_incompatible": 0,
+        "unresolved_transmitter": 0,
+        "deterministic_mismatch": 0,
+        "suitable_for_validation": false,
+        "blockers": [
+          "no applicable observations",
+          "insufficient metadata remains",
+          "interference/radio-quality context is not automatically complete"
+        ]
+      }
+    ],
+    "suitable_for_rsrp_validation": true,
+    "suitable_for_received_power_validation": false,
+    "suitable_for_sinr_validation": false,
+    "suitable_for_rsrq_validation": false,
+    "suitable_for_calibration_study": false,
+    "exclusion_reasons": {
+      "bandwidth_missing": 6,
+      "interference_validation_limited: serving/resource/neighbor context is not declared complete": 6
+    },
+    "notes": [
+      "Raw Signal Collector bytes are not rewritten; the SHA-256 checksum is the immutable input identity.",
+      "Rows with absent frequency, bandwidth, receiver-height provenance, location, or LOS/outdoor annotations remain explicit readiness failures.",
+      "This is a controlled dry-run; it is not field evidence and is not a calibration study."
+    ]
+  },
+  "raw_preservation": {
+    "container": "text",
+    "format": "SIGNAL_COLLECTOR_TXT_V6",
+    "parsed_rows": [
+      {
+        "line_number": 10,
+        "timestamp_iso_utc": "2026-09-21T10:00:00Z",
+        "epoch_ms": 1789984800000,
+        "elapsed_realtime_ns": 1000000000,
+        "session_id": "s-fixed-lte",
+        "sequence_number": 1,
+        "source": "session",
+        "payload": {
+          "label": "POINT-LTE",
+          "record_type": "survey_point"
+        }
+      },
+      {
+        "line_number": 11,
+        "timestamp_iso_utc": "2026-09-21T10:00:00Z",
+        "epoch_ms": 1789984800000,
+        "elapsed_realtime_ns": 1100000000,
+        "session_id": "s-fixed-lte",
+        "sequence_number": 2,
+        "source": "location",
+        "payload": {
+          "altitude_m": "938",
+          "horizontal_accuracy_m": "4",
+          "latitude": "39.912000",
+          "longitude": "32.849000",
+          "record_type": "fix",
+          "speed_mps": "0"
+        }
+      },
+      {
+        "line_number": 12,
+        "timestamp_iso_utc": "2026-09-21T10:00:01Z",
+        "epoch_ms": 1789984801000,
+        "elapsed_realtime_ns": 2000000000,
+        "session_id": "s-fixed-lte",
+        "sequence_number": 3,
+        "source": "mobile_network",
+        "payload": {
+          "band": "LTE Band 7",
+          "bandwidth": "20000",
+          "cell_id": "1001",
+          "cell_timestamp_ms": "1789984801000",
+          "connection_status": "PRIMARY_SERVING",
+          "earfcn": "2850",
+          "frequency_mhz": "2600",
+          "pci": "101",
+          "plmn": "28601",
+          "record_type": "cell",
+          "registered": "true",
+          "rsrp": "-82",
+          "rsrq": "-10",
+          "rssi": "-67",
+          "rssnr": "18",
+          "tac": "1",
+          "technology": "LTE"
+        }
+      },
+      {
+        "line_number": 13,
+        "timestamp_iso_utc": "2026-09-21T10:00:01Z",
+        "epoch_ms": 1789984801000,
+        "elapsed_realtime_ns": 2100000000,
+        "session_id": "s-fixed-lte",
+        "sequence_number": 4,
+        "source": "mobile_network",
+        "payload": {
+          "band": "LTE Band 7",
+          "cell_id": "1002",
+          "cell_timestamp_ms": "1789984801000",
+          "connection_status": "NONE",
+          "earfcn": "2850",
+          "frequency_mhz": "2600",
+          "pci": "102",
+          "plmn": "28601",
+          "record_type": "cell",
+          "registered": "false",
+          "rsrp": "-96",
+          "rsrq": "-17",
+          "rssnr": "4",
+          "tac": "1",
+          "technology": "LTE"
+        }
+      },
+      {
+        "line_number": 14,
+        "timestamp_iso_utc": "2026-09-21T10:00:02Z",
+        "epoch_ms": 1789984802000,
+        "elapsed_realtime_ns": 3000000000,
+        "session_id": "s-fixed-lte",
+        "sequence_number": 5,
+        "source": "mobile_network",
+        "payload": {
+          "band": "LTE Band 7",
+          "bandwidth": "20000",
+          "cell_id": "1001",
+          "cell_timestamp_ms": "1789984802000",
+          "connection_status": "PRIMARY_SERVING",
+          "earfcn": "2850",
+          "frequency_mhz": "2600",
+          "pci": "101",
+          "plmn": "28601",
+          "record_type": "cell",
+          "registered": "true",
+          "rsrp": "-83",
+          "rsrq": "-11",
+          "rssi": "-68",
+          "rssnr": "17",
+          "tac": "1",
+          "technology": "LTE"
+        }
+      },
+      {
+        "line_number": 15,
+        "timestamp_iso_utc": "2026-09-21T10:00:02Z",
+        "epoch_ms": 1789984802000,
+        "elapsed_realtime_ns": 3100000000,
+        "session_id": "s-fixed-lte",
+        "sequence_number": 6,
+        "source": "mobile_network",
+        "payload": {
+          "band": "LTE Band 7",
+          "cell_id": "1002",
+          "cell_timestamp_ms": "1789984802000",
+          "connection_status": "NONE",
+          "earfcn": "2850",
+          "frequency_mhz": "2600",
+          "pci": "102",
+          "plmn": "28601",
+          "record_type": "cell",
+          "registered": "false",
+          "rsrp": "-97",
+          "rsrq": "-18",
+          "rssnr": "3",
+          "tac": "1",
+          "technology": "LTE"
+        }
+      },
+      {
+        "line_number": 16,
+        "timestamp_iso_utc": "2026-09-21T10:10:00Z",
+        "epoch_ms": 1789985400000,
+        "elapsed_realtime_ns": 4000000000,
+        "session_id": "s-fixed-nr",
+        "sequence_number": 7,
+        "source": "session",
+        "payload": {
+          "label": "POINT-NR",
+          "record_type": "survey_point"
+        }
+      },
+      {
+        "line_number": 17,
+        "timestamp_iso_utc": "2026-09-21T10:10:00Z",
+        "epoch_ms": 1789985400000,
+        "elapsed_realtime_ns": 4100000000,
+        "session_id": "s-fixed-nr",
+        "sequence_number": 8,
+        "source": "location",
+        "payload": {
+          "altitude_m": "939",
+          "horizontal_accuracy_m": "6",
+          "latitude": "39.912500",
+          "longitude": "32.849500",
+          "record_type": "fix",
+          "speed_mps": "0"
+        }
+      },
+      {
+        "line_number": 18,
+        "timestamp_iso_utc": "2026-09-21T10:10:01Z",
+        "epoch_ms": 1789985401000,
+        "elapsed_realtime_ns": 5000000000,
+        "session_id": "s-fixed-nr",
+        "sequence_number": 9,
+        "source": "mobile_network",
+        "payload": {
+          "band": "n257",
+          "cell_id": "2001",
+          "cell_timestamp_ms": "1789985401000",
+          "connection_status": "PRIMARY_SERVING",
+          "frequency_mhz": "28000",
+          "nci": "2001",
+          "nrarfcn": "205416",
+          "pci": "201",
+          "plmn": "28601",
+          "record_type": "cell",
+          "registered": "true",
+          "ss_rsrp": "-94",
+          "ss_rsrq": "-13",
+          "ss_sinr": "9",
+          "tac": "2",
+          "technology": "NR"
+        }
+      },
+      {
+        "line_number": 19,
+        "timestamp_iso_utc": "2026-09-21T10:10:01Z",
+        "epoch_ms": 1789985401000,
+        "elapsed_realtime_ns": 5100000000,
+        "session_id": "s-fixed-nr",
+        "sequence_number": 10,
+        "source": "mobile_network",
+        "payload": {
+          "band": "n257",
+          "cell_id": "2002",
+          "cell_timestamp_ms": "1789985401000",
+          "connection_status": "NONE",
+          "frequency_mhz": "28000",
+          "nci": "2002",
+          "nrarfcn": "205416",
+          "pci": "202",
+          "plmn": "28601",
+          "record_type": "cell",
+          "registered": "false",
+          "ss_rsrp": "-101",
+          "ss_rsrq": "-18",
+          "ss_sinr": "2",
+          "tac": "2",
+          "technology": "NR"
+        }
+      },
+      {
+        "line_number": 20,
+        "timestamp_iso_utc": "2026-09-21T10:10:02Z",
+        "epoch_ms": 1789985402000,
+        "elapsed_realtime_ns": 6000000000,
+        "session_id": "s-fixed-nr",
+        "sequence_number": 11,
+        "source": "mobile_network",
+        "payload": {
+          "band": "n257",
+          "cell_id": "2001",
+          "cell_timestamp_ms": "1789985402000",
+          "connection_status": "PRIMARY_SERVING",
+          "frequency_mhz": "28000",
+          "nci": "2001",
+          "nrarfcn": "205416",
+          "pci": "201",
+          "plmn": "28601",
+          "record_type": "cell",
+          "registered": "true",
+          "ss_rsrp": "-95",
+          "ss_rsrq": "-14",
+          "ss_sinr": "8",
+          "tac": "2",
+          "technology": "NR"
+        }
+      },
+      {
+        "line_number": 21,
+        "timestamp_iso_utc": "2026-09-21T10:20:00Z",
+        "epoch_ms": 1789986000000,
+        "elapsed_realtime_ns": 7000000000,
+        "session_id": "s-poor-gps",
+        "sequence_number": 12,
+        "source": "session",
+        "payload": {
+          "label": "POINT-POOR",
+          "record_type": "survey_point"
+        }
+      },
+      {
+        "line_number": 22,
+        "timestamp_iso_utc": "2026-09-21T10:20:00Z",
+        "epoch_ms": 1789986000000,
+        "elapsed_realtime_ns": 7100000000,
+        "session_id": "s-poor-gps",
+        "sequence_number": 13,
+        "source": "location",
+        "payload": {
+          "altitude_m": "940",
+          "horizontal_accuracy_m": "25",
+          "latitude": "39.913000",
+          "longitude": "32.850000",
+          "record_type": "fix",
+          "speed_mps": "0"
+        }
+      },
+      {
+        "line_number": 23,
+        "timestamp_iso_utc": "2026-09-21T10:20:01Z",
+        "epoch_ms": 1789986001000,
+        "elapsed_realtime_ns": 8000000000,
+        "session_id": "s-poor-gps",
+        "sequence_number": 14,
+        "source": "mobile_network",
+        "payload": {
+          "band": "LTE Band 7",
+          "cell_id": "1001",
+          "cell_timestamp_ms": "1789986001000",
+          "connection_status": "PRIMARY_SERVING",
+          "earfcn": "2850",
+          "frequency_mhz": "2600",
+          "pci": "101",
+          "plmn": "28601",
+          "record_type": "cell",
+          "registered": "true",
+          "tac": "1",
+          "technology": "LTE"
+        }
+      },
+      {
+        "line_number": 24,
+        "timestamp_iso_utc": "2026-09-21T10:21:00Z",
+        "epoch_ms": 1789986060000,
+        "elapsed_realtime_ns": 9000000000,
+        "session_id": "s-missing-gps",
+        "sequence_number": 15,
+        "source": "session",
+        "payload": {
+          "label": "POINT-MISSING",
+          "record_type": "survey_point"
+        }
+      },
+      {
+        "line_number": 25,
+        "timestamp_iso_utc": "2026-09-21T10:21:01Z",
+        "epoch_ms": 1789986061000,
+        "elapsed_realtime_ns": 10000000000,
+        "session_id": "s-missing-gps",
+        "sequence_number": 16,
+        "source": "mobile_network",
+        "payload": {
+          "band": "LTE Band 7",
+          "cell_id": "1001",
+          "cell_timestamp_ms": "1789986061000",
+          "connection_status": "PRIMARY_SERVING",
+          "earfcn": "2850",
+          "frequency_mhz": "2600",
+          "pci": "101",
+          "plmn": "28601",
+          "record_type": "cell",
+          "registered": "true",
+          "tac": "1",
+          "technology": "LTE"
+        }
+      }
+    ],
+    "raw_bytes": 3915,
+    "raw_bytes_rewritten": false,
+    "raw_sha256": "sha256-c53d1653fed8be74e74b3cb140ae3fceaf4fb6ce0f333a3ae1b1df462efbdb67"
+  },
+  "schema_version": 1,
+  "selected_collector": {
+    "name": "Signal Collector",
+    "version": "1.5.2",
+    "platform": "Android",
+    "hardware_requirements": [
+      "Android handset with LTE/NR modem",
+      "GNSS receiver",
+      "operator SIM/eSIM permitted for the campaign"
+    ],
+    "root_required": false,
+    "export_format": "SIGNAL_COLLECTOR_TXT_V6",
+    "quantities": [
+      "rsrp_dbm",
+      "rsrq_db",
+      "sinr_db",
+      "rssi_dbm",
+      "serving_cell_id",
+      "pci",
+      "earfcn_or_nrarfcn",
+      "band",
+      "frequency_mhz",
+      "gps",
+      "timestamp"
+    ],
+    "serving_identity": [
+      "registered",
+      "connection_status",
+      "cell_id",
+      "nci",
+      "pci",
+      "plmn",
+      "tac"
+    ],
+    "frequency_metadata": [
+      "earfcn",
+      "nrarfcn",
+      "band",
+      "frequency_mhz",
+      "bandwidth for LTE when exported"
+    ],
+    "gps_metadata": [
+      "WGS84 latitude",
+      "WGS84 longitude",
+      "altitude",
+      "horizontal accuracy",
+      "fix timestamp"
+    ],
+    "automation": "manual start/stop export; no unattended upload or cloud dependency",
+    "licensing": "collector export is retained under the campaign operator's permitted use; this fixture is synthetic",
+    "permissions": [
+      "location while collecting",
+      "phone state/cell information",
+      "local file export"
+    ]
+  },
+  "source_type": "synthetic_controlled",
+  "transmitter_map": {
+    "schema_version": 1,
+    "map_id": "ankara-concept-6a1-dry-run-map",
+    "map_version": "2026.09.21",
+    "source_type": "controlled_fixture_planning_inventory",
+    "source_citation": "Synthetic map for Concept 6A.1 tooling tests; no field transmitter truth claim.",
+    "entries": [
+      {
+        "atom_cell_id": "atom-lte-001",
+        "observed_cell_id": "1001",
+        "observed_pci": 101,
+        "plmn": "28601",
+        "site_id": "site-lte-001",
+        "lat": 39.9113,
+        "lon": 32.8477,
+        "antenna_height_m": 25,
+        "azimuth_deg": 0,
+        "tilt_deg": 0,
+        "frequency_ghz": 2.6,
+        "bandwidth_mhz": 20,
+        "tx_power_dbm": 30,
+        "rf_profile": {
+          "schema_version": 1,
+          "network_tech": "4g",
+          "propagation_model": "urban_short_range",
+          "frequency_ghz": 2.6,
+          "band": "LTE Band 7",
+          "bandwidth_mhz": 20,
+          "channel_id": "earfcn:2850",
+          "duplex_mode": "fdd",
+          "tx_power_dbm": 30,
+          "antenna_gain_dbi": 25,
+          "rx_antenna_gain_dbi": 0,
+          "system_loss_db": 0,
+          "polarization_loss_db": 0,
+          "radius_m": 5000,
+          "beam_width": 360,
+          "antenna_height_m": 25,
+          "mechanical_downtilt_deg": 0,
+          "electrical_downtilt_deg": 0,
+          "orientation_deg": 0,
+          "horizontal_pattern_id": "ideal-sector",
+          "vertical_pattern_id": "flat",
+          "load_factor": 0.7,
+          "reuse_factor": 1,
+          "pci": 101,
+          "receiver_height_m": 1.8,
+          "receiver_sensitivity_dbm": -115,
+          "receiver_sensitivity_mode": "manual",
+          "receiver_noise_bandwidth_hz": 20000000,
+          "receiver_noise_bandwidth_source": "channel_bandwidth_approximation",
+          "receiver_noise_figure_db": 7,
+          "receiver_required_snr_db": 3,
+          "receiver_margin_db": 0,
+          "tx_antenna_gain_dbi": 25
+        },
+        "field_provenance": {
+          "antenna_height_m": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "modeled transmitter profile"
+          },
+          "atom_cell_id": {
+            "status": "configured",
+            "source": "synthetic fixture map",
+            "note": "modeled identity"
+          },
+          "azimuth_deg": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "not inferred from handset data"
+          },
+          "bandwidth_mhz": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "not copied into raw observations"
+          },
+          "frequency_ghz": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "compared with raw frequency; never used to fill missing raw frequency"
+          },
+          "observed_cell_id": {
+            "status": "known",
+            "source": "Signal Collector V6 cell_id",
+            "note": "exact receive-side identity key"
+          },
+          "provenance": {
+            "status": "known",
+            "source": "fixture authoring record",
+            "note": "all values are synthetic"
+          },
+          "site_coordinates": {
+            "status": "configured",
+            "source": "synthetic fixture map",
+            "note": "not a field survey claim"
+          },
+          "tilt_deg": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "not inferred from handset data"
+          },
+          "tx_power_dbm": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "not measured by handset"
+          }
+        },
+        "source_citation": "Synthetic fixture only"
+      },
+      {
+        "atom_cell_id": "atom-nr-001",
+        "observed_cell_id": "2001",
+        "observed_pci": 201,
+        "plmn": "28601",
+        "site_id": "site-nr-001",
+        "lat": 39.9118,
+        "lon": 32.8482,
+        "antenna_height_m": 25,
+        "azimuth_deg": 0,
+        "tilt_deg": 0,
+        "frequency_ghz": 28,
+        "bandwidth_mhz": 100,
+        "tx_power_dbm": 30,
+        "rf_profile": {
+          "schema_version": 1,
+          "network_tech": "5g",
+          "propagation_model": "urban_short_range",
+          "frequency_ghz": 28,
+          "band": "NR n257",
+          "bandwidth_mhz": 100,
+          "channel_id": "nrarfcn:205416",
+          "duplex_mode": "tdd",
+          "tx_power_dbm": 30,
+          "antenna_gain_dbi": 25,
+          "rx_antenna_gain_dbi": 0,
+          "system_loss_db": 0,
+          "polarization_loss_db": 0,
+          "radius_m": 5000,
+          "beam_width": 360,
+          "antenna_height_m": 25,
+          "mechanical_downtilt_deg": 0,
+          "electrical_downtilt_deg": 0,
+          "orientation_deg": 0,
+          "horizontal_pattern_id": "ideal-sector",
+          "vertical_pattern_id": "flat",
+          "load_factor": 0.7,
+          "reuse_factor": 1,
+          "pci": 201,
+          "receiver_height_m": 1.8,
+          "receiver_sensitivity_dbm": -115,
+          "receiver_sensitivity_mode": "manual",
+          "receiver_noise_bandwidth_hz": 100000000,
+          "receiver_noise_bandwidth_source": "channel_bandwidth_approximation",
+          "receiver_noise_figure_db": 7,
+          "receiver_required_snr_db": 3,
+          "receiver_margin_db": 0,
+          "tx_antenna_gain_dbi": 25
+        },
+        "field_provenance": {
+          "antenna_height_m": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "modeled transmitter profile"
+          },
+          "atom_cell_id": {
+            "status": "configured",
+            "source": "synthetic fixture map",
+            "note": "modeled identity"
+          },
+          "azimuth_deg": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "not inferred from handset data"
+          },
+          "bandwidth_mhz": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "deliberately absent from the raw NR rows"
+          },
+          "frequency_ghz": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "compared with raw frequency; never used to fill missing raw frequency"
+          },
+          "observed_cell_id": {
+            "status": "known",
+            "source": "Signal Collector V6 cell_id/nci",
+            "note": "exact receive-side identity key"
+          },
+          "provenance": {
+            "status": "known",
+            "source": "fixture authoring record",
+            "note": "all values are synthetic"
+          },
+          "site_coordinates": {
+            "status": "configured",
+            "source": "synthetic fixture map",
+            "note": "not a field survey claim"
+          },
+          "tilt_deg": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "not inferred from handset data"
+          },
+          "tx_power_dbm": {
+            "status": "configured",
+            "source": "synthetic planning profile",
+            "note": "not measured by handset"
+          }
+        },
+        "source_citation": "Synthetic fixture only"
+      }
+    ]
+  },
+  "validation": {
+    "schema_version": 1,
+    "dataset_identity": {
+      "dataset_id": "ankara-concept-6a1-dry-run",
+      "dataset_version": "2026.09.21",
+      "source_type": "synthetic_controlled",
+      "source_citation": "Signal Collector 1.5.2 export",
+      "license": "collector export is retained under the campaign operator's permitted use; this fixture is synthetic"
+    },
+    "counts": {
+      "total": 14,
+      "applicable": 2,
+      "censored": 0,
+      "inapplicable": 0,
+      "insufficient_metadata": 12,
+      "quantity_incompatible": 0,
+      "unresolved_transmitter": 0,
+      "deterministic_mismatch": 0,
+      "excluded_reason": {
+        "bandwidth_missing": 6,
+        "interference_validation_limited: serving/resource/neighbor context is not declared complete": 6
+      }
+    },
+    "summary": {
+      "overall": [
+        {
+          "key": "rsrp_dbm",
+          "quantity": "rsrp_dbm",
+          "metric": {
+            "n": 2,
+            "mean_bias_db": -23.359558371193707,
+            "median_bias_db": -23.359558371193707,
+            "mae_db": 23.359558371193707,
+            "rmse_db": 23.364908886987042,
+            "std_db": 0.5,
+            "p50_abs_error_db": 23.359558371193707,
+            "p90_abs_error_db": 23.759558371193705,
+            "p95_abs_error_db": 23.809558371193706,
+            "min_residual_db": -23.859558371193707,
+            "p01_residual_db": -23.849558371193705,
+            "p10_residual_db": -23.75955837119371,
+            "p90_residual_db": -22.959558371193708,
+            "p99_residual_db": -22.86955837119371,
+            "max_residual_db": -22.859558371193707,
+            "small_group": true
+          }
+        }
+      ],
+      "by_frequency": [
+        {
+          "key": "rsrp_dbm|2.6GHz",
+          "quantity": "rsrp_dbm",
+          "frequency_ghz": 2.6,
+          "metric": {
+            "n": 2,
+            "mean_bias_db": -23.359558371193707,
+            "median_bias_db": -23.359558371193707,
+            "mae_db": 23.359558371193707,
+            "rmse_db": 23.364908886987042,
+            "std_db": 0.5,
+            "p50_abs_error_db": 23.359558371193707,
+            "p90_abs_error_db": 23.759558371193705,
+            "p95_abs_error_db": 23.809558371193706,
+            "min_residual_db": -23.859558371193707,
+            "p01_residual_db": -23.849558371193705,
+            "p10_residual_db": -23.75955837119371,
+            "p90_residual_db": -22.959558371193708,
+            "p99_residual_db": -22.86955837119371,
+            "max_residual_db": -22.859558371193707,
+            "small_group": true
+          }
+        }
+      ],
+      "by_los_nlos": [
+        {
+          "key": "rsrp_dbm|los",
+          "quantity": "rsrp_dbm",
+          "los_nlos": "los",
+          "metric": {
+            "n": 2,
+            "mean_bias_db": -23.359558371193707,
+            "median_bias_db": -23.359558371193707,
+            "mae_db": 23.359558371193707,
+            "rmse_db": 23.364908886987042,
+            "std_db": 0.5,
+            "p50_abs_error_db": 23.359558371193707,
+            "p90_abs_error_db": 23.759558371193705,
+            "p95_abs_error_db": 23.809558371193706,
+            "min_residual_db": -23.859558371193707,
+            "p01_residual_db": -23.849558371193705,
+            "p10_residual_db": -23.75955837119371,
+            "p90_residual_db": -22.959558371193708,
+            "p99_residual_db": -22.86955837119371,
+            "max_residual_db": -22.859558371193707,
+            "small_group": true
+          }
+        }
+      ],
+      "by_distance": [
+        {
+          "key": "rsrp_dbm|100-200m",
+          "quantity": "rsrp_dbm",
+          "distance_bin": "100-200m",
+          "metric": {
+            "n": 2,
+            "mean_bias_db": -23.359558371193707,
+            "median_bias_db": -23.359558371193707,
+            "mae_db": 23.359558371193707,
+            "rmse_db": 23.364908886987042,
+            "std_db": 0.5,
+            "p50_abs_error_db": 23.359558371193707,
+            "p90_abs_error_db": 23.759558371193705,
+            "p95_abs_error_db": 23.809558371193706,
+            "min_residual_db": -23.859558371193707,
+            "p01_residual_db": -23.849558371193705,
+            "p10_residual_db": -23.75955837119371,
+            "p90_residual_db": -22.959558371193708,
+            "p99_residual_db": -22.86955837119371,
+            "max_residual_db": -22.859558371193707,
+            "small_group": true
+          }
+        }
+      ],
+      "by_site": [
+        {
+          "key": "rsrp_dbm|site-lte-001",
+          "quantity": "rsrp_dbm",
+          "site_id": "site-lte-001",
+          "metric": {
+            "n": 2,
+            "mean_bias_db": -23.359558371193707,
+            "median_bias_db": -23.359558371193707,
+            "mae_db": 23.359558371193707,
+            "rmse_db": 23.364908886987042,
+            "std_db": 0.5,
+            "p50_abs_error_db": 23.359558371193707,
+            "p90_abs_error_db": 23.759558371193705,
+            "p95_abs_error_db": 23.809558371193706,
+            "min_residual_db": -23.859558371193707,
+            "p01_residual_db": -23.849558371193705,
+            "p10_residual_db": -23.75955837119371,
+            "p90_residual_db": -22.959558371193708,
+            "p99_residual_db": -22.86955837119371,
+            "max_residual_db": -22.859558371193707,
+            "small_group": true
+          }
+        }
+      ],
+      "by_campaign": [
+        {
+          "key": "rsrp_dbm|ankara-concept-6a1-dry-run",
+          "quantity": "rsrp_dbm",
+          "campaign_id": "ankara-concept-6a1-dry-run",
+          "metric": {
+            "n": 2,
+            "mean_bias_db": -23.359558371193707,
+            "median_bias_db": -23.359558371193707,
+            "mae_db": 23.359558371193707,
+            "rmse_db": 23.364908886987042,
+            "std_db": 0.5,
+            "p50_abs_error_db": 23.359558371193707,
+            "p90_abs_error_db": 23.759558371193705,
+            "p95_abs_error_db": 23.809558371193706,
+            "min_residual_db": -23.859558371193707,
+            "p01_residual_db": -23.849558371193705,
+            "p10_residual_db": -23.75955837119371,
+            "p90_residual_db": -22.959558371193708,
+            "p99_residual_db": -22.86955837119371,
+            "max_residual_db": -22.859558371193707,
+            "small_group": true
+          }
+        }
+      ]
+    },
+    "observations": [
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-lte:3:1001:rsrp_dbm",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-lte-001",
+        "session_id": "s-fixed-lte",
+        "lat": 39.912,
+        "lon": 32.849,
+        "quantity": "rsrp_dbm",
+        "frequency_ghz": 2.6,
+        "distance_m": 135.62360779989808,
+        "los_nlos": "los",
+        "distance_bin": "100-200m",
+        "transmitter_id": "atom-lte-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "applicable",
+        "evidence_status": "complete_for_absolute_validation",
+        "interference_validation": "not_applicable_to_quantity",
+        "measured_value_db": -82,
+        "predicted_value_db": -59.14044162880629,
+        "residual_db": -22.859558371193707,
+        "absolute_error_db": 22.859558371193707,
+        "evidence": {
+          "primitive": "EvaluatePropagationLink plus shared radio-quality primitive when requested",
+          "model_id": "urban_short_range",
+          "applied_model_id": "urban_short_range",
+          "frequency_ghz": 2.6,
+          "distance_m": 135.62360779989808,
+          "los_nlos": "los",
+          "endpoint_case": "outdoor_to_outdoor",
+          "applicability": {
+            "applicable": true,
+            "reason": "applicable"
+          },
+          "propagation_fingerprint": "canonical-rf-3568b023cfa57e0983dd8986",
+          "rf_contract": {
+            "model_id": "urban_short_range",
+            "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+            "applied_model_id": "urban_short_range",
+            "model_family": "3GPP TR 38.901 UMa median path loss",
+            "scenario": "urban short-range outdoor-to-outdoor planning",
+            "model_status": "deterministic planning baseline",
+            "reference": "3GPP TR 38.901 V19.4.0, Table 7.4.1-1 UMa path loss",
+            "applicability": "0.5 \u003c f_c \u003c 100 GHz, 10 m \u003c= d_2D \u003c= 5000 m, known Tx/Rx heights in the deterministic UMa envelope, outdoor-to-outdoor endpoint, and footprint LOS/NLOS classification",
+            "fallback_model_id": "legacy_fspl_walls",
+            "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+            "los_classification_rule": "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable",
+            "building_height_note": "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS",
+            "deterministic": true,
+            "propagation_dimensions": "height-aware 2D footprint centerline visibility with flat-ground relative heights and 3D distance in the 3GPP UMa median path-loss equation",
+            "uses_terrain": false,
+            "uses_building_height": true,
+            "uses_diffraction": false,
+            "uses_reflection": false,
+            "wall_model": "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB",
+            "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL_3GPP_UMa(LOS|NLOS) - L_system - L_polarization + G_rx + calibration",
+            "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+            "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+            "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+            "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+            "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+            "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+            "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+            "antenna_pattern_id": "ideal-sector",
+            "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+            "antenna_pattern_uses_hard_beam": true,
+            "absolute_terms": [
+              "conducted transmit power",
+              "absolute TX boresight gain",
+              "receive antenna gain",
+              "system loss",
+              "global calibration offset"
+            ],
+            "relative_attenuation_terms": [
+              "horizontal antenna attenuation",
+              "vertical antenna attenuation"
+            ],
+            "propagation_terms": [
+              "3GPP UMa PL1/PL2 breakpoint LOS path loss",
+              "3GPP UMa NLOS max(LOS, PL') path loss",
+              "footprint-height-los-v1 geometric centerline classifier",
+              "conservative unknown-height fallback"
+            ],
+            "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+            "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+            "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+            "building_service_threshold_dbm": -100,
+            "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+            "propagation_reach_definition": "usable receiver-power reach",
+            "surface_definition": "raw single-cell received-power surface",
+            "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+            "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+            "interference_rsrp_threshold_dbm": -110,
+            "interference_sinr_threshold_db": 0,
+            "interference_rsrq_threshold_db": -20,
+            "calibration_offset_db": 0,
+            "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+            "endpoint_scope": "canonical network RF evaluation"
+          },
+          "received_power_dbm": -28.34862916833005,
+          "path_loss_db": 83.34862916833005,
+          "rsrp_dbm": -59.14044162880629,
+          "receiver_threshold": {
+            "mode": "manual",
+            "sensitivity_dbm": -115,
+            "noise_bandwidth_source": "not_applicable",
+            "assumptions": [
+              "receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated",
+              "network interference is evaluated separately through RSRP, SINR, and RSRQ"
+            ],
+            "applicability": "manual noise-limited receiver threshold for deterministic planning"
+          },
+          "rsrp_conversion_id": "uniform-carrier-to-reference-resource-v1",
+          "resource_semantics": "source_declared_cell_snapshot; raw_channel_and_bandwidth_retained",
+          "interference_validation": "not_applicable_to_quantity"
+        }
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-lte:3:1001:rsrq_db",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-lte-001",
+        "session_id": "s-fixed-lte",
+        "lat": 39.912,
+        "lon": 32.849,
+        "quantity": "rsrq_db",
+        "frequency_ghz": 2.6,
+        "distance_m": 135.62360779989808,
+        "los_nlos": "los",
+        "distance_bin": "100-200m",
+        "transmitter_id": "atom-lte-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "interference_validation_limited: serving/resource/neighbor context is not declared complete",
+        "interference_validation": "interference_validation_limited",
+        "measured_value_db": -10
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-lte:3:1001:rssi_dbm",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-lte-001",
+        "session_id": "s-fixed-lte",
+        "lat": 39.912,
+        "lon": 32.849,
+        "quantity": "rssi_dbm",
+        "frequency_ghz": 2.6,
+        "distance_m": 135.62360779989808,
+        "los_nlos": "los",
+        "distance_bin": "100-200m",
+        "transmitter_id": "atom-lte-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "interference_validation_limited: serving/resource/neighbor context is not declared complete",
+        "interference_validation": "interference_validation_limited",
+        "measured_value_db": -67
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-lte:3:1001:sinr_db",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-lte-001",
+        "session_id": "s-fixed-lte",
+        "lat": 39.912,
+        "lon": 32.849,
+        "quantity": "sinr_db",
+        "frequency_ghz": 2.6,
+        "distance_m": 135.62360779989808,
+        "los_nlos": "los",
+        "distance_bin": "100-200m",
+        "transmitter_id": "atom-lte-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "interference_validation_limited: serving/resource/neighbor context is not declared complete",
+        "interference_validation": "interference_validation_limited",
+        "measured_value_db": 18
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-lte:5:1001:rsrp_dbm",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-lte-001",
+        "session_id": "s-fixed-lte",
+        "lat": 39.912,
+        "lon": 32.849,
+        "quantity": "rsrp_dbm",
+        "frequency_ghz": 2.6,
+        "distance_m": 135.62360779989808,
+        "los_nlos": "los",
+        "distance_bin": "100-200m",
+        "transmitter_id": "atom-lte-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "applicable",
+        "evidence_status": "complete_for_absolute_validation",
+        "interference_validation": "not_applicable_to_quantity",
+        "measured_value_db": -83,
+        "predicted_value_db": -59.14044162880629,
+        "residual_db": -23.859558371193707,
+        "absolute_error_db": 23.859558371193707,
+        "evidence": {
+          "primitive": "EvaluatePropagationLink plus shared radio-quality primitive when requested",
+          "model_id": "urban_short_range",
+          "applied_model_id": "urban_short_range",
+          "frequency_ghz": 2.6,
+          "distance_m": 135.62360779989808,
+          "los_nlos": "los",
+          "endpoint_case": "outdoor_to_outdoor",
+          "applicability": {
+            "applicable": true,
+            "reason": "applicable"
+          },
+          "propagation_fingerprint": "canonical-rf-3568b023cfa57e0983dd8986",
+          "rf_contract": {
+            "model_id": "urban_short_range",
+            "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+            "applied_model_id": "urban_short_range",
+            "model_family": "3GPP TR 38.901 UMa median path loss",
+            "scenario": "urban short-range outdoor-to-outdoor planning",
+            "model_status": "deterministic planning baseline",
+            "reference": "3GPP TR 38.901 V19.4.0, Table 7.4.1-1 UMa path loss",
+            "applicability": "0.5 \u003c f_c \u003c 100 GHz, 10 m \u003c= d_2D \u003c= 5000 m, known Tx/Rx heights in the deterministic UMa envelope, outdoor-to-outdoor endpoint, and footprint LOS/NLOS classification",
+            "fallback_model_id": "legacy_fspl_walls",
+            "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+            "los_classification_rule": "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable",
+            "building_height_note": "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS",
+            "deterministic": true,
+            "propagation_dimensions": "height-aware 2D footprint centerline visibility with flat-ground relative heights and 3D distance in the 3GPP UMa median path-loss equation",
+            "uses_terrain": false,
+            "uses_building_height": true,
+            "uses_diffraction": false,
+            "uses_reflection": false,
+            "wall_model": "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB",
+            "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL_3GPP_UMa(LOS|NLOS) - L_system - L_polarization + G_rx + calibration",
+            "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+            "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+            "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+            "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+            "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+            "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+            "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+            "antenna_pattern_id": "ideal-sector",
+            "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+            "antenna_pattern_uses_hard_beam": true,
+            "absolute_terms": [
+              "conducted transmit power",
+              "absolute TX boresight gain",
+              "receive antenna gain",
+              "system loss",
+              "global calibration offset"
+            ],
+            "relative_attenuation_terms": [
+              "horizontal antenna attenuation",
+              "vertical antenna attenuation"
+            ],
+            "propagation_terms": [
+              "3GPP UMa PL1/PL2 breakpoint LOS path loss",
+              "3GPP UMa NLOS max(LOS, PL') path loss",
+              "footprint-height-los-v1 geometric centerline classifier",
+              "conservative unknown-height fallback"
+            ],
+            "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+            "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+            "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+            "building_service_threshold_dbm": -100,
+            "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+            "propagation_reach_definition": "usable receiver-power reach",
+            "surface_definition": "raw single-cell received-power surface",
+            "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+            "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+            "interference_rsrp_threshold_dbm": -110,
+            "interference_sinr_threshold_db": 0,
+            "interference_rsrq_threshold_db": -20,
+            "calibration_offset_db": 0,
+            "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+            "endpoint_scope": "canonical network RF evaluation"
+          },
+          "received_power_dbm": -28.34862916833005,
+          "path_loss_db": 83.34862916833005,
+          "rsrp_dbm": -59.14044162880629,
+          "receiver_threshold": {
+            "mode": "manual",
+            "sensitivity_dbm": -115,
+            "noise_bandwidth_source": "not_applicable",
+            "assumptions": [
+              "receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated",
+              "network interference is evaluated separately through RSRP, SINR, and RSRQ"
+            ],
+            "applicability": "manual noise-limited receiver threshold for deterministic planning"
+          },
+          "rsrp_conversion_id": "uniform-carrier-to-reference-resource-v1",
+          "resource_semantics": "source_declared_cell_snapshot; raw_channel_and_bandwidth_retained",
+          "interference_validation": "not_applicable_to_quantity"
+        }
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-lte:5:1001:rsrq_db",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-lte-001",
+        "session_id": "s-fixed-lte",
+        "lat": 39.912,
+        "lon": 32.849,
+        "quantity": "rsrq_db",
+        "frequency_ghz": 2.6,
+        "distance_m": 135.62360779989808,
+        "los_nlos": "los",
+        "distance_bin": "100-200m",
+        "transmitter_id": "atom-lte-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "interference_validation_limited: serving/resource/neighbor context is not declared complete",
+        "interference_validation": "interference_validation_limited",
+        "measured_value_db": -11
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-lte:5:1001:rssi_dbm",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-lte-001",
+        "session_id": "s-fixed-lte",
+        "lat": 39.912,
+        "lon": 32.849,
+        "quantity": "rssi_dbm",
+        "frequency_ghz": 2.6,
+        "distance_m": 135.62360779989808,
+        "los_nlos": "los",
+        "distance_bin": "100-200m",
+        "transmitter_id": "atom-lte-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "interference_validation_limited: serving/resource/neighbor context is not declared complete",
+        "interference_validation": "interference_validation_limited",
+        "measured_value_db": -68
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-lte:5:1001:sinr_db",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-lte-001",
+        "session_id": "s-fixed-lte",
+        "lat": 39.912,
+        "lon": 32.849,
+        "quantity": "sinr_db",
+        "frequency_ghz": 2.6,
+        "distance_m": 135.62360779989808,
+        "los_nlos": "los",
+        "distance_bin": "100-200m",
+        "transmitter_id": "atom-lte-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "interference_validation_limited: serving/resource/neighbor context is not declared complete",
+        "interference_validation": "interference_validation_limited",
+        "measured_value_db": 17
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-nr:11:2001:rsrp_dbm",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-nr-001",
+        "session_id": "s-fixed-nr",
+        "lat": 39.9125,
+        "lon": 32.8495,
+        "quantity": "rsrp_dbm",
+        "frequency_ghz": 28,
+        "los_nlos": "los",
+        "transmitter_id": "atom-nr-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "bandwidth_missing",
+        "measured_value_db": -95
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-nr:11:2001:rsrq_db",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-nr-001",
+        "session_id": "s-fixed-nr",
+        "lat": 39.9125,
+        "lon": 32.8495,
+        "quantity": "rsrq_db",
+        "frequency_ghz": 28,
+        "los_nlos": "los",
+        "transmitter_id": "atom-nr-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "bandwidth_missing",
+        "measured_value_db": -14
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-nr:11:2001:sinr_db",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-nr-001",
+        "session_id": "s-fixed-nr",
+        "lat": 39.9125,
+        "lon": 32.8495,
+        "quantity": "sinr_db",
+        "frequency_ghz": 28,
+        "los_nlos": "los",
+        "transmitter_id": "atom-nr-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "bandwidth_missing",
+        "measured_value_db": 8
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-nr:9:2001:rsrp_dbm",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-nr-001",
+        "session_id": "s-fixed-nr",
+        "lat": 39.9125,
+        "lon": 32.8495,
+        "quantity": "rsrp_dbm",
+        "frequency_ghz": 28,
+        "los_nlos": "los",
+        "transmitter_id": "atom-nr-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "bandwidth_missing",
+        "measured_value_db": -94
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-nr:9:2001:rsrq_db",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-nr-001",
+        "session_id": "s-fixed-nr",
+        "lat": 39.9125,
+        "lon": 32.8495,
+        "quantity": "rsrq_db",
+        "frequency_ghz": 28,
+        "los_nlos": "los",
+        "transmitter_id": "atom-nr-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "bandwidth_missing",
+        "measured_value_db": -13
+      },
+      {
+        "observation_id": "ankara-concept-6a1-dry-run:s-fixed-nr:9:2001:sinr_db",
+        "campaign_id": "ankara-concept-6a1-dry-run",
+        "site_id": "site-nr-001",
+        "session_id": "s-fixed-nr",
+        "lat": 39.9125,
+        "lon": 32.8495,
+        "quantity": "sinr_db",
+        "frequency_ghz": 28,
+        "los_nlos": "los",
+        "transmitter_id": "atom-nr-001",
+        "matching_method": "explicit_id_or_mapping",
+        "matching_status": "matched",
+        "status": "insufficient_metadata",
+        "exclusion_reason": "bandwidth_missing",
+        "measured_value_db": 9
+      }
+    ],
+    "holdout": {
+      "method": "spatial_blocks",
+      "primary": true,
+      "spatial_cell_size_m": 100,
+      "minimum_separation_m": 100,
+      "folds": [
+        {
+          "fold_id": "fold-001-44430:28048",
+          "method": "spatial_blocks",
+          "calibration_ids": [],
+          "validation_ids": [
+            "ankara-concept-6a1-dry-run:s-fixed-lte:3:1001:rsrp_dbm",
+            "ankara-concept-6a1-dry-run:s-fixed-lte:5:1001:rsrp_dbm"
+          ],
+          "validation_sites": [
+            "site-lte-001"
+          ],
+          "validation_campaigns": [
+            "ankara-concept-6a1-dry-run"
+          ],
+          "calibration_count": 0,
+          "validation_count": 2,
+          "minimum_separation_m": 100,
+          "no_leak_evidence": "deterministic spatial_blocks groups are disjoint; calibration observations within 100.0 m of validation observations are excluded; no random row split is used"
+        }
+      ]
+    },
+    "calibration": {
+      "policy": "constant_bias_from_calibration_groups_applied_only_to_heldout_diagnostics",
+      "frequency_specific": true,
+      "los_stratified": false,
+      "promoted": false,
+      "status": "insufficient_validation_data",
+      "notes": [
+        "No fold had both calibration residuals and held-out validation residuals."
+      ]
+    },
+    "readiness": "insufficient_metadata",
+    "production_candidate": false,
+    "calibration_active": false,
+    "configuration_class": "complete_for_absolute_validation_synthetic",
+    "rf_scenario_fingerprint": "canonical-rf-scenario-60c88907297381092119ac1bc5eac0d2",
+    "observation_checksum": "sha256-69263d480d87ca66fafed33246b143010c348713981ab69cdabec4e038d851a9",
+    "validation_fingerprint": "canonical-rf-validation-3efa9a3c1a61eb8929179201545e4ff1",
+    "policy": {
+      "calibration": "frequency-specific constant bias is diagnostic-only and held out; no production promotion",
+      "censoring": "explicit censored observations are counted and excluded from ordinary residual metrics",
+      "frequency": "2.6 GHz and 28 GHz remain separate",
+      "interference": "SINR/RSRQ require explicit serving, channel, bandwidth, and neighbor/resource context",
+      "los_nlos": "LOS, NLOS, and unknown are not pooled",
+      "matching": "explicit ID/mapping first; no strongest-cell inference",
+      "optimizer": "validation is optimizer-independent and cannot change recommendations or scenario fingerprints",
+      "residual": "measured - predicted; positive means canonical model underpredicts"
+    },
+    "notes": [
+      "This response consumes canonical RF primitives; it does not modify canonical equations, profiles, receiver thresholds, interference, or optimizer behavior."
+    ]
+  }
+}

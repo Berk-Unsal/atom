@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2.1",
+  "artifact": "id-reconciliation",
+  "audit_version": "concept-6a21-chongqing-rf-metadata-reconciliation-v1",
+  "prepared_at": "2026-09-21",
+  "release": {
+    "record": "https://zenodo.org/records/20564635",
+    "raw_file": "raw_datas.csv",
+    "base_file": "base_station_data.csv",
+    "raw_rows": 81419,
+    "base_rows": 189
+  },
+  "identity_contract": {
+    "authoritative_source_behavior": "The official match_dist_and_match_angle_generate.py sets raw NCI as ue_key_field and base ECI as base_key_field and performs an exact dictionary join.",
+    "accepted_join": "raw_datas.NCI == base_station_data.ECI",
+    "fallbacks": [],
+    "forbidden_fallbacks": ["nearest geographic base station", "PCI-only join", "CGI text join", "synthetic sector assignment", "silent unmapped-row drop"],
+    "identity_standard_context": {
+      "nci": "3GPP/ETSI describes the NR Cell Identity as a 36-bit value whose coding is assigned by the PLMN operator; the observed GNODEB*4096+GCELLID relation is not asserted as a universal 3GPP decoder.",
+      "sources": [
+        "https://www.etsi.org/deliver/etsi_TS/138400_138499/138413/17.07.00_60/ts_138413v170700p.pdf",
+        "https://www.etsi.org/deliver/etsi_ts/123000_123099/123003/16.05.00_60/ts_123003v160500p.pdf"
+      ]
+    }
+  },
+  "coverage": {
+    "raw_unique_nci": 197,
+    "base_unique_eci": 189,
+    "mapped_rows": 81077,
+    "mapped_row_fraction": 0.9957995,
+    "mapped_unique_nci": 189,
+    "unmapped_rows": 342,
+    "unmapped_row_fraction": 0.0042005,
+    "unmapped_unique_nci": 8,
+    "result": "The exact join covers 99.58% of raw rows but is incomplete and must not be represented as complete serving-cell truth."
+  },
+  "unmapped_nci": [
+    {"nci": "41339076869", "rows": 23},
+    {"nci": "41339355395", "rows": 42},
+    {"nci": "41340059906", "rows": 10},
+    {"nci": "41340334336", "rows": 19},
+    {"nci": "41342247177", "rows": 171},
+    {"nci": "41342247178", "rows": 19},
+    {"nci": "41343480064", "rows": 48},
+    {"nci": "41343480065", "rows": 10}
+  ],
+  "unmapped_row_profile": {
+    "network_type": {"SA": 342},
+    "band": {"N78": 342},
+    "arfcn": {"633984": 342},
+    "tac": {"10121472": 342},
+    "mcc_mnc": {"460/1": 342},
+    "is_outdoor": {"1": 342},
+    "gnodeb_gcellid_arithmetic_consistent": 342,
+    "source_file_scope": "Rows span multiple ground files and two UAV files; no authoritative source field identifies handover, secondary-cell, or base-table version cause."
+  },
+  "arithmetic_checks": {
+    "formula_observed": "NCI == GNODEB * 4096 + GCELLID",
+    "rows_consistent": 81418,
+    "rows_inconsistent": 1,
+    "inconsistent_row": {
+      "raw_id": 67557,
+      "nci": "41340817672",
+      "gnodeb": 10092973,
+      "gcellid": 261,
+      "computed_nci": "41340817669",
+      "direct_base_join": true,
+      "base_row_oid": 143,
+      "interpretation": "One internal raw identity arithmetic inconsistency exists among otherwise mapped rows; it does not explain the 342 missing base keys."
+    },
+    "unmapped_malformed_ids": 0,
+    "unmapped_alternate_encoding_proven": 0
+  },
+  "cause_assessment_for_342": {
+    "confirmed": [
+      "The 342 observations reference eight NCI values absent from the 189-row base ECI table.",
+      "All eight NCI values are parseable and have internally consistent GNODEB/GCELLID arithmetic.",
+      "All 342 rows share the N78/633984/SA/TAC profile."
+    ],
+    "not_confirmed": [
+      "handover event",
+      "secondary-cell observation",
+      "stale base-station snapshot",
+      "operator-specific alternate NCI encoding",
+      "data corruption"
+    ],
+    "authoritative_explanation": "The released metadata supports only a missing-base-key diagnosis. The paper says handover/reselection was allowed and only serving cells were retained, but the raw export has no handover flag, neighbor flag, or base-table version field. It is not legitimate to assign one of those causes to the 342 rows without source-owner clarification.",
+    "handling": "Keep the rows in source-level audit output with unresolved_serving_identity=true; do not nearest-base match or silently discard them."
+  },
+  "cross_field_consistency": {
+    "raw_pci_vs_base_pci_for_mapped_rows": {
+      "mismatched_rows": 254,
+      "mismatched_unique_nci": 32,
+      "interpretation": "PCI is not a deterministic join key or a stable validation oracle for this release.",
+      "examples": [
+        {"nci": "41340059653", "raw_pci_values": [117, 291], "base_pci": 959},
+        {"nci": "41339986178", "raw_pci_values": [400], "base_pci": 755},
+        {"nci": "41340809477", "raw_pci_values": [97], "base_pci": 530}
+      ]
+    },
+    "raw_tac_vs_base_tac_for_mapped_rows": {
+      "mismatched_rows": 0,
+      "interpretation": "TAC agrees where the NCI-to-ECI join exists, but this does not repair the missing keys."
+    },
+    "cgi_identity": {
+      "base_rows": 189,
+      "scientific_notation_rows": 23,
+      "interpretation": "CGI cannot be used as a lossless textual identity without an authoritative reconstruction rule."
+    }
+  },
+  "field_to_identity_mapping": [
+    {
+      "source_fields": ["raw_datas.NCI", "base_station_data.ECI"],
+      "target": "cell_id",
+      "status": "direct_for_81077_rows",
+      "qualification": "189 base cells mapped; eight raw NCI values remain unresolved."
+    },
+    {
+      "source_fields": ["raw_datas.GNODEB"],
+      "target": "site_id",
+      "status": "candidate_only",
+      "qualification": "Described as base-station name/identifier, but no released site identity contract or one-to-many cell grouping is authoritative."
+    },
+    {
+      "source_fields": ["raw_datas.GCELLID"],
+      "target": "local_cell_id",
+      "status": "qualified_source_component",
+      "qualification": "Use only with the source NCI/GNODEB context; not a universal decoding rule."
+    },
+    {
+      "source_fields": ["raw_datas.NR_PCI", "base_station_data.PCI"],
+      "target": "pci",
+      "status": "direct_observation_and_base_metadata_but_not_join_key",
+      "qualification": "254 mapped observations disagree with the base value."
+    },
+    {
+      "source_fields": ["base_station_data.CGI"],
+      "target": "source_cell_label",
+      "status": "lossy_or_qualified",
+      "qualification": "Scientific-notation export affects 23 rows."
+    },
+    {
+      "source_fields": ["raw_datas.source_file"],
+      "target": "campaign_or_route_id",
+      "status": "provenance_candidate_only",
+      "qualification": "Filename labels UAV/ground in this scan but no official route/session schema is defined."
+    }
+  ],
+  "adapter_boundary": {
+    "status": "not_created",
+    "research_only_output_allowed": ["exact join coverage", "unmapped key report", "identity consistency report", "source-row provenance"],
+    "production_mapping_allowed": false,
+    "reason": "A production import would need an authoritative resolution for the 342 missing keys, release/version provenance, and the PCI discrepancies."
+  },
+  "reconciliation_result": "INCOMPLETE_EXACT_JOIN_WITH_UNRESOLVED_CAUSE",
+  "required_source_owner_clarifications": [
+    "Provide the base-station export version/date and the eight missing cell records or explain why they are absent.",
+    "Explain the 254 raw/base PCI mismatches across 32 mapped NCI values.",
+    "Provide a documented site_id/sector_id/cell_id contract and the intended CGI serialization rule.",
+    "State whether the raw table includes only serving cells at every row and how handover/reselection rows should be interpreted."
+  ]
+}

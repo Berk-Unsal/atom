@@ -1,0 +1,224 @@
+{
+  "artifact": "concept-7a-storage-classification",
+  "artifact_version": "1.0.0",
+  "decision_legend": {
+    "postgresql_metadata": "Small structured records, relations, status, identity, provenance, and queryable summaries.",
+    "postgis_optional": "Geometry that benefits from relational spatial predicates, joins, extents, or proximity queries.",
+    "object_storage": "Large, immutable, binary, geospatial, or exportable content addressed by hash.",
+    "indexeddb_local_first": "Browser draft/cache/offline representation; not the future shared authority.",
+    "generated_artifact": "Immutable output reference stored in object storage with metadata elsewhere.",
+    "not_persisted": "Presentation/runtime state that should remain ephemeral."
+  },
+  "classifications": [
+    {
+      "object": "Project metadata",
+      "current_representation": "ProjectV2 nested in IndexedDB workspace",
+      "target_storage": "postgresql_metadata",
+      "secondary_storage": "indexeddb_local_first",
+      "reason": "Small relational ownership and listing data; local-first browser copy remains useful.",
+      "retain_in_database": [
+        "project_id",
+        "name",
+        "description/tags",
+        "created_at/updated_at",
+        "owner/workspace when auth exists",
+        "active scenario pointer"
+      ]
+    },
+    {
+      "object": "Scenario and ScenarioRevision",
+      "current_representation": "ScenarioSnapshot JSON nested under Project",
+      "target_storage": "postgresql_metadata",
+      "secondary_storage": "indexeddb_local_first",
+      "reason": "Needs lineage, immutable revisions, fingerprints, dataset references, and run/report relationships.",
+      "retain_in_database": [
+        "scenario_id",
+        "scenario_revision_id",
+        "project_id",
+        "name",
+        "parent_revision_id",
+        "resolved input JSON or normalized input rows",
+        "input/scenario fingerprints",
+        "created_by/created_at"
+      ],
+      "avoid": "Full large derived GeoJSON and rays inside the scenario row."
+    },
+    {
+      "object": "Inventory metadata and revisions",
+      "current_representation": "Project-local tower array in draft/plan",
+      "target_storage": "postgresql_metadata",
+      "secondary_storage": "indexeddb_local_first",
+      "reason": "Reusable inventory ownership, revision lineage, source provenance, and scenario references are relational.",
+      "retain_in_database": [
+        "inventory_id/revision_id",
+        "name/source",
+        "cell identifiers",
+        "RF profiles",
+        "provenance and validity",
+        "scenario override relation"
+      ]
+    },
+    {
+      "object": "Inventory cell and optional site geometry",
+      "current_representation": "coordinates in flat tower records",
+      "target_storage": "postgis_optional",
+      "secondary_storage": "postgresql_metadata",
+      "reason": "Point geometry and AOI/proximity queries benefit from spatial types; Site remains optional until authoritative grouping exists.",
+      "retain_in_database": [
+        "cell point geometry",
+        "radio/network attributes",
+        "stable source keys",
+        "optional site_id only when verified"
+      ],
+      "avoid": "Invented site grouping based only on proximity."
+    },
+    {
+      "object": "AOI and user-defined geometry",
+      "current_representation": "selectionPolygon in plan JSON",
+      "target_storage": "postgis_optional",
+      "secondary_storage": "indexeddb_local_first",
+      "reason": "Geometry is small and queryable for clipping/intersection; local copy is required for offline editing.",
+      "retain_in_database": [
+        "geometry",
+        "CRS",
+        "bbox/area",
+        "provenance"
+      ]
+    },
+    {
+      "object": "Dataset registry metadata",
+      "current_representation": "manifest JSON and API meta",
+      "target_storage": "postgresql_metadata",
+      "reason": "Version, hashes, license, CRS, bounds, layer status, and availability are queryable metadata.",
+      "retain_in_database": [
+        "dataset_id/version",
+        "manifest hash",
+        "file hash map",
+        "CRS/bounds",
+        "source/license/acquisition",
+        "validation status",
+        "object/file references"
+      ]
+    },
+    {
+      "object": "Buildings and large source geospatial layers",
+      "current_representation": "GeoJSON file plus Go in-memory spatial index",
+      "target_storage": "object_storage",
+      "secondary_storage": "postgis_optional",
+      "reason": "Current building source is about 111 MB with bounded viewport queries; immutable packs and spatial indexes are more efficient than row-per-feature as the default. PostGIS is justified only for product queries/joins that need it.",
+      "retain_in_object": [
+        "original pack",
+        "validated manifest",
+        "normalized FlatGeobuf/GeoParquet/COG when introduced",
+        "content hash"
+      ]
+    },
+    {
+      "object": "Terrain/DEM/DSM and clutter",
+      "current_representation": "Optional pack files and runtime paths/cache",
+      "target_storage": "object_storage",
+      "secondary_storage": "postgis_optional",
+      "reason": "Raster/terrain data is large and is consumed through specialized readers or derived tiles, not ordinary relational rows."
+    },
+    {
+      "object": "Measurement source files",
+      "current_representation": "Parsed in-memory samples up to 5000",
+      "target_storage": "object_storage",
+      "secondary_storage": "postgresql_metadata",
+      "reason": "Keep immutable raw CSV/Parquet plus provenance/hash in metadata; queryable sample subsets can be derived later.",
+      "retain_in_database": [
+        "measurement_dataset_id",
+        "content hash",
+        "schema/provenance",
+        "time/technology/band metadata",
+        "artifact reference"
+      ]
+    },
+    {
+      "object": "Run metadata",
+      "current_representation": "API response or in-memory experiment job",
+      "target_storage": "postgresql_metadata",
+      "reason": "Run status, fingerprints, summaries, lineage, and reproducibility metadata are structured and relational.",
+      "retain_in_database": [
+        "run_id/run_type",
+        "project/scenario/revision ids",
+        "input/output fingerprints",
+        "dataset refs",
+        "engine/model/RF/optimizer versions",
+        "status/timestamps",
+        "summary metrics",
+        "artifact refs"
+      ]
+    },
+    {
+      "object": "Optimization public frontier and selected solutions",
+      "current_representation": "NetworkOptimizationResponse in React/scenario artifact",
+      "target_storage": "postgresql_metadata",
+      "secondary_storage": "generated_artifact",
+      "reason": "Compact Pareto/public solutions are queryable and selectable; very large explanations/traces can be artifacts.",
+      "retain_in_database": [
+        "baseline solution",
+        "public Pareto solutions",
+        "objective/constraint metrics",
+        "selected/recommended solution",
+        "search policy and budget summary"
+      ],
+      "avoid": "Persisting every internal evaluation by default."
+    },
+    {
+      "object": "RF rays, received-power samples, coverage surfaces, large GeoJSON",
+      "current_representation": "In-memory response, optional scenario cache, or direct download",
+      "target_storage": "generated_artifact",
+      "secondary_storage": "object_storage",
+      "reason": "Potentially large and immutable per run; store content-addressed files only when requested, retained, or required for audit.",
+      "default": "Recompute/cache; persist summary and reference unless user saves/exported evidence."
+    },
+    {
+      "object": "Validation evidence and diagnostics",
+      "current_representation": "React state and endpoint responses",
+      "target_storage": "postgresql_metadata",
+      "secondary_storage": "generated_artifact",
+      "reason": "Readiness, holdout summaries, assumptions, model results, and sample/data references need durable provenance; large residual layers belong in artifacts."
+    },
+    {
+      "object": "Reports",
+      "current_representation": "Live report generation and download",
+      "target_storage": "postgresql_metadata",
+      "secondary_storage": "generated_artifact",
+      "reason": "Definition/lineage is relational; Markdown/PDF/HTML bytes are immutable artifacts.",
+      "retain_in_database": [
+        "report definition",
+        "scenario revision id",
+        "run ids",
+        "generator/schema version",
+        "content hash",
+        "artifact reference"
+      ]
+    },
+    {
+      "object": "UI navigation, loading, cancellation, map viewport, explanation cache",
+      "current_representation": "React state/useRef",
+      "target_storage": "not_persisted",
+      "reason": "Presentation/runtime state is not planning truth or evidence."
+    },
+    {
+      "object": "Local draft and offline working copy",
+      "current_representation": "IndexedDB plus localStorage fallback",
+      "target_storage": "indexeddb_local_first",
+      "reason": "Preserve current single-user/offline experience; add repository and eventual sync metadata later.",
+      "future_sync_requirements": [
+        "entity revision",
+        "device/client id",
+        "outbox operation",
+        "last server revision",
+        "conflict status"
+      ]
+    }
+  ],
+  "database_decision": {
+    "next_release": "Keep IndexedDB; formalize the domain/repository boundary first.",
+    "postgreSQL": "Defer until server sharing, durable remote runs, or multi-user ownership is required.",
+    "postgis": "Optional later for relational geometry queries; not the RF engine and not a requirement for the next phase.",
+    "object_storage": "Introduce conceptually now and implement when durable large artifacts or remote datasets are in scope."
+  }
+}

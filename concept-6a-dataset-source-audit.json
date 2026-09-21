@@ -1,0 +1,57 @@
+{
+  "acquisition_actions": [],
+  "artifact": "dataset-source-audit",
+  "audit_date": "2026-09-21",
+  "audit_version": "concept-6a-canonical-rf-validation-v1",
+  "candidate_sources": [
+    {
+      "name": "AERPAW Aerial Android-based 4G measurements",
+      "reason": "raw LTE RSRP/RSRQ/RSSI, GPS, PCI, CI, and EARFCN are documented, but the audited description does not provide the matched transmitter coordinates/heights, complete antenna/calibration provenance, or exact 2.6 GHz mapping needed for canonical propagation validation",
+      "status": "metadata_only_candidate",
+      "url": "https://datadryad.org/dataset/doi:10.5061/dryad.r7sqv9sr3"
+    },
+    {
+      "name": "POWDER 2026 cellular metrics",
+      "reason": "raw SS-RSRP/RSRQ/SINR and GPS are available, but the documented channels are 2.000 and 3.560-3.640 GHz, not 2.6 or 28 GHz; it is also a spectrum survey rather than a matched canonical serving-cell inventory",
+      "status": "not_usable_for_6A_scope",
+      "url": "https://zenodo.org/records/18272105"
+    },
+    {
+      "name": "Real-time 5G macro-cell signal dataset",
+      "reason": "raw RSRP/RSRQ/SINR, GNSS, timestamps, and cell identifiers are advertised, but the audited record does not establish exact 2.6/28 GHz scope, complete RF configuration/antenna calibration, or a usable license statement for this repository",
+      "status": "metadata_only_candidate",
+      "url": "https://zenodo.org/records/20564635"
+    },
+    {
+      "name": "5GMeas-Dataset IMC 2025",
+      "reason": "public raw RSRP/RSRQ/GPS/cell traces are described, but the available audit does not establish exact 2.6/28 GHz carrier metadata, transmitter geometry, absolute RF calibration, or a complete redistribution license",
+      "status": "metadata_only_candidate",
+      "url": "https://github.com/mssn/5GMeas-Dataset"
+    },
+    {
+      "name": "NYU Wireless 28 GHz channel-measurement publications",
+      "reason": "published channel traces/plots are useful background but are not an audited redistributable observation table with this serving-cell and absolute-quantity contract",
+      "status": "metadata_only_candidate"
+    },
+    {
+      "name": "OpenCellID-derived Ankara planning inventory",
+      "reason": "tower locations/identifiers are configuration evidence, not measured RF observations",
+      "status": "configuration_only"
+    }
+  ],
+  "concept": "6A",
+  "decision": "no_measurement_data",
+  "real_data_artifact": "not_created_by_policy",
+  "schema_version": 1,
+  "search_scope": [
+    "Ankara/Türkiye first",
+    "2.6 GHz LTE/NR",
+    "28 GHz NR/mmWave",
+    "raw numeric observations",
+    "frequency and bandwidth",
+    "geolocation",
+    "serving cell identity or deterministic mapping",
+    "license and redistribution terms"
+  ],
+  "usable_public_measurement_dataset_found": false
+}

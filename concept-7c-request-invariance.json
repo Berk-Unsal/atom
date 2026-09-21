@@ -1,0 +1,14 @@
+{
+  "concept": "7C",
+  "claim": "durable history is observational around existing compute requests",
+  "request_paths": [
+    "/api/analyze-sector",
+    "/api/optimize-azimuth",
+    "/api/optimize-network",
+    "/api/simulate"
+  ],
+  "unchanged": ["request builders", "request body fields and values", "request fingerprints", "optimizer fingerprints", "RF model calculations", "server endpoints", "cancellation signals"],
+  "new_local_work": ["create queued/running Run", "save exact request snapshot", "save compact terminal lifecycle record", "refresh local history UI"],
+  "identity_policy": "run_id is generated outside request payloads; timestamps are not inserted into request bodies",
+  "evidence": ["frontend-react/src/domain/requestEquivalence.test.js", "frontend-react/src/domain/runHistoryRepository.test.js", "frontend-react/src/App.workflow.test.jsx"]
+}

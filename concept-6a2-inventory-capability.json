@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2",
+  "artifact": "inventory-capability",
+  "audit_version": "concept-6a2-external-rf-benchmark-audit-v1",
+  "audited_at": "2026-09-21",
+  "scope": "Document the existing external-inventory ingestion boundary without changing production inventory semantics.",
+  "implementation_sources": [
+    "backend-go/raytracer/towers.go",
+    "backend-go/raytracer/request_inputs.go",
+    "backend-go/raytracer/rf_profile.go",
+    "frontend-react/src/utils/inventoryImport.js",
+    "frontend-react/src/utils/rfProfile.js",
+    "frontend-react/src/components/InventoryPanel.jsx",
+    "backend-go/raytracer/scenario_fingerprint.go",
+    "docs/concept-6a-validation-schema.json"
+  ],
+  "effective_inventory_model": {
+    "tower_station_fields": [
+      "id",
+      "cell_id",
+      "radio_type",
+      "is_simulated",
+      "lon",
+      "lat"
+    ],
+    "tower_request_fields": [
+      "id",
+      "tower_lon",
+      "tower_lat",
+      "azimuth_deg",
+      "rf_profile"
+    ],
+    "rf_profile_fields": [
+      "network_tech",
+      "propagation_model_id",
+      "frequency_ghz",
+      "band",
+      "bandwidth_mhz",
+      "channel_id",
+      "duplex_mode",
+      "tx_power_dbm",
+      "antenna_gain_dbi",
+      "rx_antenna_gain_dbi",
+      "system_loss_db",
+      "polarization_loss_db",
+      "radius_m",
+      "beam_width_deg",
+      "antenna_height_m",
+      "mechanical_downtilt_deg",
+      "electrical_downtilt_deg",
+      "orientation_deg",
+      "horizontal_pattern_id",
+      "vertical_pattern_id",
+      "load_factor",
+      "reuse_factor",
+      "pci",
+      "receiver_height_m",
+      "receiver_sensitivity_dbm",
+      "receiver_sensitivity_mode",
+      "receiver_noise_bandwidth_hz",
+      "receiver_noise_figure_db",
+      "receiver_required_snr_db",
+      "receiver_margin_db"
+    ]
+  },
+  "field_capabilities": [
+    {
+      "field": "cell_id",
+      "status": "supported",
+      "wire_location": "TowerStation.cell_id / normalized RF profile context",
+      "external_audit_rule": "Accept only when source identity and mapping provenance are explicit."
+    },
+    {
+      "field": "site_id",
+      "status": "unsupported_first_class",
+      "wire_location": null,
+      "external_audit_rule": "May be preserved only as adapter-side provenance until a deliberate inventory contract change is authorized."
+    },
+    {
+      "field": "operator_id_or_plmn",
+      "status": "unsupported_first_class",
+      "wire_location": null,
+      "external_audit_rule": "Do not discard it silently; retain it in source provenance and reject claims that require operator identity."
+    },
+    {
+      "field": "coordinates",
+      "status": "supported",
+      "wire_location": "TowerStation.lon/lat or TowerRequestInput.tower_lon/tower_lat",
+      "external_audit_rule": "Require declared CRS and conversion evidence before mapping."
+    },
+    {
+      "field": "azimuth_deg",
+      "status": "supported_optional",
+      "wire_location": "TowerRequestInput.azimuth_deg / RF profile orientation_deg",
+      "external_audit_rule": "Keep source azimuth distinct from a planned orientation unless the reference frame is documented."
+    },
+    {
+      "field": "antenna_height_m",
+      "status": "supported",
+      "wire_location": "CellRFProfile.antenna_height_m",
+      "external_audit_rule": "Require measured or documented height provenance; never substitute the planning default."
+    },
+    {
+      "field": "mechanical_downtilt_deg",
+      "status": "supported",
+      "wire_location": "CellRFProfile.mechanical_downtilt_deg",
+      "external_audit_rule": "Accept only with explicit source semantics."
+    },
+    {
+      "field": "electrical_downtilt_deg",
+      "status": "supported",
+      "wire_location": "CellRFProfile.electrical_downtilt_deg",
+      "external_audit_rule": "Accept only with explicit source semantics."
+    },
+    {
+      "field": "tx_power_dbm_conducted",
+      "status": "supported",
+      "wire_location": "CellRFProfile.tx_power_dbm",
+      "external_audit_rule": "Only accept when conducted-output semantics are established."
+    },
+    {
+      "field": "eirp_dbm",
+      "status": "unsupported_direct",
+      "wire_location": null,
+      "external_audit_rule": "Convert only when antenna gain, feeder/system losses, and EIRP reference are all explicit; otherwise reject absolute-power claims."
+    },
+    {
+      "field": "antenna_gain_dbi_absolute",
+      "status": "supported",
+      "wire_location": "CellRFProfile.antenna_gain_dbi",
+      "external_audit_rule": "Do not map a relative pattern peak or an undocumented gain value into absolute gain."
+    },
+    {
+      "field": "antenna_pattern",
+      "status": "limited_built_in_only",
+      "wire_location": "horizontal_pattern_id and vertical_pattern_id",
+      "supported_values": [
+        "ideal-sector",
+        "cosine-sector",
+        "omni",
+        "3gpp-single-element",
+        "flat",
+        "panel-10deg",
+        "panel-20deg"
+      ],
+      "external_audit_rule": "Arbitrary radiation files and undocumented pattern reconstruction are unsupported."
+    },
+    {
+      "field": "frequency_ghz",
+      "status": "supported",
+      "wire_location": "CellRFProfile.frequency_ghz",
+      "external_audit_rule": "Require unit, carrier direction, and frequency/ARFCN reconciliation."
+    },
+    {
+      "field": "bandwidth_mhz",
+      "status": "supported",
+      "wire_location": "CellRFProfile.bandwidth_mhz",
+      "external_audit_rule": "Require declared occupied or configured bandwidth semantics; do not infer from a channel number."
+    },
+    {
+      "field": "channel_or_arfcn",
+      "status": "supported_as_channel_id",
+      "wire_location": "CellRFProfile.channel_id",
+      "external_audit_rule": "Preserve raw channel and mapped frequency together; reject unresolved unit/epoch mismatches."
+    },
+    {
+      "field": "technology_and_duplex",
+      "status": "supported",
+      "wire_location": "CellRFProfile.network_tech and duplex_mode",
+      "external_audit_rule": "Require explicit technology; do not infer 4G/5G from frequency alone."
+    },
+    {
+      "field": "pci",
+      "status": "supported_optional",
+      "wire_location": "CellRFProfile.pci",
+      "external_audit_rule": "PCI is not a globally unique transmitter identity; retain the separate serving-cell mapping."
+    },
+    {
+      "field": "neighbor_relationships",
+      "status": "unsupported_first_class",
+      "wire_location": null,
+      "external_audit_rule": "Do not claim explicit neighbor truth from a tower list, channel, or PCI alone."
+    },
+    {
+      "field": "resource_and_load_semantics",
+      "status": "partial",
+      "wire_location": "load_factor, reuse_factor, channel/resource fields",
+      "external_audit_rule": "A source without resource allocation, load, and noise/interference provenance cannot support SINR/RSRQ/RSSI or radio-quality validation."
+    }
+  ],
+  "defaulting_behavior": {
+    "normal_planning": "The UI and profile resolver fill omitted profile values from plan and technology defaults.",
+    "external_benchmark_audit": "Forbidden. Every benchmark field that affects the declared claim must be direct, recoverable with documented semantics, or explicitly unavailable.",
+    "material_defaults": [
+      "2.6 GHz LTE Band 7 and 20 MHz bandwidth",
+      "28 GHz NR n257 and 100 MHz bandwidth",
+      "30 dBm conducted TX power",
+      "25 dBi TX gain",
+      "25 m antenna height",
+      "ideal-sector / flat patterns",
+      "1.5 m receiver height"
+    ],
+    "policy": "Do not use these planning defaults to reconstruct an external transmitter or receiver."
+  },
+  "conversion_rules": [
+    {
+      "source": "eirp_dbm",
+      "target": "tx_power_dbm plus antenna_gain_dbi",
+      "status": "conditional",
+      "rule": "P_tx_conducted = EIRP - G_tx_absolute only when the source EIRP reference plane, antenna gain, feeder loss, and polarization convention are explicit."
+    },
+    {
+      "source": "relative_pattern",
+      "target": "horizontal_pattern_id or vertical_pattern_id",
+      "status": "not_automatic",
+      "rule": "A relative plot is not an absolute gain or a supported built-in pattern unless its parameterization is explicitly documented and equivalent."
+    },
+    {
+      "source": "local_projected_coordinates",
+      "target": "lat/lon",
+      "status": "conditional",
+      "rule": "Require origin, projection, axis direction, units, and conversion test points."
+    },
+    {
+      "source": "ARFCN_or_channel_number",
+      "target": "frequency_ghz",
+      "status": "conditional",
+      "rule": "Apply the declared band-specific mapping only after validating duplex direction, raster, and source epoch; retain the raw value."
+    }
+  ],
+  "external_validation_boundary": {
+    "can_ingest_without_production_change": [
+      "coordinates",
+      "cell identity when explicitly mapped",
+      "frequency and bandwidth when reconciled",
+      "conducted power and absolute gain when semantics are explicit",
+      "supported built-in patterns when equivalence is demonstrated",
+      "receiver-side quantities as observations with provenance"
+    ],
+    "cannot_claim_without_contract_change_or_additional_evidence": [
+      "first-class site/operator inventory identity",
+      "absolute received-power truth from EIRP-only data",
+      "arbitrary antenna-pattern fidelity",
+      "explicit neighbor truth",
+      "SINR/RSRQ/RSSI validation without interference/resource/noise context",
+      "receiver calibration or antenna correction that is not in the source record"
+    ]
+  },
+  "invariance": {
+    "production_behavior_changed": false,
+    "canonical_rf_changed": false,
+    "inventory_semantics_changed": false,
+    "validation_readiness_changed": false,
+    "optimizer_or_terrain_changed": false
+  }
+}

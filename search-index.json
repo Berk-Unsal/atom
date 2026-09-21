@@ -2540,6 +2540,354 @@
       "text": "The archive is deliberately bounded by unique RF evaluations, expanded states, and rounds. A budget-limited run reports budget_complete=false. Pareto-only expansion cannot cross a dominated stepping stone unless a deterministic start or a future explicitly audited novelty rule admits it. Infeasible states are retained as evidence and deterministic starts may expand them, but newly discovered infeasible states do not enter the active archive or become expansion candidates. These are search-traversal semantics only; production feasibility and recommendation semantics are unchanged. The generated JSON artifacts record two-cell 36×36 and restricted three-cell 12³ exhaustive comparisons, interaction and infeasible-barrier fixtures, priority invariance, multi-priority recovery, radio-quality objective-set behavior, order and budget sensitivity, archive growth, performance/memory estimates, and bounded Ankara behavior when the dataset is available. Keep 5C opt-in pending a product decision based on those measurements."
     },
     {
+      "page": "Concept 5D Search Policy Selection",
+      "title": "Concept 5D Search Policy Selection",
+      "url": "./concept-5d-search-policy-selection.html",
+      "text": "A decision-only comparison of the frozen legacy, Concept 5B, and Concept 5C search policies across exhaustive quality, cost, sensitivity, Ankara, and product use cases. View Markdown source System architecture Audit version: concept-5d-audit-v1"
+    },
+    {
+      "page": "Concept 5D Search Policy Selection",
+      "title": "Decision",
+      "url": "./concept-5d-search-policy-selection.html#decision",
+      "text": "Recommendation D is context-dependent. Keep the frozen legacy two-pass coordinate search as the default compatibility and latency path. Offer Concept 5B as an explicit “Deep search” opt-in when deterministic multi-start exploration is worth additional RF work. Offer Concept 5C as “Pareto Explorer” when users need several priority views from one bounded evaluated archive. Do not claim that either opt-in is globally optimal or exhaustive. The audit is decision-only. It does not add a fourth optimizer, change RF physics, change objective or feasibility semantics, change Pareto dominance, or change the legacy default."
+    },
+    {
+      "page": "Concept 5D Search Policy Selection",
+      "title": "Frozen identities and comparison schema",
+      "url": "./concept-5d-search-policy-selection.html#frozen-identities-and-comparison-schema",
+      "text": "The JSON comparison records normalize policy, fixture, priority vector, algorithm/version, scenario/search/discovery/ranking fingerprints, requested and unique RF evaluations, runtime, allocation measurement, recommendation, score/regret, raw objective deltas, Pareto recall/precision, archive size, sensitivity, cache work, termination, and guarantee language. The legacy, 5B, and 5C identities are recorded separately so compatible default behavior is not inferred from opt-in metadata."
+    },
+    {
+      "page": "Concept 5D Search Policy Selection",
+      "title": "Quality evidence",
+      "url": "./concept-5d-search-policy-selection.html#quality-evidence",
+      "text": "The exhaustive-quality artifact compares the three policies with the same fixed RF candidate grid across multiple positive non-radio priority profiles. It reports recommendation recovery, score regret, raw metric deltas, and Pareto recall/precision against an independent oracle. Synthetic interaction traps show why a single coordinate basin and Pareto-only traversal can miss a better basin; deterministic start diversity recovers it in the audited fixture. The infeasible-barrier evidence is explicit: no policy receives a novelty guarantee merely because a distant feasible basin exists."
+    },
+    {
+      "page": "Concept 5D Search Policy Selection",
+      "title": "Cost and reuse",
+      "url": "./concept-5d-search-policy-selection.html#cost-and-reuse",
+      "text": "The multi-priority-cost artifact reports 1/3/5/10 priority views. Legacy and 5B rerun RF discovery for each view. 5C pays discovery once, then reranks stored metrics with zero RF evaluations; rerank latency is measured separately. Budget curves match unique RF work for 5B and 5C, with legacy shown as fixed-cost context. Archive and cache estimates make the memory trade-off visible rather than hiding it behind response latency."
+    },
+    {
+      "page": "Concept 5D Search Policy Selection",
+      "title": "Ankara and product placement",
+      "url": "./concept-5d-search-policy-selection.html#ankara-and-product-placement",
+      "text": "The Ankara artifact records the canonical six-cell comparison when the dataset pack is available, plus realistic balanced, propagation-reach-focused, demand-focused, residential-focused, and radio-quality-focused profiles. If the dataset is unavailable, the artifact says so. Product placement is intentionally small: “Fast recommendation (default)”, “Deep search”, and “Pareto Explorer”. No frontend UI is changed."
+    },
+    {
+      "page": "Concept 5D Search Policy Selection",
+      "title": "Guarantees and limits",
+      "url": "./concept-5d-search-policy-selection.html#guarantees-and-limits",
+      "text": "Legacy: deterministic fixed two-pass coordinate sweep, not a global optimum. 5B: deterministic bounded multi-start heuristic, best evaluated candidate only. 5C: priority-independent bounded archive discovery followed by pure reranking, not a complete Pareto frontier. A budget-limited run is incomplete. Scenario/search/discovery/ranking fingerprints and deterministic repeated-run checks are evidence, not mathematical optimality proofs."
+    },
+    {
+      "page": "Concept 5D Search Policy Selection",
+      "title": "Gates and future work",
+      "url": "./concept-5d-search-policy-selection.html#gates-and-future-work",
+      "text": "The release gate is the existing repository suite plus race, vet, JSON/docs validation, version consistency, and diff checks. The future novelty/angle-refinement question remains open and is not implemented here; it should return only with a new exhaustive interaction suite, explicit admission and termination semantics, and matched RF/time budgets. Artifacts are rooted at /Users/berkunsal/Desktop/urban-ray-tracer and are generated by a gated test-only audit. Allocation numbers use runtime.MemStats.TotalAlloc deltas and must not be read as resident RSS."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Concept 6A Canonical RF Validation",
+      "url": "./concept-6a-canonical-rf-validation.html",
+      "text": "Source-independent 2.6/28 GHz RF observation semantics, canonical primitive reuse, deterministic matching, applicability gates, residual diagnostics, spatial holdouts, and conservative readiness. View Markdown source System architecture Concept 6A adds an evidence-only validation foundation for the production 2.6 GHz and 28 GHz planning profiles. Its result is a reproducible validation report, not a new propagation model, a fitted UMa equation, a calibrated canonical profile, or an optimizer input. The current readiness result is validation infrastructure complete, real-data validation unavailable . The repository has no usable public Ankara/Türkiye measurement campaign in the required schema, so no concept-6a-real-data-validation.json artifact is created and no real measurement result is claimed."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Boundary and invariance",
+      "url": "./concept-6a-canonical-rf-validation.html#boundary-and-invariance",
+      "text": "The implementation lives in canonical_rf_validation.go and canonical_rf_validation_holdout.go . It is a library boundary with no normal planning route and no frontend statistics panel. A future importer or isolated API can adapt source data into the same schema without entering /api/simulate , /api/interference , /api/optimize , or recommendation workflows. Concept 6A does not change: the 2.6 GHz or 28 GHz propagation equations, UMa coefficients, LOS/NLOS rules, building-entry behavior, or antenna/link-budget equations; receiver thresholds, sensitivity admission, interference, serving-cell selection, RSRP/SINR/RSRQ resource semantics, or radio-quality thresholds; objective definitions, search policies, Pareto/reranking behavior, recommendations, or optimizer scenario fingerprints; the research-only research_sub_thz profile, the 4I references, terrain-disabled behavior, or any existing measurement route. The pre-change freeze is in concept-6a-pre-change-baseline.json , and the post-change comparison is in concept-6a-post-change-comparison.json . Both record the current UMa contract, antenna and receiver semantics, interference/radio-quality contract, optimizer-independent fingerprint, and Ankara dataset identity."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Architecture and 4I.3 reuse",
+      "url": "./concept-6a-canonical-rf-validation.html#architecture-and-4i3-reuse",
+      "text": "The flow is: source adapter → canonical observation schema → deterministic transmitter match → frequency/resource/geometry/applicability gate → shared canonical RF primitive → quantity-specific predicted value → measured − predicted residual → strata/holdout/calibration diagnostics → readiness . The existing 4I.3 layer was audited and reused where it is generic: schema/version discipline, provenance-first evidence, explicit censoring, deterministic spatial defaults, minimum reportable group size, holdout vocabulary, fingerprint exclusion of runtime/path/UI state, and the conservative calibration/non-promotion policy. The shared 4I.3 defaults are referenced directly by the Go extension ( MinimumValidationSamples , DefaultSpatialCellSizeM , and DefaultSpatialSeparationM ). 4I.3 intentionally normalizes Sub-THz evidence to path loss. Reusing that normalizer for 2.6/28 GHz would erase the distinction between received power, RSRP, RSSI, SINR, and RSRQ. Concept 6A therefore extends the same evidence policy with a quantity-preserving canonical layer rather than silently duplicating or weakening the 4I.3 semantics. Source independence is represented by CanonicalRFValidationAdapter . The included identity adapter accepts the canonical schema; source-specific CSV/TSV, GeoJSON, or field-tool adapters must map into it and retain source provenance before evaluation. No source adapter is allowed to choose a model, strongest cell, calibration statistic, or residual-minimizing aggregation."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Schema and observed quantities",
+      "url": "./concept-6a-canonical-rf-validation.html#schema-and-observed-quantities",
+      "text": "The machine-readable contract is concept-6a-validation-schema.json . Each observation carries stable observation/campaign/site/session identifiers, timestamp, latitude/longitude when available, receiver height and height provenance, technology, frequency, band, bandwidth, channel, serving-cell identity/PCI, quantity, value, device/antenna/calibration identity, motion and sampling metadata, aggregation method, provenance, quality flags, LOS/NLOS and outdoor labels, detection/censoring status, and radio-resource context. The accepted quantities are distinct: Quantity Comparison domain Required interpretation received_power_dbm absolute received power shared EvaluatePropagationLink result rsrp_dbm reference-signal power shared carrier-to-reference-resource conversion; never RSSI sinr_db serving SINR shared interference/radio-quality primitive with serving, channel, bandwidth, resource, and neighbor context rsrq_db serving RSRQ shared interference/radio-quality primitive with the same context requirements rssi_dbm wideband RSSI kept separate from RSRP and never cross-compared path_loss_db propagation-only path loss diagnostic propagation comparison, not absolute received-power validation The residual convention is always: residual_db = measured_value_db - predicted_value_db . Positive residual means the canonical model underpredicts the measured quantity. RSSI is never compared with RSRP. Received power is never silently converted to path loss, and path loss is never treated as absolute received-power evidence. Temporal meaning is explicit. raw , mean , median , and percentile are accepted deterministic aggregation choices; AggregateCanonicalRFValues sorts before reducing and requires an explicit percentile. The evaluator never selects a statistic because it improves a residual. Receiver height is required for applicability and carries measured , configured , assumed , or unknown provenance. There is no silent 1.5 m default. Device and antenna effects are retained as evidence metadata; Concept 6A does not compensate them. Missing device, antenna, or calibration identity downgrades completeness to usable_with_assumptions rather than fabricating a correction."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Matching, frequency, geometry, and applicability",
+      "url": "./concept-6a-canonical-rf-validation.html#matching-frequency-geometry-and-applicability",
+      "text": "Transmitter matching is deterministic and auditable: exact transmitter/serving-cell ID or explicit mapping ID; exact PCI, channel, and frequency candidate; an explicitly enabled geographic candidate policy with a bounded radius and deterministic nearest/tie rule. The evaluator never infers the strongest modeled cell as the serving transmitter. An unresolved, missing, mismatched, or tied candidate remains an explicit exclusion reason. Frequency and bandwidth are checked before residuals. 2.6 GHz and 28 GHz are separate strata and are never pooled into one headline metric. RSRP conversion uses the matched profile’s declared technology/bandwidth/resource semantics. SINR/RSRQ/RSSI require explicit serving identity, channel, bandwidth, resource semantics, and complete neighbor/interference context; otherwise the result is interference_validation_limited and does not become an ordinary residual. The canonical UMa applicability gate is evaluated before prediction: 2.6 or 28 GHz, 10 m <= d2D <= 5000 m , valid Tx/Rx heights, outdoor-to-outdoor endpoints, and explicit LOS/NLOS. Unknown LOS/NLOS, indoor endpoints, frequency mismatch, height gaps, distance gaps, and geometry mismatches are excluded with a reason. Where a building index is supplied, the existing height-aware path classifier is used; otherwise the observation’s declared LOS/NLOS label is retained as provenance and passed to the same production link primitive. The validator never reimplements the UMa equations."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Canonical evaluation and evidence fingerprint",
+      "url": "./concept-6a-canonical-rf-validation.html#canonical-evaluation-and-evidence-fingerprint",
+      "text": "Each applicable observation calls the same EvaluatePropagationLink used by production. Radio-quality quantities additionally call the existing evaluateInterferencePointContext , carrierPowerToReferencePower , and computeRadioQualityMetrics path. The result records measured value, predicted value, residual, applicability, matching method/status, assumptions, quantity semantics, receiver threshold, resource/interference status, and a propagation fingerprint. The validation fingerprint contains dataset ID/version, an order-independent observation checksum, adapter/evaluator versions, canonical RF scenario identity, matching policy, applicability policy, residual convention, censoring policy, spatial strategy, and calibration policy. It excludes timestamps, local paths, runtime, memory, and UI state. The canonical scenario fingerprint is optimizer-independent and cannot be used to alter a planning scenario fingerprint."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Metrics and strata",
+      "url": "./concept-6a-canonical-rf-validation.html#metrics-and-strata",
+      "text": "Every summary reports n together with mean bias, median bias, MAE, RMSE, standard deviation, p50/p90/p95 absolute error, and residual distribution min/p01/p10/median/p90/p99/max. Tiny groups are marked with small_group and never appear without their sample count. Metrics are available overall and independently by quantity, frequency, LOS/NLOS, distance, site, and campaign. The defensible distance bins are 10–50 m , 50–100 m , 100–200 m , 200–400 m , and 400 m+ ; below-envelope distances remain applicability exclusions. Unknown LOS/NLOS is not silently pooled with LOS or NLOS. Explicit left/right/below-detection observations are counted as censored and excluded from ordinary residual metrics. A floor such as < -120 dBm is not rewritten as -120 dBm ."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Spatial, site, campaign, and calibration diagnostics",
+      "url": "./concept-6a-canonical-rf-validation.html#spatial-site-campaign-and-calibration-diagnostics",
+      "text": "The primary holdout policy is deterministic spatial blocks; leave-one-site-out and leave-one-campaign-out are also available. Calibration rows within the configured minimum separation of a validation block are excluded, and each fold reports IDs, group sets, counts, cell size/separation, and no-leak evidence. Random row splitting is not the primary validation strategy. The uncalibrated baseline is always present. A frequency-specific constant bias may be estimated from calibration blocks and applied only to held-out diagnostic metrics. Calibration is not stratified by LOS/NLOS in 6A, is never applied to production RF, and is never promoted by the evaluator. Stability requires independent folds with sufficient counts and materially reduced held-out residual structure; a distance trend or LOS/NLOS differential therefore fails the scalar-calibration gate. Propagation/path-loss validation and absolute received-power validation are reported as different completeness classes: complete_for_absolute_validation ; usable_with_assumptions ; propagation_only ; insufficient . No readiness state is the bare word “validated.” The available states are no_measurement_data , insufficient_metadata , validation_only , calibration_unstable , calibration_candidate , and validated_for_declared_scope ; the last state remains gated by independent review and reproducible real campaigns."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Synthetic controls",
+      "url": "./concept-6a-canonical-rf-validation.html#synthetic-controls",
+      "text": "concept-6a-synthetic-validation.json contains six controlled fixtures. The backend tests in canonical_rf_validation_test.go also cover serving-cell mismatch, quantity-schema incompatibility, frequency mismatch, applicability exclusion, complete radio-quality evaluation, and deterministic repeated evaluation. Exact canonical residual zero: values generated by the shared primitive produce zero residual. Known +5 dB offset: a held-out constant-bias diagnostic recovers +5 dB while promoted and calibration_active remain false. Distance-dependent error: a scalar correction remains unstable after holdout. Spatial error: a held-out region exposes a correction failure. LOS/NLOS differential: opposite stratum offsets remain visible; one scalar is inadequate. Censored floor: a below-detection record is counted but is not treated as an exact residual. These fixtures test implementation behavior only. They are not field evidence."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Public-data audit and Ankara campaign",
+      "url": "./concept-6a-canonical-rf-validation.html#public-data-audit-and-ankara-campaign",
+      "text": "The source audit is concept-6a-dataset-source-audit.json . Public candidates were checked for raw numeric observations, 2.6/28 GHz frequency, geolocation, serving-cell/mapping metadata, resource semantics, device/antenna/calibration provenance, and redistribution terms. Public LTE/5G datasets do provide useful RSRP/RSRQ/SINR examples, but the audited candidates are outside Ankara/Türkiye, outside the exact 2.6/28 GHz scope, missing transmitter configuration/coordinates or complete calibration semantics, or have incomplete license/metadata evidence. They are not imported or treated as usable real-data validation in this change. The field design is in concept-6a-campaign-design.json . A future Ankara campaign should capture synchronized raw and aggregated records at both frequencies across independent sites/routes and repeated sessions, with georeferenced Tx/Rx coordinates, Tx/Rx heights, explicit serving cell/PCI/channel mapping, bandwidth and resource semantics, device/antenna/calibration identifiers, LOS/NLOS and outdoor labels, neighbor cells for radio quality, detection limits, and complete provenance. It should reserve spatial/site/campaign holdouts before any calibration decision. No acquisition was performed by Concept 6A."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Readiness and Concept 6B gate",
+      "url": "./concept-6a-canonical-rf-validation.html#readiness-and-concept-6b-gate",
+      "text": "concept-6a-readiness.json records no_measurement_data , production_candidate: false , and calibration_active: false . The permitted interpretation is “validation infrastructure complete, real-data validation unavailable.” The required Concept 6B gate is independent usable samples, complete quantity/device/antenna/calibration/resource metadata, deterministic serving-cell mapping, spatial/site/campaign holdouts, stable frequency-specific correction if one is proposed, reproducible campaign provenance, no configuration bias, and independent review. Concept 6A does not implement calibrated canonical RF, UMa coefficient fitting, ML/regression, kriging, terrain coupling, P.526 coupling, 140 GHz coupling, optimizer changes, or a new search policy. Those are future decisions and require a separate evidence-backed scope."
+    },
+    {
+      "page": "Concept 6A Canonical RF Validation",
+      "title": "Validation commands and files",
+      "url": "./concept-6a-canonical-rf-validation.html#validation-commands-and-files",
+      "text": "The required backend checks are: cd backend-go && go test ./... cd backend-go && go test -race ./... cd backend-go && go vet ./... python3 -m json.tool docs/concept-6a-validation-schema.json python3 scripts/versioning.py check git diff --check The gated artifact test is: cd backend-go && ATOM_RUN_CONCEPT_6A_AUDIT=1 go test ./raytracer -run '^TestGenerateConcept6AArtifacts$' -count=1 Required files are the schema, pre-change baseline, synthetic validation, dataset-source audit, campaign design, readiness, post-change comparison, and this design note. No real-data artifact exists because no source passed the complete-data audit."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "Concept 6A.1 Campaign Tooling",
+      "url": "./concept-6a1-campaign-tooling.html",
+      "text": "Ankara receive-side campaign tooling, Signal Collector V6 raw preservation, transmitter truth mapping, quantity-specific readiness, dry-run validation, and the Concept 6B gate. View Markdown source System architecture Concept 6A.1 is the acquisition and data-quality phase around the frozen Concept 6A canonical RF validation boundary. It makes a real Ankara pilot operationally possible without changing the canonical 2.6 GHz/28 GHz RF model, the UMa implementation, antenna/link-budget semantics, interference/radio-quality primitives, optimizer behavior, terrain behavior, or Concept 6A’s matching, applicability, residual, readiness, and calibration rules. The current result is dry_run_ready_real_data_unavailable . The repository contains a synthetic controlled export that exercises the complete import path; it is not field evidence. No real pilot data was supplied, so no concept-6a1-pilot-validation.json is created."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "1. Scope and frozen boundary",
+      "url": "./concept-6a1-campaign-tooling.html#1-scope-and-frozen-boundary",
+      "text": "The implementation is the receive-side campaign tooling in concept_6a1_campaign_tooling.go , plus the isolated import-concept-6a1 command. It adapts a documented handset export into the existing CanonicalRFValidationDataset and then invokes EvaluateCanonicalRFValidation . It does not calibrate canonical RF, fit UMa coefficients, change 2.6 GHz or 28 GHz propagation, infer a transmitter from strongest signal, invent missing frequency/bandwidth/height/LOS/antenna/calibration data, smooth measurements, replace SINR with RSRP, or feed observations into planning, optimization, or recommendation routes. The exact Concept 6A snapshots and optimizer-independent fingerprint are recorded in concept-6a1-pre-change-baseline.json and concept-6a1-post-change-comparison.json . The post-change comparison reports exact snapshot equality and keeps Concept 6A readiness at no_measurement_data ."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "2. Acquisition modes considered",
+      "url": "./concept-6a1-campaign-tooling.html#2-acquisition-modes-considered",
+      "text": "The pilot keeps three modes available: Handset mode: an Android handset modem plus GNSS, using an exported measurement file. This is the selected phase-1 mode because it is repeatable, low-friction, and can retain raw records without changing the network. Engineering/modem-log mode: a vendor or native CellInfo collector when the handset export lacks a required field, especially NR bandwidth/resource metadata. This is a phase-2 escalation and must pass a device-specific audit first. Manual fixed-point mode: an operator records point ID, height, route, LOS/NLOS, outdoor state, and the exact export/session at each stationary point. It is a fallback for route control, not a replacement for raw modem records. The campaign is receive-side only. It does not transmit test signals, alter network configuration, require operator-side privileges, or claim that a handset reading is calibrated absolute received power."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "3. Selected collector and audit",
+      "url": "./concept-6a1-campaign-tooling.html#3-selected-collector-and-audit",
+      "text": "The selected tool is Android Signal Collector with its documented SIGNAL_COLLECTOR_TXT_V6 export. The audit is in concept-6a1-collector-audit.json . The audit records platform, handset/GNSS requirements, root assumptions, export containers, fields, automation, permissions, privacy, licensing checks, and limitations. The documented sources are Signal Collector’s format reference , its product page , and its Google Play listing . The actual pilot must re-check the installed version, device behavior, export terms, operator permissions, and participant/site consent on the target hardware. CellMapper standard CSV was rejected for the full scope because its documented columns do not provide the required timestamp, RSRQ/SINR, and complete provenance contract; the audit retains it as an alternative. Android native CellInfo is the engineering fallback. Android documents registered LTE/NR cell records and timestamps in CellInfo ; the AOSP signal-strength contract documents LTE RSRP/RSRQ/RSSNR and NR SSRSRP/SSRSRQ/SSSINR in its signal-strength reference ."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "4. Raw V6 format and exported semantics",
+      "url": "./concept-6a1-campaign-tooling.html#4-raw-v6-format-and-exported-semantics",
+      "text": "The selected raw artifact starts with SIGNAL_COLLECTOR_TXT_V6 , followed by key=value header lines, a blank line, and a seven-column TSV envelope: timestamp_iso_utc epoch_ms elapsed_realtime_ns session_id sequence_number source payload payload is a second escaped key=value grammar separated by semicolons. The adapter decodes the outer TSV without destroying nested \\; , \\= , \\t , \\r , \\n , and \\\\ escapes, then parses the payload. Plain UTF-8 text and gzip-wrapped text are accepted; the checksum always identifies the original input bytes. For LTE, the adapter maps rsrp to rsrp_dbm , rsrq to rsrq_db , rssnr or sinr to sinr_db , and rssi to rssi_dbm . For NR it maps ss_rsrp , ss_rsrq , and ss_sinr . A generic dbm value is never relabeled as received power or RSRP. LTE bandwidth is interpreted as the documented kHz field and converted to MHz only when present. NR bandwidth is not assumed to exist. The selected format carries serving identity ( registered , connection_status , cell_id / nci , pci , plmn , tac ), channel ( earfcn / nrarfcn ), band, frequency, cell timestamp, GNSS fix, horizontal accuracy, altitude, speed, and UTC timestamps. Every source field remains visible through the raw export checksum, source field name, raw line, and imported identity fields."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "5. Raw preservation and checksums",
+      "url": "./concept-6a1-campaign-tooling.html#5-raw-preservation-and-checksums",
+      "text": "The campaign manifest requires raw retention, a separate canonical output, SHA-256, and no overwrite. The CLI reads -raw and never writes to that path. A report includes the raw container, byte count, immutable checksum, parsed-row count, and source provenance. Canonical observations carry the raw checksum in provenance . Malformed rows are reported as import issues and are not silently repaired. Header record-count mismatches and collector-reported dropped samples remain warnings. A gzip container is decompressed only in memory for parsing; its original compressed bytes are hashed and remain the artifact of record."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "6. Campaign manifest",
+      "url": "./concept-6a1-campaign-tooling.html#6-campaign-manifest",
+      "text": "concept-6a1-campaign-manifest.schema.json is the strict JSON Schema contract. The example is concept-6a1-dry-run-campaign.json . It requires: campaign identity, date, source type, sessions, collector/version/platform/permissions, and raw format; raw retention and no-overwrite policy; pseudonymous device, built-in antenna basis, calibration state, receiver height, and height provenance; coordinate provider, CRS, maximum accepted accuracy, timezone, and UTC normalization; operator/PLMN context and consent note; sampling interval, fixed-point window, motion state, raw aggregation, repeated-sample policy, LOS/outdoor annotation policy, and neighbor/censoring declarations; explicit representations for unavailable, invalid, and censored values; and known limitations plus privacy and sharing policy. The Go validator rejects missing receiver height, unknown usable height provenance, collector root requirements, missing detection policy, missing limitations, or missing privacy policy. No receiver-height, frequency, bandwidth, cell, LOS, outdoor, or detection default is inserted."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "7. Transmitter truth map and provenance",
+      "url": "./concept-6a1-campaign-tooling.html#7-transmitter-truth-map-and-provenance",
+      "text": "concept-6a1-transmitter-map.schema.json and concept-6a1-dry-run-transmitter-map.json map observed PLMN/cell identity to a configured A.T.O.M transmitter. Each entry includes A.T.O.M cell ID, observed cell ID, PCI, PLMN, site coordinates, an explicit canonical RF profile, source citation, and field-level provenance. Every mapping field is marked known , configured , inferred , or unknown with a source. configured planning values such as transmitter height, azimuth, tilt, bandwidth, and conducted power remain configuration evidence. They are never relabeled as handset measurements. In particular, configured 100 MHz NR planning bandwidth cannot fill a missing bandwidth field in a 28 GHz observation."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "8. Identity and matching policy",
+      "url": "./concept-6a1-campaign-tooling.html#8-identity-and-matching-policy",
+      "text": "The adapter accepts only PRIMARY_SERVING or SECONDARY_SERVING rows with an explicit registered state as serving observations. It never chooses the strongest cell. Unregistered rows are retained as neighbor IDs within their source cell-timestamp group. The mapping classes are: exact_transmitter_mapping : PLMN plus observed cell ID resolves to one map entry; deterministic_identity_mapping : PCI/channel/frequency form a unique canonical candidate later in Concept 6A; geographic_candidate_only : reserved for an explicitly enabled future policy, disabled by this adapter; and unresolved : no safe identity exists. The dry run uses exact mappings for cell IDs 1001 and 2001 ; neighbor IDs 1002 and 2002 never become canonical serving observations."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "9. Route, point, and site design",
+      "url": "./concept-6a1-campaign-tooling.html#9-route-point-and-site-design",
+      "text": "Each real run should define independent Ankara routes and fixed points before collection. A point annotation must have a stable point ID, site ID, route ID, point window, LOS/NLOS source, and outdoor state. Route IDs are retained separately from transmitter site IDs so a measurement site is not confused with a configured base-station site. The pilot should stratify both 2.6 GHz and 28 GHz by distance, LOS/NLOS, outdoor state, dense/open morphology, and route/site. It should include near/mid/far points within the canonical 10–5000 m distance envelope and deliberately label points that are outside it rather than filtering them into a headline result."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "10. Fixed points, moving routes, and repeats",
+      "url": "./concept-6a1-campaign-tooling.html#10-fixed-points-moving-routes-and-repeats",
+      "text": "Fixed-point samples remain raw and repeated. The importer groups them by annotated point window and records sessions per fixed point. It does not average samples to improve residuals. Moving routes retain the source timestamp, GNSS accuracy, speed, and motion state; a manifest default is only a declared collection state, not a measured speed. The minimum real pilot should repeat each fixed point in independent sessions, repeat routes in both directions where safe, and reserve sites/routes/campaigns for holdout before inspecting residuals. Stationary and moving rows remain separate strata. Mean, median, p10, and p90 may be reported as named descriptive summaries of the preserved raw group, but the raw samples remain the evidence and no summary is selected to improve a residual."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "11. Receiver-height policy",
+      "url": "./concept-6a1-campaign-tooling.html#11-receiver-height-policy",
+      "text": "The receiver height is a manifest value with explicit provenance. The dry run uses 1.8 m configured for a controlled handset fixture; a real run should record how the height was measured or configured for the operator’s carry position. The importer refuses a missing height and never falls back to the canonical 1.5 m value. The transmitter map’s antenna height is planning configuration and has its own provenance. Neither height is inferred from GPS altitude or a map profile without a declared source."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "12. GPS and coordinate policy",
+      "url": "./concept-6a1-campaign-tooling.html#12-gps-and-coordinate-policy",
+      "text": "The selected coordinate contract is WGS84/EPSG:4326, UTC-normalized timestamps, GNSS horizontal accuracy, altitude, and speed. A fix over the manifest’s accuracy limit remains in the raw file and is counted as poor position; its coordinates are omitted from canonical geometry. A missing fix is counted separately. No coordinate is copied from a transmitter map or neighboring row. The dry run intentionally includes one poor-accuracy row and one missing-fix row. The quality report shows both without claiming a field path result for them."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "13. Time synchronization",
+      "url": "./concept-6a1-campaign-tooling.html#13-time-synchronization",
+      "text": "The parser preserves ISO timestamp, epoch milliseconds, elapsed realtime nanoseconds, session ID, sequence number, and cell timestamp. It normalizes an ISO timestamp to UTC for the canonical row while retaining the original raw bytes. A timestamp/epoch difference over two seconds is a warning, not a silent correction. Decreasing elapsed realtime within a session is a separate warning. The real campaign should synchronize handset and any external annotation device before each session, record timezone and clock source, and reject or quarantine runs with large skew. Timestamp warnings remain in the quality artifact."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "14. Quantity semantics",
+      "url": "./concept-6a1-campaign-tooling.html#14-quantity-semantics",
+      "text": "The adapter preserves the following distinctions: Source field Canonical quantity Meaning Missing-field rule LTE rsrp / NR ss_rsrp rsrp_dbm reference-signal received power no conversion from RSSI or generic dBm LTE rsrq / NR ss_rsrq rsrq_db reference-signal quality requires canonical radio-quality context LTE rssnr / sinr / NR ss_sinr sinr_db serving signal-to-interference-plus-noise ratio never substituted with RSRP LTE rssi rssi_dbm wideband RSSI never cross-compared with RSRP none received_power_dbm absolute link received power never fabricated by the adapter The canonical evaluator supplies predicted values only where the existing Concept 6A quantity contract permits. Residuals remain measured minus predicted. The importer does not choose a statistic or combine quantities."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "15. Detection floors and censoring",
+      "url": "./concept-6a1-campaign-tooling.html#15-detection-floors-and-censoring",
+      "text": "The selected V6 export does not guarantee an explicit detection floor or left/right censoring semantics. The manifest therefore declares detection unavailable and requires empty/unavailable source fields to remain missing. An empty measurement is not a censored value, and a detection floor is never substituted. If a future collector supplies a real floor, the adapter must carry the limit and censoring direction into the existing Concept 6A fields. Those records are counted but excluded from ordinary exact residual metrics according to the frozen evaluator policy."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "16. Neighbor and radio-quality context",
+      "url": "./concept-6a1-campaign-tooling.html#16-neighbor-and-radio-quality-context",
+      "text": "Raw neighbor rows are retained when they share a cell-timestamp group, but the dry-run manifest declares neighbor_context_complete: false . This means LTE SINR, RSRQ, and RSSI remain interference_validation_limited even though the source values are present. A 28 GHz row without raw bandwidth stops earlier at bandwidth_missing . For a real radio-quality pilot, the campaign must export serving and neighbor identities, channel and bandwidth/resource semantics, sampling context, and any required load/interference metadata. The adapter must not derive a complete interference denominator from a partial neighbor list."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "17. Quality report",
+      "url": "./concept-6a1-campaign-tooling.html#17-quality-report",
+      "text": "The report includes raw/parsed/cell/serving/neighbor counts, ambiguous groups, valid/poor/missing coordinates, valid/missing measurements, valid/missing frequency, receiver-height status, serving identity and mapping counts, stationary/moving/unclassified counts, timestamp warnings, fixed-point groups, per-quantity readiness, exclusion reasons, issues, and notes. The quality report is a gate, not a score. A high parse count cannot override missing bandwidth, incomplete interference context, unresolved identity, poor position, unknown LOS/NLOS, or missing calibration semantics."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "18. Source adapter and canonical path",
+      "url": "./concept-6a1-campaign-tooling.html#18-source-adapter-and-canonical-path",
+      "text": "The end-to-end path is: raw V6 bytes → escaped V6 parser → manifest/map validation → source rows and quality counters → canonical quantity-preserving observations → existing Concept 6A evaluator → per-quantity readiness . The adapter is source-specific only up to the canonical schema. It does not call a planning route, mutate the canonical RF profile, or pass calibration into the production evaluator. The CLI writes a separate JSON report and leaves the raw input untouched. Run it with: cd backend-go go run ./cmd/import-concept-6a1 \\ -raw ../examples/concept-6a1-signal-collector-dry-run.txt \\ -manifest ../examples/concept-6a1-dry-run-campaign.json \\ -transmitter-map ../examples/concept-6a1-dry-run-transmitter-map.json \\ -output /tmp/concept-6a1-report.json"
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "19. Dry-run status and real-data boundary",
+      "url": "./concept-6a1-campaign-tooling.html#19-dry-run-status-and-real-data-boundary",
+      "text": "The controlled export is explicitly synthetic_controlled . It proves parser, raw checksum, mapping, quantity semantics, GPS handling, fixed-point grouping, canonical invocation, holdout retention, and readiness reporting. It does not prove handset accuracy, transmitter truth, device calibration, or Ankara field conditions. Because no real data was supplied, the implementation stops at a dry-run report. The optional pilot validation artifact is deliberately absent. No synthetic residual is promoted as a field result."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "20. Per-quantity readiness",
+      "url": "./concept-6a1-campaign-tooling.html#20-per-quantity-readiness",
+      "text": "The generated concept-6a1-readiness.json reports: 2.6 GHz rsrp_dbm : two applicable controlled observations and suitable for the dry-run validation path; 28 GHz rsrp_dbm : blocked by missing raw bandwidth, despite configured map bandwidth; 2.6 GHz sinr_db , rsrq_db , and rssi_dbm : source values retained but blocked by incomplete neighbor/interference context; 28 GHz sinr_db and rsrq_db : blocked by missing bandwidth before radio-quality evaluation; and received_power_dbm : no rows, because the adapter never fabricates it from RSRP. These are tooling readiness results, not a claim that the canonical RF model is validated."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "21. Independence and holdouts",
+      "url": "./concept-6a1-campaign-tooling.html#21-independence-and-holdouts",
+      "text": "The canonical response retains the existing spatial-block holdout policy with primary holdout enabled. The real campaign plan must reserve spatial blocks, sites, routes, and campaigns before any calibration decision. Repeated samples from one fixed point are not independent merely because their timestamps differ. The campaign manifest keeps device, antenna, calibration, route, site, session, point, and raw checksum identifiers so a later audit can group by the correct independence unit. No random row split is promoted as the primary evidence design."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "22. Uncalibrated baseline policy",
+      "url": "./concept-6a1-campaign-tooling.html#22-uncalibrated-baseline-policy",
+      "text": "Concept 6A.1 reports only uncalibrated readiness. The receiver calibration state is recorded as provenance, not applied as a correction. The dry run sets calibration_active: false and suitable_for_calibration_study: false . If real observations eventually pass quantity, mapping, metadata, and holdout gates, a first uncalibrated report must include n , bias, median residual, MAE, RMSE, p90 absolute error, and relevant frequency/LOS/distance/site/session strata. Any frequency-specific constant-bias study remains the diagnostic-only Concept 6A procedure. It must be fit on calibration blocks and assessed on held-out blocks before any separate 6B decision."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "23. No production promotion",
+      "url": "./concept-6a1-campaign-tooling.html#23-no-production-promotion",
+      "text": "The CLI and adapter have no optimizer/planner integration. production_candidate is false, and no measurement field changes a canonical RF profile or a network scenario. The canonical evaluator’s diagnostic calibration output, when present, is not activated or promoted."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "24. Concept 6B gate and next step",
+      "url": "./concept-6a1-campaign-tooling.html#24-concept-6b-gate-and-next-step",
+      "text": "Concept 6B is not ready. The remaining gates are lawful real receive-side observations, complete quantity/device/antenna/calibration/resource metadata, deterministic serving-cell truth, independent spatial/site/campaign holdouts, stable frequency-specific behavior, reproducible provenance, no configuration bias, complete radio-quality context where claimed, and independent review. The recommended next step is a small consented handset pilot using the selected V6 mode at a few fixed points and one moving route per frequency, with a separate truth-map review and an explicit engineering fallback for NR resource metadata. Keep the campaign uncalibrated until the quality report passes."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "25. Privacy, licensing, and safety",
+      "url": "./concept-6a1-campaign-tooling.html#25-privacy-licensing-and-safety",
+      "text": "The manifest excludes subscriber name, phone number, IMSI, IMEI, account identifiers, and raw device advertising identifiers from the canonical record. Raw files remain restricted campaign artifacts. Cell identities are retained only because deterministic serving-cell mapping requires them; sharing must be pseudonymous and consented. Before a real run, obtain operator, site, participant, institutional, and app/export permissions as applicable. Verify the collector’s current terms and any redistribution constraints. Do not collect or publish personal identifiers, do not transmit test signals, and do not use root or privileged access without an explicit device-specific audit."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "26. Reproducibility and fingerprints",
+      "url": "./concept-6a1-campaign-tooling.html#26-reproducibility-and-fingerprints",
+      "text": "The raw checksum, manifest version, transmitter-map version, adapter version, canonical observation checksum, validation fingerprint, scenario fingerprint, device pseudonym, sessions, and point IDs form the reproducibility record. The validation fingerprint excludes local paths, runtime, memory, worker count, and UI state. The dry run is repeatable: the raw SHA-256 and canonical validation fingerprint are stable across repeated evaluations. Gzip input uses the checksum of the original compressed bytes, so a container change is visible even when decompressed rows are identical."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "27. Invariance tests",
+      "url": "./concept-6a1-campaign-tooling.html#27-invariance-tests",
+      "text": "The artifact test captures the current 2.6 GHz and 28 GHz canonical snapshots before and after the tooling change. It asserts exact equality, equal optimizer-independent scenario fingerprints, unchanged Concept 6A readiness, no calibration activation, and no production candidate. The change is acquisition-only, so antenna/link-budget, interference/radio-quality, terrain, and optimizer policies remain untouched; the existing 140 GHz/4I reference scope is also outside this adapter. Backend tests also cover escape parsing, malformed rows, gzip checksums, missing receiver height, provenance rejection, no-default behavior, missing frequency, neighbor exclusion, fixed-point grouping, quantity mapping, and deterministic repeated evaluation."
+    },
+    {
+      "page": "Concept 6A.1 Campaign Tooling",
+      "title": "28. Files, commands, and recommendation",
+      "url": "./concept-6a1-campaign-tooling.html#28-files-commands-and-recommendation",
+      "text": "Key files: concept_6a1_campaign_tooling.go : parser, manifest/map validation, adapter, quality report, and evaluator wrapper; concept_6a1_campaign_tooling_test.go and concept_6a1_campaign_artifact_test.go : regression and artifact tests; concept-6a1-campaign-manifest.schema.json and concept-6a1-transmitter-map.schema.json : strict contracts; concept-6a1-collector-audit.json : selected tool and alternatives audit; concept-6a1-dry-run-validation.json , concept-6a1-readiness.json , concept-6a1-pre-change-baseline.json , and concept-6a1-post-change-comparison.json : generated evidence; and concept-6a1-signal-collector-dry-run.txt , concept-6a1-dry-run-campaign.json , and concept-6a1-dry-run-transmitter-map.json : synthetic fixtures. Validation commands: cd backend-go && go test ./... cd backend-go && go test -race ./... cd backend-go && go vet ./... cd backend-go && ATOM_RUN_CONCEPT_6A1_AUDIT=1 go test ./raytracer -run '^TestGenerateConcept6A1Artifacts$' -count=1 sh docs/build-reference-pages.sh data-pipeline/.venv/bin/python docs/validate_docs.py python3 scripts/versioning.py check git diff --check Recommendation: proceed to a consented real pilot for acquisition and quality auditing only. Do not call the current dry run validation evidence, do not activate calibration, and do not open the Concept 6B gate until real-data and independent-review requirements are met."
+    },
+    {
+      "page": "Concept 7C Durable Local Run History",
+      "title": "Concept 7C Durable Local Run History",
+      "url": "./concept-7c-run-history.html",
+      "text": "Separate browser-local run history for exact draft execution snapshots, compact results, lifecycle recovery, lineage, deletion, and safe historical inspection. View Markdown source System architecture Concept 7C adds browser-local history for normal simulation and optimization actions. A run is a durable domain record, not a cache claim and not a replacement for a saved ScenarioRevision."
+    },
+    {
+      "page": "Concept 7C Durable Local Run History",
+      "title": "Storage decision",
+      "url": "./concept-7c-run-history.html#storage-decision",
+      "text": "Run history lives in a separate additive IndexedDB database: database: atom-run-history database version: 1 object store: runs object-store key: run_id physical value: { \"storage_schema_version\": 1, \"run\": <Run> } The existing atom-planning-workspace database, ProjectV2 schema, workspace compaction, workspace localStorage fallback, RF request builders, and server APIs are unchanged. History never falls back to localStorage and never enters exported project files. This keeps workspace migration risk and serialized workspace growth out of the normal planning path while allowing deterministic history queries."
+    },
+    {
+      "page": "Concept 7C Durable Local Run History",
+      "title": "Domain and lifecycle",
+      "url": "./concept-7c-run-history.html#domain-and-lifecycle",
+      "text": "Run is authoritative. Supported run types are simulation , optimization , validation , batch_experiment , diagnostic , and reference_evaluation ; the UI currently creates simulation and optimization records. The lifecycle is: queued → running → succeeded | failed | cancelled The queued and running records are written before the compute request where storage is available. Terminal input and identity fields are immutable; status, timestamps, warnings, error, compact summary, details, and artifact references are lifecycle fields. A browser restart converts queued/running records into a failed record with error.code = run_interrupted , which is distinct from user/request cancellation. Persistence failure is non-fatal to compute. The UI reports a local-history warning and leaves the RF/optimizer result intact. Malformed records are skipped individually while valid records load; structured run_invalid issues are exposed to the history panel."
+    },
+    {
+      "page": "Concept 7C Durable Local Run History",
+      "title": "Exact inputs and unsaved drafts",
+      "url": "./concept-7c-run-history.html#exact-inputs-and-unsaved-drafts",
+      "text": "Every executed request is copied into canonical_input_snapshot.request before the API call. The snapshot also records request schema, source ScenarioRevision when one exists, draft-vs-source provenance, inventory revision, dataset references, receiver/interference assumptions, optimizer configuration, applied defaults, engine/model identity, and the RF contract. Unsaved drafts do not force a visible Save Scenario operation and are labelled draft_execution: true . Scenario and input fingerprints are copied from existing scenario/API identity fields when available. Run IDs are local entity IDs and never enter compute request payloads."
+    },
+    {
+      "page": "Concept 7C Durable Local Run History",
+      "title": "Retained result policy",
+      "url": "./concept-7c-run-history.html#retained-result-policy",
+      "text": "Simulation history retains compact statistics, model identity, coverage-gap statistics, warnings, and provenance. It deliberately excludes GeoJSON, ray paths, per-ray samples, terrain grids, coverage surfaces, building overlays, and other map-sized arrays. Inspecting a historic simulation says “Detailed visualization was not retained”; it does not silently rerun. Optimization history retains the public baseline, public Pareto solutions, durable solution IDs, recommended/selected IDs, priorities, objective availability, constraints, search policy, budgets, evaluated-count/cache summary, optimizer identity, RF contract, and optimization run identity. Private evaluation ledgers, raw search archives, private caches, and full RF/map outputs are excluded. Pareto IDs remain compute/API IDs; optimization_solution_id is a separate durable local identity."
+    },
+    {
+      "page": "Concept 7C Durable Local Run History",
+      "title": "History UI",
+      "url": "./concept-7c-run-history.html#history-ui",
+      "text": "The Review stage contains a compact Run history tool. It supports newest-first project filtering, status/type/source display, identity and dataset inspection, failure/cancellation/interruption messages, public optimization solution inspection, explicit “Apply to new revision”, explicit “Run again as a new run”, individual deletion, and explicit clearing of unreferenced records. Historic results are never auto-recomputed. Applying a historic public solution creates a new immutable ScenarioRevision with originating run and solution lineage. It does not mutate the old run, old revision, or inventory. Rerun is fail-closed when the recorded dataset is unavailable."
+    },
+    {
+      "page": "Concept 7C Durable Local Run History",
+      "title": "Deletion and retention",
+      "url": "./concept-7c-run-history.html#deletion-and-retention",
+      "text": "There is no time-based or arbitrary automatic retention policy. Users may delete individual runs. Deletion is rejected for runs referenced by ScenarioRevision lineage or report metadata. Project deletion removes unreferenced runs for that project; scenario deletion preserves history. Bulk clear requires explicit confirmation and never removes referenced runs."
+    },
+    {
+      "page": "Concept 7C Durable Local Run History",
+      "title": "Error and privacy contract",
+      "url": "./concept-7c-run-history.html#error-and-privacy-contract",
+      "text": "The local repository uses run_not_found , run_invalid , run_persistence_failed , run_storage_unavailable , run_referenced , run_input_stale , and dataset_unavailable alongside the existing repository codes. Durable records contain request/model/result metadata only; raw measurements, secrets, credentials, and private server search state are not persisted."
+    },
+    {
+      "page": "Concept 7C Durable Local Run History",
+      "title": "Validation",
+      "url": "./concept-7c-run-history.html#validation",
+      "text": "The frontend suite covers the domain capture rules, separate IndexedDB envelope, queries, deterministic ordering, terminal immutability, malformed-record isolation, interrupted recovery, size/forbidden-field protection, deletion references, storage unavailability, and the empty/simulation/optimization/failure/cancellation/interruption/history UI states. See the Concept 7C JSON evidence files beside this document. The next recommended phase is Concept 7D: report and artifact delivery UX built on top of these compact run records. It should remain local-first and should not introduce Postgres, PostGIS, object storage, authentication, or remote job orchestration."
+    },
+    {
       "page": "Contributing",
       "title": "Contributing",
       "url": "./contributing.html",

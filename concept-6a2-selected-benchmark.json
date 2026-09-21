@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2",
+  "artifact": "selected-benchmark",
+  "audit_version": "concept-6a2-external-rf-benchmark-audit-v1",
+  "audited_at": "2026-09-21",
+  "decision": "C_no_source_currently_meets_requirements",
+  "selected_benchmark": null,
+  "selection_statement": "No external source audited here satisfies the full uncalibrated transmitter-inventory, receiver-measurement, legal, and reproducibility contract for A.T.O.M. Therefore no benchmark is selected and no dataset adapter is implemented.",
+  "best_near_candidate": {
+    "id": "chongqing-macro-5g",
+    "reason": "It has the strongest public combination of raw RSRP/RSRQ/SINR, serving identifiers, a base-station table, antenna height/angle/tilt, bandwidth, power field, and environmental products.",
+    "not_selected_because": [
+      "raw ARFCN and base downlink/frequency values do not reconcile without a documented rule",
+      "power reference plane is not established as conducted output or EIRP",
+      "absolute antenna gain/pattern and receiver height/calibration are not supplied",
+      "some serving observations do not map to the base table",
+      "neighbor/resource/noise semantics are insufficient for radio-quality validation"
+    ]
+  },
+  "complementary_near_candidate": {
+    "id": "vienna-4g-5g-drive-test",
+    "reason": "It provides the strongest measurement and environment context, including exact LTE B7/2.6 observations, but the public transmitter deployment is inferred and lacks absolute RF configuration.",
+    "permitted_future_scope": "LTE B7/2.6 quantity and relative propagation analysis, with inferred deployment fields explicitly labeled and no absolute power claim."
+  },
+  "not_a_selection": {
+    "lacn_n79_uav": "Geometry/tilt contrast only; n79/4.9 GHz, local coordinates, missing power/gain/pattern, no license found.",
+    "taltech_mmwave_n258": "Restricted files; inaccessible raw-data stop condition.",
+    "mendeley_campus_5g": "Calibrated transmitter parameters are not independent benchmark truth."
+  },
+  "claim_boundary": {
+    "may_claim_now": [
+      "The audited sources and their public metadata have the documented strengths and blockers in the matrix.",
+      "Chongqing and Vienna are conditional research candidates for future quantity/relative propagation work.",
+      "Existing 6A and 6A.1 remain unvalidated for real measurements."
+    ],
+    "must_not_claim": [
+      "A.T.O.M. has been calibrated or validated against external real-world data.",
+      "Any candidate reconstructs a complete canonical transmitter inventory.",
+      "A shortlist entry is production-ready or opens the 6B gate.",
+      "Measured RSRP/RSRQ/SINR is interchangeable with received power, path loss, or radio quality."
+    ]
+  },
+  "state_after_audit": {
+    "concept_6a": "no_measurement_data",
+    "concept_6a1": "dry_run_ready_real_data_unavailable",
+    "concept_6b": "closed",
+    "production_candidate": false,
+    "calibration_active": false,
+    "production_behavior_changed": false
+  }
+}

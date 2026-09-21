@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2.1",
+  "artifact": "field-semantics",
+  "audit_version": "concept-6a21-chongqing-rf-metadata-reconciliation-v1",
+  "prepared_at": "2026-09-21",
+  "scope": "Research-only audit of the public Chongqing 5G macro-cell release; no adapter, inventory, RF, calibration, default, or production change.",
+  "audited_release": {
+    "selected_for_reconciliation": true,
+    "zenodo_record": "https://zenodo.org/records/20564635",
+    "zenodo_api_record": "https://zenodo.org/api/records/20564635",
+    "doi": "10.5281/zenodo.20564635",
+    "version": "1.0",
+    "publication_date": "2026-06-06",
+    "modified_date": "2026-06-22",
+    "license_file": "LICENSE.txt",
+    "license": "CC BY 4.0",
+    "reason_selected": "This is the versioned Zenodo record linked by the current Data Descriptor and its file names match the current paper's Data Records section.",
+    "release_ambiguity": "A second official Zenodo record, 10.5281/zenodo.20564197, and the GitHub tree contain different file names, sizes, and checksums. The audit does not merge releases or treat the two records as interchangeable."
+  },
+  "source_material_inspected": [
+    {
+      "kind": "official_dataset_record",
+      "url": "https://zenodo.org/records/20564635",
+      "inspected": ["record metadata", "file inventory", "license", "README", "Data_Dictionary.xlsx", "base_station_data.csv", "checksums.txt", "example script"]
+    },
+    {
+      "kind": "parallel_official_dataset_record",
+      "url": "https://zenodo.org/records/20564197",
+      "inspected": ["record metadata", "file inventory", "file sizes", "checksums", "release differences"]
+    },
+    {
+      "kind": "official_source_repository",
+      "url": "https://github.com/xunuosama/A-Real-time-5G-Macro-cells-Signal-Dataset",
+      "commit": "94917ae35910d642674ceebeb6fbcb712960f488",
+      "inspected": ["README", "tree", "raw/base/grid source paths", "matching and feature-engineering scripts", "repository license metadata"]
+    },
+    {
+      "kind": "current_data_descriptor",
+      "url": "https://www.nature.com/articles/s41597-026-07964-z",
+      "pdf_url": "https://www.nature.com/articles/s41597-026-07964-z_reference.pdf",
+      "inspected": ["methods", "receiver and route description", "base-station provenance", "preprocessing", "data records", "technical validation", "limitations"]
+    },
+    {
+      "kind": "associated_measurement_paper",
+      "url": "https://doi.org/10.3390/s25175440",
+      "pdf_url": "https://mdpi-res.com/d_attachment/sensors/sensors-25-05440/article_deploy/sensors-25-05440-v2.pdf",
+      "inspected": ["measurement setup", "base-station field table", "SS-RSRP definition", "grid aggregation"]
+    },
+    {
+      "kind": "nr_frequency_standard",
+      "url": "https://www.etsi.org/deliver/etsi_ts/138100_138199/138104/15.12.00_60/ts_138104v151200p.pdf",
+      "inspected": ["global NR-ARFCN to frequency formula", "frequency ranges and offsets"]
+    },
+    {
+      "kind": "nr_identity_standards",
+      "urls": [
+        "https://www.etsi.org/deliver/etsi_TS/138400_138499/138413/17.07.00_60/ts_138413v170700p.pdf",
+        "https://www.etsi.org/deliver/etsi_ts/123000_123099/123003/16.05.00_60/ts_123003v160500p.pdf"
+      ],
+      "inspected": ["NCI/NRCGI and gNB identity semantics", "36-bit operator-defined coding responsibility"]
+    }
+  ],
+  "release_file_inventory": {
+    "raw_datas.csv": {
+      "bytes": 14875475,
+      "md5": "dd59c720cfeee86fd1e99388e6d114ad",
+      "sha256_observed": "17f0cfadbfc02166851ab54dc437c63ef52d6a95fe445b9cde5c2ae152ed78d3"
+    },
+    "fishnet_30x30_processed_feature_engineered.csv": {
+      "bytes": 2569583,
+      "md5": "9fa441ceaf2577d043108c393ce00914",
+      "sha256_observed": "7faec3494a1fcb76163cce09c4dc2f208f678d4c9366b91ceb117054805c71f1"
+    },
+    "base_station_data.csv": {
+      "bytes": 17896,
+      "md5": "2209f2173c9f5464f500ef41fbba4fd0",
+      "sha256_observed": "9512e2abeaf18d1e04f502d719a766179ad147745f012512ca327e8d3b195133"
+    },
+    "Data_Dictionary.xlsx": {
+      "bytes": 12393,
+      "md5": "00df6e9b0420282fdde840c2f098dce2"
+    },
+    "README.md": {
+      "bytes": 1050,
+      "md5": "32e42086e996016f3f4bbc9b58f6e23a"
+    },
+    "LICENSE.txt": {
+      "bytes": 620,
+      "md5": "d62c0bfa8e9c61f939350b7accc4028c"
+    }
+  },
+  "release_integrity_findings": [
+    "The current checksums.txt values match the GitHub tree and the older 20564197 release, not the current 20564635 top-level files.",
+    "The current example script still loads base_station_data_processed.csv, while the current record lists base_station_data.csv.",
+    "The current record and the older record have different raw, grid, and base file sizes and hashes.",
+    "A future import must pin the exact record, file names, and independently verified checksums; it must fail closed on a release mismatch."
+  ],
+  "observed_schema": {
+    "raw": {
+      "row_count": 81419,
+      "columns": [
+        "ID", "TIME(BeiJing)", "LATITUDE", "LONGITUDE", "ACCURACY(M)", "SPEED(M/s)", "IS_OUTDOOR", "MCC", "MNC", "NETWORK_TYPE", "NCI", "GNODEB", "GCELLID", "NR_TAC", "NR_ARFCN", "NR_BAND", "NR_PCI", "SS_RSRP", "SS_RSRQ", "SS_SINR", "source_file"
+      ],
+      "time_range": ["20250523 14:05:48.275", "20251114 12:56:19.751"],
+      "band_counts": {"N78": 72091, "N1": 9328},
+      "arfcn_counts": {"633984": 71490, "428910": 9328, "627264": 601},
+      "network_type_counts": {"SA": 80336, "NSA": 1002, "LTE": 62, "NR": 19},
+      "outdoor_value_counts": {"1": 81419},
+      "mcc_mnc_value_counts": {"460/1": 81419},
+      "source_file_counts": {"unique": 3300, "uav_rows": 78158, "ground_rows": 3261},
+      "timestamp_delta_seconds_within_source_file": {
+        "positive_count": 78119,
+        "zero_count": 0,
+        "minimum": 1.002,
+        "median": 1.025,
+        "p90": 2.913,
+        "maximum": 20456.739,
+        "interpretation": "Compatible with the paper's nominal 1 Hz logging but not a continuous, gap-free route/session clock."
+      }
+    },
+    "base": {
+      "row_count": 189,
+      "columns": [
+        "OID_", "CGI", "FREQUENCY", "PCI", "ECI", "LONGITUDE (processed)", "LATITUDE (processed)", "angle", "TAC", "Downlink Frequency", "Bandwidth", "Electrical Tilt", "Mechanical Tilt", "Antenna transmit power(dBm)", "Height"
+      ],
+      "unique_eci": 189,
+      "unique_cgi": 189,
+      "downlink_frequency_values": [426000, 427980, 630000, 636664],
+      "bandwidth_counts": {"100M": 166, "20M": 13, "40M": 10},
+      "transmit_power_dbm_range": [3, 69],
+      "height_m_range": [0, 99],
+      "zero_height_rows": 2,
+      "cgi_values_exported_in_scientific_notation": 23,
+      "frequency_field_unique_values": 150,
+      "frequency_field_examples": [1, 5, 117, 4144]
+    },
+    "grid": {
+      "row_count": 10000,
+      "grid_size_m": 30,
+      "coordinate_reference_system": "WGS84 EPSG:4326",
+      "projected_processing_crs": "WGS84 / UTM Zone 48N EPSG:32648",
+      "observed_and_interpolated_labels_present": true,
+      "raw_measurement_count_field_present": true
+    }
+  },
+  "field_semantics": {
+    "raw": [
+      {
+        "field": "TIME(BeiJing)",
+        "meaning": "Beijing/China local recording time",
+        "target_use": "observation timestamp",
+        "status": "direct_with_timezone_qualification",
+        "caveat": "The paper also describes UTC alignment for UAV flight logs; the public raw field is Beijing time and does not carry a timezone offset."
+      },
+      {
+        "field": "LATITUDE/LONGITUDE",
+        "meaning": "smartphone/UAV georeferenced measurement position",
+        "target_use": "observation coordinates",
+        "status": "direct",
+        "caveat": "Retain ACCURACY(M); do not replace a raw observation with a grid center."
+      },
+      {
+        "field": "ACCURACY(M)",
+        "meaning": "smartphone GNSS estimated horizontal positioning uncertainty in metres",
+        "target_use": "position quality",
+        "status": "direct_with_quality_flag",
+        "observed_range_m": [3, 294]
+      },
+      {
+        "field": "SPEED(M/s)",
+        "meaning": "Cellular-Pro application-reported downlink data-rate indicator; no active speed-test traffic was generated",
+        "target_use": "source metadata only",
+        "status": "direct_but_not_vehicle_speed"
+      },
+      {
+        "field": "NCI",
+        "meaning": "5G NR Cell Identity",
+        "target_use": "serving cell key",
+        "status": "direct_operator_defined_identity",
+        "caveat": "3GPP makes the 36-bit coding responsibility operator-specific; observed GNODEB*4096+GCELLID arithmetic is a dataset property, not a universal decoder."
+      },
+      {
+        "field": "GNODEB",
+        "meaning": "dataset-described base-station/gNodeB name or identifier",
+        "target_use": "candidate site identifier",
+        "status": "qualified",
+        "caveat": "No separately documented site_id/sector_id contract is released."
+      },
+      {
+        "field": "GCELLID",
+        "meaning": "cell identifier under the base station",
+        "target_use": "local cell component",
+        "status": "qualified",
+        "caveat": "Use with NCI only as source reconciliation evidence; do not treat the 12-bit arithmetic partition as a general 3GPP rule."
+      },
+      {
+        "field": "NR_TAC",
+        "meaning": "New Radio Tracking Area Code",
+        "target_use": "tracking-area metadata",
+        "status": "direct"
+      },
+      {
+        "field": "NR_ARFCN",
+        "meaning": "New Radio Absolute Radio Frequency Channel Number",
+        "target_use": "channel identifier and conditional frequency derivation",
+        "status": "direct_channel_id_frequency_transform_verified",
+        "caveat": "The standard formula yields plausible raw frequencies, but no exact join to the base Downlink Frequency field exists."
+      },
+      {
+        "field": "NR_BAND",
+        "meaning": "5G NR band label",
+        "target_use": "band category",
+        "status": "direct"
+      },
+      {
+        "field": "NR_PCI",
+        "meaning": "Physical Cell Identity",
+        "target_use": "radio identity context",
+        "status": "direct_but_not_safe_join_key",
+        "caveat": "254 mapped observations across 32 NCI values disagree with base PCI."
+      },
+      {
+        "field": "SS_RSRP",
+        "meaning": "Synchronization Signal Reference Signal Received Power, reported in dBm",
+        "target_use": "candidate observation.rsrp_dbm",
+        "status": "direct_quantity_with_measurement_qualification",
+        "caveat": "The release does not specify SSB/resource averaging, device correction, detection floor, censoring, or an absolute receiver calibration. Only serving-cell observations are retained."
+      },
+      {
+        "field": "SS_RSRQ",
+        "meaning": "Synchronization Signal Reference Signal Received Quality, reported in dB",
+        "target_use": "candidate observation.rsrq_db",
+        "status": "direct_quantity_with_interference_context_missing"
+      },
+      {
+        "field": "SS_SINR",
+        "meaning": "Synchronization Signal Signal-to-Interference-plus-Noise Ratio, reported in dB",
+        "target_use": "candidate observation.sinr_db",
+        "status": "direct_quantity_with_neighbor_context_missing"
+      },
+      {
+        "field": "source_file",
+        "meaning": "source filename retained by the raw export",
+        "target_use": "provenance/campaign grouping candidate",
+        "status": "provenance_only",
+        "caveat": "It distinguishes UAV and ground naming in the scan but does not establish a documented route/session/campaign identifier."
+      }
+    ],
+    "base": [
+      {
+        "field": "ECI",
+        "meaning": "base-table cell identity used by the official code as the join key",
+        "target_use": "transmitter.cell_id",
+        "status": "direct_join_key_for_189_cells"
+      },
+      {
+        "field": "CGI",
+        "meaning": "dataset-described base-station name plus cell identity",
+        "target_use": "source label only",
+        "status": "qualified",
+        "caveat": "23 of 189 values are rendered in scientific notation, so CGI is not a lossless text identity in the released CSV."
+      },
+      {
+        "field": "LONGITUDE (processed)/LATITUDE (processed)",
+        "meaning": "base-station coordinates",
+        "target_use": "transmitter coordinates",
+        "status": "direct_with_source_provenance"
+      },
+      {
+        "field": "angle",
+        "meaning": "antenna azimuth clockwise from true north and described as main-beam direction",
+        "target_use": "transmitter azimuth",
+        "status": "direct_with_uncertainty",
+        "uncertainty_claim": "The Nature paper reports operator/open-platform inference with cross-verification and approximately ±5 degrees azimuth uncertainty."
+      },
+      {
+        "field": "TAC",
+        "meaning": "base tracking area code",
+        "target_use": "tracking-area metadata",
+        "status": "direct",
+        "cross_check": "No mapped raw TAC mismatches were observed."
+      },
+      {
+        "field": "Downlink Frequency",
+        "meaning": "dataset-described operating center frequency for downlink transmissions",
+        "target_use": "transmitter frequency",
+        "status": "unresolved",
+        "caveat": "The units/encoding are not stated. Treating values as NR-ARFCN gives plausible frequencies but zero exact agreement with raw NR_ARFCN and multiple non-constant deltas."
+      },
+      {
+        "field": "FREQUENCY",
+        "meaning": "dataset-described wireless carrier center frequency",
+        "target_use": "transmitter frequency",
+        "status": "unresolved",
+        "caveat": "The 150 unique values include values such as 1, 5, 117, and 4144; no authoritative unit or coding contract reconciles them to raw N1/N78 observations."
+      },
+      {
+        "field": "Bandwidth",
+        "meaning": "allocated spectrum range, encoded as 100M, 40M, or 20M",
+        "target_use": "transmitter bandwidth",
+        "status": "direct_with_encoding_qualification",
+        "caveat": "The release does not state whether this is carrier bandwidth, configured channel bandwidth, or another allocation label."
+      },
+      {
+        "field": "Electrical Tilt/Mechanical Tilt",
+        "meaning": "electrical and physical vertical downtilt",
+        "target_use": "transmitter downtilt",
+        "status": "direct_with_reference_qualification",
+        "caveat": "No antenna coordinate reference, sign convention beyond the descriptive wording, or pattern is released."
+      },
+      {
+        "field": "Antenna transmit power(dBm)",
+        "meaning": "dataset-described transmit power of the base-station antenna",
+        "target_use": "source-only power field pending reference-plane decision",
+        "status": "unit_known_reference_plane_unknown",
+        "uncertainty_claim": "The Nature paper reports approximately ±2 dB uncertainty for inferred transmit power."
+      },
+      {
+        "field": "Height",
+        "meaning": "base-station height above ground",
+        "target_use": "transmitter antenna height",
+        "status": "direct_with_zero_height_anomaly",
+        "caveat": "Two rows are zero; the exact antenna reference point is not stated."
+      }
+    ],
+    "grid": [
+      {
+        "field": "SS_RSRP",
+        "meaning": "average SS-RSRP within the grid cell",
+        "target_use": "descriptive aggregate only",
+        "status": "derived_average_not_raw_observation"
+      },
+      {
+        "field": "ALT_M_",
+        "meaning": "UAV flight-log altitude aligned to smartphone records using UTC",
+        "target_use": "UAV measurement altitude",
+        "status": "direct_for_uav_only",
+        "caveat": "It is not receiver height above local ground and does not describe ground-route receiver height."
+      },
+      {
+        "field": "Height_AGL",
+        "meaning": "ALT_M_ minus DEM_center",
+        "target_use": "UAV terrain-adjusted height context",
+        "status": "derived_for_uav_only"
+      },
+      {
+        "field": "is_observed/is_interpolated/n_raw_measurements/interpolation_method",
+        "meaning": "grid provenance and coverage indicators",
+        "target_use": "exclude interpolated cells from any future holdout",
+        "status": "direct_provenance_fields"
+      }
+    ]
+  },
+  "transmitter_semantics": {
+    "power": {
+      "source_field": "base_station_data.csv:Antenna transmit power(dBm)",
+      "unit": "dBm",
+      "reported_as": "transmit power of the base-station antenna",
+      "known": ["a numeric source field exists", "the current paper attributes the metadata to operator/open-platform inference and reports approximately ±2 dB uncertainty"],
+      "unknown": ["conducted versus radiated reference plane", "per-carrier versus total sector power", "per-antenna versus array power", "configured versus measured value", "whether antenna gain is already included", "whether bandwidth/resource allocation is included"],
+      "allowed_interpretation": "source metadata only; do not map to absolute EIRP or received-power link-budget input"
+    },
+    "gain_and_pattern": {
+      "antenna_model": "missing",
+      "maximum_gain_db": "missing",
+      "horizontal_pattern": "missing",
+      "vertical_pattern": "missing",
+      "beamwidth": "missing",
+      "beamforming_or_codebook": "missing",
+      "vendor_or_measurement_pattern": "missing",
+      "consequence": "The azimuth and tilts are not sufficient to reconstruct an angle-dependent antenna gain. An unknown pattern is not safely reducible to a constant offset."
+    },
+    "geometry": {
+      "coordinates": "available in base table",
+      "azimuth": "available, clockwise from true north, with paper-reported approximately ±5 degree uncertainty",
+      "electrical_tilt": "available",
+      "mechanical_tilt": "available",
+      "height": "available with two zero values and unspecified antenna reference point",
+      "receiver_height": "missing for ground measurements; UAV ALT_M_ is flight-log altitude rather than receiver height above ground"
+    }
+  },
+  "receiver_and_measurement_semantics": {
+    "device": "iQOO 8 Pro smartphone with Qualcomm Snapdragon X60 5G modem for UAV measurements; the paper identifies smartphone receivers for ground routes but does not provide a separate ground device inventory.",
+    "application": "Cellular-Pro",
+    "uav_platform": "DJI Mavic Air 3S",
+    "uav_mount": "Paper says the phone was fixed horizontally, screen upward, on the UAV upper surface in a custom 3D-printed holder.",
+    "uav_altitude": "5-200 m flight-log altitude; aligned to signal records using UTC; not equivalent to ground receiver height.",
+    "ground_route": "Research assistants walked predefined routes through open squares, narrow alleys, and near base-station towers; exact route/session identifiers are not released in raw schema.",
+    "logging_rate": "Paper states 1 Hz; raw within-file deltas contain gaps and are not an exact continuous 1-second series.",
+    "network_state": "Phone locked to N1/N78; idle; no application-layer traffic; normal cell reselection and handover allowed.",
+    "serving_cell_scope": "Only serving-cell measurements retained; neighbors excluded.",
+    "calibration": "No receiver calibration file, antenna gain, device correction, receiver noise-floor characterization, or per-device identifier was found.",
+    "rsrp": {
+      "source_quantity": "SS-RSRP",
+      "unit": "dBm",
+      "safe_target": "candidate rsrp_dbm for source-level quantity analysis",
+      "not_established": ["SSB/resource-element aggregation rule", "beam/index selection", "device correction", "absolute calibration", "floor/censoring semantics", "raw versus averaged measurement declaration"],
+      "grid_behavior": "Grid SS_RSRP is an average/weighted aggregate and interpolated cells are not raw measurements."
+    }
+  },
+  "environment_and_processing_semantics": {
+    "study_area": "9 km2 around Chongqing University of Posts and Telecommunications, Yinglong Town, Nan'an District, Chongqing, China",
+    "environment_layers": ["30 m FathomDEM v1.0-derived terrain", "Landsat/GEE annual maximum NDVI", "global building footprints/heights with field correction"],
+    "coordinate_systems": ["WGS84 EPSG:4326 for grid centers", "WGS84/UTM Zone 48N EPSG:32648 for projected processing"],
+    "los_nlos": "No per-observation measured LOS/NLOS label was found.",
+    "supplement_claim": "The Nature paper says a reproducibility package contains all sampling points in SHP and application configuration settings; those files are not present in the audited 20564635 Zenodo file listing.",
+    "processing": "Official code performs exact NCI-to-ECI dictionary matching, spatial joins, weighted/mode aggregation, and iterative interpolation; it does not provide receiver calibration, antenna patterns, power reference conversion, or an independent LOS calculation."
+  },
+  "decision_relevance": {
+    "absolute_rsrp": "blocked",
+    "relative_propagation": "blocked_for_fair_atom_validation",
+    "quantity_descriptive_analysis": "permitted at source level with provenance and serving-cell exclusions",
+    "final_classification": "D_insufficient_metadata",
+    "adapter_or_inventory_change": "not_permitted_by_this_audit"
+  }
+}

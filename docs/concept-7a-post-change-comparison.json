@@ -1,0 +1,71 @@
+{
+  "artifact": "concept-7a-post-change-comparison",
+  "artifact_version": "1.0.0",
+  "audit": {
+    "concept": "7A",
+    "baseline_artifact": "docs/concept-7a-pre-change-baseline.json",
+    "comparison_scope": "Documentation-only architecture audit",
+    "captured_on": "2026-09-21",
+    "production_behavior_changed": false
+  },
+  "file_change_classification": {
+    "added_concept_7a_artifacts": [
+      "docs/concept-7a-pre-change-baseline.json",
+      "docs/concept-7a-persistence-architecture.md",
+      "docs/concept-7a-state-inventory.json",
+      "docs/concept-7a-indexeddb-audit.json",
+      "docs/concept-7a-domain-model.json",
+      "docs/concept-7a-storage-classification.json",
+      "docs/concept-7a-schema-draft.json",
+      "docs/concept-7a-migration-plan.json",
+      "docs/concept-7a-next-phase.json",
+      "docs/concept-7a-post-change-comparison.json"
+    ],
+    "modified_production_files": [],
+    "modified_database_files": [],
+    "modified_rf_or_optimizer_files": [],
+    "pre_existing_changes_preserved": [
+        "docs/build-reference-pages.sh",
+        "docs/index.md",
+        "docs/search-index.json",
+        "All pre-existing Concept 5D/6A/6A1/6A2 files listed in the baseline"
+    ]
+  },
+  "architecture_findings": {
+    "project": "Current ProjectV2 is a local workspace container; future Project owns metadata, lineage, inventory references, and report links.",
+    "inventory": "Current flat project-local tower snapshot should evolve into revisioned flat cells/sectors; Site is intentionally deferred.",
+    "scenario": "Current ScenarioSnapshot combines inputs and optional caches; future ScenarioRevision makes resolved inputs immutable and reproducible.",
+    "runs": "Current API responses and experiment jobs are ephemeral; future generic Run envelope retains typed immutable metadata and selected public outputs.",
+    "reports": "Current live export is not durable; future ReportDefinition plus GeneratedReportArtifact binds outputs to scenario revisions and runs.",
+    "indexeddb": "Retained as local-first storage for the next phase; it is not promoted to shared/server authority.",
+    "database": "PostgreSQL/PostGIS is deferred until sharing, remote runs, or relational spatial queries justify it.",
+    "object_storage": "Reserved for large datasets, raw measurements, surfaces, rays, and generated reports."
+  },
+  "validation": {
+    "status": "passed",
+    "commands": [
+      "python3 -m json.tool docs/concept-7a-*.json",
+      "python3 docs/validate_docs.py",
+      "python3 scripts/versioning.py check",
+      "git diff --check"
+    ],
+    "results": {
+      "json_parse": "passed",
+      "docs_validate": "passed using an isolated temporary PyYAML dependency; no repository dependency changed",
+      "version_check": "passed; A.T.O.M version metadata is consistent: 0.8.0",
+      "git_diff_check": "passed",
+      "new_artifact_trailing_whitespace_check": "passed"
+    },
+    "production_tests": "Not run; no production behavior was changed.",
+    "note": "Architecture-only validation completed. Frontend/backend behavior suites remain for Concept 7B implementation work."
+  },
+  "invariance_checks": [
+    "No PostgreSQL/PostGIS dependency introduced.",
+    "No IndexedDB removal or physical migration introduced.",
+    "No backend route or DTO changed.",
+    "No RF algorithm, model, optimizer policy, or search budget changed.",
+    "No dataset pack, manifest, terrain, or Concept 6 artifact changed.",
+    "Existing dirty worktree changes remain attributable to their pre-existing work."
+  ],
+  "conclusion": "Concept 7A is complete when the documentation artifacts validate and Concept 7B is selected as the next implementation phase."
+}

@@ -1,0 +1,74 @@
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import RunHistoryPanel from "./RunHistoryPanel.jsx";
+
+const baseRun = {
+  run_id: "run-1",
+  run_type: "simulation",
+  status: "succeeded",
+  created_at: "2026-09-21T10:00:00.000Z",
+  scenario_revision_id: null,
+  scenario_fingerprint: "rf-scenario-1",
+  dataset_references: [{ dataset_id: "ankara", version: "1", content_hashes: {} }],
+  engine: { name: "A.T.O.M", version: "test" },
+  summary: { avg_rx_dbm: -88 },
+  warnings: [],
+  error: null,
+  details: { result_summary: { stats: { avg_rx_dbm: -88 } } },
+};
+
+describe("RunHistoryPanel", () => {
+  it("renders an explicit empty state", () => {
+    render(<RunHistoryPanel runs={[]} />);
+    expect(screen.getByText("No durable runs for this project yet.")).toBeInTheDocument();
+  });
+
+  it("inspects a simulation and explains compact visualization retention", () => {
+    render(<RunHistoryPanel runs={[baseRun]} />);
+    expect(screen.getByText("Simulation run")).toBeInTheDocument();
+    expect(screen.getByText("Detailed visualization was not retained. Run again to regenerate the map layers.")).toBeInTheDocument();
+  });
+
+  it("shows failed, cancelled, and interrupted lifecycle semantics", () => {
+    const failed = { ...baseRun, run_id: "failed", status: "failed", error: { code: "compute_failed", message: "capacity" } };
+    const cancelled = { ...baseRun, run_id: "cancelled", status: "cancelled", error: { code: "run_cancelled", message: "user" } };
+    const interrupted = { ...baseRun, run_id: "interrupted", status: "failed", error: { code: "run_interrupted", message: "browser restart" } };
+    render(<RunHistoryPanel runs={[failed, cancelled, interrupted]} />);
+    expect(screen.getAllByText("Failed").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: /cancelled/i }));
+    expect(screen.getAllByText("Cancelled").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: /interrupted/i }));
+    expect(screen.getAllByText("Interrupted").length).toBeGreaterThan(0);
+  });
+
+  it("exposes public historical optimization solutions and applies them", () => {
+    const onApplySolution = vi.fn();
+    const optimization = {
+      ...baseRun,
+      run_id: "optimization-1",
+      run_type: "optimization",
+      scenario_revision_id: "revision-1",
+      details: {
+        recommended_solution_id: "pareto-a",
+        public_pareto_solutions: [{
+          id: "pareto-a",
+          optimization_solution_id: "durable-solution-1",
+          cell_configurations: [{ id: "101", optimal_azimuth: 90 }],
+        }],
+      },
+    };
+    render(<RunHistoryPanel runs={[optimization]} onApplySolution={onApplySolution} />);
+    fireEvent.click(screen.getByRole("button", { name: /Apply to new revision/i }));
+    expect(onApplySolution).toHaveBeenCalledWith(optimization, optimization.details.public_pareto_solutions[0]);
+  });
+
+  it("keeps rerun explicit and supports safe deletion callbacks", () => {
+    const onRunAgain = vi.fn();
+    const onDeleteRun = vi.fn();
+    render(<RunHistoryPanel runs={[baseRun]} onRunAgain={onRunAgain} onDeleteRun={onDeleteRun} />);
+    fireEvent.click(screen.getByRole("button", { name: "Run again as a new run" }));
+    fireEvent.click(screen.getByRole("button", { name: "Delete run" }));
+    expect(onRunAgain).toHaveBeenCalledWith(baseRun);
+    expect(onDeleteRun).toHaveBeenCalledWith(baseRun);
+  });
+});

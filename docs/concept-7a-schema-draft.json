@@ -1,0 +1,388 @@
+{
+  "artifact": "concept-7a-schema-draft",
+  "artifact_version": "1.0.0",
+  "status": "conceptual_no_migrations",
+  "database_target": "PostgreSQL metadata with optional PostGIS geometry and object-storage references",
+  "policy": "This is a logical schema draft only. No SQL tables, migrations, ORM models, or production database dependencies are introduced by Concept 7A.",
+  "common_columns": [
+    "created_at",
+    "updated_at",
+    "created_by when identity exists",
+    "metadata_json for forward-compatible non-query fields"
+  ],
+  "entities": [
+    {
+      "name": "workspaces",
+      "purpose": "Future ownership and collaboration boundary; optional until auth/server sync is needed.",
+      "primary_key": "workspace_id uuid",
+      "fields": [
+        "name text",
+        "owner_id uuid nullable",
+        "metadata_json jsonb"
+      ],
+      "geometry": false,
+      "mutability": "metadata mutable",
+      "retention": "retain while projects exist"
+    },
+    {
+      "name": "projects",
+      "purpose": "Durable planning workspace.",
+      "primary_key": "project_id uuid",
+      "foreign_keys": [
+        "workspace_id -> workspaces.workspace_id nullable"
+      ],
+      "fields": [
+        "name text",
+        "description text nullable",
+        "tags jsonb",
+        "active_scenario_id uuid nullable",
+        "archived_at timestamptz nullable",
+        "metadata_json jsonb"
+      ],
+      "geometry": false,
+      "mutability": "metadata and active pointer mutable; referenced revisions immutable",
+      "retention": "soft delete/archive first; hard delete requires dependency policy"
+    },
+    {
+      "name": "datasets",
+      "purpose": "Versioned source-data registry.",
+      "primary_key": "dataset_key (dataset_id, dataset_version)",
+      "fields": [
+        "dataset_id text",
+        "dataset_version text",
+        "name text",
+        "manifest_sha256 text",
+        "file_hashes jsonb",
+        "crs text",
+        "bounds geometry nullable",
+        "sources jsonb",
+        "licenses jsonb",
+        "generated_at timestamptz nullable",
+        "acquisition_epoch timestamptz nullable",
+        "validation_status text",
+        "object_manifest_ref text nullable",
+        "metadata_json jsonb"
+      ],
+      "geometry": "Optional bounds polygon; PostGIS only if spatial catalog queries are needed.",
+      "mutability": "Version rows immutable except availability/validation status metadata",
+      "retention": "retain while referenced by ScenarioRevision or Run"
+    },
+    {
+      "name": "inventories",
+      "purpose": "Reusable inventory identity and revision head.",
+      "primary_key": "inventory_id uuid",
+      "foreign_keys": [
+        "project_id -> projects.project_id nullable",
+        "source_dataset_id/version -> datasets nullable"
+      ],
+      "fields": [
+        "name text",
+        "description text nullable",
+        "current_revision_id uuid nullable",
+        "source_type text",
+        "source_artifact_id uuid nullable",
+        "metadata_json jsonb"
+      ],
+      "geometry": false,
+      "mutability": "metadata/head pointer mutable; revisions immutable",
+      "retention": "retain while referenced by scenarios"
+    },
+    {
+      "name": "inventory_revisions",
+      "purpose": "Immutable snapshot of inventory membership and source semantics.",
+      "primary_key": "inventory_revision_id uuid",
+      "foreign_keys": [
+        "inventory_id -> inventories.inventory_id",
+        "parent_revision_id -> inventory_revisions.inventory_revision_id nullable"
+      ],
+      "fields": [
+        "revision_number bigint",
+        "content_fingerprint text",
+        "source_provenance jsonb",
+        "change_summary text nullable",
+        "published_at timestamptz"
+      ],
+      "geometry": false,
+      "mutability": "immutable",
+      "retention": "retain while any ScenarioRevision references it"
+    },
+    {
+      "name": "inventory_cells",
+      "purpose": "Flat atomic cell/sector records. This is not a Site table.",
+      "primary_key": "inventory_cell_id uuid",
+      "foreign_keys": [
+        "inventory_revision_id -> inventory_revisions.inventory_revision_id"
+      ],
+      "fields": [
+        "source_key text nullable",
+        "cell_id bigint nullable",
+        "radio_type text",
+        "is_simulated boolean",
+        "longitude double precision",
+        "latitude double precision",
+        "geometry geography(Point, 4326) optional",
+        "rf_profile jsonb",
+        "antenna_pattern_ref text nullable",
+        "provenance jsonb",
+        "metadata_json jsonb"
+      ],
+      "geometry": "Optional PostGIS point for AOI/proximity queries; canonical RF request keeps normalized numeric coordinates.",
+      "mutability": "immutable within a revision",
+      "retention": "retain with revision"
+    },
+    {
+      "name": "scenario_overrides",
+      "purpose": "Sparse scenario-specific overrides over inventory cells.",
+      "primary_key": "scenario_revision_id, inventory_cell_id",
+      "foreign_keys": [
+        "scenario_revision_id -> scenario_revisions.scenario_revision_id",
+        "inventory_cell_id -> inventory_cells.inventory_cell_id"
+      ],
+      "fields": [
+        "enabled boolean nullable",
+        "coordinate_override geometry nullable",
+        "rf_profile_override jsonb nullable",
+        "azimuth_override double precision nullable",
+        "notes text nullable",
+        "provenance jsonb"
+      ],
+      "geometry": "Optional point override",
+      "mutability": "immutable within a saved revision",
+      "retention": "retain with ScenarioRevision",
+      "null_semantics": "Absent field inherits; explicit clear marker is required to remove inherited value."
+    },
+    {
+      "name": "scenarios",
+      "purpose": "Named scenario lineage container.",
+      "primary_key": "scenario_id uuid",
+      "foreign_keys": [
+        "project_id -> projects.project_id",
+        "head_revision_id -> scenario_revisions.scenario_revision_id nullable"
+      ],
+      "fields": [
+        "name text",
+        "description text nullable",
+        "archived_at timestamptz nullable",
+        "metadata_json jsonb"
+      ],
+      "geometry": false,
+      "mutability": "name/description/head pointer mutable; revisions immutable",
+      "retention": "soft delete by default"
+    },
+    {
+      "name": "scenario_revisions",
+      "purpose": "Canonical reproducible planning input snapshot.",
+      "primary_key": "scenario_revision_id uuid",
+      "foreign_keys": [
+        "scenario_id -> scenarios.scenario_id",
+        "parent_revision_id -> scenario_revisions.scenario_revision_id nullable",
+        "inventory_revision_id -> inventory_revisions.inventory_revision_id nullable"
+      ],
+      "fields": [
+        "revision_number bigint",
+        "dataset_refs jsonb",
+        "aoi geometry nullable",
+        "settings jsonb",
+        "optimization_config jsonb",
+        "request_defaults jsonb",
+        "resolved_input jsonb",
+        "scenario_fingerprint text",
+        "input_fingerprint text",
+        "change_summary text nullable",
+        "originating_run_id uuid nullable",
+        "originating_solution_id text nullable",
+        "saved_at timestamptz"
+      ],
+      "geometry": "AOI/polygon optional PostGIS geometry; keep selected cell coordinates in inventory/overrides.",
+      "mutability": "immutable",
+      "retention": "retain while project/scenario lineage or Run/report references exist"
+    },
+    {
+      "name": "runs",
+      "purpose": "Generic immutable execution envelope for all durable computations.",
+      "primary_key": "run_id uuid",
+      "foreign_keys": [
+        "project_id -> projects.project_id",
+        "scenario_id -> scenarios.scenario_id",
+        "scenario_revision_id -> scenario_revisions.scenario_revision_id"
+      ],
+      "fields": [
+        "run_type text",
+        "status text",
+        "scenario_fingerprint text",
+        "input_fingerprint text",
+        "dataset_refs jsonb",
+        "engine_version text",
+        "engine_commit text nullable",
+        "rf_contract_version text",
+        "model_contract jsonb",
+        "optimizer_version text nullable",
+        "request_snapshot jsonb",
+        "summary_metrics jsonb",
+        "warnings jsonb",
+        "started_at timestamptz nullable",
+        "completed_at timestamptz nullable",
+        "failure_code text nullable",
+        "failure_message text nullable",
+        "output_manifest_ref text nullable"
+      ],
+      "geometry": false,
+      "mutability": "status/terminal metadata append only; input and output identity immutable",
+      "retention": "retain per policy; never overwrite a completed Run"
+    },
+    {
+      "name": "optimization_run_details",
+      "purpose": "Typed details for runs.run_type=optimization.",
+      "primary_key": "run_id",
+      "foreign_keys": [
+        "run_id -> runs.run_id"
+      ],
+      "fields": [
+        "baseline_solution jsonb",
+        "search_policy jsonb",
+        "budget_summary jsonb",
+        "effective_weights jsonb",
+        "constraint_summary jsonb",
+        "evaluated_count bigint",
+        "cache_hits bigint",
+        "public_archive_ref text nullable",
+        "selected_solution_id text nullable"
+      ],
+      "geometry": false,
+      "mutability": "immutable after run completion except selected solution pointer on a separate user selection record",
+      "retention": "retain with Run"
+    },
+    {
+      "name": "optimization_solutions",
+      "purpose": "Compact public Pareto/frontier solutions.",
+      "primary_key": "run_id, solution_id",
+      "foreign_keys": [
+        "run_id -> runs.run_id"
+      ],
+      "fields": [
+        "solution_id text",
+        "rank integer nullable",
+        "cell_configurations jsonb",
+        "metrics jsonb",
+        "objective jsonb",
+        "constraint_status jsonb",
+        "explanation jsonb",
+        "content_fingerprint text"
+      ],
+      "geometry": false,
+      "mutability": "immutable",
+      "retention": "retain with optimization Run"
+    },
+    {
+      "name": "validation_run_details",
+      "purpose": "Typed details for measurement/reference/canonical validation runs.",
+      "primary_key": "run_id",
+      "foreign_keys": [
+        "run_id -> runs.run_id"
+      ],
+      "fields": [
+        "measurement_dataset_ref text nullable",
+        "campaign_summaries jsonb",
+        "model_results jsonb",
+        "holdout_summary jsonb",
+        "readiness jsonb",
+        "assumptions jsonb",
+        "limitations jsonb"
+      ],
+      "geometry": false,
+      "mutability": "immutable",
+      "retention": "retain for validation evidence policy"
+    },
+    {
+      "name": "artifacts",
+      "purpose": "Metadata for large immutable files or generated outputs.",
+      "primary_key": "artifact_id uuid",
+      "fields": [
+        "content_sha256 text unique",
+        "media_type text",
+        "byte_size bigint",
+        "storage_uri text",
+        "artifact_kind text",
+        "producer_run_id uuid nullable",
+        "source_dataset_key jsonb nullable",
+        "retention_class text",
+        "metadata_json jsonb"
+      ],
+      "geometry": false,
+      "mutability": "content immutable; metadata/retention mutable",
+      "retention": "garbage collect only when no live references and policy allows"
+    },
+    {
+      "name": "run_artifacts",
+      "purpose": "Many-to-many links from a Run to input/output/evidence artifacts.",
+      "primary_key": "run_id, artifact_id, role",
+      "foreign_keys": [
+        "run_id -> runs.run_id",
+        "artifact_id -> artifacts.artifact_id"
+      ],
+      "fields": [
+        "role text",
+        "required_for_reproduction boolean",
+        "metadata_json jsonb"
+      ],
+      "geometry": false,
+      "mutability": "append-only link set",
+      "retention": "retain with Run"
+    },
+    {
+      "name": "report_definitions",
+      "purpose": "Mutable selection/configuration for a report.",
+      "primary_key": "report_definition_id uuid",
+      "foreign_keys": [
+        "project_id -> projects.project_id",
+        "scenario_id -> scenarios.scenario_id",
+        "scenario_revision_id -> scenario_revisions.scenario_revision_id nullable"
+      ],
+      "fields": [
+        "name text",
+        "section_config jsonb",
+        "presentation_config jsonb",
+        "latest_generated_report_id uuid nullable"
+      ],
+      "geometry": false,
+      "mutability": "mutable",
+      "retention": "retain or archive with project"
+    },
+    {
+      "name": "generated_reports",
+      "purpose": "Immutable report metadata and artifact identity.",
+      "primary_key": "generated_report_id uuid",
+      "foreign_keys": [
+        "report_definition_id -> report_definitions.report_definition_id nullable",
+        "project_id -> projects.project_id",
+        "scenario_revision_id -> scenario_revisions.scenario_revision_id",
+        "artifact_id -> artifacts.artifact_id"
+      ],
+      "fields": [
+        "run_ids jsonb",
+        "report_schema_version text",
+        "generator_version text",
+        "generated_at timestamptz",
+        "content_sha256 text",
+        "metadata_json jsonb"
+      ],
+      "geometry": false,
+      "mutability": "immutable",
+      "retention": "retain while user/audit policy requires"
+    }
+  ],
+  "referential_rules": [
+    "A ScenarioRevision cannot be deleted while a Run or GeneratedReport references it.",
+    "A Dataset version cannot be deleted while a ScenarioRevision or Run references it.",
+    "Inventory revisions are immutable and retained while referenced.",
+    "Run failure records are retained as evidence of attempted computation unless retention policy explicitly removes them.",
+    "Artifact deletion requires zero live references and an explicit retention/garbage-collection decision.",
+    "No foreign key or table is required for Site in Concept 7A."
+  ],
+  "non_goals": [
+    "No row-per-ray or row-per-receiver design",
+    "No automatic conversion of the current IndexedDB blob into server rows",
+    "No SQL migration plan or deployment",
+    "No change to current API DTOs or atom-scenario-v1"
+  ]
+}

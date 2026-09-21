@@ -1,0 +1,46 @@
+{
+  "ankara_available": true,
+  "audit_version": "concept-5d-audit-v1",
+  "budget_proposals": {
+    "concept_5b": "expose max unique RF evaluations and max passes; default opt-in budget should be explicit in the API/UI copy",
+    "concept_5c": "expose unique RF budget, expanded-state budget, and round budget; mark budget-limited results incomplete",
+    "legacy": "fixed compatibility path; keep current two-pass cost and no archive promise",
+    "repeated_priority": "reuse one 5C archive and report rerank latency separately from RF discovery latency"
+  },
+  "decision": {
+    "A": "Do not replace the legacy default with 5B: its extra RF work is not a universal quality guarantee.",
+    "B": "Do not replace the legacy default with 5C: archive cost, bounded traversal, and incomplete-frontier risk are product trade-offs.",
+    "C": "Do not add a fourth algorithm in Concept 5D; future novelty/angle-refinement remains a separately gated research decision.",
+    "D": "Context-dependent policy selection: keep legacy as the default compatibility/latency path; offer 5B for deeper bounded single-answer search; offer 5C for Pareto exploration and repeated priority reranking.",
+    "E": "Do not reject the opt-ins: both provide measurable value in scoped use cases when their limits are disclosed."
+  },
+  "evidence_links": [
+    "docs/concept-5d-policy-comparison.json",
+    "docs/concept-5d-exhaustive-quality.json",
+    "docs/concept-5d-multi-priority-cost.json",
+    "docs/concept-5d-ankara-comparison.json",
+    "docs/concept-5d-budget-curves.json"
+  ],
+  "exhaustive_record_count": 30,
+  "future_novelty_decision": "No novelty or angle-refinement algorithm is selected for 5D. Revisit only with a new exhaustive interaction/trap suite, explicit novelty admission/termination semantics, matched RF/time budgets, and a product need that 5B/5C cannot serve.",
+  "multi_priority_cost_rows": 4,
+  "policy_contract": [
+    {
+      "guarantee": "deterministic fixed two-pass coordinate sweep; no global-optimality claim",
+      "policy": "legacy_two_pass_coordinate",
+      "role": "default"
+    },
+    {
+      "guarantee": "deterministic bounded multi-start heuristic; archive is best evaluated evidence",
+      "policy": "deterministic_multistart_coordinate_v1",
+      "role": "opt-in deep search"
+    },
+    {
+      "guarantee": "priority-independent bounded archive discovery followed by pure reranking; not a complete frontier",
+      "policy": "deterministic_pareto_archive_search_v1",
+      "role": "opt-in Pareto Explorer"
+    }
+  ],
+  "recommendation": "D",
+  "semantic_freeze": "No RF model, objective definition, feasibility rule, Pareto dominance rule, legacy default, or production recommendation semantics are changed by this audit."
+}

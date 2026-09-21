@@ -1,0 +1,112 @@
+{
+  "artifact": "concept-7b-pre-change-baseline",
+  "artifact_version": "1.0.0",
+  "captured_on": "2026-09-21",
+  "timezone": "Europe/Istanbul",
+  "concept": "7B",
+  "source_commit": {
+    "hash": "92711dbcccae5a4de6e4d63c9f274082e890a50f",
+    "short": "92711db",
+    "subject": "Refactor code structure for improved readability and maintainability"
+  },
+  "scope": "Pre-domain-boundary behavior reconstructed from the Concept 7A audit, source fixtures, and existing frontend tests.",
+  "schema_versions": {
+    "workspace": 2,
+    "project_file": 2,
+    "supported_imports": [1, 2, "legacy-single-project"],
+    "indexeddb_database_version": 1
+  },
+  "storage_path": {
+    "database_name": "atom-planning-workspace",
+    "object_store": "workspace",
+    "record_key": "current",
+    "fallback": "localStorage:atom.planning.workspace.v1",
+    "write_order": ["IndexedDB", "localStorage only after IndexedDB write failure"],
+    "read_arbitration": "highest persistence.revision, then newest content timestamp",
+    "serialized_writes": true
+  },
+  "representative_project_v2_fixture": {
+    "schemaVersion": 2,
+    "persistence": { "revision": 7, "committedAt": "2026-09-21T08:00:00.000Z" },
+    "activeProjectId": "project-fixture",
+    "projects": [
+      {
+        "id": "project-fixture",
+        "name": "Ankara Plan",
+        "datasetRef": { "id": "ankara-open-planning", "version": "2026.07", "hashes": { "towers": "fixture-towers" } },
+        "createdAt": "2026-09-21T07:00:00.000Z",
+        "updatedAt": "2026-09-21T08:00:00.000Z",
+        "activeScenarioId": "scenario-fixture",
+        "draft": {
+          "plan": {
+            "planningMode": "network",
+            "settings": { "frequencyGHz": 28, "txPowerDbm": 30, "rayCount": 120, "radiusMeters": 400, "azimuthDeg": 90, "beamWidthDeg": 120 },
+            "selectedNetworkTowerIds": ["cell-1", "cell-2"],
+            "networkAzimuths": { "cell-1": 90, "cell-2": 270 },
+            "optimizationConfig": { "priorities": { "demand": 25, "residential": 25, "coverage": 25, "overlap": 25, "radio_quality": 0 } }
+          }
+        },
+        "scenarios": [
+          {
+            "id": "scenario-fixture",
+            "name": "Network plan 1",
+            "createdAt": "2026-09-21T07:30:00.000Z",
+            "updatedAt": "2026-09-21T07:45:00.000Z",
+            "plan": { "planningMode": "network", "settings": { "frequencyGHz": 28 }, "selectedNetworkTowerIds": ["cell-1", "cell-2"], "networkAzimuths": { "cell-1": 90, "cell-2": 270 }, "optimizationConfig": {} },
+            "request": { "frequency_ghz": 28, "rays": 120, "radius_m": 400 },
+            "summary": { "kind": "network", "resultsView": "optimization" },
+            "artifacts": { "simulation": { "stats": { "avg_rx_dbm": -82.4, "blocked_pct": 12.5 } } },
+            "requiresRerun": false
+          }
+        ]
+      }
+    ]
+  },
+  "legacy_fixtures": [
+    { "name": "schema-v1 workspace", "shape": "{ schemaVersion: 1, activeProjectId, projects[] }", "expected": "normalizes to schema v2 without changing project/scenario inputs" },
+    { "name": "legacy single-project envelope", "shape": "{ project: ProjectV2 }", "expected": "normalizes to one-project schema v2 workspace" },
+    { "name": "schema-v1 project file", "shape": "{ schemaVersion: 1, project: ProjectV2 }", "expected": "imports with fresh project/scenario ids" }
+  ],
+  "fingerprint_fixture": {
+    "schema": "atom-scenario-v1",
+    "value": "network-def2ab8c875ff267a6e7969d297216f0",
+    "source": "docs/concept-5a-pre-change-baseline.json",
+    "optimization_run_id": "network-opt-9fe822fc405adc9533802cef",
+    "identity_rule": "fingerprint and optimization_run_id are not durable entity ids"
+  },
+  "representative_results": {
+    "simulation": {
+      "fixture_type": "ProjectV2 retained artifact",
+      "stats": { "avg_rx_dbm": -82.4, "blocked_pct": 12.5, "ray_count": 120 },
+      "retention": "derived cache; may be compacted"
+    },
+    "optimization": {
+      "fixture_type": "Concept 5A canonical public result",
+      "baseline_score": 33.7894,
+      "optimized_score": 41.1715,
+      "pareto_ids": ["70.0,20.0,130.0,160.0,290.0,110.0"],
+      "source": "docs/concept-5a-pre-change-baseline.json"
+    }
+  },
+  "behavior": {
+    "save_current": "append a ProjectV2 scenario snapshot with a new id",
+    "draft_autosave": "App.jsx debounce of approximately 500 ms, then full workspace save",
+    "compaction": "only newest five scenarios with artifacts retain derived artifacts; older artifacts become null and requiresRerun=true",
+    "delete_and_undo": "scenario deletion is reversible in the UI; project deletion keeps at least one project",
+    "backend_persistence": "none for projects, scenarios, runs, reports, or artifacts"
+  },
+  "source_fingerprints_before_change": [
+    { "path": "frontend-react/src/utils/projectStore.js", "sha256": "889cf25d3502155dd7510b4d167247fa75e58643bbfc2dcb2875b3abe3f1cc20" },
+    { "path": "frontend-react/src/hooks/useProjectWorkspace.js", "sha256": "ee0f3047a4d066390b246b5fcd8a01a5a316a84970f25e1d3875e52010d96b03" },
+    { "path": "frontend-react/src/App.jsx", "sha256": "b98f9cc935e9cbdfdf75a3246e3aceb993771a6bf349ba8cec6f19ad2cd09976" },
+    { "path": "backend-go/raytracer/scenario_fingerprint.go", "sha256": "44ebdfc0e2a981bddae435b3382c4403e55db3d3f7e195c5ba2a2bbbff93c9f6" },
+    { "path": "backend-go/raytracer/static_simulation.go", "sha256": "1806be4c5747dd800b62486df896c62f8ecf7e522b330181ac1e4ce7596ee693" }
+  ],
+  "baseline_regression_targets": [
+    "ProjectV2 v1/v2/legacy imports remain readable",
+    "IndexedDB and localStorage fallback semantics remain unchanged",
+    "atom-scenario-v1 remains unchanged",
+    "simulation and optimization request builders remain equivalent",
+    "RF and optimizer behavior remain outside the Concept 7B change set"
+  ]
+}

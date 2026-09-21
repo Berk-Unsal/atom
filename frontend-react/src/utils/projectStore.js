@@ -2,6 +2,10 @@ import { compactRecommendationResponse } from "./recommendations.js";
 
 export const PROJECT_SCHEMA_VERSION = 2;
 export const MAX_PROJECT_FILE_BYTES = 16 * 1024 * 1024;
+export const PROJECT_DATABASE_NAME = "atom-planning-workspace";
+export const PROJECT_OBJECT_STORE_NAME = "workspace";
+export const PROJECT_WORKSPACE_KEY = "current";
+export const PROJECT_FALLBACK_STORAGE_KEY = "atom.planning.workspace.v1";
 const MAX_PROJECT_SCENARIOS = 100;
 const MAX_PROJECT_JSON_DEPTH = 40;
 const MAX_PROJECT_JSON_NODES = 250_000;
@@ -14,10 +18,10 @@ const MAX_PROJECT_STRING_BYTES = 1 * 1024 * 1024;
 /** @typedef {{ id: string, name: string, createdAt: string, updatedAt: string, plan: object, request: object|null, meta: object|null, summary: ScenarioSummary, artifacts: object|null, calibrationProfile: CalibrationProfile|null, requiresRerun: boolean }} ScenarioSnapshot */
 /** @typedef {{ id: string, name: string, datasetRef: object|null, createdAt: string, updatedAt: string, activeScenarioId: string|null, draft: object|null, scenarios: ScenarioSnapshot[] }} ProjectV2 */
 /** @typedef {{ revision: number, committedAt: string|null }} WorkspacePersistence */
-const DATABASE_NAME = "atom-planning-workspace";
-const STORE_NAME = "workspace";
-const WORKSPACE_KEY = "current";
-const FALLBACK_KEY = "atom.planning.workspace.v1";
+const DATABASE_NAME = PROJECT_DATABASE_NAME;
+const STORE_NAME = PROJECT_OBJECT_STORE_NAME;
+const WORKSPACE_KEY = PROJECT_WORKSPACE_KEY;
+const FALLBACK_KEY = PROJECT_FALLBACK_STORAGE_KEY;
 const MAX_CACHED_SCENARIOS = 5;
 let lastPersistenceRevision = 0;
 let workspaceSaveQueue = Promise.resolve();
@@ -268,6 +272,10 @@ function compactWorkspace(workspace) {
   };
 }
 
+export function compactProjectWorkspace(workspace) {
+  return compactWorkspace(normalizeWorkspace(workspace));
+}
+
 function compactScenarioArtifacts(artifacts) {
   if (!artifacts?.siteRecommendations) return artifacts;
   const siteRecommendations = compactRecommendationResponse(artifacts.siteRecommendations);
@@ -281,10 +289,14 @@ function copyProjectWithNewIDs(project, name) {
   const scenarios = (project.scenarios ?? []).map((scenario) => {
     const id = createID("scenario");
     scenarioIDs.set(scenario.id, id);
-    return { ...structuredClone(scenario), id, createdAt: timestamp, updatedAt: timestamp };
+    const clonedScenario = structuredClone(scenario);
+    delete clonedScenario.domain;
+    return { ...clonedScenario, id, createdAt: timestamp, updatedAt: timestamp };
   });
+  const clonedProject = structuredClone(project);
+  delete clonedProject.domain;
   return {
-    ...structuredClone(project),
+    ...clonedProject,
     id: createID("project"),
     name,
     createdAt: timestamp,

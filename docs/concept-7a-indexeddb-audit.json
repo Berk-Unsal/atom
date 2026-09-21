@@ -1,0 +1,162 @@
+{
+  "artifact": "concept-7a-indexeddb-audit",
+  "artifact_version": "1.0.0",
+  "scope": "frontend-react/src/utils/projectStore.js and frontend-react/src/hooks/useProjectWorkspace.js",
+  "current_store": {
+    "database_name": "atom-planning-workspace",
+    "database_version": 1,
+    "object_stores": [
+      {
+        "name": "workspace",
+        "key_path": null,
+        "record_key": "current",
+        "record_shape": "Normalized Workspace envelope",
+        "record_schema_version": 2,
+        "record_contains": [
+          "schemaVersion",
+          "persistence.revision",
+          "persistence.committedAt",
+          "activeProjectId",
+          "projects[]"
+        ]
+      }
+    ],
+    "indexes": [],
+    "transaction_scope": "One full workspace record per read or write",
+    "database_upgrade_behavior": "Creates workspace store if absent; no later upgrade path is currently defined"
+  },
+  "fallback_store": {
+    "technology": "localStorage",
+    "key": "atom.planning.workspace.v1",
+    "record_shape": "Serialized full Workspace envelope",
+    "selection_rule": "loadProjectWorkspace compares IndexedDB and fallback persistence revisions, then committed timestamps",
+    "write_rule": "IndexedDB is attempted first; localStorage is written only when IndexedDB write fails",
+    "cleanup_rule": "A successful IndexedDB write removes an older fallback record when it is not newer"
+  },
+  "read_write_paths": [
+    {
+      "operation": "load",
+      "entry_point": "loadProjectWorkspace",
+      "behavior": [
+        "Read IndexedDB current record",
+        "Read localStorage fallback independently",
+        "Parse and normalize both candidates",
+        "Choose newest persistence revision, then committed timestamp",
+        "Fall back to a default workspace when neither candidate is usable"
+      ],
+      "survives_reload": true
+    },
+    {
+      "operation": "autosave",
+      "entry_point": "queueProjectWorkspaceSave",
+      "behavior": [
+        "Normalize and compact workspace",
+        "Increment process-local persistence revision",
+        "Serialize writes through a promise queue",
+        "Persist the whole current workspace"
+      ],
+      "debounce_owner": "App.jsx, approximately 500ms after hydrated state changes",
+      "survives_reload": true
+    },
+    {
+      "operation": "scenario_save",
+      "entry_point": "saveScenario",
+      "behavior": "Appends a new scenario snapshot with a new id and timestamps; it does not update an existing scenario revision"
+    },
+    {
+      "operation": "import_export",
+      "entry_point": "exportProject/importProject",
+      "behavior": "Exports or imports a bounded JSON project envelope; imported project and scenario ids are regenerated"
+    }
+  ],
+  "normalization_and_compaction": {
+    "project_schema_version": 2,
+    "legacy_inputs": [
+      "Schema version 1 workspace",
+      "Legacy single-project envelope"
+    ],
+    "limits": {
+      "project_file_max_bytes": 16777216,
+      "maximum_scenarios_per_project": 100,
+      "cached_artifact_scenarios": 5,
+      "json_depth_and_node_limits": "Enforced by projectStore validation helpers"
+    },
+    "compaction_rules": [
+      "Only the newest five scenarios retain artifacts.",
+      "Older scenario artifacts are set to null and requiresRerun becomes true.",
+      "Recommendation GeoJSON properties are compacted to id-only properties.",
+      "Invalid projects/scenarios are filtered during normalization."
+    ]
+  },
+  "ownership_and_authority": {
+    "browser_is_authority_for": [
+      "Current project/workspace envelope",
+      "Draft plan",
+      "Saved scenario snapshots",
+      "Project-local inventory snapshot",
+      "User-selected active project and scenario"
+    ],
+    "backend_is_authority_for": [
+      "Validated dataset-pack contents",
+      "RF calculations and response DTOs",
+      "Dataset manifest/hash validation",
+      "Stateless compute-time optimization and analysis"
+    ],
+    "shared_authority": false,
+    "server_sync": false
+  },
+  "persistence_classification": {
+    "durable_across_reload": [
+      "Project name and identity",
+      "Dataset reference",
+      "Draft plan",
+      "Scenario input snapshot",
+      "Selected cached result artifacts, subject to compaction"
+    ],
+    "recomputed_or_ephemeral": [
+      "Request cancellation state",
+      "Coverage surface runtime state",
+      "Path/reference diagnostics not included in scenario artifacts",
+      "Cell explanation Map cache",
+      "UI selection, drawer, map, and notification state",
+      "Backend job/cache maps after process restart"
+    ],
+    "conditionally_durable": [
+      "Simulation, gap, interference, and network artifacts when planDirty is false and the scenario is among the five retained artifact scenarios",
+      "Measurement analysis summary; raw measurement samples and provenance are not included in the current scenario snapshot"
+    ]
+  },
+  "risk_register": [
+    {
+      "id": "IDB-001",
+      "risk": "The entire workspace is one opaque record, so a single write serializes all projects, scenarios, and retained artifacts.",
+      "impact": "Large writes, coarse conflict granularity, and difficult future multi-device synchronization.",
+      "mitigation": "Keep IndexedDB as local-first storage now; introduce a repository boundary and normalized domain model before any server migration."
+    },
+    {
+      "id": "IDB-002",
+      "risk": "Persistence revision is process-local and has no server or device identity.",
+      "impact": "Revision ordering is useful for local fallback recovery but is not a distributed conflict protocol.",
+      "mitigation": "Future sync needs stable entity revisions, device/outbox metadata, and explicit conflict policy."
+    },
+    {
+      "id": "IDB-003",
+      "risk": "Saved scenario artifacts are caches rather than complete run evidence.",
+      "impact": "Reload can require rerun, and current snapshots do not prove the exact engine/dataset environment.",
+      "mitigation": "Persist immutable Run metadata and provenance separately before treating results as audit-grade."
+    },
+    {
+      "id": "IDB-004",
+      "risk": "Project-local tower snapshots conflate reusable inventory with scenario overrides.",
+      "impact": "A cell edit is difficult to reuse or reconcile across scenarios.",
+      "mitigation": "Concept 7B defines Inventory and ScenarioOverride boundaries without changing current behavior."
+    },
+    {
+      "id": "IDB-005",
+      "risk": "There is no orphan cleanup or per-entity delete protocol because records are nested in one envelope.",
+      "impact": "Logical deletion is safe locally but future partial sync needs tombstones or revision-aware operations.",
+      "mitigation": "Define deletion and retention semantics in the repository contract before server persistence."
+    }
+  ],
+  "audit_conclusion": "IndexedDB is sufficient for the current single-user, local-first workspace and should remain in place for the next release. It is not sufficient as a durable shared source of truth for projects, runs, large geospatial data, or immutable evidence."
+}

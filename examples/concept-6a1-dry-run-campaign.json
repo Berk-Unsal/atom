@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "campaign_id": "ankara-concept-6a1-dry-run",
+  "campaign_version": "2026.09.21",
+  "title": "Ankara Concept 6A.1 synthetic Signal Collector import dry-run",
+  "campaign_date": "2026-09-21",
+  "source_type": "synthetic_controlled",
+  "collection_mode": "handset_field_measurement",
+  "raw_format": "SIGNAL_COLLECTOR_TXT_V6",
+  "session_ids": ["s-fixed-lte", "s-fixed-nr", "s-poor-gps", "s-missing-gps"],
+  "raw_preservation": {
+    "keep_raw": true,
+    "canonical_output_separate": true,
+    "hash_algorithm": "sha256",
+    "raw_artifact_pattern": "raw/{campaign_id}/{session_id}.signal-collector.txt",
+    "no_overwrite": true
+  },
+  "collector": {
+    "name": "Signal Collector",
+    "version": "1.5.2",
+    "platform": "Android",
+    "hardware_requirements": ["Android handset with LTE/NR modem", "GNSS receiver", "operator SIM/eSIM permitted for the campaign"],
+    "root_required": false,
+    "export_format": "SIGNAL_COLLECTOR_TXT_V6",
+    "quantities": ["rsrp_dbm", "rsrq_db", "sinr_db", "rssi_dbm", "serving_cell_id", "pci", "earfcn_or_nrarfcn", "band", "frequency_mhz", "gps", "timestamp"],
+    "serving_identity": ["registered", "connection_status", "cell_id", "nci", "pci", "plmn", "tac"],
+    "frequency_metadata": ["earfcn", "nrarfcn", "band", "frequency_mhz", "bandwidth for LTE when exported"],
+    "gps_metadata": ["WGS84 latitude", "WGS84 longitude", "altitude", "horizontal accuracy", "fix timestamp"],
+    "automation": "manual start/stop export; no unattended upload or cloud dependency",
+    "licensing": "collector export is retained under the campaign operator's permitted use; this fixture is synthetic",
+    "permissions": ["location while collecting", "phone state/cell information", "local file export"]
+  },
+  "device": {
+    "pseudonymous_id": "handset-pilot-001",
+    "manufacturer": "controlled-fixture",
+    "model": "controlled-fixture-handset",
+    "android_version": "controlled-fixture",
+    "antenna_id": "builtin-rf-001",
+    "antenna_basis": "built-in handset antenna; vendor response is not relabeled as calibrated gain",
+    "calibration_id": "vendor-factory-profile",
+    "calibration_state": "vendor_factory_uncalibrated"
+  },
+  "receiver": {
+    "height_agl_m": 1.8,
+    "height_source": "configured",
+    "antenna_id": "builtin-rf-001",
+    "antenna_basis": "built-in handset antenna",
+    "calibration_id": "vendor-factory-profile",
+    "calibration_state": "vendor_factory_uncalibrated"
+  },
+  "coordinate": {
+    "provider": "GNSS",
+    "crs": "EPSG:4326",
+    "max_accuracy_m": 10,
+    "timezone": "UTC",
+    "normalize_to_utc": true,
+    "poor_position_action": "retain raw accuracy and row, omit unusable coordinates from canonical geometry"
+  },
+  "operator": {
+    "operator_name": "controlled-fixture-operator",
+    "plmn": "28601",
+    "network_context": "receive-side modem observation only; no transmitter-side access",
+    "consent_note": "synthetic fixture; live collection requires operator, site, and participant permissions"
+  },
+  "measurement": {
+    "mode": "fixed_point_and_moving",
+    "sampling_interval_ms": 1000,
+    "fixed_point_window_seconds": 30,
+    "default_motion_state": "stationary",
+    "keep_stationary_separate": true,
+    "aggregation_method": "raw",
+    "preserve_repeated_samples": true,
+    "neighbor_context_complete": false,
+    "censoring_supported": false,
+    "censoring_limitation": "empty or unavailable source fields remain missing; no detection floor is invented and no missing row is called censored",
+    "los_annotation_policy": "required_per_fixed_point_before real validation",
+    "outdoor_annotation_policy": "required_per_fixed_point before real validation"
+  },
+  "detection": {
+    "available": false,
+    "unavailable_representation": "empty source field retained as missing",
+    "invalid_representation": "invalid source field retained as an import issue and excluded from the quantity row",
+    "censoring_representation": "not available in selected V6 export; do not substitute a floor"
+  },
+  "point_annotations": [
+    {"label": "POINT-LTE", "fixed_point_id": "fp-lte-001", "site_id": "site-lte-001", "route_id": "route-fixed-001", "los_nlos": "los", "los_source": "controlled_fixture_annotation", "outdoor": true, "point_window_seconds": 30, "notes": "usable 2.6 GHz receive-side path"},
+    {"label": "POINT-NR", "fixed_point_id": "fp-nr-001", "site_id": "site-nr-001", "route_id": "route-fixed-001", "los_nlos": "los", "los_source": "controlled_fixture_annotation", "outdoor": true, "point_window_seconds": 30, "notes": "28 GHz raw field intentionally omits NR bandwidth"},
+    {"label": "POINT-POOR", "fixed_point_id": "fp-poor-001", "site_id": "site-lte-001", "route_id": "route-fixed-001", "los_nlos": "los", "los_source": "controlled_fixture_annotation", "outdoor": true, "point_window_seconds": 30, "notes": "row retained with poor GNSS accuracy and no fabricated measurement"},
+    {"label": "POINT-MISSING", "fixed_point_id": "fp-missing-001", "site_id": "site-lte-001", "route_id": "route-fixed-001", "los_nlos": "los", "los_source": "controlled_fixture_annotation", "outdoor": true, "point_window_seconds": 30, "notes": "row retained without a location fix and without a fabricated measurement"}
+  ],
+  "known_limitations": [
+    "This file is synthetic controlled data and is not field measurement evidence.",
+    "Signal Collector V6 does not guarantee NR bandwidth or resource metadata; the adapter never copies planning bandwidth into an observation.",
+    "The selected handset export does not establish calibrated absolute received power or a complete neighbor interference context.",
+    "No detection floor or censoring semantics are available in this fixture."
+  ],
+  "privacy": {
+    "personal_identifiers_excluded": ["subscriber name", "phone number", "IMSI", "IMEI", "account identifier", "raw device advertising identifier"],
+    "cell_identifiers_retained": true,
+    "raw_access": "restricted campaign custodians; export and checksum retained separately from canonical observations",
+    "sharing_policy": "share only pseudonymous, consented, minimum necessary artifacts; do not publish raw identifiers"
+  }
+}

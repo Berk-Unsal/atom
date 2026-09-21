@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Ankara receive-side campaign
+tooling, Signal Collector V6 raw preservation, transmitter truth
+mapping, quantity-specific readiness, dry-run validation, and the
+Concept 6B gate." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 6A.1 Campaign Tooling | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 6A.1
+Campaign Tooling page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#1-scope-and-frozen-boundary"
+      id="toc-1-scope-and-frozen-boundary">1. Scope and frozen
+      boundary</a></li>
+      <li><a href="#2-acquisition-modes-considered"
+      id="toc-2-acquisition-modes-considered">2. Acquisition modes
+      considered</a></li>
+      <li><a href="#3-selected-collector-and-audit"
+      id="toc-3-selected-collector-and-audit">3. Selected collector and
+      audit</a></li>
+      <li><a href="#4-raw-v6-format-and-exported-semantics"
+      id="toc-4-raw-v6-format-and-exported-semantics">4. Raw V6 format
+      and exported semantics</a></li>
+      <li><a href="#5-raw-preservation-and-checksums"
+      id="toc-5-raw-preservation-and-checksums">5. Raw preservation and
+      checksums</a></li>
+      <li><a href="#6-campaign-manifest" id="toc-6-campaign-manifest">6.
+      Campaign manifest</a></li>
+      <li><a href="#7-transmitter-truth-map-and-provenance"
+      id="toc-7-transmitter-truth-map-and-provenance">7. Transmitter
+      truth map and provenance</a></li>
+      <li><a href="#8-identity-and-matching-policy"
+      id="toc-8-identity-and-matching-policy">8. Identity and matching
+      policy</a></li>
+      <li><a href="#9-route-point-and-site-design"
+      id="toc-9-route-point-and-site-design">9. Route, point, and site
+      design</a></li>
+      <li><a href="#10-fixed-points-moving-routes-and-repeats"
+      id="toc-10-fixed-points-moving-routes-and-repeats">10. Fixed
+      points, moving routes, and repeats</a></li>
+      <li><a href="#11-receiver-height-policy"
+      id="toc-11-receiver-height-policy">11. Receiver-height
+      policy</a></li>
+      <li><a href="#12-gps-and-coordinate-policy"
+      id="toc-12-gps-and-coordinate-policy">12. GPS and coordinate
+      policy</a></li>
+      <li><a href="#13-time-synchronization"
+      id="toc-13-time-synchronization">13. Time synchronization</a></li>
+      <li><a href="#14-quantity-semantics"
+      id="toc-14-quantity-semantics">14. Quantity semantics</a></li>
+      <li><a href="#15-detection-floors-and-censoring"
+      id="toc-15-detection-floors-and-censoring">15. Detection floors
+      and censoring</a></li>
+      <li><a href="#16-neighbor-and-radio-quality-context"
+      id="toc-16-neighbor-and-radio-quality-context">16. Neighbor and
+      radio-quality context</a></li>
+      <li><a href="#17-quality-report" id="toc-17-quality-report">17.
+      Quality report</a></li>
+      <li><a href="#18-source-adapter-and-canonical-path"
+      id="toc-18-source-adapter-and-canonical-path">18. Source adapter
+      and canonical path</a></li>
+      <li><a href="#19-dry-run-status-and-real-data-boundary"
+      id="toc-19-dry-run-status-and-real-data-boundary">19. Dry-run
+      status and real-data boundary</a></li>
+      <li><a href="#20-per-quantity-readiness"
+      id="toc-20-per-quantity-readiness">20. Per-quantity
+      readiness</a></li>
+      <li><a href="#21-independence-and-holdouts"
+      id="toc-21-independence-and-holdouts">21. Independence and
+      holdouts</a></li>
+      <li><a href="#22-uncalibrated-baseline-policy"
+      id="toc-22-uncalibrated-baseline-policy">22. Uncalibrated baseline
+      policy</a></li>
+      <li><a href="#23-no-production-promotion"
+      id="toc-23-no-production-promotion">23. No production
+      promotion</a></li>
+      <li><a href="#24-concept-6b-gate-and-next-step"
+      id="toc-24-concept-6b-gate-and-next-step">24. Concept 6B gate and
+      next step</a></li>
+      <li><a href="#25-privacy-licensing-and-safety"
+      id="toc-25-privacy-licensing-and-safety">25. Privacy, licensing,
+      and safety</a></li>
+      <li><a href="#26-reproducibility-and-fingerprints"
+      id="toc-26-reproducibility-and-fingerprints">26. Reproducibility
+      and fingerprints</a></li>
+      <li><a href="#27-invariance-tests"
+      id="toc-27-invariance-tests">27. Invariance tests</a></li>
+      <li><a href="#28-files-commands-and-recommendation"
+      id="toc-28-files-commands-and-recommendation">28. Files, commands,
+      and recommendation</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Measurement acquisition</span>
+        <h1>Concept 6A.1 Campaign Tooling</h1>
+        <p>Ankara receive-side campaign tooling, Signal Collector V6 raw
+preservation, transmitter truth mapping, quantity-specific readiness,
+dry-run validation, and the Concept 6B gate.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-6a1-campaign-tooling.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Concept 6A.1 is the acquisition and data-quality phase around the
+frozen Concept 6A canonical RF validation boundary. It makes a real
+Ankara pilot operationally possible without changing the canonical 2.6
+GHz/28 GHz RF model, the UMa implementation, antenna/link-budget
+semantics, interference/radio-quality primitives, optimizer behavior,
+terrain behavior, or Concept 6A’s matching, applicability, residual,
+readiness, and calibration rules.</p>
+<p>The current result is
+<code>dry_run_ready_real_data_unavailable</code>. The repository
+contains a synthetic controlled export that exercises the complete
+import path; it is not field evidence. No real pilot data was supplied,
+so no <code>concept-6a1-pilot-validation.json</code> is created.</p>
+<h2 id="1-scope-and-frozen-boundary">1. Scope and frozen boundary</h2>
+<p>The implementation is the receive-side campaign tooling in <a
+href="../backend-go/raytracer/concept_6a1_campaign_tooling.go"><code>concept_6a1_campaign_tooling.go</code></a>,
+plus the isolated <a
+href="../backend-go/cmd/import-concept-6a1/main.go"><code>import-concept-6a1</code></a>
+command. It adapts a documented handset export into the existing
+<code>CanonicalRFValidationDataset</code> and then invokes
+<code>EvaluateCanonicalRFValidation</code>.</p>
+<p>It does not calibrate canonical RF, fit UMa coefficients, change 2.6
+GHz or 28 GHz propagation, infer a transmitter from strongest signal,
+invent missing frequency/bandwidth/height/LOS/antenna/calibration data,
+smooth measurements, replace SINR with RSRP, or feed observations into
+planning, optimization, or recommendation routes.</p>
+<p>The exact Concept 6A snapshots and optimizer-independent fingerprint
+are recorded in <a
+href="concept-6a1-pre-change-baseline.json"><code>concept-6a1-pre-change-baseline.json</code></a>
+and <a
+href="concept-6a1-post-change-comparison.json"><code>concept-6a1-post-change-comparison.json</code></a>.
+The post-change comparison reports exact snapshot equality and keeps
+Concept 6A readiness at <code>no_measurement_data</code>.</p>
+<h2 id="2-acquisition-modes-considered">2. Acquisition modes
+considered</h2>
+<p>The pilot keeps three modes available:</p>
+<ol type="1">
+<li><strong>Handset mode:</strong> an Android handset modem plus GNSS,
+using an exported measurement file. This is the selected phase-1 mode
+because it is repeatable, low-friction, and can retain raw records
+without changing the network.</li>
+<li><strong>Engineering/modem-log mode:</strong> a vendor or native
+<code>CellInfo</code> collector when the handset export lacks a required
+field, especially NR bandwidth/resource metadata. This is a phase-2
+escalation and must pass a device-specific audit first.</li>
+<li><strong>Manual fixed-point mode:</strong> an operator records point
+ID, height, route, LOS/NLOS, outdoor state, and the exact export/session
+at each stationary point. It is a fallback for route control, not a
+replacement for raw modem records.</li>
+</ol>
+<p>The campaign is receive-side only. It does not transmit test signals,
+alter network configuration, require operator-side privileges, or claim
+that a handset reading is calibrated absolute received power.</p>
+<h2 id="3-selected-collector-and-audit">3. Selected collector and
+audit</h2>
+<p>The selected tool is Android <strong>Signal Collector</strong> with
+its documented <code>SIGNAL_COLLECTOR_TXT_V6</code> export. The audit is
+in <a
+href="concept-6a1-collector-audit.json"><code>concept-6a1-collector-audit.json</code></a>.
+The audit records platform, handset/GNSS requirements, root assumptions,
+export containers, fields, automation, permissions, privacy, licensing
+checks, and limitations.</p>
+<p>The documented sources are <a
+href="https://signalcollector.app/format">Signal Collector’s format
+reference</a>, its <a href="https://signalcollector.app/">product
+page</a>, and its <a
+href="https://play.google.com/store/apps/details?id=app.signalcollector">Google
+Play listing</a>. The actual pilot must re-check the installed version,
+device behavior, export terms, operator permissions, and
+participant/site consent on the target hardware.</p>
+<p>CellMapper standard CSV was rejected for the full scope because its
+documented columns do not provide the required timestamp, RSRQ/SINR, and
+complete provenance contract; the audit retains it as an alternative.
+Android native <code>CellInfo</code> is the engineering fallback.
+Android documents registered LTE/NR cell records and timestamps in <a
+href="https://developer.android.com/reference/android/telephony/CellInfo"><code>CellInfo</code></a>;
+the AOSP signal-strength contract documents LTE RSRP/RSRQ/RSSNR and NR
+SSRSRP/SSRSRQ/SSSINR in its <a
+href="https://source.android.google.cn/docs/core/connect/signal-strength?hl=en">signal-strength
+reference</a>.</p>
+<h2 id="4-raw-v6-format-and-exported-semantics">4. Raw V6 format and
+exported semantics</h2>
+<p>The selected raw artifact starts with
+<code>SIGNAL_COLLECTOR_TXT_V6</code>, followed by <code>key=value</code>
+header lines, a blank line, and a seven-column TSV envelope:</p>
+<pre class="text"><code>timestamp_iso_utc  epoch_ms  elapsed_realtime_ns  session_id  sequence_number  source  payload</code></pre>
+<p><code>payload</code> is a second escaped <code>key=value</code>
+grammar separated by semicolons. The adapter decodes the outer TSV
+without destroying nested <code>\;</code>, <code>\=</code>,
+<code>\t</code>, <code>\r</code>, <code>\n</code>, and <code>\\</code>
+escapes, then parses the payload. Plain UTF-8 text and gzip-wrapped text
+are accepted; the checksum always identifies the original input
+bytes.</p>
+<p>For LTE, the adapter maps <code>rsrp</code> to <code>rsrp_dbm</code>,
+<code>rsrq</code> to <code>rsrq_db</code>, <code>rssnr</code> or
+<code>sinr</code> to <code>sinr_db</code>, and <code>rssi</code> to
+<code>rssi_dbm</code>. For NR it maps <code>ss_rsrp</code>,
+<code>ss_rsrq</code>, and <code>ss_sinr</code>. A generic
+<code>dbm</code> value is never relabeled as received power or RSRP. LTE
+<code>bandwidth</code> is interpreted as the documented kHz field and
+converted to MHz only when present. NR bandwidth is not assumed to
+exist.</p>
+<p>The selected format carries serving identity
+(<code>registered</code>, <code>connection_status</code>,
+<code>cell_id</code>/<code>nci</code>, <code>pci</code>,
+<code>plmn</code>, <code>tac</code>), channel
+(<code>earfcn</code>/<code>nrarfcn</code>), band, frequency, cell
+timestamp, GNSS fix, horizontal accuracy, altitude, speed, and UTC
+timestamps. Every source field remains visible through the raw export
+checksum, source field name, raw line, and imported identity fields.</p>
+<h2 id="5-raw-preservation-and-checksums">5. Raw preservation and
+checksums</h2>
+<p>The campaign manifest requires raw retention, a separate canonical
+output, SHA-256, and no overwrite. The CLI reads <code>-raw</code> and
+never writes to that path. A report includes the raw container, byte
+count, immutable checksum, parsed-row count, and source provenance.
+Canonical observations carry the raw checksum in
+<code>provenance</code>.</p>
+<p>Malformed rows are reported as import issues and are not silently
+repaired. Header record-count mismatches and collector-reported dropped
+samples remain warnings. A gzip container is decompressed only in memory
+for parsing; its original compressed bytes are hashed and remain the
+artifact of record.</p>
+<h2 id="6-campaign-manifest">6. Campaign manifest</h2>
+<p><a
+href="concept-6a1-campaign-manifest.schema.json"><code>concept-6a1-campaign-manifest.schema.json</code></a>
+is the strict JSON Schema contract. The example is <a
+href="../examples/concept-6a1-dry-run-campaign.json"><code>concept-6a1-dry-run-campaign.json</code></a>.
+It requires:</p>
+<ul>
+<li>campaign identity, date, source type, sessions,
+collector/version/platform/permissions, and raw format;</li>
+<li>raw retention and no-overwrite policy;</li>
+<li>pseudonymous device, built-in antenna basis, calibration state,
+receiver height, and height provenance;</li>
+<li>coordinate provider, CRS, maximum accepted accuracy, timezone, and
+UTC normalization;</li>
+<li>operator/PLMN context and consent note;</li>
+<li>sampling interval, fixed-point window, motion state, raw
+aggregation, repeated-sample policy, LOS/outdoor annotation policy, and
+neighbor/censoring declarations;</li>
+<li>explicit representations for unavailable, invalid, and censored
+values; and</li>
+<li>known limitations plus privacy and sharing policy.</li>
+</ul>
+<p>The Go validator rejects missing receiver height, unknown usable
+height provenance, collector root requirements, missing detection
+policy, missing limitations, or missing privacy policy. No
+receiver-height, frequency, bandwidth, cell, LOS, outdoor, or detection
+default is inserted.</p>
+<h2 id="7-transmitter-truth-map-and-provenance">7. Transmitter truth map
+and provenance</h2>
+<p><a
+href="concept-6a1-transmitter-map.schema.json"><code>concept-6a1-transmitter-map.schema.json</code></a>
+and <a
+href="../examples/concept-6a1-dry-run-transmitter-map.json"><code>concept-6a1-dry-run-transmitter-map.json</code></a>
+map observed PLMN/cell identity to a configured A.T.O.M transmitter.
+Each entry includes A.T.O.M cell ID, observed cell ID, PCI, PLMN, site
+coordinates, an explicit canonical RF profile, source citation, and
+field-level provenance.</p>
+<p>Every mapping field is marked <code>known</code>,
+<code>configured</code>, <code>inferred</code>, or <code>unknown</code>
+with a source. <code>configured</code> planning values such as
+transmitter height, azimuth, tilt, bandwidth, and conducted power remain
+configuration evidence. They are never relabeled as handset
+measurements. In particular, configured 100 MHz NR planning bandwidth
+cannot fill a missing <code>bandwidth</code> field in a 28 GHz
+observation.</p>
+<h2 id="8-identity-and-matching-policy">8. Identity and matching
+policy</h2>
+<p>The adapter accepts only <code>PRIMARY_SERVING</code> or
+<code>SECONDARY_SERVING</code> rows with an explicit registered state as
+serving observations. It never chooses the strongest cell. Unregistered
+rows are retained as neighbor IDs within their source cell-timestamp
+group.</p>
+<p>The mapping classes are:</p>
+<ul>
+<li><code>exact_transmitter_mapping</code>: PLMN plus observed cell ID
+resolves to one map entry;</li>
+<li><code>deterministic_identity_mapping</code>: PCI/channel/frequency
+form a unique canonical candidate later in Concept 6A;</li>
+<li><code>geographic_candidate_only</code>: reserved for an explicitly
+enabled future policy, disabled by this adapter; and</li>
+<li><code>unresolved</code>: no safe identity exists.</li>
+</ul>
+<p>The dry run uses exact mappings for cell IDs <code>1001</code> and
+<code>2001</code>; neighbor IDs <code>1002</code> and <code>2002</code>
+never become canonical serving observations.</p>
+<h2 id="9-route-point-and-site-design">9. Route, point, and site
+design</h2>
+<p>Each real run should define independent Ankara routes and fixed
+points before collection. A point annotation must have a stable point
+ID, site ID, route ID, point window, LOS/NLOS source, and outdoor state.
+Route IDs are retained separately from transmitter site IDs so a
+measurement site is not confused with a configured base-station
+site.</p>
+<p>The pilot should stratify both 2.6 GHz and 28 GHz by distance,
+LOS/NLOS, outdoor state, dense/open morphology, and route/site. It
+should include near/mid/far points within the canonical 10–5000 m
+distance envelope and deliberately label points that are outside it
+rather than filtering them into a headline result.</p>
+<h2 id="10-fixed-points-moving-routes-and-repeats">10. Fixed points,
+moving routes, and repeats</h2>
+<p>Fixed-point samples remain raw and repeated. The importer groups them
+by annotated point window and records sessions per fixed point. It does
+not average samples to improve residuals. Moving routes retain the
+source timestamp, GNSS accuracy, speed, and motion state; a manifest
+default is only a declared collection state, not a measured speed.</p>
+<p>The minimum real pilot should repeat each fixed point in independent
+sessions, repeat routes in both directions where safe, and reserve
+sites/routes/campaigns for holdout before inspecting residuals.
+Stationary and moving rows remain separate strata. Mean, median, p10,
+and p90 may be reported as named descriptive summaries of the preserved
+raw group, but the raw samples remain the evidence and no summary is
+selected to improve a residual.</p>
+<h2 id="11-receiver-height-policy">11. Receiver-height policy</h2>
+<p>The receiver height is a manifest value with explicit provenance. The
+dry run uses 1.8 m <code>configured</code> for a controlled handset
+fixture; a real run should record how the height was measured or
+configured for the operator’s carry position. The importer refuses a
+missing height and never falls back to the canonical 1.5 m value.</p>
+<p>The transmitter map’s antenna height is planning configuration and
+has its own provenance. Neither height is inferred from GPS altitude or
+a map profile without a declared source.</p>
+<h2 id="12-gps-and-coordinate-policy">12. GPS and coordinate policy</h2>
+<p>The selected coordinate contract is WGS84/EPSG:4326, UTC-normalized
+timestamps, GNSS horizontal accuracy, altitude, and speed. A fix over
+the manifest’s accuracy limit remains in the raw file and is counted as
+poor position; its coordinates are omitted from canonical geometry. A
+missing fix is counted separately. No coordinate is copied from a
+transmitter map or neighboring row.</p>
+<p>The dry run intentionally includes one poor-accuracy row and one
+missing-fix row. The quality report shows both without claiming a field
+path result for them.</p>
+<h2 id="13-time-synchronization">13. Time synchronization</h2>
+<p>The parser preserves ISO timestamp, epoch milliseconds, elapsed
+realtime nanoseconds, session ID, sequence number, and cell timestamp.
+It normalizes an ISO timestamp to UTC for the canonical row while
+retaining the original raw bytes. A timestamp/epoch difference over two
+seconds is a warning, not a silent correction. Decreasing elapsed
+realtime within a session is a separate warning.</p>
+<p>The real campaign should synchronize handset and any external
+annotation device before each session, record timezone and clock source,
+and reject or quarantine runs with large skew. Timestamp warnings remain
+in the quality artifact.</p>
+<h2 id="14-quantity-semantics">14. Quantity semantics</h2>
+<p>The adapter preserves the following distinctions:</p>
+<table>
+<thead>
+<tr>
+<th>Source field</th>
+<th>Canonical quantity</th>
+<th>Meaning</th>
+<th>Missing-field rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LTE <code>rsrp</code> / NR <code>ss_rsrp</code></td>
+<td><code>rsrp_dbm</code></td>
+<td>reference-signal received power</td>
+<td>no conversion from RSSI or generic dBm</td>
+</tr>
+<tr>
+<td>LTE <code>rsrq</code> / NR <code>ss_rsrq</code></td>
+<td><code>rsrq_db</code></td>
+<td>reference-signal quality</td>
+<td>requires canonical radio-quality context</td>
+</tr>
+<tr>
+<td>LTE <code>rssnr</code>/<code>sinr</code> / NR
+<code>ss_sinr</code></td>
+<td><code>sinr_db</code></td>
+<td>serving signal-to-interference-plus-noise ratio</td>
+<td>never substituted with RSRP</td>
+</tr>
+<tr>
+<td>LTE <code>rssi</code></td>
+<td><code>rssi_dbm</code></td>
+<td>wideband RSSI</td>
+<td>never cross-compared with RSRP</td>
+</tr>
+<tr>
+<td>none</td>
+<td><code>received_power_dbm</code></td>
+<td>absolute link received power</td>
+<td>never fabricated by the adapter</td>
+</tr>
+</tbody>
+</table>
+<p>The canonical evaluator supplies predicted values only where the
+existing Concept 6A quantity contract permits. Residuals remain measured
+minus predicted. The importer does not choose a statistic or combine
+quantities.</p>
+<h2 id="15-detection-floors-and-censoring">15. Detection floors and
+censoring</h2>
+<p>The selected V6 export does not guarantee an explicit detection floor
+or left/right censoring semantics. The manifest therefore declares
+detection unavailable and requires empty/unavailable source fields to
+remain missing. An empty measurement is not a censored value, and a
+detection floor is never substituted.</p>
+<p>If a future collector supplies a real floor, the adapter must carry
+the limit and censoring direction into the existing Concept 6A fields.
+Those records are counted but excluded from ordinary exact residual
+metrics according to the frozen evaluator policy.</p>
+<h2 id="16-neighbor-and-radio-quality-context">16. Neighbor and
+radio-quality context</h2>
+<p>Raw neighbor rows are retained when they share a cell-timestamp
+group, but the dry-run manifest declares
+<code>neighbor_context_complete: false</code>. This means LTE SINR,
+RSRQ, and RSSI remain <code>interference_validation_limited</code> even
+though the source values are present. A 28 GHz row without raw bandwidth
+stops earlier at <code>bandwidth_missing</code>.</p>
+<p>For a real radio-quality pilot, the campaign must export serving and
+neighbor identities, channel and bandwidth/resource semantics, sampling
+context, and any required load/interference metadata. The adapter must
+not derive a complete interference denominator from a partial neighbor
+list.</p>
+<h2 id="17-quality-report">17. Quality report</h2>
+<p>The report includes raw/parsed/cell/serving/neighbor counts,
+ambiguous groups, valid/poor/missing coordinates, valid/missing
+measurements, valid/missing frequency, receiver-height status, serving
+identity and mapping counts, stationary/moving/unclassified counts,
+timestamp warnings, fixed-point groups, per-quantity readiness,
+exclusion reasons, issues, and notes.</p>
+<p>The quality report is a gate, not a score. A high parse count cannot
+override missing bandwidth, incomplete interference context, unresolved
+identity, poor position, unknown LOS/NLOS, or missing calibration
+semantics.</p>
+<h2 id="18-source-adapter-and-canonical-path">18. Source adapter and
+canonical path</h2>
+<p>The end-to-end path is:</p>
+<p><code>raw V6 bytes → escaped V6 parser → manifest/map validation → source rows and quality counters → canonical quantity-preserving observations → existing Concept 6A evaluator → per-quantity readiness</code>.</p>
+<p>The adapter is source-specific only up to the canonical schema. It
+does not call a planning route, mutate the canonical RF profile, or pass
+calibration into the production evaluator. The CLI writes a separate
+JSON report and leaves the raw input untouched.</p>
+<p>Run it with:</p>
+<pre class="text"><code>cd backend-go
+go run ./cmd/import-concept-6a1 \
+  -raw ../examples/concept-6a1-signal-collector-dry-run.txt \
+  -manifest ../examples/concept-6a1-dry-run-campaign.json \
+  -transmitter-map ../examples/concept-6a1-dry-run-transmitter-map.json \
+  -output /tmp/concept-6a1-report.json</code></pre>
+<h2 id="19-dry-run-status-and-real-data-boundary">19. Dry-run status and
+real-data boundary</h2>
+<p>The controlled export is explicitly
+<code>synthetic_controlled</code>. It proves parser, raw checksum,
+mapping, quantity semantics, GPS handling, fixed-point grouping,
+canonical invocation, holdout retention, and readiness reporting. It
+does not prove handset accuracy, transmitter truth, device calibration,
+or Ankara field conditions.</p>
+<p>Because no real data was supplied, the implementation stops at a
+dry-run report. The optional pilot validation artifact is deliberately
+absent. No synthetic residual is promoted as a field result.</p>
+<h2 id="20-per-quantity-readiness">20. Per-quantity readiness</h2>
+<p>The generated <a
+href="concept-6a1-readiness.json"><code>concept-6a1-readiness.json</code></a>
+reports:</p>
+<ul>
+<li>2.6 GHz <code>rsrp_dbm</code>: two applicable controlled
+observations and suitable for the dry-run validation path;</li>
+<li>28 GHz <code>rsrp_dbm</code>: blocked by missing raw bandwidth,
+despite configured map bandwidth;</li>
+<li>2.6 GHz <code>sinr_db</code>, <code>rsrq_db</code>, and
+<code>rssi_dbm</code>: source values retained but blocked by incomplete
+neighbor/interference context;</li>
+<li>28 GHz <code>sinr_db</code> and <code>rsrq_db</code>: blocked by
+missing bandwidth before radio-quality evaluation; and</li>
+<li><code>received_power_dbm</code>: no rows, because the adapter never
+fabricates it from RSRP.</li>
+</ul>
+<p>These are tooling readiness results, not a claim that the canonical
+RF model is validated.</p>
+<h2 id="21-independence-and-holdouts">21. Independence and holdouts</h2>
+<p>The canonical response retains the existing spatial-block holdout
+policy with primary holdout enabled. The real campaign plan must reserve
+spatial blocks, sites, routes, and campaigns before any calibration
+decision. Repeated samples from one fixed point are not independent
+merely because their timestamps differ.</p>
+<p>The campaign manifest keeps device, antenna, calibration, route,
+site, session, point, and raw checksum identifiers so a later audit can
+group by the correct independence unit. No random row split is promoted
+as the primary evidence design.</p>
+<h2 id="22-uncalibrated-baseline-policy">22. Uncalibrated baseline
+policy</h2>
+<p>Concept 6A.1 reports only uncalibrated readiness. The receiver
+calibration state is recorded as provenance, not applied as a
+correction. The dry run sets <code>calibration_active: false</code> and
+<code>suitable_for_calibration_study: false</code>.</p>
+<p>If real observations eventually pass quantity, mapping, metadata, and
+holdout gates, a first uncalibrated report must include <code>n</code>,
+bias, median residual, MAE, RMSE, p90 absolute error, and relevant
+frequency/LOS/distance/site/session strata. Any frequency-specific
+constant-bias study remains the diagnostic-only Concept 6A procedure. It
+must be fit on calibration blocks and assessed on held-out blocks before
+any separate 6B decision.</p>
+<h2 id="23-no-production-promotion">23. No production promotion</h2>
+<p>The CLI and adapter have no optimizer/planner integration.
+<code>production_candidate</code> is false, and no measurement field
+changes a canonical RF profile or a network scenario. The canonical
+evaluator’s diagnostic calibration output, when present, is not
+activated or promoted.</p>
+<h2 id="24-concept-6b-gate-and-next-step">24. Concept 6B gate and next
+step</h2>
+<p>Concept 6B is not ready. The remaining gates are lawful real
+receive-side observations, complete
+quantity/device/antenna/calibration/resource metadata, deterministic
+serving-cell truth, independent spatial/site/campaign holdouts, stable
+frequency-specific behavior, reproducible provenance, no configuration
+bias, complete radio-quality context where claimed, and independent
+review.</p>
+<p>The recommended next step is a small consented handset pilot using
+the selected V6 mode at a few fixed points and one moving route per
+frequency, with a separate truth-map review and an explicit engineering
+fallback for NR resource metadata. Keep the campaign uncalibrated until
+the quality report passes.</p>
+<h2 id="25-privacy-licensing-and-safety">25. Privacy, licensing, and
+safety</h2>
+<p>The manifest excludes subscriber name, phone number, IMSI, IMEI,
+account identifiers, and raw device advertising identifiers from the
+canonical record. Raw files remain restricted campaign artifacts. Cell
+identities are retained only because deterministic serving-cell mapping
+requires them; sharing must be pseudonymous and consented.</p>
+<p>Before a real run, obtain operator, site, participant, institutional,
+and app/export permissions as applicable. Verify the collector’s current
+terms and any redistribution constraints. Do not collect or publish
+personal identifiers, do not transmit test signals, and do not use root
+or privileged access without an explicit device-specific audit.</p>
+<h2 id="26-reproducibility-and-fingerprints">26. Reproducibility and
+fingerprints</h2>
+<p>The raw checksum, manifest version, transmitter-map version, adapter
+version, canonical observation checksum, validation fingerprint,
+scenario fingerprint, device pseudonym, sessions, and point IDs form the
+reproducibility record. The validation fingerprint excludes local paths,
+runtime, memory, worker count, and UI state.</p>
+<p>The dry run is repeatable: the raw SHA-256 and canonical validation
+fingerprint are stable across repeated evaluations. Gzip input uses the
+checksum of the original compressed bytes, so a container change is
+visible even when decompressed rows are identical.</p>
+<h2 id="27-invariance-tests">27. Invariance tests</h2>
+<p>The artifact test captures the current 2.6 GHz and 28 GHz canonical
+snapshots before and after the tooling change. It asserts exact
+equality, equal optimizer-independent scenario fingerprints, unchanged
+Concept 6A readiness, no calibration activation, and no production
+candidate. The change is acquisition-only, so antenna/link-budget,
+interference/radio-quality, terrain, and optimizer policies remain
+untouched; the existing 140 GHz/4I reference scope is also outside this
+adapter. Backend tests also cover escape parsing, malformed rows, gzip
+checksums, missing receiver height, provenance rejection, no-default
+behavior, missing frequency, neighbor exclusion, fixed-point grouping,
+quantity mapping, and deterministic repeated evaluation.</p>
+<h2 id="28-files-commands-and-recommendation">28. Files, commands, and
+recommendation</h2>
+<p>Key files:</p>
+<ul>
+<li><a
+href="../backend-go/raytracer/concept_6a1_campaign_tooling.go"><code>concept_6a1_campaign_tooling.go</code></a>:
+parser, manifest/map validation, adapter, quality report, and evaluator
+wrapper;</li>
+<li><a
+href="../backend-go/raytracer/concept_6a1_campaign_tooling_test.go"><code>concept_6a1_campaign_tooling_test.go</code></a>
+and <a
+href="../backend-go/raytracer/concept_6a1_campaign_artifact_test.go"><code>concept_6a1_campaign_artifact_test.go</code></a>:
+regression and artifact tests;</li>
+<li><a
+href="concept-6a1-campaign-manifest.schema.json"><code>concept-6a1-campaign-manifest.schema.json</code></a>
+and <a
+href="concept-6a1-transmitter-map.schema.json"><code>concept-6a1-transmitter-map.schema.json</code></a>:
+strict contracts;</li>
+<li><a
+href="concept-6a1-collector-audit.json"><code>concept-6a1-collector-audit.json</code></a>:
+selected tool and alternatives audit;</li>
+<li><a
+href="concept-6a1-dry-run-validation.json"><code>concept-6a1-dry-run-validation.json</code></a>,
+<a
+href="concept-6a1-readiness.json"><code>concept-6a1-readiness.json</code></a>,
+<a
+href="concept-6a1-pre-change-baseline.json"><code>concept-6a1-pre-change-baseline.json</code></a>,
+and <a
+href="concept-6a1-post-change-comparison.json"><code>concept-6a1-post-change-comparison.json</code></a>:
+generated evidence; and</li>
+<li><a
+href="../examples/concept-6a1-signal-collector-dry-run.txt"><code>concept-6a1-signal-collector-dry-run.txt</code></a>,
+<a
+href="../examples/concept-6a1-dry-run-campaign.json"><code>concept-6a1-dry-run-campaign.json</code></a>,
+and <a
+href="../examples/concept-6a1-dry-run-transmitter-map.json"><code>concept-6a1-dry-run-transmitter-map.json</code></a>:
+synthetic fixtures.</li>
+</ul>
+<p>Validation commands:</p>
+<pre class="text"><code>cd backend-go &amp;&amp; go test ./...
+cd backend-go &amp;&amp; go test -race ./...
+cd backend-go &amp;&amp; go vet ./...
+cd backend-go &amp;&amp; ATOM_RUN_CONCEPT_6A1_AUDIT=1 go test ./raytracer -run &#39;^TestGenerateConcept6A1Artifacts$&#39; -count=1
+sh docs/build-reference-pages.sh
+data-pipeline/.venv/bin/python docs/validate_docs.py
+python3 scripts/versioning.py check
+git diff --check</code></pre>
+<p>Recommendation: proceed to a consented real pilot for acquisition and
+quality auditing only. Do not call the current dry run validation
+evidence, do not activate calibration, and do not open the Concept 6B
+gate until real-data and independent-review requirements are met.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

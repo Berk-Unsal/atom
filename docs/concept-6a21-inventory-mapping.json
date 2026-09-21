@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2.1",
+  "artifact": "inventory-mapping",
+  "audit_version": "concept-6a21-chongqing-rf-metadata-reconciliation-v1",
+  "prepared_at": "2026-09-21",
+  "scope": "Field-level research mapping only. This file is not an import manifest and does not authorize changes to the inventory schema or production RF profiles.",
+  "target_contract_context": {
+    "candidate_observation_targets": ["lat", "lon", "timestamp", "serving_cell_id", "rsrp_dbm", "rsrq_db", "sinr_db", "band", "channel_id", "frequency_ghz", "position_accuracy_m", "source_provenance"],
+    "candidate_transmitter_targets": ["site_id", "cell_id", "lat", "lon", "azimuth_deg", "antenna_height_m", "electrical_downtilt_deg", "mechanical_downtilt_deg", "bandwidth_mhz", "tx_power_dbm", "eirp_dbm", "antenna_gain_db", "antenna_pattern"],
+    "adapter_status": "not_created",
+    "production_mapping_status": "not_authorized"
+  },
+  "mapping": [
+    {
+      "source": "raw_datas.LATITUDE",
+      "target": "observation.lat",
+      "status": "direct",
+      "transform": "none; WGS84 geographic coordinate",
+      "confidence": "high",
+      "caveat": "Keep the original row and GNSS accuracy; do not substitute grid-center coordinates."
+    },
+    {
+      "source": "raw_datas.LONGITUDE",
+      "target": "observation.lon",
+      "status": "direct",
+      "transform": "none; WGS84 geographic coordinate",
+      "confidence": "high",
+      "caveat": "Keep the original row and GNSS accuracy; do not substitute grid-center coordinates."
+    },
+    {
+      "source": "raw_datas.ACCURACY(M)",
+      "target": "observation.position_accuracy_m",
+      "status": "direct_qualified",
+      "transform": "none",
+      "confidence": "high",
+      "caveat": "Smartphone GNSS estimated horizontal uncertainty; observed range 3-294 m."
+    },
+    {
+      "source": "raw_datas.TIME(BeiJing)",
+      "target": "observation.timestamp",
+      "status": "direct_qualified",
+      "transform": "parse as China/Beijing local time; preserve original text",
+      "confidence": "medium",
+      "caveat": "No offset is embedded; paper separately discusses UTC alignment for UAV logs."
+    },
+    {
+      "source": "raw_datas.source_file",
+      "target": "observation.provenance/campaign_id",
+      "status": "provenance_only",
+      "transform": "retain exact source filename; do not promote to official route/session ID",
+      "confidence": "medium",
+      "caveat": "Filename can distinguish UAV/ground patterns in this release but route/session semantics are undocumented."
+    },
+    {
+      "source": "raw_datas.NCI == base_station_data.ECI",
+      "target": "observation.serving_cell_id/transmitter.cell_id",
+      "status": "direct_join_for_81077_rows",
+      "transform": "exact string/integer equality",
+      "confidence": "high_for_mapped_rows",
+      "caveat": "342 raw rows reference eight missing ECI keys; no fallback is allowed."
+    },
+    {
+      "source": "raw_datas.GNODEB",
+      "target": "transmitter.site_id",
+      "status": "candidate_only",
+      "transform": "none",
+      "confidence": "low",
+      "caveat": "The release calls it a base-station name/identifier but gives no authoritative site/sector contract."
+    },
+    {
+      "source": "raw_datas.GCELLID",
+      "target": "transmitter.local_cell_id",
+      "status": "qualified_source_component",
+      "transform": "retain with NCI/GNODEB; observed 12-bit arithmetic relation only",
+      "confidence": "medium",
+      "caveat": "Do not treat GNODEB*4096+GCELLID as a general 3GPP decoder."
+    },
+    {
+      "source": "raw_datas.NR_PCI",
+      "target": "observation.pci",
+      "status": "direct_observation_only",
+      "transform": "none",
+      "confidence": "high_as_observed_field",
+      "caveat": "Not safe for joining to base PCI: 254 mapped rows across 32 NCI values disagree."
+    },
+    {
+      "source": "base_station_data.PCI",
+      "target": "transmitter.pci",
+      "status": "direct_metadata_only",
+      "transform": "none",
+      "confidence": "medium",
+      "caveat": "Conflicts with raw observations for part of the exact NCI/ECI mapping."
+    },
+    {
+      "source": "raw_datas.NR_TAC/base_station_data.TAC",
+      "target": "observation.tracking_area_code/transmitter.tracking_area_code",
+      "status": "direct_qualified",
+      "transform": "none",
+      "confidence": "high_for_mapped_rows",
+      "caveat": "No mapped TAC mismatches were observed; missing-key rows remain unresolved."
+    },
+    {
+      "source": "raw_datas.NR_ARFCN",
+      "target": "observation.channel_id",
+      "status": "direct",
+      "transform": "none",
+      "confidence": "high",
+      "caveat": "A frequency can be derived with the 3GPP formula, but it does not reconcile to base Downlink Frequency."
+    },
+    {
+      "source": "raw_datas.NR_ARFCN + ETSI TS 138 104 formula",
+      "target": "observation.frequency_ghz",
+      "status": "transformed_source_level_only",
+      "transform": "633984 -> 3.50976 GHz; 627264 -> 3.40896 GHz; 428910 -> 2.14455 GHz",
+      "confidence": "high_for_raw_channel_conversion",
+      "caveat": "Not a validated transmitter inventory frequency until base-field reconciliation is resolved."
+    },
+    {
+      "source": "raw_datas.NR_BAND",
+      "target": "observation.band",
+      "status": "direct",
+      "transform": "none",
+      "confidence": "high"
+    },
+    {
+      "source": "base_station_data.Downlink Frequency",
+      "target": "transmitter.frequency_ghz",
+      "status": "blocked_unresolved",
+      "transform": "none permitted",
+      "confidence": "none",
+      "caveat": "Conditional NR-ARFCN interpretation yields 0 exact agreements and non-constant deltas with raw channels."
+    },
+    {
+      "source": "base_station_data.FREQUENCY",
+      "target": "transmitter.frequency_ghz",
+      "status": "blocked_unresolved",
+      "transform": "none permitted",
+      "confidence": "none",
+      "caveat": "Unit/encoding is undocumented and observed values are not numerically reconcilable to N1/N78."
+    },
+    {
+      "source": "base_station_data.Bandwidth",
+      "target": "transmitter.bandwidth_mhz",
+      "status": "known_with_encoding_qualification",
+      "transform": "100M -> 100 MHz, 40M -> 40 MHz, 20M -> 20 MHz only as source labels",
+      "confidence": "medium",
+      "caveat": "The source does not define whether this is configured carrier bandwidth or allocated spectrum range for the RF quantity."
+    },
+    {
+      "source": "base_station_data.LONGITUDE (processed)/LATITUDE (processed)",
+      "target": "transmitter.lon/transmitter.lat",
+      "status": "direct_qualified",
+      "transform": "none; preserve processed field names and source coordinates",
+      "confidence": "medium",
+      "caveat": "Coordinates are operator/open-platform metadata, not terminal-measured antenna coordinates."
+    },
+    {
+      "source": "base_station_data.angle",
+      "target": "transmitter.azimuth_deg",
+      "status": "direct_qualified",
+      "transform": "none; clockwise from true north",
+      "confidence": "medium",
+      "caveat": "Paper reports approximately ±5 degrees uncertainty and no antenna pattern."
+    },
+    {
+      "source": "base_station_data.Electrical Tilt",
+      "target": "transmitter.electrical_downtilt_deg",
+      "status": "direct_qualified",
+      "transform": "none",
+      "confidence": "medium",
+      "caveat": "Reference/sign convention is only described textually; gain/pattern remains missing."
+    },
+    {
+      "source": "base_station_data.Mechanical Tilt",
+      "target": "transmitter.mechanical_downtilt_deg",
+      "status": "direct_qualified",
+      "transform": "none",
+      "confidence": "medium",
+      "caveat": "Reference/sign convention is only described textually; gain/pattern remains missing."
+    },
+    {
+      "source": "base_station_data.Height",
+      "target": "transmitter.antenna_height_m",
+      "status": "direct_qualified",
+      "transform": "none",
+      "confidence": "medium",
+      "caveat": "Two zero values; exact antenna reference point and policy for zero are not established."
+    },
+    {
+      "source": "base_station_data.Antenna transmit power(dBm)",
+      "target": "transmitter.tx_power_dbm",
+      "status": "source_only_reference_plane_unknown",
+      "transform": "none permitted",
+      "confidence": "low_for_absolute_rf",
+      "caveat": "Conducted/EIRP/array/per-carrier/configured-vs-measured semantics and gain inclusion are missing."
+    },
+    {
+      "source": "base_station_data.Antenna transmit power(dBm) + antenna gain/pattern",
+      "target": "transmitter.eirp_dbm",
+      "status": "missing",
+      "transform": "not computable",
+      "confidence": "none",
+      "caveat": "No gain, pattern, antenna model, or power reference plane is released."
+    },
+    {
+      "source": "antenna model/pattern/gain",
+      "target": "transmitter.antenna_gain_db/transmitter.antenna_pattern",
+      "status": "missing",
+      "transform": "not computable",
+      "confidence": "none",
+      "caveat": "Azimuth and tilts do not substitute for directional pattern data."
+    },
+    {
+      "source": "raw_datas.SS_RSRP",
+      "target": "observation.rsrp_dbm",
+      "status": "direct_quantity_candidate_source_level_only",
+      "transform": "none; retain SS-RSRP name and source row",
+      "confidence": "medium",
+      "caveat": "Absolute validation is blocked by receiver calibration, resource averaging, detection floor, antenna, and transmitter metadata gaps."
+    },
+    {
+      "source": "raw_datas.SS_RSRQ",
+      "target": "observation.rsrq_db",
+      "status": "direct_quantity_candidate_source_level_only",
+      "transform": "none",
+      "confidence": "medium",
+      "caveat": "Neighbor/interference context is excluded from the release."
+    },
+    {
+      "source": "raw_datas.SS_SINR",
+      "target": "observation.sinr_db",
+      "status": "direct_quantity_candidate_source_level_only",
+      "transform": "none",
+      "confidence": "medium",
+      "caveat": "Neighbor/interference context is excluded from the release."
+    },
+    {
+      "source": "grid.SS_RSRP/grid.is_interpolated/grid.n_raw_measurements",
+      "target": "observation.rsrp_dbm",
+      "status": "incompatible_for_raw_validation",
+      "transform": "none",
+      "confidence": "none",
+      "caveat": "Grid SS-RSRP is an aggregate and may be interpolated; it is not a substitute for raw observations."
+    },
+    {
+      "source": "grid.ALT_M_/grid.Height_AGL",
+      "target": "observation.receiver_height_m",
+      "status": "incompatible_for_general_receiver_height",
+      "transform": "none",
+      "confidence": "none",
+      "caveat": "These are UAV flight-log/terrain-derived quantities and do not cover ground receiver height."
+    },
+    {
+      "source": "environmental DEM/NDVI/building features",
+      "target": "observation.environment_context",
+      "status": "known_context_only",
+      "transform": "retain source/grid provenance",
+      "confidence": "medium",
+      "caveat": "No measured LOS/NLOS label or independently reproduced geometry/occlusion truth is released."
+    },
+    {
+      "source": "paper supplementary SHP/configuration claim",
+      "target": "route/session/environment reproducibility",
+      "status": "missing_from_audited_release",
+      "transform": "none",
+      "confidence": "none",
+      "caveat": "The paper claims a reproducibility package, but the audited Zenodo file listing does not contain it."
+    }
+  ],
+  "minimum_authoritative_additions_before_import": [
+    "Pinned release manifest with matching checksums and corrected example script/file names.",
+    "Resolved NCI/ECI coverage for the eight missing cells and explanation of 254 PCI mismatches.",
+    "Resolved raw/base frequency units, direction, carrier snapshot, and mapping.",
+    "Power reference plane plus antenna gain/model/pattern or an explicit non-absolute validation scope.",
+    "Receiver/device/antenna/calibration and SS-RSRP measurement-resource semantics.",
+    "Ground receiver height, route/session identifiers, and the claimed GIS/configuration supplement."
+  ],
+  "result": "No production inventory mapping is safe to materialize from this release."
+}

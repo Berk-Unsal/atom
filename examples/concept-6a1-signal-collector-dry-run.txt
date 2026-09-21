@@ -1,0 +1,25 @@
+SIGNAL_COLLECTOR_TXT_V6
+export_id=concept-6a1-dry-run
+record_count=16
+dropped_samples=0
+timezone=UTC
+platform=Android
+collector_version=1.5.2
+
+timestamp_iso_utc	epoch_ms	elapsed_realtime_ns	session_id	sequence_number	source	payload
+2026-09-21T10:00:00Z	1789984800000	1000000000	s-fixed-lte	1	session	record_type=survey_point;label=POINT-LTE
+2026-09-21T10:00:00Z	1789984800000	1100000000	s-fixed-lte	2	location	record_type=fix;latitude=39.912000;longitude=32.849000;altitude_m=938;horizontal_accuracy_m=4;speed_mps=0
+2026-09-21T10:00:01Z	1789984801000	2000000000	s-fixed-lte	3	mobile_network	record_type=cell;technology=LTE;registered=true;connection_status=PRIMARY_SERVING;cell_timestamp_ms=1789984801000;plmn=28601;cell_id=1001;pci=101;tac=1;earfcn=2850;band=LTE Band 7;frequency_mhz=2600;bandwidth=20000;rssi=-67;rsrp=-82;rsrq=-10;rssnr=18
+2026-09-21T10:00:01Z	1789984801000	2100000000	s-fixed-lte	4	mobile_network	record_type=cell;technology=LTE;registered=false;connection_status=NONE;cell_timestamp_ms=1789984801000;plmn=28601;cell_id=1002;pci=102;tac=1;earfcn=2850;band=LTE Band 7;frequency_mhz=2600;rsrp=-96;rsrq=-17;rssnr=4
+2026-09-21T10:00:02Z	1789984802000	3000000000	s-fixed-lte	5	mobile_network	record_type=cell;technology=LTE;registered=true;connection_status=PRIMARY_SERVING;cell_timestamp_ms=1789984802000;plmn=28601;cell_id=1001;pci=101;tac=1;earfcn=2850;band=LTE Band 7;frequency_mhz=2600;bandwidth=20000;rssi=-68;rsrp=-83;rsrq=-11;rssnr=17
+2026-09-21T10:00:02Z	1789984802000	3100000000	s-fixed-lte	6	mobile_network	record_type=cell;technology=LTE;registered=false;connection_status=NONE;cell_timestamp_ms=1789984802000;plmn=28601;cell_id=1002;pci=102;tac=1;earfcn=2850;band=LTE Band 7;frequency_mhz=2600;rsrp=-97;rsrq=-18;rssnr=3
+2026-09-21T10:10:00Z	1789985400000	4000000000	s-fixed-nr	7	session	record_type=survey_point;label=POINT-NR
+2026-09-21T10:10:00Z	1789985400000	4100000000	s-fixed-nr	8	location	record_type=fix;latitude=39.912500;longitude=32.849500;altitude_m=939;horizontal_accuracy_m=6;speed_mps=0
+2026-09-21T10:10:01Z	1789985401000	5000000000	s-fixed-nr	9	mobile_network	record_type=cell;technology=NR;registered=true;connection_status=PRIMARY_SERVING;cell_timestamp_ms=1789985401000;plmn=28601;cell_id=2001;nci=2001;pci=201;tac=2;nrarfcn=205416;band=n257;frequency_mhz=28000;ss_rsrp=-94;ss_rsrq=-13;ss_sinr=9
+2026-09-21T10:10:01Z	1789985401000	5100000000	s-fixed-nr	10	mobile_network	record_type=cell;technology=NR;registered=false;connection_status=NONE;cell_timestamp_ms=1789985401000;plmn=28601;cell_id=2002;nci=2002;pci=202;tac=2;nrarfcn=205416;band=n257;frequency_mhz=28000;ss_rsrp=-101;ss_rsrq=-18;ss_sinr=2
+2026-09-21T10:10:02Z	1789985402000	6000000000	s-fixed-nr	11	mobile_network	record_type=cell;technology=NR;registered=true;connection_status=PRIMARY_SERVING;cell_timestamp_ms=1789985402000;plmn=28601;cell_id=2001;nci=2001;pci=201;tac=2;nrarfcn=205416;band=n257;frequency_mhz=28000;ss_rsrp=-95;ss_rsrq=-14;ss_sinr=8
+2026-09-21T10:20:00Z	1789986000000	7000000000	s-poor-gps	12	session	record_type=survey_point;label=POINT-POOR
+2026-09-21T10:20:00Z	1789986000000	7100000000	s-poor-gps	13	location	record_type=fix;latitude=39.913000;longitude=32.850000;altitude_m=940;horizontal_accuracy_m=25;speed_mps=0
+2026-09-21T10:20:01Z	1789986001000	8000000000	s-poor-gps	14	mobile_network	record_type=cell;technology=LTE;registered=true;connection_status=PRIMARY_SERVING;cell_timestamp_ms=1789986001000;plmn=28601;cell_id=1001;pci=101;tac=1;earfcn=2850;band=LTE Band 7;frequency_mhz=2600
+2026-09-21T10:21:00Z	1789986060000	9000000000	s-missing-gps	15	session	record_type=survey_point;label=POINT-MISSING
+2026-09-21T10:21:01Z	1789986061000	10000000000	s-missing-gps	16	mobile_network	record_type=cell;technology=LTE;registered=true;connection_status=PRIMARY_SERVING;cell_timestamp_ms=1789986061000;plmn=28601;cell_id=1001;pci=101;tac=1;earfcn=2850;band=LTE Band 7;frequency_mhz=2600

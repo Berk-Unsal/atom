@@ -1,0 +1,50 @@
+{
+  "concept": "7C",
+  "captured_at": "2026-09-21",
+  "commands": [
+    {
+      "command": "cd frontend-react && npm test",
+      "result": "pass",
+      "evidence": "39 test files, 216 tests"
+    },
+    {
+      "command": "cd frontend-react && npm run lint",
+      "result": "pass"
+    },
+    {
+      "command": "cd frontend-react && npm run build",
+      "result": "pass",
+      "evidence": "Vite production bundle built successfully"
+    },
+    {
+      "command": "cd backend-go && go vet ./... && go test -race ./...",
+      "result": "pass",
+      "evidence": "all backend packages passed vet and race tests"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "command": "python3 docs/validate_docs.py",
+      "result": "blocked_missing_dependency",
+      "reason": "the active Python environment does not provide the yaml module"
+    }
+  ],
+  "test_categories": [
+    "separate database/store/envelope",
+    "newest-first query/filter",
+    "terminal immutability",
+    "interrupted recovery",
+    "malformed record isolation",
+    "size guard and forbidden arrays",
+    "persistence unavailable without localStorage fallback",
+    "simulation capture",
+    "optimization capture/public solutions",
+    "unsaved draft provenance",
+    "failure/cancellation distinction",
+    "empty/simulation/optimization/failed/cancelled/interrupted UI",
+    "historic solution apply callback",
+    "explicit rerun and safe deletion callbacks"
+  ]
+}

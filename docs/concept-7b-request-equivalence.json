@@ -1,0 +1,18 @@
+{
+  "artifact": "concept-7b-request-equivalence",
+  "artifact_version": "1.0.0",
+  "method": "Compare current requestPayloads builders fed by existing ProjectV2 inputs with the same builders fed by ScenarioRevision + InventoryRevision resolution.",
+  "cases": [
+    { "name": "canonical 2.6 GHz", "request": "simulation", "builder": "buildSimulationPayload", "result": "equivalent", "test": "src/domain/requestEquivalence.test.js" },
+    { "name": "canonical 28 GHz", "request": "simulation", "builder": "buildSimulationPayload", "result": "equivalent", "test": "src/domain/requestEquivalence.test.js" },
+    { "name": "interference-enabled network", "request": "interference", "builder": "buildInterferencePayload", "result": "equivalent", "test": "src/domain/requestEquivalence.test.js" },
+    { "name": "optimization-enabled network", "request": "optimization", "builder": "buildNetworkOptimizationPayload", "result": "equivalent", "test": "src/domain/requestEquivalence.test.js" }
+  ],
+  "comparison_boundary": {
+    "old": "ProjectV2 plan.settings + plan.inventory + plan.selectedNetworkTowerIds + plan.networkAzimuths + plan.optimizationConfig",
+    "new": "ScenarioRevision fields + InventoryRevision cells + resolveScenarioConfiguration + scenarioRevisionToLegacyPlan",
+    "rf_math_moved": false,
+    "atom_scenario_v1_changed": false
+  },
+  "caveat": "The equivalence tests compare frontend payload construction; backend RF result equality remains protected by unchanged Go RF/optimizer sources and the existing backend regression suite."
+}

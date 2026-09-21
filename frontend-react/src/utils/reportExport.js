@@ -95,6 +95,7 @@ export function buildPlanningReport({
     optimizationConfig,
     planningMode,
     project,
+    domainBinding: buildReportDomainBinding(project),
     recommendations,
     reportMode,
     selectedTower,
@@ -1429,6 +1430,18 @@ function buildReportId(report) {
 function getScenarioName(project) {
   const active = project?.scenarios?.find((scenario) => scenario.id === project.activeScenarioId);
   return active?.name ?? project?.name ?? null;
+}
+
+export function buildReportDomainBinding(project) {
+  const active = project?.scenarios?.find((scenario) => scenario.id === project.activeScenarioId);
+  const domain = active?.domain ?? {};
+  return {
+    scenario_id: domain.scenario_id ?? active?.id ?? null,
+    scenario_revision_id: domain.current_revision_id ?? null,
+    run_ids: Array.isArray(domain.runs) ? domain.runs.map((run) => run.run_id).filter(Boolean) : [],
+    live_generated: true,
+    report_definition_id: null,
+  };
 }
 
 function snapshotRFProfileToOverride(profile = {}) {

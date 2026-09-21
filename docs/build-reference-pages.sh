@@ -73,6 +73,8 @@ build_page concept-5b-multistart-search.md concept-5b-multistart-search.html "Co
   "An opt-in deterministic multi-start coordinate search with until-stable termination, request-scoped memoization, archive-based Pareto discovery, explicit budgets, and canonical audit evidence."
 build_page concept-5c-pareto-search.md concept-5c-pareto-search.html "Concept 5C Priority-Independent Pareto Archive Search" "Optimization audit" \
   "An opt-in bounded multi-objective archive search that discovers candidates without using user priority weights, then reranks the evaluated Pareto trade-offs."
+build_page concept-5d-search-policy-selection.md concept-5d-search-policy-selection.html "Concept 5D Search Policy Selection" "Optimization decision audit" \
+  "A decision-only comparison of the frozen legacy, Concept 5B, and Concept 5C search policies across exhaustive quality, cost, sensitivity, Ankara, and product use cases."
 build_page concept-4i1-140ghz-audit.md concept-4i1-140ghz-audit.html "Concept 4I.1 140 GHz Applicability Audit" "Scientific audit" \
   "A read-only audit of the 140 GHz research planning profile, authoritative reference applicability, independent atmospheric and material terms, transferability, and the future roadmap."
 build_page concept-4i2a-atmospheric-reference.md concept-4i2a-atmospheric-reference.html "Concept 4I.2A Atmospheric Reference" "Scientific reference" \
@@ -81,6 +83,12 @@ build_page concept-4i2b-p1411-reference.md concept-4i2b-p1411-reference.html "Co
   "Applicability-gated ITU-R P.1411-13 Table 4 candidate rows, 140 GHz envelopes, provenance, median-only statistics, isolated comparisons, and Ankara readiness."
 build_page concept-4i3-measurement-validation.md concept-4i3-measurement-validation.html "Concept 4I.3 Measurement Validation" "Scientific validation" \
   "Versioned measurement campaigns, quantity semantics, reference-model adapters, deterministic calibration and spatial holdouts, evidence readiness, and the Ankara measurement gap."
+build_page concept-6a-canonical-rf-validation.md concept-6a-canonical-rf-validation.html "Concept 6A Canonical RF Validation" "Scientific validation" \
+  "Source-independent 2.6/28 GHz RF observation semantics, canonical primitive reuse, deterministic matching, applicability gates, residual diagnostics, spatial holdouts, and conservative readiness."
+build_page concept-6a1-campaign-tooling.md concept-6a1-campaign-tooling.html "Concept 6A.1 Campaign Tooling" "Measurement acquisition" \
+  "Ankara receive-side campaign tooling, Signal Collector V6 raw preservation, transmitter truth mapping, quantity-specific readiness, dry-run validation, and the Concept 6B gate."
+build_page concept-7c-run-history.md concept-7c-run-history.html "Concept 7C Durable Local Run History" "Local persistence" \
+  "Separate browser-local run history for exact draft execution snapshots, compact results, lifecycle recovery, lineage, deletion, and safe historical inspection."
 build_page concept-4i4-material-facade-reference.md concept-4i4-material-facade-reference.html "Concept 4I.4 Material and Facade Reference" "Scientific reference" \
   "An isolated ITU-R P.2040-4 homogeneous slab ledger with explicit electrical properties, TE/TM coefficients, applicability, numerical stability, controlled fixtures, and non-combined heuristic comparison."
 build_page concept-4i5a-reflection-audit.md concept-4i5a-reflection-audit.html "Concept 4I.5A Specular Reflection Audit" "Scientific audit" \

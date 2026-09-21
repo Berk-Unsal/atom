@@ -5,6 +5,7 @@ import {
   Database,
   FileText,
   FlaskConical,
+  History,
   Layers3,
   Radar,
   RadioTower,
@@ -23,6 +24,7 @@ export const WORKSPACE_TOOLS = [
   { id: "building-entry", label: "Building entry", icon: Building2, stage: "analyze" },
   { id: "core", label: "5G Core", icon: Server, stage: "analyze" },
   { id: "results", label: "Results", icon: BarChart3, stage: "review" },
+  { id: "history", label: "Run history", icon: History, stage: "review" },
   { id: "data", label: "Data", icon: Database, stage: "review" },
   { id: "report", label: "Report", icon: FileText, stage: "review" },
 ];

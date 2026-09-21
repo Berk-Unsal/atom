@@ -20,6 +20,7 @@ import MeasurementValidationPanel from "./components/MeasurementValidationPanel.
 import MaterialReferencePanel from "./components/MaterialReferencePanel.jsx";
 import BuildingEntryPanel from "./components/BuildingEntryPanel.jsx";
 import InventoryPanel from "./components/InventoryPanel.jsx";
+import RunHistoryPanel from "./components/RunHistoryPanel.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
 import PathProfilePanel from "./components/PathProfilePanel.jsx";
@@ -40,6 +41,14 @@ import {
 import { WORKSPACE_TOOLS } from "./components/workspaceTools.js";
 import useRequestCoordinator from "./hooks/useRequestCoordinator.js";
 import useProjectWorkspace from "./hooks/useProjectWorkspace.js";
+import useRunHistory from "./hooks/useRunHistory.js";
+import {
+  buildRunExecutionContext,
+  captureOptimizationRun,
+  captureSimulationRun,
+  identitiesFromResult,
+} from "./domain/runCapture.js";
+import { createOptimizationRun, createSimulationRun, transitionRun } from "./domain/run.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { getJSON, isAbortError, postBlob, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
@@ -250,9 +259,11 @@ export default function App() {
     topology: null,
   });
   const [error, setError] = useState("");
+  const [runHistoryWarning, setRunHistoryWarning] = useState("");
   const [undoNotice, setUndoNotice] = useState(null);
   const restoredProjectRef = useRef(null);
   const cellExplanationCacheRef = useRef(new Map());
+  const latestOptimizationRunRef = useRef(null);
   const coverageSurfaceSourceKeyRef = useRef(null);
   const buildingEntrySourceKeyRef = useRef(null);
   const clearCellExplanation = useCallback(() => {
@@ -262,10 +273,106 @@ export default function App() {
   const requests = useRequestCoordinator();
   const projectWorkspace = useProjectWorkspace(appMeta);
   const activeProject = projectWorkspace.activeProject;
+  const activeScenario = useMemo(
+    () => activeProject?.scenarios?.find((scenario) => scenario.id === activeProject.activeScenarioId) ?? null,
+    [activeProject],
+  );
+  const runHistory = useRunHistory({
+    projectId: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
+  });
   const workspaceLoaded = projectWorkspace.loaded;
   const visibleError = projectWorkspace.error || error;
   const saveProjectDraft = projectWorkspace.saveDraft;
   const saveProjectScenario = projectWorkspace.saveScenario;
+
+  const persistRunHistoryRecord = useCallback(async (run) => {
+    const saved = await runHistory.saveRun(run);
+    if (!saved) {
+      setRunHistoryWarning("This computation completed, but its local run history record could not be saved.");
+    } else {
+      setRunHistoryWarning("");
+    }
+    return saved;
+  }, [runHistory]);
+
+  const beginDurableRun = useCallback(async ({ request: requestPayload, runType, optimizerContract = null } = {}) => {
+    const rfContract = {
+      model_version: appMeta?.model_version ?? null,
+      receiver: {
+        sensitivity_dbm: settings.receiverSensitivityDbm ?? null,
+        noise_figure_db: settings.noiseFigureDb ?? null,
+        required_snr_db: settings.requiredSnrDb ?? null,
+      },
+      interference: {
+        bandwidth_mhz: settings.interferenceBandwidthMHz ?? null,
+        load_pct: settings.cellLoadPct ?? null,
+      },
+      applied_defaults: {
+        frequency_ghz: settings.frequencyGHz,
+        tx_power_dbm: settings.txPowerDbm,
+        radius_m: settings.radiusMeters,
+        beam_width_deg: settings.beamWidthDeg,
+      },
+    };
+    const context = buildRunExecutionContext({
+      appMeta,
+      datasetRef: activeProject?.datasetRef ?? datasetReference(appMeta),
+      optimizerContract,
+      project: activeProject,
+      request: requestPayload,
+      rfContract,
+      scenario: activeScenario,
+      runType,
+      source: activeScenario ? "scenario_draft" : "draft",
+    });
+    const queued = runType === "optimization"
+      ? createOptimizationRun({ ...context, status: "queued" })
+      : createSimulationRun({ ...context, status: "queued" });
+    await persistRunHistoryRecord(queued);
+    const running = transitionRun(queued, "running");
+    await persistRunHistoryRecord(running);
+    return { context, running };
+  }, [activeProject, activeScenario, appMeta, persistRunHistoryRecord, settings]);
+
+  const finishDurableRun = useCallback(async ({ details = null, error: runError = null, request: requestPayload, response = null, result = null, running, status = null, warnings = [] } = {}) => {
+    if (!running) return null;
+    const identity = identitiesFromResult(response ?? result);
+    const context = { ...running, ...identity };
+    const finalRun = running.run_type === "optimization"
+      ? captureOptimizationRun({
+        context,
+        request: requestPayload,
+        response,
+        details,
+        error: runError,
+        status,
+        warnings,
+      })
+      : captureSimulationRun({
+        context,
+        request: requestPayload,
+        result,
+        error: runError,
+        status,
+        warnings,
+      });
+    await persistRunHistoryRecord(finalRun);
+    if (finalRun.run_type === "optimization") latestOptimizationRunRef.current = finalRun;
+    return finalRun;
+  }, [persistRunHistoryRecord]);
+
+  const selectParetoSolution = useCallback((solutionId) => {
+    setSelectedParetoSolutionId(solutionId);
+    const run = latestOptimizationRunRef.current;
+    if (!run || run.status !== "succeeded" || run.details?.selected_solution_id === solutionId) return;
+    const nextRun = {
+      ...run,
+      details: { ...(run.details ?? {}), selected_solution_id: solutionId },
+    };
+    runHistory.updateRunLifecycle(run.run_id, { details: nextRun.details }).then((updated) => {
+      if (updated) latestOptimizationRunRef.current = updated;
+    });
+  }, [runHistory]);
   const isLoading = activeRFTask === "simulation" || activeRFTask === "network_evaluation";
   const isEvaluatingNetwork = activeRFTask === "network_evaluation";
   const isOptimizing = activeRFTask === "optimization";
@@ -812,13 +919,22 @@ export default function App() {
     const request = requests.begin("rf");
     setActiveRFTask("simulation");
     setError("");
+    const simulationRequest = buildSimulationPayload(selectedTower, settings);
+    let durableRun = null;
     try {
+      durableRun = (await beginDurableRun({ request: simulationRequest, runType: "simulation" })).running;
       const { simulation: simulationPayload, coverageGaps: gapPayload } = await simulateForSettings(
         selectedTower,
         settings,
         request.signal,
       );
       if (!request.isCurrent()) {
+        await finishDurableRun({
+          error: { code: "run_cancelled", message: "Simulation was superseded or cancelled before completion." },
+          request: simulationRequest,
+          running: durableRun,
+          status: "cancelled",
+        });
         return;
       }
       setSimulation(simulationPayload);
@@ -832,7 +948,20 @@ export default function App() {
       setActiveResultsView("rf");
       setPlanDirty(false);
       markCoverageSurfaceAvailable();
+      await finishDurableRun({
+        request: simulationRequest,
+        result: { simulation: simulationPayload, coverage_gaps: gapPayload },
+        running: durableRun,
+      });
     } catch (requestError) {
+      await finishDurableRun({
+        error: isAbortError(requestError)
+          ? { code: "run_cancelled", message: "Simulation was cancelled." }
+          : requestError,
+        request: simulationRequest,
+        running: durableRun,
+        status: isAbortError(requestError) ? "cancelled" : null,
+      });
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
       }
@@ -842,7 +971,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [clearCoverageSurface, markCoverageSurfaceAvailable, requests, selectedTower, settings, simulateForSettings]);
+  }, [beginDurableRun, clearCoverageSurface, finishDurableRun, markCoverageSurfaceAvailable, requests, selectedTower, settings, simulateForSettings]);
 
   const optimizeAzimuth = useCallback(async () => {
     if (!selectedTower) {
@@ -854,7 +983,14 @@ export default function App() {
     clearCoverageSurface();
     setActiveRFTask("optimization");
     setError("");
+    const optimizationRequest = buildSimulationPayload(selectedTower, settings);
+    let durableRun = null;
     try {
+      durableRun = (await beginDurableRun({
+        optimizerContract: { kind: "single_cell_azimuth", settings: { azimuth_deg: settings.azimuthDeg } },
+        request: optimizationRequest,
+        runType: "optimization",
+      })).running;
       const beforeSnapshot = buildComparisonSnapshot({
         coverageGaps,
         diagnostics: optimizationDiagnostics,
@@ -865,7 +1001,7 @@ export default function App() {
       });
       const payload = await postJSON(
         "/api/optimize-azimuth",
-        buildSimulationPayload(selectedTower, settings),
+        optimizationRequest,
         "Optimization request failed",
         request.signal,
       );
@@ -876,6 +1012,12 @@ export default function App() {
       const { simulation: optimizedSimulation, coverageGaps: optimizedGaps } =
         await simulateForSettings(selectedTower, optimizedSettings, request.signal);
       if (!request.isCurrent()) {
+        await finishDurableRun({
+          error: { code: "run_cancelled", message: "Optimization was superseded or cancelled before completion." },
+          request: optimizationRequest,
+          running: durableRun,
+          status: "cancelled",
+        });
         return;
       }
       const afterSnapshot = buildComparisonSnapshot({
@@ -900,7 +1042,33 @@ export default function App() {
       setActiveResultsView("optimization");
       setPlanDirty(false);
       markCoverageSurfaceAvailable();
+      await finishDurableRun({
+        request: optimizationRequest,
+        response: {
+          ...payload,
+          summary: {
+            before: beforeSnapshot,
+            after: afterSnapshot,
+            simulation: optimizedSimulation?.stats ?? null,
+            coverage_gaps: optimizedGaps?.stats ?? null,
+          },
+          pareto_frontier: [{
+            id: "optimal-azimuth",
+            towers: [{ id: selectedTower.cellId ?? selectedTower.id, optimal_azimuth: Number(payload.optimal_azimuth) }],
+            stats: optimizedSimulation?.stats ?? {},
+          }],
+        },
+        running: durableRun,
+      });
     } catch (requestError) {
+      await finishDurableRun({
+        error: isAbortError(requestError)
+          ? { code: "run_cancelled", message: "Optimization was cancelled." }
+          : requestError,
+        request: optimizationRequest,
+        running: durableRun,
+        status: isAbortError(requestError) ? "cancelled" : null,
+      });
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
       }
@@ -911,8 +1079,10 @@ export default function App() {
       }
     }
   }, [
+    beginDurableRun,
     clearCoverageSurface,
     coverageGaps,
+    finishDurableRun,
     markCoverageSurfaceAvailable,
     optimizationDiagnostics,
     selectedTower,
@@ -942,8 +1112,14 @@ export default function App() {
     setError("");
     clearCellExplanation();
     clearInterferenceAnalysis();
+    const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig);
+    let durableRun = null;
     try {
-      const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig);
+      durableRun = (await beginDurableRun({
+        optimizerContract: optimizationConfig,
+        request: networkRequest,
+        runType: "optimization",
+      })).running;
       const payload = await postJSON(
         "/api/optimize-network",
         networkRequest,
@@ -969,6 +1145,12 @@ export default function App() {
         },
       );
       if (!request.isCurrent()) {
+        await finishDurableRun({
+          error: { code: "run_cancelled", message: "Network optimization was superseded or cancelled before completion." },
+          request: networkRequest,
+          running: durableRun,
+          status: "cancelled",
+        });
         return;
       }
       setBuildingEntryAnalysis(null);
@@ -987,7 +1169,26 @@ export default function App() {
       setActiveResultsView("optimization");
       setPlanDirty(false);
       markCoverageSurfaceAvailable();
+      await finishDurableRun({
+        request: networkRequest,
+        response: {
+          ...payload,
+          summary: {
+            simulation_count: simulations.length,
+            simulation_stats: simulations.map((candidate) => candidate?.stats ?? null),
+          },
+        },
+        running: durableRun,
+      });
     } catch (requestError) {
+      await finishDurableRun({
+        error: isAbortError(requestError)
+          ? { code: "run_cancelled", message: "Network optimization was cancelled." }
+          : requestError,
+        request: networkRequest,
+        running: durableRun,
+        status: isAbortError(requestError) ? "cancelled" : null,
+      });
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
       }
@@ -997,7 +1198,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [beginDurableRun, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, finishDurableRun, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const evaluateNetwork = useCallback(async () => {
     const priorityError = optimizationConfigValidationMessage(optimizationConfig);
@@ -2184,6 +2385,10 @@ export default function App() {
       tone: coreLab.status?.state === "connected" ? "success" : "warning",
     },
     results: { badge: hasResults ? "•" : null, tone: "success" },
+    history: {
+      badge: runHistory.runs.length > 99 ? "99+" : runHistory.runs.length ? String(runHistory.runs.length) : null,
+      tone: runHistory.error ? "warning" : runHistory.runs.length ? "success" : undefined,
+    },
     data: {},
     report: {},
   };
@@ -2323,6 +2528,91 @@ export default function App() {
     if (scenario.requiresRerun) setError("This scenario retains its inputs and summary; rerun it to restore uncached map layers.");
   }, [projectWorkspace, restorePlanningSnapshot]);
 
+  const historyDatasetUnavailable = useMemo(
+    () => Boolean(appMeta && runHistory.runs.some((run) => !runDatasetMatches(run, appMeta))),
+    [appMeta, runHistory.runs],
+  );
+
+  const historyReferencesForRun = useCallback((run) => {
+    const references = [];
+    for (const scenario of activeProject?.scenarios ?? []) {
+      for (const revision of scenario.domain?.revisions ?? []) {
+        if (revision.originating_run_id === run.run_id) {
+          references.push({ type: "scenario_revision", id: revision.scenario_revision_id });
+        }
+      }
+    }
+    for (const report of activeProject?.domain?.report_definitions ?? []) {
+      if ((report.run_ids ?? []).includes(run.run_id)) references.push({ type: "report", id: report.report_id });
+    }
+    return references;
+  }, [activeProject]);
+
+  const deleteHistoryRun = useCallback(async (run) => {
+    await runHistory.deleteRun(run.run_id, historyReferencesForRun(run));
+  }, [historyReferencesForRun, runHistory]);
+
+  const clearUnreferencedHistory = useCallback(async () => {
+    if (!globalThis.confirm?.("Clear every unreferenced local run-history record?")) return;
+    const referencedRunIds = (projectWorkspace.workspace.projects ?? []).flatMap((project) => (
+      (project.scenarios ?? []).flatMap((scenario) => (
+        (scenario.domain?.revisions ?? []).map((revision) => revision.originating_run_id).filter(Boolean)
+      ))
+    ));
+    await runHistory.clearAllUnreferenced(referencedRunIds);
+  }, [projectWorkspace.workspace.projects, runHistory]);
+
+  const deleteProjectWithHistory = useCallback(async () => {
+    const projectID = activeProject?.domain?.project_id ?? activeProject?.id;
+    const referencedRunIds = [
+      ...(activeProject?.scenarios ?? []).flatMap((scenario) => (
+        (scenario.domain?.revisions ?? []).map((revision) => revision.originating_run_id).filter(Boolean)
+      )),
+      ...(activeProject?.domain?.report_definitions ?? []).flatMap((report) => report.run_ids ?? []),
+    ];
+    await runHistory.clearUnreferenced(referencedRunIds);
+    restoredProjectRef.current = null;
+    setWorkspaceRestored(false);
+    projectWorkspace.deleteProject();
+    return projectID;
+  }, [activeProject, projectWorkspace, runHistory]);
+
+  const applyHistoricalSolution = useCallback(async (run, solution) => {
+    if (historyDatasetUnavailable) {
+      setError("The historical run dataset is unavailable; the solution cannot be applied safely.");
+      return;
+    }
+    const currentScenarioID = activeScenario?.domain?.scenario_id ?? activeScenario?.id;
+    if (!run.scenario_id || (currentScenarioID && String(run.scenario_id) !== String(currentScenarioID))) {
+      setError("Open the saved source scenario for this historical solution before applying it.");
+      return;
+    }
+    try {
+      const saved = await projectWorkspace.applyHistoricalOptimization({ run, solution });
+      const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
+      const nextScenario = nextProject?.scenarios?.find((scenario) => scenario.id === nextProject.activeScenarioId);
+      invalidatePlanResults();
+      if (nextScenario) restorePlanningSnapshot(nextScenario);
+      setPlanDirty(true);
+      setError("Historical solution applied to a new ScenarioRevision. Run the plan to compute fresh visualization.");
+    } catch (applyError) {
+      setError(applyError.message);
+    }
+  }, [activeScenario, historyDatasetUnavailable, invalidatePlanResults, projectWorkspace, restorePlanningSnapshot]);
+
+  const runAgainFromHistory = useCallback((run) => {
+    if (historyDatasetUnavailable) {
+      setError("The historical run dataset is unavailable; run again is disabled.");
+      return;
+    }
+    if (run.run_type === "optimization") {
+      if (planningMode === "network") optimizeNetwork();
+      else optimizeAzimuth();
+      return;
+    }
+    runSimulation();
+  }, [historyDatasetUnavailable, optimizeAzimuth, optimizeNetwork, planningMode, runSimulation]);
+
   const applyRecommendation = useCallback((recommendation) => {
     const candidate = towers.find((tower) => String(tower.cellId) === String(recommendation.cell_id) || tower.id === recommendation.id);
     if (!candidate) {
@@ -2454,6 +2744,7 @@ export default function App() {
 	    "building-entry": "Estimated service just inside representative building facades",
 	    core: "Xn, N2, N3, sessions, and lab scenarios",
     results: "Focused analysis from the latest RF operation",
+    history: "Durable local simulation and optimization records",
     data: "Dataset confidence and model assumptions",
     report: "Export the current planning state",
   };
@@ -2480,7 +2771,7 @@ export default function App() {
             compatible={isDatasetCompatible(projectWorkspace.activeProject, appMeta)}
             exportContent={projectWorkspace.exportActiveProject}
             onAddProject={() => { restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.addProject(); }}
-            onDeleteProject={() => { restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.deleteProject(); }}
+            onDeleteProject={deleteProjectWithHistory}
             onDeleteScenario={deleteScenarioWithUndo}
             onDuplicateProject={() => { restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.duplicateProject(); }}
             onImportProject={(text) => { restoredProjectRef.current = null; setWorkspaceRestored(false); return projectWorkspace.importProject(text); }}
@@ -2799,12 +3090,29 @@ export default function App() {
               onApplyRecommendation={applyRecommendation}
               onOpenScenario={openSavedScenario}
               onRecommendSites={recommendSites}
-              onSelectParetoSolution={setSelectedParetoSolutionId}
+              onSelectParetoSolution={selectParetoSolution}
               recommendations={siteRecommendations}
               recommending={isRecommendingSites}
               savedScenarios={projectWorkspace.activeProject?.scenarios ?? []}
               recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}
               stats={stats}
+            />
+          ) : null}
+
+          {drawerMode === "tool" && activeTool === "history" ? (
+            <RunHistoryPanel
+              currentScenarioId={activeScenario?.domain?.scenario_id ?? activeScenario?.id ?? null}
+              datasetUnavailable={historyDatasetUnavailable}
+              error={runHistory.error}
+              issues={runHistory.issues}
+              loading={runHistory.loading}
+              onApplySolution={applyHistoricalSolution}
+              onClearUnreferenced={clearUnreferencedHistory}
+              onDeleteRun={deleteHistoryRun}
+              onRefresh={runHistory.refresh}
+              onRunAgain={runAgainFromHistory}
+              runs={runHistory.runs}
+              warning={runHistoryWarning}
             />
           ) : null}
 
@@ -2845,6 +3153,15 @@ export default function App() {
       />
     </main>
   );
+}
+
+function runDatasetMatches(run, appMeta) {
+  const current = datasetReference(appMeta);
+  const recorded = run?.dataset_references?.[0];
+  if (!current || !recorded) return true;
+  return recorded.dataset_id === current.id
+    && recorded.version === current.version
+    && Object.entries(current.hashes ?? {}).every(([key, value]) => recorded.content_hashes?.[key] === value);
 }
 
 function MapInspector({ selectedMapObject }) {

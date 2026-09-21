@@ -1,0 +1,241 @@
+{
+  "artifact": "concept-7a-domain-model",
+  "artifact_version": "1.0.0",
+  "decision_status": "audit_proposal_for_concept_7b",
+  "principles": [
+    "Inputs, derived results, evidence, and presentation state are different lifecycles.",
+    "A stable entity id is not a content fingerprint and neither is a run id.",
+    "The current local-first workflow remains valid while the domain boundary is formalized.",
+    "A scenario must be reproducible from an immutable resolved input revision plus dataset and engine provenance.",
+    "Large geospatial data and RF traces are artifacts, not rows in the project aggregate."
+  ],
+  "entities": [
+    {
+      "name": "Project",
+      "purpose": "Durable planning workspace and ownership boundary.",
+      "owns": [
+        "Project identity, name, optional description/tags",
+        "Scenario lineage and active working scenario",
+        "Inventory references or project-owned inventory revisions",
+        "Dataset references used by scenarios",
+        "Report definitions and links to generated reports"
+      ],
+      "does_not_own": [
+        "UI drawer/map selections",
+        "Every RF ray or intermediate optimizer evaluation",
+        "Mutable global dataset contents"
+      ],
+      "mutability": "Metadata and working pointers mutable; referenced ScenarioRevisions, Runs, and GeneratedReportArtifacts immutable.",
+      "current_implementation": "ProjectV2 nested in one IndexedDB workspace record.",
+      "future_identity": "project_id"
+    },
+    {
+      "name": "Inventory",
+      "purpose": "Reusable physical/network asset collection used to seed scenarios.",
+      "current_shape": "Flat cell/tower records with coordinates and RF profile; dataset cells and manual/imported cells are mixed in the current project snapshot.",
+      "future_shape": [
+        "Inventory metadata and revision",
+        "InventoryCell/Sector records",
+        "Optional import provenance and source artifact",
+        "Stable external/source identifiers"
+      ],
+      "site_decision": "Do not introduce Site as a required entity now. Current backend TowerStation has cell id, radio type, simulated flag, and coordinates but no authoritative stable site key. Group cells into sites only after a verified source key and grouping rule exist.",
+      "mutability": "Revisioned; a new import/edit creates a new inventory revision or explicit cell revision.",
+      "future_identity": "inventory_id plus inventory_revision_id"
+    },
+    {
+      "name": "InventoryCell",
+      "purpose": "Atomic cell/sector record consumed by RF requests.",
+      "current_fields": [
+        "id",
+        "cellId",
+        "radioType",
+        "isSimulated",
+        "coordinates",
+        "rfProfile",
+        "inventorySource",
+        "editable"
+      ],
+      "future_fields": [
+        "cell_id",
+        "inventory_revision_id",
+        "source_key",
+        "geometry",
+        "radio_technology",
+        "rf_profile",
+        "antenna_pattern_reference",
+        "provenance",
+        "valid_from/valid_to or revision metadata"
+      ],
+      "mutability": "Never silently mutate a referenced scenario input; publish a new revision.",
+      "future_identity": "inventory_cell_id"
+    },
+    {
+      "name": "Scenario",
+      "purpose": "Named planning hypothesis and lineage container inside a Project.",
+      "owns": [
+        "Scenario identity and name",
+        "Revision lineage",
+        "Selected inventory revision/reference",
+        "Dataset references",
+        "Run and report links"
+      ],
+      "does_not_own": [
+        "Transient UI state",
+        "A mutable copy of every derived result",
+        "Backend dataset files"
+      ],
+      "mutability": "Current working copy can be edited; saved revisions are immutable. Current UI's append-only Save current behavior is a compatible interim behavior.",
+      "future_identity": "scenario_id"
+    },
+    {
+      "name": "ScenarioRevision",
+      "purpose": "Exact resolved scenario inputs for a reproducible analysis.",
+      "contains": [
+        "Inventory reference and cell override map",
+        "AOI/selection geometry and demand references",
+        "RF/propagation/receiver/interference inputs",
+        "Optimization objectives, constraints, weights, search policy, budgets",
+        "Dataset references and hashes",
+        "Parent revision and change summary",
+        "scenario_fingerprint and input_fingerprint"
+      ],
+      "mutability": "Immutable after save.",
+      "change_rule": "An RF-affecting input change creates a new revision; UI-only changes do not.",
+      "future_identity": "scenario_revision_id"
+    },
+    {
+      "name": "Dataset",
+      "purpose": "Versioned, validated source-data identity and provenance record.",
+      "contains": [
+        "Dataset id/version",
+        "Manifest and file hashes",
+        "CRS, bounds, layer metadata, licenses",
+        "Source/acquisition/import provenance",
+        "Object/file references",
+        "Availability and validation status"
+      ],
+      "mutability": "Immutable version; a new pack/version is a new Dataset.",
+      "current_implementation": "Manifest plus files under the local dataset root and in-memory DatasetPack.",
+      "future_identity": "dataset_id plus dataset_version"
+    },
+    {
+      "name": "Run",
+      "purpose": "Immutable execution record for simulation, optimization, validation, batch experiment, or diagnostic work.",
+      "contains": [
+        "run_id and run_type",
+        "project_id/scenario_id/scenario_revision_id",
+        "scenario_fingerprint and input_fingerprint",
+        "dataset references and hashes",
+        "engine/model/RF contract/optimizer versions",
+        "request/configuration snapshot",
+        "status/timestamps/warnings",
+        "summary metrics and artifact references"
+      ],
+      "mutability": "Append-only status transition from queued/running to succeeded/failed/cancelled; result data immutable.",
+      "run_types": [
+        "simulation",
+        "optimization",
+        "validation",
+        "batch_experiment",
+        "diagnostic",
+        "reference_evaluation"
+      ],
+      "current_implementation": "Request-scoped API response or in-memory experiment job; no durable Run table."
+    },
+    {
+      "name": "OptimizationSolution",
+      "purpose": "Public, selectable candidate from an OptimizationRun.",
+      "contains": [
+        "solution_id",
+        "run_id",
+        "cell configurations",
+        "objective metrics and score",
+        "constraint status/violations",
+        "explanation summary",
+        "selection/application lineage"
+      ],
+      "mutability": "Immutable; selecting or applying it is a new user action.",
+      "application_rule": "Apply as Scenario creates a new ScenarioRevision or cloned Scenario with originating_run_id and selected_solution_id; baseline inventory is unchanged."
+    },
+    {
+      "name": "GeneratedArtifact",
+      "purpose": "Content-addressed output too large or too binary for relational/project metadata.",
+      "examples": [
+        "Building/terrain source packs",
+        "Raw measurement CSV",
+        "Ray traces",
+        "Coverage surfaces",
+        "Large GeoJSON/GeoTIFF/CSV exports",
+        "Rendered reports"
+      ],
+      "mutability": "Immutable by content hash; retention policy may delete unreferenced objects.",
+      "future_identity": "artifact_id plus content_hash"
+    },
+    {
+      "name": "ReportDefinition",
+      "purpose": "Mutable user selection of project/scenario/run sections and presentation options.",
+      "mutability": "Mutable until generated.",
+      "current_implementation": "Implicit live selection in reportExport.js."
+    },
+    {
+      "name": "GeneratedReportArtifact",
+      "purpose": "Immutable report output tied to exact inputs and run references.",
+      "contains": [
+        "report_id",
+        "project_id",
+        "scenario_revision_id",
+        "run_ids",
+        "generated_at",
+        "report_schema_version",
+        "content_hash",
+        "artifact reference",
+        "generator/version metadata"
+      ],
+      "mutability": "Immutable; regenerate creates a new artifact.",
+      "current_implementation": "Download-only Markdown or print/PDF from live state."
+    }
+  ],
+  "precedence_rules": {
+    "resolved_cell": [
+      "ScenarioCellOverride when a field is explicitly set",
+      "Referenced InventoryCell value",
+      "Dataset/default RF value"
+    ],
+    "null_semantics": "Use explicit clear/remove markers in the repository contract; absence means inherit, not clear.",
+    "scenario_settings": "ScenarioRevision settings override application defaults; server defaults are recorded in the resolved request.",
+    "dataset": "The exact Dataset version/hash reference on the ScenarioRevision wins over the currently active server dataset; a mismatch makes the scenario stale and blocks silent reuse."
+  },
+  "mutability_rules": {
+    "ui_only_change": "No new ScenarioRevision or Run.",
+    "rf_or_geometry_input_change": "New working revision; prior saved revision and its Runs remain immutable.",
+    "dataset_change": "New DatasetRef and new ScenarioRevision or explicit stale state; never silently rewrite a prior revision.",
+    "inventory_change": "New Inventory revision and scenario re-resolution; preserve the prior cell snapshot for old revisions.",
+    "apply_optimization_solution": "New scenario/revision by default; allow explicit replace only as a future, audited action.",
+    "run_completion": "Status and terminal metadata may be appended; result payload and fingerprints do not change."
+  },
+  "fingerprint_rules": {
+    "entity_identity": "Stable ids identify Project, Scenario, ScenarioRevision, Dataset, Run, and Artifact records.",
+    "current_scenario_fingerprint": "Preserve backend atom-scenario-v1 behavior and do not change it in Concept 7A.",
+    "future_input_fingerprint": "Hash canonical resolved scenario inputs plus dataset ids/hashes, inventory revision, engine/RF contract, and optimizer contract.",
+    "run_identity": "run_id is a durable UUID; existing optimization_run_id is a compute/cache identity and is not treated as a durable database primary key.",
+    "presentation": "UI state, timestamps, request paths, and map viewport do not enter the deterministic input fingerprint unless explicitly part of the domain request."
+  },
+  "provenance_vocabulary": [
+    "user_configured",
+    "imported",
+    "measured",
+    "derived",
+    "assumed",
+    "default",
+    "generated",
+    "validated"
+  ],
+  "acceptance_contract": [
+    "A saved ScenarioRevision can reconstruct the exact resolved RF request.",
+    "Every durable Run records the scenario revision, dataset hashes, engine/model/RF contract, and input fingerprint.",
+    "Applying an OptimizationSolution cannot mutate the baseline Inventory or prior ScenarioRevision.",
+    "A report can be regenerated or audited from stable scenario/run/artifact references.",
+    "The browser can continue operating in local-first mode through the same domain repository interface."
+  ]
+}

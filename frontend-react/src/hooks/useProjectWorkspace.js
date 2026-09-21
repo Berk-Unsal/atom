@@ -1,20 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  createProject,
-  createProjectWorkspace,
-  createScenario,
-  datasetReference,
-  duplicateProjectData,
-  exportProjectFile,
-  importProjectFile,
-  loadProjectWorkspace,
-  queueProjectWorkspaceSave,
-  updateProjectDraft,
-} from "../utils/projectStore.js";
+import LocalRepository from "../repository/localRepository.js";
 
 export default function useProjectWorkspace(meta) {
-  const initialDatasetRef = useRef(datasetReference(meta));
-  const [workspace, setWorkspace] = useState(() => createProjectWorkspace(datasetReference(meta)));
+  const repository = useMemo(() => new LocalRepository(), []);
+  const [initialDatasetRef] = useState(() => repository.datasetReference(meta));
+  const [workspace, setWorkspace] = useState(() => repository.createProjectWorkspace(initialDatasetRef));
   const workspaceRef = useRef(workspace);
   const mountedRef = useRef(true);
   const pendingSaveCountRef = useRef(0);
@@ -25,7 +15,7 @@ export default function useProjectWorkspace(meta) {
   useEffect(() => {
     mountedRef.current = true;
     let mounted = true;
-    loadProjectWorkspace(initialDatasetRef.current)
+    repository.loadWorkspace(initialDatasetRef)
       .then((stored) => {
         if (mounted) {
           workspaceRef.current = stored;
@@ -43,10 +33,10 @@ export default function useProjectWorkspace(meta) {
       mounted = false;
       mountedRef.current = false;
     };
-  }, []);
+  }, [initialDatasetRef, repository]);
 
   const commit = useCallback((recipe) => {
-    const { workspace: next, saved } = queueProjectWorkspaceSave(recipe(workspaceRef.current));
+    const { workspace: next, saved } = repository.queueWorkspaceSave(recipe(workspaceRef.current));
     workspaceRef.current = next;
     setWorkspace(next);
     pendingSaveCountRef.current += 1;
@@ -68,7 +58,7 @@ export default function useProjectWorkspace(meta) {
       },
     );
     return saved;
-  }, []);
+  }, [repository]);
 
   const activeProject = useMemo(
     () => workspace.projects.find((project) => project.id === workspace.activeProjectId) ?? workspace.projects[0],
@@ -90,9 +80,9 @@ export default function useProjectWorkspace(meta) {
   }, [commit]);
 
   const addProject = useCallback(() => {
-    const project = createProject("Untitled Plan", datasetReference(meta));
+    const project = repository.createProject("Untitled Plan", repository.datasetReference(meta));
     commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }));
-  }, [commit, meta]);
+  }, [commit, meta, repository]);
 
   const renameProject = useCallback((name) => {
     if (!activeProject || !String(name).trim()) return;
@@ -101,9 +91,9 @@ export default function useProjectWorkspace(meta) {
 
   const duplicateProject = useCallback(() => {
     if (!activeProject) return;
-    const duplicate = duplicateProjectData(activeProject);
+    const duplicate = repository.duplicateProjectData(activeProject);
     commit((current) => ({ ...current, activeProjectId: duplicate.id, projects: [...current.projects, duplicate] }));
-  }, [activeProject, commit]);
+  }, [activeProject, commit, repository]);
 
   const deleteProject = useCallback(() => {
     if (!activeProject || workspace.projects.length === 1) return;
@@ -115,28 +105,46 @@ export default function useProjectWorkspace(meta) {
 
   const saveDraft = useCallback((draft) => {
     if (!activeProjectID) return;
-    updateProject(activeProjectID, (project) => updateProjectDraft({
+    updateProject(activeProjectID, (project) => repository.updateProjectDraft({
       ...project,
-      datasetRef: project.datasetRef ?? datasetReference(meta),
+      datasetRef: project.datasetRef ?? repository.datasetReference(meta),
     }, draft));
-  }, [activeProjectID, meta, updateProject]);
+  }, [activeProjectID, meta, repository, updateProject]);
 
   const activateScenario = useCallback((scenarioID) => {
     if (!activeProject || !activeProject.scenarios.some((scenario) => scenario.id === scenarioID)) return;
     updateProject(activeProject.id, (project) => ({ ...project, activeScenarioId: scenarioID }));
   }, [activeProject, updateProject]);
 
-  const saveScenario = useCallback((name, snapshot) => {
+  const saveScenario = useCallback((name, snapshot, options = {}) => {
     if (!activeProjectID) return null;
-    const scenario = createScenario(name, snapshot);
+    const scenario = repository.createScenario(name, snapshot, options);
     const saved = updateProject(activeProjectID, (project) => ({
       ...project,
       activeScenarioId: scenario.id,
-      datasetRef: project.datasetRef ?? datasetReference(meta),
+      datasetRef: project.datasetRef ?? repository.datasetReference(meta),
       scenarios: [...project.scenarios, scenario],
     }));
     return saved.then(() => scenario);
-  }, [activeProjectID, meta, updateProject]);
+  }, [activeProjectID, meta, repository, updateProject]);
+
+  const applyHistoricalOptimization = useCallback(async ({ run, solution } = {}) => {
+    const projectID = activeProject?.domain?.project_id ?? activeProject?.id;
+    const scenario = activeProject?.scenarios?.find((candidate) => candidate.id === activeProject.activeScenarioId);
+    const scenarioID = scenario?.domain?.scenario_id ?? scenario?.id;
+    if (!projectID || !scenarioID) throw new Error("Open a saved scenario before applying a historical solution");
+    const saved = await repository.applyOptimizationSolution({
+      projectId: projectID,
+      scenarioId: scenarioID,
+      run,
+      solution,
+    });
+    if (mountedRef.current && saved.workspace) {
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+    }
+    return saved;
+  }, [activeProject, repository]);
 
   const deleteScenario = useCallback((scenarioID) => {
     if (!activeProject) return;
@@ -161,21 +169,22 @@ export default function useProjectWorkspace(meta) {
   }, [activeProject, updateProject]);
 
   const importProject = useCallback((text) => {
-    const project = importProjectFile(text);
+    const project = repository.importProjectFile(text);
     commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }));
     return project;
-  }, [commit]);
+  }, [commit, repository]);
 
   return {
     activeProject,
     activateScenario,
     addProject,
+    applyHistoricalOptimization,
     clearError: () => setError(""),
     deleteProject,
     deleteScenario,
     duplicateProject,
     error,
-    exportActiveProject: () => exportProjectFile(activeProject),
+    exportActiveProject: () => repository.exportProjectFile(activeProject),
     importProject,
     loaded,
     persistenceState,

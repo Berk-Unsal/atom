@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2.1",
+  "artifact": "readiness",
+  "audit_version": "concept-6a21-chongqing-rf-metadata-reconciliation-v1",
+  "prepared_at": "2026-09-21",
+  "research_only": true,
+  "final_classification": "insufficient_metadata",
+  "classification_letter": "D",
+  "classification_statement": "Chongqing is still too ambiguous for fair A.T.O.M. validation. The public material supports source-level quantity description, but not an authoritative absolute-RSRP or relative-propagation validation claim.",
+  "classification_options": {
+    "A_research_absolute_rsrp_candidate": "not selected",
+    "B_research_relative_propagation_candidate": "not selected",
+    "C_quantity_validation_only": "not selected because transmitter, release, identity, frequency, and receiver metadata remain jointly unresolved for a fair quantity-validation adapter",
+    "D_insufficient_metadata": "selected"
+  },
+  "evidence_summary": {
+    "raw_rows": 81419,
+    "base_rows": 189,
+    "exact_nci_eci_mapped_rows": 81077,
+    "unmapped_rows": 342,
+    "unmapped_unique_nci": 8,
+    "raw_base_pci_mismatch_rows": 254,
+    "raw_base_pci_mismatch_unique_nci": 32,
+    "raw_base_frequency_exact_agreement_rows": 0,
+    "raw_nci_gnodeb_gcellid_arithmetic_inconsistent_rows": 1,
+    "base_cgi_scientific_notation_rows": 23,
+    "base_zero_height_rows": 2,
+    "raw_gnss_accuracy_range_m": [3, 294],
+    "source_release_conflict": true,
+    "supplementary_gis_and_config_present_in_audited_record": false
+  },
+  "readiness_matrix": {
+    "absolute_rsrp": {
+      "ready": false,
+      "status": "blocked",
+      "blockers": [
+        "transmit-power reference plane is undefined",
+        "antenna gain and directional pattern are absent",
+        "raw/base frequency semantics do not reconcile",
+        "receiver calibration, antenna, and SS-RSRP resource semantics are absent",
+        "serving-cell mapping is incomplete for 342 rows",
+        "release checksums/script are internally mismatched"
+      ]
+    },
+    "relative_propagation": {
+      "ready_for_fair_atom_validation": false,
+      "status": "blocked",
+      "what_is_available": ["raw SS-RSRP observations", "coordinates and GNSS accuracy", "coarse terrain/vegetation/building context", "some antenna azimuth/tilt/height metadata"],
+      "blockers": [
+        "unknown directional antenna pattern can create angle-dependent residuals",
+        "unresolved carrier/frequency join prevents frequency-specific comparison",
+        "identity gaps and PCI mismatches weaken serving-cell assignment",
+        "route/session and receiver-height metadata are incomplete",
+        "claimed SHP/configuration reproducibility package is not in the audited file list"
+      ],
+      "safe_scope": "Descriptive source-level variation only; no adapter or fair A.T.O.M. residual claim."
+    },
+    "quantity_validation": {
+      "ready": false,
+      "status": "source_level_only",
+      "reason": "The SS-RSRP field is a named dBm quantity, but the information needed to define a reproducible validation quantity and isolate transmitter/receiver effects is not complete."
+    },
+    "environment": {
+      "ready_for_independent_geometry_validation": false,
+      "available": ["DEM-derived terrain", "NDVI", "building coverage/height-derived grid fields", "WGS84/UTM coordinate documentation"],
+      "missing": ["measured LOS/NLOS labels", "audited raw building geometry package", "confirmed sampling SHP/configuration supplement", "complete route/session metadata"]
+    }
+  },
+  "power_gain_pattern_decision": {
+    "power_field": "Antenna transmit power(dBm) is source metadata only; dBm unit is known but reference plane and gain inclusion are unknown.",
+    "gain": "No authoritative maximum gain or antenna model found.",
+    "pattern": "No horizontal/vertical pattern, beamwidth, codebook, or vendor radiation data found.",
+    "consequence": "Do not compute EIRP, do not use source power as canonical tx_power_dbm, and do not fit an offset to hide missing pattern information."
+  },
+  "identity_frequency_decision": {
+    "identity": "Exact NCI-to-ECI mapping is accepted only for the 81077 mapped rows; 342 rows remain unresolved and PCI is not a safe fallback.",
+    "frequency": "Raw NR-ARFCN can be converted under ETSI rules, but base Downlink Frequency has zero exact agreement and non-constant conditional deltas; no rewrite is allowed."
+  },
+  "receiver_rsrp_decision": {
+    "receiver": "iQOO 8 Pro/Snapdragon X60 is documented for UAV measurements; Cellular-Pro and the UAV/ground collection modes are documented.",
+    "missing": ["ground device inventory", "receiver/antenna gain", "calibration", "receiver height for ground routes", "SSB/resource averaging", "detection floor/censoring", "per-row device identifier"],
+    "rsrp": "Raw SS-RSRP may be retained as a source quantity, but it is not approved as independently calibrated absolute received power for A.T.O.M. validation."
+  },
+  "six_a_three": {
+    "decision": "NO_GO",
+    "implementation_pilot": false,
+    "adapter_allowed": false,
+    "reason": "The required metadata reconciliation gates did not pass; a 6A.3 adapter pilot would force assumptions about power, pattern, frequency, identity, or receiver semantics.",
+    "future_reconsideration_prerequisites": [
+      "Pin one official release and provide matching checksums and runnable loading script.",
+      "Resolve all eight missing NCI/ECI keys and the 254 PCI inconsistencies with source-owner evidence.",
+      "Document base frequency fields and exact raw-to-base carrier mapping.",
+      "Document power reference plane, antenna model/gain/pattern, or explicitly constrain a future study to a defensible source-only quantity.",
+      "Release receiver/antenna/calibration, ground receiver height, route/session, and SS-RSRP measurement-resource metadata.",
+      "Deliver or link the claimed GIS sampling-point and application-configuration supplement."
+    ],
+    "next_action": "Stop at research artifacts; do not build or stage an adapter."
+  },
+  "six_b": {
+    "status": "CLOSED",
+    "changed": false,
+    "reason": "Concept 6B remains gated on independent usable samples, complete metadata, deterministic mapping, reproducible provenance, holdouts, and review."
+  },
+  "invariants": {
+    "concept_6a": "unchanged: no_measurement_data",
+    "concept_6a1": "unchanged: dry_run_ready_real_data_unavailable",
+    "concept_6a2": "unchanged: external benchmark audit only; no benchmark selected and no adapter",
+    "canonical_rf": "unchanged",
+    "inventory_schema_and_defaults": "unchanged",
+    "calibration": "inactive",
+    "terrain_and_optimizer_behavior": "unchanged",
+    "production_code": "not modified"
+  },
+  "artifact_status": {
+    "required_files": [
+      "docs/concept-6a21-chongqing-reconciliation.md",
+      "docs/concept-6a21-field-semantics.json",
+      "docs/concept-6a21-id-reconciliation.json",
+      "docs/concept-6a21-frequency-reconciliation.json",
+      "docs/concept-6a21-inventory-mapping.json",
+      "docs/concept-6a21-readiness.json",
+      "docs/concept-6a21-post-change-comparison.json"
+    ],
+    "adapter": "not_created",
+    "inventory_change": "not_created",
+    "rf_or_calibration_change": "not_created"
+  }
+}

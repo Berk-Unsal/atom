@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Activity, CloudFog, CloudRain, PlayCircle, Radio } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
+import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 function initialOptions(settings) {
   return {
@@ -28,15 +29,18 @@ function initialOptions(settings) {
   };
 }
 
-export default function SubTHZReferencePanel({ endpoint, isAnalyzing, onAnalyze, reference, selectedTower, settings }) {
+export default function SubTHZReferencePanel({ endpoint, isAnalyzing, onActivityChange, onAnalyze, reference, selectedTower, settings }) {
   const [options, setOptions] = useState(() => initialOptions(settings));
-  const update = (key, value) => setOptions((current) => ({ ...current, [key]: value }));
+  const update = (key, value) => {
+    onActivityChange?.();
+    setOptions((current) => ({ ...current, [key]: value }));
+  };
   const numberValue = (key) => Number.isFinite(Number(options[key])) ? options[key] : "";
   const canRun = Boolean(selectedTower && endpoint && !isAnalyzing);
 
   return (
     <section className="sub-thz-reference-panel" aria-label="Sub-THz atmospheric reference">
-      <header className="panel-title"><Activity size={16} /><span>Sub-THz atmospheric reference</span></header>
+      <header className="panel-title"><Activity size={16} /><span>Sub-THz atmospheric reference</span><ResearchReferenceBadge /></header>
       <p className="data-note">Opt-in, non-canonical ledger. It evaluates P.525 free space plus explicitly enabled atmosphere terms and never changes network RF, coverage, interference, or optimization.</p>
 
       <div className="sub-thz-reference-status">

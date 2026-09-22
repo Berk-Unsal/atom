@@ -1,0 +1,220 @@
+{
+  "concept": "7F",
+  "artifact": "navigation-map",
+  "capturedOn": "2026-09-22",
+  "routeModel": {
+    "browserPath": "/",
+    "clientRouter": false,
+    "anchor": "#planning-map",
+    "stateInUrl": false,
+    "implication": "Refresh, back/forward, and deep-link recovery do not preserve stage, tool, results view, map layer, Scenario, Version, or Run context."
+  },
+  "currentShell": {
+    "globalHeader": {
+      "region": "command-bar",
+      "contains": ["brand", "Project menu", "compact planning context", "modeling-limits link", "run status", "local save state", "primary Run Sector action", "global error banner"],
+      "ownership": ["global", "project", "run"]
+    },
+    "leftRail": {
+      "region": "workflow-rail",
+      "contains": ["Plan", "Simulate", "Analyze", "Review"],
+      "ownership": ["global"]
+    },
+    "mapStage": {
+      "region": "map-stage",
+      "contains": ["Leaflet map", "cell markers", "buildings", "result overlays", "feature inspector"],
+      "ownership": ["map", "result", "diagnostic"]
+    },
+    "contextDrawer": {
+      "region": "tool-drawer",
+      "contains": ["tool title/subtitle", "tool subnav", "tool panel body", "drawer error", "undo toast"],
+      "ownership": ["tool", "project", "scenario", "run", "dataset", "report"]
+    },
+    "mapOverlays": {
+      "regions": ["focused-map-toolbar", "map legend", "layer menu"],
+      "ownership": ["map", "result", "diagnostic"]
+    }
+  },
+  "stageGraph": {
+    "Plan": {
+      "tools": {
+        "Setup": {
+          "purpose": "Common planning configuration plus Scenario workspace",
+          "next": ["Inventory", "Propagation", "Results", "Project menu"]
+        },
+        "Inventory": {
+          "purpose": "Cell list, map placement, import, and per-cell RF profile",
+          "next": ["Setup", "Propagation", "Results", "Map inspector"]
+        }
+      }
+    },
+    "Simulate": {
+      "tools": {
+        "Propagation": {
+          "purpose": "Canonical propagation geometry, optimization entry, and reference panels",
+          "next": ["Results", "Experiments", "Signal surface", "Analyze"]
+        },
+        "Experiments": {
+          "purpose": "Queued parameter sweeps and Pareto comparison",
+          "next": ["Results", "Propagation", "Run history"]
+        },
+        "Signal surface": {
+          "purpose": "Current RF surface generation and GIS export",
+          "next": ["Results", "Map inspector", "Propagation"]
+        }
+      }
+    },
+    "Analyze": {
+      "tools": {
+        "Interference": {
+          "purpose": "Radio quality and co-channel analysis",
+          "next": ["Results", "Map inspector", "Setup"]
+        },
+        "RF Diagnostics": {
+          "purpose": "Evidence campaigns and reference diagnostics",
+          "next": ["Data", "Results", "Run history"]
+        },
+        "Building entry": {
+          "purpose": "Derived facade-entry service estimate",
+          "next": ["Results", "Map inspector"]
+        },
+        "5G Core": {
+          "purpose": "Core Lab scenarios",
+          "next": ["Run history", "Results"]
+        }
+      }
+    },
+    "Review": {
+      "tools": {
+        "Results": {
+          "purpose": "Current operation result views and map inspection",
+          "next": ["Setup", "Propagation", "Run history", "Report", "Map inspector"]
+        },
+        "Run history": {
+          "purpose": "Durable local computation records",
+          "next": ["Source Version", "Run again", "Report", "Apply Version/branch"]
+        },
+        "Data": {
+          "purpose": "Dataset confidence, model assumptions, validation, calibration",
+          "next": ["Setup", "RF Diagnostics", "Report"]
+        },
+        "Report": {
+          "purpose": "Current and retained planning outputs",
+          "next": ["Source Version", "Run history", "Map/Results"]
+        }
+      }
+    }
+  },
+  "conceptOwnership": {
+    "Project": {
+      "primaryLocation": "Header Project menu",
+      "secondaryLocations": ["header compact context", "local repository"],
+      "assessment": "Correctly global; management is discoverable."
+    },
+    "Scenario": {
+      "primaryLocation": "Plan > Setup > Scenario workspace",
+      "secondaryLocations": ["Header Project menu", "Run History detail", "Report source detail"],
+      "assessment": "Correctly above RF operation, but identity is not persistent in header."
+    },
+    "Version": {
+      "primaryLocation": "Setup Scenario workspace and Project menu",
+      "secondaryLocations": ["Run History detail", "Report source binding", "revision inspector"],
+      "assessment": "Correctly owns saved inputs, but duplicate save entry points and hidden active identity increase risk."
+    },
+    "Inventory": {
+      "primaryLocation": "Plan > Inventory",
+      "secondaryLocations": ["map selection tools", "header compact selected-cell context"],
+      "assessment": "Related concepts are together; bulk/provenance detail is underdeveloped."
+    },
+    "Planning Area": {
+      "primaryLocation": "Map stage and selection tools",
+      "secondaryLocations": ["network selection in Setup/Inventory", "map inspector"],
+      "assessment": "Spatially appropriate; scope selection can be visually dense."
+    },
+    "RF Configuration": {
+      "primaryLocation": "Plan > Setup and Plan > Inventory",
+      "secondaryLocations": ["Simulate > Propagation", "Interference"],
+      "assessment": "Common inputs are split from per-cell overrides; research inputs are mixed into Propagation."
+    },
+    "Simulation": {
+      "primaryLocation": "Header Run Sector plus Simulate",
+      "secondaryLocations": ["Results", "Signal surface", "Run history"],
+      "assessment": "Run is visible; source Version/Run identity needs persistent treatment."
+    },
+    "Optimization": {
+      "primaryLocation": "Simulate/Results optimization controls",
+      "secondaryLocations": ["Scenario revision inspector", "Run history"],
+      "assessment": "Capabilities are connected but terminology and target lineage are spread."
+    },
+    "Run": {
+      "primaryLocation": "Review > Run history",
+      "secondaryLocations": ["header current status", "Results", "Scenario revision detail"],
+      "assessment": "Durable record is under Review as expected; current Run identity is not always visible."
+    },
+    "Report": {
+      "primaryLocation": "Review > Report",
+      "secondaryLocations": ["Run History detail", "Scenario revision detail"],
+      "assessment": "Correctly a Review output; ordinary UX exposes storage terminology."
+    },
+    "Dataset": {
+      "primaryLocation": "Review > Data",
+      "secondaryLocations": ["Setup assumptions", "Run/Report metadata"],
+      "assessment": "Important and visible, but Data combines confidence, packs, model, validation, and calibration."
+    },
+    "Diagnostics": {
+      "primaryLocation": "Analyze > RF Diagnostics",
+      "secondaryLocations": ["Interference", "Building entry", "Data", "map layers"],
+      "assessment": "Technically coherent but mixes operational analysis and research/validation."
+    }
+  },
+  "duplicateEntryPoints": [
+    {
+      "concept": "Save Version",
+      "locations": ["Header Project menu", "Plan > Setup > ScenarioPanel", "Scenario revision detail after applying a solution"],
+      "risk": "Users may not know whether these save a Project, Scenario, or Version, even though the domain semantics differ."
+    },
+    {
+      "concept": "Open source",
+      "locations": ["Run History detail", "Report artifact detail", "Scenario revision inspector"],
+      "risk": "Related lineage jumps use different copy and are not always accompanied by the same context summary."
+    },
+    {
+      "concept": "Generate report",
+      "locations": ["Review > Report", "Run History detail", "Scenario revision detail"],
+      "risk": "Multiple valid entry points can make the source binding ambiguous."
+    },
+    {
+      "concept": "Results access",
+      "locations": ["Header result summary", "Review > Results", "Map layers and inspector"],
+      "risk": "Current result, map evidence, and durable historical evidence are not one visibly named object."
+    }
+  ],
+  "hierarchyConflicts": [
+    {
+      "location": "Setup",
+      "conflict": "RF configuration and Scenario persistence share one drawer.",
+      "severity": "medium"
+    },
+    {
+      "location": "Propagation",
+      "conflict": "Canonical RF controls and research/reference studies share one normal scroll path.",
+      "severity": "high"
+    },
+    {
+      "location": "Data",
+      "conflict": "Dataset confidence, model assumptions, field validation, and calibration share one Review tool.",
+      "severity": "medium-high"
+    },
+    {
+      "location": "Header",
+      "conflict": "Project identity is global while Scenario/Version identity is local to drawers.",
+      "severity": "high"
+    }
+  ],
+  "currentMermaid": "flowchart LR\n  Launch[Open A.T.O.M / map] --> Dataset[Dataset loaded]\n  Dataset --> Plan[Plan: Setup + Inventory]\n  Plan --> RF[Simulate: Propagation / Signal surface]\n  RF --> Inspect[Results: map layers / inspector]\n  Inspect --> Optimize[Analyze / optimize: priorities + policy]\n  Optimize --> Pareto[Review: Pareto / compare]\n  Pareto --> Apply[Apply to new Version or branch]\n  Apply --> Save[Project / Scenario / Version save]\n  Save --> Report[Review: Report / Run History]\n  Report --> Revisit[Open source Version / Run again]",
+  "proposedDirection": {
+    "selectedConcept7G": "Results, Lineage & Stale-State UX",
+    "principle": "Keep the current four-stage map shell; add a persistent identity/state context that travels with current results, historical Runs, and Reports.",
+    "notProposed": ["new top-level route system", "project dashboard", "RF behavior change", "persistence schema change", "broad shell rewrite"]
+  }
+}

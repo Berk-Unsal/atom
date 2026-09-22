@@ -1,6 +1,6 @@
 import { rxPowerColor } from "./geojson.js";
 import { normalizedNetworkScore } from "./appWorkspace.js";
-import { buildCellMarginalEffectView, isRadioQualityEvaluated } from "./optimizationConfig.js";
+import { buildCellMarginalEffectView, buildNetworkOptimizationComparison, isRadioQualityEvaluated } from "./optimizationConfig.js";
 import {
   renderMarkdownInterferenceSection,
   renderPrintableInterferenceSection,
@@ -11,6 +11,7 @@ import {
   formatNumber,
 } from "./reportFormatting.js";
 import { effectiveReceiverSensitivityDbm, resolveRFProfile } from "./rfProfile.js";
+import { resolveReportSource } from "../domain/reportSource.js";
 
 const SVG_WIDTH = 720;
 const SVG_HEIGHT = 460;
@@ -44,6 +45,8 @@ export function buildPlanningReport({
   coverageGaps,
   diagnostics,
   generatedAt: generatedAtValue,
+  domainBinding = null,
+  evidence = null,
   interferenceAnalysis,
   measurementAnalysis,
   networkOptimization,
@@ -57,6 +60,7 @@ export function buildPlanningReport({
   settings,
   simulation,
   stats,
+  selectedSolutionId = null,
 }) {
   const safeSettings = settings ?? {};
   const generatedAt = normalizeDate(generatedAtValue);
@@ -95,7 +99,8 @@ export function buildPlanningReport({
     optimizationConfig,
     planningMode,
     project,
-    domainBinding: buildReportDomainBinding(project),
+    domainBinding: domainBinding ?? buildReportDomainBinding(project),
+    evidence,
     recommendations,
     reportMode,
     selectedTower,
@@ -104,6 +109,7 @@ export function buildPlanningReport({
     settings: safeSettings,
     simulation,
     stats,
+    selectedSolutionId,
   };
   report.recommendedSolution = resolveRecommendedSolution(networkOptimization);
   report.recommendedConfigurations = buildRecommendedConfigurations({
@@ -138,6 +144,70 @@ export function buildPlanningReport({
   return report;
 }
 
+export function buildHistoricalPlanningReport({
+  appMeta = null,
+  generatedAt,
+  project = null,
+  scenario = null,
+  scenarioRevision = null,
+  runs = [],
+} = {}) {
+  const source = resolveReportSource({ project, scenario, scenarioRevision, runs });
+  const revision = source.scenario_revision;
+  const plan = historicalPlanFromRevision(revision, scenario);
+  const inventory = historicalInventoryFromRevision(revision, scenario);
+  const selectedNetworkTowers = historicalTowers(inventory, revision, plan.selectedNetworkTowerIds);
+  const selectedTower = selectedNetworkTowers.find((tower) => String(tower.id ?? tower.cellId) === String(plan.selectedTowerId))
+    ?? (plan.planningMode === "network" ? null : selectedNetworkTowers[0] ?? null);
+  const optimizationRun = source.runs.find((run) => run.run_type === "optimization" && run.status === "succeeded") ?? null;
+  const simulationRun = source.runs.find((run) => run.run_type === "simulation" && run.status === "succeeded") ?? null;
+  const networkOptimization = optimizationRun ? historicalOptimizationResponse(optimizationRun) : null;
+  const comparison = networkOptimization?.baseline && networkOptimization?.pareto_frontier?.length
+    ? buildNetworkOptimizationComparison(networkOptimization, plan.optimizationConfig)
+    : null;
+  const simulation = simulationRun ? historicalSimulationResult(simulationRun) : null;
+  const reportProject = {
+    ...(project ?? {}),
+    id: project?.id ?? project?.project_id ?? source.binding.project_id,
+    name: project?.name ?? "Planning project",
+    activeScenarioId: scenario?.id ?? scenario?.scenario_id ?? source.binding.scenario_id,
+    scenarios: [scenario ?? { id: source.binding.scenario_id, name: "Historical scenario" }],
+  };
+  const report = buildPlanningReport({
+    activeNetworkTech: plan.settings.networkTech ?? plan.settings.network_tech ?? null,
+    appMeta: appMeta ?? revision.metadata?.app_meta ?? scenario?.meta ?? null,
+    buildingEntryAnalysis: null,
+    buildingSummary: scenario?.summary ?? null,
+    calibrationProfile: revision.calibration_profile ?? null,
+    cellExplanations: [],
+    comparison,
+    coreLab: null,
+    coreLabApplicable: false,
+    coreLabEnabled: false,
+    coverageGaps: simulation?.coverageGaps ?? null,
+    diagnostics: null,
+    domainBinding: source.binding,
+    evidence: source.evidence,
+    generatedAt,
+    interferenceAnalysis: null,
+    measurementAnalysis: null,
+    networkOptimization,
+    networkResultKind: networkOptimization ? "optimization" : null,
+    optimizationConfig: plan.optimizationConfig,
+    planningMode: plan.planningMode,
+    project: reportProject,
+    recommendations: null,
+    selectedSolutionId: optimizationRun?.details?.selected_solution_id ?? null,
+    selectedTower,
+    selectedNetworkTowers: plan.planningMode === "network" ? selectedNetworkTowers : [],
+    settings: plan.settings,
+    simulation: simulation?.result ?? null,
+    stats: simulation?.stats ?? { avgPower: null, maxRange: null, minRange: null, blockedRatio: null, rayCount: null },
+  });
+  report.historicalSource = source;
+  return report;
+}
+
 export function downloadMarkdownReport(report) {
   const markdown = renderMarkdownReport(report);
   downloadBlob(`${report.reportId}.md`, markdown, "text/markdown;charset=utf-8");
@@ -161,6 +231,7 @@ export function renderMarkdownReport(report) {
   const view = getReportViewModel(report);
   const sections = [
     renderMarkdownExecutiveSummary(view),
+    renderMarkdownEvidence(view),
     renderMarkdownRecommendedSolution(view),
     renderMarkdownComparison(view),
     renderMarkdownPareto(view),
@@ -188,6 +259,7 @@ export function renderPrintableReport(report) {
   const view = getReportViewModel(report);
   const sections = [
     renderPrintableExecutiveSummary(view),
+    renderPrintableEvidence(view),
     renderPrintableRecommendedSolution(view),
     renderPrintableComparison(view),
     renderPrintablePareto(view),
@@ -345,6 +417,7 @@ function buildReportViewModel(report) {
     coreLabEnabled: report.coreLabEnabled,
     coverageGaps: report.coverageGaps,
     datasetRows,
+    domainBinding: report.domainBinding,
     diagnostics: report.diagnostics,
     evaluatedCellExplanations,
     generatedAt: formatDate(report.generatedAt),
@@ -370,6 +443,8 @@ function buildReportViewModel(report) {
     scenarioName,
     settings: report.settings ?? {},
     simulation: report.simulation,
+    evidence: report.evidence,
+    selectedSolutionId: report.selectedSolutionId ?? null,
     subtitle,
     title,
     topGaps,
@@ -420,6 +495,31 @@ Interference analysis: ${interferenceStatus}.` : ""}
 ${statusLine}`;
 }
 
+function renderMarkdownEvidence(view) {
+  if (!view.evidence) return "";
+  const binding = view.domainBinding ?? {};
+  const rows = [
+    row("ScenarioRevision", binding.scenario_revision_id),
+    row("Source Run(s)", (binding.run_ids ?? []).length > 0 ? binding.run_ids.join(", ") : "None"),
+    row("Scenario fingerprint", binding.scenario_fingerprint),
+    row("Input fingerprint(s)", (binding.input_fingerprints ?? []).length > 0 ? binding.input_fingerprints.join(", ") : null),
+    row("Source boundary", view.evidence.sources?.run_results ?? "Not bound"),
+    row("Silent recomputation", view.evidence.no_silent_recompute ? "Not performed" : "Not applicable"),
+    row("Selected solution", view.selectedSolutionId),
+  ].filter((item) => item[1] !== null);
+  const retained = (view.evidence.retained ?? []).map((item) => `- ${item}`).join("\n");
+  const unavailable = (view.evidence.unavailable ?? []).map((item) => `- ${item}`).join("\n");
+  return `## Evidence & Source Binding
+
+${renderMarkdownTable(["Field", "Value"], rows)}${retained ? `
+
+Retained evidence:
+${retained}` : ""}${unavailable ? `
+
+Unavailable detail:
+${unavailable}` : ""}`;
+}
+
 function renderPrintableExecutiveSummary(view) {
   const scopeLabel = view.isNetworkReport ? "Network" : "Cell / RF context";
   const networkRows = view.isNetworkReport
@@ -448,6 +548,23 @@ function renderPrintableExecutiveSummary(view) {
       ? "Status: evaluated network configuration."
       : "Status: current single-cell RF result.";
   return `<section data-report-section="executive-summary"><h2>Executive Summary</h2><div class="report-grid"><div><h3>${escapeHtml(scopeLabel)}</h3>${renderHtmlTable(["Field", "Value"], networkRows)}</div><div><h3>${escapeHtml(resultLabel)}</h3>${renderHtmlTable(["Metric", "Achieved"], [...summaryPerformance, row("Constraints", view.constraintStatus.label)])}${interferenceStatus ? `<p class="report-note">Interference analysis: ${escapeHtml(interferenceStatus)}.</p>` : ""}<p class="report-note">${escapeHtml(statusLine)}</p></div></div></section>`;
+}
+
+function renderPrintableEvidence(view) {
+  if (!view.evidence) return "";
+  const binding = view.domainBinding ?? {};
+  const rows = [
+    row("ScenarioRevision", binding.scenario_revision_id),
+    row("Source Run(s)", (binding.run_ids ?? []).length > 0 ? binding.run_ids.join(", ") : "None"),
+    row("Scenario fingerprint", binding.scenario_fingerprint),
+    row("Input fingerprint(s)", (binding.input_fingerprints ?? []).length > 0 ? binding.input_fingerprints.join(", ") : null),
+    row("Source boundary", view.evidence.sources?.run_results ?? "Not bound"),
+    row("Silent recomputation", view.evidence.no_silent_recompute ? "Not performed" : "Not applicable"),
+    row("Selected solution", view.selectedSolutionId),
+  ].filter((item) => item[1] !== null);
+  const retained = (view.evidence.retained ?? []).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  const unavailable = (view.evidence.unavailable ?? []).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  return `<section data-report-section="evidence"><h2>Evidence &amp; Source Binding</h2>${renderHtmlTable(["Field", "Value"], rows)}${retained ? `<h3>Retained evidence</h3><ul>${retained}</ul>` : ""}${unavailable ? `<h3>Unavailable detail</h3><ul>${unavailable}</ul>` : ""}</section>`;
 }
 
 function renderMarkdownRecommendedSolution(view) {
@@ -1441,6 +1558,131 @@ export function buildReportDomainBinding(project) {
     run_ids: Array.isArray(domain.runs) ? domain.runs.map((run) => run.run_id).filter(Boolean) : [],
     live_generated: true,
     report_definition_id: null,
+  };
+}
+
+function historicalPlanFromRevision(revision, scenario) {
+  const snapshot = revision?.canonical_input_snapshot ?? revision?.request_inputs ?? scenario?.plan ?? {};
+  const settings = {
+    ...(snapshot?.settings ?? {}),
+    ...(revision?.rf_affecting_settings ?? {}),
+  };
+  const selectedNetworkTowerIds = [
+    ...(revision?.enabled_cell_ids ?? snapshot?.selectedNetworkTowerIds ?? []),
+    ...(revision?.selected_cell_ids ?? snapshot?.selectedNetworkTowerIds ?? []),
+  ].filter((value, index, values) => value !== null && value !== undefined && values.findIndex((candidate) => String(candidate) === String(value)) === index).map(String);
+  return {
+    planningMode: revision?.planning_mode ?? snapshot?.planningMode ?? "single",
+    selectedTowerId: revision?.selected_cell_id ?? snapshot?.selectedTowerId ?? selectedNetworkTowerIds[0] ?? null,
+    selectedNetworkTowerIds,
+    settings,
+    optimizationConfig: revision?.optimizer_configuration ?? revision?.objective_constraints ?? snapshot?.optimizationConfig ?? {},
+  };
+}
+
+function historicalInventoryFromRevision(revision, scenario) {
+  const snapshot = revision?.canonical_input_snapshot ?? revision?.request_inputs ?? scenario?.plan ?? {};
+  return snapshot?.inventory
+    ?? scenario?.plan?.inventory
+    ?? [];
+}
+
+function historicalTowers(inventory, revision, selectedIds) {
+  const overrides = revision?.overrides ?? {};
+  return (Array.isArray(inventory) ? inventory : []).map((tower) => {
+    const id = tower.id ?? tower.cellId ?? tower.cell_id;
+    const override = overrides[String(id)]?.fields ?? overrides[String(id)] ?? {};
+    const profile = tower.rfProfile ?? tower.rf_profile ?? {};
+    return {
+      ...tower,
+      id: tower.id ?? id,
+      cellId: tower.cellId ?? tower.cell_id ?? id,
+      azimuth: override.azimuth_deg ?? tower.azimuth ?? tower.azimuth_deg ?? tower.optimal_azimuth ?? 0,
+      coordinates: tower.coordinates ?? [tower.lon ?? tower.longitude, tower.lat ?? tower.latitude].filter((value) => value !== undefined),
+      rfProfile: tower.rfProfile ?? {
+        networkTech: profile.network_tech ?? profile.networkTech,
+        frequencyGHz: profile.frequency_ghz ?? profile.frequencyGHz,
+        band: profile.band,
+        channelId: profile.channel_id ?? profile.channelId,
+        txPowerDbm: profile.tx_power_dbm ?? profile.txPowerDbm,
+        antennaGainDbi: profile.antenna_gain_dbi ?? profile.antennaGainDbi,
+        radiusMeters: profile.radius_m ?? profile.radiusMeters,
+        beamWidthDeg: profile.beam_width ?? profile.beamWidthDeg,
+      },
+    };
+  }).filter((tower) => selectedIds.length === 0 || selectedIds.includes(String(tower.id)) || selectedIds.includes(String(tower.cellId)));
+}
+
+function historicalOptimizationResponse(run) {
+  const details = run.details ?? {};
+  const summary = run.summary ?? {};
+  const normalizeSolution = (solution) => {
+    if (!solution) return null;
+    const towers = solution.cell_configurations ?? solution.cellConfigurations ?? solution.towers ?? [];
+    return {
+      ...solution,
+      id: solution.id ?? solution.optimizer_solution_id ?? solution.optimization_solution_id,
+      towers,
+      cell_configurations: towers,
+      stats: solution.stats ?? {},
+    };
+  };
+  const baseline = normalizeSolution(details.baseline_solution);
+  const pareto = (details.public_pareto_solutions ?? []).map(normalizeSolution).filter(Boolean);
+  const recommended = pareto.find((solution) => String(solution.id) === String(details.recommended_solution_id)) ?? pareto[0] ?? null;
+  const optimizationSummary = summary.optimization ?? {};
+  const configuredPriorities = details.effective_priorities ?? {};
+  const priorityTotal = Object.values(configuredPriorities).reduce((total, value) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) && numeric > 0 ? total + numeric : total;
+  }, 0);
+  const effectiveWeights = Object.fromEntries(Object.entries(configuredPriorities).map(([key, value]) => {
+    const numeric = Number(value);
+    return [key, Number.isFinite(numeric) && numeric > 1 && priorityTotal > 0 ? numeric / priorityTotal : value];
+  }));
+  return {
+    baseline: baseline ? { ...baseline, cell_configurations: baseline.towers } : null,
+    pareto_frontier: pareto,
+    optimized_towers: recommended?.towers ?? [],
+    optimization_run_id: details.optimization_run_id ?? summary.optimization_run_id ?? null,
+    optimization_domain: details.optimization_domain ?? optimizationSummary.optimization_domain ?? null,
+    optimization: {
+      recommended: pareto.length > 0,
+      recommended_solution_id: details.recommended_solution_id ?? recommended?.id ?? null,
+      configured_priorities: configuredPriorities,
+      effective_weights: effectiveWeights,
+      objective_status: details.objective_availability ?? {},
+      constraints: details.constraints ?? {},
+      search_policy: details.search_policy ?? null,
+      budgets: details.budgets ?? null,
+      evaluated_count: details.evaluated_count ?? null,
+      cache_summary: details.cache_summary ?? null,
+      optimizer_identity: details.optimizer_identity ?? null,
+      constraints_satisfied: baseline?.constraints_satisfied !== false && recommended?.constraints_satisfied !== false,
+    },
+    stats: summary.stats ?? optimizationSummary.stats ?? recommended?.stats ?? null,
+    rf_contract: details.rf_contract ?? run.rf_contract ?? null,
+  };
+}
+
+function historicalSimulationResult(run) {
+  const summary = run.details?.result_summary ?? run.summary ?? {};
+  const simulationStats = summary.simulation?.stats ?? summary.simulation ?? summary.stats ?? null;
+  const coverageStats = summary.coverage_gaps?.stats ?? summary.coverage_gaps ?? null;
+  const model = summary.simulation?.model ?? summary.model ?? null;
+  const result = simulationStats || model
+    ? { stats: simulationStats, model, rf_contract: run.rf_contract }
+    : null;
+  return {
+    result,
+    coverageGaps: coverageStats ? { stats: coverageStats, geojson: { type: "FeatureCollection", features: [] }, rf_contract: run.rf_contract } : null,
+    stats: {
+      avgPower: simulationStats?.avg_rx_dbm ?? null,
+      maxRange: simulationStats?.max_range_m ?? null,
+      minRange: simulationStats?.min_range_m ?? null,
+      blockedRatio: simulationStats?.blocked_pct ?? null,
+      rayCount: null,
+    },
   };
 }
 

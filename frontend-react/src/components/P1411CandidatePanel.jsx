@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Activity, BookOpen, GitCompare, PlayCircle } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
+import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 function initialOptions(settings) {
   return {
@@ -20,15 +21,18 @@ function initialOptions(settings) {
   };
 }
 
-export default function P1411CandidatePanel({ endpoint, isAnalyzing, onAnalyze, reference, selectedTower, settings }) {
+export default function P1411CandidatePanel({ endpoint, isAnalyzing, onActivityChange, onAnalyze, reference, selectedTower, settings }) {
   const [options, setOptions] = useState(() => initialOptions(settings));
-  const update = (key, value) => setOptions((current) => ({ ...current, [key]: value }));
+  const update = (key, value) => {
+    onActivityChange?.();
+    setOptions((current) => ({ ...current, [key]: value }));
+  };
   const numberValue = (key) => Number.isFinite(Number(options[key])) ? options[key] : "";
   const canRun = Boolean(selectedTower && endpoint && !isAnalyzing);
 
   return (
     <section className="p1411-candidate-panel" aria-label="ITU-R P.1411 candidate reference">
-      <header className="panel-title"><Activity size={16} /><span>ITU-R P.1411 candidate reference</span></header>
+      <header className="panel-title"><Activity size={16} /><span>ITU-R P.1411 candidate reference</span><ResearchReferenceBadge /></header>
       <p className="p1411-callout"><strong>Reference candidate only — not used by network simulation.</strong> This isolated panel evaluates Table 4 rows side by side. It does not change coverage, interference, optimization, building entry, or canonical RF.</p>
       <p className="data-note">Source clause: ITU-R P.1411-13 (2025-09) §4.1.1, Table 4, equation (1). The 25 m TX / 1.5 m RX profile defaults are inputs only; they do not prove that both stations are below rooftops.</p>
 

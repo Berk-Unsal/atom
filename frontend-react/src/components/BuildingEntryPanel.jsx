@@ -53,7 +53,7 @@ export default function BuildingEntryPanel({
         <div className="building-entry-status warning" role="status">
           <AlertTriangle size={16} />
           <div>
-            <strong>Not available for this plan</strong>
+            <strong>UNSUPPORTED for this profile</strong>
             <span>{analysis.applicability?.detail ?? "Concept 4E supports 2.6 GHz and 28 GHz only."}</span>
           </div>
         </div>

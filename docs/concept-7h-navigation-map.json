@@ -1,0 +1,30 @@
+{
+  "concept": "7H",
+  "artifact": "navigation-map",
+  "capturedOn": "2026-09-23",
+  "shell": ["Plan", "Simulate", "Analyze", "Review"],
+  "urlRoutingAdded": false,
+  "newTopLevelStageAdded": false,
+  "paths": [
+    { "id": "setup.planning", "tier": "planning", "path": "Plan → Setup → Planning", "defaultDisclosure": "open", "purpose": "Mode, technology, model, TX power, selected cell/network, and global Run action." },
+    { "id": "setup.model_details", "tier": "advanced", "path": "Plan → Setup → Advanced model details", "defaultDisclosure": "closed", "purpose": "Model applicability and detailed link-budget assumptions." },
+    { "id": "setup.scenario_workspace", "tier": "advanced", "path": "Plan → Setup → Scenario workspace", "defaultDisclosure": "closed", "purpose": "Saved Scenario/Version management, Runs, and Reports; exact-source navigation opens this disclosure." },
+    { "id": "inventory.common_profile", "tier": "planning", "path": "Plan → Inventory → select a cell → Planning", "defaultDisclosure": "open", "purpose": "Identity, location, carrier basics, common RF fields, and manual receiver threshold." },
+    { "id": "inventory.specialist_profile", "tier": "advanced", "path": "Plan → Inventory → select a cell → Advanced", "defaultDisclosure": "closed", "purpose": "Detailed antenna, carrier, load, reuse, PCI, and derived receiver fields." },
+    { "id": "propagation.planning", "tier": "planning", "path": "Simulate → Propagation → Planning", "defaultDisclosure": "open", "purpose": "Ray count, radius, azimuth, beam width, and the existing network optimization action." },
+    { "id": "propagation.advanced", "tier": "advanced", "path": "Simulate → Propagation → Advanced analysis", "defaultDisclosure": "closed", "purpose": "Optimizer objectives/constraints and vertical path-profile diagnostics." },
+    { "id": "propagation.sub_thz", "tier": "research_reference", "path": "Simulate → Propagation → Research / reference → Sub-THz atmospheric reference", "defaultDisclosure": "closed", "purpose": "Isolated atmospheric component reference." },
+    { "id": "propagation.p1411", "tier": "research_reference", "path": "Simulate → Propagation → Research / reference → P.1411 candidate reference", "defaultDisclosure": "closed", "purpose": "Alternative/reference candidate evaluation." },
+    { "id": "analyze.interference", "tier": "advanced", "path": "Analyze → Interference", "defaultDisclosure": "tool-specific", "purpose": "Distinct radio-quality analysis and settings." },
+    { "id": "analyze.building_entry", "tier": "advanced", "path": "Analyze → Building entry", "defaultDisclosure": "tool-specific", "purpose": "Specialist building-service analysis with existing facade and low/high loss semantics." },
+    { "id": "diagnostics.canonical_actions", "tier": "advanced", "path": "Analyze → RF Diagnostics", "defaultDisclosure": "visible", "purpose": "Open the current RF result or navigate to the vertical path profile." },
+    { "id": "diagnostics.measurement", "tier": "research_reference", "path": "Analyze → RF Diagnostics → Research / reference → Measurement validation", "defaultDisclosure": "closed", "purpose": "Campaign and residual validation." },
+    { "id": "diagnostics.material", "tier": "research_reference", "path": "Analyze → RF Diagnostics → Research / reference → Material and facade interaction reference", "defaultDisclosure": "closed", "purpose": "Isolated slab/component reference." },
+    { "id": "diagnostics.reflection", "tier": "research_reference", "path": "Analyze → RF Diagnostics → Research / reference → Specular reflection reference", "defaultDisclosure": "closed", "purpose": "Isolated single-bounce reference." },
+    { "id": "data.planning", "tier": "planning", "path": "Review → Data → Planning data", "defaultDisclosure": "open", "purpose": "Demand surface and dataset confidence used by normal planning." },
+    { "id": "data.dataset", "tier": "advanced", "path": "Review → Data → Dataset details", "defaultDisclosure": "closed", "purpose": "Installed packs, provenance, QA, and pack commands." },
+    { "id": "data.assumptions", "tier": "advanced", "path": "Review → Data → Advanced model details", "defaultDisclosure": "closed", "purpose": "Expanded propagation and radio-quality assumptions." },
+    { "id": "data.validation", "tier": "research_reference", "path": "Review → Data → Research / reference → Field measurement validation and calibration", "defaultDisclosure": "closed", "purpose": "Evidence and explicit calibration review/application." },
+    { "id": "analyze.core_lab", "tier": "research_reference", "path": "Analyze → 5G Core", "defaultDisclosure": "tool-specific", "purpose": "Existing Core Lab adapter and scenarios remain in Analyze." }
+  ]
+}

@@ -36,6 +36,7 @@ export default function ControlPanel({
 
   const activeTechnology = NETWORK_TECH_OPTIONS.find((option) => option.frequencyGHz === settings.frequencyGHz);
   const bandwidthOptions = activeTechnology?.bandwidthsMHz ?? [];
+  const advancedInterferenceCount = Number(Number(settings.noiseFigureDb) !== 7) + Number(Number(settings.sampleSpacingMeters) !== 40);
 
   if (activeTool === "setup") {
     return (
@@ -232,13 +233,14 @@ export default function ControlPanel({
           actionLabel="Use 5G mmWave"
           description="The current 6G research profile is a 140 GHz propagation planning overlay and does not expose SINR, RSRP, or RSRQ analysis."
           onAction={() => updateNetworkTech(nrOption)}
-          title="Not available in 6G research profile"
+          title="Radio quality · UNSUPPORTED for 6G research profile"
         />
       );
     }
 
     return (
       <section className="control-panel focused-control-panel interference-control" aria-label="Interference controls">
+            <p className="data-note">Propagation results describe received power and coverage. Radio-quality analysis separately estimates load-adjusted RSRP, SINR, and RSRQ across the selected cells.</p>
             <label className="input-row select-row">
               <span className="input-label">Bandwidth</span>
               <span className="number-wrap">
@@ -280,7 +282,7 @@ export default function ControlPanel({
               </div>
             </div>
             <details className="advanced-settings">
-              <summary>Advanced assumptions</summary>
+              <summary>Advanced assumptions{advancedInterferenceCount > 0 ? ` · ${advancedInterferenceCount} configured` : " · No additional configuration"}</summary>
               <NumberField
                 icon={<Activity size={18} />}
                 label="Noise figure"

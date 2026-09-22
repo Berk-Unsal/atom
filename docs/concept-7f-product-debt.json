@@ -1,0 +1,174 @@
+{
+  "concept": "7F",
+  "artifact": "product-debt",
+  "capturedOn": "2026-09-22",
+  "severityScale": {
+    "critical": "Can produce misleading evidence or unsafe state transition.",
+    "high": "Materially increases wrong-workflow or wrong-context risk.",
+    "medium": "Creates repeat friction or slows a meaningful user band.",
+    "low": "Polish or consistency issue without major workflow risk."
+  },
+  "categories": {
+    "uxDebt": [
+      {
+        "id": "ux-lineage-context",
+        "finding": "Active Scenario and Version are not persistent in the global workspace context.",
+        "evidence": ["Header shows Project and compact cell/RF context.", "Scenario/Version identity appears in Setup, Project menu, Run History, and Report detail."],
+        "impact": "Users must reconstruct which saved inputs own a current result, a historical Run, or a Report.",
+        "severity": "critical",
+        "nextAction": "Concept 7G: add current/stale/historical lineage context around the existing shell.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "ux-drawer-overload",
+        "finding": "Setup, Propagation, RF Diagnostics, and Data mix multiple jobs in long drawers.",
+        "evidence": ["Propagation places common ray controls before path profile, Sub-THz, and P.1411 reference cards.", "Data combines dataset, model, validation, and calibration."],
+        "impact": "First-time and regular planners scan through research/reference detail before finding the next ordinary action.",
+        "severity": "high",
+        "nextAction": "Introduce progressive disclosure and explicit Planning/Advanced/Research boundaries after lineage work.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "ux-inventory-scale",
+        "finding": "Inventory supports precise one-cell editing but not bulk planning.",
+        "evidence": ["First 250 matching cells are rendered.", "Long list and editor share one drawer."],
+        "impact": "Regular planners may need repeated single-cell edits and lose list context.",
+        "severity": "medium",
+        "nextAction": "Measure real bulk-edit tasks before selecting a safe bulk interaction model.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "ux-empty-state-inconsistency",
+        "finding": "Some empty states name a next action well; others describe future detail when no item can be selected.",
+        "evidence": ["Run History says select a Run when empty.", "Report and Version empty states are more actionable but use storage-oriented copy."],
+        "impact": "New users receive inconsistent guidance at the same lifecycle boundary.",
+        "severity": "medium",
+        "nextAction": "Standardize empty-state pattern: what exists, why empty, one next action.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "ux-responsive-overflow",
+        "finding": "Map toolbar and layer menu are too dense at 1024px and 640px.",
+        "evidence": ["1024px screenshot showed right-edge crowding/clipping.", "640px DOM geometry placed the layer menu beyond the viewport."],
+        "impact": "Focused map inspection remains possible, but full planning controls are unreliable on narrow layouts.",
+        "severity": "high",
+        "nextAction": "Run a focused shell-quality pass with width-specific toolbar and layer-menu rules.",
+        "outOfScopeFor7F": true
+      }
+    ],
+    "architectureDebt": [
+      {
+        "id": "architecture-app-orchestrator",
+        "finding": "App.jsx is a large stateful orchestrator for shell, RF, optimization, Scenario, Run, Report, map, and diagnostics.",
+        "evidence": ["App.jsx is 5267 lines in the audited tree.", "All major panels and many domain operations are imported and coordinated there."],
+        "impact": "IA changes can accidentally cross compute, persistence, and presentation boundaries; safe feature isolation is harder.",
+        "severity": "high",
+        "nextAction": "Use product-boundary adapters or route-level composition only when a concrete workflow phase needs it.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "architecture-no-addressable-state",
+        "finding": "Stage, tool, result view, layer, Scenario, Version, and Run context are not URL-addressable.",
+        "evidence": ["The app renders a single shell at /.", "No client-side route router was found."],
+        "impact": "Refresh, deep links, browser back, and shareable review context are weak.",
+        "severity": "medium-high",
+        "nextAction": "Evaluate URL state only after lineage vocabulary is stable; do not introduce a router as a reflex.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "architecture-distributed-lineage-entries",
+        "finding": "Project menu, ScenarioPanel, Run History, Report artifacts, and revision inspector each own part of navigation.",
+        "evidence": ["Save Version and source/open actions have multiple entry points."],
+        "impact": "Valid workflows feel fragmented and target scope is harder to infer.",
+        "severity": "high",
+        "nextAction": "Define one lineage contract for labels, source summaries, and context actions.",
+        "outOfScopeFor7F": true
+      }
+    ],
+    "performanceDebt": [
+      {
+        "id": "performance-single-main-chunk",
+        "finding": "Production JS is emitted as one 921.62 kB raw / 252.89 kB gzip main chunk.",
+        "evidence": ["Vite emitted the >500 kB warning.", "App.jsx statically imports rare research, validation, Core Lab, experiment, and report tooling."],
+        "impact": "Initial load pays for features most users do not need on first interaction.",
+        "severity": "medium-high",
+        "nextAction": "Generate a treemap and safely lazy-load product-boundary modules.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "performance-heavy-spatial-surface",
+        "finding": "451 cells, 161,784 building footprints, Leaflet layers, and optional result overlays share the map workspace.",
+        "evidence": ["Runtime logs and Data panel expose dataset scale.", "MapCanvas renders multiple spatial layer types."],
+        "impact": "Map load, dataset switches, and layer toggles may feel heavier than control-panel actions.",
+        "severity": "medium",
+        "nextAction": "Profile map interaction and layer toggles using representative Ankara data before optimizing.",
+        "outOfScopeFor7F": true
+      }
+    ],
+    "accessibilityDebt": [
+      {
+        "id": "a11y-drawer-focus",
+        "finding": "The tool drawer is a modeless native dialog-shaped surface without evident focus containment or return behavior.",
+        "evidence": ["WorkspaceChrome renders a dialog with open and aria-modal=false.", "Heading receives a ref/tabIndex, but an end-to-end focus contract was not evident."],
+        "impact": "Keyboard and assistive-technology users may lose context when the drawer changes.",
+        "severity": "high",
+        "nextAction": "Test and document focus entry, escape, outside interaction, and return-to-trigger behavior for drawer and project menu.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "a11y-map-equivalent",
+        "finding": "Spatial evidence is primarily visual; there is no complete keyboard-equivalent inventory of map features and layers.",
+        "evidence": ["Map markers/layers are rendered spatially; feature inspector opens through map interaction."],
+        "impact": "Non-pointer users cannot inspect the same evidence path with equal confidence.",
+        "severity": "medium-high",
+        "nextAction": "Provide a synchronized selected-feature list or results table where the map is the primary visual.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "a11y-state-badges",
+        "finding": "Rail attention badges and icon-first controls can make state interpretation depend on symbol/color context.",
+        "evidence": ["Analyze rail shows ! in some states.", "Map controls rely heavily on icons with tooltip/aria labels."],
+        "impact": "Unavailable, stale, or diagnostic states may be less discoverable without sight or prior knowledge.",
+        "severity": "medium",
+        "nextAction": "Pair badges with text and preserve visible grouped labels at responsive widths.",
+        "outOfScopeFor7F": true
+      }
+    ],
+    "terminologyDebt": [
+      {
+        "id": "term-current-historical-stale",
+        "finding": "Current, historical, and stale are not one shared user-facing vocabulary.",
+        "evidence": ["Plan changed is used for invalidation.", "Historical/source language appears in Run/Report detail.", "Current result is implied by Results."],
+        "impact": "Users can understand individual screens but not always the relationship among states.",
+        "severity": "critical",
+        "nextAction": "Adopt explicit state labels and source summaries in Concept 7G.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "term-artifact-leakage",
+        "finding": "Retained report artifact, generator, hash, and evidence status appear in ordinary Report flow.",
+        "evidence": ["ReportArtifactsPanel is nested in ReportExportPanel.", "Visible copy includes retained artifacts and artifact counts."],
+        "impact": "Report creation feels like storage management for non-reviewer users.",
+        "severity": "medium",
+        "nextAction": "Lead with Report/Download/source; keep artifact metadata behind detail.",
+        "outOfScopeFor7F": true
+      },
+      {
+        "id": "term-cell-site-tower",
+        "finding": "Cell, tower, and site describe different levels but are not always explicitly scoped.",
+        "evidence": ["Inventory and Run contexts use cell; Report copy uses selected tower."],
+        "impact": "Users may infer that a physical tower and RF cell are the same entity.",
+        "severity": "medium",
+        "nextAction": "Use cell in RF scope and site/tower only for physical placement context.",
+        "outOfScopeFor7F": true
+      }
+    ]
+  },
+  "prioritySummary": {
+    "critical": ["ux-lineage-context", "term-current-historical-stale"],
+    "high": ["ux-drawer-overload", "ux-responsive-overflow", "architecture-app-orchestrator", "architecture-distributed-lineage-entries", "performance-single-main-chunk", "a11y-drawer-focus"],
+    "selectedConcept7G": "Results, Lineage & Stale-State UX",
+    "reason": "It directly reduces the two critical risks using existing domain and persistence concepts before larger disclosure, responsive, or performance work."
+  },
+  "invariance": "This register records debt only; it does not authorize or implement fixes."
+}

@@ -315,9 +315,16 @@ function scenarioToLegacySnapshot(scenario, revision, legacyScenario, inventoryR
     datasetRef: datasetReferenceToLegacy(revision?.dataset_references?.[0]) ?? original.datasetRef ?? null,
     plan,
     request: cloneDomainValue(revision?.request_inputs ?? original.request ?? null),
+    requiresRerun: Boolean(
+      original.requiresRerun
+        || scenario.parent_scenario_id
+        || revision?.originating_solution_id
+        || revision?.provenance === "duplicated",
+    ),
     domain: {
       ...(original.domain ?? {}),
       scenario_id: scenario.scenario_id,
+      parent_scenario_id: scenario.parent_scenario_id ?? original.domain?.parent_scenario_id ?? null,
       current_revision_id: revision?.scenario_revision_id ?? scenario.current_revision_id,
       revision: revision?.revision ?? 1,
       inventory_revision_id: revision?.inventory_revision_id ?? null,

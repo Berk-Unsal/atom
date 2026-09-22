@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { Activity, AlertTriangle, CheckCircle2, PlayCircle, Upload } from "lucide-react";
 import { MAX_MEASUREMENT_VALIDATION_FILE_BYTES, parseMeasurementValidationJSON, syntheticP525Campaign } from "../utils/measurementValidation.js";
 import { formatNumber } from "../utils/appWorkspace.js";
+import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 const MODEL_OPTIONS = [
   ["p525_fspl", "P.525 FSPL"],
@@ -81,7 +82,7 @@ export default function MeasurementValidationPanel({ analysis, isAnalyzing, onRu
 
   return (
     <section className="measurement-validation-panel" aria-label="RF diagnostics and measurement validation">
-      <header className="panel-title"><Activity size={16} /><span>RF Diagnostics</span><span className="panel-title-badge">isolated</span></header>
+      <header className="panel-title"><Activity size={16} /><span>RF Diagnostics</span><ResearchReferenceBadge label="Validation / reference" /><span className="panel-title-badge">isolated</span></header>
       <p className="measurement-validation-callout"><strong>Evidence ledger only.</strong> This workflow does not alter canonical propagation, coverage, building entry, diffraction, interference, radio quality, or optimization. Residual is measured path loss minus predicted path loss.</p>
 
       <div className="measurement-validation-import-row">

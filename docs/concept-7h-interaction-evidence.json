@@ -1,0 +1,87 @@
+{
+  "concept": "7H",
+  "artifact": "interaction-evidence",
+  "capturedOn": "2026-09-23",
+  "viewport": { "width": 1440, "height": 960 },
+  "method": "Pre-change values are from concept-7h-pre-change-baseline.json. Post-change drawer values were read from the updated running UI. Visible control counts include controls in the visible drawer sections; the main Run action remains in the global command bar.",
+  "workflows": [
+    {
+      "id": "ordinary_2_6_lte",
+      "profile": "4G LTE · 2.6 GHz · urban_short_range",
+      "primaryAction": "Run Sector",
+      "primaryActionLocation": "global command bar",
+      "propagationControlsBefore": 38,
+      "propagationControlsAfter": 5,
+      "afterVisibleControls": ["Ray count", "Radius", "Azimuth", "Beam width", "Optimize Network"],
+      "researchSectionsVisibleBefore": 2,
+      "researchSectionsVisibleAfter": 0,
+      "notes": "Setup and per-cell common fields remain in Planning. The same request/profile is exercised by the 2.6 GHz collapse/restore App workflow test."
+    },
+    {
+      "id": "ordinary_28_5g",
+      "profile": "5G mmWave · 28 GHz · urban_short_range",
+      "primaryAction": "Run Sector",
+      "primaryActionLocation": "global command bar",
+      "propagationControlsBefore": 38,
+      "propagationControlsAfter": 5,
+      "afterVisibleControls": ["Ray count", "Radius", "Azimuth", "Beam width", "Optimize Network"],
+      "researchSectionsVisibleBefore": 2,
+      "researchSectionsVisibleAfter": 0,
+      "notes": "The 28 GHz request-equivalence unit case verifies unchanged resolved simulation inputs."
+    },
+    {
+      "id": "building_entry",
+      "profile": "Existing selected 2.6/28 GHz planning context",
+      "path": "Analyze → Building entry",
+      "normalPlanningFacadeInputs": 0,
+      "tier": "advanced",
+      "notes": "The existing separate tool and facade-target semantics remain. Typical use does not add facade inputs to Setup or Propagation Planning."
+    },
+    {
+      "id": "140_ghz_atmosphere",
+      "profile": "Research Sub-THz · 140 GHz",
+      "path": "Simulate → Propagation → Research / reference → Sub-THz atmospheric reference",
+      "subThzControlCountAfterExpansion": 10,
+      "subThzControlsVisibleByDefault": 0,
+      "disclosuresToOpen": 1,
+      "notes": "The active profile shows its research/unsupported boundary; the isolated reference inputs remain unchanged and are revealed by expanding Research / reference."
+    }
+  ],
+  "drawerDensity": {
+    "propagation": {
+      "scrollHeightBeforePx": 2451,
+      "scrollHeightAfterPx": 791,
+      "reductionPercent": 67.7,
+      "visibleSectionsBefore": 4,
+      "expandedContentSectionsAfter": 1,
+      "researchSectionsBefore": 2,
+      "researchSectionsAfter": 0
+    },
+    "rfDiagnostics": {
+      "scrollHeightBeforePx": 2657,
+      "scrollHeightAfterPx": 791,
+      "reductionPercent": 70.2,
+      "visibleSectionsBefore": 3,
+      "visibleCanonicalActionRegionsAfter": 1,
+      "researchSectionsAfter": 0,
+      "visibleActionsAfter": ["Open current RF result", "Open vertical path profile"]
+    },
+    "data": {
+      "scrollHeightBeforePx": 1838,
+      "scrollHeightAfterPx": 852,
+      "reductionPercent": 53.6,
+      "visibleDataGroupsBefore": 4,
+      "openPlanningGroupsAfter": 1,
+      "collapsedGroupsAfter": ["Dataset details", "Advanced model details", "Research / reference"],
+      "measurementValidationVisibleBefore": true,
+      "measurementValidationVisibleAfter": false
+    }
+  },
+  "visualAssessment": {
+    "desktopMapRemainsDominant": true,
+    "planningRemainsVisible": true,
+    "advancedAndResearchRemainDiscoverable": true,
+    "newCardBoundariesAdded": false,
+    "unrelatedMapToolbarChanged": false
+  }
+}

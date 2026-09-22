@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AlertTriangle, CheckCircle2, CircleHelp, PlayCircle, Waves } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
+import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 const INITIAL_OPTIONS = {
   frequencyGHz: 140,
@@ -39,17 +40,23 @@ function statusTone(status) {
   return "invalid";
 }
 
-export default function SpecularReflectionReferencePanel({ analysis, isAnalyzing, onRun }) {
+export default function SpecularReflectionReferencePanel({ analysis, isAnalyzing, onActivityChange, onRun }) {
   const [options, setOptions] = useState(INITIAL_OPTIONS);
-  const update = (key, value) => setOptions((current) => ({ ...current, [key]: value }));
-  const updateNested = (group, key, value) => updateGroup(setOptions, group, key, value);
+  const update = (key, value) => {
+    onActivityChange?.();
+    setOptions((current) => ({ ...current, [key]: value }));
+  };
+  const updateNested = (group, key, value) => {
+    onActivityChange?.();
+    updateGroup(setOptions, group, key, value);
+  };
   const updateNumber = (group, key) => (event) => updateNested(group, key, event.target.value === "" ? "" : Number(event.target.value));
   const updateTopNumber = (key) => (event) => update(key, event.target.value === "" ? "" : Number(event.target.value));
 
   return (
     <section className="specular-reflection-panel" aria-label="Specular reflection reference">
       <header className="specular-reflection-heading">
-        <div className="panel-title"><Waves size={16} /><span>Specular Reflection Reference</span></div>
+        <div className="panel-title"><Waves size={16} /><span>Specular Reflection Reference</span><ResearchReferenceBadge /></div>
         <span className="specular-reference-chip">Opt-in diagnostic</span>
       </header>
       <p className="specular-reference-subtitle">Isolated one-bounce reference — not used by network simulation.</p>

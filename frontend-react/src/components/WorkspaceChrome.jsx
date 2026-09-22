@@ -20,11 +20,14 @@ import {
 } from "lucide-react";
 import { WORKSPACE_STAGES, WORKSPACE_TOOLS } from "./workspaceTools.js";
 import { MAX_PROJECT_FILE_BYTES } from "../utils/projectStore.js";
+import ResultContextBadge from "./ResultContextBadge.jsx";
 
 export function CommandBar({
   appIconUrl,
   contextLabel,
+  draftUnsaved = false,
   error,
+  lineageContext = null,
   networkTech,
   onDismissError,
   onOpenResults,
@@ -35,6 +38,7 @@ export function CommandBar({
   primaryActionLabel,
   primaryDisabled,
   resultSummary,
+  resultContext = null,
   runState,
   statusTone = "ready",
 }) {
@@ -51,6 +55,8 @@ export function CommandBar({
 
         <div className="command-context" aria-label="Active planning context">
           {projectControl}
+          {lineageContext ? <WorkspaceLineageContext context={lineageContext} /> : null}
+          {resultContext ? <ResultContextBadge compact context={resultContext} /> : null}
           <span className="context-primary">{contextLabel}</span>
           <span className="context-divider" aria-hidden="true" />
           <span>{networkTech}</span>
@@ -84,7 +90,7 @@ export function CommandBar({
             {runState}
           </span>
           <span className={`workspace-save-state ${persistenceState}`} role="status" aria-live="polite">
-            {persistenceState === "saving" ? "Saving…" : persistenceState === "error" ? "Save failed" : "Saved locally"}
+            {persistenceState === "saving" ? "Saving…" : persistenceState === "error" ? "Save failed" : draftUnsaved ? "Draft saved locally" : "Saved locally"}
           </span>
           {primaryActionLabel ? (
             <button
@@ -112,6 +118,28 @@ export function CommandBar({
   );
 }
 
+export function WorkspaceLineageContext({ context }) {
+  if (!context) return null;
+  return (
+    <details className="workspace-lineage-context">
+      <summary aria-label={`Workspace lineage: ${context.scenario_name}, ${context.version_label}, ${context.draft_state}`}>
+        <span className="workspace-lineage-scenario">{context.scenario_name}</span>
+        <span>{context.version_label}</span>
+        <b className={context.unsaved ? "unsaved" : "saved"}>{context.draft_state}</b>
+      </summary>
+      <div className="workspace-lineage-popover">
+        <strong>Workspace lineage</strong>
+        <dl>
+          <div><dt>Project</dt><dd>{context.project_name}</dd></div>
+          <div><dt>Scenario</dt><dd>{context.scenario_name}</dd></div>
+          <div><dt>Version</dt><dd>{context.version_label}</dd></div>
+          <div><dt>Draft</dt><dd>{context.draft_state}</dd></div>
+        </dl>
+      </div>
+    </details>
+  );
+}
+
 export function ProjectMenu({
   activeProject,
   compatible,
@@ -126,6 +154,7 @@ export function ProjectMenu({
   onSaveScenario,
   onSelectProject,
   projects,
+  staleResultRunLabel = "",
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(activeProject?.name ?? "");
@@ -179,7 +208,7 @@ export function ProjectMenu({
     setMessage("Saving scenario…");
     try {
       await onSaveScenario();
-      setMessage("Scenario saved");
+      setMessage("Version saved");
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -233,17 +262,18 @@ export function ProjectMenu({
             <input ref={fileRef} hidden type="file" accept=".json,.atom-project.json" onChange={importFile} />
           </div>
           <div className="scenario-menu-header">
-            <strong>Scenarios</strong>
-            <button type="button" onClick={saveScenario} disabled={savingScenario}>
-              <Save size={14} /> {savingScenario ? "Saving…" : "Save current"}
+            <strong>Scenarios / Versions</strong>
+            <button type="button" onClick={saveScenario} disabled={savingScenario} aria-label="Save current">
+              <Save size={14} /> {savingScenario ? "Saving…" : "Save version"}
             </button>
           </div>
+          {staleResultRunLabel ? <p className="project-menu-save-note">Save Version records the current plan. {staleResultRunLabel} remains tied to the input that produced it.</p> : null}
           <div className="scenario-menu-list">
             {(activeProject?.scenarios ?? []).length ? activeProject.scenarios.map((scenario) => (
               <div key={scenario.id}>
                 <button type="button" onClick={() => onOpenScenario(scenario)}>
                   <span>{scenario.name}</span>
-                  <small>{new Date(scenario.updatedAt).toLocaleString()}</small>
+                  <small>Version {scenario.domain?.revision ?? scenario.domain?.revisions?.[scenario.domain?.revisions?.length - 1]?.revision ?? 1} · {new Date(scenario.updatedAt).toLocaleString()}</small>
                 </button>
                 <button type="button" onClick={() => onDeleteScenario(scenario.id)} aria-label={`Delete ${scenario.name}`}><Trash2 size={13} /></button>
               </div>
@@ -620,7 +650,7 @@ export function MapToolbar({
   );
 }
 
-export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, hasSignalSurface, metric, onToggle, planningMode, receiverSensitivityDBm = -115, surface, surfaceCellId, surfaceDisplayThresholdDBm = -110 }) {
+export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, hasSignalSurface, metric, onToggle, planningMode, receiverSensitivityDBm = -115, resultContext = null, surface, surfaceCellId, surfaceDisplayThresholdDBm = -110 }) {
   const legends = {
     sinr: ["< 0", "0–13", "13–20", "≥ 20 dB"],
     rsrp: ["< -100", "-100–-90", "-90–-80", "≥ -80 dBm"],
@@ -640,6 +670,12 @@ export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, ha
             {planningMode === "network" ? <span><i className="map-key-marker cluster-cell" aria-hidden="true" />Selected cluster</span> : null}
             <span><i className="map-key-marker available-cell" aria-hidden="true" />Available cell</span>
           </section>
+          {resultContext ? (
+            <section aria-label="Result source">
+              <strong>Result source</strong>
+              <ResultContextBadge compact context={resultContext} />
+            </section>
+          ) : null}
           {hasRays ? (
             <section aria-label="Received power">
               <strong>Received power</strong>

@@ -312,20 +312,133 @@ test("runs a sector and preserves a named scenario", async ({ page }) => {
   await page.getByRole("button", { name: "Review workspace" }).click();
   await expect(page.getByRole("dialog", { name: "Results" })).toContainText("-72.0 dBm");
 
+  const projectMenuBox = await page.getByRole("button", { name: "Open project menu" }).boundingBox();
+  const lineageBox = await page.locator(".workspace-lineage-context > summary").boundingBox();
+  expect(projectMenuBox && lineageBox).toBeTruthy();
+  expect(projectMenuBox.x + projectMenuBox.width).toBeLessThanOrEqual(lineageBox.x + 1);
+
   await page.getByRole("button", { name: "Open project menu" }).click();
   await page.getByRole("button", { name: "Save current" }).click();
   await expect(page.getByRole("dialog", { name: "Project and scenarios" })).toContainText("Sector plan 1");
-  await expect(page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("status")).toHaveText("Scenario saved");
+  await expect(page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("status")).toHaveText("Version saved");
 
   await page.reload();
   await page.getByRole("button", { name: "Open project menu" }).click();
   await expect(page.getByRole("dialog", { name: "Project and scenarios" })).toContainText("Sector plan 1");
 });
 
+test("keeps an unsaved draft when opening a different Scenario is blocked", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+
+  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  await projectMenuButton.click();
+  const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
+  await projectMenuButton.click();
+
+  await page.getByRole("button", { name: "Scenario workspace" }).click();
+  await page.getByRole("button", { name: "Duplicate scenario" }).click();
+  await expect(page.getByText("Independent Scenario duplicated")).toBeVisible();
+  const lineageSummary = page.locator(".workspace-lineage-context > summary");
+  await expect(page.getByText("2 saved")).toBeVisible();
+
+  const txPower = page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" });
+  await txPower.fill("31");
+  await expect(lineageSummary).toContainText("Unsaved changes");
+
+  await projectMenuButton.click();
+  const savedScenario = page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("button", { name: /Sector plan 1 Version/ }).first();
+  await savedScenario.click();
+
+  await expect(page.getByRole("alert")).toContainText("Save the current draft as a Version before opening another Scenario");
+  await expect(lineageSummary).toContainText("Unsaved changes");
+  await expect(page.getByText("2 saved")).toBeVisible();
+  await expect(txPower).toHaveValue("31");
+});
+
+test("keeps a collapsed Advanced cell RF value through Version save and reload", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Inventory", exact: true }).click();
+  const cells = page.getByRole("listbox", { name: "Available cells" });
+  await cells.getByRole("option", { name: /cell-1/ }).click();
+
+  const advanced = page.getByRole("button", { name: /^Advanced/ });
+  await expect(advanced).toHaveAttribute("aria-expanded", "false");
+  await advanced.click();
+  await page.getByRole("spinbutton", { name: "TX boresight gain" }).fill("27");
+  await advanced.click();
+  await expect(advanced).toHaveAttribute("aria-expanded", "false");
+
+  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  await projectMenuButton.click();
+  const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
+  await page.reload();
+
+  await page.getByRole("button", { name: "Inventory", exact: true }).click();
+  await page.getByRole("listbox", { name: "Available cells" }).getByRole("option", { name: /cell-1/ }).click();
+  const restoredAdvanced = page.getByRole("button", { name: /^Advanced/ });
+  await expect(restoredAdvanced).toHaveAttribute("aria-expanded", "false");
+  await restoredAdvanced.click();
+  await expect(page.getByRole("spinbutton", { name: "TX boresight gain" })).toHaveValue("27");
+});
+
+test("opens the exact Run source Version while keeping the current Version active", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+
+  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  await projectMenuButton.click();
+  let projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
+  await projectMenuButton.click();
+  await page.getByRole("button", { name: "Scenario workspace" }).click();
+  const savedScenario = page.getByRole("button", { name: /Sector plan 1.*Version 1/ });
+  await savedScenario.click();
+  await expect(savedScenario).toHaveAttribute("aria-current", "true");
+  const lineageSummary = page.locator(".workspace-lineage-context > summary");
+  await expect(lineageSummary).toContainText("Version 1");
+
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible();
+  await expect(lineageSummary).toContainText("Version 1");
+
+  const txPower = page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" });
+  await txPower.fill("31");
+  await expect(lineageSummary).toContainText("Unsaved changes");
+  await projectMenuButton.click();
+  projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
+  await projectMenuButton.click();
+  await expect(lineageSummary).toContainText("Version 2");
+
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("button", { name: "Run history" }).click();
+  await expect(page.getByRole("article", { name: /Run .* details/ })).toBeVisible();
+  await expect(page.getByRole("region", { name: "HISTORICAL context" })).toContainText("Version 1");
+  await page.getByRole("button", { name: "Open source Version" }).click();
+
+  await expect(page.getByRole("button", { name: "Scenario workspace" })).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("button", { name: /Version 1/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(lineageSummary).toContainText("Version 2");
+  await expect(txPower).toHaveValue("31");
+});
+
 test("keeps the focused workspace usable without horizontal overflow", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("region", { name: "Ankara propagation map" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Setup" })).toBeVisible();
+  const lineageSummary = page.locator(".workspace-lineage-context > summary");
+  await expect(lineageSummary).toBeVisible();
+  const lineageBox = await lineageSummary.boundingBox();
+  expect(lineageBox?.width).toBeGreaterThan(0);
+  expect(lineageBox?.x).toBeGreaterThanOrEqual(0);
+  expect(lineageBox?.x + lineageBox?.width).toBeLessThanOrEqual(page.viewportSize().width + 1);
   await page.getByRole("button", { name: "Analyze workspace" }).click();
   await expect(page.getByRole("button", { name: "Interference" })).toHaveAttribute("aria-disabled", "true");
   await expect(page.getByRole("button", { name: "5G Core" })).toBeEnabled();
@@ -373,6 +486,8 @@ test("keeps propagation actions clear of the vertical path profile", async ({ pa
 
   const toolNavigation = page.getByRole("navigation", { name: "Simulate tools" });
   const activeTool = page.getByRole("button", { name: "Propagation", exact: true });
+  await expect(page.getByRole("button", { name: /^Advanced analysis/ })).toHaveAttribute("aria-expanded", "false");
+  await page.getByRole("button", { name: /^Advanced analysis/ }).click();
   const optimizeButton = page.getByRole("button", { name: "Auto-Optimize Sector" });
   const pathProfile = page.getByRole("region", { name: "Vertical path profile" });
   await expect(toolNavigation).toBeVisible();
@@ -394,6 +509,22 @@ test("keeps propagation actions clear of the vertical path profile", async ({ pa
   expect(pathProfileBox.y - (optimizeBox.y + optimizeBox.height)).toBeGreaterThanOrEqual(8);
 });
 
+test("opens the collapsed path-profile section from its RF Diagnostics action", async ({ page }) => {
+  const rfRequests = [];
+  page.on("request", (request) => {
+    if (/\/api\/(analyze-sector|path-profile)/.test(request.url())) rfRequests.push(request.url());
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+  await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  await page.getByRole("button", { name: "Open vertical path profile" }).click();
+
+  await expect(page.getByRole("dialog", { name: "Propagation" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Advanced analysis/ })).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("region", { name: "Vertical path profile" })).toBeVisible();
+  expect(rfRequests).toHaveLength(0);
+});
+
 test("runs the isolated material reference from RF Diagnostics", async ({ page }) => {
   const materialRequests = [];
   page.on("request", (request) => {
@@ -403,6 +534,7 @@ test("runs the isolated material reference from RF Diagnostics", async ({ page }
   await page.goto("/");
   await page.getByRole("button", { name: "Analyze workspace" }).click();
   await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  await page.getByRole("button", { name: /^Research \/ reference/ }).click();
   const materialReference = page.getByRole("region", { name: "Material and facade interaction reference" });
   await expect(materialReference).toBeVisible();
   await expect(page.getByText(/Material reference only — not used by network simulation/i)).toBeVisible();
@@ -427,6 +559,7 @@ test("runs the isolated specular reflection reference from RF Diagnostics", asyn
   await page.goto("/");
   await page.getByRole("button", { name: "Analyze workspace" }).click();
   await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  await page.getByRole("button", { name: /^Research \/ reference/ }).click();
   const reflectionReference = page.getByRole("region", { name: "Specular reflection reference" });
   await expect(reflectionReference).toBeVisible();
   await expect(reflectionReference.getByText(/single_bounce_specular_reflection_reference_v1/i)).toBeVisible();
@@ -527,11 +660,80 @@ test("lazily explains a selected cell and reuses it after priority-only changes"
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
   await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await page.getByRole("button", { name: /^Advanced analysis/ }).click();
   await page.getByRole("slider", { name: "Demand importance" }).fill("100");
   await page.getByRole("button", { name: "Review workspace" }).click();
   await page.getByRole("tab", { name: "Solutions" }).click();
   await page.getByRole("button", { name: "Explain Cell cell-1 marginal effect" }).click();
   expect(explanationRequests).toHaveLength(2);
+});
+
+test("supports keyboard disclosure navigation without starting RF work", async ({ page }) => {
+  const analysisRequests = [];
+  page.on("request", (request) => {
+    if (/\/api\/(analyze-sector|simulate|sub-thz-reference|sub-thz-p1411-reference)/.test(request.url())) analysisRequests.push(request.url());
+  });
+  await page.goto("/");
+  const planning = page.getByRole("button", { name: "Planning", exact: true });
+  await expect(planning).toHaveAttribute("aria-expanded", "true");
+  await planning.focus();
+  await planning.press("Enter");
+  await expect(planning).toHaveAttribute("aria-expanded", "false");
+  await planning.press("Space");
+  await expect(planning).toHaveAttribute("aria-expanded", "true");
+
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  const advanced = page.getByRole("button", { name: /^Advanced analysis/ });
+  const research = page.getByRole("button", { name: /^Research \/ reference/ });
+  await expect(advanced).toHaveAttribute("aria-expanded", "false");
+  await expect(research).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("region", { name: "Vertical path profile" })).toBeHidden();
+  await research.focus();
+  await research.press("Enter");
+  await expect(page.getByRole("region", { name: "Sub-THz atmospheric reference" })).toBeVisible();
+  const subThz = page.getByRole("region", { name: "Sub-THz atmospheric reference" });
+  const frequency = subThz.getByRole("spinbutton").first();
+  await frequency.fill("145");
+  await research.press("Space");
+  await expect(research).toHaveAttribute("aria-expanded", "false");
+  await research.click();
+  await expect(subThz.getByRole("spinbutton").first()).toHaveValue("145");
+  expect(analysisRequests).toHaveLength(0);
+});
+
+test("keeps disclosure headers and the propagation drawer usable at target widths", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+
+  const planning = page.getByRole("button", { name: "Planning", exact: true });
+  const advanced = page.getByRole("button", { name: /^Advanced analysis/ });
+  const research = page.getByRole("button", { name: /^Research \/ reference/ });
+  const drawerBody = page.locator(".tool-drawer-body");
+  const evidence = [];
+  for (const width of [1440, 1280, 1024, 640, 390]) {
+    await page.setViewportSize({ width, height: width <= 640 ? 844 : 900 });
+    await expect(planning).toBeVisible();
+    await expect(advanced).toBeVisible();
+    await expect(research).toBeVisible();
+    await expect(advanced).toHaveAttribute("aria-expanded", "false");
+    await expect(research).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByRole("button", { name: "Run Sector" })).toBeVisible();
+    const dimensions = await drawerBody.evaluate((element) => ({
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+    }));
+    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+    const headerBox = await research.boundingBox();
+    expect(headerBox).not.toBeNull();
+    expect(headerBox.x).toBeGreaterThanOrEqual(0);
+    expect(headerBox.x + headerBox.width).toBeLessThanOrEqual(width + 1);
+    evidence.push({ width, ...dimensions });
+  }
+  expect(evidence).toHaveLength(5);
 });
 
 function point(id, cellID, longitude, latitude) {

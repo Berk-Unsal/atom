@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const api = vi.hoisted(() => ({
@@ -243,6 +243,100 @@ describe("App planning workflow", () => {
     useNetworkFixture = false;
   });
 
+  it("opens Planning by default and keeps model and Scenario workspace details collapsed", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    expect(screen.getByRole("button", { name: "Planning" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: "Advanced model details" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: /Scenario workspace/ })).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(screen.getByRole("button", { name: "Advanced model details" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Scenario workspace/ }));
+    expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+    expect(api.postJSON).not.toHaveBeenCalled();
+    expect(screen.queryByText("Run needed", { selector: ".run-state" })).not.toBeInTheDocument();
+  });
+
+  it("keeps Research collapsed by default and preserves isolated reference inputs through collapse", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
+    fireEvent.click(screen.getByRole("button", { name: "Propagation" }));
+
+    expect(screen.getByRole("button", { name: "Planning" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: /^Advanced analysis/ })).toHaveAttribute("aria-expanded", "false");
+    const research = screen.getByRole("button", { name: /^Research \/ reference/ });
+    expect(research).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(research);
+    const subThzPanel = screen.getByRole("region", { name: "Sub-THz atmospheric reference" });
+    const frequency = within(subThzPanel).getByRole("spinbutton", { name: /Frequency/i });
+    fireEvent.change(frequency, { target: { value: "145" } });
+    expect(screen.getByText("Research activity available")).toBeInTheDocument();
+    fireEvent.click(research);
+    expect(research).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(research);
+    expect(within(subThzPanel).getByRole("spinbutton", { name: /Frequency/i })).toHaveValue(145);
+    expect(api.postJSON).not.toHaveBeenCalled();
+    expect(screen.queryByText("Run needed", { selector: ".run-state" })).not.toBeInTheDocument();
+  });
+
+  it("does not make a current result stale when disclosure state changes", async () => {
+    render(<App />);
+    const run = await screen.findByRole("button", { name: "Run Sector" });
+    fireEvent.click(run);
+    await screen.findByText("Ready", { selector: ".run-state" });
+    const requestCount = api.postJSON.mock.calls.length;
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
+    fireEvent.click(screen.getByRole("button", { name: "Propagation" }));
+    const advanced = screen.getByRole("button", { name: /^Advanced analysis/ });
+    const research = screen.getByRole("button", { name: /^Research \/ reference/ });
+    fireEvent.click(advanced);
+    fireEvent.click(research);
+    fireEvent.click(advanced);
+    fireEvent.click(research);
+
+    expect(await screen.findByText("Ready", { selector: ".run-state" })).toBeInTheDocument();
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+  });
+
+  it("keeps hidden per-cell antenna values and marks RF edits dirty", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Inventory" }));
+    const advanced = screen.getByRole("button", { name: /^Advanced/ });
+    expect(advanced).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(advanced);
+    const gain = screen.getByRole("spinbutton", { name: /TX boresight gain/i });
+    fireEvent.change(gain, { target: { value: "26" } });
+    expect(screen.getByText("Run needed", { selector: ".run-state" })).toBeInTheDocument();
+    fireEvent.click(advanced);
+    expect(advanced).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(advanced);
+    expect(screen.getByRole("spinbutton", { name: /TX boresight gain/i })).toHaveValue(26);
+  });
+
+  it("sends the same default RF profile when Planning is collapsed and restored at 2.6 GHz", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    const planning = screen.getByRole("button", { name: "Planning" });
+    fireEvent.click(planning);
+    fireEvent.click(planning);
+    fireEvent.click(screen.getByRole("button", { name: "4G LTE, 2.6 GHz" }));
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+
+    await waitFor(() => expect(api.postJSON).toHaveBeenCalledWith(
+      "/api/analyze-sector",
+      expect.objectContaining({
+        frequency_ghz: 2.6,
+        tx_power_dbm: 30,
+        rf_profile: expect.objectContaining({ network_tech: "4g", frequency_ghz: 2.6, tx_power_dbm: 30 }),
+      }),
+      "Sector analysis failed",
+      expect.any(AbortSignal),
+    ));
+  });
+
   it("invalidates results without launching RF work until Run is pressed", async () => {
     render(<App />);
 
@@ -256,7 +350,7 @@ describe("App planning workflow", () => {
     await act(async () => Promise.resolve());
 
     expect(api.postJSON).not.toHaveBeenCalled();
-    expect(screen.getByText("Plan changed", { selector: ".run-state" })).toBeInTheDocument();
+    expect(screen.getByText("Run needed", { selector: ".run-state" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Open Sector result results/i })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
@@ -450,6 +544,7 @@ describe("App planning workflow", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
     fireEvent.click(screen.getByRole("button", { name: "Propagation" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Advanced analysis/ }));
     fireEvent.change(screen.getByRole("slider", { name: "Demand importance" }), { target: { value: "100" } });
     await act(async () => Promise.resolve());
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
@@ -476,6 +571,7 @@ describe("App planning workflow", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    fireEvent.click(screen.getByRole("button", { name: "Advanced model details" }));
     expect(screen.getByRole("region", { name: "Propagation model assumptions" })).toBeInTheDocument();
     expect(screen.getByText("FSPL + footprint obstruction")).toBeInTheDocument();
     expect(screen.getByText(/Fast fading, diffraction, sidelobes/)).toBeInTheDocument();
@@ -551,6 +647,7 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Dataset details/ }));
     fireEvent.click(await screen.findByRole("button", { name: /Second pack.*Activate/i }));
 
     await waitFor(() => expect(api.postJSON).toHaveBeenCalledWith(
@@ -608,6 +705,7 @@ describe("App planning workflow", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Research \/ reference/ }));
     const fileInput = screen.getByLabelText(/Import measurement CSV/i);
     const measurementCsv = "id,longitude,latitude,technology,rsrp_dbm\nm-1,32.85,39.92,5g,-80";
     const measurementFile = {
@@ -622,7 +720,7 @@ describe("App planning workflow", () => {
 
     expect(screen.queryByRole("button", { name: /Open Sector result results/i })).not.toBeInTheDocument();
     expect(screen.queryByText("Apply correction to plan")).not.toBeInTheDocument();
-    expect(screen.getByText("Plan changed", { selector: ".run-state" })).toBeInTheDocument();
+    expect(screen.getByText("Result out of date", { selector: ".run-state" })).toBeInTheDocument();
   });
 });
 

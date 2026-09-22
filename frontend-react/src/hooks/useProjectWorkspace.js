@@ -113,7 +113,17 @@ export default function useProjectWorkspace(meta) {
 
   const activateScenario = useCallback((scenarioID) => {
     if (!activeProject || !activeProject.scenarios.some((scenario) => scenario.id === scenarioID)) return;
-    updateProject(activeProject.id, (project) => ({ ...project, activeScenarioId: scenarioID }));
+    updateProject(activeProject.id, (project) => ({ ...project, activeScenarioId: scenarioID, draft: null }));
+  }, [activeProject, updateProject]);
+
+  const renameScenario = useCallback((scenarioID, name) => {
+    if (!activeProject || !String(name ?? "").trim()) return;
+    updateProject(activeProject.id, (project) => ({
+      ...project,
+      scenarios: project.scenarios.map((scenario) => scenario.id === scenarioID
+        ? { ...scenario, name: String(name).trim(), updatedAt: new Date().toISOString() }
+        : scenario),
+    }));
   }, [activeProject, updateProject]);
 
   const saveScenario = useCallback((name, snapshot, options = {}) => {
@@ -122,22 +132,94 @@ export default function useProjectWorkspace(meta) {
     const saved = updateProject(activeProjectID, (project) => ({
       ...project,
       activeScenarioId: scenario.id,
+      draft: null,
       datasetRef: project.datasetRef ?? repository.datasetReference(meta),
       scenarios: [...project.scenarios, scenario],
     }));
     return saved.then(() => scenario);
   }, [activeProjectID, meta, repository, updateProject]);
 
-  const applyHistoricalOptimization = useCallback(async ({ run, solution } = {}) => {
+  const saveScenarioVersion = useCallback(async (options = {}) => {
+    const projectID = options.projectId ?? activeProject?.domain?.project_id ?? activeProject?.id;
+    if (!projectID || !options.scenarioId) throw new Error("A saved Scenario is required before saving a Version");
+    const saved = await repository.saveScenarioVersion({ ...options, projectId: projectID });
+    if (mountedRef.current && saved.workspace) {
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+      setError("");
+    }
+    return saved;
+  }, [activeProject, repository]);
+
+  const branchScenario = useCallback(async (options = {}) => {
+    const projectID = options.projectId ?? activeProject?.domain?.project_id ?? activeProject?.id;
+    if (!projectID || !options.scenarioId) throw new Error("A saved Scenario is required before creating a branch");
+    const saved = await repository.branchScenario({ ...options, projectId: projectID });
+    if (mountedRef.current && saved.workspace) {
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+      setError("");
+    }
+    return saved;
+  }, [activeProject, repository]);
+
+  const duplicateScenario = useCallback(async (options = {}) => {
+    const projectID = options.projectId ?? activeProject?.domain?.project_id ?? activeProject?.id;
+    if (!projectID || !options.scenarioId) throw new Error("A saved Scenario is required before duplicating it");
+    const saved = await repository.duplicateScenario({ ...options, projectId: projectID });
+    if (mountedRef.current && saved.workspace) {
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+      setError("");
+    }
+    return saved;
+  }, [activeProject, repository]);
+
+  const continueFromScenarioRevision = useCallback(async (options = {}) => {
+    const projectID = options.projectId ?? activeProject?.domain?.project_id ?? activeProject?.id;
+    if (!projectID || !options.scenarioId || !options.revisionId) {
+      throw new Error("A Scenario and Version are required to continue from history");
+    }
+    const saved = await repository.continueFromScenarioRevision({ ...options, projectId: projectID });
+    if (mountedRef.current && saved.workspace) {
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+      setError("");
+    }
+    return saved;
+  }, [activeProject, repository]);
+
+  const saveReportDefinition = useCallback(async (report) => {
+    try {
+      const saved = await repository.saveReportDefinitionWithWorkspace(report);
+      if (mountedRef.current && saved.workspace) {
+        workspaceRef.current = saved.workspace;
+        setWorkspace(saved.workspace);
+        setError("");
+      }
+      return saved;
+    } catch (saveError) {
+      if (mountedRef.current) setError(saveError.message);
+      throw saveError;
+    }
+  }, [repository]);
+
+  const applyHistoricalOptimization = useCallback(async ({ run, solution, mode = "version", scenarioId = null, revisionId = null, branchName = "" } = {}) => {
     const projectID = activeProject?.domain?.project_id ?? activeProject?.id;
-    const scenario = activeProject?.scenarios?.find((candidate) => candidate.id === activeProject.activeScenarioId);
-    const scenarioID = scenario?.domain?.scenario_id ?? scenario?.id;
+    const scenario = activeProject?.scenarios?.find((candidate) => (
+      String(candidate.domain?.scenario_id ?? candidate.id) === String(scenarioId)
+        || String(candidate.id) === String(scenarioId)
+    )) ?? activeProject?.scenarios?.find((candidate) => candidate.id === activeProject.activeScenarioId);
+    const scenarioID = scenarioId ?? scenario?.domain?.scenario_id ?? scenario?.id;
     if (!projectID || !scenarioID) throw new Error("Open a saved scenario before applying a historical solution");
     const saved = await repository.applyOptimizationSolution({
       projectId: projectID,
       scenarioId: scenarioID,
+      revisionId: revisionId ?? run?.scenario_revision_id ?? null,
       run,
       solution,
+      mode,
+      branchName,
     });
     if (mountedRef.current && saved.workspace) {
       workspaceRef.current = saved.workspace;
@@ -179,9 +261,12 @@ export default function useProjectWorkspace(meta) {
     activateScenario,
     addProject,
     applyHistoricalOptimization,
+    branchScenario,
     clearError: () => setError(""),
+    continueFromScenarioRevision,
     deleteProject,
     deleteScenario,
+    duplicateScenario,
     duplicateProject,
     error,
     exportActiveProject: () => repository.exportProjectFile(activeProject),
@@ -189,9 +274,12 @@ export default function useProjectWorkspace(meta) {
     loaded,
     persistenceState,
     renameProject,
+    renameScenario,
     restoreScenario,
     saveDraft,
+    saveReportDefinition,
     saveScenario,
+    saveScenarioVersion,
     selectProject,
     workspace,
   };

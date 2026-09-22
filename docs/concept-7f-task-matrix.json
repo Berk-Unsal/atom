@@ -1,0 +1,135 @@
+{
+  "concept": "7F",
+  "artifact": "task-matrix",
+  "capturedOn": "2026-09-22",
+  "countingNote": "Interaction and context-switch estimates are task-model ranges based on the inspected UI, not analytics.",
+  "tasks": [
+    {
+      "id": "create-network",
+      "task": "Create network",
+      "userBand": ["first-time technical user", "regular planner"],
+      "entryPoint": "Plan > Setup > Network, then Plan > Inventory",
+      "steps": ["Choose Network mode", "Select technology/profile", "Review planning defaults", "Open Inventory", "Select/place/import cells", "Draw or confirm network selection", "Run or evaluate network"],
+      "interactionEstimate": "8–14 major actions",
+      "contextSwitchesEstimate": "3–5",
+      "friction": ["Project is visible but Scenario/Version identity is not persistent", "cell readiness and network selection are split between drawer and map", "empty/initial network guidance is not one continuous task path"],
+      "requiredConcepts": ["Project", "Scenario", "Version", "Inventory", "Planning Area", "RF Configuration", "network selection"],
+      "discoverability": "Medium-high; Plan labels are clear, but saving and lineage arrive later."
+    },
+    {
+      "id": "import-cells",
+      "task": "Import cells",
+      "userBand": ["regular planner"],
+      "entryPoint": "Plan > Inventory > Import",
+      "steps": ["Open Inventory", "Choose Import", "Select/validate an inventory file", "Review imported cells", "Select an active cell or network subset", "Fix any profile validation errors"],
+      "interactionEstimate": "5–10 major actions",
+      "contextSwitchesEstimate": "2–3",
+      "friction": ["Import and per-cell editing are in one long drawer", "provenance is visible as a source label but not emphasized", "large lists need a clearer result count and bulk follow-up"],
+      "requiredConcepts": ["Inventory", "cell", "source/provenance", "profile validity"],
+      "discoverability": "High; Import is a visible Inventory action."
+    },
+    {
+      "id": "modify-rf",
+      "task": "Modify RF configuration",
+      "userBand": ["first-time technical user", "regular planner", "advanced/research user"],
+      "entryPoint": "Plan > Setup, Plan > Inventory, and Simulate > Propagation",
+      "steps": ["Choose mode/technology/model", "Set TX power", "Select or edit cell profile", "Set radius/azimuth/beam/ray controls", "Review readiness", "Run or save a Version"],
+      "interactionEstimate": "7–15 major actions",
+      "contextSwitchesEstimate": "3–5",
+      "friction": ["Common and research/reference inputs are visually contiguous", "per-cell overrides are separated from plan defaults", "Plan changed invalidation is visible but source Run identity is not"],
+      "requiredConcepts": ["RF Configuration", "Inventory", "Scenario", "Version", "stale result"],
+      "discoverability": "High for core controls; medium for knowing which level owns a setting."
+    },
+    {
+      "id": "compare-scenarios",
+      "task": "Compare scenarios",
+      "userBand": ["regular planner", "advanced/research user"],
+      "entryPoint": "Header Project menu or Plan > Setup > Scenario workspace",
+      "steps": ["Open Project/Scenario controls", "Save a Version if needed", "Create or activate another Scenario", "Open comparison", "Review Version differences", "Return to active Scenario"],
+      "interactionEstimate": "7–12 major actions",
+      "contextSwitchesEstimate": "3–5",
+      "friction": ["Scenario and Version actions have duplicate entry points", "hierarchy requires an explanation", "comparison source identity is not carried into the global header"],
+      "requiredConcepts": ["Project", "Scenario", "Version", "baseline", "comparison"],
+      "discoverability": "Medium; visible once Setup is opened but not part of the map’s persistent context."
+    },
+    {
+      "id": "simulate",
+      "task": "Simulate",
+      "userBand": ["first-time technical user", "regular planner"],
+      "entryPoint": "Header Run Sector or Simulate > Propagation",
+      "steps": ["Confirm selected cell/network", "Confirm RF readiness", "Run Sector or evaluate network", "Read status", "Wait for result", "Open Results or inspect the map"],
+      "interactionEstimate": "3–7 major actions",
+      "contextSwitchesEstimate": "1–3",
+      "friction": ["Run is clear, but current Version/Run identity is not", "research cards can distract from the canonical Run", "map/result state is not one named object"],
+      "requiredConcepts": ["Simulation", "Run", "current result", "map layers"],
+      "discoverability": "High; Run Sector is the strongest action in the header."
+    },
+    {
+      "id": "diagnose-poor-service",
+      "task": "Diagnose poor service",
+      "userBand": ["regular planner", "advanced/research user"],
+      "entryPoint": "Map layers/legend, Results, Analyze tools",
+      "steps": ["Inspect gaps/signal/radio-quality on map", "Select a cell or gap", "Open Results or Map inspector", "Choose Interference, Building entry, or RF Diagnostics", "Run the relevant diagnostic", "Compare evidence with the active result"],
+      "interactionEstimate": "6–14 major actions",
+      "contextSwitchesEstimate": "3–6",
+      "friction": ["Diagnostic choices are spread across Analyze and map state", "historical/current distinction is weak", "research/reference panels compete with operational diagnosis"],
+      "requiredConcepts": ["coverage", "serviceability", "signal", "interference", "building entry", "diagnostics", "current Run"],
+      "discoverability": "Medium; map evidence is intuitive, deeper diagnosis requires domain knowledge."
+    },
+    {
+      "id": "optimize",
+      "task": "Optimize",
+      "userBand": ["regular planner", "advanced/research user"],
+      "entryPoint": "Simulate > Propagation optimization controls or Results optimization view",
+      "steps": ["Review objectives", "Set priorities", "Open feasibility constraints", "Choose search policy", "Start optimization", "Read status", "Inspect recommendation and metrics"],
+      "interactionEstimate": "7–15 major actions",
+      "contextSwitchesEstimate": "2–5",
+      "friction": ["Search policy is specialist language", "optimization shares space with propagation/reference tooling", "result source and target Version need stronger identity"],
+      "requiredConcepts": ["Optimization", "objectives", "priorities", "constraints", "search policy", "baseline", "optimized"],
+      "discoverability": "Medium; Auto-Optimize Sector is visible, but the conceptual workflow is not one compact surface."
+    },
+    {
+      "id": "explore-pareto",
+      "task": "Explore Pareto alternatives",
+      "userBand": ["advanced/research user", "regular planner"],
+      "entryPoint": "Simulate > Experiments or Results > Optimization/Candidates",
+      "steps": ["Open experiment or optimization result", "Inspect objectives and feasibility", "Review chart/solutions", "Select a candidate", "Inspect raw metrics and trade-offs", "Choose apply, compare, or return"],
+      "interactionEstimate": "6–12 major actions",
+      "contextSwitchesEstimate": "2–4",
+      "friction": ["Objectives, scores, raw metrics, ranking, and feasibility are dense", "Recommended, Selected, and Pareto are easy to conflate", "application target Scenario/Version is not always persistent"],
+      "requiredConcepts": ["Pareto", "recommendation", "selected solution", "feasibility", "Version/branch"],
+      "discoverability": "Medium-low for new users; strong for users who know optimization terminology."
+    },
+    {
+      "id": "produce-report",
+      "task": "Produce report",
+      "userBand": ["regular planner", "advanced/research user"],
+      "entryPoint": "Review > Report, Run History detail, or Scenario revision detail",
+      "steps": ["Choose current or historical source", "Review report facts", "Confirm source Version/Run", "Choose PDF/Print or Markdown", "Download/open output", "Optionally retain and revisit artifact"],
+      "interactionEstimate": "5–10 major actions",
+      "contextSwitchesEstimate": "2–4",
+      "friction": ["There are multiple entry points", "artifact terminology appears in the default flow", "source confirmation is inside detail rather than persistent"],
+      "requiredConcepts": ["Report", "Version", "Run", "retained output", "current/historical"],
+      "discoverability": "High under Review; medium when starting from a result or Run."
+    },
+    {
+      "id": "revisit-previous-run",
+      "task": "Revisit previous Run",
+      "userBand": ["regular planner", "advanced/research user"],
+      "entryPoint": "Review > Run history or Scenario revision inspector",
+      "steps": ["Filter Run history", "Select a Run", "Inspect status/contract/source", "Open source Version", "Rerun or apply a retained solution", "Generate a historical Report if needed"],
+      "interactionEstimate": "5–11 major actions",
+      "contextSwitchesEstimate": "2–5",
+      "friction": ["Historical state is not visually persistent after leaving Run history", "Run detail uses implementation-heavy metadata", "applying a solution needs stronger destination confirmation"],
+      "requiredConcepts": ["Run", "historical", "Scenario", "Version", "dataset compatibility", "Report"],
+      "discoverability": "High for users who inspect Review; low from the default map unless they know Review exists."
+    }
+  ],
+  "crossTaskFindings": {
+    "mostCommonContextSwitch": "Map → stage/drawer → Review/history → source Version/Scenario → map",
+    "mostCommonAmbiguity": "Which Scenario/Version produced the current or historical result?",
+    "bestCurrentEntryPoint": "Header Run Sector for current computation",
+    "weakestCurrentEntryPoint": "Persistent source context after a result or historical Run is opened",
+    "highestLeverageChange": "Make current/stale/historical state and lineage visible without changing the existing task graph."
+  }
+}

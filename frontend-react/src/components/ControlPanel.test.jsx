@@ -56,7 +56,7 @@ describe("ControlPanel interference controls", () => {
       interferenceApplicable: false,
       networkSelectionCount: 2,
     });
-    expect(screen.getByText(/not available in 6G research profile/i)).toBeInTheDocument();
+    expect(screen.getByText(/UNSUPPORTED for 6G research profile/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Use 5G mmWave" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Analyze Interference/i })).not.toBeInTheDocument();
   });

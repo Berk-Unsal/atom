@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Traceable local report definitions,
+immutable report artifacts, historical Run generation, content
+verification, retention, and delivery behavior." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 7D Local Report and Artifact
+Delivery | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 7D Local
+Report and Artifact Delivery page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#validation-debt-closure"
+      id="toc-validation-debt-closure">Validation debt closure</a></li>
+      <li><a href="#reportdefinition"
+      id="toc-reportdefinition">ReportDefinition</a></li>
+      <li><a href="#generatedreportartifact"
+      id="toc-generatedreportartifact">GeneratedReportArtifact</a></li>
+      <li><a href="#physical-storage" id="toc-physical-storage">Physical
+      storage</a></li>
+      <li><a href="#content-integrity-and-failure-states"
+      id="toc-content-integrity-and-failure-states">Content integrity
+      and failure states</a></li>
+      <li><a href="#report-source-resolution"
+      id="toc-report-source-resolution">Report source
+      resolution</a></li>
+      <li><a href="#format-path" id="toc-format-path">Format
+      path</a></li>
+      <li><a href="#ui-workflow" id="toc-ui-workflow">UI
+      workflow</a></li>
+      <li><a href="#deletion-and-export-boundaries"
+      id="toc-deletion-and-export-boundaries">Deletion and export
+      boundaries</a></li>
+      <li><a href="#privacy-and-determinism"
+      id="toc-privacy-and-determinism">Privacy and determinism</a></li>
+      <li><a href="#evidence-files" id="toc-evidence-files">Evidence
+      files</a></li>
+      <li><a href="#concept-7e-recommendation"
+      id="toc-concept-7e-recommendation">Concept 7E
+      recommendation</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Local evidence</span>
+        <h1>Concept 7D Local Report and Artifact Delivery</h1>
+        <p>Traceable local report definitions, immutable report
+artifacts, historical Run generation, content verification, retention,
+and delivery behavior.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-7d-report-artifacts.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Concept 7D makes reports first-class local evidence while preserving
+A.T.O.M's local-first boundary. The lifecycle is:</p>
+<pre class="text"><code>ScenarioRevision + Run(s)
+        ↓
+ReportDefinition
+        ↓
+GeneratedReportArtifact
+        ↓
+inspect · download · regenerate · retain · delete</code></pre>
+<p>The change does not add PostgreSQL, PostGIS, S3/MinIO,
+authentication, remote jobs, or a server-side PDF service. It does not
+change RF propagation, interference, optimization, Pareto membership,
+recommendation semantics, <code>atom-scenario-v1</code>, Concept 6
+readiness, ProjectV2 compatibility, workspace IndexedDB, or Concept 7C
+Run History capture.</p>
+<h2 id="validation-debt-closure">Validation debt closure</h2>
+<p><code>docs/requirements.txt</code> already documents a hashed PyYAML
+6.0.3 lock. The active system Python did not expose <code>yaml</code>,
+so <code>python3 docs/validate_docs.py</code> initially failed with
+<code>ModuleNotFoundError</code>. The repository policy was left
+unchanged. A temporary virtual environment installed the documented lock
+and produced:</p>
+<pre class="text"><code>documentation valid: 36 HTML pages and 41 API paths</code></pre>
+<p>That pre-change validation produced
+<code>documentation valid: 36 HTML pages and 41 API paths</code>. After
+generating the Concept 7C/7D reference pages and evidence links, the
+final post-change validation produced
+<code>documentation valid: 38 HTML pages and 41 API paths</code>. The
+temporary environment is not part of the repository.</p>
+<h2 id="reportdefinition">ReportDefinition</h2>
+<p><code>ReportDefinition</code> is mutable project/domain metadata
+stored through <code>LocalRepository</code> and carried through the
+existing ProjectV2 compatibility projection. It describes a report
+configuration, not generated bytes.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">schema_version</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  report_id<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  project_id<span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  scenario_id<span class="op">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  scenario_revision_id<span class="op">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">run_ids</span><span class="op">:</span> []<span class="op">,</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  title<span class="op">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">sections</span><span class="op">:</span> []<span class="op">,</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">presentation_options</span><span class="op">:</span> {}<span class="op">,</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  source_kind<span class="op">,</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  source_binding<span class="op">,</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  created_at<span class="op">,</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  updated_at</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>source_kind</code> is one of <code>scenario_revision</code>,
+<code>historical_run</code>, <code>comparison_runs</code>, or the
+explicit compatibility mode <code>live_compatibility</code>. A dirty
+working draft is never silently associated with an older saved revision;
+the compatibility path records that it is live/unbound. Historical
+generation requires the exact durable ScenarioRevision and explicit
+source Run(s).</p>
+<h2 id="generatedreportartifact">GeneratedReportArtifact</h2>
+<p><code>GeneratedReportArtifact</code> is immutable evidence metadata.
+Its bytes are never overwritten. Regeneration reuses the
+ReportDefinition/source references and creates a new
+<code>artifact_id</code>, preserving the previous artifact.</p>
+<p>Required metadata includes:</p>
+<ul>
+<li>artifact identity and report/project/scenario lineage;</li>
+<li>exact ScenarioRevision and Run IDs;</li>
+<li>format, media type, filename, byte size, storage reference, and
+availability;</li>
+<li>report schema version, generator version, and generated
+timestamp;</li>
+<li>SHA-256 content hash;</li>
+<li>provenance, report manifest, and warnings.</li>
+</ul>
+<p><code>artifact_id</code> and <code>content_hash</code> have different
+meanings. The first identifies a generated evidence record; the second
+verifies its bytes. Identical bytes from two generations may therefore
+have different artifact identities.</p>
+<p>The manifest records <code>report_schema_version</code>,
+<code>generator_version</code>, ScenarioRevision fingerprint, Run IDs,
+Run input fingerprints, dataset references/hashes, the final artifact
+content hash, and <code>generated_at</code>. It is not an
+<code>atom-scenario-v1</code> hash.</p>
+<h2 id="physical-storage">Physical storage</h2>
+<p>Artifacts use a separate IndexedDB database:</p>
+<pre class="text"><code>atom-artifacts
+├── metadata  (versioned metadata envelopes keyed by artifact_id)
+└── bytes     (immutable report bytes keyed by artifact_id)</code></pre>
+<p>This is additive storage. Generated bytes do not enter
+<code>atom-planning-workspace</code>, ProjectV2, or
+<code>atom-run-history</code>. Listing reads only the metadata store; an
+artifact body is hydrated only for explicit download/verification. A
+<code>LocalArtifactStore</code> contract exposes
+<code>putArtifact</code>, <code>getArtifact</code>,
+<code>getArtifactMetadata</code>, <code>listArtifacts</code>,
+<code>deleteArtifact</code>, and <code>hasArtifact</code>, plus local
+project cleanup and quota inspection.</p>
+<p>The current safety ceiling is 64 MiB per artifact. It is a
+browser-safety ceiling, not an eviction threshold. When
+<code>navigator.storage.estimate()</code> is available, the store warns
+at 80% projected use and fails explicitly at quota. It never silently
+evicts evidence. When quota APIs are missing, storage proceeds and
+reports no estimate.</p>
+<h2 id="content-integrity-and-failure-states">Content integrity and
+failure states</h2>
+<p>Bytes are hashed with SHA-256 before persistence. On read, the store
+verifies both hash and byte size.</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+<th>User behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>available</code></td>
+<td>Metadata and bytes verify</td>
+<td>Download is enabled</td>
+</tr>
+<tr>
+<td><code>missing</code></td>
+<td>Metadata exists but bytes are absent</td>
+<td>Download is blocked; regeneration is explicit</td>
+</tr>
+<tr>
+<td><code>corrupt</code></td>
+<td>Bytes fail hash or size verification</td>
+<td>Bytes are never served as valid evidence; regeneration is
+explicit</td>
+</tr>
+</tbody>
+</table>
+<p>Malformed metadata is isolated from the list. A corrupt artifact does
+not prevent other report rows from loading. A generation failure does
+not create a valid-looking partial artifact. If report generation
+succeeds but retention fails, the current Markdown download or print
+action remains available and the UI says that local retention
+failed.</p>
+<h2 id="report-source-resolution">Report source resolution</h2>
+<p><code>resolveReportSource</code> is a pure boundary. It checks that
+the selected Runs belong to the same project, scenario, and exact
+ScenarioRevision. It records source fingerprints and dataset references
+and emits an evidence boundary:</p>
+<ul>
+<li>ScenarioRevision input values are source evidence;</li>
+<li>compact Run summaries/details are retained Run evidence;</li>
+<li>retained public optimization baseline/Pareto/recommendation data
+remains visible;</li>
+<li>large RF arrays and private ledgers remain outside the report
+source;</li>
+<li>unavailable historical detail is stated rather than recomputed.</li>
+</ul>
+<p>The existing report renderer remains the semantic center.
+<code>buildHistoricalPlanningReport</code> adapts durable source records
+into the existing report model; it does not call a backend endpoint or
+rerun RF/optimizer work.</p>
+<h3 id="historical-simulation">Historical simulation</h3>
+<p>The Run's compact simulation and coverage summaries populate the RF
+result and gap sections. The report includes the ScenarioRevision and
+Run IDs and explicitly says that detailed signal surfaces and ray
+geometry were not retained when those arrays are absent.</p>
+<h3 id="historical-optimization">Historical optimization</h3>
+<p>The Run's public baseline, Pareto solutions, recommendation,
+effective priorities, constraints, search policy, and selected solution
+identity populate the network report. The optimizer is not rerun. The
+report keeps the existing distinctions between baseline, recommended,
+selected, and Pareto alternatives.</p>
+<h3 id="multi-run-reports">Multi-Run reports</h3>
+<p>The source boundary accepts compatible Runs from one exact
+ScenarioRevision, including baseline-plus-optimization or
+simulation-plus-optimization combinations. Unrelated revisions are
+rejected. The current UI generates a single selected historical Run from
+Run History; the resolver is ready for explicit comparison definitions
+without auto-combining arbitrary project history.</p>
+<h2 id="format-path">Format path</h2>
+<p>There is one report model and two renderers:</p>
+<pre class="text"><code>report model
+  ├── renderMarkdownReport → Markdown artifact
+  └── renderHtmlReport / renderPrintableReport → HTML / print artifact</code></pre>
+<p>The current browser print workflow remains available. The retained
+print-ready artifact is HTML and can be downloaded/printed later; no
+server PDF service is introduced.</p>
+<h2 id="ui-workflow">UI workflow</h2>
+<p>The existing Report tool now has a compact retained-reports section.
+Each row shows title, scenario, format, timestamp, byte size, and
+availability. Selecting a row reveals the artifact ID, ScenarioRevision,
+source Runs, SHA-256, generator, and evidence status. Actions are:</p>
+<ul>
+<li>download stored bytes without regeneration;</li>
+<li>regenerate from the same ReportDefinition/source bindings as a new
+artifact;</li>
+<li>delete the artifact only;</li>
+<li>inspect missing/corrupt status without claiming evidence is
+available.</li>
+</ul>
+<p>Run History rows for succeeded Runs expose
+<code>Generate report</code>. That action prebinds project, scenario,
+exact ScenarioRevision, and the selected Run, then stores a Markdown
+artifact. The source Run remains immutable and the ScenarioRevision
+remains unchanged.</p>
+<p>Current-state Markdown and print actions remain compatible. They
+create a ReportDefinition and retain an artifact when possible. If the
+working draft is dirty, the definition is explicitly
+<code>live_compatibility</code> with no older revision silently
+attached.</p>
+<h2 id="deletion-and-export-boundaries">Deletion and export
+boundaries</h2>
+<p>Deleting an artifact removes only its metadata and bytes. It does not
+delete its ScenarioRevision, source Run, or ReportDefinition. Deleting a
+ReportDefinition is intentionally separate and is not implemented as an
+implicit artifact purge. Project deletion cleans project artifacts
+through the separate store before removing the project workspace;
+scenario deletion leaves historical report evidence intact.</p>
+<p>ProjectV2 export remains a planning-workspace export, not a full
+evidence archive. A future portable evidence bundle may contain report
+bytes, metadata, Run summaries, fingerprints, and a checksum manifest.
+Concept 7D does not add a large ZIP format.</p>
+<h2 id="privacy-and-determinism">Privacy and determinism</h2>
+<p>The report path inherits existing measurement privacy boundaries and
+does not include credentials, hidden browser state, local filesystem
+paths, or raw private measurement identifiers. Current map viewport and
+drawer state are excluded from durable historical input.</p>
+<p>For a fixed ReportDefinition, ScenarioRevision, Runs, report schema,
+and generator version, semantic report content is stable. Generated
+timestamps and artifact IDs are evidence metadata and may differ across
+regeneration. No historical report silently reconstructs missing RF
+output.</p>
+<h2 id="evidence-files">Evidence files</h2>
+<ul>
+<li><a href="concept-7d-pre-change-baseline.json">Pre-change
+baseline</a></li>
+<li><a href="concept-7d-report-source-map.json">Report source
+map</a></li>
+<li><a href="concept-7d-storage-decision.json">Artifact storage
+decision</a></li>
+<li><a href="concept-7d-artifact-schema.json">Artifact schema</a></li>
+<li><a href="concept-7d-artifact-types.json">Artifact type
+vocabulary</a></li>
+<li><a href="concept-7d-storage-size.json">Storage size and quota
+policy</a></li>
+<li><a href="concept-7d-test-evidence.json">Test evidence</a></li>
+<li><a href="concept-7d-post-change-comparison.json">Post-change
+comparison</a></li>
+</ul>
+<h2 id="concept-7e-recommendation">Concept 7E recommendation</h2>
+<p>Inspect actual report/source friction next, with priority on Scenario
+and Branch UX productization. The artifact boundary is now explicit; a
+large evidence bundle or backend durable repository should wait until
+users demonstrate a need for cross-device sharing, collaboration, or
+retained large RF outputs. PostgreSQL/PostGIS is not the automatic next
+phase.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

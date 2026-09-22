@@ -14,6 +14,7 @@ import {
   Upload,
 } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
+import DisclosureSection from "./components/DisclosureSection.jsx";
 import ExperimentPanel from "./components/ExperimentPanel.jsx";
 import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
 import MeasurementValidationPanel from "./components/MeasurementValidationPanel.jsx";
@@ -21,6 +22,11 @@ import MaterialReferencePanel from "./components/MaterialReferencePanel.jsx";
 import BuildingEntryPanel from "./components/BuildingEntryPanel.jsx";
 import InventoryPanel from "./components/InventoryPanel.jsx";
 import RunHistoryPanel from "./components/RunHistoryPanel.jsx";
+import ReportArtifactsPanel from "./components/ReportArtifactsPanel.jsx";
+import ScenarioPanel from "./components/ScenarioPanel.jsx";
+import ApplySolutionDialog from "./components/ApplySolutionDialog.jsx";
+import ResultContextBadge from "./components/ResultContextBadge.jsx";
+import ResearchReferenceBadge from "./components/ResearchReferenceBadge.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
 import PathProfilePanel from "./components/PathProfilePanel.jsx";
@@ -42,6 +48,7 @@ import { WORKSPACE_TOOLS } from "./components/workspaceTools.js";
 import useRequestCoordinator from "./hooks/useRequestCoordinator.js";
 import useProjectWorkspace from "./hooks/useProjectWorkspace.js";
 import useRunHistory from "./hooks/useRunHistory.js";
+import useReportArtifacts from "./hooks/useReportArtifacts.js";
 import {
   buildRunExecutionContext,
   captureOptimizationRun,
@@ -49,6 +56,8 @@ import {
   identitiesFromResult,
 } from "./domain/runCapture.js";
 import { createOptimizationRun, createSimulationRun, transitionRun } from "./domain/run.js";
+import { createReportDefinition } from "./domain/report.js";
+import { buildResultContext, buildWorkspaceLineage } from "./domain/resultContext.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { getJSON, isAbortError, postBlob, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
@@ -108,6 +117,7 @@ import {
   buildBuildingEntryAnalysisSourceKey,
 } from "./utils/requestPayloads.js";
 import {
+  buildHistoricalPlanningReport,
   buildPlanningReport,
   buildComparisonBarChartSvg,
   buildComparisonSlopeChartSvg,
@@ -115,6 +125,7 @@ import {
   downloadMarkdownReport,
   openPdfReport,
 } from "./utils/reportExport.js";
+import { buildReportArtifactOutput, downloadReportBytes, openStoredHtmlReport } from "./utils/reportArtifact.js";
 
 const APP_ICON_URL = "/icon/icon.svg";
 const CORE_LAB_START_COMMAND =
@@ -183,6 +194,9 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [drawerMode, setDrawerMode] = useState("tool");
   const [previousTool, setPreviousTool] = useState("setup");
+  const [openPropagationAdvancedRequest, setOpenPropagationAdvancedRequest] = useState(0);
+  const [openScenarioWorkspaceRequest, setOpenScenarioWorkspaceRequest] = useState(0);
+  const [researchActivity, setResearchActivity] = useState(false);
   const [activeResultsView, setActiveResultsView] = useState("rf");
   const [lastAnalysisKind, setLastAnalysisKind] = useState("rf");
   const [networkResultKind, setNetworkResultKind] = useState(null);
@@ -246,6 +260,9 @@ export default function App() {
   const [optimizationDiagnostics, setOptimizationDiagnostics] = useState(null);
   const [networkOptimization, setNetworkOptimization] = useState(null);
   const [selectedParetoSolutionId, setSelectedParetoSolutionId] = useState(null);
+  const [focusedRevisionId, setFocusedRevisionId] = useState(null);
+  const [focusedRunId, setFocusedRunId] = useState(null);
+  const [currentResultRun, setCurrentResultRun] = useState(null);
   const [cellExplanationState, setCellExplanationState] = useState(EMPTY_CELL_EXPLANATION_STATE);
   const [comparison, setComparison] = useState({ before: null, after: null });
   const [coreLabEnabled, setCoreLabEnabled] = useState(false);
@@ -259,9 +276,12 @@ export default function App() {
     topology: null,
   });
   const [error, setError] = useState("");
+  const [navigationNotice, setNavigationNotice] = useState("");
   const [runHistoryWarning, setRunHistoryWarning] = useState("");
+  const [reportWarning, setReportWarning] = useState("");
   const [undoNotice, setUndoNotice] = useState(null);
   const restoredProjectRef = useRef(null);
+  const lastScenarioSourceRef = useRef(null);
   const cellExplanationCacheRef = useRef(new Map());
   const latestOptimizationRunRef = useRef(null);
   const coverageSurfaceSourceKeyRef = useRef(null);
@@ -277,13 +297,34 @@ export default function App() {
     () => activeProject?.scenarios?.find((scenario) => scenario.id === activeProject.activeScenarioId) ?? null,
     [activeProject],
   );
+  useEffect(() => {
+    if (activeScenario && activeProject?.id) {
+      lastScenarioSourceRef.current = { projectId: activeProject.id, scenario: activeScenario };
+    }
+  }, [activeProject?.id, activeScenario]);
+  const scenarioSource = useMemo(
+    () => activeScenario
+      ?? activeProject?.scenarios?.find((scenario) => (
+        String(scenario.id) === String(activeProject?.draft?.sourceScenarioId)
+          || String(scenario.domain?.scenario_id) === String(activeProject?.draft?.sourceScenarioId)
+      ))
+      ?? (lastScenarioSourceRef.current?.projectId === activeProject?.id ? lastScenarioSourceRef.current.scenario : null)
+      ?? null,
+    [activeProject, activeScenario],
+  );
+  const draftSourceScenario = activeScenario ? null : scenarioSource;
   const runHistory = useRunHistory({
     projectId: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
   });
+  const reportArtifacts = useReportArtifacts({
+    projectId: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
+  });
+  const [selectedArtifactId, setSelectedArtifactId] = useState(null);
   const workspaceLoaded = projectWorkspace.loaded;
   const visibleError = projectWorkspace.error || error;
   const saveProjectDraft = projectWorkspace.saveDraft;
   const saveProjectScenario = projectWorkspace.saveScenario;
+  const saveProjectScenarioVersion = projectWorkspace.saveScenarioVersion;
 
   const persistRunHistoryRecord = useCallback(async (run) => {
     const saved = await runHistory.saveRun(run);
@@ -358,6 +399,9 @@ export default function App() {
       });
     await persistRunHistoryRecord(finalRun);
     if (finalRun.run_type === "optimization") latestOptimizationRunRef.current = finalRun;
+    if (finalRun.status === "succeeded" && ["simulation", "optimization"].includes(finalRun.run_type)) {
+      setCurrentResultRun(finalRun);
+    }
     return finalRun;
   }, [persistRunHistoryRecord]);
 
@@ -373,6 +417,7 @@ export default function App() {
       if (updated) latestOptimizationRunRef.current = updated;
     });
   }, [runHistory]);
+
   const isLoading = activeRFTask === "simulation" || activeRFTask === "network_evaluation";
   const isEvaluatingNetwork = activeRFTask === "network_evaluation";
   const isOptimizing = activeRFTask === "optimization";
@@ -2153,6 +2198,7 @@ export default function App() {
   const selectWorkspaceTool = useCallback((tool) => {
 		if (tool !== "inventory") setIsPlacingCell(false);
     if (tool !== "propagation") setIsSelectingPathEndpoint(false);
+    if (tool !== activeTool) setResearchActivity(false);
     if (drawerOpen && drawerMode === "tool" && activeTool === tool) {
       closeDrawer();
       return;
@@ -2163,6 +2209,11 @@ export default function App() {
     setDrawerOpen(true);
     setSelectedMapObject(null);
   }, [activeTool, closeDrawer, drawerMode, drawerOpen]);
+
+  const openPathProfileDiagnostics = useCallback(() => {
+    setOpenPropagationAdvancedRequest((current) => current + 1);
+    selectWorkspaceTool("propagation");
+  }, [selectWorkspaceTool]);
 
   const openResults = useCallback((view = activeResultsView) => {
     setActiveResultsView(view);
@@ -2279,8 +2330,8 @@ export default function App() {
                   ? "Evaluating reference"
                 : activeRFTask === "building_entry"
                   ? "Estimating entry"
-            : planDirty
-              ? "Plan changed"
+    : planDirty
+              ? currentResultRun ? "Result out of date" : "Run needed"
               : "Ready";
   const resultSummary = useMemo(() => {
     if (lastAnalysisKind === "building-entry" && buildingEntryAnalysis?.summary) {
@@ -2337,6 +2388,50 @@ export default function App() {
   const hasInterferenceData = (interferenceAnalysis.geojson?.features ?? []).length > 0;
   const currentBuildingEntryAnalysis = buildingEntryIsCurrent ? buildingEntryAnalysis : null;
   const hasResults = Boolean(simulation?.stats || networkOptimization?.stats || interferenceAnalysis.stats || siteRecommendations || measurementAnalysis || currentBuildingEntryAnalysis);
+  const workspaceLineage = useMemo(() => buildWorkspaceLineage({
+    project: activeProject,
+    activeScenario,
+    sourceScenario: scenarioSource,
+    draft: activeProject?.draft,
+    scenarios: activeProject?.scenarios ?? [],
+  }), [activeProject, activeScenario, scenarioSource]);
+  const activeRevisionId = activeScenario?.domain?.current_revision_id
+    ?? activeProject?.draft?.sourceRevisionId
+    ?? activeProject?.draft?.source_revision_id
+    ?? scenarioSource?.domain?.current_revision_id
+    ?? null;
+  const currentRevision = scenarioSource?.domain?.revisions?.find((revision) => (
+    String(revision.scenario_revision_id) === String(activeRevisionId)
+  )) ?? null;
+  const resultRunType = lastAnalysisKind === "rf"
+    ? "simulation"
+    : ["network", "optimization"].includes(lastAnalysisKind)
+      ? "optimization"
+      : null;
+  const matchingResultRun = currentResultRun?.run_type === resultRunType ? currentResultRun : null;
+  const resultContext = resultRunType && (hasResults || Boolean(matchingResultRun))
+    ? buildResultContext({
+      activeProjectId: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
+      activeScenarioId: workspaceLineage.scenario_id,
+      activeRevisionId,
+      currentInputFingerprint: workspaceLineage.unsaved ? null : currentRevision?.resolved_fingerprints?.input_fingerprint ?? null,
+      currentScenarioFingerprint: workspaceLineage.unsaved ? null : currentRevision?.resolved_fingerprints?.scenario_fingerprint ?? null,
+      draftChangedSinceRun: planDirty,
+      project: activeProject,
+      run: matchingResultRun,
+      resultType: resultRunType,
+      scenarios: activeProject?.scenarios ?? [],
+      unavailableReason: matchingResultRun ? "" : "The restored result has no unambiguous retained Run.",
+    })
+    : null;
+  const rerunCurrentResult = useCallback(() => {
+    if (resultContext?.run_type === "optimization") {
+      if (planningMode === "network") return optimizeNetwork();
+      return optimizeAzimuth();
+    }
+    if (planningMode === "network") return evaluateNetwork();
+    return runSimulation();
+  }, [evaluateNetwork, optimizeAzimuth, optimizeNetwork, planningMode, resultContext?.run_type, runSimulation]);
   const interferenceUnavailableReason = planningMode !== "network"
     ? "Interference requires Network planning mode"
     : !interferenceApplicable
@@ -2417,11 +2512,13 @@ export default function App() {
           title: `Add ${cellsNeeded} more ${cellsNeeded === 1 ? "cell" : "cells"}`,
           detail: "Select towers on the map or draw an area to build the cluster.",
         }
-      : {
-          title: "Plan changed",
-          detail: planningMode === "network"
-            ? "Evaluate the network to refresh the map and KPIs."
-            : "Run the sector to refresh the map and KPIs.",
+              : {
+          title: currentResultRun ? "Result out of date" : "Plan changed",
+          detail: currentResultRun
+            ? `${currentResultRun.run_type === "optimization" ? "Optimization" : "Simulation"} ${shortRunLabel(currentResultRun.run_id)} came from its original input. Run again for this plan.`
+            : planningMode === "network"
+              ? "Evaluate the network to refresh the map and KPIs."
+              : "Run the sector to refresh the map and KPIs.",
         }
     : null;
 
@@ -2504,11 +2601,25 @@ export default function App() {
 		towers,
   ]);
 
-  const saveCurrentScenario = useCallback(() => {
+  const saveCurrentScenario = useCallback((changeSummary = "") => {
     const count = activeProject?.scenarios?.length ?? 0;
     const label = lastAnalysisKind === "recommendation" ? "Candidate search" : lastAnalysisKind === "interference" ? "Interference" : planningMode === "network" ? "Network plan" : "Sector plan";
-    return saveProjectScenario(`${label} ${count + 1}`, buildCurrentScenarioSnapshot());
-  }, [activeProject?.scenarios?.length, buildCurrentScenarioSnapshot, lastAnalysisKind, planningMode, saveProjectScenario]);
+    const snapshot = buildCurrentScenarioSnapshot();
+    if (scenarioSource) {
+      return saveProjectScenarioVersion({
+        changeSummary: changeSummary || `Saved Version ${Number(scenarioSource.domain?.revision ?? 0) + 1}`,
+        scenarioId: scenarioSource.domain?.scenario_id ?? scenarioSource.id,
+        snapshot,
+      }).then((saved) => {
+        const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
+        const nextScenario = nextProject?.scenarios?.find((scenario) => scenario.id === nextProject.activeScenarioId) ?? saved.scenario;
+        if (nextScenario) restorePlanningSnapshot(nextScenario);
+        setError("");
+        return saved;
+      });
+    }
+    return saveProjectScenario(`${label} ${count + 1}`, snapshot);
+  }, [activeProject?.scenarios?.length, buildCurrentScenarioSnapshot, lastAnalysisKind, planningMode, restorePlanningSnapshot, saveProjectScenario, saveProjectScenarioVersion, scenarioSource]);
 
   const deleteScenarioWithUndo = useCallback((scenarioID) => {
     const scenarios = activeProject?.scenarios ?? [];
@@ -2523,10 +2634,136 @@ export default function App() {
   }, [activeProject, projectWorkspace, showUndoNotice]);
 
   const openSavedScenario = useCallback((scenario) => {
+    if (!scenario) return false;
+    if (activeProject?.draft && activeProject.activeScenarioId === null) {
+      setNavigationNotice("Save the current draft as a Version before opening another Scenario. Your draft has been kept.");
+      return false;
+    }
+    setNavigationNotice("");
+    setCurrentResultRun(null);
+    setFocusedRunId(null);
     projectWorkspace.activateScenario(scenario.id);
+    setFocusedRevisionId(scenario.domain?.current_revision_id ?? null);
     restorePlanningSnapshot(scenario);
-    if (scenario.requiresRerun) setError("This scenario retains its inputs and summary; rerun it to restore uncached map layers.");
+    setError(scenario.requiresRerun ? "This scenario retains its inputs and summary; rerun it to restore uncached map layers." : "");
+    return true;
+  }, [activeProject, projectWorkspace, restorePlanningSnapshot]);
+
+  const openScenarioRevision = useCallback((scenarioID, revisionID) => {
+    const scenario = (activeProject?.scenarios ?? []).find((candidate) => (
+      String(candidate.id) === String(scenarioID)
+        || String(candidate.domain?.scenario_id) === String(scenarioID)
+    ));
+    const revisionRetained = scenario?.domain?.revisions?.some((revision) => (
+      String(revision.scenario_revision_id) === String(revisionID)
+    ));
+    if (!scenario || !revisionRetained) {
+      setNavigationNotice("UNAVAILABLE · The exact source Scenario Version is not retained, so it could not be opened.");
+      return;
+    }
+    const sourceScenarioID = scenario.domain?.scenario_id ?? scenario.id;
+    const sameCurrentScenario = String(workspaceLineage.scenario_id ?? "") === String(sourceScenarioID);
+    if (activeProject?.draft && activeProject.activeScenarioId === null && !sameCurrentScenario) {
+      setNavigationNotice("Save the current draft as a Version before opening another Scenario. Your draft has been kept.");
+      return;
+    }
+    setNavigationNotice("");
+    setFocusedRunId(null);
+    if (!sameCurrentScenario && !openSavedScenario(scenario)) return;
+    setFocusedRevisionId(revisionID);
+    setOpenScenarioWorkspaceRequest((current) => current + 1);
+    setActiveTool("setup");
+    setDrawerMode("tool");
+    setDrawerOpen(true);
+  }, [activeProject, openSavedScenario, workspaceLineage.scenario_id]);
+
+  const handleBranchScenario = useCallback(async ({ name, revisionId, scenarioId }) => {
+    try {
+      const saved = await projectWorkspace.branchScenario({ name, revisionId, scenarioId });
+      const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
+      const nextScenario = nextProject?.scenarios?.find((scenario) => scenario.id === nextProject.activeScenarioId);
+      setFocusedRevisionId(saved.revision?.scenario_revision_id ?? null);
+      if (nextScenario) restorePlanningSnapshot(nextScenario);
+      setPlanDirty(true);
+      setError("");
+      return saved;
+    } catch (branchError) {
+      setError(branchError.message);
+      throw branchError;
+    }
   }, [projectWorkspace, restorePlanningSnapshot]);
+
+  const handleDuplicateScenario = useCallback(async ({ name, scenarioId }) => {
+    try {
+      const saved = await projectWorkspace.duplicateScenario({ name, scenarioId });
+      const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
+      const nextScenario = nextProject?.scenarios?.find((scenario) => scenario.id === nextProject.activeScenarioId);
+      setFocusedRevisionId(saved.revision?.scenario_revision_id ?? null);
+      if (nextScenario) restorePlanningSnapshot(nextScenario);
+      setPlanDirty(true);
+      setError("");
+      return saved;
+    } catch (duplicateError) {
+      setError(duplicateError.message);
+      throw duplicateError;
+    }
+  }, [projectWorkspace, restorePlanningSnapshot]);
+
+  const handleContinueFromVersion = useCallback(async ({ scenarioId, revisionId }) => {
+    try {
+      const saved = await projectWorkspace.continueFromScenarioRevision({ scenarioId, revisionId });
+      const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
+      if (nextProject?.draft) restorePlanningSnapshot(nextProject.draft);
+      setFocusedRevisionId(revisionId);
+      setPlanDirty(true);
+      setError("");
+      return saved;
+    } catch (continueError) {
+      setError(continueError.message);
+      throw continueError;
+    }
+  }, [projectWorkspace, restorePlanningSnapshot]);
+
+  const openRunSource = useCallback((run) => {
+    if (!run?.scenario_id || !run?.scenario_revision_id) {
+      setActiveTool("history");
+      setDrawerMode("tool");
+      setDrawerOpen(true);
+      return;
+    }
+    openScenarioRevision(run.scenario_id, run.scenario_revision_id);
+  }, [openScenarioRevision]);
+
+  const openRunHistory = useCallback((run) => {
+    setFocusedRunId(run?.run_id ?? null);
+    setActiveTool("history");
+    setDrawerMode("tool");
+    setDrawerOpen(true);
+  }, []);
+
+  const openReportSource = useCallback((artifact) => {
+    if (artifact?.scenario_id && artifact?.scenario_revision_id) {
+      openScenarioRevision(artifact.scenario_id, artifact.scenario_revision_id);
+      return;
+    }
+    setSelectedArtifactId(artifact?.artifact_id ?? null);
+    setActiveTool("report");
+    setDrawerMode("tool");
+    setDrawerOpen(true);
+  }, [openScenarioRevision]);
+
+  const inspectReport = useCallback((artifact) => {
+    setSelectedArtifactId(artifact?.artifact_id ?? null);
+    setActiveTool("report");
+    setDrawerMode("tool");
+    setDrawerOpen(true);
+  }, []);
+
+  const openReports = useCallback(() => {
+    setActiveTool("report");
+    setDrawerMode("tool");
+    setDrawerOpen(true);
+  }, []);
 
   const historyDatasetUnavailable = useMemo(
     () => Boolean(appMeta && runHistory.runs.some((run) => !runDatasetMatches(run, appMeta))),
@@ -2571,47 +2808,129 @@ export default function App() {
       ...(activeProject?.domain?.report_definitions ?? []).flatMap((report) => report.run_ids ?? []),
     ];
     await runHistory.clearUnreferenced(referencedRunIds);
+    try {
+      await reportArtifacts.repository.deleteProjectArtifacts(projectID);
+      await reportArtifacts.refresh();
+    } catch (artifactError) {
+      setError(`Project artifacts could not be cleaned up: ${artifactError.message}`);
+      return;
+    }
     restoredProjectRef.current = null;
     setWorkspaceRestored(false);
+    setCurrentResultRun(null);
+    setFocusedRunId(null);
     projectWorkspace.deleteProject();
     return projectID;
-  }, [activeProject, projectWorkspace, runHistory]);
+  }, [activeProject, projectWorkspace, reportArtifacts, runHistory]);
 
-  const applyHistoricalSolution = useCallback(async (run, solution) => {
-    if (historyDatasetUnavailable) {
+  const applyHistoricalSolution = useCallback(async (run, solution, mode = "version") => {
+    if (!runDatasetMatches(run, appMeta)) {
       setError("The historical run dataset is unavailable; the solution cannot be applied safely.");
       return;
     }
-    const currentScenarioID = activeScenario?.domain?.scenario_id ?? activeScenario?.id;
-    if (!run.scenario_id || (currentScenarioID && String(run.scenario_id) !== String(currentScenarioID))) {
-      setError("Open the saved source scenario for this historical solution before applying it.");
+    if (!run?.scenario_id || !run?.scenario_revision_id) {
+      setError("This Run is not bound to a saved Scenario Version; the solution cannot be applied safely.");
       return;
     }
     try {
-      const saved = await projectWorkspace.applyHistoricalOptimization({ run, solution });
+      const saved = await projectWorkspace.applyHistoricalOptimization({
+        branchName: mode === "branch" ? `${scenarioSourceForRun(run, activeProject?.scenarios)?.name ?? "Scenario"} optimized` : "",
+        mode,
+        revisionId: run.scenario_revision_id,
+        run,
+        scenarioId: run.scenario_id,
+        solution,
+      });
       const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
       const nextScenario = nextProject?.scenarios?.find((scenario) => scenario.id === nextProject.activeScenarioId);
       invalidatePlanResults();
-      if (nextScenario) restorePlanningSnapshot(nextScenario);
+      if (nextScenario) {
+        setFocusedRevisionId(saved.revision?.scenario_revision_id ?? null);
+        restorePlanningSnapshot({ ...nextScenario, requiresRerun: true, artifacts: null });
+      }
       setPlanDirty(true);
-      setError("Historical solution applied to a new ScenarioRevision. Run the plan to compute fresh visualization.");
+      setError(mode === "branch"
+        ? "Historical solution applied to a new branched Version. Run the plan to compute fresh visualization."
+        : "Historical solution applied to a new Version. Run the plan to compute fresh visualization.");
     } catch (applyError) {
       setError(applyError.message);
     }
-  }, [activeScenario, historyDatasetUnavailable, invalidatePlanResults, projectWorkspace, restorePlanningSnapshot]);
+  }, [activeProject?.scenarios, appMeta, invalidatePlanResults, projectWorkspace, restorePlanningSnapshot]);
 
-  const runAgainFromHistory = useCallback((run) => {
-    if (historyDatasetUnavailable) {
-      setError("The historical run dataset is unavailable; run again is disabled.");
+  const applyCurrentOptimizationSolution = useCallback((solution, mode = "version") => {
+    const run = currentResultRun;
+    if (!run?.scenario_id || !run?.scenario_revision_id) {
+      setError("Save a Scenario Version before applying an optimization solution to lineage.");
       return;
     }
-    if (run.run_type === "optimization") {
-      if (planningMode === "network") optimizeNetwork();
-      else optimizeAzimuth();
+    if (run.run_type !== "optimization" || run.status !== "succeeded") {
+      setError("This solution is not bound to the current successful Optimization Run.");
       return;
     }
-    runSimulation();
-  }, [historyDatasetUnavailable, optimizeAzimuth, optimizeNetwork, planningMode, runSimulation]);
+    return applyHistoricalSolution(run, solution, mode);
+  }, [applyHistoricalSolution, currentResultRun]);
+
+  const runAgainFromHistory = useCallback(async (run) => {
+    if (!runDatasetMatches(run, appMeta)) {
+      setError("UNAVAILABLE · The dataset recorded for this Run is not active; rerun was not started.");
+      return;
+    }
+    const requestPayload = run?.canonical_input_snapshot?.request;
+    if (!requestPayload) {
+      setError("UNAVAILABLE · The exact input for this Run was not retained; rerun was not started.");
+      return;
+    }
+    if (!["simulation", "optimization"].includes(run.run_type)) {
+      setError("UNSUPPORTED · This Run type cannot be recomputed from its retained input.");
+      return;
+    }
+
+    const sourceContext = { ...run };
+    delete sourceContext.run_id;
+    const newRunContext = {
+      ...sourceContext,
+      status: "queued",
+      created_at: new Date().toISOString(),
+      started_at: null,
+      completed_at: null,
+      summary: {},
+      details: null,
+      error: null,
+      warnings: [],
+      metadata: { ...(run.metadata ?? {}) },
+    };
+    const queued = run.run_type === "optimization"
+      ? createOptimizationRun({ ...newRunContext, request: requestPayload })
+      : createSimulationRun({ ...newRunContext, request: requestPayload });
+    await persistRunHistoryRecord(queued);
+    const running = transitionRun(queued, "running");
+    await persistRunHistoryRecord(running);
+
+    try {
+      let finalRun;
+      if (run.run_type === "simulation") {
+        const result = await postJSON("/api/analyze-sector", requestPayload, "Historical simulation rerun failed");
+        finalRun = captureSimulationRun({ context: running, request: requestPayload, result });
+      } else {
+        const networkRequest = Array.isArray(requestPayload.towers);
+        const endpoint = networkRequest ? "/api/optimize-network" : "/api/optimize-azimuth";
+        const response = await postJSON(endpoint, requestPayload, "Historical optimization rerun failed");
+        finalRun = captureOptimizationRun({ context: running, request: requestPayload, response });
+      }
+      await persistRunHistoryRecord(finalRun);
+      setFocusedRunId(finalRun.run_id);
+      setActiveTool("history");
+      setDrawerMode("tool");
+      setDrawerOpen(true);
+      setError("");
+    } catch (rerunError) {
+      const finalRun = run.run_type === "optimization"
+        ? captureOptimizationRun({ context: running, request: requestPayload, error: rerunError })
+        : captureSimulationRun({ context: running, request: requestPayload, error: rerunError });
+      await persistRunHistoryRecord(finalRun);
+      setError(rerunError.message);
+    }
+  }, [appMeta, persistRunHistoryRecord]);
 
   const applyRecommendation = useCallback((recommendation) => {
     const candidate = towers.find((tower) => String(tower.cellId) === String(recommendation.cell_id) || tower.id === recommendation.id);
@@ -2717,21 +3036,162 @@ export default function App() {
     ],
   );
 
-  const exportMarkdownReport = useCallback(() => {
-    try {
-      downloadMarkdownReport(createPlanningReport());
-    } catch (exportError) {
-      setError(exportError.message);
-    }
-  }, [createPlanningReport]);
+  const reportDefinitions = useMemo(() => activeProject?.domain?.report_definitions ?? [], [activeProject?.domain?.report_definitions]);
+  const currentReportRuns = useMemo(() => {
+    const revisionID = activeScenario?.domain?.current_revision_id;
+    if (planDirty || !revisionID) return [];
+    const compatible = runHistory.runs.filter((run) => String(run.scenario_revision_id) === String(revisionID) && run.status === "succeeded");
+    const type = planningMode === "network" ? "optimization" : "simulation";
+    return compatible.filter((run) => run.run_type === type).slice(0, 1);
+  }, [activeScenario?.domain?.current_revision_id, planDirty, planningMode, runHistory.runs]);
 
-  const exportPdfReport = useCallback(() => {
+  const createCurrentReportDefinition = useCallback((report) => {
+    const projectID = activeProject?.domain?.project_id ?? activeProject?.id ?? null;
+    const scenarioID = activeScenario?.domain?.scenario_id ?? activeScenario?.id ?? null;
+    const revisionID = planDirty ? null : activeScenario?.domain?.current_revision_id ?? null;
+    return createReportDefinition({
+      project_id: projectID,
+      scenario_id: scenarioID,
+      scenario_revision_id: revisionID,
+      run_ids: planDirty ? [] : currentReportRuns.map((run) => run.run_id),
+      title: report?.view?.title ?? (planningMode === "network" ? "Network planning report" : "Single-cell RF planning report"),
+      sections: ["executive_summary", "evidence", "result", "configuration", "methodology"],
+      presentation_options: { formats: ["markdown", "html"] },
+      source_kind: revisionID ? "scenario_revision" : "live_compatibility",
+      source_binding: {
+        ...(report?.domainBinding ?? {}),
+        project_id: projectID,
+        scenario_id: scenarioID,
+        scenario_revision_id: revisionID,
+        run_ids: planDirty ? [] : currentReportRuns.map((run) => run.run_id),
+        source_kind: revisionID ? "scenario_revision" : "live_compatibility",
+      },
+    });
+  }, [activeProject, activeScenario, currentReportRuns, planDirty, planningMode]);
+
+  const persistReportArtifact = useCallback(async ({ report, definition, format, download = true } = {}) => {
+    const output = buildReportArtifactOutput({ report, reportDefinition: definition, format });
+    const saved = await reportArtifacts.saveArtifact(output.artifact, output.bytes);
+    if (!saved) {
+      setReportWarning("Report generated, but its artifact was not retained locally. The current output is still available for download.");
+      if (download && format === "markdown") downloadReportBytes(output.artifact, output.bytes);
+      if (download && format === "html") openPdfReport(report);
+      return null;
+    }
+    setReportWarning("");
+    setSelectedArtifactId(saved.artifact_id);
+    if (download && format === "markdown") downloadReportBytes(saved, output.bytes);
+    if (download && format === "html") openStoredHtmlReport(saved, output.bytes);
+    return saved;
+  }, [reportArtifacts]);
+
+  const exportMarkdownReport = useCallback(async () => {
     try {
-      openPdfReport(createPlanningReport());
+      const report = createPlanningReport();
+      const definition = createCurrentReportDefinition(report);
+      await projectWorkspace.saveReportDefinition(definition);
+      await persistReportArtifact({ report, definition, format: "markdown" });
     } catch (exportError) {
       setError(exportError.message);
+      try { downloadMarkdownReport(createPlanningReport()); } catch { /* Keep the original persistence error visible. */ }
     }
-  }, [createPlanningReport]);
+  }, [createCurrentReportDefinition, createPlanningReport, persistReportArtifact, projectWorkspace]);
+
+  const exportPdfReport = useCallback(async () => {
+    try {
+      const report = createPlanningReport();
+      const definition = createCurrentReportDefinition(report);
+      await projectWorkspace.saveReportDefinition(definition);
+      await persistReportArtifact({ report, definition, format: "html" });
+    } catch (exportError) {
+      setError(exportError.message);
+      try { openPdfReport(createPlanningReport()); } catch { /* Keep the original persistence error visible. */ }
+    }
+  }, [createCurrentReportDefinition, createPlanningReport, persistReportArtifact, projectWorkspace]);
+
+  const historicalReportContext = useCallback((run) => {
+    const scenario = (activeProject?.scenarios ?? []).find((candidate) => (
+      String(candidate.domain?.scenario_id ?? candidate.id) === String(run?.scenario_id)
+    )) ?? activeScenario;
+    const revision = scenario?.domain?.revisions?.find((candidate) => (
+      String(candidate.scenario_revision_id) === String(run?.scenario_revision_id)
+    )) ?? null;
+    return { revision, scenario };
+  }, [activeProject?.scenarios, activeScenario]);
+
+  const generateHistoricalReport = useCallback(async (run) => {
+    if (!run || run.status !== "succeeded") return;
+    const { revision, scenario } = historicalReportContext(run);
+    if (!revision || !scenario) {
+      setError("The exact Scenario Version for this Run is unavailable; no report was generated.");
+      return;
+    }
+    try {
+      const report = buildHistoricalPlanningReport({
+        appMeta,
+        project: activeProject,
+        scenario,
+        scenarioRevision: revision,
+        runs: [run],
+      });
+      const definition = createReportDefinition({
+        project_id: activeProject?.domain?.project_id ?? activeProject?.id,
+        scenario_id: run.scenario_id,
+        scenario_revision_id: run.scenario_revision_id,
+        run_ids: [run.run_id],
+        title: report.view?.title ?? "Historical planning report",
+        sections: ["executive_summary", "evidence", "result", "configuration", "methodology"],
+        presentation_options: { formats: ["markdown", "html"] },
+        source_kind: "historical_run",
+        source_binding: report.domainBinding,
+      });
+      await projectWorkspace.saveReportDefinition(definition);
+      const saved = await persistReportArtifact({ report, definition, format: "markdown", download: false });
+      if (saved) {
+        setReportWarning("Historical report retained locally. Its source Run and Version are shown in Reports.");
+        setActiveTool("report");
+        setDrawerOpen(true);
+      }
+    } catch (reportError) {
+      setError(reportError.message);
+    }
+  }, [activeProject, appMeta, historicalReportContext, persistReportArtifact, projectWorkspace]);
+
+  const regenerateReportArtifact = useCallback(async (artifact) => {
+    const definition = reportDefinitions.find((candidate) => candidate.report_id === artifact.report_id);
+    if (!definition) {
+      setError("The Report definition for this artifact is no longer available; the historical bytes remain inspectable.");
+      return;
+    }
+    try {
+      let report;
+      if (definition.run_ids?.length > 0) {
+        const runs = runHistory.runs.filter((run) => definition.run_ids.includes(run.run_id));
+        const run = runs[0];
+        const { revision, scenario } = historicalReportContext(run);
+        if (!run || !revision || !scenario) throw new Error("The exact historical source Version for this report is unavailable; regeneration was not performed.");
+        report = buildHistoricalPlanningReport({ appMeta, project: activeProject, scenario, scenarioRevision: revision, runs });
+      } else {
+        report = createPlanningReport();
+      }
+      const saved = await persistReportArtifact({ report, definition, format: artifact.format, download: false });
+      if (saved) setReportWarning("A new artifact was generated. The previous artifact remains available.");
+    } catch (regenerateError) {
+      setError(regenerateError.message);
+    }
+  }, [activeProject, appMeta, createPlanningReport, historicalReportContext, persistReportArtifact, reportDefinitions, runHistory.runs]);
+
+  const downloadStoredReportArtifact = useCallback(async (artifact) => {
+    const stored = await reportArtifacts.getArtifact(artifact.artifact_id);
+    if (!stored) return;
+    downloadReportBytes(stored.metadata, stored.bytes);
+  }, [reportArtifacts]);
+
+  const deleteReportArtifact = useCallback(async (artifact) => {
+    if (!globalThis.confirm?.("Delete this retained report artifact? Its source Run and Version will remain.")) return;
+    const deleted = await reportArtifacts.deleteArtifact(artifact.artifact_id);
+    if (deleted && selectedArtifactId === artifact.artifact_id) setSelectedArtifactId(null);
+  }, [reportArtifacts, selectedArtifactId]);
 
   const drawerSubtitles = {
     setup: "Mode, technology, power, and cell selection",
@@ -2749,16 +3209,49 @@ export default function App() {
     report: "Export the current planning state",
   };
 
+  const controlPanel = (
+    <ControlPanel
+      activeTool={activeTool}
+      settings={settings}
+      onChange={updateSettings}
+      onOptimizeAzimuth={optimizeAzimuth}
+      isLoading={isLoading}
+      isOptimizing={isOptimizing}
+      networkSelectionCount={selectedCellCount}
+      onOptimizeNetwork={optimizeNetwork}
+      onAnalyzeInterference={analyzeInterference}
+      onFocusMap={() => closeDrawer("map")}
+      onPlanningModeChange={changePlanningMode}
+      optimizationConfigValid={!optimizationConfigValidationMessage(optimizationConfig)}
+      selectionNotice={selectionNotice}
+      planningMode={planningMode}
+      interferenceApplicable={interferenceApplicable}
+      isAnalyzingInterference={isAnalyzingInterference}
+    />
+  );
+  const researchProfileActive = Number(settings.frequencyGHz) >= 100 || settings.propagationModelID === "research_sub_thz";
+  const researchResultsAvailable = Boolean(subTHZReference || p1411Reference || measurementValidation || materialReference || specularReflectionReference);
+  const researchDisclosureStatus = researchResultsAvailable
+    ? "Results available"
+    : researchActivity ? "Research activity available" : "Available for this profile";
+  const defaultOptimizationConfig = createDefaultOptimizationConfig();
+  const advancedOptimizationCount = (optimizationConfig.objectives ?? []).filter((objective) => (
+    Number(objective.weight) !== Number(defaultOptimizationConfig.objectives.find((item) => item.id === objective.id)?.weight ?? 0)
+  )).length + Object.keys(optimizationConfig.constraints ?? {}).length;
+  const advancedPropagationCount = advancedOptimizationCount;
+
   return (
     <main className="focused-app-shell">
       <a className="skip-link" href="#planning-map">Skip to planning map</a>
       <CommandBar
         appIconUrl={APP_ICON_URL}
         contextLabel={contextLabel}
-        error={drawerOpen && !projectWorkspace.error ? "" : visibleError}
+        error={drawerOpen && !projectWorkspace.error ? navigationNotice : visibleError}
+        lineageContext={workspaceLineage}
         networkTech={activeNetworkTech}
         onDismissError={() => {
           setError("");
+          setNavigationNotice("");
           projectWorkspace.clearError();
         }}
         onOpenResults={() => openResults(resultSummary?.view)}
@@ -2770,22 +3263,25 @@ export default function App() {
             activeProject={projectWorkspace.activeProject}
             compatible={isDatasetCompatible(projectWorkspace.activeProject, appMeta)}
             exportContent={projectWorkspace.exportActiveProject}
-            onAddProject={() => { restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.addProject(); }}
+            onAddProject={() => { setCurrentResultRun(null); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.addProject(); }}
             onDeleteProject={deleteProjectWithHistory}
             onDeleteScenario={deleteScenarioWithUndo}
-            onDuplicateProject={() => { restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.duplicateProject(); }}
-            onImportProject={(text) => { restoredProjectRef.current = null; setWorkspaceRestored(false); return projectWorkspace.importProject(text); }}
+            onDuplicateProject={() => { setCurrentResultRun(null); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.duplicateProject(); }}
+            onImportProject={(text) => { setCurrentResultRun(null); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); return projectWorkspace.importProject(text); }}
             onOpenScenario={openSavedScenario}
             onRenameProject={projectWorkspace.renameProject}
             onSaveScenario={saveCurrentScenario}
-            onSelectProject={(id) => { restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.selectProject(id); }}
+            onSelectProject={(id) => { setCurrentResultRun(null); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.selectProject(id); }}
             projects={projectWorkspace.workspace.projects}
+            staleResultRunLabel={resultContext?.freshness === "stale" ? resultContext.run_label : ""}
           />
         )}
         persistenceState={projectWorkspace.persistenceState}
+        draftUnsaved={workspaceLineage.unsaved}
         primaryActionLabel={primaryActionLabel}
 		primaryDisabled={!workspaceLoaded || !workspaceRestored || hydratedDatasetRevision !== datasetRevision || activeRFTask !== null || invalidProfileCount > 0 || (planningMode === "network" ? selectedCellCount < 2 : !selectedTower)}
         resultSummary={resultSummary}
+        resultContext={resultContext}
         runState={runState}
         statusTone={visibleError ? "error" : activeRFTask !== null ? "busy" : planDirty ? "pending" : "ready"}
       />
@@ -2896,6 +3392,10 @@ export default function App() {
             surface={renderedCoverageSurface}
             surfaceCellId={coverageSurfaceCellId}
             surfaceDisplayThresholdDBm={surfaceOptions.displayThresholdDBm}
+            resultContext={resultContext && (layerVisibility.rays && visibleRayFeatures.length > 0
+              || layerVisibility.surfaces && Boolean(renderedCoverageSurface?.grid?.values?.length)
+              || layerVisibility.gaps && Boolean(coverageGaps.geojson?.features?.length)
+              || layerVisibility.interference && hasInterferenceData) ? resultContext : null}
             metric={interferenceMetric}
             onToggle={() => setLegendCollapsed((current) => !current)}
             planningMode={planningMode}
@@ -2919,59 +3419,119 @@ export default function App() {
           {drawerMode === "inspector" ? <MapInspector selectedMapObject={selectedMapObject} /> : null}
 
           {drawerMode === "tool" && ["setup", "propagation", "interference"].includes(activeTool) ? (
-            <ControlPanel
-              activeTool={activeTool}
-              settings={settings}
-              onChange={updateSettings}
-              onOptimizeAzimuth={optimizeAzimuth}
-              isLoading={isLoading}
-              isOptimizing={isOptimizing}
-              networkSelectionCount={selectedCellCount}
-              onOptimizeNetwork={optimizeNetwork}
-              onAnalyzeInterference={analyzeInterference}
-              onFocusMap={() => closeDrawer("map")}
-              onPlanningModeChange={changePlanningMode}
-              optimizationConfigValid={!optimizationConfigValidationMessage(optimizationConfig)}
-              selectionNotice={selectionNotice}
-              planningMode={planningMode}
-              interferenceApplicable={interferenceApplicable}
-              isAnalyzingInterference={isAnalyzingInterference}
-            />
+            ["setup", "propagation"].includes(activeTool) ? (
+              <DisclosureSection
+                title="Planning"
+                description="Controls used for normal RF planning. Run Sector remains available in the global command bar."
+                defaultOpen
+                research={activeTool === "setup" && researchProfileActive}
+              >
+                {activeTool === "setup" && researchProfileActive ? (
+                  <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz is not canonical validation or production-calibrated. Radio-quality output is UNSUPPORTED for this research profile.</p>
+                ) : null}
+                {controlPanel}
+              </DisclosureSection>
+            ) : controlPanel
+          ) : null}
+
+          {drawerMode === "tool" && activeTool === "setup" ? (
+            <>
+              <DisclosureSection
+                title="Advanced model details"
+                description="Model applicability and link-budget assumptions for the selected profile."
+              >
+                <ModelApplicabilityDetails appMeta={appMeta} settings={settings} />
+              </DisclosureSection>
+              <DisclosureSection
+                title="Scenario workspace"
+                description="Manage saved scenarios, Versions, Runs, and reports."
+                openRequest={openScenarioWorkspaceRequest}
+                status={activeScenario?.name ?? "Working draft"}
+              >
+                <ScenarioPanel
+                  activeProject={activeProject}
+                  activeScenario={activeScenario}
+                  draftSourceScenario={draftSourceScenario}
+                  focusedRevisionId={focusedRevisionId}
+                  staleResultRunLabel={resultContext?.freshness === "stale" ? resultContext.run_label : ""}
+                  onBranchScenario={handleBranchScenario}
+                  onContinueFromVersion={handleContinueFromVersion}
+                  onDeleteScenario={deleteScenarioWithUndo}
+                  onDuplicateScenario={handleDuplicateScenario}
+                  onFocusRevision={setFocusedRevisionId}
+                  onOpenReport={inspectReport}
+                  onOpenReports={openReports}
+                  onOpenRun={openRunHistory}
+                  onOpenScenario={openSavedScenario}
+                  onRenameScenario={projectWorkspace.renameScenario}
+                  onSaveVersion={saveCurrentScenario}
+                  persistenceState={projectWorkspace.persistenceState}
+                  planDirty={planDirty}
+                  reportArtifacts={reportArtifacts.artifacts}
+                  reportDefinitions={reportDefinitions}
+                  runs={runHistory.runs}
+                  scenarios={activeProject?.scenarios ?? []}
+                />
+              </DisclosureSection>
+            </>
           ) : null}
 
           {drawerMode === "tool" && activeTool === "propagation" ? (
             <>
-              {planningMode === "network" ? (
-                <OptimizationGoalsPanel config={optimizationConfig} onChange={updateOptimizationConfig} />
+              {researchProfileActive ? (
+                <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz propagation is a research/reference profile. It is not canonical validation or production-calibrated; radio-quality output is UNSUPPORTED.</p>
               ) : null}
-              <PathProfilePanel
-                endpoint={pathProfileEndpoint}
-                isAnalyzing={isAnalyzingPathProfile}
-                isSelectingEndpoint={isSelectingPathEndpoint}
-                onAnalyze={analyzePathProfile}
-                onCancelSelection={() => setIsSelectingPathEndpoint(false)}
-                onEndpointChange={selectPathEndpoint}
-                onStartSelection={startPathEndpointSelection}
-                profile={pathProfile}
-                selectedTower={selectedTower}
-                settings={settings}
-              />
-              <SubTHZReferencePanel
-                endpoint={pathProfileEndpoint}
-                isAnalyzing={isAnalyzingSubTHZReference}
-                onAnalyze={analyzeSubTHZReference}
-                reference={subTHZReference}
-                selectedTower={selectedTower}
-                settings={settings}
-              />
-              <P1411CandidatePanel
-                endpoint={pathProfileEndpoint}
-                isAnalyzing={isAnalyzingP1411Reference}
-                onAnalyze={analyzeP1411Reference}
-                reference={p1411Reference}
-                selectedTower={selectedTower}
-                settings={settings}
-              />
+              <DisclosureSection
+                title="Advanced analysis"
+                description="Additional analysis and model configuration. P.526/path-profile diffraction is diagnostic evidence and does not add loss to canonical UMa."
+                count={advancedPropagationCount}
+                status={advancedPropagationCount === 0 ? "No additional configuration" : ""}
+                openRequest={openPropagationAdvancedRequest}
+                attention={planningMode === "network" && selectedCellCount >= 2 && Boolean(optimizationConfigValidationMessage(optimizationConfig))}
+                attentionMessage="Advanced settings need attention"
+                focusInvalid
+              >
+                {planningMode === "network" ? (
+                  <OptimizationGoalsPanel config={optimizationConfig} onChange={updateOptimizationConfig} radioQualitySupported={!researchProfileActive} />
+                ) : null}
+                <PathProfilePanel
+                  endpoint={pathProfileEndpoint}
+                  isAnalyzing={isAnalyzingPathProfile}
+                  isSelectingEndpoint={isSelectingPathEndpoint}
+                  onAnalyze={analyzePathProfile}
+                  onCancelSelection={() => setIsSelectingPathEndpoint(false)}
+                  onEndpointChange={selectPathEndpoint}
+                  onStartSelection={startPathEndpointSelection}
+                  profile={pathProfile}
+                  selectedTower={selectedTower}
+                  settings={settings}
+                />
+              </DisclosureSection>
+              <DisclosureSection
+                title="Research / reference"
+                description="Isolated experimental and candidate tools; applicability varies by reference and none automatically changes canonical network RF."
+                research
+                status={researchDisclosureStatus}
+              >
+                <SubTHZReferencePanel
+                  endpoint={pathProfileEndpoint}
+                  isAnalyzing={isAnalyzingSubTHZReference}
+                  onAnalyze={analyzeSubTHZReference}
+                  onActivityChange={() => setResearchActivity(true)}
+                  reference={subTHZReference}
+                  selectedTower={selectedTower}
+                  settings={settings}
+                />
+                <P1411CandidatePanel
+                  endpoint={pathProfileEndpoint}
+                  isAnalyzing={isAnalyzingP1411Reference}
+                  onAnalyze={analyzeP1411Reference}
+                  onActivityChange={() => setResearchActivity(true)}
+                  reference={p1411Reference}
+                  selectedTower={selectedTower}
+                  settings={settings}
+                />
+              </DisclosureSection>
             </>
           ) : null}
 
@@ -2996,21 +3556,37 @@ export default function App() {
 
           {drawerMode === "tool" && activeTool === "validation" ? (
             <>
-              <MeasurementValidationPanel
-                analysis={measurementValidation}
-                isAnalyzing={isAnalyzingMeasurementValidation}
-                onRun={analyzeMeasurementValidation}
-              />
-              <MaterialReferencePanel
-                analysis={materialReference}
-                isAnalyzing={isAnalyzingMaterialReference}
-                onRun={analyzeMaterialReference}
-              />
-              <SpecularReflectionReferencePanel
-                analysis={specularReflectionReference}
-                isAnalyzing={isAnalyzingSpecularReflectionReference}
-                onRun={analyzeSpecularReflectionReference}
-              />
+              <section className="diagnostic-entry-actions" aria-label="Canonical diagnostic actions">
+                <p className="data-note">Start with a canonical RF result, then inspect a vertical path or building-entry estimate. The evidence tools below remain isolated from network RF.</p>
+                <div>
+                  <button type="button" onClick={() => openResults("rf")} disabled={!simulation?.stats}>Open current RF result</button>
+                  <button type="button" onClick={openPathProfileDiagnostics}>Open vertical path profile</button>
+                </div>
+              </section>
+              <DisclosureSection
+                title="Research / reference"
+                description="Campaign validation and declared material/facade references. Results retain their own evidence context and do not imply canonical status."
+                research
+                status={researchDisclosureStatus}
+              >
+                <MeasurementValidationPanel
+                  analysis={measurementValidation}
+                  isAnalyzing={isAnalyzingMeasurementValidation}
+                  onRun={analyzeMeasurementValidation}
+                />
+                <MaterialReferencePanel
+                  analysis={materialReference}
+                  isAnalyzing={isAnalyzingMaterialReference}
+                  onActivityChange={() => setResearchActivity(true)}
+                  onRun={analyzeMaterialReference}
+                />
+                <SpecularReflectionReferencePanel
+                  analysis={specularReflectionReference}
+                  isAnalyzing={isAnalyzingSpecularReflectionReference}
+                  onActivityChange={() => setResearchActivity(true)}
+                  onRun={analyzeSpecularReflectionReference}
+                />
+              </DisclosureSection>
             </>
           ) : null}
 
@@ -3057,19 +3633,23 @@ export default function App() {
           ) : null}
 
           {drawerMode === "tool" && activeTool === "building-entry" ? (
-            <BuildingEntryPanel
-              analysis={buildingEntryAnalysis}
-              disabled={activeRFTask !== null || (planningMode === "network" ? selectedNetworkTowers.length === 0 : !selectedTower)}
-              disabledReason={planningMode === "network" ? "Select at least one network cell first." : "Select a transmitter cell first."}
-              isCurrent={buildingEntryIsCurrent}
-              isLoading={activeRFTask === "building_entry"}
-              onRun={analyzeBuildingEntry}
-            />
+            <DisclosureSection title="Advanced analysis" description="Estimate entry at representative facades; indoor or whole-building coverage is outside scope." defaultOpen>
+              <BuildingEntryPanel
+                analysis={buildingEntryAnalysis}
+                disabled={activeRFTask !== null || (planningMode === "network" ? selectedNetworkTowers.length === 0 : !selectedTower)}
+                disabledReason={planningMode === "network" ? "Select at least one network cell first." : "Select a transmitter cell first."}
+                isCurrent={buildingEntryIsCurrent}
+                isLoading={activeRFTask === "building_entry"}
+                onRun={analyzeBuildingEntry}
+              />
+            </DisclosureSection>
           ) : null}
 
           {drawerMode === "tool" && activeTool === "results" ? (
             <ResultsPanel
               activeView={activeResultsView}
+              resultContext={resultContext}
+              currentWorkspace={workspaceLineage}
               comparison={activeComparison}
               diagnostics={optimizationDiagnostics}
               isNetworkResult={lastAnalysisKind === "network"}
@@ -3087,9 +3667,13 @@ export default function App() {
               hasRFResults={Boolean(simulation?.stats)}
               constraintsConfigured={Object.keys(optimizationConfig.constraints ?? {}).length > 0}
               onViewChange={setActiveResultsView}
+              onApplySolution={applyCurrentOptimizationSolution}
               onApplyRecommendation={applyRecommendation}
+              unsupportedInterferenceReason={Number(settings.frequencyGHz) >= 100 ? "Radio-quality output is not defined for the 6G research profile." : ""}
               onOpenScenario={openSavedScenario}
               onRecommendSites={recommendSites}
+              onRerunCurrent={rerunCurrentResult}
+              onOpenRun={openRunHistory}
               onSelectParetoSolution={selectParetoSolution}
               recommendations={siteRecommendations}
               recommending={isRecommendingSites}
@@ -3101,17 +3685,24 @@ export default function App() {
 
           {drawerMode === "tool" && activeTool === "history" ? (
             <RunHistoryPanel
+              key={focusedRunId ?? "history"}
               currentScenarioId={activeScenario?.domain?.scenario_id ?? activeScenario?.id ?? null}
+              currentWorkspace={workspaceLineage}
               datasetUnavailable={historyDatasetUnavailable}
+              isRunDatasetUnavailable={(run) => !runDatasetMatches(run, appMeta)}
               error={runHistory.error}
+              focusedRunId={focusedRunId}
               issues={runHistory.issues}
               loading={runHistory.loading}
               onApplySolution={applyHistoricalSolution}
               onClearUnreferenced={clearUnreferencedHistory}
               onDeleteRun={deleteHistoryRun}
+              onGenerateReport={generateHistoricalReport}
+              onOpenSource={openRunSource}
               onRefresh={runHistory.refresh}
               onRunAgain={runAgainFromHistory}
               runs={runHistory.runs}
+              scenarios={activeProject?.scenarios ?? []}
               warning={runHistoryWarning}
             />
           ) : null}
@@ -3139,7 +3730,26 @@ export default function App() {
           ) : null}
 
           {drawerMode === "tool" && activeTool === "report" ? (
-            <ReportExportPanel onExportMarkdown={exportMarkdownReport} onExportPdf={exportPdfReport} />
+            <ReportExportPanel
+              artifacts={reportArtifacts.artifacts}
+              definitions={reportDefinitions}
+              error={reportArtifacts.error}
+              issues={reportArtifacts.issues}
+              loading={reportArtifacts.loading}
+              onDeleteArtifact={deleteReportArtifact}
+              onDownloadArtifact={downloadStoredReportArtifact}
+              onInspectArtifact={(artifact) => setSelectedArtifactId(artifact.artifact_id)}
+              onOpenSource={openReportSource}
+              onRegenerateArtifact={regenerateReportArtifact}
+              onExportMarkdown={exportMarkdownReport}
+              onExportPdf={exportPdfReport}
+              reportWarning={reportWarning}
+              currentWorkspace={workspaceLineage}
+              currentResultContext={resultContext}
+              runs={runHistory.runs}
+              scenarios={activeProject?.scenarios ?? []}
+              selectedArtifactId={selectedArtifactId}
+            />
           ) : null}
         </ToolDrawer>
       </section>
@@ -3162,6 +3772,17 @@ function runDatasetMatches(run, appMeta) {
   return recorded.dataset_id === current.id
     && recorded.version === current.version
     && Object.entries(current.hashes ?? {}).every(([key, value]) => recorded.content_hashes?.[key] === value);
+}
+
+function scenarioSourceForRun(run, scenarios = []) {
+  return scenarios.find((scenario) => (
+    String(scenario.domain?.scenario_id ?? scenario.id) === String(run?.scenario_id)
+  )) ?? null;
+}
+
+function shortRunLabel(value) {
+  const text = String(value ?? "");
+  return text.length > 18 ? `${text.slice(0, 8)}…${text.slice(-6)}` : text || "Run unavailable";
 }
 
 function MapInspector({ selectedMapObject }) {
@@ -3406,6 +4027,7 @@ function ResultsPanel({
   networkOptimization,
   networkResultKind,
   onExplainCell,
+  onApplySolution,
   onApplyRecommendation,
   onOpenScenario,
   onRecommendSites,
@@ -3417,6 +4039,11 @@ function ResultsPanel({
   recommendationDisabled,
   recommendations,
   recommending,
+  resultContext,
+  currentWorkspace,
+  onRerunCurrent,
+  onOpenRun,
+  unsupportedInterferenceReason = "",
   savedScenarios,
   selectedSolutionId,
   stats,
@@ -3434,6 +4061,16 @@ function ResultsPanel({
 
   return (
     <section className="results-panel" aria-label="Simulation results">
+      {resultContext ? (
+        <ResultContextBadge
+          context={resultContext}
+          currentWorkspace={currentWorkspace}
+          primaryLabel={resultContext.freshness === "stale" ? "Run again" : resultContext.freshness === "unavailable" ? "Run current plan" : ""}
+          onPrimaryAction={onRerunCurrent}
+          secondaryLabel={resultContext.run_id ? `View ${resultContext.run_label}` : ""}
+          onSecondaryAction={resultContext.run ? () => onOpenRun?.(resultContext.run) : undefined}
+        />
+      ) : null}
       <div className="result-view-tabs" role="tablist" aria-label="Result views">
         {views.map((view) => (
           <button
@@ -3501,7 +4138,12 @@ function ResultsPanel({
       ) : null}
 
       {activeView === "interference" ? (
-        interferenceAnalysis?.stats ? (
+        unsupportedInterferenceReason ? (
+          <div className="result-unsupported-note" role="status">
+            <strong>UNSUPPORTED</strong>
+            <span>{unsupportedInterferenceReason}</span>
+          </div>
+        ) : interferenceAnalysis?.stats ? (
           <InterferenceResultsPanel analysis={interferenceAnalysis} />
         ) : (
           <AnalysisEmptyState
@@ -3525,7 +4167,9 @@ function ResultsPanel({
             cellExplanation={cellExplanation}
             constraintsConfigured={constraintsConfigured}
             onExplainCell={onExplainCell}
+            onApplySolution={onApplySolution}
             onSelectSolution={onSelectParetoSolution}
+            resultContext={resultContext}
             paretoComparison={paretoComparison}
             recommendedSolutionId={recommendedSolutionId}
             selectedSolutionId={selectedSolutionId}
@@ -3769,7 +4413,8 @@ function formatSignedNumber(value, digits = 0) {
   return `${prefix}${formatNumber(numeric, digits)}`;
 }
 
-function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured, onExplainCell, onSelectSolution, paretoComparison, recommendedSolutionId, selectedSolutionId, solutions }) {
+function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured, onApplySolution, onExplainCell, onSelectSolution, paretoComparison, recommendedSolutionId, resultContext, selectedSolutionId, solutions }) {
+  const [applyTarget, setApplyTarget] = useState(null);
   if (!solutions?.length) {
     return (
       <AnalysisEmptyState
@@ -3803,12 +4448,18 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
       <p className="data-note">
         Non-dominated solutions represent different valid trade-offs. The highest score for the current priorities is recommended.
       </p>
+      <div className="pareto-role-legend" aria-label="Optimization solution roles">
+        <p><strong>Recommended</strong><span>Highest-ranked feasible solution under current priorities.</span></p>
+        <p><strong>Selected</strong><span>Solution currently being inspected.</span></p>
+        <p><strong>Pareto</strong><span>Non-dominated alternatives.</span></p>
+      </div>
       <ParetoSolutionDetail
         baseline={baseline}
         cellExplanation={cellExplanation}
         comparison={paretoComparison}
         constraintsConfigured={constraintsConfigured}
         isRecommended={String(selectedSolution.id) === String(recommendedSolutionId)}
+        onApplySolution={(solution) => setApplyTarget(solution)}
         onExplainCell={onExplainCell}
         rank={selectedIndex + 1}
         solution={selectedSolution}
@@ -3851,11 +4502,19 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
           );
         })}
       </div>
+      <ApplySolutionDialog
+        open={Boolean(applyTarget)}
+        sourceContext={resultContext}
+        solution={applyTarget}
+        destinationBaseName={resultContext?.scenario_name ?? "Scenario"}
+        onClose={() => setApplyTarget(null)}
+        onApply={(mode) => { const solution = applyTarget; setApplyTarget(null); onApplySolution?.(solution, mode); }}
+      />
     </section>
   );
 }
 
-function ParetoSolutionDetail({ baseline, cellExplanation, comparison, constraintsConfigured, isRecommended, onExplainCell, rank, solution }) {
+function ParetoSolutionDetail({ baseline, cellExplanation, comparison, constraintsConfigured, isRecommended, onApplySolution, onExplainCell, rank, solution }) {
   const objectiveRows = [
     { id: "demand", label: "Demand", rawLabel: "served / relevant demand" },
     { id: "residential", label: "Residential", rawLabel: "covered / relevant buildings" },
@@ -3951,6 +4610,11 @@ function ParetoSolutionDetail({ baseline, cellExplanation, comparison, constrain
         ) : null}
       </div>
       {comparison ? <ParetoTradeoffComparison comparison={comparison} /> : null}
+      <div className="pareto-apply-actions">
+        <strong>Apply this solution</strong>
+        <button type="button" onClick={() => onApplySolution?.(solution)} disabled={!onApplySolution}>Apply solution…</button>
+        <small>Review the source Run and destination before continuing.</small>
+      </div>
       <p className="data-note pareto-map-note">
         Inspection does not change the recommendation. RF map rays remain from the last simulation and are not re-simulated for this solution.
       </p>
@@ -4337,6 +5001,7 @@ function CoreLabTool({ applicable, coreLab, enabled, scenarios, startCommand, to
           <strong>Core Lab overlay</strong>
           <small>{enabled ? "Path monitoring enabled" : "Optional local Open5GS integration"}</small>
         </span>
+        <ResearchReferenceBadge label="Lab overlay" />
         <input
           type="checkbox"
           checked={enabled}
@@ -4393,6 +5058,7 @@ function CoreLabPanel({ applicable, coreLab, enabled, scenarios, startCommand, t
       <div className="panel-title">
         <Server size={16} />
         <span>5G Communication Path</span>
+        <ResearchReferenceBadge label="Lab overlay" />
       </div>
       <div className="core-state-row">
         <span className={`core-state-pill ${state}`}>{stateLabel}</span>
@@ -4508,9 +5174,19 @@ function DataPanel({
   const totalBuildings = summary?.total_buildings ?? null;
   const residential = summary?.residential_weighted_buildings ?? null;
   const demand = summary?.demand_weighted_buildings ?? null;
+  const dataResearchStatus = measurementAnalysis
+    ? "Results available"
+    : measurementCount
+      ? `${measurementCount.toLocaleString()} samples loaded`
+      : calibrationProfile ? "Correction active" : "Available for local evidence";
 
   return (
     <section className="dataset-panel" aria-label="Dataset confidence">
+      <DisclosureSection
+        title="Planning data"
+        description="Demand and dataset context used by ordinary planning and optimization."
+        defaultOpen
+      >
       <div className="panel-title">
         <Database size={16} />
         <span>Demand Surface</span>
@@ -4538,6 +5214,12 @@ function DataPanel({
         Static OSM/OpenCellID-derived files are loaded locally. Demand values combine explicit POI tags
         with residential-density heuristics, so confidence is useful context for optimization results.
       </p>
+		</DisclosureSection>
+		<DisclosureSection
+			title="Dataset details"
+			description="Installed packs, provenance, QA, and pack-building commands."
+			status={appMeta?.dataset?.name ?? "Dataset details available"}
+		>
 		<section className="model-assumptions dataset-switcher" aria-label="Installed dataset packs">
 			<div className="panel-title"><Database size={16} /><span>Installed Dataset Packs</span></div>
 			<p className="data-note">Only packs discovered under the configured local <code>ATOM_DATASETS_ROOT</code> can be activated. A candidate is fully hash- and geometry-validated before the active in-memory snapshot changes.</p>
@@ -4565,6 +5247,12 @@ function DataPanel({
 			) : null}
 			<pre className="dataset-studio-command">python data-pipeline/pack_studio.py inspect --towers cells.geojson --buildings buildings.gpkg{"\n"}python data-pipeline/pack_studio.py build --help</pre>
 		</section>
+		</DisclosureSection>
+		<DisclosureSection
+			title="Advanced model details"
+			description="Expanded propagation and radio-quality assumptions for this plan."
+			count={Number(Number.isFinite(Number(settings?.calibrationOffsetDb)) && Number(settings?.calibrationOffsetDb) !== 0)}
+		>
       <section className="model-assumptions" aria-label="Propagation model assumptions">
         <div className="panel-title">
           <RadioTower size={16} />
@@ -4608,6 +5296,13 @@ function DataPanel({
           </ul>
         </section>
       ) : null}
+		</DisclosureSection>
+		<DisclosureSection
+			title="Research / reference"
+			description="Field evidence and calibration review. Applying an eligible correction remains an explicit action that updates the canonical plan."
+			research
+			status={dataResearchStatus}
+		>
       <section className="model-assumptions measurement-panel" aria-label="Field measurement validation">
         <div className="panel-title">
           <Activity size={16} />
@@ -4664,6 +5359,35 @@ function DataPanel({
         ) : null}
         {calibrationProfile ? <p className="calibration-active">Active correction: {formatNumber(calibrationProfile.offsetDb, 1)} dB. This is a global bias adjustment, not full calibration.</p> : null}
       </section>
+		</DisclosureSection>
+    </section>
+  );
+}
+
+function ModelApplicabilityDetails({ appMeta, settings }) {
+  const modelID = settings?.propagationModelID ?? "urban_short_range";
+  const frequencyGHz = Number(settings?.frequencyGHz);
+  const isResearch = frequencyGHz >= 100 || modelID === "research_sub_thz";
+  const modelName = modelID === "research_sub_thz"
+    ? "Research sub-THz"
+    : modelID === "legacy_fspl_walls" ? "Legacy FSPL + walls" : "Urban short-range (UMa)";
+
+  return (
+    <section className="model-applicability-details" aria-label="Propagation model applicability">
+      <p><strong>{modelName}</strong> · {isResearch ? "research/reference profile; radio quality unsupported" : "urban planning profile; runtime frequency ceiling 100 GHz"}</p>
+      {isResearch ? <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz is not canonical validation or production-calibrated. It remains outside ordinary radio-quality analysis.</p> : null}
+      <details className="model-limit-details">
+        <summary>Model scope, RF contract, and assumptions <span>{appMeta?.model_id ?? modelID}</span></summary>
+        <p>For <code>urban_short_range</code>, A.T.O.M runs the deterministic UMa LOS/NLOS path-loss subset for its normal 2.6/28 GHz planning profiles. The documented mathematical envelope is 0.5–100 GHz, 10–5,000 m ground distance, 10–150 m transmitter height, and 1.5–&lt;13 m receiver height; full 3GPP channel-model conformance is not claimed.</p>
+        <p>The canonical RF contract carries the selected propagation model and per-cell RF profile into the existing request. Conducted power, absolute TX gain, pattern attenuation, RX gain, system and polarization losses, calibration, propagation loss, building loss, and receiver thresholds remain distinct terms.</p>
+        <ul>
+          <li>UMa empirical NLOS does not add legacy wall loss. The isolated P.526/path-profile calculation is diagnostic evidence and is not added to canonical UMa.</li>
+          <li>Fast fading, multipath reflection, MIMO scheduling, vendor antenna diagrams, and UE measurement behavior are outside the current model.</li>
+          <li>Building service uses the fixed raw-power threshold; per-cell receiver sensitivity and interference RSRP/SINR/RSRQ thresholds remain separate.</li>
+          <li>Sub-THz, P.1411, material, and reflection panels are isolated references and do not silently change canonical network RF.</li>
+        </ul>
+        <p>Full applicability and limitations are documented in <a href="https://github.com/Berk-Unsal/atom/blob/main/docs/modeling-limits.md">Modeling limits</a>.</p>
+      </details>
     </section>
   );
 }
@@ -4793,17 +5517,47 @@ function OptimizerBreakdown({ diagnostics }) {
   );
 }
 
-function ReportExportPanel({ onExportMarkdown, onExportPdf }) {
+function ReportExportPanel({
+  artifacts,
+  definitions,
+  error,
+  issues,
+  loading,
+  onDeleteArtifact,
+  onDownloadArtifact,
+  onInspectArtifact,
+  onOpenSource,
+  onRegenerateArtifact,
+  onExportMarkdown,
+  onExportPdf,
+  reportWarning,
+  currentWorkspace,
+  currentResultContext,
+  runs,
+  scenarios,
+  selectedArtifactId,
+}) {
   return (
     <section className="report-card" aria-label="Planning report export">
       <div className="panel-title">
         <FileText size={16} />
-        <span>Planning Report</span>
+        <span>Report</span>
       </div>
       <p className="empty-note">
         Export the selected tower, beam direction, RF KPIs, demand hits, gap summary, and a portable map
         preview for stakeholder review.
       </p>
+      <div className="report-source-summary" aria-label="Report source">
+        <strong>Report source</strong>
+        {currentWorkspace?.unsaved || !currentWorkspace?.scenario_revision_id ? (
+          <p className="report-live-source"><b>Current unsaved plan</b><span>This Report will not be tied to a saved Version.</span></p>
+        ) : currentResultContext?.freshness === "current" ? (
+          <ResultContextBadge context={currentResultContext} />
+        ) : (
+          <p>{currentWorkspace.scenario_name} · {currentWorkspace.version_label}. A Report records its source Run when one is available.</p>
+        )}
+      </div>
+      {reportWarning ? <div className="run-history-message warning" role="status"><AlertTriangle size={14} />{reportWarning}</div> : null}
       <div className="report-actions">
         <button type="button" className="report-button primary" onClick={onExportPdf}>
           <FileText size={15} />
@@ -4814,6 +5568,22 @@ function ReportExportPanel({ onExportMarkdown, onExportPdf }) {
           <span>Markdown</span>
         </button>
       </div>
+      <ReportArtifactsPanel
+        artifacts={artifacts}
+        definitions={definitions}
+        error={error}
+        issues={issues}
+        loading={loading}
+        onDelete={onDeleteArtifact}
+        onDownload={onDownloadArtifact}
+        onInspect={onInspectArtifact}
+        onOpenSource={onOpenSource}
+        onRegenerate={onRegenerateArtifact}
+        currentWorkspace={currentWorkspace}
+        runs={runs}
+        scenarios={scenarios}
+        selectedArtifactId={selectedArtifactId}
+      />
     </section>
   );
 }

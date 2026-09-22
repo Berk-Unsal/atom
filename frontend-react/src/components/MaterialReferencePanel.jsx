@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { BookOpen, FlaskConical, PlayCircle } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
+import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 const PRESETS = [
 	["concrete_1_100", "Concrete · 1–100 GHz"],
@@ -52,10 +53,13 @@ const AIR_MEDIUM = {
   property_source: "user_declared",
 };
 
-export default function MaterialReferencePanel({ analysis, isAnalyzing, onRun }) {
+export default function MaterialReferencePanel({ analysis, isAnalyzing, onActivityChange, onRun }) {
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
   const [message, setMessage] = useState("");
-  const update = (key, value) => setOptions((current) => ({ ...current, [key]: value }));
+  const update = (key, value) => {
+    onActivityChange?.();
+    setOptions((current) => ({ ...current, [key]: value }));
+  };
   const canRun = !isAnalyzing;
   const inputValue = (key) => (Number.isFinite(Number(options[key])) ? options[key] : "");
 
@@ -107,7 +111,7 @@ export default function MaterialReferencePanel({ analysis, isAnalyzing, onRun })
 
   return (
     <section className="material-reference-panel" aria-label="Material and facade interaction reference">
-      <header className="panel-title"><FlaskConical size={16} /><span>Material & facade reference</span><span className="panel-title-badge">4I.4 · isolated</span></header>
+      <header className="panel-title"><FlaskConical size={16} /><span>Material & facade reference</span><ResearchReferenceBadge /><span className="panel-title-badge">4I.4 · isolated</span></header>
       <p className="material-reference-callout"><strong>Material reference only — not used by network simulation.</strong> This is a declared homogeneous slab ledger for P.2040-4 comparison. It does not estimate whole-building entry loss, indoor coverage, or an urban reflected path.</p>
 
       <div className="material-reference-status">

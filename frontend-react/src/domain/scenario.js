@@ -1,5 +1,5 @@
-import { cloneDomainValue, createEntityId, deepFreeze } from "./identifiers.js";
-import { createDatasetReference } from "./dataset.js";
+import { cloneDomainValue, createEntityId, deepFreeze, deriveCompatibilityIdentifier } from "./identifiers.js";
+import { createDatasetReference, datasetReferenceToLegacy } from "./dataset.js";
 import { inventoryCellToLegacy, resolveInventoryRevision } from "./inventory.js";
 import { assertNoUIState, stripUIState } from "./serialization.js";
 
@@ -165,6 +165,59 @@ export function scenarioRevisionToLegacyPlan(revision, originalPlan = {}) {
   };
 }
 
+export function getScenarioRevisionRecords(scenario) {
+  const stored = Array.isArray(scenario?.domain?.revisions)
+    ? scenario.domain.revisions.map(cloneDomainValue)
+    : [];
+  const currentRevisionId = scenario?.domain?.current_revision_id ?? scenario?.domain?.scenario_revision_id ?? null;
+  if (currentRevisionId && stored.some((revision) => String(revision.scenario_revision_id) === String(currentRevisionId))) {
+    return stored.sort(compareScenarioRevisions);
+  }
+  const reconstructed = scenarioRevisionFromLegacySnapshot(scenario, {
+    scenarioId: scenario?.domain?.scenario_id ?? scenario?.id,
+    scenarioRevisionId: currentRevisionId ?? deriveCompatibilityIdentifier("scenario-revision", scenario?.id ?? "scenario"),
+    revision: Number(scenario?.domain?.revision) || 1,
+    datasetReference: scenario?.datasetRef,
+    originatingRunId: scenario?.domain?.originating_run_id ?? scenario?.domain?.originatingRunId,
+    originatingSolutionId: scenario?.domain?.originating_solution_id ?? scenario?.domain?.originatingSolutionId,
+  });
+  return [...stored, reconstructed]
+    .filter((revision, index, revisions) => revisions.findIndex((candidate) => candidate.scenario_revision_id === revision.scenario_revision_id) === index)
+    .sort(compareScenarioRevisions);
+}
+
+export function getScenarioRevision(scenario, revisionId = null) {
+  const revisions = getScenarioRevisionRecords(scenario);
+  if (!revisionId) return revisions.find((revision) => String(revision.scenario_revision_id) === String(scenario?.domain?.current_revision_id)) ?? revisions[revisions.length - 1] ?? null;
+  return revisions.find((revision) => String(revision.scenario_revision_id) === String(revisionId)) ?? null;
+}
+
+export function getCurrentScenarioRevision(scenario) {
+  return getScenarioRevision(scenario, scenario?.domain?.current_revision_id ?? null);
+}
+
+export function scenarioRevisionToWorkingSnapshot(revision, sourceScenario, now = new Date().toISOString()) {
+  const scenario = cloneDomainValue(sourceScenario ?? {});
+  const nextPlan = scenarioRevisionToLegacyPlan(revision, scenario.plan ?? {});
+  return {
+    ...scenario,
+    plan: nextPlan,
+    request: cloneDomainValue(revision?.request_inputs ?? scenario.request ?? null),
+    datasetRef: datasetReferenceToLegacy(revision?.dataset_references?.[0]) ?? scenario.datasetRef ?? null,
+    artifacts: null,
+    requiresRerun: true,
+    updatedAt: now,
+    sourceScenarioId: scenario.id ?? null,
+    sourceRevisionId: revision?.scenario_revision_id ?? null,
+    domain: {
+      ...(scenario.domain ?? {}),
+      scenario_id: revision?.scenario_id ?? scenario.domain?.scenario_id ?? scenario.id ?? null,
+      current_revision_id: revision?.scenario_revision_id ?? scenario.domain?.current_revision_id ?? null,
+      revision: revision?.revision ?? scenario.domain?.revision ?? 1,
+    },
+  };
+}
+
 export function resolveScenarioConfiguration(inventoryRevision, scenarioRevision, defaults = {}) {
   const cells = resolveInventoryRevision(
     inventoryRevision,
@@ -209,6 +262,28 @@ export function branchScenario({ sourceScenario, sourceRevision, name, descripti
   });
   return {
     scenario: { ...scenario, current_revision_id: revision.scenario_revision_id, revision_ids: [revision.scenario_revision_id] },
+    revision,
+  };
+}
+
+export function duplicateScenario({ sourceScenario, sourceRevision, name, description = "", projectId } = {}) {
+  const branch = branchScenario({ sourceScenario, sourceRevision, name, description, projectId });
+  const revision = createScenarioRevision({
+    ...cloneDomainValue(branch.revision),
+    revision: 1,
+    parent_revision_id: null,
+    originating_run_id: null,
+    originating_solution_id: null,
+    provenance: "duplicated",
+    change_summary: "Duplicated from a saved Scenario version",
+  });
+  return {
+    scenario: {
+      ...branch.scenario,
+      parent_scenario_id: null,
+      current_revision_id: revision.scenario_revision_id,
+      revision_ids: [revision.scenario_revision_id],
+    },
     revision,
   };
 }
@@ -282,3 +357,10 @@ export function validateScenarioRevision(revision) {
 }
 
 export const createScenario = createScenarioEntity;
+
+function compareScenarioRevisions(left, right) {
+  const revisionDifference = Number(left?.revision ?? 0) - Number(right?.revision ?? 0);
+  if (revisionDifference !== 0) return revisionDifference;
+  return String(left?.created_at ?? "").localeCompare(String(right?.created_at ?? ""))
+    || String(left?.scenario_revision_id ?? "").localeCompare(String(right?.scenario_revision_id ?? ""));
+}

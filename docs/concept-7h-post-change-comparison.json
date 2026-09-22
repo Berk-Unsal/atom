@@ -1,0 +1,87 @@
+{
+  "concept": "7H",
+  "artifact": "post-change-comparison",
+  "capturedOn": "2026-09-23",
+  "baselineArtifact": "concept-7h-pre-change-baseline.json",
+  "repositoryState": {
+    "workingTree": "dirty",
+    "baselineTreatment": "Pre-existing uncommitted Concept 7G work was preserved and treated as the Concept 7H baseline.",
+    "commitCreated": false
+  },
+  "disclosure": {
+    "presentationTiers": ["planning", "advanced", "research_reference"],
+    "controlCount": 190,
+    "tierCounts": { "planning": 33, "advanced": 46, "research_reference": 111 },
+    "disclosureState": "ephemeral UI-only state",
+    "disclosureFieldInScenarioRevision": false,
+    "disclosureFieldInRunSnapshot": false,
+    "disclosureFieldInFingerprint": false,
+    "newRoute": false,
+    "newTopLevelShellStage": false
+  },
+  "drawerDensity": {
+    "viewport": { "width": 1440, "height": 960 },
+    "propagation": { "scrollHeightBeforePx": 2451, "scrollHeightAfterPx": 791, "reductionPercent": 67.7, "simultaneouslyVisibleControlsBefore": 38, "simultaneouslyVisibleControlsAfter": 5, "researchSectionsBefore": 2, "researchSectionsAfter": 0 },
+    "rfDiagnostics": { "scrollHeightBeforePx": 2657, "scrollHeightAfterPx": 791, "reductionPercent": 70.2, "visibleResearchSectionsBefore": 3, "visibleResearchSectionsAfter": 0 },
+    "data": { "scrollHeightBeforePx": 1838, "scrollHeightAfterPx": 852, "reductionPercent": 53.6, "visibleDataGroupsBefore": 4, "openPlanningGroupsAfter": 1 }
+  },
+  "productionBundle": {
+    "before": {
+      "javascriptBytes": 946230,
+      "javascriptGzipBytes": 259280,
+      "cssBytes": 148050,
+      "cssGzipBytes": 28110
+    },
+    "after": {
+      "javascriptBytes": 957780,
+      "javascriptGzipBytes": 263000,
+      "cssBytes": 151600,
+      "cssGzipBytes": 28750
+    },
+    "delta": {
+      "javascriptBytes": 11550,
+      "javascriptPercent": 1.22,
+      "javascriptGzipBytes": 3720,
+      "javascriptGzipPercent": 1.43,
+      "cssBytes": 3550,
+      "cssPercent": 2.4,
+      "cssGzipBytes": 640,
+      "cssGzipPercent": 2.28
+    },
+    "viteLargeChunkWarning": true,
+    "lazyLoadingImplemented": false,
+    "performanceImprovementClaimed": false
+  },
+  "behavioralInvariance": {
+    "requestPayloadBuilderCodeChanged": false,
+    "backendRfCodeChanged": false,
+    "optimizerMathOrPolicyChanged": false,
+    "scenarioRevisionOrAtomScenarioSchemaChanged": false,
+    "runSnapshotOrReportBindingChanged": false,
+    "disclosureOnlyResultInvalidation": false,
+    "hiddenRfEditStillInvalidates": true,
+    "verifiedBy": [
+      "2.6 GHz App workflow request after disclosure collapse/reopen",
+      "existing 2.6/28 simulation and interference/optimization request-equivalence tests",
+      "existing building-entry and isolated-reference request payload tests",
+      "existing domain serialization, fingerprint, Run, and Report-source tests",
+      "backend Go vet and race tests"
+    ],
+    "measurementQualification": "The 7H code path is presentation-only and request/persistence builders are unchanged. No separate byte-for-byte replay of every baseline UI workflow was performed."
+  },
+  "profileAndResearchBoundaries": {
+    "research140GhZCanonical": false,
+    "research140GHzProductionCalibrated": false,
+    "radioQualityAt140GHz": "UNSUPPORTED",
+    "p1411AutomaticallyAddedToCanonicalLoss": false,
+    "p526PathProfileAddedToUMa": false,
+    "researchPanelInputsPersistedInScenarioVersion": false,
+    "researchPanelPersistenceSemanticsChanged": false
+  },
+  "nextPhase": {
+    "recommendation": "Safe Feature Lazy Loading / bundle splitting",
+    "evidence": "The largest production JS chunk is 957.78 kB minified and retains the >500 kB Vite warning. 7H improves task density but does not lower bundle size.",
+    "candidateBoundaries": ["Research/reference panels", "Reports", "Experiments/Pareto", "Core Lab"],
+    "gate": "Measure initial-load impact and prove request/result state continuity before implementing splits."
+  }
+}

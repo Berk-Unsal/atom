@@ -1,6 +1,14 @@
 import * as projectStore from "../utils/projectStore.js";
 import { createEntityId, cloneDomainValue } from "../domain/identifiers.js";
-import { applyOptimizationSolution, scenarioRevisionFromLegacySnapshot } from "../domain/scenario.js";
+import {
+  applyOptimizationSolution,
+  branchScenario as branchScenarioEntity,
+  duplicateScenario as duplicateScenarioEntity,
+  getCurrentScenarioRevision,
+  scenarioRevisionFromLegacySnapshot,
+  scenarioRevisionToWorkingSnapshot,
+} from "../domain/scenario.js";
+import { validateReportDefinition } from "../domain/report.js";
 import { canonicalSerialize } from "../domain/serialization.js";
 import { workspaceToDomain, domainToWorkspace } from "./projectCompatibility.js";
 import { implementsRepositoryContract } from "./contract.js";
@@ -104,6 +112,158 @@ export class LocalRepository {
     return this.saveDomain({ ...domain, scenarios });
   }
 
+  async saveScenarioVersion({ projectId, scenarioId, snapshot = {}, changeSummary = "", originatingRunId = null, originatingSolutionId = null, provenance = "user_configured" } = {}) {
+    const domain = await this.loadDomain();
+    const project = domain.projects.find((candidate) => String(candidate.project_id) === String(projectId));
+    const sourceScenario = domain.scenarios.find((candidate) => String(candidate.scenario_id) === String(scenarioId)
+      || String(candidate.metadata?.compatibility_scenario_id) === String(scenarioId));
+    if (!project || !sourceScenario) throw new RepositoryError("not_found", "The source Scenario was not found");
+    const sourceRevision = domain.scenario_revisions.find((candidate) => candidate.scenario_revision_id === sourceScenario.current_revision_id)
+      ?? getCurrentScenarioRevision(resolveLegacyScenarioSnapshot(domain, project, sourceScenario));
+    if (!sourceRevision) throw new RepositoryError("run_input_stale", "The source Scenario version is unavailable");
+    const now = new Date().toISOString();
+    const legacySource = resolveLegacyScenarioSnapshot(domain, project, sourceScenario);
+    const revision = scenarioRevisionFromLegacySnapshot({
+      ...cloneDomainValue(legacySource),
+      ...cloneDomainValue(snapshot),
+      id: legacySource.id,
+      datasetRef: snapshot.datasetRef ?? legacySource.datasetRef ?? project.dataset_references?.[0],
+    }, {
+      scenarioId: sourceScenario.scenario_id,
+      scenarioRevisionId: undefined,
+      inventoryRevisionId: sourceRevision.inventory_revision_id,
+      parentRevisionId: sourceRevision.scenario_revision_id,
+      revision: Number(sourceRevision.revision ?? 0) + 1,
+      datasetReference: snapshot.datasetRef ?? legacySource.datasetRef ?? project.dataset_references?.[0],
+      originatingRunId,
+      originatingSolutionId,
+      changeSummary: changeSummary || "Saved a new Scenario version",
+      provenance,
+    });
+    const nextScenario = {
+      ...sourceScenario,
+      name: snapshot.name ?? sourceScenario.name,
+      description: snapshot.description ?? sourceScenario.description ?? "",
+      updated_at: now,
+      current_revision_id: revision.scenario_revision_id,
+      revision_ids: [...new Set([...(sourceScenario.revision_ids ?? []), revision.scenario_revision_id])],
+    };
+    const revisions = [...domain.scenario_revisions, revision]
+      .filter((candidate, index, values) => values.findIndex((item) => item.scenario_revision_id === candidate.scenario_revision_id) === index);
+    const nextDomain = {
+      ...domain,
+      scenarios: domain.scenarios.map((candidate) => candidate.scenario_id === sourceScenario.scenario_id ? nextScenario : candidate),
+      scenario_revisions: revisions,
+    };
+    const workspace = domainToWorkspace(nextDomain, domain.compatibility_workspace);
+    const nextWorkspace = replaceLegacyScenario(workspace, project, sourceScenario, {
+      ...cloneDomainValue(legacySource),
+      ...cloneDomainValue(snapshot),
+      id: legacySource.id,
+      name: snapshot.name ?? legacySource.name ?? sourceScenario.name,
+      description: snapshot.description ?? legacySource.description ?? sourceScenario.description ?? "",
+      createdAt: legacySource.createdAt ?? sourceScenario.created_at,
+      updatedAt: now,
+      requiresRerun: Boolean(snapshot.requiresRerun),
+      sourceScenarioId: undefined,
+      sourceRevisionId: undefined,
+      domain: {
+        ...(legacySource.domain ?? {}),
+        scenario_id: sourceScenario.scenario_id,
+        current_revision_id: revision.scenario_revision_id,
+        revision: revision.revision,
+        parent_revision_id: revision.parent_revision_id,
+        originating_run_id: revision.originating_run_id,
+        originating_solution_id: revision.originating_solution_id,
+        revisions: revisions.filter((candidate) => candidate.scenario_id === sourceScenario.scenario_id).map(cloneDomainValue),
+      },
+    });
+    const savedWorkspace = await this.saveWorkspace(nextWorkspace);
+    const savedScenario = savedWorkspace.projects
+      .find((candidate) => candidate.id === nextWorkspace.activeProjectId || String(candidate.domain?.project_id) === String(project.project_id))
+      ?.scenarios?.find((candidate) => String(candidate.id) === String(legacySource.id));
+    return { scenario: savedScenario ?? null, revision: cloneDomainValue(revision), workspace: savedWorkspace };
+  }
+
+  async branchScenario({ projectId, scenarioId, revisionId = null, name, description = "" } = {}) {
+    const domain = await this.loadDomain();
+    const project = domain.projects.find((candidate) => String(candidate.project_id) === String(projectId));
+    const sourceScenario = domain.scenarios.find((candidate) => String(candidate.scenario_id) === String(scenarioId)
+      || String(candidate.metadata?.compatibility_scenario_id) === String(scenarioId));
+    const sourceRevision = domain.scenario_revisions.find((candidate) => String(candidate.scenario_revision_id) === String(revisionId))
+      ?? (sourceScenario ? domain.scenario_revisions.find((candidate) => candidate.scenario_revision_id === sourceScenario.current_revision_id) : null);
+    if (!project || !sourceScenario || !sourceRevision) throw new RepositoryError("not_found", "The source Scenario version was not found");
+    const result = branchScenarioEntity({
+      sourceScenario,
+      sourceRevision,
+      name: String(name ?? "").trim() || `${sourceScenario.name} branch`,
+      description,
+      projectId: project.project_id,
+    });
+    const nextProject = {
+      ...project,
+      active_scenario_id: result.scenario.scenario_id,
+      scenario_ids: [...new Set([...(project.scenario_ids ?? []), result.scenario.scenario_id])],
+      updated_at: new Date().toISOString(),
+    };
+    const saved = await this.saveDomainWithWorkspace({
+      ...domain,
+      projects: domain.projects.map((candidate) => candidate.project_id === project.project_id ? nextProject : candidate),
+      scenarios: [...domain.scenarios, result.scenario],
+      scenario_revisions: [...domain.scenario_revisions, result.revision],
+    });
+    return { ...result, ...saved };
+  }
+
+  async duplicateScenario({ projectId, scenarioId, name, description = "" } = {}) {
+    const domain = await this.loadDomain();
+    const project = domain.projects.find((candidate) => String(candidate.project_id) === String(projectId));
+    const sourceScenario = domain.scenarios.find((candidate) => String(candidate.scenario_id) === String(scenarioId)
+      || String(candidate.metadata?.compatibility_scenario_id) === String(scenarioId));
+    const sourceRevision = sourceScenario && domain.scenario_revisions.find((candidate) => candidate.scenario_revision_id === sourceScenario.current_revision_id);
+    if (!project || !sourceScenario || !sourceRevision) throw new RepositoryError("not_found", "The source Scenario version was not found");
+    const result = duplicateScenarioEntity({
+      sourceScenario,
+      sourceRevision,
+      name: String(name ?? "").trim() || `${sourceScenario.name} copy`,
+      description: description || sourceScenario.description || "",
+      projectId: project.project_id,
+    });
+    const nextProject = {
+      ...project,
+      active_scenario_id: result.scenario.scenario_id,
+      scenario_ids: [...new Set([...(project.scenario_ids ?? []), result.scenario.scenario_id])],
+      updated_at: new Date().toISOString(),
+    };
+    const saved = await this.saveDomainWithWorkspace({
+      ...domain,
+      projects: domain.projects.map((candidate) => candidate.project_id === project.project_id ? nextProject : candidate),
+      scenarios: [...domain.scenarios, result.scenario],
+      scenario_revisions: [...domain.scenario_revisions, result.revision],
+    });
+    return { ...result, ...saved };
+  }
+
+  async continueFromScenarioRevision({ projectId, scenarioId, revisionId } = {}) {
+    const domain = await this.loadDomain();
+    const project = domain.projects.find((candidate) => String(candidate.project_id) === String(projectId));
+    const sourceScenario = domain.scenarios.find((candidate) => String(candidate.scenario_id) === String(scenarioId)
+      || String(candidate.metadata?.compatibility_scenario_id) === String(scenarioId));
+    const revision = domain.scenario_revisions.find((candidate) => String(candidate.scenario_revision_id) === String(revisionId));
+    if (!project || !sourceScenario || !revision) throw new RepositoryError("not_found", "The selected Scenario version was not found");
+    const legacySource = resolveLegacyScenarioSnapshot(domain, project, sourceScenario);
+    const draft = scenarioRevisionToWorkingSnapshot(revision, legacySource);
+    draft.sourceScenarioId = legacySource.id;
+    draft.sourceRevisionId = revision.scenario_revision_id;
+    const workspace = cloneDomainValue(domain.compatibility_workspace);
+    const legacyProject = workspace.projects.find((candidate) => String(candidate.domain?.project_id ?? candidate.id) === String(project.project_id));
+    if (!legacyProject) throw new RepositoryError("not_found", "The source Project workspace was not found");
+    legacyProject.activeScenarioId = null;
+    legacyProject.draft = draft;
+    const savedWorkspace = await this.saveWorkspace(workspace);
+    return { draft, revision: cloneDomainValue(revision), workspace: savedWorkspace };
+  }
+
   async getScenarioRevision(revisionId) {
     const domain = await this.loadDomain();
     const revision = domain.scenario_revisions.find((candidate) => candidate.scenario_revision_id === revisionId);
@@ -174,37 +334,97 @@ export class LocalRepository {
     return this.saveDomain({ ...domain, runs });
   }
 
-  async applyOptimizationSolution({ projectId, scenarioId, run, solution } = {}) {
+  async applyOptimizationSolution({ projectId, scenarioId, revisionId = null, run, solution, mode = "version", branchName = "" } = {}) {
     const domain = await this.loadDomain();
-    const scenario = domain.scenarios.find((candidate) => candidate.scenario_id === scenarioId
-      && (!projectId || candidate.project_id === projectId));
+    const scenario = domain.scenarios.find((candidate) => (
+      String(candidate.scenario_id) === String(scenarioId)
+        || String(candidate.metadata?.compatibility_scenario_id) === String(scenarioId)
+    ) && (!projectId || String(candidate.project_id) === String(projectId)));
     if (!scenario) throw new RepositoryError("run_input_stale", "The source ScenarioRevision for this run is no longer available");
-    const revision = domain.scenario_revisions.find((candidate) => candidate.scenario_revision_id === scenario.current_revision_id);
+    const revision = domain.scenario_revisions.find((candidate) => String(candidate.scenario_revision_id) === String(
+      revisionId ?? run?.scenario_revision_id ?? scenario.current_revision_id,
+    ));
     if (!revision) throw new RepositoryError("run_input_stale", "The source ScenarioRevision for this run is no longer available");
     let result;
     try {
-      result = applyOptimizationSolution({ scenario, scenarioRevision: revision, run, solution });
+      if (mode === "branch") {
+        const branch = branchScenarioEntity({
+          sourceScenario: scenario,
+          sourceRevision: revision,
+          name: String(branchName ?? "").trim() || `${scenario.name} optimized`,
+          description: `Optimization branch from Version ${revision.revision}`,
+          projectId: scenario.project_id,
+        });
+        const applied = applyOptimizationSolution({
+          scenario: branch.scenario,
+          scenarioRevision: branch.revision,
+          run,
+          solution,
+          changeSummary: "Applied a public optimization solution to a branch",
+        });
+        result = {
+          ...applied,
+          branch,
+          scenario: applied.scenario,
+          revision: applied.revision,
+          sourceRevision: revision,
+          branchRevision: branch.revision,
+        };
+      } else {
+        result = applyOptimizationSolution({
+          scenario,
+          scenarioRevision: revision,
+          run,
+          solution,
+          changeSummary: "Applied a public optimization solution as a new Version",
+        });
+      }
     } catch (error) {
       throw new RepositoryError("run_input_stale", error.message, { cause: error });
     }
-    const nextScenarios = domain.scenarios.map((candidate) => (
-      candidate.scenario_id === scenario.scenario_id ? result.scenario : candidate
-    ));
+    const project = domain.projects.find((candidate) => String(candidate.project_id) === String(scenario.project_id));
+    const nextProject = project && mode === "branch"
+      ? {
+          ...project,
+          active_scenario_id: result.scenario.scenario_id,
+          scenario_ids: [...new Set([...(project.scenario_ids ?? []), result.scenario.scenario_id])],
+          updated_at: new Date().toISOString(),
+        }
+      : project;
+    const addedScenarios = mode === "branch"
+      ? [...domain.scenarios, result.scenario]
+      : domain.scenarios.map((candidate) => (
+        candidate.scenario_id === scenario.scenario_id ? result.scenario : candidate
+      ));
+    const addedRevisions = mode === "branch"
+      ? [...domain.scenario_revisions, result.branchRevision, result.revision]
+      : [...domain.scenario_revisions, result.revision];
     const saved = await this.saveDomainWithWorkspace({
       ...domain,
-      scenarios: nextScenarios,
-      scenario_revisions: [...domain.scenario_revisions, result.revision],
+      projects: nextProject ? domain.projects.map((candidate) => candidate.project_id === project.project_id ? nextProject : candidate) : domain.projects,
+      scenarios: addedScenarios,
+      scenario_revisions: addedRevisions.filter((candidate, index, values) => values.findIndex((item) => item.scenario_revision_id === candidate.scenario_revision_id) === index),
     });
     return { ...result, ...saved };
   }
 
   async saveReportDefinition(report) {
+    const saved = await this.saveReportDefinitionWithWorkspace(report);
+    return saved.domain;
+  }
+
+  async saveReportDefinitionWithWorkspace(report) {
+    const errors = validateReportDefinition(report);
+    if (errors.length > 0) throw new RepositoryError("invalid_entity", errors.join("; "));
     const domain = await this.loadDomain();
     const reports = [...domain.report_definitions];
     const index = reports.findIndex((candidate) => candidate.report_id === report?.report_id);
     if (index < 0) reports.push(cloneDomainValue(report));
     else reports[index] = cloneDomainValue(report);
-    return this.saveDomain({ ...domain, report_definitions: reports });
+    const projects = domain.projects.map((project) => project.project_id === report?.project_id
+      ? { ...project, report_ids: [...new Set([...(project.report_ids ?? []), report.report_id])] }
+      : project);
+    return this.saveDomainWithWorkspace({ ...domain, projects, report_definitions: reports });
   }
 
   async getReportDefinition(reportId) {
@@ -241,8 +461,10 @@ export class LocalRepository {
         scenario_id: scenario.id,
         current_revision_id: revision.scenario_revision_id,
         revision: revision.revision,
+        parent_revision_id: revision.parent_revision_id,
         originating_run_id: revision.originating_run_id,
         originating_solution_id: revision.originating_solution_id,
+        revisions: [cloneDomainValue(revision)],
       },
     };
   }
@@ -278,6 +500,34 @@ export function createLocalRepository(options) {
 
 export function hasLocalRepositoryContract(repository) {
   return implementsRepositoryContract(repository);
+}
+
+function resolveLegacyScenarioSnapshot(domain, project, scenario) {
+  const workspace = domain?.compatibility_workspace;
+  const legacyProject = workspace?.projects?.find((candidate) => String(candidate.domain?.project_id ?? candidate.id) === String(project?.project_id));
+  const legacyID = scenario?.metadata?.compatibility_scenario_id ?? scenario?.scenario_id;
+  return legacyProject?.scenarios?.find((candidate) => String(candidate.id) === String(legacyID)
+    || String(candidate.domain?.scenario_id) === String(scenario?.scenario_id))
+    ?? {
+      id: legacyID,
+      name: scenario?.name ?? "Planning scenario",
+      plan: {},
+      domain: { scenario_id: scenario?.scenario_id ?? legacyID },
+    };
+}
+
+function replaceLegacyScenario(workspace, project, sourceScenario, replacement) {
+  const next = cloneDomainValue(workspace);
+  const legacyProject = next.projects?.find((candidate) => String(candidate.domain?.project_id ?? candidate.id) === String(project?.project_id));
+  if (!legacyProject) throw new RepositoryError("not_found", "The source Project workspace was not found");
+  const legacyID = sourceScenario?.metadata?.compatibility_scenario_id ?? sourceScenario?.scenario_id;
+  const index = legacyProject.scenarios.findIndex((candidate) => String(candidate.id) === String(legacyID)
+    || String(candidate.domain?.scenario_id) === String(sourceScenario?.scenario_id));
+  if (index < 0) legacyProject.scenarios.push(replacement);
+  else legacyProject.scenarios[index] = replacement;
+  legacyProject.activeScenarioId = replacement.id;
+  legacyProject.draft = null;
+  return next;
 }
 
 export default LocalRepository;

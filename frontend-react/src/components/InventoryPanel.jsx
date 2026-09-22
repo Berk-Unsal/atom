@@ -1,8 +1,9 @@
-import { useMemo, useRef, useState } from "react";
+import { cloneElement, useMemo, useRef, useState } from "react";
 import { Copy, Crosshair, RadioTower, RotateCcw, Search, Trash2, Upload, X } from "lucide-react";
 import { NETWORK_TECHNOLOGIES, RF_PROFILE_OPTIONS } from "../generated/policy.js";
 import { MAX_INVENTORY_FILE_BYTES, parseInventoryFile } from "../utils/inventoryImport.js";
 import { resolveRFProfile, technologyDefaults, validateRFProfile } from "../utils/rfProfile.js";
+import DisclosureSection from "./DisclosureSection.jsx";
 
 const NUMBER_FIELDS = [
   ["frequencyGHz", "Frequency", "GHz", "0.1"],
@@ -24,6 +25,16 @@ const NUMBER_FIELDS = [
   ["receiverHeightM", "Receiver height", "m", "0.1"],
 ];
 const RECEIVER_NUMBER_FIELDS = new Set(["receiverSensitivityDbm", "receiverNoiseBandwidthHz", "receiverNoiseFigureDb", "receiverRequiredSnrDb", "receiverMarginDb"]);
+const PLANNING_PROFILE_FIELDS = new Set([
+  "frequencyGHz", "bandwidthMHz", "txPowerDbm", "radiusMeters", "beamWidthDeg",
+  "antennaHeightM", "orientationDeg", "receiverHeightM",
+]);
+const ADVANCED_PROFILE_FIELDS = new Set([
+  "band", "channelId", "duplexMode", "antennaGainDbi", "rxAntennaGainDbi", "systemLossDb",
+  "polarizationLossDb", "mechanicalDowntiltDeg", "electricalDowntiltDeg", "loadFactor",
+  "reuseFactor", "pci", "horizontalPatternId", "verticalPatternId", "receiverNoiseBandwidthHz",
+  "receiverNoiseFigureDb", "receiverRequiredSnrDb", "receiverMarginDb",
+]);
 
 export default function InventoryPanel({
   isPlacingCell,
@@ -45,6 +56,10 @@ export default function InventoryPanel({
   const fileRef = useRef(null);
   const profile = selectedTower ? resolveRFProfile(selectedTower, settings, towers.findIndex((tower) => tower.id === selectedTower.id)) : null;
   const errors = profile ? validateRFProfile(profile) : {};
+  const advancedErrors = Object.fromEntries(Object.entries(errors).filter(([key]) => ADVANCED_PROFILE_FIELDS.has(key)));
+  const advancedOverrideCount = selectedTower
+    ? Object.keys(selectedTower.rfProfile ?? {}).filter((key) => ADVANCED_PROFILE_FIELDS.has(key)).length
+    : 0;
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     return towers.filter((tower) => !normalized
@@ -111,41 +126,33 @@ export default function InventoryPanel({
             <span><strong>{selectedTower.cellId ?? selectedTower.id}</strong><small>{selectedTower.inventorySource ?? "dataset"}</small></span>
             <div>
               <button type="button" onClick={() => onDuplicateCell(selectedTower)} title="Duplicate cell" aria-label={`Duplicate ${selectedTower.cellId ?? selectedTower.id}`}><Copy size={14} /></button>
-              <button type="button" onClick={() => onResetProfile(selectedTower.id)} title="Use plan defaults" aria-label={`Reset ${selectedTower.cellId ?? selectedTower.id} to plan defaults`}><RotateCcw size={14} /></button>
+              <button type="button" onClick={() => onResetProfile(selectedTower.id)} title="Clears only this cell’s RF profile overrides; keeps its ID and location" aria-label={`Clear RF overrides for ${selectedTower.cellId ?? selectedTower.id}`}><RotateCcw size={14} /></button>
               <button type="button" onClick={() => onDeleteCell(selectedTower.id)} title="Delete cell" aria-label={`Delete ${selectedTower.cellId ?? selectedTower.id}`}><Trash2 size={14} /></button>
             </div>
           </div>
-          <fieldset>
-            <legend>Position</legend>
-            <div className="inventory-field-grid">
-              <InventoryField label="Longitude"><input type="number" step="0.000001" value={selectedTower.coordinates[0]} onChange={(event) => onMoveCell(selectedTower.id, [Number(event.target.value), selectedTower.coordinates[1]])} /></InventoryField>
-              <InventoryField label="Latitude"><input type="number" step="0.000001" value={selectedTower.coordinates[1]} onChange={(event) => onMoveCell(selectedTower.id, [selectedTower.coordinates[0], Number(event.target.value)])} /></InventoryField>
-            </div>
-            {selectedTower.editable ? <p className="field-help">The selected map marker is draggable.</p> : <p className="field-help">Editing coordinates creates a project-local position override.</p>}
-          </fieldset>
-          <fieldset>
-            <legend>Carrier & channel</legend>
-            <div className="inventory-field-grid">
-              <InventoryField label="Technology"><select value={profile.networkTech} onChange={(event) => update("networkTech", event.target.value)}>{NETWORK_TECHNOLOGIES.map((technology) => <option key={technology.id} value={technology.id}>{technology.label}</option>)}</select></InventoryField>
-              <InventoryField label="Band" error={errors.band}><input value={profile.band} onChange={(event) => update("band", event.target.value)} /></InventoryField>
-              <InventoryField label="Channel" error={errors.channelId}><input value={profile.channelId} onChange={(event) => update("channelId", event.target.value)} /></InventoryField>
-              <InventoryField label="Duplex" error={errors.duplexMode}><select value={profile.duplexMode} onChange={(event) => update("duplexMode", event.target.value)}>{RF_PROFILE_OPTIONS.duplexModes.map((mode) => <option key={mode} value={mode}>{mode.toUpperCase()}</option>)}</select></InventoryField>
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend>Antenna & receiver</legend>
-            <p className="field-help inventory-model-note">TX power is conducted; TX gain is absolute boresight gain; pattern loss is relative. RX gain and polarization loss are explicit scalar link terms.</p>
-            <div className="inventory-field-grid">
-              {NUMBER_FIELDS.map(([key, label, unit, step]) => (
-                <InventoryField key={key} label={label} unit={unit} error={errors[key]}>
-                  <input type="number" step={step} value={profile[key] ?? ""} onChange={(event) => update(key, event.target.value)} />
-                </InventoryField>
-              ))}
-              <InventoryField label="Horizontal pattern" error={errors.horizontalPatternId}><select value={profile.horizontalPatternId} onChange={(event) => update("horizontalPatternId", event.target.value)}>{RF_PROFILE_OPTIONS.horizontalPatterns.map((pattern) => <option key={pattern.id} value={pattern.id}>{pattern.label}</option>)}</select></InventoryField>
-              <InventoryField label="Vertical pattern" error={errors.verticalPatternId}><select value={profile.verticalPatternId} onChange={(event) => update("verticalPatternId", event.target.value)}>{RF_PROFILE_OPTIONS.verticalPatterns.map((pattern) => <option key={pattern.id} value={pattern.id}>{pattern.label}</option>)}</select></InventoryField>
-            </div>
-            <div className="receiver-sensitivity-editor">
-              <div className="receiver-sensitivity-heading"><strong>Receiver sensitivity</strong><span>Effective per-cell usability threshold</span></div>
+          <p className="inventory-reset-scope">Clears only this cell’s RF profile overrides; keeps its ID and location.</p>
+          <DisclosureSection title="Planning" description="Identity, location, carrier profile, and common transmitter/receiver assumptions." defaultOpen>
+            <fieldset>
+              <legend>Position</legend>
+              <div className="inventory-field-grid">
+                <InventoryField label="Longitude"><input type="number" step="0.000001" value={selectedTower.coordinates[0]} onChange={(event) => onMoveCell(selectedTower.id, [Number(event.target.value), selectedTower.coordinates[1]])} /></InventoryField>
+                <InventoryField label="Latitude"><input type="number" step="0.000001" value={selectedTower.coordinates[1]} onChange={(event) => onMoveCell(selectedTower.id, [selectedTower.coordinates[0], Number(event.target.value)])} /></InventoryField>
+              </div>
+              {selectedTower.editable ? <p className="field-help">The selected map marker is draggable.</p> : <p className="field-help">Editing coordinates creates a project-local position override.</p>}
+            </fieldset>
+            <fieldset>
+              <legend>Carrier & common assumptions</legend>
+              <div className="inventory-field-grid">
+                <InventoryField label="Technology"><select value={profile.networkTech} onChange={(event) => update("networkTech", event.target.value)}>{NETWORK_TECHNOLOGIES.map((technology) => <option key={technology.id} value={technology.id}>{technology.label}</option>)}</select></InventoryField>
+                {NUMBER_FIELDS.filter(([key]) => PLANNING_PROFILE_FIELDS.has(key)).map(([key, label, unit, step]) => (
+                  <InventoryField key={key} label={label} unit={unit} error={errors[key]}>
+                    <input type="number" step={step} value={profile[key] ?? ""} onChange={(event) => update(key, event.target.value)} />
+                  </InventoryField>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Receiver threshold</legend>
               <div className="inventory-field-grid">
                 <InventoryField label="Threshold mode" error={errors.receiverSensitivityMode}>
                   <select value={profile.receiverSensitivityMode} onChange={(event) => update("receiverSensitivityMode", event.target.value)}>
@@ -156,26 +163,55 @@ export default function InventoryPanel({
                   <InventoryField label="RX sensitivity" unit="dBm" error={errors.receiverSensitivityDbm}>
                     <input type="number" step="0.1" value={profile.receiverSensitivityDbm ?? ""} onChange={(event) => update("receiverSensitivityDbm", event.target.value)} />
                   </InventoryField>
-                ) : (
-                  <>
-                    <InventoryField label="Noise bandwidth" unit="MHz" error={errors.receiverNoiseBandwidthHz}>
-                      <input type="number" min="0.000001" step="0.1" value={Number(profile.receiverNoiseBandwidthHz) / 1e6} onChange={(event) => update("receiverNoiseBandwidthHz", Number(event.target.value) * 1e6)} />
-                    </InventoryField>
-                    <InventoryField label="Noise figure" unit="dB" error={errors.receiverNoiseFigureDb}>
-                      <input type="number" step="0.1" value={profile.receiverNoiseFigureDb ?? ""} onChange={(event) => update("receiverNoiseFigureDb", event.target.value)} />
-                    </InventoryField>
-                    <InventoryField label="Required SNR" unit="dB" error={errors.receiverRequiredSnrDb}>
-                      <input type="number" step="0.1" value={profile.receiverRequiredSnrDb ?? ""} onChange={(event) => update("receiverRequiredSnrDb", event.target.value)} />
-                    </InventoryField>
-                    <InventoryField label="Receiver margin" unit="dB" error={errors.receiverMarginDb}>
-                      <input type="number" step="0.1" value={profile.receiverMarginDb ?? ""} onChange={(event) => update("receiverMarginDb", event.target.value)} />
-                    </InventoryField>
-                  </>
-                )}
+                ) : <p className="field-help">Derived sensitivity inputs are in Advanced; the effective receiver threshold remains separate from building-service and radio-quality thresholds.</p>}
               </div>
-              <p className="field-help">Derived = −174 dBm/Hz + 10 log₁₀(noise bandwidth) + NF + required SNR + margin. Interference noise and SINR remain a separate model.</p>
-            </div>
-          </fieldset>
+            </fieldset>
+          </DisclosureSection>
+          <DisclosureSection
+            title="Advanced"
+            description="Additional antenna, channel, load, and derived receiver configuration."
+            count={advancedOverrideCount}
+            status={advancedOverrideCount === 0 ? "No additional configuration" : ""}
+            attention={Object.keys(advancedErrors).length > 0}
+            attentionMessage="Advanced settings need attention"
+            focusInvalid
+          >
+            <fieldset>
+              <legend>Carrier detail</legend>
+              <div className="inventory-field-grid">
+                <InventoryField label="Band" error={errors.band}><input value={profile.band} onChange={(event) => update("band", event.target.value)} /></InventoryField>
+                <InventoryField label="Channel" error={errors.channelId}><input value={profile.channelId} onChange={(event) => update("channelId", event.target.value)} /></InventoryField>
+                <InventoryField label="Duplex" error={errors.duplexMode}><select value={profile.duplexMode} onChange={(event) => update("duplexMode", event.target.value)}>{RF_PROFILE_OPTIONS.duplexModes.map((mode) => <option key={mode} value={mode}>{mode.toUpperCase()}</option>)}</select></InventoryField>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Antenna & radio-quality detail</legend>
+              <p className="field-help inventory-model-note">TX power is conducted; TX gain is absolute boresight gain; pattern loss is relative. RX gain and polarization loss are explicit scalar link terms.</p>
+              <div className="inventory-field-grid">
+                {NUMBER_FIELDS.filter(([key]) => ADVANCED_PROFILE_FIELDS.has(key) && !["receiverNoiseBandwidthHz", "receiverNoiseFigureDb", "receiverRequiredSnrDb", "receiverMarginDb"].includes(key)).map(([key, label, unit, step]) => (
+                  <InventoryField key={key} label={label} unit={unit} error={errors[key]}>
+                    <input type="number" step={step} value={profile[key] ?? ""} onChange={(event) => update(key, event.target.value)} />
+                  </InventoryField>
+                ))}
+                <InventoryField label="Horizontal pattern" error={errors.horizontalPatternId}><select value={profile.horizontalPatternId} onChange={(event) => update("horizontalPatternId", event.target.value)}>{RF_PROFILE_OPTIONS.horizontalPatterns.map((pattern) => <option key={pattern.id} value={pattern.id}>{pattern.label}</option>)}</select></InventoryField>
+                <InventoryField label="Vertical pattern" error={errors.verticalPatternId}><select value={profile.verticalPatternId} onChange={(event) => update("verticalPatternId", event.target.value)}>{RF_PROFILE_OPTIONS.verticalPatterns.map((pattern) => <option key={pattern.id} value={pattern.id}>{pattern.label}</option>)}</select></InventoryField>
+              </div>
+            </fieldset>
+            {profile.receiverSensitivityMode === "derived" ? (
+              <fieldset className="receiver-sensitivity-editor">
+                <legend>Derived receiver threshold</legend>
+                <div className="inventory-field-grid">
+                  <InventoryField label="Noise bandwidth" unit="MHz" error={errors.receiverNoiseBandwidthHz}>
+                    <input type="number" min="0.000001" step="0.1" value={Number(profile.receiverNoiseBandwidthHz) / 1e6} onChange={(event) => update("receiverNoiseBandwidthHz", Number(event.target.value) * 1e6)} />
+                  </InventoryField>
+                  <InventoryField label="Noise figure" unit="dB" error={errors.receiverNoiseFigureDb}><input type="number" step="0.1" value={profile.receiverNoiseFigureDb ?? ""} onChange={(event) => update("receiverNoiseFigureDb", event.target.value)} /></InventoryField>
+                  <InventoryField label="Required SNR" unit="dB" error={errors.receiverRequiredSnrDb}><input type="number" step="0.1" value={profile.receiverRequiredSnrDb ?? ""} onChange={(event) => update("receiverRequiredSnrDb", event.target.value)} /></InventoryField>
+                  <InventoryField label="Receiver margin" unit="dB" error={errors.receiverMarginDb}><input type="number" step="0.1" value={profile.receiverMarginDb ?? ""} onChange={(event) => update("receiverMarginDb", event.target.value)} /></InventoryField>
+                </div>
+                <p className="field-help">Derived = −174 dBm/Hz + 10 log₁₀(noise bandwidth) + NF + required SNR + margin. Interference noise and SINR remain a separate model.</p>
+              </fieldset>
+            ) : null}
+          </DisclosureSection>
           {Object.keys(errors).length ? <p className="inventory-validation" role="alert">Fix {Object.keys(errors).length} profile field{Object.keys(errors).length === 1 ? "" : "s"} before running RF analysis.</p> : <p className="inventory-valid">Profile valid · request-ready</p>}
         </section>
       ) : <p className="inventory-empty">Select a cell to edit its RF profile.</p>}
@@ -184,5 +220,6 @@ export default function InventoryPanel({
 }
 
 function InventoryField({ children, error, label, unit }) {
-  return <label className={error ? "invalid" : ""}><span>{label}{unit ? <small>{unit}</small> : null}</span>{children}{error ? <em>{error}</em> : null}</label>;
+  const control = error ? cloneElement(children, { "aria-invalid": "true" }) : children;
+  return <label className={error ? "invalid" : ""}><span>{label}{unit ? <small>{unit}</small> : null}</span>{control}{error ? <em>{error}</em> : null}</label>;
 }

@@ -1,24 +1,37 @@
-import { AlertTriangle, CheckCircle2, Clock3, RefreshCw, RotateCcw, Trash2, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock3, FileText, RefreshCw, RotateCcw, Trash2, XCircle } from "lucide-react";
 import { useMemo, useState } from "react";
+import { buildResultContext, formatRunType, shortID as shortResultID } from "../domain/resultContext.js";
+import ApplySolutionDialog from "./ApplySolutionDialog.jsx";
+import GenerateRunReportDialog from "./GenerateRunReportDialog.jsx";
+import ResultContextBadge from "./ResultContextBadge.jsx";
 
 export default function RunHistoryPanel({
   currentScenarioId = null,
+  currentWorkspace = null,
   datasetUnavailable = false,
   error = "",
+  focusedRunId = null,
+  isRunDatasetUnavailable = null,
   issues = [],
   loading = false,
   onApplySolution,
   onClearUnreferenced,
   onDeleteRun,
+  onGenerateReport,
+  onOpenSource,
   onRefresh,
   onRunAgain,
   runs = [],
+  scenarios = [],
   warning = "",
 }) {
-  const [selectedRunId, setSelectedRunId] = useState(null);
+  const [selectedRunId, setSelectedRunId] = useState(focusedRunId);
   const [scope, setScope] = useState("project");
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [applyTarget, setApplyTarget] = useState(null);
+  const [reportTarget, setReportTarget] = useState(null);
+
   const visibleRuns = useMemo(() => runs.filter((run) => (
     (scope === "project" || String(run.scenario_id) === String(currentScenarioId))
       && (typeFilter === "all" || run.run_type === typeFilter)
@@ -55,8 +68,8 @@ export default function RunHistoryPanel({
 
       <div className="run-history-layout">
         <div className="run-history-list" role="list" aria-label="Saved runs">
-          {runs.length === 0 && !loading ? <p className="run-history-empty">No durable runs for this project yet.</p> : null}
-          {runs.length > 0 && visibleRuns.length === 0 ? <p className="run-history-empty">No runs match these filters.</p> : null}
+          {runs.length === 0 && !loading ? <p className="run-history-empty">No saved Runs yet. Run a simulation or optimization to create one.</p> : null}
+          {runs.length > 0 && visibleRuns.length === 0 ? <p className="run-history-empty">No Runs match these filters.</p> : null}
           {visibleRuns.map((run) => (
             <button
               type="button"
@@ -67,8 +80,8 @@ export default function RunHistoryPanel({
             >
               <RunStatusIcon run={run} />
               <span>
-                <strong>{run.run_type === "optimization" ? "Optimization" : "Simulation"}</strong>
-                <small>{formatTimestamp(run.created_at)} · {run.scenario_revision_id ? "ScenarioRevision" : "Draft"}</small>
+                <strong>{formatRunType(run.run_type)}</strong>
+                <small>{scenarioName(run, scenarios)} · {scenarioVersionLabel(run, scenarios)} · {formatTimestamp(run.created_at)}</small>
               </span>
               <em className={`run-status ${run.status}`}>{displayStatus(run)}</em>
             </button>
@@ -77,39 +90,82 @@ export default function RunHistoryPanel({
 
         {selectedRun ? (
           <RunDetails
-            datasetUnavailable={datasetUnavailable}
-            onApplySolution={onApplySolution}
+            datasetUnavailable={isRunDatasetUnavailable ? isRunDatasetUnavailable(selectedRun) : datasetUnavailable}
             onDeleteRun={onDeleteRun}
+            onOpenSource={onOpenSource}
+            onRequestApply={setApplyTarget}
+            onRequestReport={setReportTarget}
             onRunAgain={onRunAgain}
             run={selectedRun}
+            currentWorkspace={currentWorkspace}
+            scenarios={scenarios}
           />
-        ) : <div className="run-history-detail empty-detail">Select a run to inspect its retained identity and compact result.</div>}
+        ) : <div className="run-history-detail empty-detail">Choose a Run from history to inspect its source and retained summary.</div>}
       </div>
+      <ApplySolutionDialog
+        open={Boolean(applyTarget)}
+        sourceContext={applyTarget?.context}
+        solution={applyTarget?.solution}
+        destinationBaseName={applyTarget?.destinationName}
+        onClose={() => setApplyTarget(null)}
+        onApply={(mode) => { const target = applyTarget; setApplyTarget(null); onApplySolution?.(target.run, target.solution, mode); }}
+      />
+      <GenerateRunReportDialog
+        open={Boolean(reportTarget)}
+        sourceContext={reportTarget?.context}
+        onClose={() => setReportTarget(null)}
+        onConfirm={() => { const run = reportTarget?.run; setReportTarget(null); onGenerateReport?.(run); }}
+      />
     </section>
   );
 }
 
-function RunDetails({ datasetUnavailable, onApplySolution, onDeleteRun, onRunAgain, run }) {
+function RunDetails({ currentWorkspace, datasetUnavailable, onDeleteRun, onOpenSource, onRequestApply, onRequestReport, onRunAgain, run, scenarios }) {
   const solutions = run.details?.public_pareto_solutions ?? [];
-  const sourceLabel = run.scenario_revision_id ? `Revision ${shortID(run.scenario_revision_id)}` : "Unsaved draft";
+  const sourceLabel = scenarioVersionLabel(run, scenarios);
+  const context = buildResultContext({ run, historical: true, scenarios });
+  const sourceScenario = scenarios.find((scenario) => (
+    String(scenario.domain?.scenario_id ?? scenario.id) === String(run.scenario_id)
+  ));
+  const sourceVersionAvailable = Boolean(
+    run.scenario_id
+      && run.scenario_revision_id
+      && sourceScenario?.domain?.revisions?.some((revision) => (
+        String(revision.scenario_revision_id) === String(run.scenario_revision_id)
+      )),
+  );
+  const contextWithWorkspace = {
+    ...context,
+    current_workspace_label: currentWorkspace
+      ? `${currentWorkspace.scenario_name} · ${currentWorkspace.version_label}${currentWorkspace.unsaved ? " · Unsaved changes" : ""}`
+      : "The current draft stays unchanged.",
+  };
+  const canRerun = Boolean(run.canonical_input_snapshot?.request);
   return (
     <article className="run-history-detail" aria-label={`Run ${run.run_id} details`}>
       <div className="run-history-detail-header">
         <div>
           <span className={`run-status ${run.status}`}>{displayStatus(run)}</span>
-          <h3>{run.run_type === "optimization" ? "Optimization run" : "Simulation run"}</h3>
+          <h3>{formatRunType(run.run_type)} run · {shortResultID(run.run_id)}</h3>
         </div>
         <button type="button" className="icon-button danger" onClick={() => onDeleteRun?.(run)} aria-label="Delete run" title="Delete run"><Trash2 size={15} /></button>
       </div>
+      <ResultContextBadge context={context} currentWorkspace={currentWorkspace} />
       <dl className="run-history-facts">
         <div><dt>Run identity</dt><dd>{shortID(run.run_id)}</dd></div>
-        <div><dt>Source</dt><dd>{sourceLabel}</dd></div>
+        <div><dt>Scenario</dt><dd>{scenarioName(run, scenarios)}</dd></div>
+        <div><dt>Version</dt><dd>{sourceLabel}</dd></div>
         <div><dt>Created</dt><dd>{formatTimestamp(run.created_at)}</dd></div>
         <div><dt>Scenario fingerprint</dt><dd>{run.scenario_fingerprint ?? "Not returned"}</dd></div>
         <div><dt>Dataset</dt><dd>{run.dataset_references?.[0]?.dataset_id ?? "Not recorded"} {run.dataset_references?.[0]?.version ?? ""}</dd></div>
         <div><dt>Engine</dt><dd>{run.engine?.name ?? "A.T.O.M"} {run.engine?.version ?? ""}</dd></div>
         <div><dt>RF contract</dt><dd>{run.rf_contract?.model_version ?? run.rf_contract?.model ?? "Recorded"}</dd></div>
       </dl>
+      {run.scenario_revision_id && sourceVersionAvailable
+        ? <button type="button" className="run-history-source-button" onClick={() => onOpenSource?.(run)}>Open source Version</button>
+        : run.scenario_revision_id
+          ? <p className="run-history-unavailable">UNAVAILABLE · The exact source Version is not retained, so it cannot be opened.</p>
+          : null}
 
       {run.error ? <div className="run-history-error"><strong>{run.error.code ?? "run_failed"}</strong><span>{run.error.message}</span></div> : null}
       {run.warnings?.length ? <p className="run-history-warning">{run.warnings.join(" ")}</p> : null}
@@ -123,12 +179,13 @@ function RunDetails({ datasetUnavailable, onApplySolution, onDeleteRun, onRunAga
             return (
               <div className="run-history-solution" key={solution.optimization_solution_id ?? solution.id ?? index}>
                 <span><b>{recommended ? "Recommended" : `Alternative ${index + 1}`}</b><small>{solution.id || solution.optimizer_solution_id || "unnamed"}</small></span>
-                <button type="button" onClick={() => onApplySolution?.(run, solution)} disabled={run.status !== "succeeded" || datasetUnavailable}>
-                  <RotateCcw size={13} /> Apply to new revision
+                <button type="button" aria-label={`Apply solution from ${shortResultID(run.run_id)}`} onClick={() => onRequestApply?.({ run, solution, context, destinationName: context.scenario_name })} disabled={run.status !== "succeeded" || datasetUnavailable || !sourceVersionAvailable}>
+                  <RotateCcw size={13} /> Apply solution…
                 </button>
               </div>
             );
           })}
+          {solutions.length > 0 && !sourceVersionAvailable ? <p className="run-history-unavailable">UNAVAILABLE · The source Scenario Version is not retained, so this solution cannot be applied safely.</p> : null}
         </section>
       ) : (
         <div className="run-history-retained-result">
@@ -139,9 +196,14 @@ function RunDetails({ datasetUnavailable, onApplySolution, onDeleteRun, onRunAga
       )}
 
       {run.status === "succeeded" || run.status === "failed" || run.status === "cancelled" ? (
-        <button type="button" className="run-history-rerun" onClick={() => onRunAgain?.(run)} disabled={datasetUnavailable}>
-          <RotateCcw size={14} /> Run again as a new run
-        </button>
+        <div className="run-history-detail-actions">
+          {run.status === "succeeded" && sourceVersionAvailable ? <button type="button" className="run-history-rerun" onClick={() => onRequestReport?.({ run, context: contextWithWorkspace })}><FileText size={14} /> Generate report from {context.run_label}</button> : null}
+          {run.status === "succeeded" && !sourceVersionAvailable ? <p className="run-history-unavailable">UNAVAILABLE · The source Scenario Version is not retained, so a historical Report cannot be generated.</p> : null}
+          <button type="button" className="run-history-rerun" onClick={() => onRunAgain?.(run)} disabled={datasetUnavailable || !canRerun} title={!canRerun ? "Exact Run inputs are unavailable" : undefined}>
+            <RotateCcw size={14} /> Run again from this Run
+          </button>
+          {!canRerun ? <p className="run-history-unavailable">UNAVAILABLE · Exact input for this Run was not retained.</p> : null}
+        </div>
       ) : null}
     </article>
   );
@@ -171,4 +233,12 @@ function shortID(value) {
 function formatTimestamp(value) {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? "Unknown time" : date.toLocaleString();
+}
+
+function scenarioName(run, scenarios = []) {
+  return buildResultContext({ run, scenarios }).scenario_name;
+}
+
+function scenarioVersionLabel(run, scenarios = []) {
+  return buildResultContext({ run, scenarios }).version_label;
 }

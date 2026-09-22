@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Shared current, stale, historical,
+unavailable, and unsupported states; persistent workspace lineage; safe
+Run, Report, Apply, and rerun sources; responsive result context." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 7G Results, Lineage, and Stale-State
+UX | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 7G
+Results, Lineage, and Stale-State UX page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#state-vocabulary" id="toc-state-vocabulary">State
+      vocabulary</a></li>
+      <li><a href="#workspace-and-result-context"
+      id="toc-workspace-and-result-context">Workspace and result
+      context</a></li>
+      <li><a href="#reports-optimization-and-source-safety"
+      id="toc-reports-optimization-and-source-safety">Reports,
+      optimization, and source safety</a></li>
+      <li><a href="#unavailable-unsupported-and-researchreference"
+      id="toc-unavailable-unsupported-and-researchreference">Unavailable,
+      unsupported, and research/reference</a></li>
+      <li><a href="#validation-record"
+      id="toc-validation-record">Validation record</a></li>
+      <li><a href="#concept-7h-recommendation"
+      id="toc-concept-7h-recommendation">Concept 7H
+      recommendation</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Result identity</span>
+        <h1>Concept 7G Results, Lineage, and Stale-State UX</h1>
+        <p>Shared current, stale, historical, unavailable, and
+unsupported states; persistent workspace lineage; safe Run, Report,
+Apply, and rerun sources; responsive result context.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-7g-results-lineage.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Captured 2026-09-22. Concept 7G adds a shared user-facing state model
+to the existing map-first workspace. It keeps the current four-stage
+shell, RF requests, optimizer, domain records, local repositories, and
+Report source bindings intact.</p>
+<h2 id="state-vocabulary">State vocabulary</h2>
+<p>The shared result labels are <strong>CURRENT</strong>,
+<strong>STALE</strong>, <strong>HISTORICAL</strong>,
+<strong>UNAVAILABLE</strong>, and <strong>UNSUPPORTED</strong>.
+Operation-specific progress labels remain (for example, Simulating and
+Optimizing). Research/reference panels carry a visible Research /
+reference label. Draft persistence is separate: the header shows a saved
+Version or Unsaved changes, even when the local draft has autosaved.</p>
+<p><code>resolveRunFreshness</code> and <code>buildResultContext</code>
+derive one UI context from the existing Run, active workspace
+identities, existing invalidation state, and comparable fingerprints.
+They never use timestamps as freshness evidence. A Run with no retained
+source ScenarioRevision stays draft-sourced; the active Version is not
+substituted as its source. Restored result data without an unambiguous
+retained Run is UNAVAILABLE.</p>
+<h2 id="workspace-and-result-context">Workspace and result context</h2>
+<p>The compact header carries Project, Scenario, Version, draft state,
+and the short current/stale Run cue. At narrow widths it keeps the state
+text and the primary workspace identity visible and exposes full
+workspace context from a focusable disclosure. The same result component
+is used in Results, Run History, Reports, and the map legend when
+result-derived layers are visible.</p>
+<p>Current results identify result type, source Scenario/Version or
+draft source, and Run. Stale results retain the original Run context
+after safe invalidation clears result overlays. The stale action reruns
+the current working plan only after an explicit user action; the
+historical Run action replays its exact retained request as a new Run.
+Opening Run History does not switch the current plan. “Open source
+Version” inspects the exact retained Version while leaving the active
+Version plan in place; “Continue from Version” remains the separate
+draft-changing action. Scenario navigation is blocked while it would
+discard an unsaved draft, and the user is told to save that draft as a
+Version first. Switching the active Scenario clears its active result
+association.</p>
+<h2 id="reports-optimization-and-source-safety">Reports, optimization,
+and source safety</h2>
+<p>Reports lead with Scenario, Version, Runs, and date. Artifact ID,
+source kind, SHA-256, generator version, evidence status, and byte size
+stay under Details / Provenance. A live compatibility Report is
+described as generated from the <strong>Current unsaved plan</strong>
+and says it was not tied to a saved Version. A persisted live Report
+remains visibly historical when reopened; if it was not based on a Run,
+it says <strong>No Run</strong> rather than implying that the Report
+itself is unavailable.</p>
+<p>Generating a Report from Run History first confirms the exact source
+Scenario/Version/Run and shows the current workspace. It does not rerun
+RF. The action is unavailable if the exact source Version is not
+retained. Applying an optimization solution confirms its source
+Scenario/Version/Run/public solution and its destination (new Version or
+branch). Historical Apply uses the selected historical Run and solution,
+not current priorities or result state.</p>
+<p>The Pareto legend explains Recommended (highest-ranked feasible under
+current priorities), Selected (currently inspected), and Pareto
+(non-dominated alternatives). These roles stay independent from result
+freshness.</p>
+<h2 id="unavailable-unsupported-and-researchreference">Unavailable,
+unsupported, and research/reference</h2>
+<p>UNAVAILABLE names the missing retained detail, exact input, source
+Version, or dataset and blocks unsafe actions. UNSUPPORTED describes a
+feature or quantity not defined for the selected model/profile. Research
+/ reference distinguishes 140 GHz/Sub-THz, P.1411 candidate, material,
+reflection, measurement validation, and Core Lab outputs from canonical
+planning output.</p>
+<h2 id="validation-record">Validation record</h2>
+<p>The responsive browser suite exercises the workspace at 1440, 1024,
+768, and 390 CSS pixels. The lineage summary must remain visible and
+within the viewport, the app must have no horizontal page overflow, and
+the mobile rail must keep all stages/tools reachable. Unit coverage
+checks freshness, source identity, missing historic inputs, exact source
+Version action guards, dialog focus/cancel, Report provenance
+disclosure, header labels, and map legend context.</p>
+<p>The implementation does not add persistence fields or schemas,
+routes, databases, API contracts, RF/optimizer calculations, result
+payload fields, public solution IDs, Report source bindings, or new
+stale map layers. Exact command outcomes are recorded in <a
+href="concept-7g-test-evidence.json">Concept 7G test evidence</a>.</p>
+<h2 id="concept-7h-recommendation">Concept 7H recommendation</h2>
+<p>Choose <strong>RF Configuration Progressive Disclosure</strong> next.
+The post-7G app now has a shared lineage/state vocabulary and clear
+research/reference labels, while the Concept 7F audit still identifies
+mixed ordinary-planning and reference content in Propagation, plus high
+task effort for modifying RF configuration. The next phase should
+separate Planning, Advanced, and Research boundaries and collapse
+reference detail by default, preserving each tool and every scientific
+term. Keep the map-first shell and current RF behavior. Recheck at 1024
+and 640 pixels because the existing map toolbar/layer-menu density
+remains a separate responsive concern.</p>
+<p>This recommendation is a product-priority proposal only; Concept 7H
+is not implemented here.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

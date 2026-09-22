@@ -1,0 +1,87 @@
+{
+  "concept": "7D",
+  "captured_at": "2026-09-21",
+  "purpose": "Compare the audited pre-change export path with the implemented local evidence lifecycle without implying an RF-result re-run.",
+  "comparisons": [
+    {
+      "area": "report identity",
+      "before": "Exports were render-time outputs with no persisted ReportDefinition.",
+      "after": "A validated ReportDefinition records project, scenario, exact revision when available, source Run IDs, sections, presentation options, and source kind."
+    },
+    {
+      "area": "artifact bytes",
+      "before": "Markdown and printable HTML were delivered through an ephemeral Blob/window path.",
+      "after": "GeneratedReportArtifact bytes are retained in a separate atom-artifacts IndexedDB bytes store and can be downloaded again offline."
+    },
+    {
+      "area": "artifact metadata",
+      "before": "No durable byte size, storage reference, generator version, or availability state.",
+      "after": "Immutable metadata records artifact identity, lineage, format, byte size, local storage reference, schema/generator versions, provenance, warnings, and available/missing/corrupt status."
+    },
+    {
+      "area": "integrity",
+      "before": "No content hash or read-time byte verification.",
+      "after": "SHA-256 is computed before persistence and verified with byte size on read; failed verification blocks delivery and marks the artifact corrupt."
+    },
+    {
+      "area": "historical source",
+      "before": "The current report depended on live React state and did not freeze exact Run lineage.",
+      "after": "Historical reports resolve an exact ScenarioRevision plus explicit compatible Run(s); dirty drafts use an explicit live_compatibility binding rather than silently borrowing an older revision."
+    },
+    {
+      "area": "historical simulation",
+      "before": "No Run History report generation path.",
+      "after": "Run History offers Generate report for succeeded simulation Runs and renders retained compact results while identifying absent signal surfaces/ray geometry."
+    },
+    {
+      "area": "historical optimization",
+      "before": "No durable historical report path.",
+      "after": "Public baseline, Pareto, recommendation, effective priorities, constraints, and selected solution identity are rendered from Run details without rerunning the optimizer; the private evaluation ledger is labelled unavailable."
+    },
+    {
+      "area": "multi-run compatibility",
+      "before": "No durable multi-run relation.",
+      "after": "The source resolver accepts explicit same-revision Run sets and rejects missing or incompatible project/scenario/revision sources. The current UI intentionally generates one selected historical Run at a time."
+    },
+    {
+      "area": "delivery UI",
+      "before": "Current-state PDF/print and Markdown actions only.",
+      "after": "The Report tool lists local artifacts with inspect, download, regenerate-as-new-artifact, and delete actions; Run History adds Generate report."
+    },
+    {
+      "area": "failure behavior",
+      "before": "No retained artifact state to diagnose.",
+      "after": "Missing bytes, corrupt bytes, malformed metadata, storage failure, and quota pressure have explicit states/messages; generation failure never creates a valid-looking partial artifact."
+    },
+    {
+      "area": "deletion and cleanup",
+      "before": "There were no retained report bytes to clean up.",
+      "after": "Artifact deletion removes only its metadata/bytes; source Runs and revisions remain. Project deletion clears project artifacts through the separate store before workspace deletion."
+    },
+    {
+      "area": "storage safety",
+      "before": "No local artifact ceiling or quota warning policy.",
+      "after": "One artifact is capped at 64 MiB, projected usage warns at 80% when browser quota APIs exist, and evidence is never silently evicted."
+    },
+    {
+      "area": "export boundary",
+      "before": "Project export had no report artifact model.",
+      "after": "ProjectV2 export remains planning metadata; report bytes stay in atom-artifacts until a future explicit evidence-bundle format is designed."
+    }
+  ],
+  "unchanged_boundaries": [
+    "RF propagation, interference, optimization, Pareto membership, recommendation, dataset semantics, and API contracts",
+    "atom-scenario-v1 and ProjectV2 compatibility",
+    "Concept 7C Run History capture and compact retained-result policy",
+    "measurement privacy and raw input boundaries"
+  ],
+  "verification": {
+    "frontend_tests": "43 files, 230 tests passed",
+    "frontend_lint": "passed",
+    "frontend_build": "passed with existing bundle-size warning",
+    "responsive_smoke": "33 passed, 3 intentionally skipped across desktop/tablet/mobile workspace projects",
+    "backend_vet_and_race": "passed",
+    "docs_validator": "passed after using the repository's documented temporary PyYAML environment",
+    "concept_7e_recommendation": "Inspect Scenario and Branch UX friction next; defer large evidence bundles or backend durable storage until cross-device or collaboration demand is demonstrated."
+  }
+}

@@ -819,6 +819,12 @@
     },
     {
       "page": "Changelog",
+      "title": "Added",
+      "url": "./changelog.html#added",
+      "text": "Add local-first Concept 7D report artifacts with exact ScenarioRevision/Run lineage, SHA-256 verification, separate IndexedDB retention, historical Run generation, offline download, regeneration, corruption handling, and explicit cleanup/quota behavior. Add local-first Concept 7E Scenario UX with explicit immutable Versions, draft/Save version semantics, Scenario switching, input diffs, branch and duplicate lineage, optimization application choices, friendly Run/Report navigation, and safe input-first comparison. Add Concept 7G result freshness and source lineage across the workspace, Results, Run History, Reports, map legend, and optimization actions, with explicit stale/history safety, draft-source clarity, and accessible state labels. Add Concept 7H RF configuration progressive disclosure, keeping Planning visible while grouping specialist and reference controls under Advanced and Research / reference without changing RF behavior or saved inputs."
+    },
+    {
+      "page": "Changelog",
       "title": "0.8.0 - 2026-09-19",
       "url": "./changelog.html#080---2026-09-19",
       "text": ""
@@ -826,7 +832,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added",
+      "url": "./changelog.html#added-1",
       "text": "Add opt-in deterministic_pareto_archive_search_v1 for bounded priority-independent Pareto candidate discovery, exact evaluated-state archiving, post-discovery priority reranking, deterministic discovery/ranking fingerprints, and Concept 5C audit artifacts; legacy and Concept 5B search policies remain available. Add opt-in deterministic_multistart_coordinate_v1 network search with until-stable coordinate descent, deterministic starts, request-scoped memoization, evaluated-state archive/Pareto metadata, explicit budgets, and Concept 5B audit artifacts while preserving the legacy default. Add Concept 4F.3A.5 diagnostic terrain-clearance primitive with radio-minus-terrain endpoint/sign/no-data/datum/interpolation contracts, NASADEM/FABDEM 432-path regression artifacts, and no canonical RF coupling. Add Concept 4F.1 deterministic height-aware urban_short_range centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts. Add Concept 4F.2 p526-single-edge-v1 diffraction diagnostics with independent P.526-16 reference fixtures, known-height obstruction ledgers, deterministic roof-edge selection, canonical UMa comparison, Fresnel separation, restrained Path Profile UI, and no network/optimizer/surface/interference/building-entry coupling. Add Concept 4F.3A spatial-evidence foundations with explicit DTM/DSM and vertical-datum semantics, windowed GeoTIFF sampling, terrain path evidence, robust building-base/roof ledgers, source-independent external-height matching, conflict/precedence policies, deterministic fingerprints, Ankara readiness artifacts, diagnostic-only inspector routes, and no canonical RF coupling. Add Concept 4F.3A.1 bounded Ankara external-height acquisition and matching pilot with exact Microsoft GlobalMLBuildingFootprints tile selection, raw checksums, input QA, normalized sidecar output, deterministic STRtree matching, source-agreement audits, diagnostic impact, reproducibility, and an honest NO-GO for numeric promotion when the active tiles contain no positive heights. Add Concept 4F.3A.2 diagnostic-only GlobalBuildingAtlas GBA.Height Ankara acquisition with official index/tile checksums, CC BY-NC license gate, windowed raster sa"
     },
     {
@@ -838,7 +844,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-1",
+      "url": "./changelog.html#added-2",
       "text": "Add Concept 4E building-entry analysis for deterministic 2.6/28 GHz service estimates immediately inside representative facades, with standard-derived low/high O2I scenarios, material-data auditing, one batched API request, RF-aware caching, and restrained Analyze/report surfaces."
     },
     {
@@ -862,7 +868,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-2",
+      "url": "./changelog.html#added-3",
       "text": "Add a unified map key, visible local-save status, and recoverable deletion controls."
     },
     {
@@ -886,7 +892,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-3",
+      "url": "./changelog.html#added-4",
       "text": "Add an inspectable 2.5D point-to-point path profiler with optional COG/GeoTIFF terrain, building heights, LOS/Fresnel classification, single knife-edge diffraction, material-aware penetration, environmental sensitivity terms, uncertainty ranges, and an interactive vertical cross section. Add asynchronous batch experiment matrices with cancellation, deterministic dataset/model fingerprints, bounded caching, a headless CLI, progress UI, scenario tables, and Pareto evidence. Add configurable network objectives, weights, hard constraints, feasibility evidence, and non-dominated azimuth solutions while keeping unsupported tilt, power, candidate-site, cost, fiber, and permitting inputs explicit. Add spatially blocked five-fold calibration validation, spatial-diversity rejection, per-cell/per-band and distance/obstruction residual summaries, robust outlier flags, uncertainty quantiles, confidence intervals, and campaign provenance/expiration support. Add regular-grid analytical coverage surfaces, marching-square isolines, opacity and display-threshold controls, plus GeoTIFF, contour GeoJSON, and CSV exports. Add OGC API Features-style, viewport-bounded building queries with pagination and GeoJSON/CSV representations so clients need not transfer the full building dataset. Add a persistent cell Inventory workspace with manual map placement, dragging, duplication, deletion, bounded CSV/GeoJSON import, search, validation, and independent per-cell RF profiles across propagation, network, interference, recommendation, measurement, and report workflows. Add Dataset Pack Studio for arbitrary-region source inspection, geometry repair, reprojection/cropping, schema-v2 manifests, hashes, provenance/licenses/confidence, QA evidence, and optional terrain, clutter, building-height, and material layers. Add a local installed-dataset catalog and atomic manifest-ID switching that retains the active immutable pack on validation failure, with optional administration-key protection."
     },
     {
@@ -952,7 +958,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-4",
+      "url": "./changelog.html#added-5",
       "text": "Add keyboard-accessible full-site search to the static documentation website. Publish the canonical project changelog as a searchable documentation page."
     },
     {
@@ -982,7 +988,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-5",
+      "url": "./changelog.html#added-6",
       "text": "Deterministic sector, network, optimization, interference, recommendation, and measurement-validation workflows. Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths. Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing."
     },
     {
@@ -2888,6 +2894,288 @@
       "text": "The frontend suite covers the domain capture rules, separate IndexedDB envelope, queries, deterministic ordering, terminal immutability, malformed-record isolation, interrupted recovery, size/forbidden-field protection, deletion references, storage unavailability, and the empty/simulation/optimization/failure/cancellation/interruption/history UI states. See the Concept 7C JSON evidence files beside this document. The next recommended phase is Concept 7D: report and artifact delivery UX built on top of these compact run records. It should remain local-first and should not introduce Postgres, PostGIS, object storage, authentication, or remote job orchestration."
     },
     {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Concept 7D Local Report and Artifact Delivery",
+      "url": "./concept-7d-report-artifacts.html",
+      "text": "Traceable local report definitions, immutable report artifacts, historical Run generation, content verification, retention, and delivery behavior. View Markdown source System architecture Concept 7D makes reports first-class local evidence while preserving A.T.O.M's local-first boundary. The lifecycle is: ScenarioRevision + Run(s) ↓ ReportDefinition ↓ GeneratedReportArtifact ↓ inspect · download · regenerate · retain · delete The change does not add PostgreSQL, PostGIS, S3/MinIO, authentication, remote jobs, or a server-side PDF service. It does not change RF propagation, interference, optimization, Pareto membership, recommendation semantics, atom-scenario-v1 , Concept 6 readiness, ProjectV2 compatibility, workspace IndexedDB, or Concept 7C Run History capture."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Validation debt closure",
+      "url": "./concept-7d-report-artifacts.html#validation-debt-closure",
+      "text": "docs/requirements.txt already documents a hashed PyYAML 6.0.3 lock. The active system Python did not expose yaml , so python3 docs/validate_docs.py initially failed with ModuleNotFoundError . The repository policy was left unchanged. A temporary virtual environment installed the documented lock and produced: documentation valid: 36 HTML pages and 41 API paths That pre-change validation produced documentation valid: 36 HTML pages and 41 API paths . After generating the Concept 7C/7D reference pages and evidence links, the final post-change validation produced documentation valid: 38 HTML pages and 41 API paths . The temporary environment is not part of the repository."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "ReportDefinition",
+      "url": "./concept-7d-report-artifacts.html#reportdefinition",
+      "text": "ReportDefinition is mutable project/domain metadata stored through LocalRepository and carried through the existing ProjectV2 compatibility projection. It describes a report configuration, not generated bytes. { schema_version : 1 , report_id , project_id , scenario_id , scenario_revision_id , run_ids : [] , title , sections : [] , presentation_options : {} , source_kind , source_binding , created_at , updated_at } source_kind is one of scenario_revision , historical_run , comparison_runs , or the explicit compatibility mode live_compatibility . A dirty working draft is never silently associated with an older saved revision; the compatibility path records that it is live/unbound. Historical generation requires the exact durable ScenarioRevision and explicit source Run(s)."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "GeneratedReportArtifact",
+      "url": "./concept-7d-report-artifacts.html#generatedreportartifact",
+      "text": "GeneratedReportArtifact is immutable evidence metadata. Its bytes are never overwritten. Regeneration reuses the ReportDefinition/source references and creates a new artifact_id , preserving the previous artifact. Required metadata includes: artifact identity and report/project/scenario lineage; exact ScenarioRevision and Run IDs; format, media type, filename, byte size, storage reference, and availability; report schema version, generator version, and generated timestamp; SHA-256 content hash; provenance, report manifest, and warnings. artifact_id and content_hash have different meanings. The first identifies a generated evidence record; the second verifies its bytes. Identical bytes from two generations may therefore have different artifact identities. The manifest records report_schema_version , generator_version , ScenarioRevision fingerprint, Run IDs, Run input fingerprints, dataset references/hashes, the final artifact content hash, and generated_at . It is not an atom-scenario-v1 hash."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Physical storage",
+      "url": "./concept-7d-report-artifacts.html#physical-storage",
+      "text": "Artifacts use a separate IndexedDB database: atom-artifacts ├── metadata (versioned metadata envelopes keyed by artifact_id) └── bytes (immutable report bytes keyed by artifact_id) This is additive storage. Generated bytes do not enter atom-planning-workspace , ProjectV2, or atom-run-history . Listing reads only the metadata store; an artifact body is hydrated only for explicit download/verification. A LocalArtifactStore contract exposes putArtifact , getArtifact , getArtifactMetadata , listArtifacts , deleteArtifact , and hasArtifact , plus local project cleanup and quota inspection. The current safety ceiling is 64 MiB per artifact. It is a browser-safety ceiling, not an eviction threshold. When navigator.storage.estimate() is available, the store warns at 80% projected use and fails explicitly at quota. It never silently evicts evidence. When quota APIs are missing, storage proceeds and reports no estimate."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Content integrity and failure states",
+      "url": "./concept-7d-report-artifacts.html#content-integrity-and-failure-states",
+      "text": "Bytes are hashed with SHA-256 before persistence. On read, the store verifies both hash and byte size. State Meaning User behavior available Metadata and bytes verify Download is enabled missing Metadata exists but bytes are absent Download is blocked; regeneration is explicit corrupt Bytes fail hash or size verification Bytes are never served as valid evidence; regeneration is explicit Malformed metadata is isolated from the list. A corrupt artifact does not prevent other report rows from loading. A generation failure does not create a valid-looking partial artifact. If report generation succeeds but retention fails, the current Markdown download or print action remains available and the UI says that local retention failed."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Report source resolution",
+      "url": "./concept-7d-report-artifacts.html#report-source-resolution",
+      "text": "resolveReportSource is a pure boundary. It checks that the selected Runs belong to the same project, scenario, and exact ScenarioRevision. It records source fingerprints and dataset references and emits an evidence boundary: ScenarioRevision input values are source evidence; compact Run summaries/details are retained Run evidence; retained public optimization baseline/Pareto/recommendation data remains visible; large RF arrays and private ledgers remain outside the report source; unavailable historical detail is stated rather than recomputed. The existing report renderer remains the semantic center. buildHistoricalPlanningReport adapts durable source records into the existing report model; it does not call a backend endpoint or rerun RF/optimizer work."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Historical simulation",
+      "url": "./concept-7d-report-artifacts.html#historical-simulation",
+      "text": "The Run's compact simulation and coverage summaries populate the RF result and gap sections. The report includes the ScenarioRevision and Run IDs and explicitly says that detailed signal surfaces and ray geometry were not retained when those arrays are absent."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Historical optimization",
+      "url": "./concept-7d-report-artifacts.html#historical-optimization",
+      "text": "The Run's public baseline, Pareto solutions, recommendation, effective priorities, constraints, search policy, and selected solution identity populate the network report. The optimizer is not rerun. The report keeps the existing distinctions between baseline, recommended, selected, and Pareto alternatives."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Multi-Run reports",
+      "url": "./concept-7d-report-artifacts.html#multi-run-reports",
+      "text": "The source boundary accepts compatible Runs from one exact ScenarioRevision, including baseline-plus-optimization or simulation-plus-optimization combinations. Unrelated revisions are rejected. The current UI generates a single selected historical Run from Run History; the resolver is ready for explicit comparison definitions without auto-combining arbitrary project history."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Format path",
+      "url": "./concept-7d-report-artifacts.html#format-path",
+      "text": "There is one report model and two renderers: report model ├── renderMarkdownReport → Markdown artifact └── renderHtmlReport / renderPrintableReport → HTML / print artifact The current browser print workflow remains available. The retained print-ready artifact is HTML and can be downloaded/printed later; no server PDF service is introduced."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "UI workflow",
+      "url": "./concept-7d-report-artifacts.html#ui-workflow",
+      "text": "The existing Report tool now has a compact retained-reports section. Each row shows title, scenario, format, timestamp, byte size, and availability. Selecting a row reveals the artifact ID, ScenarioRevision, source Runs, SHA-256, generator, and evidence status. Actions are: download stored bytes without regeneration; regenerate from the same ReportDefinition/source bindings as a new artifact; delete the artifact only; inspect missing/corrupt status without claiming evidence is available. Run History rows for succeeded Runs expose Generate report . That action prebinds project, scenario, exact ScenarioRevision, and the selected Run, then stores a Markdown artifact. The source Run remains immutable and the ScenarioRevision remains unchanged. Current-state Markdown and print actions remain compatible. They create a ReportDefinition and retain an artifact when possible. If the working draft is dirty, the definition is explicitly live_compatibility with no older revision silently attached."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Deletion and export boundaries",
+      "url": "./concept-7d-report-artifacts.html#deletion-and-export-boundaries",
+      "text": "Deleting an artifact removes only its metadata and bytes. It does not delete its ScenarioRevision, source Run, or ReportDefinition. Deleting a ReportDefinition is intentionally separate and is not implemented as an implicit artifact purge. Project deletion cleans project artifacts through the separate store before removing the project workspace; scenario deletion leaves historical report evidence intact. ProjectV2 export remains a planning-workspace export, not a full evidence archive. A future portable evidence bundle may contain report bytes, metadata, Run summaries, fingerprints, and a checksum manifest. Concept 7D does not add a large ZIP format."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Privacy and determinism",
+      "url": "./concept-7d-report-artifacts.html#privacy-and-determinism",
+      "text": "The report path inherits existing measurement privacy boundaries and does not include credentials, hidden browser state, local filesystem paths, or raw private measurement identifiers. Current map viewport and drawer state are excluded from durable historical input. For a fixed ReportDefinition, ScenarioRevision, Runs, report schema, and generator version, semantic report content is stable. Generated timestamps and artifact IDs are evidence metadata and may differ across regeneration. No historical report silently reconstructs missing RF output."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Evidence files",
+      "url": "./concept-7d-report-artifacts.html#evidence-files",
+      "text": "Pre-change baseline Report source map Artifact storage decision Artifact schema Artifact type vocabulary Storage size and quota policy Test evidence Post-change comparison"
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Concept 7E recommendation",
+      "url": "./concept-7d-report-artifacts.html#concept-7e-recommendation",
+      "text": "Inspect actual report/source friction next, with priority on Scenario and Branch UX productization. The artifact boundary is now explicit; a large evidence bundle or backend durable repository should wait until users demonstrate a need for cross-device sharing, collaboration, or retained large RF outputs. PostgreSQL/PostGIS is not the automatic next phase."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Concept 7E Scenario, Version, and Branch UX",
+      "url": "./concept-7e-scenario-ux.html",
+      "text": "Local-first Scenario switching, explicit immutable Versions, input diffs, branch and duplicate lineage, optimization application, Run/Report navigation, and safe Version comparison. View Markdown source System architecture Concept 7E turns the existing local planning workspace into a legible Scenario and Version product without changing RF computation. A Project remains the local workspace boundary. A Scenario is a named planning lineage. A Version is an immutable input state inside that lineage. Runs and Reports point back to exact Versions when they are saved; a working draft remains explicitly unsaved. The required audit artifacts are the pre-change baseline , the terminology map , the implementation source map , the post-change comparison , and the test evidence ."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Product vocabulary",
+      "url": "./concept-7e-scenario-ux.html#product-vocabulary",
+      "text": "User term Durable meaning Internal identity Project Local workspace containing planning lineages and evidence ProjectV2 , project_id Scenario Named lineage that can have Versions and child branches Scenario , scenario_id Version Immutable input state; never edited in place ScenarioRevision , scenario_revision_id , revision Branch scenario New Scenario whose first Version records its parent branchScenario , parent_scenario_id Save version Explicitly persist the current working plan as a new Version saveScenarioVersion , createScenarioRevision Run Durable execution record Run , run_id Report Report metadata and optional retained evidence bytes ReportDefinition , GeneratedReportArtifact Internal names remain stable for compatibility and storage. User-facing surfaces use Version, Branch scenario, Save version, Run, and Report."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "UX workflow",
+      "url": "./concept-7e-scenario-ux.html#ux-workflow",
+      "text": "The Setup tool contains the Scenario workspace. It is intentionally compact so the map remains the primary planning surface."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Scenario switcher",
+      "url": "./concept-7e-scenario-ux.html#scenario-switcher",
+      "text": "Each Scenario row shows its name, latest Version, last-updated time, branch parent when present, and whether the active Scenario has Unsaved changes. Switching restores the selected Scenario's current input snapshot. It does not call an RF endpoint, recompute a map, or mutate any Version. The project menu remains a quick-access surface and now says Scenarios / Versions. The detailed history surface is the Scenario workspace."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Draft and save semantics",
+      "url": "./concept-7e-scenario-ux.html#draft-and-save-semantics",
+      "text": "Autosave continues to persist the working draft so browser refresh is recoverable. Autosave never creates a Version. When the working plan differs from the active Version, the Scenario workspace says Unsaved changes and Save version is the explicit durable action. When no named Scenario exists, the same action creates the first Scenario and Version. Saving a Version records: Scenario current_revision_id → new Version revision_ids → previous Versions + new Version Version revision = previous revision + 1 parent_revision_id = previous current Version change_summary = optional user text input state = RF-affecting, dataset, cell, optimization, interference, and AOI inputs The existing ProjectV2 compatibility projection stores the Version records under snapshot.domain.revisions . The adapter remains additive: old flat snapshots are reconstructed as Version 1 when no history is present."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Version history and inspection",
+      "url": "./concept-7e-scenario-ux.html#version-history-and-inspection",
+      "text": "The Version list shows Version number, timestamp, change summary, provenance, associated Run count, and associated Report count. Selecting a Version shows only metadata and input state. Report bytes are not hydrated. The pure buildScenarioRevisionDiff(before, after) model reports changes in these sections: cells and enablement, including per-cell overrides and selected cells; RF settings and propagation model; receiver assumptions; interference settings; objectives, constraints, and optimizer configuration; dataset references and inventory Version; AOI/selection geometry and planning mode. The selected Version is compared with its parent Version when possible. A first Version is shown as the initial input state. This is an input diff, not an RF result diff."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Continue and branch",
+      "url": "./concept-7e-scenario-ux.html#continue-and-branch",
+      "text": "Continue from Version copies the selected immutable input state into the Project draft, marks it as requiring a new Run, and retains source Scenario/Version IDs on the draft. It does not change the selected Version. Branch from here asks for a name and creates a new Scenario whose first Version records both parent_scenario_id and parent_revision_id . The parent remains untouched. The branch becomes active, but RF computation is still explicit. Duplicate scenario copies the latest Version into a new independent Scenario. It deliberately clears parent Scenario and parent Version lineage. This is the user-facing distinction: Branch scenario = related lineage; parent remains discoverable Duplicate = independent lineage; content starts from the same input"
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Overview",
+      "url": "./concept-7e-scenario-ux.html#overview",
+      "text": "The active Scenario overview shows name, description, Version count, parent label, last Run, last optimization, last Report, dataset, RF mode, and propagation/profile context. Renaming changes Scenario metadata only; it does not create a new Version."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Optimization lineage",
+      "url": "./concept-7e-scenario-ux.html#optimization-lineage",
+      "text": "Run History and the current Pareto inspector expose two explicit actions: Apply as new Version : append a Version to the source Scenario using the selected historical Version as the input parent; Branch with solution : create a related Scenario from the historical Version and append the solution as its second Version. The source Version, Run, and optimization solution remain immutable. The resulting Version records originating_run_id and originating_solution_id . Both actions invalidate cached RF visualization and require a fresh explicit Run. Applying a historical solution uses the Run's scenario_revision_id when available. It never silently substitutes the currently selected Version. If the recorded dataset is unavailable, application is blocked."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Run History and Reports",
+      "url": "./concept-7e-scenario-ux.html#run-history-and-reports",
+      "text": "Run History rows display friendly Scenario and Version labels. Run details show Scenario, Version, Run identity, dataset, engine, and RF contract. Open source Version navigates to Setup and focuses the exact Version without rerunning RF. Historical optimization solutions retain Apply as new Version and Branch with solution. Report rows display Scenario + Version, format, size, timestamp, availability, and source Run IDs. Open Version navigates to the exact source Version. Version inspection lists associated Runs and Reports as metadata and links back to the existing history/report surfaces. Downloading a retained Report remains an explicit bytes action."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Comparison model",
+      "url": "./concept-7e-scenario-ux.html#comparison-model",
+      "text": "The Scenario workspace compares Scenario A + Version with Scenario B + Version . It renders the input-state diff first. It does not label input differences as better or worse RF performance. An optional retained Run pair is displayed only when both Runs are succeeded and semantically compatible: same Run type, dataset ID/version, and RF model/engine identity. When a compatible pair is absent, the UI says so rather than inventing a comparison. Opening a Run navigates to the existing Run History record. The existing Results KPI comparison remains useful for the current analysis flow, but the durable Scenario comparison is the authoritative Version/input comparison."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Storage and retention boundary",
+      "url": "./concept-7e-scenario-ux.html#storage-and-retention-boundary",
+      "text": "7E does not create a new database. Scenario Versions continue through the existing ProjectV2 compatibility adapter and local repository. Run History and Report Artifacts remain additive local stores. Version inspection uses compact metadata and does not hydrate retained report bytes or large RF arrays. The current ProjectV2 limits remain visible and unchanged: maximum 100 Scenario snapshots per Project; compact cached artifacts retained for the five newest artifact-bearing Scenarios; older cached Scenario artifacts are nulled and marked requiresRerun while exact input/revision metadata remains available. These limits are storage/retention policies, not automatic Version deletion. Deleting a Scenario remains an explicit user action with the existing recoverable undo toast."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Invariants and non-goals",
+      "url": "./concept-7e-scenario-ux.html#invariants-and-non-goals",
+      "text": "Switching, inspecting, comparing, continuing, branching, duplicating, and applying a solution never launch RF compute. A Version is immutable; new input always creates a new Version or draft. Autosave persists a draft; it never silently creates a Version. Historical Run and Report navigation preserves exact IDs. Existing dataset compatibility, ProjectV2 import/export, Run History, Report Artifact, and RF behavior remain additive. No collaboration, authentication, remote persistence, server-side report service, RF algorithm redesign, or optimizer redesign is part of 7E."
+    },
+    {
+      "page": "Concept 7E Scenario, Version, and Branch UX",
+      "title": "Validation",
+      "url": "./concept-7e-scenario-ux.html#validation",
+      "text": "The pure diff model, repository lineage operations, Scenario workspace, Run History labels/actions, and Report source navigation have focused regressions. Final completion evidence is maintained in concept-7e-test-evidence.json and is updated after the responsive browser workflow, Go checks, and documentation validator complete."
+    },
+    {
+      "page": "Concept 7G Results, Lineage, and Stale-State UX",
+      "title": "Concept 7G Results, Lineage, and Stale-State UX",
+      "url": "./concept-7g-results-lineage.html",
+      "text": "Shared current, stale, historical, unavailable, and unsupported states; persistent workspace lineage; safe Run, Report, Apply, and rerun sources; responsive result context. View Markdown source System architecture Captured 2026-09-22. Concept 7G adds a shared user-facing state model to the existing map-first workspace. It keeps the current four-stage shell, RF requests, optimizer, domain records, local repositories, and Report source bindings intact."
+    },
+    {
+      "page": "Concept 7G Results, Lineage, and Stale-State UX",
+      "title": "State vocabulary",
+      "url": "./concept-7g-results-lineage.html#state-vocabulary",
+      "text": "The shared result labels are CURRENT , STALE , HISTORICAL , UNAVAILABLE , and UNSUPPORTED . Operation-specific progress labels remain (for example, Simulating and Optimizing). Research/reference panels carry a visible Research / reference label. Draft persistence is separate: the header shows a saved Version or Unsaved changes, even when the local draft has autosaved. resolveRunFreshness and buildResultContext derive one UI context from the existing Run, active workspace identities, existing invalidation state, and comparable fingerprints. They never use timestamps as freshness evidence. A Run with no retained source ScenarioRevision stays draft-sourced; the active Version is not substituted as its source. Restored result data without an unambiguous retained Run is UNAVAILABLE."
+    },
+    {
+      "page": "Concept 7G Results, Lineage, and Stale-State UX",
+      "title": "Workspace and result context",
+      "url": "./concept-7g-results-lineage.html#workspace-and-result-context",
+      "text": "The compact header carries Project, Scenario, Version, draft state, and the short current/stale Run cue. At narrow widths it keeps the state text and the primary workspace identity visible and exposes full workspace context from a focusable disclosure. The same result component is used in Results, Run History, Reports, and the map legend when result-derived layers are visible. Current results identify result type, source Scenario/Version or draft source, and Run. Stale results retain the original Run context after safe invalidation clears result overlays. The stale action reruns the current working plan only after an explicit user action; the historical Run action replays its exact retained request as a new Run. Opening Run History does not switch the current plan. “Open source Version” inspects the exact retained Version while leaving the active Version plan in place; “Continue from Version” remains the separate draft-changing action. Scenario navigation is blocked while it would discard an unsaved draft, and the user is told to save that draft as a Version first. Switching the active Scenario clears its active result association."
+    },
+    {
+      "page": "Concept 7G Results, Lineage, and Stale-State UX",
+      "title": "Reports, optimization, and source safety",
+      "url": "./concept-7g-results-lineage.html#reports-optimization-and-source-safety",
+      "text": "Reports lead with Scenario, Version, Runs, and date. Artifact ID, source kind, SHA-256, generator version, evidence status, and byte size stay under Details / Provenance. A live compatibility Report is described as generated from the Current unsaved plan and says it was not tied to a saved Version. A persisted live Report remains visibly historical when reopened; if it was not based on a Run, it says No Run rather than implying that the Report itself is unavailable. Generating a Report from Run History first confirms the exact source Scenario/Version/Run and shows the current workspace. It does not rerun RF. The action is unavailable if the exact source Version is not retained. Applying an optimization solution confirms its source Scenario/Version/Run/public solution and its destination (new Version or branch). Historical Apply uses the selected historical Run and solution, not current priorities or result state. The Pareto legend explains Recommended (highest-ranked feasible under current priorities), Selected (currently inspected), and Pareto (non-dominated alternatives). These roles stay independent from result freshness."
+    },
+    {
+      "page": "Concept 7G Results, Lineage, and Stale-State UX",
+      "title": "Unavailable, unsupported, and research/reference",
+      "url": "./concept-7g-results-lineage.html#unavailable-unsupported-and-researchreference",
+      "text": "UNAVAILABLE names the missing retained detail, exact input, source Version, or dataset and blocks unsafe actions. UNSUPPORTED describes a feature or quantity not defined for the selected model/profile. Research / reference distinguishes 140 GHz/Sub-THz, P.1411 candidate, material, reflection, measurement validation, and Core Lab outputs from canonical planning output."
+    },
+    {
+      "page": "Concept 7G Results, Lineage, and Stale-State UX",
+      "title": "Validation record",
+      "url": "./concept-7g-results-lineage.html#validation-record",
+      "text": "The responsive browser suite exercises the workspace at 1440, 1024, 768, and 390 CSS pixels. The lineage summary must remain visible and within the viewport, the app must have no horizontal page overflow, and the mobile rail must keep all stages/tools reachable. Unit coverage checks freshness, source identity, missing historic inputs, exact source Version action guards, dialog focus/cancel, Report provenance disclosure, header labels, and map legend context. The implementation does not add persistence fields or schemas, routes, databases, API contracts, RF/optimizer calculations, result payload fields, public solution IDs, Report source bindings, or new stale map layers. Exact command outcomes are recorded in Concept 7G test evidence ."
+    },
+    {
+      "page": "Concept 7G Results, Lineage, and Stale-State UX",
+      "title": "Concept 7H recommendation",
+      "url": "./concept-7g-results-lineage.html#concept-7h-recommendation",
+      "text": "Choose RF Configuration Progressive Disclosure next. The post-7G app now has a shared lineage/state vocabulary and clear research/reference labels, while the Concept 7F audit still identifies mixed ordinary-planning and reference content in Propagation, plus high task effort for modifying RF configuration. The next phase should separate Planning, Advanced, and Research boundaries and collapse reference detail by default, preserving each tool and every scientific term. Keep the map-first shell and current RF behavior. Recheck at 1024 and 640 pixels because the existing map toolbar/layer-menu density remains a separate responsive concern. This recommendation is a product-priority proposal only; Concept 7H is not implemented here."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Concept 7H RF Configuration Progressive Disclosure",
+      "url": "./concept-7h-rf-progressive-disclosure.html",
+      "text": "Three-tier RF configuration, collapsed specialist tools, control inventory and classification, profile boundaries, measured drawer density, responsive behavior, and compatibility evidence. View Markdown source System architecture Implemented 2026-09-23. Concept 7H reorganizes the existing A.T.O.M controls into Planning, Advanced, and Research / reference tiers. It keeps the four-stage Plan / Simulate / Analyze / Review shell and all existing RF, optimizer, persistence, and result workflows."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Outcome",
+      "url": "./concept-7h-rf-progressive-disclosure.html#outcome",
+      "text": "Planning controls open on first load. Specialist configuration and reference panels start collapsed, remain mounted while hidden, and keep their values. The disclosure state is ordinary React UI state: it is not added to a ScenarioRevision, RF fingerprint, API payload, Run snapshot, Report binding, or local project schema. The machine-readable control inventory contains 190 individual visible controls, grouped into 93 rows for readability. The classification contract assigns every inventory member exactly one presentation tier: 33 Planning, 46 Advanced, and 111 Research / reference. Classification is documentation and presentation metadata only; runtime code does not import it."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Tiers and navigation",
+      "url": "./concept-7h-rf-progressive-disclosure.html#tiers-and-navigation",
+      "text": "Tier Purpose Main paths Planning Inputs and actions used in normal RF planning Plan → Setup → Planning; Plan → Inventory → Planning; Simulate → Propagation → Planning Advanced Specialist canonical configuration and diagnostic analysis Plan → Setup → Advanced model details; Plan → Inventory → Advanced; Simulate → Propagation → Advanced analysis; Analyze → Interference; Analyze → Building entry Research / reference Isolated experimental, reference, campaign-validation, and research-profile controls Simulate → Propagation → Research / reference; Analyze → RF Diagnostics → Research / reference; Review → Data → Research / reference; Analyze → 5G Core The navigation map records the destination and default disclosure state for each existing tool. Tool names remain recognizable; no rail stage, route, shell, or search system was added."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Planning",
+      "url": "./concept-7h-rf-progressive-disclosure.html#planning",
+      "text": "Setup keeps planning mode, technology/profile, propagation model, conducted TX power, cell/network selection, and the global Run action easy to reach. Propagation shows ray count, radius, azimuth, beam width, and the existing relevant network optimization action. The primary Run action remains in the global command bar rather than being duplicated inside the drawer. The Inventory editor opens its identity/location and common profile group. Its common profile fields include technology, frequency, bandwidth, conducted power, radius, beam width, antenna height, orientation, receiver height, receiver threshold mode, and manual RX sensitivity. Ordinary planning does not require editing every link-budget term."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Advanced",
+      "url": "./concept-7h-rf-progressive-disclosure.html#advanced",
+      "text": "Advanced Setup details expose model applicability and link-budget assumptions. Inventory Advanced exposes carrier identifiers, TX/RX gain, system and polarization loss, downtilt, antenna patterns, cell load, reuse, PCI, and derived receiver-noise/sensitivity inputs. Manual sensitivity, derived sensitivity, building-service threshold, and radio-quality thresholds remain separate concepts. Propagation Advanced contains network optimization objectives/constraints and the vertical path-profile diagnostic. The P.526 path profile remains an isolated diagnostic; opening or running it does not add diffraction loss to canonical UMa. Interference stays under Analyze and its radio-quality output is distinct from propagation coverage. Building entry stays under Analyze as a specialist action and requires no facade inputs in ordinary planning. The Advanced indicator reports configured optimizer priorities/constraints; a completed diagnostic path alone does not imply an active plan configuration. Inventory reports explicit per-cell Advanced overrides. An advanced value is a valid configuration, not an error. If an advanced field blocks an operation, its parent section opens, labels the attention state, and focuses the invalid field."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Research / reference",
+      "url": "./concept-7h-rf-progressive-disclosure.html#research--reference",
+      "text": "Propagation Research / reference contains Sub-THz atmospheric evaluation and P.1411 candidate evaluation. RF Diagnostics leads with canonical result/path actions; its Research / reference disclosure contains measurement campaigns, material/facade reference, and specular reflection. Review → Data separates planning data, dataset details, advanced model details, and validation/calibration evidence. The 140 GHz profile is explicitly marked Research / reference, not canonical validation, and not production-calibrated. Radio quality is UNSUPPORTED for that profile; the unsupported optimizer priority remains configured and is not applied. P.1411 remains an alternative/reference candidate, never automatically additive propagation loss. Material remains a slab/component reference, reflection remains an isolated single-bounce reference, and measurement validation does not promote a model automatically. Existing Research / reference result badges and CURRENT / STALE / HISTORICAL / UNAVAILABLE / UNSUPPORTED vocabulary are preserved; CURRENT is not a claim of canonical status."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Profile visibility and state preservation",
+      "url": "./concept-7h-rf-progressive-disclosure.html#profile-visibility-and-state-preservation",
+      "text": "The profile visibility record describes the 2.6 GHz LTE, 28 GHz 5G, legacy, and 140 GHz research contexts. Selecting a different profile does not clear a hidden Advanced or Research value merely because its disclosure is closed. Unsupported radio quality is labeled and disabled for the 140 GHz research profile while its stored optimizer priority remains intact. Opening/closing a disclosure does not dirty the plan or start RF work. Editing an RF value inside a collapsed section still follows the existing invalidation behavior. A research input edit updates only the Research activity indicator; it does not create a canonical RF result or request. “Open source Version” navigation opens the Scenario workspace disclosure so the selected exact Version is visible without activating its inputs. The inventory marks reference-panel inputs as persisted: false : collapse/reopen preserves their component-local values, but saved Versions do not contain those inputs and a full page reload restores their established panel defaults. 7H keeps that existing persistence boundary. In contrast, per-cell Advanced RF overrides already belong to the saved plan and the responsive browser suite verifies an override through Version save and reload."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Interaction and responsive evidence",
+      "url": "./concept-7h-rf-progressive-disclosure.html#interaction-and-responsive-evidence",
+      "text": "At 1440 × 960, the baseline Propagation drawer showed four sections together and 38 controls across them (5 propagation, 13 path-profile, 10 Sub-THz, 10 P.1411); two research sections were open. After 7H, the same drawer has one Planning section open, five common Propagation controls visible, and Advanced and Research / reference collapsed. Research controls visible by default fall from 20 to zero. Its measured scroll height falls from 2,451 px to 791 px, a 67.7% reduction. RF Diagnostics changes from three fully visible sections (59 controls, including material and reflection references) to canonical diagnostic actions plus a collapsed Research / reference group. Its measured scroll height falls from 2,657 px to 791 px (70.2%). Review → Data changes from measurement validation mixed into the visible dataset/model content to one open Planning data group and three collapsed detail groups. Its measured scroll height falls from 1,838 px to 852 px (53.6%). These are content-density measurements, not speed claims. Full details are in interaction evidence . Responsive evidence covers 1440, 1280, 1024, 640, and 390 CSS-pixel widths. Disclosure headers and the global Run action remain reachable, hidden details stay scrollable when opened, and the drawer/document show no horizontal overflow at those sizes. The map remains the dominant surface at desktop sizes. The unrelated map-toolbar layout was not changed. Exact measured dimensions and checks are in responsive evidence ."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Compatibility and validation",
+      "url": "./concept-7h-rf-progressive-disclosure.html#compatibility-and-validation",
+      "text": "Concept 7H changes presentation boundaries only. It does not change RF formulas, defaults, request fields, optimizer behavior, model applicability, scores, Pareto IDs, ScenarioRevision contents, atom-scenario-v1 , Run snapshots, report-source bindings, datasets, or results. Request payload builders and backend RF code were not changed for this concept. The 2.6 GHz workflow test runs the same 4G profile after collapsing/reopening Planning; existing request-equivalence tests cover 2.6/28 GHz, interference, and optimization, while request-builder tests cover building entry and the isolated reference payloads. Existing Concept 7G domain and artifact tests cover exact Version, Run snapshot, report binding, and UI-only-state boundaries. Targeted accessibility behavior includes semantic disclosure buttons, aria-expanded , descriptive accessible names, Enter/Space activation, focus guidance on automatic open, and validation attention that opens and focuses the invalid field. The control inventory/classification test ensures every concrete control remains represented exactly once. Recorded commands and outcomes are in test evidence . The production build remains near the prior size and still emits Vite's existing >500 kB chunk warning; no broad code splitting was part of 7H. The measured bundle comparison is in post-change comparison ."
+    },
+    {
+      "page": "Concept 7H RF Configuration Progressive Disclosure",
+      "title": "Concept 7I recommendation",
+      "url": "./concept-7h-rf-progressive-disclosure.html#concept-7i-recommendation",
+      "text": "Proceed with Safe Feature Lazy Loading / bundle splitting as the next investigation. The Planning path is materially shorter, while the production JavaScript chunk remains 957.70 kB minified and triggers Vite's large-chunk warning. Profile dormant research/reference panels, report tools, experiments, and Core Lab as candidate boundaries, then validate request/result state continuity and quantify initial-load behavior before adopting splits. Concept 7H did not implement lazy imports."
+    },
+    {
       "page": "Contributing",
       "title": "Contributing",
       "url": "./contributing.html",
@@ -3701,7 +3989,7 @@
       "page": "Overview",
       "title": "Reference library",
       "url": "./index.html#reference-heading",
-      "text": "Use the focused guides above for orientation, then move into the detailed API, algorithms, deployment, and release history. REST API reference Endpoints and contracts Algorithms and RF physics Equations and geometry Capability details Supported workflows Reading propagation maps Visual interpretation Production deployment Operations guide Dataset Pack Studio Build arbitrary-region packs Modeling limits Confidence boundary Concept 4E building entry Facade-entry model reference Concept 4F.1 height-aware obstruction Centerline roof classifier Concept 4G.1 antenna and link budget Explicit RF term contract Concept 4I.1 140 GHz audit Applicability and evidence boundary Concept 4I.2B P.1411 candidates Strict Table 4 reference gates Concept 4I.3 measurement validation Evidence, calibration, and spatial holdouts FAQ and troubleshooting Common questions Project changelog Releases and updates Contributor guide Development workflow"
+      "text": "Use the focused guides above for orientation, then move into the detailed API, algorithms, deployment, and release history. REST API reference Endpoints and contracts Algorithms and RF physics Equations and geometry Capability details Supported workflows Reading propagation maps Visual interpretation Production deployment Operations guide Dataset Pack Studio Build arbitrary-region packs Modeling limits Confidence boundary Concept 4E building entry Facade-entry model reference Concept 4F.1 height-aware obstruction Centerline roof classifier Concept 4G.1 antenna and link budget Explicit RF term contract Concept 4I.1 140 GHz audit Applicability and evidence boundary Concept 4I.2B P.1411 candidates Strict Table 4 reference gates Concept 4I.3 measurement validation Evidence, calibration, and spatial holdouts Concept 7C durable run history Local execution lineage Concept 7D report artifacts Local evidence and delivery Concept 7E Scenario UX Versions, branches, and lineage Concept 7H RF configuration Planning, Advanced, and Research / reference FAQ and troubleshooting Common questions Project changelog Releases and updates Contributor guide Development workflow"
     },
     {
       "page": "Modeling Limits",

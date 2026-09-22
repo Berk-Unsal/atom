@@ -1,0 +1,22 @@
+{
+  "concept": "7E",
+  "title": "Scenario UX terminology map",
+  "version": 1,
+  "user_vocabulary": [
+    { "display": "Project", "internal": ["ProjectV2", "project_id"], "meaning": "A local workspace containing Scenarios, Runs, Reports, and dataset context" },
+    { "display": "Scenario", "internal": ["Scenario", "scenario_id"], "meaning": "A named planning lineage" },
+    { "display": "Version", "internal": ["ScenarioRevision", "scenario_revision_id", "revision"], "meaning": "An immutable input state inside a Scenario" },
+    { "display": "Branch scenario", "internal": ["branchScenario", "parent_scenario_id"], "meaning": "A new Scenario whose first Version records the source Scenario and Version" },
+    { "display": "Save version", "internal": ["saveScenarioVersion", "createScenarioRevision"], "meaning": "Persist the current working plan as a new immutable Version" },
+    { "display": "Run", "internal": ["Run", "run_id"], "meaning": "A durable execution record bound to a Version when the plan was saved" },
+    { "display": "Report", "internal": ["ReportDefinition", "GeneratedReportArtifact"], "meaning": "A report definition or retained evidence artifact associated with a Version and optional Runs" }
+  ],
+  "interaction_rules": [
+    "Opening or inspecting a Version never mutates it",
+    "Continue from Version creates a working draft; Save version is still explicit",
+    "Branch from here creates a new Scenario with parent Scenario and source Version metadata",
+    "Duplicate scenario creates independent lineage with no parent Scenario",
+    "Applying an optimization solution defaults to a new Version; branch application is explicitly available",
+    "Run and Report surfaces use friendly Scenario and Version labels while retaining stable internal IDs"
+  ]
+}

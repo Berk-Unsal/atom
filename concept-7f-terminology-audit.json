@@ -1,0 +1,174 @@
+{
+  "concept": "7F",
+  "artifact": "terminology-audit",
+  "capturedOn": "2026-09-22",
+  "principle": "Preserve scientifically deliberate distinctions; improve discoverability with short explanations rather than flattening accurate terms.",
+  "terms": [
+    {
+      "term": "coverage",
+      "currentLocations": ["Results", "coverage gaps map layer", "report gap summary"],
+      "meaning": "Spatial service outcome or area meeting a defined quality condition.",
+      "status": "keep",
+      "risk": "Users may read it as raw received power because both appear on the map.",
+      "recommendation": "Add a short definition near the legend or Results tab: coverage is the area meeting the selected service criterion."
+    },
+    {
+      "term": "propagation reach",
+      "currentLocations": ["optimization objectives", "radius/geometry controls"],
+      "meaning": "How far the modeled propagation extends or is evaluated.",
+      "status": "keep-distinct",
+      "risk": "Could be confused with coverage, which includes a quality threshold.",
+      "recommendation": "Keep the term; pair it with a one-line distinction from service coverage."
+    },
+    {
+      "term": "signal",
+      "currentLocations": ["Signal surface tool", "Signal map toggle", "received power legend"],
+      "meaning": "Modeled signal/received-power representation.",
+      "status": "keep",
+      "risk": "Signal can be read as a binary service state.",
+      "recommendation": "Use Received power or Signal surface in metric-specific locations; use Signal as the concise map-layer label."
+    },
+    {
+      "term": "serviceability",
+      "currentLocations": ["objective and report language", "quality outcomes"],
+      "meaning": "Whether a location or demand point meets the selected service condition.",
+      "status": "keep-distinct",
+      "risk": "May be read as the same as coverage.",
+      "recommendation": "Explain serviceability as the pass/fail criterion used to derive coverage or demand hits."
+    },
+    {
+      "term": "scenario",
+      "currentLocations": ["Project menu", "Setup Scenario workspace", "Run and Report metadata"],
+      "meaning": "Named planning branch containing current inputs and Versions.",
+      "status": "keep",
+      "risk": "New users may treat Scenario as a temporary form state.",
+      "recommendation": "Show a short helper: a Scenario is a named planning branch; save Versions inside it."
+    },
+    {
+      "term": "version",
+      "currentLocations": ["Save a Version", "Version history", "source Version", "branch/continue"],
+      "meaning": "Saved immutable or revisioned planning state used as a source for Runs and Reports.",
+      "status": "keep",
+      "risk": "The active Version is not visible in the header, and Save version appears in multiple places.",
+      "recommendation": "Keep Version; persist its name/number and source status next to the active Scenario."
+    },
+    {
+      "term": "run",
+      "currentLocations": ["Run Sector", "Run History", "Run again", "source Run"],
+      "meaning": "An executed simulation or optimization record.",
+      "status": "keep-with-helper",
+      "risk": "Run can sound like a transient button action rather than a durable evidence object.",
+      "recommendation": "First-use copy should say “Run: saved computation record” or similar."
+    },
+    {
+      "term": "result",
+      "currentLocations": ["Results", "current RF result", "result summary", "result views"],
+      "meaning": "Output of the latest compatible computation or a selected historical computation.",
+      "status": "keep",
+      "risk": "Current and historical result are not consistently qualified.",
+      "recommendation": "Use Current result, Historical result, and Result out of date as explicit state labels."
+    },
+    {
+      "term": "report",
+      "currentLocations": ["Review > Report", "Generate report", "Planning Report"],
+      "meaning": "Human-readable planning output derived from a current or historical source.",
+      "status": "keep",
+      "risk": "Retained artifact terminology competes with the user-facing output concept.",
+      "recommendation": "Use Report in primary UI and reserve artifact for advanced retained-output metadata."
+    },
+    {
+      "term": "dataset",
+      "currentLocations": ["Data panel", "Run metadata", "dataset pack"],
+      "meaning": "The buildings, demand, cell, and source data used by planning/runtime models.",
+      "status": "keep",
+      "risk": "Dataset, installed pack, and static source are shown at different levels.",
+      "recommendation": "Label active Dataset separately from Dataset Pack and source/license evidence."
+    },
+    {
+      "term": "inventory",
+      "currentLocations": ["Plan > Inventory", "cell inventory", "import"],
+      "meaning": "The editable local set of planning cells and their profiles.",
+      "status": "keep",
+      "risk": "A new user may not know Inventory is the cell-editing workspace.",
+      "recommendation": "Use Cell inventory as the panel title and retain Inventory as the stage/tool label."
+    },
+    {
+      "term": "cell",
+      "currentLocations": ["cell list", "cell ID", "selected cell", "Run context"],
+      "meaning": "A radio planning entity with a per-cell RF profile.",
+      "status": "keep",
+      "risk": "Cell can be confused with a geographic grid cell or demand cell.",
+      "recommendation": "Use radio cell or planning cell in first-use help; keep cell in compact controls."
+    },
+    {
+      "term": "tower",
+      "currentLocations": ["selected tower", "report copy", "map markers"],
+      "meaning": "Physical or map-visible cell/tower placement context.",
+      "status": "clarify",
+      "risk": "The domain primarily models cells; tower can imply an infrastructure asset not represented by the selected RF entity.",
+      "recommendation": "Use selected cell in RF UI and selected site/tower only when describing physical placement."
+    },
+    {
+      "term": "site",
+      "currentLocations": ["potential physical planning language", "recommendation contexts"],
+      "meaning": "Physical location hosting one or more radio cells.",
+      "status": "keep-when-physical",
+      "risk": "Site and cell are not interchangeable.",
+      "recommendation": "Use site for placement/infrastructure; use cell for RF configuration and Run scope."
+    },
+    {
+      "term": "baseline",
+      "currentLocations": ["optimization", "Scenario comparison", "reports"],
+      "meaning": "Reference plan or Version against which another state is compared.",
+      "status": "keep",
+      "risk": "A baseline can be a Version, current draft, or optimization starting point if not qualified.",
+      "recommendation": "Always name the baseline source: baseline Version, baseline Run, or current draft."
+    },
+    {
+      "term": "selected",
+      "currentLocations": ["selected cell", "selected solution", "selected cluster"],
+      "meaning": "The user’s active choice in a list, map, or solution set.",
+      "status": "keep",
+      "risk": "Selected can be confused with Recommended.",
+      "recommendation": "Use Selected for user choice only; never use it as a quality judgment."
+    },
+    {
+      "term": "recommended",
+      "currentLocations": ["optimization recommendation", "recommendation map features"],
+      "meaning": "System-generated preferred solution under the current objective/policy.",
+      "status": "keep-distinct",
+      "risk": "Users may assume Recommended has been applied.",
+      "recommendation": "Pair with “not applied” or “apply as new Version/branch” until the user commits it."
+    },
+    {
+      "term": "optimized",
+      "currentLocations": ["baseline vs optimized", "optimization results", "reports"],
+      "meaning": "A state produced by an optimization operation.",
+      "status": "keep",
+      "risk": "Optimized can be read as globally best rather than best under selected priorities/constraints.",
+      "recommendation": "Use optimized under selected priorities/constraints in details; retain concise labels in charts."
+    },
+    {
+      "term": "planning estimate",
+      "currentLocations": ["header link"],
+      "meaning": "Likely model limitations or confidence guidance.",
+      "status": "clarify",
+      "risk": "The phrase does not tell the user whether it is a link to limitations, uncertainty, or a numeric estimate.",
+      "recommendation": "Use Model limitations, Model confidence, or Planning assumptions based on the actual destination."
+    },
+    {
+      "term": "artifact",
+      "currentLocations": ["Report artifact panel", "hash/generator/evidence status"],
+      "meaning": "Retained generated bytes and their integrity/lineage metadata.",
+      "status": "advanced-only",
+      "risk": "It makes ordinary report generation sound like storage management.",
+      "recommendation": "Keep in retained-output detail and technical evidence views; lead with Report elsewhere."
+    }
+  ],
+  "stateVocabulary": {
+    "recommended": ["Current result", "Result out of date", "Historical result", "Unavailable", "Unsupported", "Research/reference"],
+    "avoidAsStandalone": ["Ready", "Saved locally", "Selected", "Optimized"],
+    "reason": "These short labels are useful but need scope or source context to be unambiguous."
+  },
+  "highestPriorityTerms": ["Version", "Run", "Result", "Report/artifact", "coverage/serviceability", "tower/cell/site", "planning estimate"]
+}

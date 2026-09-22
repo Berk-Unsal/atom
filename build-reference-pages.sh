@@ -89,6 +89,14 @@ build_page concept-6a1-campaign-tooling.md concept-6a1-campaign-tooling.html "Co
   "Ankara receive-side campaign tooling, Signal Collector V6 raw preservation, transmitter truth mapping, quantity-specific readiness, dry-run validation, and the Concept 6B gate."
 build_page concept-7c-run-history.md concept-7c-run-history.html "Concept 7C Durable Local Run History" "Local persistence" \
   "Separate browser-local run history for exact draft execution snapshots, compact results, lifecycle recovery, lineage, deletion, and safe historical inspection."
+build_page concept-7d-report-artifacts.md concept-7d-report-artifacts.html "Concept 7D Local Report and Artifact Delivery" "Local evidence" \
+  "Traceable local report definitions, immutable report artifacts, historical Run generation, content verification, retention, and delivery behavior."
+build_page concept-7e-scenario-ux.md concept-7e-scenario-ux.html "Concept 7E Scenario, Version, and Branch UX" "Scenario productization" \
+  "Local-first Scenario switching, explicit immutable Versions, input diffs, branch and duplicate lineage, optimization application, Run/Report navigation, and safe Version comparison."
+build_page concept-7g-results-lineage.md concept-7g-results-lineage.html "Concept 7G Results, Lineage, and Stale-State UX" "Result identity" \
+  "Shared current, stale, historical, unavailable, and unsupported states; persistent workspace lineage; safe Run, Report, Apply, and rerun sources; responsive result context."
+build_page concept-7h-rf-progressive-disclosure.md concept-7h-rf-progressive-disclosure.html "Concept 7H RF Configuration Progressive Disclosure" "Workspace UX" \
+  "Three-tier RF configuration, collapsed specialist tools, control inventory and classification, profile boundaries, measured drawer density, responsive behavior, and compatibility evidence."
 build_page concept-4i4-material-facade-reference.md concept-4i4-material-facade-reference.html "Concept 4I.4 Material and Facade Reference" "Scientific reference" \
   "An isolated ITU-R P.2040-4 homogeneous slab ledger with explicit electrical properties, TE/TM coefficients, applicability, numerical stability, controlled fixtures, and non-combined heuristic comparison."
 build_page concept-4i5a-reflection-audit.md concept-4i5a-reflection-audit.html "Concept 4I.5A Specular Reflection Audit" "Scientific audit" \

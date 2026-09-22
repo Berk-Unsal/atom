@@ -1,0 +1,71 @@
+{
+  "concept": "7D",
+  "captured_at": "2026-09-21",
+  "validation_scope": "ReportDefinition validation, source compatibility, historical report reconstruction, separate IndexedDB artifact storage, SHA-256 verification, retained-report UI actions, and existing renderer compatibility.",
+  "frontend": {
+    "command": "cd frontend-react && npm test -- --run",
+    "status": "passed",
+    "test_files": 43,
+    "tests": 230,
+    "notable_coverage": [
+      "artifact persistence, reload, metadata-only listing, SHA-256 and byte-size verification",
+      "missing and corrupt artifact isolation",
+      "project cleanup and unavailable local storage",
+      "historical simulation and optimization source binding",
+      "historical Pareto, baseline, recommendation, selected-solution, and effective-priority preservation",
+      "Markdown/HTML artifact generation and regeneration identity",
+      "retained-report inspect/download/regenerate/delete actions",
+      "Run History Generate report action",
+      "existing report export behavior"
+    ]
+  },
+  "frontend_lint": {
+    "command": "cd frontend-react && npm run lint",
+    "status": "passed",
+    "warnings": []
+  },
+  "frontend_build": {
+    "command": "cd frontend-react && npm run build",
+    "status": "passed",
+    "note": "Vite reports the existing single application bundle is larger than 500 kB after minification; this is a warning, not a build failure."
+  },
+  "responsive_smoke": {
+    "command": "cd frontend-react && npm run test:e2e -- --grep workspace",
+    "status": "passed",
+    "result": "33 passed, 3 intentionally skipped across desktop, tablet, and mobile projects",
+    "scope_note": "Existing workspace smoke coverage; no RF request or report-specific browser workflow was added in this pass."
+  },
+  "backend": {
+    "command": "cd backend-go && go vet ./... && go test -race ./...",
+    "status": "passed",
+    "packages": [
+      "ankara-5g-raytracer",
+      "ankara-5g-raytracer/raytracer",
+      "cmd/import-concept-6a1",
+      "cmd/run-experiment",
+      "cmd/validate-dataset"
+    ],
+    "scope_note": "No backend RF or optimizer files changed for Concept 7D."
+  },
+  "documentation": {
+    "build_command": "sh docs/build-reference-pages.sh",
+    "build_status": "passed",
+    "build_note": "Pandoc emitted its existing --mathml deprecation warning while generating the reference pages.",
+    "validator_command": "python docs/validate_docs.py",
+    "validator_status": "passed",
+    "validator_result": "documentation valid: 38 HTML pages and 41 API paths",
+    "dependency_resolution": "The first system-Python invocation failed because yaml was unavailable. A temporary virtual environment installed the already documented, hash-pinned docs/requirements.txt lock; no dependency policy or repository lock changed."
+  },
+  "release_checks": {
+    "version_command": "python3 scripts/versioning.py check",
+    "version_status": "passed: A.T.O.M version metadata is consistent: 0.8.0",
+    "diff_command": "git diff --check",
+    "diff_status": "passed"
+  },
+  "invariance": [
+    "No database server, PostGIS, object store, authentication, remote job, or server-side PDF service was added.",
+    "No RF propagation, interference, optimization, Pareto, recommendation, dataset, or API semantics changed.",
+    "ProjectV2, atom-scenario-v1, atom-planning-workspace, and atom-run-history remain outside generated artifact bytes.",
+    "Historical report generation does not call RF or optimizer endpoints and states unavailable large retained detail explicitly."
+  ]
+}

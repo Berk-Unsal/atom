@@ -1,0 +1,23 @@
+{
+  "implemented": [
+    {
+      "type": "report",
+      "status": "implemented",
+      "formats": ["markdown", "html"],
+      "notes": "HTML is the canonical printable/Save-as-PDF path; no server-side PDF service is used."
+    }
+  ],
+  "boundary_only": [
+    { "type": "signal_surface", "status": "vocabulary only", "reason": "large RF surface is not retained by Concept 7C Run History" },
+    { "type": "ray_trace", "status": "vocabulary only", "reason": "ray arrays remain outside normal metadata persistence" },
+    { "type": "path_profile", "status": "vocabulary only", "reason": "requires an explicit retained output policy" },
+    { "type": "measurement_export", "status": "vocabulary only", "reason": "privacy and campaign evidence boundary remains unchanged" },
+    { "type": "validation_residuals", "status": "vocabulary only", "reason": "future evidence output; not a report byte alias" },
+    { "type": "coverage_export", "status": "vocabulary only", "reason": "large GIS output remains an explicit future artifact" },
+    { "type": "optimization_export", "status": "vocabulary only", "reason": "public optimization summaries are currently retained inside Run details" }
+  ],
+  "optional_not_implemented": {
+    "type": "run_export_json",
+    "reason": "compact Run export is useful but not required to establish the report artifact lifecycle"
+  }
+}

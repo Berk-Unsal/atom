@@ -1,0 +1,32 @@
+{
+  "concept": "7G",
+  "artifact": "lineage-context",
+  "capturedOn": "2026-09-22",
+  "persistenceChanges": false,
+  "workspaceLineage": {
+    "derivedBy": "buildWorkspaceLineage",
+    "fields": ["project_id", "project_name", "scenario_id", "scenario_name", "scenario_revision_id", "version_label", "draft_state", "unsaved"],
+    "headerPresentation": "Persistent compact Project menu plus Scenario / Version / draft summary; summary opens a keyboard-accessible details popover.",
+    "draftSemantics": "Unsaved changes is independent of autosaved local persistence and does not create an immutable Version."
+  },
+  "resultContext": {
+    "derivedBy": "buildResultContext / resolveRunFreshness",
+    "fields": ["freshness", "project_id", "project_name", "scenario_id", "scenario_name", "scenario_revision_id", "version_label", "run_id", "run_label", "run_type", "run_created_at", "scenario_fingerprint", "input_fingerprint", "source_kind", "draft_changed_since_run", "dataset_ref", "historical", "unavailable_reason", "unsupported_reason", "run"],
+    "sourceRule": "If a Run exists, its retained ScenarioRevision/canonical snapshot owns the source. A missing Run revision is not filled with the currently active Version.",
+    "freshnessRule": "Use exact known identity mismatch, existing invalidation, and comparable existing fingerprints; timestamps never establish freshness.",
+    "restoredResultRule": "If result UI state exists but no unambiguous current Run association is retained, report UNAVAILABLE rather than guessing by time."
+  },
+  "surfaces": [
+    {"surface": "workspace header", "content": ["Project", "Scenario", "Version", "Saved Version or Unsaved changes", "compact current/stale Run cue"], "density": "compact; popover holds the complete workspace identity"},
+    {"surface": "Results", "content": ["shared state", "Scenario", "Version or draft source", "result type", "Run/date", "Run again / View Run where safe"]},
+    {"surface": "Run History", "content": ["Historical state", "Scenario", "Version", "Run type/date", "fingerprint and dataset on demand", "current workspace if different"]},
+    {"surface": "Reports", "content": ["Scenario", "Version", "Run(s)", "generated date", "historical/current-unsaved state", "technical provenance on demand"]},
+    {"surface": "map legend", "content": ["state", "source Scenario/Version", "short Run ID when a result-derived layer is visible"]},
+    {"surface": "optimization Apply", "content": ["exact source Scenario/Version/Run/public solution ID", "new Version or new branch destination"]}
+  ],
+  "identityDisplay": {
+    "default": "Short Run ID and user-facing Scenario/Version labels.",
+    "technicalDetails": ["full Run ID", "ScenarioRevision ID", "scenario fingerprint", "input fingerprint", "dataset ID/version", "source kind"],
+    "runDate": "Use the same Run.created_at source in Results, Run History, and Report context."
+  }
+}

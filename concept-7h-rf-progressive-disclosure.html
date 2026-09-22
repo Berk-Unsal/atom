@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Three-tier RF configuration,
+collapsed specialist tools, control inventory and classification,
+profile boundaries, measured drawer density, responsive behavior, and
+compatibility evidence." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 7H RF Configuration Progressive
+Disclosure | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 7H RF
+Configuration Progressive Disclosure page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#outcome" id="toc-outcome">Outcome</a></li>
+      <li><a href="#tiers-and-navigation"
+      id="toc-tiers-and-navigation">Tiers and navigation</a></li>
+      <li><a href="#profile-visibility-and-state-preservation"
+      id="toc-profile-visibility-and-state-preservation">Profile
+      visibility and state preservation</a></li>
+      <li><a href="#interaction-and-responsive-evidence"
+      id="toc-interaction-and-responsive-evidence">Interaction and
+      responsive evidence</a></li>
+      <li><a href="#compatibility-and-validation"
+      id="toc-compatibility-and-validation">Compatibility and
+      validation</a></li>
+      <li><a href="#concept-7i-recommendation"
+      id="toc-concept-7i-recommendation">Concept 7I
+      recommendation</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Workspace UX</span>
+        <h1>Concept 7H RF Configuration Progressive Disclosure</h1>
+        <p>Three-tier RF configuration, collapsed specialist tools,
+control inventory and classification, profile boundaries, measured
+drawer density, responsive behavior, and compatibility evidence.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-7h-rf-progressive-disclosure.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Implemented 2026-09-23. Concept 7H reorganizes the existing A.T.O.M
+controls into Planning, Advanced, and Research / reference tiers. It
+keeps the four-stage Plan / Simulate / Analyze / Review shell and all
+existing RF, optimizer, persistence, and result workflows.</p>
+<h2 id="outcome">Outcome</h2>
+<p>Planning controls open on first load. Specialist configuration and
+reference panels start collapsed, remain mounted while hidden, and keep
+their values. The disclosure state is ordinary React UI state: it is not
+added to a ScenarioRevision, RF fingerprint, API payload, Run snapshot,
+Report binding, or local project schema.</p>
+<p>The machine-readable <a
+href="concept-7h-control-inventory.json">control inventory</a> contains
+190 individual visible controls, grouped into 93 rows for readability.
+The <a href="concept-7h-classification.json">classification contract</a>
+assigns every inventory member exactly one presentation tier: 33
+Planning, 46 Advanced, and 111 Research / reference. Classification is
+documentation and presentation metadata only; runtime code does not
+import it.</p>
+<h2 id="tiers-and-navigation">Tiers and navigation</h2>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Purpose</th>
+<th>Main paths</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Planning</td>
+<td>Inputs and actions used in normal RF planning</td>
+<td>Plan → Setup → Planning; Plan → Inventory → Planning; Simulate →
+Propagation → Planning</td>
+</tr>
+<tr>
+<td>Advanced</td>
+<td>Specialist canonical configuration and diagnostic analysis</td>
+<td>Plan → Setup → Advanced model details; Plan → Inventory → Advanced;
+Simulate → Propagation → Advanced analysis; Analyze → Interference;
+Analyze → Building entry</td>
+</tr>
+<tr>
+<td>Research / reference</td>
+<td>Isolated experimental, reference, campaign-validation, and
+research-profile controls</td>
+<td>Simulate → Propagation → Research / reference; Analyze → RF
+Diagnostics → Research / reference; Review → Data → Research /
+reference; Analyze → 5G Core</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="concept-7h-navigation-map.json">navigation map</a>
+records the destination and default disclosure state for each existing
+tool. Tool names remain recognizable; no rail stage, route, shell, or
+search system was added.</p>
+<h3 id="planning">Planning</h3>
+<p>Setup keeps planning mode, technology/profile, propagation model,
+conducted TX power, cell/network selection, and the global Run action
+easy to reach. Propagation shows ray count, radius, azimuth, beam width,
+and the existing relevant network optimization action. The primary Run
+action remains in the global command bar rather than being duplicated
+inside the drawer.</p>
+<p>The Inventory editor opens its identity/location and common profile
+group. Its common profile fields include technology, frequency,
+bandwidth, conducted power, radius, beam width, antenna height,
+orientation, receiver height, receiver threshold mode, and manual RX
+sensitivity. Ordinary planning does not require editing every
+link-budget term.</p>
+<h3 id="advanced">Advanced</h3>
+<p>Advanced Setup details expose model applicability and link-budget
+assumptions. Inventory Advanced exposes carrier identifiers, TX/RX gain,
+system and polarization loss, downtilt, antenna patterns, cell load,
+reuse, PCI, and derived receiver-noise/sensitivity inputs. Manual
+sensitivity, derived sensitivity, building-service threshold, and
+radio-quality thresholds remain separate concepts.</p>
+<p>Propagation Advanced contains network optimization
+objectives/constraints and the vertical path-profile diagnostic. The
+P.526 path profile remains an isolated diagnostic; opening or running it
+does not add diffraction loss to canonical UMa. Interference stays under
+Analyze and its radio-quality output is distinct from propagation
+coverage. Building entry stays under Analyze as a specialist action and
+requires no facade inputs in ordinary planning.</p>
+<p>The Advanced indicator reports configured optimizer
+priorities/constraints; a completed diagnostic path alone does not imply
+an active plan configuration. Inventory reports explicit per-cell
+Advanced overrides. An advanced value is a valid configuration, not an
+error. If an advanced field blocks an operation, its parent section
+opens, labels the attention state, and focuses the invalid field.</p>
+<h3 id="research--reference">Research / reference</h3>
+<p>Propagation Research / reference contains Sub-THz atmospheric
+evaluation and P.1411 candidate evaluation. RF Diagnostics leads with
+canonical result/path actions; its Research / reference disclosure
+contains measurement campaigns, material/facade reference, and specular
+reflection. Review → Data separates planning data, dataset details,
+advanced model details, and validation/calibration evidence.</p>
+<p>The 140 GHz profile is explicitly marked Research / reference, not
+canonical validation, and not production-calibrated. Radio quality is
+<strong>UNSUPPORTED</strong> for that profile; the unsupported optimizer
+priority remains configured and is not applied. P.1411 remains an
+alternative/reference candidate, never automatically additive
+propagation loss. Material remains a slab/component reference,
+reflection remains an isolated single-bounce reference, and measurement
+validation does not promote a model automatically. Existing Research /
+reference result badges and CURRENT / STALE / HISTORICAL / UNAVAILABLE /
+UNSUPPORTED vocabulary are preserved; CURRENT is not a claim of
+canonical status.</p>
+<h2 id="profile-visibility-and-state-preservation">Profile visibility
+and state preservation</h2>
+<p>The <a href="concept-7h-profile-visibility.json">profile visibility
+record</a> describes the 2.6 GHz LTE, 28 GHz 5G, legacy, and 140 GHz
+research contexts. Selecting a different profile does not clear a hidden
+Advanced or Research value merely because its disclosure is closed.
+Unsupported radio quality is labeled and disabled for the 140 GHz
+research profile while its stored optimizer priority remains intact.</p>
+<p>Opening/closing a disclosure does not dirty the plan or start RF
+work. Editing an RF value inside a collapsed section still follows the
+existing invalidation behavior. A research input edit updates only the
+Research activity indicator; it does not create a canonical RF result or
+request. “Open source Version” navigation opens the Scenario workspace
+disclosure so the selected exact Version is visible without activating
+its inputs.</p>
+<p>The inventory marks reference-panel inputs as
+<code>persisted: false</code>: collapse/reopen preserves their
+component-local values, but saved Versions do not contain those inputs
+and a full page reload restores their established panel defaults. 7H
+keeps that existing persistence boundary. In contrast, per-cell Advanced
+RF overrides already belong to the saved plan and the responsive browser
+suite verifies an override through Version save and reload.</p>
+<h2 id="interaction-and-responsive-evidence">Interaction and responsive
+evidence</h2>
+<p>At 1440 × 960, the baseline Propagation drawer showed four sections
+together and 38 controls across them (5 propagation, 13 path-profile, 10
+Sub-THz, 10 P.1411); two research sections were open. After 7H, the same
+drawer has one Planning section open, five common Propagation controls
+visible, and Advanced and Research / reference collapsed. Research
+controls visible by default fall from 20 to zero. Its measured scroll
+height falls from 2,451 px to 791 px, a 67.7% reduction.</p>
+<p>RF Diagnostics changes from three fully visible sections (59
+controls, including material and reflection references) to canonical
+diagnostic actions plus a collapsed Research / reference group. Its
+measured scroll height falls from 2,657 px to 791 px (70.2%). Review →
+Data changes from measurement validation mixed into the visible
+dataset/model content to one open Planning data group and three
+collapsed detail groups. Its measured scroll height falls from 1,838 px
+to 852 px (53.6%). These are content-density measurements, not speed
+claims. Full details are in <a
+href="concept-7h-interaction-evidence.json">interaction
+evidence</a>.</p>
+<p>Responsive evidence covers 1440, 1280, 1024, 640, and 390 CSS-pixel
+widths. Disclosure headers and the global Run action remain reachable,
+hidden details stay scrollable when opened, and the drawer/document show
+no horizontal overflow at those sizes. The map remains the dominant
+surface at desktop sizes. The unrelated map-toolbar layout was not
+changed. Exact measured dimensions and checks are in <a
+href="concept-7h-responsive-evidence.json">responsive evidence</a>.</p>
+<h2 id="compatibility-and-validation">Compatibility and validation</h2>
+<p>Concept 7H changes presentation boundaries only. It does not change
+RF formulas, defaults, request fields, optimizer behavior, model
+applicability, scores, Pareto IDs, ScenarioRevision contents,
+<code>atom-scenario-v1</code>, Run snapshots, report-source bindings,
+datasets, or results. Request payload builders and backend RF code were
+not changed for this concept. The 2.6 GHz workflow test runs the same 4G
+profile after collapsing/reopening Planning; existing
+request-equivalence tests cover 2.6/28 GHz, interference, and
+optimization, while request-builder tests cover building entry and the
+isolated reference payloads. Existing Concept 7G domain and artifact
+tests cover exact Version, Run snapshot, report binding, and
+UI-only-state boundaries.</p>
+<p>Targeted accessibility behavior includes semantic disclosure buttons,
+<code>aria-expanded</code>, descriptive accessible names, Enter/Space
+activation, focus guidance on automatic open, and validation attention
+that opens and focuses the invalid field. The control
+inventory/classification test ensures every concrete control remains
+represented exactly once.</p>
+<p>Recorded commands and outcomes are in <a
+href="concept-7h-test-evidence.json">test evidence</a>. The production
+build remains near the prior size and still emits Vite's existing
+&gt;500 kB chunk warning; no broad code splitting was part of 7H. The
+measured bundle comparison is in <a
+href="concept-7h-post-change-comparison.json">post-change
+comparison</a>.</p>
+<h2 id="concept-7i-recommendation">Concept 7I recommendation</h2>
+<p>Proceed with <strong>Safe Feature Lazy Loading / bundle
+splitting</strong> as the next investigation. The Planning path is
+materially shorter, while the production JavaScript chunk remains 957.70
+kB minified and triggers Vite's large-chunk warning. Profile dormant
+research/reference panels, report tools, experiments, and Core Lab as
+candidate boundaries, then validate request/result state continuity and
+quantify initial-load behavior before adopting splits. Concept 7H did
+not implement lazy imports.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

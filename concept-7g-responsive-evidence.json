@@ -1,0 +1,23 @@
+{
+  "concept": "7G",
+  "artifact": "responsive-evidence",
+  "capturedOn": "2026-09-22",
+  "method": "Playwright responsive workspace suite across its configured Chromium projects.",
+  "viewports": [
+    {"project": "desktop-1440", "width": 1440, "height": 900},
+    {"project": "desktop-1024", "width": 1024, "height": 768},
+    {"project": "tablet-768", "width": 768, "height": 1024},
+    {"project": "mobile-390", "width": 390, "height": 844}
+  ],
+  "checks": [
+    {"name": "Persistent lineage remains visible and within the viewport", "result": "passed", "coverage": "All four viewport projects."},
+    {"name": "No document-level horizontal overflow", "result": "passed", "coverage": "All four viewport projects."},
+    {"name": "Project menu and lineage controls do not overlap", "result": "passed", "coverage": "Run/save workflow asserts adjacent hit targets at all four viewports, including 1024px."},
+    {"name": "Planning context remains text-visible as header content compresses", "result": "passed", "coverage": "The primary planning label is retained and ellipsized at narrower widths; Scenario/Version/draft details remain in the lineage disclosure."},
+    {"name": "Workspace stages and Results/Data/Report destinations remain reachable", "result": "passed", "coverage": "Mobile rail workflow at 390px."},
+    {"name": "RF controls remain usable with failed basemap tiles", "result": "passed", "coverage": "Responsive browser suite at all four viewport projects."}
+  ],
+  "suite": {"total": 52, "passed": 41, "skipped": 11, "failed": 0},
+  "skipReason": "The configured suite skips real-backend-only scenarios without ATOM_REAL_E2E and skips the mobile-only rail assertion on non-mobile projects.",
+  "limitations": ["Chromium viewport smoke; not a screenshot pixel-diff audit or a full assistive-technology review."]
+}

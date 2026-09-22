@@ -1,0 +1,31 @@
+{
+  "concept": "7G",
+  "artifact": "test-evidence",
+  "capturedOn": "2026-09-22",
+  "validation": [
+    {"command": "cd frontend-react && npm test", "result": "passed", "summary": "49 test files; 256 tests passed."},
+    {"command": "cd frontend-react && npm run lint", "result": "passed", "summary": "ESLint completed for src, e2e, and Vite/Playwright configuration."},
+    {"command": "cd frontend-react && npm run build", "result": "passed_with_warning", "summary": "Vite production build succeeded. Main JavaScript chunk is 946.23 kB (259.28 kB gzip), above the 500 kB advisory threshold."},
+    {"command": "cd frontend-react && npm run test:e2e", "result": "passed", "summary": "52 cases: 41 passed, 11 intentionally skipped, 0 failed; desktop 1440, desktop 1024, tablet 768, and mobile 390 viewport projects. Covers draft-preserving Scenario-switch guard and exact source-Version inspection."},
+    {"command": "cd backend-go && go vet ./... && go test -race ./...", "result": "passed", "summary": "Go vet and race-enabled tests passed."},
+    {"command": "cd core-lab-adapter && go vet ./... && go test -race ./...", "result": "passed", "summary": "Go vet and race-enabled tests passed."},
+    {"command": "sh docs/build-reference-pages.sh", "result": "passed", "summary": "Reference pages regenerated, including Concept 7G."},
+    {"command": "PYTHONPATH=/tmp/atom-7g-doc-validation python3 docs/validate_docs.py", "result": "passed", "summary": "40 HTML pages and 41 OpenAPI paths validated. PyYAML 6.0.3 was installed to an isolated temporary target from docs/requirements.txt because it was absent from the default Python environment."},
+    {"command": "JSON parse all docs/concept-7g-*.json", "result": "passed", "summary": "All 8 Concept 7G JSON files parse successfully."},
+    {"command": "python3 scripts/versioning.py check", "result": "passed", "summary": "Version metadata is consistent at 0.8.0."},
+    {"command": "git diff --check", "result": "passed", "summary": "Tracked diff whitespace validation and a changed-file trailing-whitespace scan passed."}
+  ],
+  "accessibility": {
+    "result": "passed_for_targeted_component_checks",
+    "coverage": ["Result state and source use visible text and semantic labels.", "Lineage disclosure exposes a readable aria-label and keyboard focus.", "Open source Version is a keyboard-focusable named button and preserves the selected Run.", "Apply confirmation starts focus on Cancel, supports Escape, and exposes named destinations.", "Historical Report confirmation identifies the source and current workspace, starts focus on Cancel, supports Escape, and exposes a named confirmation action."],
+    "limitation": "No full WCAG audit or automated axe scan was run."
+  },
+  "invarianceEvidence": {
+    "requestEquivalenceSuite": "Existing request equivalence tests pass for canonical 2.6 GHz and 28 GHz simulation requests and optimization plus interference payloads.",
+    "7GPayloadChanges": "The 7G result context is derived only in the UI/domain display path; no result-context fields are added to RF compute payload builders.",
+    "changedBackendOrAdapterFiles": false,
+    "7GChangesToRFModelsOptimizationScoresPublicSolutionIDsOrFingerprintAlgorithms": false,
+    "7GChangesToRunIDsReportSourceBindingOrIndexedDBSchemas": false
+  },
+  "scopeNotes": ["The broader working tree already contains Concepts 7C through 7F; this evidence isolates the Concept 7G presentation changes and does not claim those earlier phases are newly introduced here.", "The production build warning is recorded for follow-up; it does not fail the build."]
+}

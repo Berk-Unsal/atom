@@ -1,0 +1,63 @@
+{
+  "concept": "7G",
+  "artifact": "post-change-comparison",
+  "capturedOn": "2026-09-22",
+  "baseline": "docs/concept-7g-pre-change-baseline.json",
+  "comparison": [
+    {
+      "case": "fresh simulation result",
+      "before": "Result and map output were visible without an adjacent Run identity or shared freshness label.",
+      "after": "CURRENT context names the Scenario, Version or draft source, result type, Run, and date; map legend repeats source context when result layers are visible."
+    },
+    {
+      "case": "stale result after RF-affecting edit",
+      "before": "Safe invalidation removed result overlays, while generic Plan changed copy did not preserve visible Run lineage.",
+      "after": "STALE retains the source Run/Version/date and offers Run again for the current plan or View Run; no automatic recompute or stale overlay restoration."
+    },
+    {
+      "case": "current optimization result",
+      "before": "Optimization metrics and solution roles lacked a shared source Run/freshness heading.",
+      "after": "Optimization uses the same result context; Recommended, Selected, and Pareto roles have a separate semantics legend."
+    },
+    {
+      "case": "historical simulation and optimization Runs",
+      "before": "Run details retained history but lacked the shared HISTORICAL state and explicit separation from the active workspace.",
+      "after": "HISTORICAL identifies source Scenario/Version/Run/date and current workspace; opening a Run leaves the working Scenario/draft active."
+    },
+    {
+      "case": "Report from current result",
+      "before": "Report source binding existed, but user-facing source context and unsaved-Version distinction were weak.",
+      "after": "Reports lead with Scenario, Version/draft source, Run, and date; technical artifact details sit under Details / Provenance."
+    },
+    {
+      "case": "Report from historical Run",
+      "before": "The source Run/Revision binding was implicit before Report generation.",
+      "after": "A confirmation names source Scenario/Version/Run and current workspace; unavailable exact source Versions block the action; no RF rerun."
+    },
+    {
+      "case": "unsupported and unavailable states",
+      "before": "Panel-specific language could blur a missing retained detail with an intentionally unsupported feature.",
+      "after": "UNAVAILABLE communicates missing bytes/input/dataset with a reason; UNSUPPORTED is reserved for undefined model quantities."
+    },
+    {
+      "case": "research/reference output",
+      "before": "Some reference limits were explained locally without consistent labeling.",
+      "after": "Research / reference labels identify Sub-THz, P.1411 candidate, material, reflection, measurement validation, and Core Lab output."
+    }
+  ],
+  "productInvariants": [
+    "Save state and result freshness remain independent; an autosaved draft is not an immutable Version.",
+    "Current/stale resolution uses identity, existing invalidation, and comparable fingerprints, never timestamps alone.",
+    "Historical Apply, Report, rerun, and source-Version navigation use the selected Run's exact retained source and disclose destination/target.",
+    "Opening a source Version focuses that exact retained Version while keeping the active Version plan unchanged; Scenario switching is blocked while an unsaved draft would be lost.",
+    "No stale map layer is reintroduced; a historical inspection does not replace the current workspace result.",
+    "Missing historical evidence is UNAVAILABLE; model-defined absence is UNSUPPORTED."
+  ],
+  "7HRecommendation": {
+    "selection": "RF Configuration Progressive Disclosure",
+    "basis": ["Concept 7F audit identified mixed ordinary planning and reference content in Propagation.", "RF configuration still requires high task effort and contains dense controls.", "7G now provides the state and lineage foundation to separate Planning, Advanced, and Research presentation without changing RF behavior."],
+    "scope": "Present and collapse configuration/reference detail by user task; preserve every existing tool, scientific term, request, and RF calculation.",
+    "recheck": ["1024 px", "640 px", "Propagation toolbar and layer-menu density"],
+    "status": "Recommendation only; Concept 7H is not implemented in this phase."
+  }
+}

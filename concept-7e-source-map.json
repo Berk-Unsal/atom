@@ -1,0 +1,19 @@
+{
+  "concept": "7E",
+  "title": "Scenario UX implementation source map",
+  "version": 1,
+  "surfaces": [
+    { "surface": "Scenario switcher and overview", "files": ["frontend-react/src/components/ScenarioPanel.jsx", "frontend-react/src/App.jsx", "frontend-react/src/styles.css"], "evidence": ["scenario-switch-row", "scenario-overview-grid"] },
+    { "surface": "Version history, input diff, restore, and branch", "files": ["frontend-react/src/components/ScenarioPanel.jsx", "frontend-react/src/domain/scenarioDiff.js", "frontend-react/src/domain/scenario.js", "frontend-react/src/repository/localRepository.js"], "evidence": ["buildScenarioRevisionDiff", "continueFromScenarioRevision", "branchScenario"] },
+    { "surface": "Save version and dirty semantics", "files": ["frontend-react/src/App.jsx", "frontend-react/src/hooks/useProjectWorkspace.js", "frontend-react/src/utils/projectStore.js"], "evidence": ["saveCurrentScenario", "updateProjectDraft", "saveScenarioVersion"] },
+    { "surface": "Optimization solution lineage", "files": ["frontend-react/src/App.jsx", "frontend-react/src/components/RunHistoryPanel.jsx", "frontend-react/src/repository/localRepository.js", "frontend-react/src/domain/scenario.js"], "evidence": ["Apply as new Version", "Branch with solution", "originating_run_id", "originating_solution_id"] },
+    { "surface": "Run and Report navigation", "files": ["frontend-react/src/components/RunHistoryPanel.jsx", "frontend-react/src/components/ReportArtifactsPanel.jsx", "frontend-react/src/App.jsx"], "evidence": ["Open source Version", "Open Version", "openScenarioRevision"] },
+    { "surface": "Input-first comparison", "files": ["frontend-react/src/components/ScenarioPanel.jsx", "frontend-react/src/domain/scenarioDiff.js"], "evidence": ["Compare Scenario + Version", "semanticallyCompatibleRuns"] }
+  ],
+  "storage_boundary": {
+    "durable_version": "ProjectV2 snapshot.domain.revisions projected through workspaceToDomain/domainToWorkspace",
+    "run_store": "Existing additive local Run History store",
+    "report_store": "Existing additive local Report Artifact store",
+    "bytes_policy": "Version inspection and associated-record inspection use metadata; retained report bytes are not hydrated"
+  }
+}

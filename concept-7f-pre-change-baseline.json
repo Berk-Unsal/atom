@@ -1,0 +1,347 @@
+{
+  "concept": "7F",
+  "title": "A.T.O.M Workspace, Information Architecture & Product UX Audit",
+  "capturedOn": "2026-09-22",
+  "capturedTimezone": "Europe/Istanbul",
+  "purpose": "Freeze the product shell and observable behavior before a future Concept 7G implementation.",
+  "scope": "Documentation-only audit. No RF, optimizer, domain, persistence, IndexedDB, API, or UI behavior changes are part of Concept 7F.",
+  "repository": {
+    "root": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "branch": "main",
+    "headCommit": "9dcdd151110cb2b98da98c274e315a9348a67b8c",
+    "workingTree": "dirty",
+    "dirtyTreeContext": "Existing Concept 7E scenario/version work is present in the working tree. It is preserved and treated as the product under audit.",
+    "auditFilesAdded": [
+      "docs/concept-7f-pre-change-baseline.json",
+      "docs/concept-7f-product-ux-audit.md",
+      "docs/concept-7f-screen-inventory.json",
+      "docs/concept-7f-navigation-map.json",
+      "docs/concept-7f-task-matrix.json",
+      "docs/concept-7f-terminology-audit.json",
+      "docs/concept-7f-state-communication.json",
+      "docs/concept-7f-bundle-audit.json",
+      "docs/concept-7f-product-debt.json",
+      "docs/concept-7f-next-phase.json",
+      "docs/concept-7f-post-change-comparison.json"
+    ]
+  },
+  "runtimeObservation": {
+    "frontendCommand": "npm run build",
+    "frontendBuild": "passed before audit artifact creation",
+    "observedOrigin": "http://localhost:8080",
+    "observedOriginStatus": "Existing local container responded on port 8080; a second backend process was not started because the port was occupied.",
+    "documentTitle": "A.T.O.M - Ankara Telecom Optimization Model",
+    "datasetObservation": {
+      "buildings": 161784,
+      "demandWeightedBuildings": 5957,
+      "demandAverage": 44.18,
+      "demandMaximum": 240,
+      "cells": 451,
+      "source": "Runtime logs and visible Data panel"
+    }
+  },
+  "applicationRoutes": {
+    "browserRoute": "/",
+    "routeModel": "Single-page map workspace with no client-side route router.",
+    "urlState": "The current tool, stage, drawer, results tab, map layer, scenario, and run selection are application state rather than addressable URLs. #planning-map is an accessibility anchor, not a route.",
+    "backendRouteFamilies": [
+      "/readyz",
+      "/api/metadata",
+      "/api/cells",
+      "/api/simulate",
+      "/api/optimize",
+      "/api/interference",
+      "/api/diagnostics",
+      "/api/core/*",
+      "/api/dataset/*"
+    ],
+    "routeEvidence": "frontend-react/src/App.jsx renders one focused-app-shell; server routing is owned by backend-go rather than a client router."
+  },
+  "shell": {
+    "composition": [
+      "Command bar/header",
+      "Workflow rail",
+      "Map stage",
+      "Contextual tool drawer",
+      "Map toolbar and layer menu",
+      "Map legend",
+      "Map inspector / selected-feature overlays",
+      "Bottom rail on narrow layouts",
+      "Transient status, error, and undo notices"
+    ],
+    "headerControls": [
+      "A.T.O.M brand",
+      "Project menu: Ankara Plan",
+      "Project context: Single · Cell 26380 · 5G mmWave · 28.0 GHz · 30 dBm · 400 m",
+      "Planning estimate / modeling-limits link",
+      "Run status: Ready",
+      "Saved locally",
+      "Run Sector primary action"
+    ],
+    "stageNavigation": [
+      {
+        "id": "plan",
+        "label": "Plan",
+        "tools": ["Setup", "Inventory"]
+      },
+      {
+        "id": "simulate",
+        "label": "Simulate",
+        "tools": ["Propagation", "Experiments", "Signal surface"]
+      },
+      {
+        "id": "analyze",
+        "label": "Analyze",
+        "tools": ["Interference", "RF Diagnostics", "Building entry", "5G Core"]
+      },
+      {
+        "id": "review",
+        "label": "Review",
+        "tools": ["Results", "Run history", "Data", "Report"]
+      }
+    ],
+    "globalVsScoped": {
+      "global": ["stage rail", "map viewport", "run action", "save state", "global errors", "modeling-limits link"],
+      "project": ["project name", "new/duplicate/delete/import/export project"],
+      "scenario": ["active scenario", "scenario rename/duplicate/delete", "save Version", "branch/continue from Version"],
+      "map": ["selection tools", "cell focus", "RF display", "layers", "legend", "feature inspector"],
+      "run": ["run status", "current result summary", "Run History", "rerun/apply historical solution"],
+      "report": ["report generation", "retained report artifacts", "source Version/Run lineage"]
+    }
+  },
+  "projectScenarioVersion": {
+    "projectEntryPoint": "Header project button opens Project and scenarios dialog.",
+    "projectActions": ["rename", "new", "duplicate", "delete", "import", "export"],
+    "scenarioEntryPoints": [
+      "Header Project and scenarios dialog",
+      "Plan > Setup Scenario workspace card"
+    ],
+    "versionActions": [
+      "Save a Version from the draft Scenario workspace",
+      "Save version from the project menu",
+      "Save a new Version from a saved Scenario",
+      "Branch or continue from a Version in Scenario revision details",
+      "Apply optimization as a new Version or branch"
+    ],
+    "baselineAssessment": "Project → Scenario → Version is implemented and locally durable, but the active Scenario/Version is not persistent in the global header. Users must open Setup or the project menu to verify lineage.",
+    "persistenceConstraint": "Concept 7F records existing semantics only; it does not change the project, Scenario, Version, Run History, or Report Artifact model."
+  },
+  "majorPanelsAndDrawers": [
+    {
+      "tool": "Setup",
+      "purpose": "Choose mode, technology, propagation model, power, and scenario entry state.",
+      "primaryAction": "Configure planning inputs or save a Version.",
+      "density": "High because ControlPanel and ScenarioPanel share one drawer."
+    },
+    {
+      "tool": "Inventory",
+      "purpose": "Search, place, import, select, and edit local cells.",
+      "primaryAction": "Select or modify a cell profile.",
+      "density": "High; list and long single-cell editor share one scroll context."
+    },
+    {
+      "tool": "Propagation",
+      "purpose": "Set ray geometry and optimization controls.",
+      "primaryAction": "Run or optimize the selected sector.",
+      "density": "Very high; normal propagation controls are followed by path profile, Sub-THz reference, and P.1411 candidate research panels."
+    },
+    {
+      "tool": "Experiments",
+      "purpose": "Queue parameter sweeps and inspect Pareto comparison.",
+      "primaryAction": "Run an experiment.",
+      "density": "Medium to high; experiment and Pareto concepts are specialized."
+    },
+    {
+      "tool": "Signal surface",
+      "purpose": "Generate, view, export, and inspect received-signal surfaces.",
+      "primaryAction": "Load or generate the surface for the current RF result.",
+      "density": "Medium; result dependency is clear in the empty/loading states."
+    },
+    {
+      "tool": "Interference",
+      "purpose": "Configure co-channel load and radio-quality assumptions.",
+      "primaryAction": "Analyze interference.",
+      "density": "Medium; unavailable state can appear before prerequisites exist."
+    },
+    {
+      "tool": "RF Diagnostics",
+      "purpose": "Load evidence campaigns and run measurement/material/facade diagnostics.",
+      "primaryAction": "Load a campaign or synthetic control, then run diagnostics.",
+      "density": "Very high; evidence ledger, measurement validation, material reference, and specular reflection are combined."
+    },
+    {
+      "tool": "Building entry",
+      "purpose": "Estimate service just inside representative facades.",
+      "primaryAction": "Estimate building-entry service.",
+      "density": "Medium; specialized but bounded."
+    },
+    {
+      "tool": "5G Core",
+      "purpose": "Explore Xn, N2, N3, sessions, and lab scenarios.",
+      "primaryAction": "Run a Core Lab scenario.",
+      "density": "Medium; adjacent to RF analysis but not part of ordinary planning."
+    },
+    {
+      "tool": "Results",
+      "purpose": "Inspect current RF, optimization, interference, comparison, and candidate views.",
+      "primaryAction": "Choose a result view and inspect the map.",
+      "density": "Medium; five result tabs become cramped at 1024px."
+    },
+    {
+      "tool": "Run history",
+      "purpose": "Find durable local computation records and reopen their source.",
+      "primaryAction": "Select a Run or rerun/apply its retained solution.",
+      "density": "Medium; empty state contains a future-detail instruction with no record."
+    },
+    {
+      "tool": "Data",
+      "purpose": "Explain dataset confidence and model assumptions.",
+      "primaryAction": "Inspect data quality and assumptions.",
+      "density": "Very high; demand, packs, model assumptions, field validation, and calibration share one panel."
+    },
+    {
+      "tool": "Report",
+      "purpose": "Generate and revisit planning outputs.",
+      "primaryAction": "Export PDF/Print or Markdown.",
+      "density": "Medium; retained artifacts introduce implementation terminology."
+    }
+  ],
+  "projectControls": {
+    "menuLabel": "Project and scenarios",
+    "observedActions": ["Project combobox", "Project name", "Save project name", "New", "Duplicate", "Delete", "Import", "Export", "Save version"],
+    "emptyVersionState": "Save the current plan to create a comparison baseline.",
+    "risk": "Project, Scenario, and Version actions are split between a global menu and Setup; this is powerful but not self-evidently hierarchical."
+  },
+  "runHistoryEntryPoints": [
+    "Review > Run history",
+    "Run History detail: Open source Version, Run again, Generate report, Apply solution",
+    "Scenario revision inspector: open linked Runs and Reports"
+  ],
+  "reportEntryPoints": [
+    "Review > Report",
+    "Run History detail: Generate report",
+    "Report artifact detail: download/open retained output",
+    "Scenario revision inspector: open linked Reports"
+  ],
+  "mapToolbar": {
+    "selectionTools": ["Draw selection area", "Clear selected cells", "Fit selected cells"],
+    "rfDisplay": ["Signal toggle", "Rays toggle", "Scope: All cells / Selected cell / Hidden", "Focus selector"],
+    "layers": ["Viewport buildings", "coverage gaps", "selected cells", "communication paths", "interference", "measurement residuals when available"],
+    "legend": ["Cells", "Received power", "Signal surface", "Coverage gaps", "SINR/RSRP/RSRQ quality when available"],
+    "baselineAssessment": "Map controls are grouped by job, but the toolbar is horizontally dense and the layer menu can extend beyond the 640px viewport."
+  },
+  "optimizationWorkflow": {
+    "entryPoint": "Plan or Simulate controls expose Auto-Optimize Sector; Results and optimization views expose current outcomes.",
+    "sequence": ["configure objectives", "review feasibility constraints", "choose search policy", "optimize", "inspect recommendation", "inspect Pareto alternatives", "apply as new Version or branch"],
+    "visibleConcepts": ["objectives", "priorities", "constraints", "search policy", "baseline", "optimized", "recommended", "selected solution", "Pareto"],
+    "baselineAssessment": "The computation path is explicit and evidence-aware, but optimization concepts compete with propagation and research controls in the Simulate drawer."
+  },
+  "responsiveBreakpoints": [
+    {
+      "range": ">= 1121px",
+      "behavior": "Full header context, left rail, drawer, and map toolbar. 1440px and 1280px observations were usable."
+    },
+    {
+      "range": "901px–1120px",
+      "behavior": "Header hides brand subtitle, plan summary, save state, and result summary as width decreases."
+    },
+    {
+      "range": "641px–900px",
+      "behavior": "Result summary is hidden; drawer/rail remain side-by-side. 1024px observation showed map toolbar and subnav crowding."
+    },
+    {
+      "range": "<= 640px",
+      "behavior": "Map fills the viewport, workflow rail becomes a bottom rail, and the drawer becomes a bottom sheet. The toolbar remains dense; at 640px the layer menu extended roughly 114px beyond the viewport."
+    },
+    {
+      "range": "<= 520px",
+      "behavior": "Some map controls wrap and labels collapse, but this is a best-effort inspection layout rather than a full planning workflow."
+    }
+  ],
+  "observedViewports": [
+    {
+      "viewport": "1440x900",
+      "finding": "Map remains dominant; header, rail, drawer, toolbar, legend, and Setup/Scenario content are readable."
+    },
+    {
+      "viewport": "1280x800",
+      "finding": "Still usable for the core map workflow; drawer and toolbar consume a meaningful but acceptable share of width."
+    },
+    {
+      "viewport": "1024x768",
+      "finding": "Header is intentionally reduced, but toolbar controls clip or crowd the right edge; result tabs wrap; advanced drawers feel overloaded."
+    },
+    {
+      "viewport": "640x900",
+      "finding": "Bottom-sheet map shell is visible; layer menu overflow and toolbar density make full planning/editing unreliable."
+    }
+  ],
+  "bundleSnapshot": {
+    "buildCommand": "cd frontend-react && npm run build",
+    "jsChunk": {
+      "file": "dist/assets/index-oHxw5LEU.js",
+      "rawBytesApprox": 944762,
+      "reportedRaw": "921.62 kB",
+      "gzipReported": "252.89 kB"
+    },
+    "cssChunk": {
+      "file": "dist/assets/index-CYzsGwqW.css",
+      "reportedRaw": "137.77 kB",
+      "gzipReported": "26.63 kB"
+    },
+    "warning": "Vite warns that the JavaScript chunk exceeds 500 kB after minification.",
+    "interpretation": "Worth measuring and eventually code-splitting by product boundary; not a reason for an emergency optimization-only phase."
+  },
+  "accessibilityBaseline": {
+    "positiveEvidence": [
+      "Skip link targets #planning-map.",
+      "Visible focus styles exist for common controls.",
+      "Many status, alert, listbox, option, tab, table, and graphic roles are present.",
+      "Map toolbar buttons expose aria-labels and narrow controls maintain a 44px minimum target in CSS."
+    ],
+    "risks": [
+      "ToolDrawer uses a native dialog element with aria-modal=false but is a modeless application drawer; focus containment and return-to-trigger behavior were not evident.",
+      "Map markers and rich map layers are visually informative but do not provide a complete keyboard-equivalent inspection path.",
+      "Rail status badges and some icon-first controls need text/state context beyond color or a symbol; labels exist in several places but consistency should be verified.",
+      "The full application has a large focusable surface and no client route state, making deep-linking and restoration of context difficult for keyboard and assistive-technology users."
+    ]
+  },
+  "technicalEvidence": {
+    "sourceFiles": [
+      "frontend-react/src/App.jsx",
+      "frontend-react/src/components/WorkspaceChrome.jsx",
+      "frontend-react/src/components/workspaceTools.js",
+      "frontend-react/src/components/ControlPanel.jsx",
+      "frontend-react/src/components/InventoryPanel.jsx",
+      "frontend-react/src/components/ScenarioPanel.jsx",
+      "frontend-react/src/components/RunHistoryPanel.jsx",
+      "frontend-react/src/styles.css"
+    ],
+    "keyEvidence": [
+      "App.jsx renders every major panel in one shell and imports all research/reference panels eagerly.",
+      "WorkspaceChrome owns the global header, rail, drawer, map toolbar, legend, and project menu.",
+      "workspaceTools.js defines four stages and thirteen tools without route-backed navigation.",
+      "ScenarioPanel and ProjectMenu both expose Version actions.",
+      "DataPanel combines dataset, model assumptions, field validation, and calibration.",
+      "Propagation and RF Diagnostics combine everyday controls with specialized reference workflows."
+    ]
+  },
+  "invariance": {
+    "rf": "unchanged",
+    "optimizer": "unchanged",
+    "projectDomain": "unchanged",
+    "scenarioDomain": "unchanged",
+    "runHistory": "unchanged",
+    "reportArtifactStorage": "unchanged",
+    "apiContracts": "unchanged",
+    "databaseOrAuthentication": "not introduced"
+  },
+  "validationIntent": [
+    "documentation validation",
+    "JSON parsing for every Concept 7F JSON artifact",
+    "frontend lint and tests",
+    "frontend production build",
+    "version consistency",
+    "git diff --check"
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "concept": "7F",
+  "artifact": "state-communication",
+  "capturedOn": "2026-09-22",
+  "scope": "How the current product communicates saved, running, historical, stale, unavailable, and research-only states.",
+  "states": [
+    {
+      "state": "Saved",
+      "currentLabels": ["Saved locally"],
+      "locations": ["Command bar", "ScenarioPanel status", "persistence messages"],
+      "communicationMode": ["text", "status role"],
+      "strength": "Visible and understandable as local-first persistence.",
+      "gap": "Does not say which Project, Scenario, or Version is saved.",
+      "recommendedUserAction": "Keep the text and add compact Scenario/Version identity nearby.",
+      "priority": "high"
+    },
+    {
+      "state": "Unsaved",
+      "currentLabels": ["Unsaved changes"],
+      "locations": ["Setup > Scenario workspace"],
+      "communicationMode": ["text", "status styling"],
+      "strength": "Scenario-level state is explicit when the user is in Setup.",
+      "gap": "The state is not persistent while the user is in Inventory, Propagation, Results, or Report.",
+      "recommendedUserAction": "Expose a compact draft marker globally without adding a new persistence semantic.",
+      "priority": "high"
+    },
+    {
+      "state": "Running",
+      "currentLabels": ["Loading surface", "Evaluating", "Simulating", "Optimizing", "Analyzing", "Recommending", "Validating", "Evaluating reference", "Estimating entry"],
+      "locations": ["Command bar", "panel status", "map prompt", "result-dependent panels"],
+      "communicationMode": ["text", "progress/status roles", "disabled/active controls"],
+      "strength": "The vocabulary distinguishes major computation types and avoids a generic spinner-only experience.",
+      "gap": "The target Scenario/Version/Run is not always named next to the activity.",
+      "recommendedUserAction": "Preserve activity names and append target/source identity.",
+      "priority": "high"
+    },
+    {
+      "state": "Ready",
+      "currentLabels": ["Ready"],
+      "locations": ["Command bar"],
+      "communicationMode": ["text", "status styling"],
+      "strength": "Clear default status.",
+      "gap": "Ready can mean ready to run, ready with a current result, or ready after a save; it is not scoped.",
+      "recommendedUserAction": "Keep Ready as compact status only when a secondary current/stale/source cue is present.",
+      "priority": "medium"
+    },
+    {
+      "state": "Stale",
+      "currentLabels": ["Plan changed", "Run sector…", "Evaluate network…"],
+      "locations": ["Command bar", "map plan prompt", "result clearing behavior"],
+      "communicationMode": ["text", "result removal", "action prompt"],
+      "strength": "RF-affecting edits invalidate current result artifacts instead of silently presenting them as current.",
+      "gap": "The label does not identify the last valid Run/Version or explain saved-draft versus result state.",
+      "recommendedUserAction": "Use Result out of date / Last Run from Version and provide Rerun or Open historical Run.",
+      "priority": "critical"
+    },
+    {
+      "state": "Historical",
+      "currentLabels": ["Open source Version", "Historical report", "retained Run", "source Run"],
+      "locations": ["Run History", "Report detail", "Scenario revision inspector"],
+      "communicationMode": ["text", "metadata", "source links"],
+      "strength": "Lineage is retained and navigable for expert review.",
+      "gap": "Historical state is mostly local to Review details; it can lose salience after returning to the map.",
+      "recommendedUserAction": "Carry a Historical badge and source identity into the opened result/report context.",
+      "priority": "critical"
+    },
+    {
+      "state": "Failed",
+      "currentLabels": ["panel/global error copy", "failed Run status"],
+      "locations": ["global error banner", "panel alerts", "Run History"],
+      "communicationMode": ["text", "alert role", "status"],
+      "strength": "Failures are visible and retained for Runs.",
+      "gap": "Raw technical error text may not name the affected source or a safe recovery action.",
+      "recommendedUserAction": "Use what happened / what remains valid / what to try next structure.",
+      "priority": "medium-high"
+    },
+    {
+      "state": "Interrupted",
+      "currentLabels": ["Interrupted"],
+      "locations": ["Run History"],
+      "communicationMode": ["text", "status"],
+      "strength": "Distinct from failed/cancelled and useful for durable records.",
+      "gap": "Not exposed in the current workspace when a live operation ends unexpectedly.",
+      "recommendedUserAction": "Link the interrupted Run to retry and source Version detail.",
+      "priority": "medium"
+    },
+    {
+      "state": "Unavailable",
+      "currentLabels": ["!", "disabled action", "No campaigns", "dataset unavailable", "not available"],
+      "locations": ["workflow rail", "panels", "Run History warning", "map layer menu"],
+      "communicationMode": ["symbol", "text", "disabled state", "alert/status role"],
+      "strength": "The product avoids pretending unavailable data or tools are ready.",
+      "gap": "The meaning of a rail ! is not self-contained and varies by tool.",
+      "recommendedUserAction": "Pair every unavailable badge with a readable reason and next prerequisite.",
+      "priority": "high"
+    },
+    {
+      "state": "Unsupported",
+      "currentLabels": ["research-only note", "model/profile limitations", "disabled/conditional controls"],
+      "locations": ["Setup", "Propagation", "Data", "reference panels"],
+      "communicationMode": ["text", "conditional control", "warning"],
+      "strength": "Some frequency/model limitations are honestly stated.",
+      "gap": "No single visual vocabulary distinguishes unsupported from unavailable or research-only.",
+      "recommendedUserAction": "Use a plain-language Unsupported or Research/reference label with explanation.",
+      "priority": "medium"
+    },
+    {
+      "state": "Research only",
+      "currentLabels": ["6G research profile", "research-only", "reference", "candidate", "synthetic control"],
+      "locations": ["Setup", "Propagation", "RF Diagnostics", "Core Lab", "Data"],
+      "communicationMode": ["text", "section titles", "notes"],
+      "strength": "Technical scope is often named in the panel copy.",
+      "gap": "Research cards still occupy the normal vertical planning path.",
+      "recommendedUserAction": "Keep the label persistent at card/tool level and separate the disclosure boundary later.",
+      "priority": "high"
+    }
+  ],
+  "communicationRules": {
+    "minimumStatePayload": ["state label", "scope", "source or target when relevant", "next safe action"],
+    "nonColorRequirement": "Every meaningful state must be readable through text, structure, or a role; color and rail symbols are supplemental.",
+    "lineageRequirement": "Current, historical, stale, and report states should name Scenario/Version/Run when that identity changes the user decision.",
+    "currentImplementationAssessment": "Activity and validation statuses are stronger than lineage and stale-state statuses.",
+    "selectedConcept7GFocus": ["stale", "historical", "current result", "saved draft", "report source"]
+  },
+  "stateTransitions": [
+    {
+      "from": "Saved",
+      "to": "Unsaved",
+      "trigger": "Scenario or RF-affecting edit",
+      "currentVisibility": "Unsaved changes appears in Setup; Plan changed appears after result invalidation."
+    },
+    {
+      "from": "Unsaved",
+      "to": "Running",
+      "trigger": "Run Sector or network evaluation",
+      "currentVisibility": "Command bar run state is explicit."
+    },
+    {
+      "from": "Running",
+      "to": "Current",
+      "trigger": "Successful compatible Run",
+      "currentVisibility": "Results/map output appears, but Current identity is implicit."
+    },
+    {
+      "from": "Current",
+      "to": "Stale",
+      "trigger": "RF-affecting edit or incompatible model/data change",
+      "currentVisibility": "Result artifacts clear and Plan changed prompt appears."
+    },
+    {
+      "from": "Historical",
+      "to": "Working draft",
+      "trigger": "Open source Version, branch, continue, or apply solution",
+      "currentVisibility": "Scenario/Version hooks perform the transition, but header identity remains compact."
+    },
+    {
+      "from": "Current or Historical",
+      "to": "Report",
+      "trigger": "Generate report",
+      "currentVisibility": "Source binding exists in detail/artifact metadata, not in a persistent result context."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "concept": "7E",
+  "title": "Scenario UX post-change comparison",
+  "version": 1,
+  "baseline": "docs/concept-7e-pre-change-baseline.json",
+  "changes": [
+    { "area": "Scenario identity", "before": "Flat snapshots were the primary user-facing unit", "after": "Scenario is a named lineage with immutable Versions and a compact overview" },
+    { "area": "Save", "before": "Save current created another Scenario snapshot", "after": "Save version creates a new immutable Version with optional change summary and parent Version" },
+    { "area": "Switching", "before": "Switching restored a snapshot without Version context", "after": "Switcher shows latest Version, parent relation, updated time, and Unsaved changes state" },
+    { "area": "History", "before": "No Version history or input diff", "after": "Version list, RF/cell/receiver/interference/optimization/dataset/AOI diff, continue, and branch actions" },
+    { "area": "Lineage", "before": "Optimization apply and Scenario identity were loosely connected", "after": "Version and branch application preserve parent, originating Run, and originating solution lineage" },
+    { "area": "Run History", "before": "Raw ScenarioRevision or Draft labels", "after": "Friendly Scenario + Version labels and source navigation" },
+    { "area": "Reports", "before": "Raw ScenarioRevision metadata", "after": "Friendly Scenario + Version metadata and Open Version navigation" },
+    { "area": "Comparison", "before": "Flat KPI comparison in Results", "after": "Scenario + Version input-state comparison first; retained RF result comparison is shown only when semantically compatible" },
+    { "area": "Safety", "before": "Historical apply path could implicitly use current revision", "after": "Historical Version is explicit; source Versions remain immutable and no action auto-runs RF" }
+  ],
+  "invariants": [
+    "No RF compute is launched by switch, inspect, continue, branch, duplicate, compare, or apply",
+    "Old Versions are never edited in place",
+    "Save version is explicit; autosave remains a draft persistence mechanism",
+    "Run and Report metadata remain separate from large Scenario payloads",
+    "Existing ProjectV2, Run History, and Report Artifact compatibility paths remain additive"
+  ]
+}

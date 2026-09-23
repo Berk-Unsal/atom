@@ -1,0 +1,90 @@
+{
+  "concept": "8A",
+  "signalCounts": [
+    {
+      "signal": "Current stage",
+      "defaultToolScreen": 1,
+      "cues": ["Active stage button in left rail"],
+      "notes": "Rail active state disappears when drawer is closed."
+    },
+    {
+      "signal": "Current tool",
+      "defaultToolScreen": 3,
+      "cues": ["Drawer title", "Selected sibling-tool button", "Possible repeated inner panel title"],
+      "notes": "The third cue is screen/content-dependent. In an expanded RF Diagnostics screen, RF DIAGNOSTICS appears again as an inner evidence card."
+    },
+    {
+      "signal": "Current capability/category",
+      "defaultToolScreen": "1–5",
+      "cues": ["Research / reference disclosure", "Validation / reference badge", "Research / reference badge", "ISOLATED badge", "4I.4 · ISOLATED badge and safety prose"],
+      "notes": "The five count is the visible badge instances in the expanded RF Diagnostics evidence area; disclosure and prose are additional."
+    }
+  ],
+  "chipAndBorderEvidence": {
+    "definition": "Count is by named top-level surface or badge role, not every 1 px control border. The absolute count is evidence of fragmentation, not a design score.",
+    "setupNoResultAt1440": {
+      "commandBarContextActionItems": 9,
+      "topLevelOutlinedOrPillSurfaces": 3,
+      "surfaces": ["Project menu control", "Workspace lineage summary", "Run Sector primary action"],
+      "nonBoxedStatusesOrLinks": ["Planning estimate", "Ready", "Draft saved locally"],
+      "drawerSiblingButtons": 2,
+      "selectedSiblingOutlineCount": 1,
+      "otherPersistentContainers": ["Active rail item", "Map-toolbar frame/groups", "Map-key panel"]
+    },
+    "conditionalResultAt1440": {
+      "additionalCommandBarOutlinedSurfaces": 2,
+      "surfaces": ["ResultContextBadge", "Result summary metric button"],
+      "resultSourceCues": ["Global result badge", "Results result card", "Map legend Result source"],
+      "possibleAdditionalStaleCue": "Map prompt repeats Result out of date."
+    },
+    "fourToolStages": {
+      "siblingChoices": 4,
+      "activeOutlinedSibling": 1,
+      "naturalWidthPx": 513,
+      "drawerWidthPxAt1440": 360,
+      "evidence": "At least one entire sibling cannot fit in the visible row; the scrollbar is hidden."
+    },
+    "interpretation": "Most boxes are interactive and should not simply disappear. The likely simplification is to group related workspace metadata and remove the permanent sibling row after its navigation/availability job moves to the rail flyout."
+  },
+  "borderDensity": {
+    "requiredInteractiveControls": ["Project menu", "active stage/tool selection", "segmented planning mode/technology", "inputs/selects", "explicit compute buttons", "map toolbar toggles/selectors", "map legend collapse control"],
+    "status": ["CURRENT/STALE/HISTORICAL badge", "operation state", "save state", "tool availability/result/attention badge"],
+    "metadata": ["Project/Scenario/Version", "technology/frequency/power/radius", "result source Run"],
+    "structuralContainers": ["drawer header/body", "capability disclosures", "inventory rows/details", "Results current-run card, result-view group, metrics cards", "research evidence panels", "map toolbar and legend"],
+    "opportunity": "Keep borders where they signal an interactive control or meaningful state. In the command bar and nested tool panels, use shared alignment and typography before adding or retaining peer containers."
+  },
+  "resultContextRedundancy": {
+    "current": ["Command-bar freshness/source chip", "Conditional command-bar metric card", "Results panel current-result card", "Map legend Result source"],
+    "stale": ["Command-bar stale source", "Results stale card and Run again action", "Map stale prompt", "Map legend source if stale layer is visible"],
+    "historicalInspection": ["History row", "Historical result detail", "Details / Provenance", "Map prompt may describe the current draft's stale result"],
+    "keep": ["One compact global freshness/source identity", "Full details in Results/Run history", "Map legend source while that result layer is active"],
+    "move": ["Score/overlap/serviceability and detailed metrics into Results and relevant legend"]
+  },
+  "persistenceRedundancy": {
+    "visibleCues": ["No saved Version", "Unsaved changes", "Draft saved locally"],
+    "risk": "These can be read as contradictory even though local draft autosave succeeded and no immutable Version was created.",
+    "recommendation": "Group immutable Version identity with workspace lineage. Group browser-local autosave as its own compact persistence state; keep saving/error visible and clarify that local save is not Version creation."
+  },
+  "researchAndReferenceRepetition": {
+    "expandedRfDiagnosticsBadgeInstances": [
+      "VALIDATION / REFERENCE",
+      "ISOLATED",
+      "RESEARCH / REFERENCE",
+      "4I.4 · ISOLATED",
+      "RESEARCH / REFERENCE"
+    ],
+    "additionalVisibleLabels": ["Research / reference disclosure", "RF Diagnostics inner card title", "Material reference only — not used by network simulation", "ITU-R P.2040-4 · Table 3 and source/model values"],
+    "classification": {
+      "navigationCategory": "Research / reference disclosure",
+      "resultStatus": "CURRENT/STALE/UNAVAILABLE/UNSUPPORTED and tool readiness",
+      "scientificProvenance": "P.2040/P.1411/P.526 clauses, material/model IDs, assumptions, data source"
+    },
+    "recommendation": "Keep the top-level category and one explicit method-level safety/applicability statement. Avoid multiple badges saying the same category. Preserve validation status, unsupported state, and the not-used-by-network-simulation wording. Keep exact source clauses and assumptions in the panel or Details / Provenance."
+  },
+  "internalIdentifiers": {
+    "observed": ["4I.4", "p2040_material_slab_reference_v1", "urban_short_range", "engine/model and RF contract identifiers"],
+    "defaultVisibility": "Show user-facing tool/method name and safety status by default. Put implementation identifiers and concept IDs in Details / Provenance.",
+    "keepVisibleWhenNeeded": ["Scientific standard/clause", "CURRENT/STALE/HISTORICAL/UNAVAILABLE/UNSUPPORTED", "applicability and explicit safety limits"]
+  },
+  "visualHierarchyFinding": "The first persistent duplication is structural (stage rail plus tool row). The second is contextual (multiple separate command-bar objects). Tool-specific cards/disclosures contain legitimate inputs and evidence; do not flatten all scientific context into one plain text column."
+}

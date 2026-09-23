@@ -1,0 +1,174 @@
+{
+  "concept": "8A",
+  "options": [
+    {
+      "id": "current",
+      "name": "Stage rail plus persistent tool tabs",
+      "status": "baseline",
+      "desktopBehavior": "Clicking a different stage selects its first available tool. The active drawer then presents a permanent horizontal sibling-tool row.",
+      "keyboard": {
+        "tab": "Native Tab moves through stage buttons and, while open, sibling tool buttons.",
+        "arrows": "No custom arrow-key movement is implemented for rail or tool navigation.",
+        "enterSpace": "Activates a stage or sibling tool.",
+        "escape": "Application Escape handling closes the drawer or open layer menu.",
+        "focusReturn": "ToolDrawer focuses its heading when opened; close logic targets the active sibling button, which is unmounted with the drawer."
+      },
+      "pointerHover": "Stage hover presents a tooltip; it does not expose sibling tools.",
+      "touch": "The tool row is horizontally scrollable, but its scrollbar is hidden.",
+      "mapContract": "Map and drawer remain in one workspace; no routing.",
+      "advantages": ["One-activation tool switching", "Sibling names visible without opening another control", "Per-tool availability and attention are visible"],
+      "costs": ["Active tool appears in the rail stage state, drawer title, and selected tool row", "51/59 px permanent row", "Four-tool row is wider than the drawer and its scrollbar is hidden"]
+    },
+    {
+      "id": "A",
+      "name": "Rail flyout",
+      "status": "selected",
+      "desktopBehavior": "Keep the 88 px four-stage rail. Clicking a different stage preserves current behavior by selecting the stage's first available tool and opening its tool flyout. Clicking the active stage opens/closes its list without changing the current tool. The flyout contains the stage name and vertically listed tools. Selecting a sibling changes the drawer in place and closes the flyout.",
+      "activeToolDisplay": "Drawer header remains the single persistent tool title/description. The selected tool is marked in the flyout while open.",
+      "availability": "Keep unavailable tools visible with the existing reason and attention/result badge. Do not let opening a flyout load the tool.",
+      "keyboard": {
+        "tab": "Tab reaches each named stage button; normal Tab/Shift+Tab reaches named tool choices when open.",
+        "arrows": "Within the flyout, Up/Down move among tool choices; Home/End move to first/last. Disabled tools remain discoverable and announce why but cannot activate.",
+        "enterSpace": "Enter/Space on a stage opens/closes its flyout. Enter/Space on a tool selects it.",
+        "escape": "Escape closes the flyout.",
+        "focusReturn": "Escape returns focus to the stage trigger. Tool selection transfers focus to the current tool heading. Closing the drawer returns focus to the active stage button.",
+        "roles": "Use a stage button with accurate aria-haspopup/aria-expanded and a named navigation/menu surface with selected/current item semantics. Implement the expected arrow-key model if using menu roles."
+      },
+      "pointerHover": "Hover may provide an optional preview but is not required to open or operate the list; click always works.",
+      "touch": "Tap stage to open, tap named tool to select. No hover-dependent action.",
+      "responsiveBehavior": {
+        "atOrAbove1280": "Flyout anchored to the clicked rail stage, over the drawer edge; map and drawer dimensions do not change.",
+        "1024To1279": "Same model with the same overlay behavior; retain tool labels and status text.",
+        "640To1023": "Touch-sized click popover; rail stays vertical; no hover dependency.",
+        "below640": "Bottom rail remains. A stage tap uses the existing drawer sheet footprint as a tool chooser; selecting a tool returns to the single-tool sheet."
+      },
+      "directNavigation": "Direct actions continue to set activeTool/drawer state in App and bypass the flyout.",
+      "lazyLoading": "Tool labels/icons and menu open do not import chunks. Existing dynamic import starts only after the existing tool selection/render boundary is reached.",
+      "interactionCost": {
+        "coldSwitch": "A tool switch from a closed active-stage flyout takes two activations: open stage list, choose sibling.",
+        "differentStageDefault": "One stage activation selects the existing first-available default and exposes siblings.",
+        "openFlyout": "Selecting an item from an already-open flyout takes one activation.",
+        "mapAndDrawerContext": "No route or map resize; drawer title/content changes only when tool selection changes.",
+        "commonTransitions": [
+          { "from": "Setup", "to": "Inventory", "activations": 2, "note": "Open Plan flyout, choose Inventory." },
+          { "from": "Inventory", "to": "Propagation", "activations": 1, "note": "Simulate stage keeps current first-available default behavior." },
+          { "from": "Propagation", "to": "Experiments", "activations": 2, "note": "Open active Simulate flyout, choose Experiments." },
+          { "from": "Propagation", "to": "Interference", "activations": 1, "note": "Analyze stage selects first available; requires Interference to be eligible. Otherwise the default remains RF Diagnostics." },
+          { "from": "Interference", "to": "RF Diagnostics", "activations": 2, "note": "Open Analyze flyout, choose RF Diagnostics." },
+          { "from": "Results", "to": "Run history", "activations": 2, "note": "Open Review flyout, choose Run history." },
+          { "from": "Run history", "to": "Report", "activations": 2, "note": "Open Review flyout, choose Report." },
+          { "from": "RF Diagnostics", "to": "Building entry", "activations": 2, "note": "Open Analyze flyout, choose Building entry." }
+        ]
+      },
+      "tradeoffs": ["Removes a persistent row and fits four tool names vertically.", "Same-stage closed-menu switches add one activation versus current tabs.", "Stage defaults and direct navigation remain familiar.", "No telemetry proves a need for recents or hotkeys; defer both."]
+    },
+    {
+      "id": "B",
+      "name": "Expandable rail",
+      "desktopBehavior": "Expand the selected stage to show its tool buttons under its stage label. Choose a tool from the expanded group.",
+      "keyboard": {
+        "tab": "Tab moves through stages; expanded stage reveals tool buttons in the normal order.",
+        "arrows": "Up/Down can move within a stage list if a roving focus model is deliberately implemented; otherwise native Tab remains.",
+        "enterSpace": "Toggle stage expansion or activate a tool.",
+        "escape": "Collapse the expanded group.",
+        "focusReturn": "Return to the stage button when collapsed."
+      },
+      "pointerHover": "Not required; click expands.",
+      "touch": "Tap stage, then tap tool.",
+      "mapImpact": "A persistent expanded rail needs roughly 208–248 px total width instead of 88 px, reducing map width by roughly 120–160 px. An overlay variant is effectively a persistent flyout.",
+      "directNavigation": "Direct actions update active stage and expanded tool list without extra selection.",
+      "lazyLoading": "Expansion exposes metadata only; select tool to trigger its existing lazy boundary.",
+      "interactionCost": "One activation for siblings once expanded; two to expand a different stage and select a non-default tool.",
+      "advantages": ["Strong sibling discovery", "Fast repeated same-stage switches"],
+      "costs": ["Consumes horizontal map area when expanded", "Longer stage rail and more visible navigation chrome", "Tablet width is especially constrained"]
+    },
+    {
+      "id": "C",
+      "name": "Compact stage selector plus current-tool dropdown",
+      "desktopBehavior": "Keep the current stage rail and replace the persistent row with a current-tool dropdown in the drawer header.",
+      "keyboard": {
+        "tab": "Tab to stage buttons and the labeled current-tool selector.",
+        "arrows": "Native select behavior or expected popover menu arrows.",
+        "enterSpace": "Open selector/activate a tool.",
+        "escape": "Close dropdown and restore focus to its trigger.",
+        "focusReturn": "Return to the tool selector or heading after selection."
+      },
+      "pointerHover": "No hover requirement.",
+      "touch": "Tap dropdown, then choose a sibling; below 640 px use a sheet/picker.",
+      "mapImpact": "No rail width increase and no map resize; header receives a permanent compact selector.",
+      "directNavigation": "Direct destinations update the stage rail and current-tool control.",
+      "lazyLoading": "Opening selector does not load tools; choose to activate the current boundary.",
+      "interactionCost": "Same-stage cold switch takes two activations; switching stages to a non-default tool can take stage selection plus dropdown open plus tool selection.",
+      "advantages": ["Smaller vertical cost than a full row", "Tool name remains adjacent to the drawer title"],
+      "costs": ["Rail does not own tool selection", "Another persistent selector shares the crowded top area", "Sibling availability/attention is less scannable"]
+    },
+    {
+      "id": "D",
+      "name": "Two-column temporary stage/tool chooser",
+      "desktopBehavior": "A rail activation opens a temporary stage column and sibling-tool column.",
+      "keyboard": {
+        "tab": "Tab enters the chooser and traverses both columns.",
+        "arrows": "Left/Right change columns; Up/Down move within the active column.",
+        "enterSpace": "Activate a stage or tool.",
+        "escape": "Close chooser.",
+        "focusReturn": "Restore the opening stage button."
+      },
+      "pointerHover": "Click/focus opens; hover is optional.",
+      "touch": "Tap stage and then tool in a larger bottom sheet.",
+      "mapImpact": "A 280–320 px temporary overlay covers more of the map/drawer edge than a single flyout.",
+      "directNavigation": "Direct destination actions bypass it.",
+      "lazyLoading": "Metadata-only chooser; tool select triggers existing chunk.",
+      "interactionCost": "Two activations from a closed chooser; one after a stage column is already active.",
+      "advantages": ["Makes the hierarchy explicit across all stages"],
+      "costs": ["Larger overlay, more navigation surface, and more map occlusion"]
+    },
+    {
+      "id": "E",
+      "name": "Persistent nested rail with every stage's tools visible",
+      "desktopBehavior": "Show each stage and its complete tool list permanently in a nested left navigation column.",
+      "keyboard": {"tab": "Tab traverses all stages and all 13 tools on every workspace screen.", "arrows": "A treeview needs a full tree keyboard model; plain links/buttons use native Tab order.", "enterSpace": "Activate a stage or tool.", "escape": "No persistent menu to close; dismiss overlays only.", "focusReturn": "Direct tool activation focuses the active tool heading."},
+      "pointerHover": "Not required.",
+      "touch": "Nested lists remain available, but a dedicated mobile sheet would still be needed.",
+      "mapImpact": "Four stages plus 13 tool links need substantially more than 88 px, or force dense icon-only navigation.",
+      "directNavigation": "Direct actions select the corresponding tool and its stage.",
+      "lazyLoading": "Items expose metadata only; activating one uses its existing lazy boundary.",
+      "interactionCost": "One activation to select any visible tool.",
+      "advantages": ["All sibling tools are continuously discoverable", "One-activation selection"],
+      "costs": ["Persistent navigation dominates the map-first layout", "Consumes the most horizontal map width", "Dense and difficult to scan on tablet and mobile"]
+    },
+    {
+      "id": "F",
+      "name": "Stage rail plus workspace-wide tool palette",
+      "desktopBehavior": "Keep stage-only rail and add a searchable command palette that lists tools across all stages.",
+      "keyboard": {"tab": "Tab reaches the palette trigger; focus is managed inside the searchable dialog while open.", "arrows": "Up/Down move through filtered results; typing narrows the list.", "enterSpace": "Enter selects a result; Space follows the input/button native behavior.", "escape": "Escape closes the palette and restores focus to its trigger.", "focusReturn": "Return focus to the trigger after dismissal; focus the tool heading after selection."},
+      "pointerHover": "Not required.",
+      "touch": "Use a searchable full-width sheet on phone.",
+      "mapImpact": "No persistent map resize, but opening the palette covers workspace content.",
+      "directNavigation": "Direct actions continue to bypass the palette.",
+      "lazyLoading": "Search indexes metadata only; selection follows the current lazy boundary.",
+      "interactionCost": "At least two activations plus search/scan for most users; frequent experts may benefit from a shortcut.",
+      "advantages": ["Can find a known tool without first knowing its stage", "Scales to more tools"],
+      "costs": ["Adds a new global control and modal/search interaction", "Weakens stage-to-tool learning for first-time users", "No telemetry supports prioritizing search over visible sibling choices"]
+    }
+  ],
+  "railCapacityAlternatives": [
+    {"id": "A", "name": "Stage-only rail (current baseline)", "assessment": "Keeps the 88 px rail compact, but cannot own tool selection. The permanent drawer row currently supplies sibling navigation."},
+    {"id": "B", "name": "Click-to-expand stage flyout (selected capacity pattern)", "assessment": "A click/tap opens up to four named tools and transfers the drawer row's discovery and availability/attention jobs without persistent map cost."},
+    {"id": "C", "name": "Hover/focus-open stage flyout", "assessment": "Fast for pointer users but can open accidentally, is hard to stabilize across the rail-to-flyout gap, and does not translate cleanly to touch. Focus may reveal a preview; click/tap remains dependable."},
+    {"id": "D", "name": "Two-column temporary stage/tool chooser", "assessment": "Makes both levels explicit but covers more of the map and adds a second navigation column."},
+    {"id": "E", "name": "Persistent nested rail", "assessment": "Keeps every sibling visible and enables one-activation selection, but 13 tool labels dominate the left edge and reduce map width at every viewport."},
+    {"id": "F", "name": "Workspace-wide searchable tool palette", "assessment": "Helps experts who know a tool name, but adds a global launcher and search mode without evidence that it solves first-time stage/tool discovery."}
+  ],
+  "decision": {
+    "selected": "A",
+    "why": "It replaces the permanent tool row while retaining map width, stage semantics, sibling discovery, availability/attention, current-tool title, direct navigation, and lazy boundaries.",
+    "qualification": "The closed-menu same-stage cost rises from one to two activations. A stage click to its existing first-available default remains one activation. Confirm the tradeoff with expert users during 8B review.",
+    "frequentTransitions": {
+      "plausiblePairs": ["Setup ↔ Inventory", "Propagation ↔ Results", "Results ↔ Run history"],
+      "evidence": "No product telemetry or user observation dataset was available; these are workflow hypotheses.",
+      "recommendation": "Do not invent Recent tools or keyboard shortcuts in 8B. Evaluate switching feedback after the flyout is usable."
+    },
+    "mapFirstContract": ["No page routes", "No dashboard", "Map remains continuous", "Flyout does not resize map", "Tool selection updates the same drawer", "Direct destinations bypass the chooser"],
+    "lastToolMemory": "Current rail stage clicks select the first available tool; preserve that expectation for 8B. Do not add per-stage persisted last-tool state."
+  }
+}

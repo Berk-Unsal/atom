@@ -1,0 +1,58 @@
+{
+  "concept": "8A",
+  "sourceOfCurrentDefinitions": "frontend-react/src/components/workspaceTools.js (WORKSPACE_STAGES and WORKSPACE_TOOLS)",
+  "stages": [
+    {
+      "id": "plan",
+      "label": "Plan",
+      "tools": [
+        { "id": "setup", "label": "Setup", "icon": "SlidersHorizontal", "defaultOrder": 1, "availability": "available", "loading": "eager" },
+        { "id": "inventory", "label": "Inventory", "icon": "RadioTower", "defaultOrder": 2, "availability": "available", "loading": "eager" }
+      ]
+    },
+    {
+      "id": "simulate",
+      "label": "Simulate",
+      "tools": [
+        { "id": "propagation", "label": "Propagation", "icon": "Radar", "defaultOrder": 1, "availability": "available", "loading": "eager controls; research feature lazy" },
+        { "id": "experiments", "label": "Experiments", "icon": "FlaskConical", "defaultOrder": 2, "availability": "available", "loading": "lazy via loadExperimentFeature" },
+        { "id": "surfaces", "label": "Signal surface", "icon": "Layers3", "defaultOrder": 3, "availability": "available", "loading": "eager" }
+      ]
+    },
+    {
+      "id": "analyze",
+      "label": "Analyze",
+      "tools": [
+        { "id": "interference", "label": "Interference", "icon": "Activity", "defaultOrder": 1, "availability": "conditional", "availabilityRuleOwner": "App toolState", "unavailableWhen": ["not Network mode", "fewer than two selected cells", "6G research profile in plan or selected cell"], "attention": "warning when ineligible, success/result badge after analysis", "loading": "eager controls" },
+        { "id": "validation", "label": "RF Diagnostics", "icon": "BarChart3", "defaultOrder": 2, "availability": "available", "loading": "eager shell; diagnostic/reference features lazy" },
+        { "id": "building-entry", "label": "Building entry", "icon": "Building2", "defaultOrder": 3, "availability": "available", "loading": "eager" },
+        { "id": "core", "label": "5G Core", "icon": "Server", "defaultOrder": 4, "availability": "conditional", "availabilityRuleOwner": "App toolState", "unavailableWhen": ["plan defaults/cells are not 5G mmWave-compatible"], "loading": "lazy via loadCoreLabFeature; external sidecar optional" }
+      ],
+      "initialWorkspaceStageJump": "Interference is unavailable in default single-cell mode, so clicking Analyze opens RF Diagnostics as the first available tool."
+    },
+    {
+      "id": "review",
+      "label": "Review",
+      "tools": [
+        { "id": "results", "label": "Results", "icon": "BarChart3", "defaultOrder": 1, "availability": "available", "attention": "result badge when data exists", "loading": "eager shell" },
+        { "id": "history", "label": "Run history", "icon": "History", "defaultOrder": 2, "availability": "available", "attention": "run count and history warning", "loading": "lazy via loadRunHistoryFeature" },
+        { "id": "data", "label": "Data", "icon": "Database", "defaultOrder": 3, "availability": "available", "loading": "eager" },
+        { "id": "report", "label": "Report", "icon": "FileText", "defaultOrder": 4, "availability": "available", "loading": "lazy via loadReportFeature" }
+      ]
+    }
+  ],
+  "stageToolCounts": { "plan": 2, "simulate": 3, "analyze": 4, "review": 4, "total": 13 },
+  "lazyBoundaries": [
+    { "feature": "Propagation research", "loader": "loadPropagationResearch", "trigger": "Select/open its existing research capability" },
+    { "feature": "RF Diagnostics research", "loader": "loadRFDiagnosticsResearch", "trigger": "Select/open its existing research capability" },
+    { "feature": "Experiments", "loader": "loadExperimentFeature", "trigger": "Select Experiments" },
+    { "feature": "5G Core", "loader": "loadCoreLabFeature", "trigger": "Select 5G Core" },
+    { "feature": "Run history", "loader": "loadRunHistoryFeature", "trigger": "Select Run history" },
+    { "feature": "Report", "loader": "loadReportFeature", "trigger": "Select Report" }
+  ],
+  "registryOpportunity": {
+    "current": "WORKSPACE_TOOLS already centralizes tool id, label, icon, and stage for the rail and drawer tabs.",
+    "duplicatedElsewhere": ["drawerSubtitles in App.jsx", "runtime availability/attention toolState in App.jsx", "activeTool content switches in App.jsx", "lazy loader declarations in App.jsx"],
+    "recommendation": "Reuse and minimally extend WORKSPACE_TOOLS with short description and non-executable lazy/eager metadata if the flyout needs it. Keep availability reason and all RF/domain behavior in App-owned state. Do not put import() loaders in a menu registry, create a second source of truth, or introduce a plugin system."
+  }
+}

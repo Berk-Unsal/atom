@@ -1,0 +1,150 @@
+{
+  "concept": "8A",
+  "scope": "Persistent and semi-persistent layers observed in the current workspace",
+  "layers": [
+    {
+      "id": "command_bar",
+      "location": "Top of application; .command-bar",
+      "scope": "Global workspace",
+      "persistence": "Persistent; 56 px desktop, 52 px at phone",
+      "purpose": "Identity, project context, lineage, RF context, result/status, and plan-level compute action.",
+      "information": ["A.T.O.M identity", "Project", "Scenario/Version/draft", "single/network cell context", "technology/frequency/power/radius", "result state/source", "conditional result metrics", "operation status", "local autosave status", "Planning estimate"],
+      "actions": ["Open Project menu", "Open lineage details", "Open result summary", "Open model limits", "Run Sector/Evaluate Network", "Dismiss global error"],
+      "duplicates": ["Result state and source recur in Results and map legend.", "Draft state and local-save status appear as separate concepts without a clear grouping.", "RF values are a peer series of text items."],
+      "visualWeight": "High; multiple adjacent outlined controls/statuses share one row.",
+      "responsive": "CSS hides fields at 1120/900/640 px; at 390 px the project name and product wordmark are hidden, run status is a dot, RF detail and local save disappear, and text overlaps."
+    },
+    {
+      "id": "workflow_rail",
+      "location": "Left edge; .workflow-rail",
+      "scope": "Application stage navigation",
+      "persistence": "Persistent; 88 px desktop/tablet, 64 px bottom rail below 640 px",
+      "purpose": "Choose Plan, Simulate, Analyze, or Review.",
+      "information": ["Four stage labels and icons", "active stage", "aggregated attention/result badge"],
+      "actions": ["Select stage and its first available tool"],
+      "duplicates": ["Stage is implicit in the tool-tab row's aria-label and tool grouping, but those have the separate sibling-tool job."],
+      "visualWeight": "Medium; narrow background rail with one selected stage.",
+      "responsive": "Vertical rail remains at 768 px; transforms to labeled bottom buttons on phone."
+    },
+    {
+      "id": "tool_drawer_header",
+      "location": "Top of .tool-drawer",
+      "scope": "Current tool or map inspector",
+      "persistence": "Visible whenever drawer is open; 62 px desktop, 65 px phone",
+      "purpose": "Identify the single active tool or inspector.",
+      "information": ["Icon", "tool title", "short description", "close; inspector back action"],
+      "actions": ["Close drawer", "Return from inspector"],
+      "duplicates": ["Tool title is repeated as selected sibling tab and may recur as an inner panel title."],
+      "visualWeight": "Medium; white header with bottom divider.",
+      "responsive": "Tool name and short subtitle truncate at constrained widths; close target grows to 44 px on phone."
+    },
+    {
+      "id": "tool_sibling_tabs",
+      "location": "Immediately below drawer header; .tool-subnav",
+      "scope": "Sibling tools for active stage",
+      "persistence": "Always visible while a tool drawer is open; 51 px desktop, 59 px phone",
+      "purpose": "Fast tool switching, availability, and per-tool attention.",
+      "information": ["2 Plan tools", "3 Simulate tools", "4 Analyze tools", "4 Review tools", "active tool", "success/warning/count badges", "unavailable reason in title text"],
+      "actions": ["Select an available sibling tool"],
+      "duplicates": ["Repeats current tool identity already in drawer header; stage membership is already represented by active rail."],
+      "visualWeight": "High when four tools are present; bordered active tab and row divider.",
+      "responsive": "Analyze/Review natural width is 513 px, versus 359 px drawer at 1440 and 390 px screen on phone. Horizontal scrolling is enabled but scrollbar hidden; end items are clipped."
+    },
+    {
+      "id": "capability_disclosures",
+      "location": "Tool drawer content; DisclosureSection controls and tool-specific sections",
+      "scope": "One active tool",
+      "persistence": "Semi-persistent open/closed state within the current tool; some defaults open and Research/reference defaults closed",
+      "purpose": "Separate routine Planning controls, Advanced details, Research/reference, and tool-specific content.",
+      "information": ["Applicability", "model assumptions", "optional workflows", "research/evidence boundary"],
+      "actions": ["Expand/collapse capability sections"],
+      "duplicates": ["Research/reference and Advanced labels may recur inside child panels and badges."],
+      "visualWeight": "Medium/high; headers, divider/border, explanatory copy, and sometimes nested panels.",
+      "responsive": "Stacks in the drawer; controls and copy scroll within the fixed-height panel."
+    },
+    {
+      "id": "tool_content",
+      "location": ".tool-drawer-body",
+      "scope": "One selected tool, sometimes a nested result subview",
+      "persistence": "Visible while selected; scrollable; active tool state is app-owned",
+      "purpose": "Present controls, data, workflow state, and explicit computation.",
+      "information": ["Inputs", "availability", "result details", "scientific qualifications", "local history or report artifacts"],
+      "actions": ["Tool-specific compute, selection, import/export, navigation, and disclosure actions"],
+      "duplicates": ["Some tool titles repeat the drawer header; Results and Run history add their own view/list/detail hierarchy."],
+      "visualWeight": "Content-dependent; nested cards are common in Inventory, Results, diagnostics, and history.",
+      "responsive": "Drawer body remains scrollable; first tool control ranges from 129 to 592 px below drawer top depending on tool and required setup."
+    },
+    {
+      "id": "map_toolbar",
+      "location": "Top overlay in .map-stage; .focused-map-toolbar",
+      "scope": "Map presentation and spatial selection",
+      "persistence": "Persistent overlay; actions enabled/available according to current data",
+      "purpose": "Control map selection, focus, RF layers, interference metric, and optional layers.",
+      "information": ["RF label", "Signal/Rays state", "Scope/Focus selections", "available metrics/layers", "selection state"],
+      "actions": ["Area selection", "Clear/fitting selection", "Signal/Rays", "Scope/Focus", "Metric switch", "Layers menu", "zoom"],
+      "duplicates": ["Layer names and result interpretation recur in the map legend; status/context also appears in command bar."],
+      "visualWeight": "High in width and control count; one outlined floating container with grouped controls.",
+      "responsive": "42 px high at desktop; wraps to 201 px at 390 px, where it overlaps the only unobscured map band."
+    },
+    {
+      "id": "map_legend",
+      "location": "Lower-right map overlay; .focused-map-legend",
+      "scope": "Visible spatial layers",
+      "persistence": "User-collapsible; expands conditionally by active layer",
+      "purpose": "Explain map symbols and active RF/result semantics.",
+      "information": ["Cell markers", "result source", "received power", "signal-surface scale/floor/cell", "coverage gaps", "SINR/RSRP/RSRQ quality"],
+      "actions": ["Expand/collapse map key"],
+      "duplicates": ["Result source is repeated in global result context and Results card; other legend values are unique scientific interpretation."],
+      "visualWeight": "High when several layers are active; one bordered floating panel with sections.",
+      "responsive": "Width is 180 px; constrained by map area and can sit behind/near the phone drawer."
+    },
+    {
+      "id": "map_inspector_and_popup",
+      "location": "Leaflet popup plus drawerMode=inspector",
+      "scope": "Selected map object",
+      "persistence": "Transient; replaces tool drawer content while selection is inspected",
+      "purpose": "Show selected tower/building/path object details with map context retained.",
+      "information": ["Cell ID", "technology", "cluster state/order", "object-specific values"],
+      "actions": ["Close popup", "Back to previous tool", "Close inspector"],
+      "duplicates": ["Cell identity can recur in RF context, Focus selector, and tool controls."],
+      "visualWeight": "Medium; map popup and a second drawer mode can be visible together.",
+      "responsive": "Popup and full-width tool sheet compete for limited phone map area."
+    },
+    {
+      "id": "map_zoom_and_floating_controls",
+      "location": "Leaflet zoom, map selection overlays, and temporary map prompts",
+      "scope": "Map interaction",
+      "persistence": "Zoom persistent; drawing/cell popups/prompt transient",
+      "purpose": "Direct map navigation and feedback for plan or selection state.",
+      "information": ["Zoom level", "selection state", "plan changed/result out of date/map readiness"],
+      "actions": ["Zoom", "Draw/select", "Dismiss or continue selection"],
+      "duplicates": ["A map prompt may repeat the operation status shown in the command bar."],
+      "visualWeight": "Contextual and may overlap map geometry.",
+      "responsive": "Map prompt and toolbar shift around the bottom rail/sheet on phone."
+    },
+    {
+      "id": "result_context",
+      "location": "Command bar ResultContextBadge, Results result card, MapLegend Result source, and map prompt",
+      "scope": "A particular Run/result layer",
+      "persistence": "Conditional on current, stale, historical, unsupported, or unavailable result context",
+      "purpose": "Preserve lineage and prevent a result from being mistaken for current plan output.",
+      "information": ["Freshness", "Scenario/Version", "source Run", "sometimes metric/source detail"],
+      "actions": ["Open Results", "Run again", "View source Run"],
+      "duplicates": ["Freshness and run identity can be shown in three locations at once; result score/overlap are also in the global summary."],
+      "visualWeight": "High during result review.",
+      "responsive": "Header badge/metric are clipped or hidden at narrower breakpoints; map legend is partly obscured by mobile sheet."
+    },
+    {
+      "id": "status_and_toast_regions",
+      "location": "Command-bar run/save statuses, .global-error-banner, map-plan-prompt, .undo-toast, local panel statuses",
+      "scope": "Global operation, persistence, validation, or transient undo",
+      "persistence": "State-dependent; errors/status may persist, toast is transient",
+      "purpose": "Report readiness, computation, local save, errors, plan changes, and undo.",
+      "information": ["Ready/Running/Run needed/Result out of date", "Saving/Saved locally/Save failed", "errors and attention"],
+      "actions": ["Dismiss error/toast", "Undo", "Rerun current result"],
+      "duplicates": ["Run state and map prompt may both describe a stale/changed plan; save state and draft lineage can seem contradictory."],
+      "visualWeight": "Low to high depending on error; status appears alongside many command-bar items.",
+      "responsive": "Run status becomes dot-only and local save text disappears below 1120 px; map notices overlay content."
+    }
+  ]
+}

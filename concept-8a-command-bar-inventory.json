@@ -1,0 +1,41 @@
+{
+  "concept": "8A",
+  "observedItems": [
+    { "id": "atom_identity", "label": "A.T.O.M and product subtitle", "class": "global identity", "visibility": "always except text truncates/hides on narrow screens", "priority": "persistent compact identity" },
+    { "id": "project_menu", "label": "Project name and folder control", "class": "workspace identity/action", "visibility": "always; phone shows icon", "priority": "Project name stays answerable" },
+    { "id": "workspace_lineage", "label": "Scenario, Version/no-Version, draft state; detail popover has Project/Scenario/Version/Draft", "class": "workspace identity/status", "visibility": "always; summary is clipped on narrow screens", "priority": "Project/Scenario/Version/draft remain immediately visible" },
+    { "id": "result_context_badge", "label": "CURRENT/STALE/HISTORICAL/UNAVAILABLE/UNSUPPORTED and source result context", "class": "result context", "visibility": "conditional on result context", "priority": "Freshness and short source Run remain visible whenever relevant" },
+    { "id": "planning_mode_and_cell_count", "label": "Single · Cell N or Network · N cells", "class": "RF/workspace context", "visibility": "persistent but ellipsized", "priority": "Group with technology/frequency" },
+    { "id": "technology", "label": "4G LTE, 5G mmWave, or 6G research profile", "class": "RF context", "visibility": "persistent when space allows", "priority": "Keep technology visible" },
+    { "id": "rf_scalar_summary", "label": "Frequency GHz · TX power dBm · radius m", "class": "RF context", "visibility": "hidden at max-width 1120", "priority": "Keep frequency in compact group; put power/radius in responsive secondary detail" },
+    { "id": "planning_estimate", "label": "Planning estimate / model limits link", "class": "model qualification/navigation", "visibility": "always desktop; constrained on mobile", "priority": "Move to Data/model detail or a clear help entry" },
+    { "id": "result_summary_button", "label": "Sector/network/interference/optimization metric plus secondary summary", "class": "result context/action", "visibility": "conditional on a result; hidden 641–900 and below 640", "priority": "Metrics belong in Results; retain a compact state/source shortcut" },
+    { "id": "run_state", "label": "Ready, Running, Run needed, Result out of date", "class": "operation/result status", "visibility": "always; dot-only at max-width 640", "priority": "Keep readable operation/currentness state" },
+    { "id": "local_save_state", "label": "Saving, Draft saved locally, Saved locally, Save failed", "class": "persistence status", "visibility": "always when wide; hidden at max-width 1120", "priority": "Group local autosave with draft; keep saving/error visible" },
+    { "id": "primary_compute", "label": "Run Sector, Add N cells, Evaluating…, Evaluate Network", "class": "primary action", "visibility": "Setup, Inventory, and Propagation only", "priority": "Keep current mode-aware wording/readiness in Plan/Simulate scope" }
+  ],
+  "observedLayout": {
+    "1440x900": "56 px row: brand 248 px, context 700 px, actions 436 px. Context values are separate peers; the conditional result badge and metric shortcut make it denser.",
+    "1280x800": "56 px row: context contracts to 540 px while right actions remain 436 px; lineage/scalars ellipsize.",
+    "1024x768": "56 px row: brand 196 px, context 465 px, actions 319 px; media rule has already hidden some context.",
+    "768x1024": "56 px row: brand 170 px, context 353 px, actions 201 px; result summary and RF scalar/local save are hidden.",
+    "390x844": "52 px row: icon-only brand/project, narrow context and action; fields overlap, run status loses text, RF context and local-save text disappear."
+  },
+  "informationPriority": {
+    "permanent": ["Project", "Scenario", "Version or No saved Version", "draft state", "result freshness/source when a result is relevant", "current operation/error state", "mode/cell count/technology/frequency summary", "one plan-level compute action on Plan/Simulate"],
+    "grouped": ["Project/Scenario/Version/draft as Workspace", "mode/cell count/technology/frequency as RF context", "operation and result freshness as Status"],
+    "progressiveDisclosure": ["Full IDs and source lineage", "TX power and radius on phone/tablet", "local autosave implementation detail when idle", "model-limit documentation link"],
+    "conditionalResult": ["A compact Result state/source shortcut may appear while result context exists and open Results."],
+    "moveToResultsOrLegend": ["Optimization score", "overlap", "serviceability", "average received power/interference score", "full source Run details"]
+  },
+  "recommendedInformationArchitecture": {
+    "workspace": "Project · Scenario · Version/no-Version · draft state; full details on one disclosure.",
+    "rfContext": "Single/Network · cell count · technology · frequency; power and radius in secondary RF details where space is constrained.",
+    "status": "Operation readiness/error plus CURRENT/STALE/HISTORICAL/UNAVAILABLE/UNSUPPORTED and short source Run when applicable.",
+    "primaryAction": "Run Sector/Evaluate Network with unchanged semantics and existing Plan/Simulate visibility.",
+    "resultMetrics": "Results panel and active-layer map legend; do not keep a separate global metric card."
+  },
+  "lineageContract": "Without opening a deep panel, users can answer which Project, Scenario, Version/draft, result state, and short source Run are active. The detail disclosure is for full IDs and provenance, not basic identity.",
+  "persistenceContract": "An immutable Saved Version is distinct from a browser-local autosaved draft. Do not make 'Unsaved changes' appear to mean unsaved local data when only Version creation is pending.",
+  "primaryActionFinding": "The action is a plan-level command placed in the global bar for Plan/Simulate tools. Keep the established Run Sector/Evaluate Network mode-aware labels and required-cell readiness. Tool-specific analysis/reference/report actions remain in their tool and retain one clear local primary action."
+}

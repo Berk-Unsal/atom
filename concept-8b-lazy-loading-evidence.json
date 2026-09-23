@@ -1,0 +1,27 @@
+{
+  "concept": "8B",
+  "coldStartup": {
+    "specializedFeatureChunksRequested": [],
+    "featuresAbsent": [
+      "PropagationResearchFeature",
+      "RFDiagnosticsResearchFeature",
+      "ExperimentPanel",
+      "CoreLabFeature",
+      "RunHistoryPanel",
+      "ReportFeature"
+    ],
+    "test": "frontend-react/e2e/workspace.spec.js — loads specialized feature modules only after their workspace action"
+  },
+  "activationEvidence": [
+    {"feature": "Propagation research", "activation": "Open its Research/reference disclosure", "chooserSelectionAloneImports": false},
+    {"feature": "RF diagnostics research", "activation": "Open its Research/reference disclosure"},
+    {"feature": "Experiments", "activation": "Select Experiments"},
+    {"feature": "5G Core", "activation": "Select 5G Core"},
+    {"feature": "Run history", "activation": "Select Run history"},
+    {"feature": "Report feature", "activation": "Select Report"},
+    {"feature": "Report export/artifact code", "activation": "Generate a Report from a Run"}
+  ],
+  "navigationMetadata": "WORKSPACE_TOOLS contains stage, label, icon, and short description only; no dynamic import functions or eager lazy-feature references.",
+  "productionBuild": {"status": "passed", "javascriptChunkCount": 12, "modulesTransformed": 1705},
+  "boundariesPreserved": ["Concept 7I feature boundaries", "chooser rendering imports presentation metadata only", "existing action/disclosure remains the feature trigger"]
+}

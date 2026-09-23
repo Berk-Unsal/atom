@@ -1,0 +1,64 @@
+{
+  "concept": "8A",
+  "testPlanOnly": true,
+  "testsWereRunDuringAudit": false,
+  "navigation": [
+    { "id": "stage-selection", "check": "All four stages can be opened and stage labels remain Plan, Simulate, Analyze, Review." },
+    { "id": "tool-selection", "check": "Every one of the 13 tools can be selected from its stage flyout." },
+    { "id": "unavailable-tool", "check": "Unavailable tools remain discoverable, expose a reason, and cannot activate." },
+    { "id": "stage-default", "check": "A different-stage click retains the existing first-available-tool behavior." },
+    { "id": "current-tool-header", "check": "Drawer always shows current stage and tool name, including direct/programmatic destinations." },
+    { "id": "sibling-discovery", "check": "All sibling names and success/warning/count state are visible in the flyout without horizontal scrolling." },
+    { "id": "inspector", "check": "Map Inspector replaces tool content as before and Back returns to prior tool." }
+  ],
+  "keyboardAndPointer": [
+    { "id": "tab-order", "check": "Tab reaches all stage triggers and available tool choices in a logical order." },
+    { "id": "arrow-keys", "check": "Up/Down and Home/End follow the documented flyout model." },
+    { "id": "enter-space", "check": "Enter/Space opens a stage chooser and selects a tool." },
+    { "id": "escape", "check": "Escape closes the flyout and restores focus to the stage trigger." },
+    { "id": "drawer-focus-return", "check": "Closing the drawer returns focus to a mounted stage control, not a removed tool-tab button." },
+    { "id": "focus-after-selection", "check": "Tool selection announces/lands on the active tool heading without trapping focus." },
+    { "id": "pointer", "check": "Pointer click opens and selects; hover is not required; dismissal does not swallow a map or drawer click." },
+    { "id": "touch", "check": "Tap opens stage tools and tap selects a named tool; no hover behavior is required." }
+  ],
+  "directNavigation": [
+    { "id": "current-rf-result", "check": "Open current RF result reaches Results/RF without an extra flyout click." },
+    { "id": "vertical-path-profile", "check": "Open vertical path profile reaches Propagation's advanced path-profile section directly." },
+    { "id": "run-history-source", "check": "Run History source actions inspect or regenerate the chosen Run directly." },
+    { "id": "report-navigation", "check": "Report source and generated-report navigation preserve Scenario/Version/Run context." },
+    { "id": "validation-attention", "check": "Validation/attention action opens its exact target directly." }
+  ],
+  "lazyLoading": [
+    { "id": "research-lazy", "check": "Opening a stage flyout does not load Propagation or RF Diagnostics research chunks; selecting the existing feature triggers its current lazy boundary." },
+    { "id": "core-lazy", "check": "Core Lab chunk remains unloaded until 5G Core is selected." },
+    { "id": "report-lazy", "check": "Report chunk remains unloaded until Report is selected." },
+    { "id": "history-lazy", "check": "Run History chunk remains unloaded until Run history is selected." },
+    { "id": "experiments-lazy", "check": "Experiments chunk remains unloaded until Experiments is selected." },
+    { "id": "chunk-invariance", "check": "Compare build chunks before/after 8B; no lazy feature is folded into the eager shell." }
+  ],
+  "responsive": [
+    { "viewport": "1440x900", "check": "Rail, drawer, flyout, command bar, map, toolbar, and legend fit with map dimensions unchanged." },
+    { "viewport": "1280x800", "check": "Grouped command bar stays readable; no widening of drawer." },
+    { "viewport": "1024x768", "check": "Flyout overlays without pushing map; workspace/RF/result state remain visible." },
+    { "viewport": "768x1024", "check": "Touch-sized flyout works with vertical rail and usable map." },
+    { "viewport": "390x844", "check": "Bottom stage bar and tool sheet work; no horizontal overflow; action and map inspection remain usable." },
+    { "id": "overflow", "check": "Assert document scrollWidth equals viewport width and all tool names remain discoverable." }
+  ],
+  "lineageAndResults": [
+    { "id": "lineage-visible", "check": "User can answer Project, Scenario, Version/no-Version, and draft state without a deep panel." },
+    { "id": "result-currentness", "check": "CURRENT, STALE, HISTORICAL, UNAVAILABLE, and UNSUPPORTED remain explicit when applicable." },
+    { "id": "source-run", "check": "A short source Run stays discoverable globally; full run identity remains in Results/Run History." },
+    { "id": "metrics", "check": "Optimization/overlap/serviceability/RF metrics remain discoverable in Results and relevant legend after moving out of global header." },
+    { "id": "persistence-meaning", "check": "Browser-local draft autosave and immutable Version save remain distinct in labels and Project menu." },
+    { "id": "result-subviews", "check": "Results RF, Optimization, Interference, Compare, and Candidates views remain intact." }
+  ],
+  "invariance": [
+    { "id": "request-invariance", "check": "Compare RF request payloads for the same plan before/after navigation changes; navigation itself issues no RF request." },
+    { "id": "optimizer-invariance", "check": "Optimization request and input fingerprints remain identical for unchanged inputs." },
+    { "id": "scenario-run-report-invariance", "check": "Project/Scenario, Run source, historical result, and Report semantics are unchanged." },
+    { "id": "disclosure-invariance", "check": "Planning/Advanced/Research capability state and scientific terminology are retained." },
+    { "id": "lazy-request-invariance", "check": "Opening menus introduces no API calls or feature imports; selecting tool follows its existing boundary." }
+  ],
+  "executionOrder": ["Unit/component tests for flyout and focus", "Existing App/workspace workflow tests", "Direct-navigation and lazy-boundary checks", "Request/fingerprint comparison", "Responsive screenshots at all five widths"],
+  "outOfScope": ["Map-toolbar redesign", "RF/optimizer behavior tests unrelated to invariance", "New routing", "Global state migration", "New persistence"]
+}

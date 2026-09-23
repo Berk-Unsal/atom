@@ -1,0 +1,49 @@
+{
+  "concept": "8B",
+  "scope": "navigation, command-bar presentation, and presentation-only research-label cleanup",
+  "productionChanges": [
+    "frontend-react/src/App.jsx",
+    "frontend-react/src/components/WorkspaceChrome.jsx",
+    "frontend-react/src/components/ResultContextBadge.jsx",
+    "frontend-react/src/components/workspaceTools.js",
+    "frontend-react/src/components/MaterialReferencePanel.jsx",
+    "frontend-react/src/components/MeasurementValidationPanel.jsx",
+    "frontend-react/src/components/P1411CandidatePanel.jsx",
+    "frontend-react/src/components/SpecularReflectionReferencePanel.jsx",
+    "frontend-react/src/components/SubTHZReferencePanel.jsx",
+    "frontend-react/src/styles.css"
+  ],
+  "unchangedSourceAreas": [
+    "RF equations, propagation and antenna/link budget implementations",
+    "request schemas/builders and backend API routes",
+    "optimizer scoring, search policy, Pareto membership, IDs, and recommendations",
+    "ScenarioRevision, ProjectV2, inventory, run-history, report-source and artifact persistence implementations",
+    "resolveRunFreshness and buildResultContext",
+    "IndexedDB/localStorage schema and behavior",
+    "useRunExecution, useReportWorkflow, useProjectWorkspace, and useRequestCoordinator",
+    "MapToolbar JSX structure, map toolbar scientific controls, and MapLegend scientific interpretation",
+    "routes; no router added"
+  ],
+  "results": {
+    "internalSubviewsRetained": ["RF", "Optimization", "Interference", "Compare", "Candidates"],
+    "detailedMetrics": "remain in Results and relevant map legend",
+    "resultFreshnessVocabulary": ["CURRENT", "STALE", "HISTORICAL", "UNAVAILABLE", "UNSUPPORTED"],
+    "compactSourceAction": "opens Results without changing result source"
+  },
+  "verification": [
+    {"area": "request equivalence", "command": "cd frontend-react && npx vitest run src/domain/requestEquivalence.test.js", "status": "passed; 1 file, 3 tests"},
+    {"area": "frontend suite", "command": "cd frontend-react && npm test", "status": "passed; see concept-8b-test-evidence.json"},
+    {"area": "backend-go", "command": "cd backend-go && go vet ./... && go test -race ./...", "status": "passed"},
+    {"area": "core-lab-adapter", "command": "cd core-lab-adapter && go vet ./... && go test -race ./...", "status": "passed"}
+  ],
+  "regressionEvidence": {
+    "7G freshness": "full suite includes resultContext tests for current/stale/historical/unavailable/unsupported vocabulary and matching fingerprint/identity behavior; resultContext source unchanged",
+    "7H disclosures": "full component/workflow suite and existing keyboard disclosure E2E passed; Planning/Advanced/Research boundaries remain in tool content",
+    "7I lazy loading": "production build plus specialized-feature E2E passed; see concept-8b-lazy-loading-evidence.json",
+    "7J orchestration": "the four orchestration hooks are imported and called from App as before; no hook files changed; frontend suite passed",
+    "optimizer": "Pareto alternative and optimization workflow E2E passed; public alternatives and recommendation contract untouched",
+    "projectRunReport": "project switch, saved Version, Run History, report generation, historical apply/source flows pass except the baseline source attribution assertion called out below",
+    "fingerprints": "domain canonicalization/fingerprint and request-equivalence tests passed as part of the 55-file suite; requestEquivalence.test.js also passed directly (3 tests)"
+  },
+  "caveat": "The pre-change historical source-Version E2E baseline issue remains. This implementation does not change report/run attribution or hide its failure."
+}

@@ -1,0 +1,73 @@
+{
+  "concept": "8A",
+  "horizontalOverflow": {
+    "document": { "1440": false, "1280": false, "1024": false, "768": false, "390": false },
+    "internalToolRow": { "1440": true, "1280": true, "1024": true, "768": true, "390": true, "naturalWidthAnalyzeReviewPx": 513, "scrollbar": "hidden" }
+  },
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "rail": "88 px vertical",
+      "drawer": "360 px wide; x=88; 62 px header + 51 px tool row",
+      "map": "1352 px stage width; drawer covers 360 px; 992 px of viewport width remains unobscured",
+      "toolbar": "968x42 px at x=460",
+      "header": "All contexts fit nominally but are visually segmented into peer items; result state/summary add more objects.",
+      "actualFailure": "No horizontal overflow. Analyze/Review sibling names clip because row natural width exceeds drawer."
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "rail": "88 px vertical",
+      "drawer": "345.6 px wide; x=88; 62 px header + 51 px tool row",
+      "map": "1192 px stage width; 846.4 px unobscured",
+      "toolbar": "808x42 px at x=460",
+      "header": "Text truncation starts as context column narrows; full 1120 px compression rule is not active.",
+      "actualFailure": "No document overflow; 4-item tool row remains horizontally scrollable and clipped."
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "rail": "88 px vertical",
+      "drawer": "320 px wide; x=88; 62 px header + 51 px tool row",
+      "map": "936 px stage width; 616 px unobscured",
+      "toolbar": "552x42 px",
+      "header": "At max-width 1120 the brand subtitle, RF scalar summary, and local-save text are hidden. Project/scenario/version remain compressed alongside operation/action.",
+      "actualFailure": "Context is removed to make the row fit instead of grouped; Analyze/Review tool list overflows its drawer."
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "rail": "88 px vertical; desktop rail still used",
+      "drawer": "320 px wide; x=88; 62 px header + 51 px tool row",
+      "map": "680 px stage width; only 360 px of viewport width remains outside drawer",
+      "toolbar": "296x42 px",
+      "header": "641–900 px rule hides result metric shortcut; RF scalar/local-save text is hidden; the brand is reduced.",
+      "actualFailure": "The map remains present but comparatively narrow. Tool siblings scroll; toolbar control width is tight."
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "rail": "64 px bottom bar from y=780",
+      "drawer": "390 px full-width bottom sheet; y≈189; height≈591; header 65 px + tool row 59 px",
+      "map": "390x728 px map stage; about 137 px of height remains unobscured above the sheet",
+      "toolbar": "340x201 px wrapped overlay from x=42, y=62; parts sit behind sheet",
+      "header": "52 px; brand text and RF summary hidden, Project trigger icon-only, local save hidden, status is a colored dot. Workspace/result text visibly collides.",
+      "actualFailure": "No document horizontal scroll, but command-bar overlap makes workspace/result context unreliable. Four sibling tools need hidden horizontal scroll. Map is mostly covered by the focused sheet."
+    }
+  ],
+  "selectedNavigationResponsiveContract": {
+    "atOrAbove1280": "Keep 88 px vertical rail. Click opens a labeled stage flyout; tool choices overlay drawer edge and do not change map/drawer dimensions.",
+    "1024To1279": "Use the same flyout with compact command-bar grouping. Keep stage/tool labels and result state readable; power/radius may move to secondary RF details.",
+    "640To1023": "Keep the vertical stage rail. Open the tool chooser by click/tap with touch-sized targets. Do not depend on hover; chooser overlays instead of widening rail.",
+    "below640": "Keep 64 px labeled bottom stage bar. A stage tap opens the tool list in the existing drawer-sheet footprint; a tool tap returns to that one-tool sheet. Preserve map inspection and basic selection/actions.",
+    "allSizes": ["No page routing", "No horizontal overflow", "Current tool title remains in the drawer", "Project/Scenario/Version and result state remain answerable", "CURRENT/STALE/HISTORICAL/UNAVAILABLE/UNSUPPORTED stay explicit"]
+  },
+  "responsivePrinciples": [
+    "Treat 1440 as the primary planning layout.",
+    "Do not widen the drawer to fix the tool row.",
+    "At phone width, preserve map inspection and focused basic actions rather than full planning density.",
+    "Keep the map a continuous surface; temporary chooser may cover a small area but must not reflow or route away.",
+    "Reuse existing 1120, 900, and 640 CSS boundaries where suitable."
+  ]
+}

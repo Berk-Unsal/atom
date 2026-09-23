@@ -1,0 +1,72 @@
+{
+  "concept": "8B",
+  "capturedAt": "2026-09-23",
+  "preChangeBaseline": {
+    "frontendUnit": {"testFilesPassed": 55, "testsPassed": 282},
+    "frontendE2E": {"total": 88, "passed": 70, "failed": 4, "skipped": 14},
+    "knownFailure": "opens the exact Run source Version while keeping the current Version active; all four viewport projects expected Version 1 but displayed Working draft · No saved Version."
+  },
+  "postChange": {
+    "frontendUnit": {
+      "command": "cd frontend-react && npm test",
+      "status": "passed",
+      "testFilesPassed": 55,
+      "testsPassed": 289
+    },
+    "frontendLint": {"command": "cd frontend-react && npm run lint", "status": "passed"},
+    "frontendBuild": {
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "modulesTransformed": 1705,
+      "javascriptChunkCount": 12,
+      "initialJavaScriptRawBytes": 778271,
+      "initialJavaScriptGzipKB": 220.98,
+      "initialCssRawBytes": 162609,
+      "initialCssGzipKB": 30.45,
+      "existingLargeEntryWarning": true
+    },
+    "frontendE2E": {
+      "command": "cd frontend-react && npm run test:e2e",
+      "total": 100,
+      "passed": 74,
+      "failed": 3,
+      "skipped": 23,
+      "workers": 5,
+      "newSmoke": "smokes sibling navigation across all four stages passed on desktop-1440; mobile destination and chooser flows passed.",
+      "coldHistoryReport": "passed on all four viewport projects",
+      "onlyFailure": {
+        "test": "opens the exact Run source Version while keeping the current Version active",
+        "failedViewportProjects": ["desktop-1440", "tablet-768", "mobile-390"],
+        "passedViewportProjects": ["desktop-1024"],
+        "expected": "Version 1 for the historical Run source",
+        "observed": "Working draft · No saved Version",
+        "baselineRelation": "same pre-change failure and semantics as the recorded 8B starting baseline; 4 viewport failures before this implementation"
+      }
+    },
+    "requestEquivalence": {
+      "command": "cd frontend-react && npx vitest run src/domain/requestEquivalence.test.js",
+      "status": "passed",
+      "testFilesPassed": 1,
+      "testsPassed": 3
+    },
+    "backendGo": {
+      "command": "cd backend-go && go vet ./... && go test -race ./...",
+      "status": "passed",
+      "packagesWithTests": 2,
+      "packagesWithoutTests": 3
+    },
+    "coreLabAdapter": {
+      "command": "cd core-lab-adapter && go vet ./... && go test -race ./...",
+      "status": "passed",
+      "packagesWithTests": 1
+    },
+    "documentation": {
+      "referencePageGeneration": "passed; existing Pandoc --mathml deprecation warnings",
+      "validator": "passed; 41 HTML pages and 41 API paths, using docs/requirements.txt pinned PyYAML in a disposable venv",
+      "versionConsistency": "passed; VERSION 0.9.0",
+      "jsonParsing": "passed; all 9 Concept 8B JSON files parsed",
+      "screenshotIndex": "passed; all 15 indexed JPEGs exist under docs/assets/concept-8b/",
+      "gitDiffCheck": "passed"
+    }
+  }
+}

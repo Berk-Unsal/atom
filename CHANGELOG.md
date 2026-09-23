@@ -4,6 +4,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-23
+
 ### Added
 
 - Add local-first Concept 7D report artifacts with exact ScenarioRevision/Run lineage, SHA-256 verification, separate IndexedDB retention, historical Run generation, offline download, regeneration, corruption handling, and explicit cleanup/quota behavior.
@@ -188,7 +190,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/Berk-Unsal/atom/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Berk-Unsal/atom/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/Berk-Unsal/atom/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0

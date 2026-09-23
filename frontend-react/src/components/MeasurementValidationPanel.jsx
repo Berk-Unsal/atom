@@ -2,7 +2,6 @@ import { useMemo, useRef, useState } from "react";
 import { Activity, AlertTriangle, CheckCircle2, PlayCircle, Upload } from "lucide-react";
 import { MAX_MEASUREMENT_VALIDATION_FILE_BYTES, parseMeasurementValidationJSON, syntheticP525Campaign } from "../utils/measurementValidation.js";
 import { formatNumber } from "../utils/appWorkspace.js";
-import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 const MODEL_OPTIONS = [
   ["p525_fspl", "P.525 FSPL"],
@@ -82,7 +81,7 @@ export default function MeasurementValidationPanel({ analysis, isAnalyzing, onRu
 
   return (
     <section className="measurement-validation-panel" aria-label="RF diagnostics and measurement validation">
-      <header className="panel-title"><Activity size={16} /><span>RF Diagnostics</span><ResearchReferenceBadge label="Validation / reference" /><span className="panel-title-badge">isolated</span></header>
+      <header className="panel-title"><Activity size={16} /><span>RF Diagnostics</span></header>
       <p className="measurement-validation-callout"><strong>Evidence ledger only.</strong> This workflow does not alter canonical propagation, coverage, building entry, diffraction, interference, radio quality, or optimization. Residual is measured path loss minus predicted path loss.</p>
 
       <div className="measurement-validation-import-row">
@@ -143,16 +142,18 @@ function ValidationModelCard({ model }) {
   const metric = model.metric ?? {};
   const statuses = model.status_counts ?? {};
   const calibration = model.calibration;
+  const modelLabel = MODEL_OPTIONS.find(([modelID]) => modelID === model.model_id)?.[1] ?? "Reference model";
   const points = (model.predictions ?? []).filter((prediction) => prediction.residual_db !== undefined && prediction.residual_db !== null);
   return (
     <article className="measurement-validation-model-card">
-      <header><div><strong>{model.model_id}</strong><small>{model.model_version}</small></div><span>{metric.count ?? 0} applicable</span></header>
+      <header><div><strong>{modelLabel}</strong></div><span>{metric.count ?? 0} applicable</span></header>
       <div className="measurement-validation-statuses">{Object.entries(statuses).map(([status, count]) => <span key={status}><small>{formatLabel(status)}</small><strong>{count}</strong></span>)}</div>
       <div className="measurement-validation-metrics"><Metric label="Bias" value={metric.mean_bias_db} /><Metric label="Median" value={metric.median_bias_db} /><Metric label="MAE" value={metric.mae_db} /><Metric label="RMSE" value={metric.rmse_db} /><Metric label="Std" value={metric.std_db} /><Metric label="P10 / P90" value={`${formatNumber(metric.p10_db, 2)} / ${formatNumber(metric.p90_db, 2)}`} /></div>
       {model.p1411_sigma_comparison ? <p className="data-note">P.1411 source σ {formatNumber(model.p1411_sigma_comparison.source_sigma_db, 2)} dB · observed residual σ {formatNumber(model.p1411_sigma_comparison.observed_residual_std_db, 2)} dB.</p> : null}
       {model.atmospheric_comparison ? <p className="data-note">Atmospheric comparison: {formatLabel(model.atmospheric_comparison.status)}{model.atmospheric_comparison.reason ? ` · ${model.atmospheric_comparison.reason}` : ""}.</p> : null}
       {calibration ? <p className={`measurement-validation-calibration ${calibration.status === "stable" ? "valid" : "warning"}`}><strong>{formatLabel(calibration.status)}</strong> · fitted constant bias {formatNumber(calibration.fitted_bias_db, 2)} dB · validation n={calibration.validation_count} · promoted: no</p> : null}
       {points.length > 1 ? <ResidualChart points={points} /> : null}
+      <details className="measurement-validation-model-provenance"><summary>Details / Provenance</summary><p className="data-note">Model ID <code>{model.model_id}</code> · version {model.model_version ?? "not supplied"}.</p></details>
       {(model.stratified_metrics ?? []).length > 0 ? <details className="measurement-validation-strata"><summary>Scenario and distance strata</summary><div>{model.stratified_metrics.slice(0, 18).map((row) => <span key={`${row.dimension}-${row.value}`}><small>{formatLabel(row.dimension)} · {row.value}</small><strong>{formatNumber(row.metric.mean_bias_db, 2)} dB / n={row.metric.count}</strong></span>)}</div></details> : null}
     </article>
   );

@@ -1,0 +1,69 @@
+{
+  "concept": "8A",
+  "decisionStatus": "Complete; ready for Concept 8B implementation",
+  "navigation": {
+    "selectedModel": "A — Rail flyout",
+    "stageConcepts": ["Plan", "Simulate", "Analyze", "Review"],
+    "desktop": "Retain 88 px stage rail. Clicking another stage selects its first available tool as today and opens its named tool flyout. Clicking the active stage toggles its list. Selecting a sibling changes content in the existing drawer.",
+    "activeToolDisplay": "Keep the current drawer icon, title, description, and close control as the single persistent tool identity.",
+    "siblingDiscovery": "Vertical list of every stage tool; preserve availability reason and per-tool attention/result badges.",
+    "keyboard": "Named stage triggers; Enter/Space opens; arrows/Home/End move among tool choices; Enter/Space selects; Escape closes and returns focus to trigger; selecting a tool returns focus to its heading.",
+    "pointer": "Click works; optional hover may assist but cannot be required.",
+    "touch": "Tap stage and tool. Below 640 px, use the existing drawer-sheet footprint for tool choice.",
+    "directDestinations": "Open current RF result, vertical path profile, Run History/report source, and attention actions bypass the chooser.",
+    "lazyLoading": "Flyout reads navigation metadata only. Existing dynamic imports remain behind tool selection."
+  },
+  "commandBar": {
+    "informationArchitecture": [
+      { "group": "Workspace", "keepVisible": ["Project", "Scenario", "Version/no-Version", "draft state"] },
+      { "group": "RF context", "keepVisible": ["Single/Network", "cell count", "technology", "frequency"], "secondary": ["TX power", "radius"] },
+      { "group": "Status", "keepVisible": ["operation readiness/error", "CURRENT/STALE/HISTORICAL/UNAVAILABLE/UNSUPPORTED and short source Run when applicable"] },
+      { "group": "Primary action", "keepVisible": ["Run Sector or Evaluate Network in existing Plan/Simulate scope with unchanged readiness/disabled behavior"] }
+    ],
+    "moveOutOfGlobalHeader": ["optimization score", "overlap", "serviceability", "detailed RF metrics", "full source Run/provenance", "model-limit documentation link"],
+    "resultShortcut": "A compact Result state/source chip may open Results; do not keep a separate metric card in the global header.",
+    "persistence": "Version identity stays with Workspace; local autosave stays a separate, compact status and must not be confused with immutable Version save."
+  },
+  "drawer": {
+    "retain": ["one active tool", "tool title/icon/subtitle/close", "tool content", "Planning/Advanced/Research disclosures", "result subviews"],
+    "removeAfterReplacement": "Permanent tool-tab row only; move sibling navigation/availability/attention to the rail flyout.",
+    "expectedDensityGain": "51 px desktop, 59 px phone before content."
+  },
+  "mapToolbar": {
+    "decision": "Defer structural simplification to Concept 8C.",
+    "reason": "Navigation and command-bar grouping already constitute a bounded 8B change; toolbar controls are context-dependent and carry map interaction semantics.",
+    "preserveFor8B": ["Signal/Rays", "Scope/Focus", "metric switch", "Layers", "spatial selection", "legend source/interpretation"]
+  },
+  "researchLabels": {
+    "keepVisible": ["Research / reference capability group", "current result status", "unsupported/applicability state", "one explicit per-method safety statement", "scientific standard and clause where needed for interpretation"],
+    "moveToDetailsOrProvenance": ["4I.4", "internal contract/model IDs", "duplicate implementation identifiers", "redundant second/third Research/reference badges"],
+    "preserveTerminology": ["P.2040", "P.1411", "P.526", "UMa", "RSRP", "SINR", "RSRQ"]
+  },
+  "responsiveContract": {
+    "atOrAbove1280": "Vertical rail plus anchored overlay flyout; no map resize.",
+    "1024To1279": "Same flyout; grouped compact context; keep lineage/result state.",
+    "640To1023": "Touch-sized rail popover; no hover requirement.",
+    "below640": "Bottom stage bar plus stage tool sheet in existing drawer footprint.",
+    "all": "No page routing, no horizontal overflow, current tool remains named, map remains inspectable."
+  },
+  "mapFirstDecision": "Keep A.T.O.M as a map-first workspace. All options that resize the map persistently or turn the application into pages/dashboard were rejected.",
+  "dashboardDecision": "No dashboard justified.",
+  "visualSimplificationRules": [
+    "Do not keep a permanent bordered sibling-tab row inside the drawer.",
+    "Give each navigation level one job: stage in rail, tool in temporary flyout, capability in disclosure, method/source in provenance.",
+    "Keep one obvious active tool title in the drawer.",
+    "Group related metadata before adding another pill or border.",
+    "Prefer spacing, typography, and alignment before another container.",
+    "Keep result freshness and required scientific safety/applicability explicit.",
+    "Treat local draft autosave and immutable Version as separate states.",
+    "Do not move map-toolbar restructuring into 8B."
+  ],
+  "invarianceContract": {
+    "unchanged": ["RF requests", "optimization behavior/fingerprints", "Project/Scenario state", "Run semantics", "Report semantics", "result freshness", "lazy feature boundaries", "disclosure semantics", "scientific terminology", "local-first architecture"],
+    "stateOwnership": "Navigation remains UI-only; reuse App's activeTool/drawer ownership.",
+    "noNewArchitecture": ["No global store", "No new routing", "No dashboard", "No component library/design system", "No plugin architecture"]
+  },
+  "implementationRiskReference": "docs/concept-8a-implementation-risk.json",
+  "testPlanReference": "docs/concept-8a-8b-test-plan.json",
+  "baselineReference": "docs/concept-8a-pre-change-baseline.json"
+}

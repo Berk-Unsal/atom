@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Activity, BookOpen, GitCompare, PlayCircle } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
-import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 function initialOptions(settings) {
   return {
@@ -32,7 +31,7 @@ export default function P1411CandidatePanel({ endpoint, isAnalyzing, onActivityC
 
   return (
     <section className="p1411-candidate-panel" aria-label="ITU-R P.1411 candidate reference">
-      <header className="panel-title"><Activity size={16} /><span>ITU-R P.1411 candidate reference</span><ResearchReferenceBadge /></header>
+      <header className="panel-title"><Activity size={16} /><span>ITU-R P.1411 candidate reference</span></header>
       <p className="p1411-callout"><strong>Reference candidate only — not used by network simulation.</strong> This isolated panel evaluates Table 4 rows side by side. It does not change coverage, interference, optimization, building entry, or canonical RF.</p>
       <p className="data-note">Source clause: ITU-R P.1411-13 (2025-09) §4.1.1, Table 4, equation (1). The 25 m TX / 1.5 m RX profile defaults are inputs only; they do not prove that both stations are below rooftops.</p>
 
@@ -117,7 +116,7 @@ function P1411CandidateCard({ candidate }) {
   return (
     <article className={`p1411-candidate-card ${applicable ? "applicable" : "inapplicable"}`}>
       <header className="p1411-candidate-header">
-        <div><strong>{candidate.row}</strong><code>{candidate.model_id}</code></div>
+        <div><strong>{candidate.row}</strong></div>
         <span className={applicable ? "valid" : "warning"}>{applicable ? "Applicable" : "Inapplicable"}</span>
       </header>
       {!applicable ? <p className="p1411-reasons"><strong>Gates:</strong> {(applicability.reasons ?? []).map(formatReason).join(" · ")}</p> : null}
@@ -135,6 +134,7 @@ function P1411CandidateCard({ candidate }) {
       <details className="p1411-candidate-details">
         <summary>Inspect coefficients and source limits</summary>
         <div className="p1411-audit-grid">
+          <span><small>Model ID</small><code>{candidate.model_id}</code></span>
           <span><small>Equation</small><code>{model.equation}</code></span>
           <span><small>α / β / γ</small><strong>{formatNumber(model.coefficients?.alpha, 2)} / {formatNumber(model.coefficients?.beta, 2)} / {formatNumber(model.coefficients?.gamma, 2)}</strong></span>
           <span><small>Rooftop / path state</small><strong>{candidate.applicability?.required_rooftop_relation} / {candidate.applicability?.required_los_state}</strong></span>

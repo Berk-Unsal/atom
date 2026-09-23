@@ -1,0 +1,110 @@
+{
+  "concept": "8B",
+  "phase": "pre-change baseline",
+  "capturedDate": "2026-09-23",
+  "implementationStarted": false,
+  "stopConditionTriggered": true,
+  "stopReason": "The existing frontend E2E suite fails before any Concept 8B product changes. The user brief requires stopping and documenting baseline failures before implementation.",
+  "startingWorktree": {
+    "branch": "main",
+    "commit": "fc81741771699da7af95fb20b846f893950585db",
+    "version": "0.9.0",
+    "trackedDiffStat": "",
+    "trackedProductChanges": false,
+    "dirtyTree": true,
+    "dirtyCause": "Untracked Concept 8A documentation and screenshot assets from the previous audit; preserved in place.",
+    "preExistingUntrackedPaths": [
+      "docs/assets/concept-8a/",
+      "docs/concept-8a-8b-test-plan.json",
+      "docs/concept-8a-command-bar-inventory.json",
+      "docs/concept-8a-decision.json",
+      "docs/concept-8a-implementation-risk.json",
+      "docs/concept-8a-navigation-chrome-audit.md",
+      "docs/concept-8a-navigation-depth.json",
+      "docs/concept-8a-navigation-options.json",
+      "docs/concept-8a-pre-change-baseline.json",
+      "docs/concept-8a-redundancy-audit.json",
+      "docs/concept-8a-responsive-analysis.json",
+      "docs/concept-8a-tool-map.json",
+      "docs/concept-8a-ui-layer-inventory.json",
+      "docs/concept-8a-wireframes.md"
+    ]
+  },
+  "navigationRelatedFiles": [
+    "frontend-react/src/App.jsx",
+    "frontend-react/src/components/WorkspaceChrome.jsx",
+    "frontend-react/src/components/WorkspaceChrome.test.jsx",
+    "frontend-react/src/components/workspaceTools.js",
+    "frontend-react/src/styles.css"
+  ],
+  "productionBuild": {
+    "command": "cd frontend-react && npm run build",
+    "status": "passed",
+    "modulesTransformed": 1705,
+    "javascriptChunkCount": 12,
+    "cssFileCount": 1,
+    "initialJavaScriptEntry": {
+      "file": "frontend-react/dist/assets/index-CXcsYZlG.js",
+      "rawBytes": 771408,
+      "rawKilobytes": 771.41,
+      "gzipKilobytes": 219.05
+    },
+    "initialCss": {
+      "file": "frontend-react/dist/assets/index-zTiVlQb_.css",
+      "rawBytes": 152345,
+      "rawKilobytes": 152.35,
+      "gzipKilobytes": 28.89
+    },
+    "warning": "Vite reports the existing initial JavaScript chunk is larger than 500 kB after minification."
+  },
+  "baselineValidation": {
+    "frontendUnit": {
+      "command": "cd frontend-react && npm test",
+      "status": "passed",
+      "testFilesPassed": 55,
+      "testsPassed": 282
+    },
+    "frontendLint": {
+      "command": "cd frontend-react && npm run lint",
+      "status": "passed"
+    },
+    "frontendBuild": {
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "modulesTransformed": 1705
+    },
+    "frontendE2E": {
+      "command": "cd frontend-react && npm run test:e2e",
+      "status": "failed",
+      "total": 88,
+      "passed": 70,
+      "failed": 4,
+      "skipped": 14,
+      "workers": 5
+    },
+    "backendGoVet": {
+      "backend-go": "passed",
+      "core-lab-adapter": "passed"
+    },
+    "backendRaceTests": {
+      "backend-go": "passed; 2 packages with tests, 3 packages without test files",
+      "core-lab-adapter": "passed; 1 package with tests"
+    }
+  },
+  "baselineE2EFailure": {
+    "test": "opens the exact Run source Version while keeping the current Version active",
+    "location": "frontend-react/e2e/workspace.spec.js:560",
+    "failingAssertion": "frontend-react/e2e/workspace.spec.js:594",
+    "viewportProjects": ["desktop-1440", "desktop-1024", "tablet-768", "mobile-390"],
+    "expected": "Version 1 in the HISTORICAL context region",
+    "observed": "Historical result context reported Working draft · No saved Version; current workspace was Version 2.",
+    "failureCount": 4,
+    "diagnosis": "Not determined. No product changes or unrelated fixes were attempted."
+  },
+  "decisionAtCapture": "Stop before Concept 8B implementation as required by the pre-implementation gate; resume only after the pre-existing E2E issue is resolved or the user explicitly changes the gate.",
+  "continuation": {
+    "date": "2026-09-23",
+    "authorization": "The user explicitly instructed proceeding with Concept 8B despite the recorded baseline E2E failure.",
+    "baselineArtifactPreserved": true
+  }
+}

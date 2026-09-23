@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { cwd } from "node:process";
 
 const towers = {
   type: "FeatureCollection",
@@ -8,6 +11,32 @@ const towers = {
     point("tower-3", "cell-3", 32.8580, 39.9240),
   ],
 };
+
+const workspaceTools = {
+  Setup: ["plan", "Plan", "setup"],
+  Inventory: ["plan", "Plan", "inventory"],
+  Propagation: ["simulate", "Simulate", "propagation"],
+  Experiments: ["simulate", "Simulate", "experiments"],
+  "Signal surface": ["simulate", "Simulate", "surfaces"],
+  Interference: ["analyze", "Analyze", "interference"],
+  "RF Diagnostics": ["analyze", "Analyze", "validation"],
+  "Building entry": ["analyze", "Analyze", "building-entry"],
+  "5G Core": ["analyze", "Analyze", "core"],
+  Results: ["review", "Review", "results"],
+  "Run history": ["review", "Review", "history"],
+  Data: ["review", "Review", "data"],
+  Report: ["review", "Review", "report"],
+};
+
+async function selectWorkspaceTool(page, label) {
+  const [stageID, stageLabel, toolID] = workspaceTools[label];
+  const option = page.locator(`#stage-tool-${stageID}-${toolID}`);
+  if (!await option.count()) {
+    await page.getByRole("button", { name: `${stageLabel} workspace` }).click();
+  }
+  await expect(option).toBeVisible();
+  await option.click();
+}
 
 const optimizationObjectiveStatus = {
   demand: { available: true },
@@ -310,6 +339,7 @@ test("runs a sector and preserves a named scenario", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
   await page.getByRole("button", { name: "Run Sector" }).click();
   await page.getByRole("button", { name: "Review workspace" }).click();
+  await selectWorkspaceTool(page, "Results");
   await expect(page.getByRole("dialog", { name: "Results" })).toContainText("-72.0 dBm");
 
   const projectMenuBox = await page.getByRole("button", { name: "Open project menu" }).boundingBox();
@@ -332,7 +362,7 @@ test("switching Projects clears the live Run association and scopes Run History"
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
   await page.getByRole("button", { name: "Run Sector" }).click();
   await page.getByRole("button", { name: "Review workspace" }).click();
-  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  await selectWorkspaceTool(page, "Run history");
   const history = page.getByRole("region", { name: "Durable local run history" });
   await expect(history.getByRole("button", { name: /Simulation/ })).toBeVisible();
 
@@ -369,9 +399,11 @@ test("completes the Run, optimization, apply, Version, and historical Report jou
   await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
   await page.getByRole("button", { name: "Run Sector" }).click();
   await page.getByRole("button", { name: "Review workspace" }).click();
+  await selectWorkspaceTool(page, "Results");
   await expect(page.getByRole("dialog", { name: "Results" })).toContainText("-72.0 dBm");
 
   await page.getByRole("button", { name: "Plan workspace" }).click();
+  await selectWorkspaceTool(page, "Setup");
   await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
   await expect(page.getByRole("button", { name: "Network mode, 1 selected" })).toBeVisible();
   const closeToolDrawer = page.getByRole("button", { name: "Close tool drawer" });
@@ -397,13 +429,15 @@ test("completes the Run, optimization, apply, Version, and historical Report jou
   await projectMenuButton.click();
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await selectWorkspaceTool(page, "Propagation");
   await page.getByRole("button", { name: "Optimize Network" }).click();
   await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible();
   await page.getByRole("button", { name: "Review workspace" }).click();
+  await selectWorkspaceTool(page, "Results");
   await page.getByRole("tab", { name: "Solutions" }).click();
   await expect(page.getByRole("region", { name: "Pareto alternative solutions" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  await selectWorkspaceTool(page, "Run history");
   const history = page.getByRole("region", { name: "Durable local run history" });
   await expect(history).toBeVisible();
   const optimizationRow = history.locator(".run-history-row").filter({ hasText: "Optimization" }).first();
@@ -424,11 +458,11 @@ test("completes the Run, optimization, apply, Version, and historical Report jou
   const activeLineageBeforeSourceInspection = await lineageSummary.getAttribute("aria-label");
   expect(activeLineageBeforeSourceInspection).toMatch(/Version [23]/);
   await history.getByRole("button", { name: "Open source Version" }).click();
-  await expect(page.getByRole("button", { name: /Version 2/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".scenario-version-row").filter({ hasText: "Version 2" })).toHaveAttribute("aria-pressed", "true");
   await expect(lineageSummary).toHaveAttribute("aria-label", activeLineageBeforeSourceInspection);
 
   await page.getByRole("button", { name: "Review workspace" }).click();
-  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  await selectWorkspaceTool(page, "Run history");
   const historicalReport = page.getByRole("button", { name: /Generate report from/ });
   await expect(historicalReport).toBeEnabled();
   await historicalReport.click();
@@ -459,7 +493,8 @@ test("generates a historical Report from cold Run History without opening Report
 
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
-  await expect(page.locator(".workspace-save-state")).toHaveText("Draft saved locally");
+  const lineageSummary = page.locator(".workspace-lineage-context > summary");
+  await expect(lineageSummary).toHaveAttribute("aria-label", /No saved Version/);
   const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
   await projectMenuButton.click();
   const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
@@ -469,7 +504,7 @@ test("generates a historical Report from cold Run History without opening Report
 
   await page.getByRole("button", { name: "Run Sector" }).click();
   await page.getByRole("button", { name: "Review workspace" }).click();
-  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  await selectWorkspaceTool(page, "Run history");
   await expect(page.getByRole("region", { name: "Durable local run history" })).toBeVisible();
   await expect(page.getByRole("button", { name: /Generate report from/ })).toBeEnabled();
   expect(reportModules.some((path) => path.includes("ReportFeature"))).toBe(false);
@@ -484,7 +519,7 @@ test("generates a historical Report from cold Run History without opening Report
   await generationFailure.getByRole("button", { name: "Reload application" }).click();
   await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
   await page.getByRole("button", { name: "Review workspace" }).click();
-  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  await selectWorkspaceTool(page, "Run history");
   await expect(page.getByRole("region", { name: "Durable local run history" })).toBeVisible();
   await page.getByRole("button", { name: /Generate report from/ }).click();
   const retryConfirmation = page.getByRole("dialog", { name: "Generate a Report from this Run?" });
@@ -531,7 +566,7 @@ test("keeps an unsaved draft when opening a different Scenario is blocked", asyn
 
 test("keeps a collapsed Advanced cell RF value through Version save and reload", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Inventory", exact: true }).click();
+  await selectWorkspaceTool(page, "Inventory");
   const cells = page.getByRole("listbox", { name: "Available cells" });
   await cells.getByRole("option", { name: /cell-1/ }).click();
 
@@ -549,7 +584,7 @@ test("keeps a collapsed Advanced cell RF value through Version save and reload",
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await page.reload();
 
-  await page.getByRole("button", { name: "Inventory", exact: true }).click();
+  await selectWorkspaceTool(page, "Inventory");
   await page.getByRole("listbox", { name: "Available cells" }).getByRole("option", { name: /cell-1/ }).click();
   const restoredAdvanced = page.getByRole("button", { name: /^Advanced/ });
   await expect(restoredAdvanced).toHaveAttribute("aria-expanded", "false");
@@ -589,13 +624,13 @@ test("opens the exact Run source Version while keeping the current Version activ
   await expect(lineageSummary).toContainText("Version 2");
 
   await page.getByRole("button", { name: "Review workspace" }).click();
-  await page.getByRole("button", { name: "Run history" }).click();
+  await selectWorkspaceTool(page, "Run history");
   await expect(page.getByRole("article", { name: /Run .* details/ })).toBeVisible();
   await expect(page.getByRole("region", { name: "HISTORICAL context" })).toContainText("Version 1");
   await page.getByRole("button", { name: "Open source Version" }).click();
 
   await expect(page.getByRole("button", { name: "Scenario workspace" })).toHaveAttribute("aria-expanded", "true");
-  await expect(page.getByRole("button", { name: /Version 1/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".scenario-version-row").filter({ hasText: "Version 1" })).toHaveAttribute("aria-pressed", "true");
   await expect(lineageSummary).toContainText("Version 2");
   await expect(txPower).toHaveValue("31");
 });
@@ -603,7 +638,7 @@ test("opens the exact Run source Version while keeping the current Version activ
 test("keeps the focused workspace usable without horizontal overflow", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("region", { name: "Ankara propagation map" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Setup" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Plan workspace" })).toBeVisible();
   const lineageSummary = page.locator(".workspace-lineage-context > summary");
   await expect(lineageSummary).toBeVisible();
   const lineageBox = await lineageSummary.boundingBox();
@@ -641,42 +676,139 @@ test("keeps every workspace destination reachable in the mobile rail", async ({ 
     await expect(page.getByRole("button", { name: stage })).toBeInViewport();
   }
 
-  await page.getByRole("button", { name: "Review workspace" }).click();
+  const reviewStage = page.getByRole("button", { name: "Review workspace" });
+  await reviewStage.click();
+  const chooserSheet = page.locator('.tool-drawer[data-stage-chooser="true"]');
+  await expect(chooserSheet).toBeVisible();
+  const firstSheetBox = await chooserSheet.boundingBox();
 
   for (const destination of ["Results", "Data", "Report"]) {
-    const button = page.getByRole("button", { name: destination, exact: true });
-    await expect(button).toBeInViewport();
-    if (destination !== "Results") await button.click();
-    await expect(page.getByRole("dialog", { name: destination })).toBeVisible();
+    const option = page.locator(`#stage-tool-review-${workspaceTools[destination][2]}`);
+    await expect(option).toBeVisible();
+    await option.click();
+    const drawer = page.getByRole("dialog", { name: destination });
+    await expect(drawer).toBeVisible();
+    const selectedSheetBox = await drawer.boundingBox();
+    expect(selectedSheetBox?.height).toBeLessThanOrEqual(620);
+    expect(selectedSheetBox?.height).toBe(firstSheetBox?.height);
+    expect(selectedSheetBox?.y).toBe(firstSheetBox?.y);
+
+    if (destination !== "Report") {
+      await reviewStage.click();
+      await expect(chooserSheet).toBeVisible();
+      const reopenedSheetBox = await chooserSheet.boundingBox();
+      expect(reopenedSheetBox?.height).toBe(firstSheetBox?.height);
+      expect(reopenedSheetBox?.y).toBe(firstSheetBox?.y);
+    }
   }
+});
+
+test("smokes sibling navigation across all four stages", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Run the complete tool-switching smoke once at desktop size");
+
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+
+  await selectWorkspaceTool(page, "Inventory");
+  await expect(page.getByRole("dialog", { name: "Inventory" })).toBeVisible();
+  await selectWorkspaceTool(page, "Propagation");
+  await expect(page.getByRole("dialog", { name: "Propagation" })).toBeVisible();
+  await selectWorkspaceTool(page, "Experiments");
+  await expect(page.getByRole("dialog", { name: "Experiments" })).toBeVisible();
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
+  await expect(page.getByRole("button", { name: "Network mode, 1 selected" })).toBeVisible();
+  const closeToolDrawer = page.getByRole("button", { name: "Close tool drawer" });
+  if (await closeToolDrawer.isVisible()) await closeToolDrawer.click();
+  const map = page.locator(".leaflet-container");
+  const mapBox = await map.boundingBox();
+  expect(mapBox).not.toBeNull();
+  const target = projectMapPoint(32.854, 39.922, 12);
+  const center = projectMapPoint(32.8541, 39.9208, 12);
+  await map.click({ position: {
+    x: mapBox.width / 2 + target.x - center.x,
+    y: mapBox.height / 2 + target.y - center.y,
+  } });
+  await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
+
+  await selectWorkspaceTool(page, "Propagation");
+  await selectWorkspaceTool(page, "Interference");
+  await expect(page.getByRole("dialog", { name: "Interference" })).toBeVisible();
+  await selectWorkspaceTool(page, "RF Diagnostics");
+  await expect(page.getByRole("dialog", { name: "RF Diagnostics" })).toBeVisible();
+  await selectWorkspaceTool(page, "Building entry");
+  await expect(page.getByRole("dialog", { name: "Building entry" })).toBeVisible();
+
+  await selectWorkspaceTool(page, "Results");
+  await expect(page.getByRole("dialog", { name: "Results" })).toBeVisible();
+  await selectWorkspaceTool(page, "Run history");
+  await expect(page.getByRole("dialog", { name: "Run history" })).toBeVisible();
+  await selectWorkspaceTool(page, "Report");
+  await expect(page.getByRole("dialog", { name: "Report" })).toBeVisible();
+});
+
+test("explores and dismisses stage choices without replacing the active workspace tool", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Desktop stage chooser focus regression");
+
+  await page.goto("/");
+  const setup = page.getByRole("dialog", { name: "Setup" });
+  const planStage = page.getByRole("button", { name: "Plan workspace" });
+  await expect(setup).toBeVisible();
+
+  await planStage.click();
+  const chooser = page.getByRole("dialog", { name: "Plan tools" });
+  await expect(chooser).toBeVisible();
+  await expect(setup).toBeVisible();
+  await expect(chooser.getByRole("button", { name: "Setup", exact: true })).toHaveAttribute("aria-current", "page");
+
+  await page.keyboard.press("Escape");
+  await expect(chooser).toBeHidden();
+  await expect(planStage).toBeFocused();
+  await expect(setup).toBeVisible();
+
+  await planStage.click();
+  await expect(chooser).toBeVisible();
+  const mapBox = await page.locator(".leaflet-container").boundingBox();
+  expect(mapBox).not.toBeNull();
+  await page.locator(".leaflet-container").click({ position: { x: mapBox.width * 0.8, y: mapBox.height * 0.7 } });
+  await expect(chooser).toBeHidden();
+  await expect(setup).toBeVisible();
+
+  await planStage.focus();
+  await page.keyboard.press("Enter");
+  await expect(chooser).toBeVisible();
+  await page.keyboard.press("Tab");
+  await expect(chooser.getByRole("button", { name: "Setup", exact: true })).toBeFocused();
+  await page.keyboard.press("Tab");
+  const inventoryChoice = chooser.getByRole("button", { name: "Inventory", exact: true });
+  await expect(inventoryChoice).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog", { name: "Inventory" })).toBeVisible();
 });
 
 test("keeps propagation actions clear of the vertical path profile", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await selectWorkspaceTool(page, "Propagation");
 
-  const toolNavigation = page.getByRole("navigation", { name: "Simulate tools" });
-  const activeTool = page.getByRole("button", { name: "Propagation", exact: true });
+  const drawer = page.getByRole("dialog", { name: "Propagation" });
   await expect(page.getByRole("button", { name: /^Advanced analysis/ })).toHaveAttribute("aria-expanded", "false");
   await page.getByRole("button", { name: /^Advanced analysis/ }).click();
   const optimizeButton = page.getByRole("button", { name: "Auto-Optimize Sector" });
   const pathProfile = page.getByRole("region", { name: "Vertical path profile" });
-  await expect(toolNavigation).toBeVisible();
-  await expect(activeTool).toBeVisible();
+  await expect(drawer).toBeVisible();
   await expect(optimizeButton).toBeVisible();
   await expect(pathProfile).toBeVisible();
 
-  const [navigationBox, activeToolBox, optimizeBox, pathProfileBox] = await Promise.all([
-    toolNavigation.boundingBox(),
-    activeTool.boundingBox(),
+  const [drawerBox, optimizeBox, pathProfileBox] = await Promise.all([
+    drawer.boundingBox(),
     optimizeButton.boundingBox(),
     pathProfile.boundingBox(),
   ]);
-  expect(navigationBox).not.toBeNull();
-  expect(activeToolBox).not.toBeNull();
+  expect(drawerBox).not.toBeNull();
   expect(optimizeBox).not.toBeNull();
   expect(pathProfileBox).not.toBeNull();
-  expect((navigationBox.y + navigationBox.height) - (activeToolBox.y + activeToolBox.height)).toBeGreaterThanOrEqual(6);
   expect(pathProfileBox.y - (optimizeBox.y + optimizeBox.height)).toBeGreaterThanOrEqual(8);
 });
 
@@ -687,7 +819,7 @@ test("opens the collapsed path-profile section from its RF Diagnostics action", 
   });
   await page.goto("/");
   await page.getByRole("button", { name: "Analyze workspace" }).click();
-  await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  await selectWorkspaceTool(page, "RF Diagnostics");
   await page.getByRole("button", { name: "Open vertical path profile" }).click();
 
   await expect(page.getByRole("dialog", { name: "Propagation" })).toBeVisible();
@@ -704,7 +836,7 @@ test("runs the isolated material reference from RF Diagnostics", async ({ page }
 
   await page.goto("/");
   await page.getByRole("button", { name: "Analyze workspace" }).click();
-  await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  await selectWorkspaceTool(page, "RF Diagnostics");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
   const materialReference = page.getByRole("region", { name: "Material and facade interaction reference" });
   await expect(materialReference).toBeVisible();
@@ -729,15 +861,17 @@ test("runs the isolated specular reflection reference from RF Diagnostics", asyn
 
   await page.goto("/");
   await page.getByRole("button", { name: "Analyze workspace" }).click();
-  await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  await selectWorkspaceTool(page, "RF Diagnostics");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
   const reflectionReference = page.getByRole("region", { name: "Specular reflection reference" });
   await expect(reflectionReference).toBeVisible();
-  await expect(reflectionReference.getByText(/single_bounce_specular_reflection_reference_v1/i)).toBeVisible();
+  await expect(reflectionReference.getByText(/reference-only one-bounce diagnostic/i)).toBeVisible();
   await expect(reflectionReference.getByText(/not used by network simulation/i)).toBeVisible();
   await reflectionReference.getByRole("button", { name: "Evaluate reflected path" }).click();
   await expect(reflectionReference.getByText("qualified_reference", { exact: true })).toBeVisible();
   await expect(reflectionReference.getByText("118.381 dB")).toBeVisible();
+  await reflectionReference.getByText("Details / Provenance: assumptions and visibility").click();
+  await expect(reflectionReference.getByText(/single_bounce_specular_reflection_reference_v1/i)).toBeVisible();
   expect(reflectionRequests).toHaveLength(1);
   expect(reflectionRequests[0].postDataJSON()).toMatchObject({
     schema_version: 1,
@@ -773,11 +907,13 @@ test("explores a retained Pareto alternative without another RF request", async 
   await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await selectWorkspaceTool(page, "Propagation");
   await page.getByRole("button", { name: "Optimize Network" }).click();
   await expect(page.getByRole("button", { name: "Optimize Network" })).toBeEnabled();
   await expect.poll(() => rfRequests.filter((url) => url.includes("/api/optimize-network")).length).toBe(1);
 
   await page.getByRole("button", { name: "Review workspace" }).click();
+  await selectWorkspaceTool(page, "Results");
   await page.getByRole("tab", { name: "Solutions" }).click();
   await expect(page.getByRole("region", { name: "Pareto alternative solutions" })).toBeVisible();
   await expect(page.getByRole("button", { name: /Inspect Pareto solution 1, recommended/i })).toBeVisible();
@@ -811,9 +947,11 @@ test("lazily explains a selected cell and reuses it after priority-only changes"
   await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await selectWorkspaceTool(page, "Propagation");
   await page.getByRole("button", { name: "Optimize Network" }).click();
   await expect(page.getByRole("button", { name: "Optimize Network" })).toBeEnabled();
   await page.getByRole("button", { name: "Review workspace" }).click();
+  await selectWorkspaceTool(page, "Results");
   await page.getByRole("tab", { name: "Solutions" }).click();
 
   await page.getByRole("button", { name: "Explain Cell cell-1 marginal effect" }).click();
@@ -830,10 +968,11 @@ test("lazily explains a selected cell and reuses it after priority-only changes"
   expect(explanationRequests[1].postDataJSON()).toMatchObject({ solution_id: "solution-b", cell_id: "cell-1" });
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
-  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await selectWorkspaceTool(page, "Propagation");
   await page.getByRole("button", { name: /^Advanced analysis/ }).click();
   await page.getByRole("slider", { name: "Demand importance" }).fill("100");
   await page.getByRole("button", { name: "Review workspace" }).click();
+  await selectWorkspaceTool(page, "Results");
   await page.getByRole("tab", { name: "Solutions" }).click();
   await page.getByRole("button", { name: "Explain Cell cell-1 marginal effect" }).click();
   expect(explanationRequests).toHaveLength(2);
@@ -854,7 +993,7 @@ test("supports keyboard disclosure navigation without starting RF work", async (
   await expect(planning).toHaveAttribute("aria-expanded", "true");
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
-  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await selectWorkspaceTool(page, "Propagation");
   const advanced = page.getByRole("button", { name: /^Advanced analysis/ });
   const research = page.getByRole("button", { name: /^Research \/ reference/ });
   await expect(advanced).toHaveAttribute("aria-expanded", "false");
@@ -894,7 +1033,7 @@ test("loads specialized feature modules only after their workspace action", asyn
   expect(Object.values(featurePaths).some(wasRequested)).toBe(false);
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
-  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await selectWorkspaceTool(page, "Propagation");
   const propagationResearch = page.getByRole("button", { name: /^Research \/ reference/ });
   await expect(propagationResearch).toHaveAttribute("aria-expanded", "false");
   expect(wasRequested(featurePaths.propagation)).toBe(false);
@@ -910,7 +1049,7 @@ test("loads specialized feature modules only after their workspace action", asyn
   await expect(subThz.getByRole("spinbutton").first()).toHaveValue("145");
 
   await page.getByRole("button", { name: "Analyze workspace" }).click();
-  await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  await selectWorkspaceTool(page, "RF Diagnostics");
   const diagnosticsResearch = page.getByRole("button", { name: /^Research \/ reference/ });
   expect(wasRequested(featurePaths.diagnostics)).toBe(false);
   await diagnosticsResearch.click();
@@ -918,20 +1057,20 @@ test("loads specialized feature modules only after their workspace action", asyn
   await expect.poll(() => wasRequested(featurePaths.diagnostics)).toBe(true);
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
-  await page.getByRole("button", { name: "Experiments", exact: true }).click();
+  await selectWorkspaceTool(page, "Experiments");
   await expect(page.getByRole("region", { name: "Batch experiments" })).toBeVisible();
   await expect.poll(() => wasRequested(featurePaths.experiments)).toBe(true);
 
   await page.getByRole("button", { name: "Analyze workspace" }).click();
-  await page.getByRole("button", { name: "5G Core", exact: true }).click();
+  await selectWorkspaceTool(page, "5G Core");
   await expect(page.getByRole("region", { name: "5G Core Lab controls" })).toBeVisible();
   await expect.poll(() => wasRequested(featurePaths.coreLab)).toBe(true);
 
   await page.getByRole("button", { name: "Review workspace" }).click();
-  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  await selectWorkspaceTool(page, "Run history");
   await expect(page.getByRole("region", { name: "Durable local run history" })).toBeVisible();
   await expect.poll(() => wasRequested(featurePaths.history)).toBe(true);
-  await page.getByRole("button", { name: "Report", exact: true }).click();
+  await selectWorkspaceTool(page, "Report");
   await expect(page.getByRole("region", { name: "Planning report export" })).toBeVisible();
   await expect.poll(() => wasRequested(featurePaths.reports)).toBe(true);
   await expect(page.getByRole("region", { name: "Ankara propagation map" })).toBeVisible();
@@ -953,7 +1092,7 @@ test("recovers from a failed research import by reloading the application", asyn
   await page.route("**/assets/PropagationResearchFeature-*.js", failOnce);
   await page.goto("/");
   await page.getByRole("button", { name: "Simulate workspace" }).click();
-  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await selectWorkspaceTool(page, "Propagation");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
 
   const failure = page.getByRole("alert", { name: "Propagation Research could not be loaded" });
@@ -965,7 +1104,7 @@ test("recovers from a failed research import by reloading the application", asyn
   await failure.getByRole("button", { name: "Reload application" }).click();
   await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
   await page.getByRole("button", { name: "Simulate workspace" }).click();
-  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await selectWorkspaceTool(page, "Propagation");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
   await expect(page.getByRole("region", { name: "Sub-THz atmospheric reference" })).toBeVisible();
   expect(importRequests).toBe(2);
@@ -974,7 +1113,7 @@ test("recovers from a failed research import by reloading the application", asyn
 test("keeps disclosure headers and the propagation drawer usable at target widths", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Simulate workspace" }).click();
-  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await selectWorkspaceTool(page, "Propagation");
 
   const planning = page.getByRole("button", { name: "Planning", exact: true });
   const advanced = page.getByRole("button", { name: /^Advanced analysis/ });
@@ -1003,6 +1142,239 @@ test("keeps disclosure headers and the propagation drawer usable at target width
     evidence.push({ width, ...dimensions });
   }
   expect(evidence).toHaveLength(5);
+});
+
+test("captures post-change Concept 8B chrome and responsive evidence", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Capture the evidence set once from the desktop project");
+  const responsiveMeasurements = [];
+  const screenshot = (name) => page.screenshot({
+    path: `../docs/assets/concept-8b/${name}.jpg`,
+    type: "jpeg",
+    quality: 78,
+    animations: "disabled",
+  });
+  const measureLayout = (viewportLabel) => page.evaluate((label) => {
+    const rect = (selector) => {
+      const element = document.querySelector(selector);
+      if (!element) return null;
+      const box = element.getBoundingClientRect();
+      return { x: Math.round(box.x * 10) / 10, y: Math.round(box.y * 10) / 10, width: Math.round(box.width * 10) / 10, height: Math.round(box.height * 10) / 10 };
+    };
+    const visible = (element) => Boolean(element && element.getClientRects().length && getComputedStyle(element).visibility !== "hidden");
+    const commandGroups = [...document.querySelectorAll(".command-bar .command-group")].filter(visible);
+    const drawer = document.querySelector(".tool-drawer");
+    const header = drawer?.querySelector(".tool-drawer-header");
+    const body = drawer?.querySelector(".tool-drawer-body");
+    const firstContent = body?.firstElementChild;
+    return {
+      label,
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+      documentOverflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      commandBar: rect(".command-bar"),
+      commandGrid: getComputedStyle(document.querySelector(".command-bar")).gridTemplateAreas,
+      visibleCommandGroups: commandGroups.map((group) => group.getAttribute("aria-label")),
+      commandWorkspace: rect(".command-workspace"),
+      commandRFContext: rect(".command-rf-context"),
+      commandStatus: rect(".command-status"),
+      commandPrimaryAction: rect(".command-primary-action"),
+      runState: rect(".command-status .run-state"),
+      runStateStyle: (() => {
+        const state = document.querySelector(".command-status .run-state");
+        const style = getComputedStyle(state);
+        return { display: style.display, width: style.width, minWidth: style.minWidth, color: style.color, overflow: style.overflow, fontSize: style.fontSize, gridColumn: style.gridColumn, gridRow: style.gridRow };
+      })(),
+      resultContext: rect(".command-status .result-context-compact"),
+      runStateText: document.querySelector(".command-status .run-state")?.textContent.trim() ?? null,
+      resultContextText: document.querySelector(".command-status .result-context-compact")?.textContent.trim() ?? null,
+      stageRail: rect(".workflow-rail"),
+      map: rect(".leaflet-container"),
+      drawer: rect(".tool-drawer"),
+      drawerHeader: rect(".tool-drawer-header"),
+      firstToolContentOffsetFromDrawer: header && firstContent
+        ? Math.round((firstContent.getBoundingClientRect().top - drawer.getBoundingClientRect().top) * 10) / 10
+        : null,
+      persistentToolNavigationCount: document.querySelectorAll(".tool-subnav, .tool-tabs, [data-persistent-tool-nav]").length,
+      chooser: rect(".stage-tool-chooser-flyout") ?? rect('.tool-drawer[data-stage-chooser="true"]'),
+      toolChoiceCount: document.querySelectorAll("[data-stage-chooser] .stage-tool-choice").length,
+      drawerFirstContent: firstContent?.className ?? null,
+    };
+  }, viewportLabel);
+
+  await page.route("**/api/interference", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({
+      geojson: {
+        type: "FeatureCollection",
+        features: [{
+          type: "Feature",
+          properties: { interference_dbm: -96, sinr_db: 12.3 },
+          geometry: { type: "Point", coordinates: [32.852, 39.921] },
+        }],
+      },
+      demand_geojson: { type: "FeatureCollection", features: [] },
+      stats: {
+        avg_sinr_db: 12.3,
+        p10_sinr_db: 1.2,
+        median_sinr_db: 10.5,
+        avg_rsrp_dbm: -91,
+        avg_rsrq_db: -12,
+        serviceable_pct: 50,
+        serviceable_fraction: 0.8,
+        interference_limited_pct: 10,
+        no_signal_count: 2,
+        affected_demand: 240,
+        per_serving_cell: [
+          { cell_id: "cell-1", channel_id: "channel-a", serving_samples: 120, avg_sinr_db: 12.3, avg_rsrp_dbm: -91, avg_rsrq_db: -12 },
+          { cell_id: "cell-2", channel_id: "channel-b", serving_samples: 90, avg_sinr_db: 9.6, avg_rsrp_dbm: -94, avg_rsrq_db: -14 },
+        ],
+      },
+      model: {
+        rsrp_threshold_dbm: -110,
+        sinr_threshold_db: 0,
+        rsrq_threshold_db: -20,
+        resource_basis: "one occupied frequency resource element",
+        co_channel_eligibility_rule: "exact configured channel",
+        effective_cell_profiles: [],
+      },
+    }),
+  }));
+
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
+  await screenshot("1440-setup");
+  const beforeFlyout = await measureLayout("1440 flyout closed");
+  await page.getByRole("button", { name: "Plan workspace" }).click();
+  await expect(page.getByRole("dialog", { name: "Plan tools" })).toBeVisible();
+  await screenshot("1440-desktop-flyout");
+  const afterFlyout = await measureLayout("1440 flyout open");
+  responsiveMeasurements.push(beforeFlyout, afterFlyout);
+  expect(afterFlyout.map?.width).toBe(beforeFlyout.map?.width);
+  expect(afterFlyout.drawer?.width).toBe(beforeFlyout.drawer?.width);
+  expect(afterFlyout.stageRail?.width).toBe(beforeFlyout.stageRail?.width);
+
+  await selectWorkspaceTool(page, "Inventory");
+  await expect(page.getByRole("dialog", { name: "Inventory" })).toBeVisible();
+  await screenshot("1440-inventory");
+  await selectWorkspaceTool(page, "Propagation");
+  await expect(page.getByRole("dialog", { name: "Propagation" })).toBeVisible();
+  await screenshot("1440-propagation");
+  await selectWorkspaceTool(page, "RF Diagnostics");
+  await expect(page.getByRole("button", { name: /^Research \/ reference/ })).toHaveAttribute("aria-expanded", "false");
+  await screenshot("1440-rf-diagnostics-collapsed");
+  await page.getByRole("button", { name: /^Research \/ reference/ }).click();
+  await expect(page.getByRole("region", { name: "RF diagnostics and measurement validation" })).toBeVisible();
+  await screenshot("1440-rf-diagnostics-research");
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
+  await expect(page.getByRole("button", { name: "Network mode, 1 selected" })).toBeVisible();
+  const closeToolDrawer = page.getByRole("button", { name: "Close tool drawer" });
+  if (await closeToolDrawer.isVisible()) await closeToolDrawer.click();
+  const map = page.locator(".leaflet-container");
+  const mapBox = await map.boundingBox();
+  expect(mapBox).not.toBeNull();
+  const target = projectMapPoint(32.854, 39.922, 12);
+  const center = projectMapPoint(32.8541, 39.9208, 12);
+  await map.click({ position: {
+    x: mapBox.width / 2 + target.x - center.x,
+    y: mapBox.height / 2 + target.y - center.y,
+  } });
+  await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
+
+  await selectWorkspaceTool(page, "Interference");
+  await page.getByRole("button", { name: "Analyze Interference" }).click();
+  await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible();
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await selectWorkspaceTool(page, "Results");
+  await expect(page.getByRole("tab", { name: "Interference" })).toHaveAttribute("aria-selected", "true");
+  await screenshot("1440-interference-result");
+
+  await selectWorkspaceTool(page, "Propagation");
+  await page.getByRole("button", { name: "Optimize Network" }).click();
+  await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible();
+  await selectWorkspaceTool(page, "Results");
+  await expect(page.getByRole("tab", { name: "Optimization" })).toBeVisible();
+  await page.getByRole("tab", { name: "Optimization" }).click();
+  await screenshot("1440-results-optimization");
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
+  await selectWorkspaceTool(page, "Results");
+  await expect(page.locator(".command-status .run-state")).toHaveText("Result out of date");
+  await screenshot("1440-results-stale");
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator(".command-status .run-state")).toHaveText("Result out of date");
+  await expect(page.locator(".result-context-compact .result-context-state")).toBeVisible();
+  await expect(page.locator(".workspace-lineage-context > summary")).toBeVisible();
+  await expect(page.locator(".workspace-lineage-context > summary")).toHaveAttribute(
+    "aria-label",
+    /Workspace: .*?, .*?, .*?, .*/,
+  );
+  await screenshot("390-results-stale");
+  const mobileStale = await measureLayout("390 stale result");
+  responsiveMeasurements.push(mobileStale);
+  const runStateBox = await page.locator(".command-status .run-state").boundingBox();
+  const resultContextBox = await page.locator(".command-status .result-context-compact").boundingBox();
+  expect(runStateBox).not.toBeNull();
+  expect(resultContextBox).not.toBeNull();
+  expect(runStateBox.x + runStateBox.width).toBeLessThanOrEqual(resultContextBox.x + 1);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+
+  await page.evaluate(async () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    const databases = await indexedDB.databases?.() ?? [];
+    await Promise.all(databases.map(({ name }) => new Promise((resolveDelete) => {
+      if (!name) return resolveDelete();
+      const request = indexedDB.deleteDatabase(name);
+      request.onsuccess = request.onerror = request.onblocked = resolveDelete;
+    })));
+  });
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
+  await expect(page.locator(".command-status .run-state")).toHaveText("Ready");
+  await selectWorkspaceTool(page, "Setup");
+  for (const width of [1280, 1024, 768, 390]) {
+    await page.setViewportSize({ width, height: width <= 390 ? 844 : width === 768 ? 1024 : 900 });
+    await page.waitForTimeout(100);
+    await screenshot(`${width}-setup`);
+    responsiveMeasurements.push(await measureLayout(`${width} setup`));
+  }
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await expect(page.locator('.tool-drawer[data-stage-chooser="true"]')).toBeVisible();
+  await screenshot("390-mobile-chooser");
+  const mobileChooser = await measureLayout("390 Review chooser");
+  responsiveMeasurements.push(mobileChooser);
+  expect(mobileChooser.chooser?.height).toBeLessThanOrEqual(620);
+
+  await writeFile(
+    resolve(cwd(), "../docs/concept-8b-responsive-evidence.json"),
+    `${JSON.stringify({
+      concept: "8B",
+      screenshotFiles: [
+        "1440-setup.jpg",
+        "1440-desktop-flyout.jpg",
+        "1440-inventory.jpg",
+        "1440-propagation.jpg",
+        "1440-rf-diagnostics-collapsed.jpg",
+        "1440-rf-diagnostics-research.jpg",
+        "1440-interference-result.jpg",
+        "1440-results-optimization.jpg",
+        "1440-results-stale.jpg",
+        "390-results-stale.jpg",
+        "1280-setup.jpg",
+        "1024-setup.jpg",
+        "768-setup.jpg",
+        "390-setup.jpg",
+        "390-mobile-chooser.jpg",
+      ],
+      screenshots: responsiveMeasurements.map(({ label }) => label),
+      measurements: responsiveMeasurements,
+    }, null, 2)}\n`,
+  );
 });
 
 function point(id, cellID, longitude, latitude) {

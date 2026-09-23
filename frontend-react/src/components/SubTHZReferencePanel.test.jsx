@@ -16,7 +16,7 @@ describe("SubTHZReferencePanel", () => {
     const onAnalyze = vi.fn();
     render(<SubTHZReferencePanel {...baseProps} onAnalyze={onAnalyze} />);
 
-    expect(screen.getByText("sub_thz_atmospheric_reference_v1")).toBeInTheDocument();
+    expect(screen.queryByText("sub_thz_atmospheric_reference_v1")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Run atmospheric reference" })).toBeEnabled();
     expect(screen.getByText(/No receiver power is calculated until this block is enabled/)).toBeInTheDocument();
 
@@ -55,5 +55,7 @@ describe("SubTHZReferencePanel", () => {
     expect(screen.getByText("117.36 dB")).toBeInTheDocument();
     expect(screen.getByText(/no wall or diffraction loss applied/i)).toBeInTheDocument();
     expect(screen.getByText(/thresholds and serviceability remain out of scope/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Inspect standards, assumptions, and fingerprint"));
+    expect(screen.getByText("sub_thz_atmospheric_reference_v1")).toBeInTheDocument();
   });
 });

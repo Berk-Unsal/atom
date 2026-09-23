@@ -25,73 +25,74 @@ import ResultContextBadge from "./ResultContextBadge.jsx";
 export function CommandBar({
   appIconUrl,
   contextLabel,
-  draftUnsaved = false,
   error,
+  frequencyGHz,
   lineageContext = null,
   networkTech,
   onDismissError,
   onOpenResults,
   onRun,
-  planSummary,
   persistenceState = "saved",
   projectControl,
   primaryActionLabel,
   primaryDisabled,
-  resultSummary,
   resultContext = null,
+  radiusMeters,
   runState,
   statusTone = "ready",
+  txPowerDbm,
 }) {
   return (
     <>
       <header className="command-bar">
-        <div className="command-brand">
-          <img src={appIconUrl} alt="" />
-          <span>
-            <strong>A.T.O.M</strong>
-            <small>Ankara Telecom Optimization Model</small>
-          </span>
+        <div className="command-group command-workspace" role="group" aria-label="Workspace">
+          <div className="command-brand" aria-label="A.T.O.M workspace">
+            <img src={appIconUrl} alt="" />
+            <span><strong>A.T.O.M</strong><small>Ankara Telecom Optimization Model</small></span>
+          </div>
+          <div className="workspace-group-content">
+            {projectControl}
+            {lineageContext ? <WorkspaceLineageContext context={lineageContext} persistenceState={persistenceState} /> : null}
+          </div>
         </div>
 
-        <div className="command-context" aria-label="Active planning context">
-          {projectControl}
-          {lineageContext ? <WorkspaceLineageContext context={lineageContext} /> : null}
-          {resultContext ? <ResultContextBadge compact context={resultContext} /> : null}
-          <span className="context-primary">{contextLabel}</span>
-          <span className="context-divider" aria-hidden="true" />
-          <span>{networkTech}</span>
-          <span className="plan-summary">{planSummary}</span>
+        <div className="command-group command-rf-context" role="group" aria-label="RF context">
+          <div className="rf-context-primary">
+            <strong className="context-primary">{contextLabel}</strong>
+            <span className="rf-context-tech">{networkTech}</span>
+            <span className="rf-context-frequency">{frequencyGHz} GHz</span>
+          </div>
+          <details className="rf-context-details">
+            <summary aria-label="More RF context"><ChevronDown size={14} /><span>RF details</span></summary>
+            <div className="rf-context-popover">
+              <span>TX power <strong>{txPowerDbm} dBm</strong></span>
+              <span>Planning radius <strong>{radiusMeters} m</strong></span>
+              <a
+                className="planning-estimate-link"
+                href="https://github.com/Berk-Unsal/atom/blob/main/docs/modeling-limits.md"
+                target="_blank"
+                rel="noreferrer"
+                title="Open deterministic model limitations"
+              >
+                Planning estimate: model limitations
+              </a>
+            </div>
+          </details>
         </div>
 
-        <div className="command-actions">
-          <a
-            className="planning-estimate-link"
-            href="https://github.com/Berk-Unsal/atom/blob/main/docs/modeling-limits.md"
-            target="_blank"
-            rel="noreferrer"
-            title="Open deterministic model limitations"
-          >
-            Planning estimate
-          </a>
-          {resultSummary ? (
-            <button
-              type="button"
-              className="result-summary-button"
-              onClick={onOpenResults}
-              aria-label={`Open ${resultSummary.label} results`}
-            >
-              <span>{resultSummary.label}</span>
-              <strong>{resultSummary.primary}</strong>
-              <small>{resultSummary.secondary}</small>
-            </button>
-          ) : null}
-          <span className={`run-state ${statusTone}`}>
-            <i aria-hidden="true" />
+        <div className="command-group command-status" role="group" aria-label="Status">
+          <span className={`run-state ${statusTone}`} role="status" aria-live="polite">
             {runState}
           </span>
-          <span className={`workspace-save-state ${persistenceState}`} role="status" aria-live="polite">
-            {persistenceState === "saving" ? "Saving…" : persistenceState === "error" ? "Save failed" : draftUnsaved ? "Draft saved locally" : "Saved locally"}
-          </span>
+          {resultContext ? <ResultContextBadge compact sourceRunOnly interactive context={resultContext} onPrimaryAction={onOpenResults} /> : null}
+          {persistenceState === "saving" || persistenceState === "error" ? (
+            <span className={`workspace-persistence-state ${persistenceState}`} role="status" aria-live="polite">
+              {persistenceState === "saving" ? "Saving local draft…" : "Draft save failed"}
+            </span>
+          ) : null}
+        </div>
+
+        <div className="command-group command-primary-action" role="group" aria-label="Primary action">
           {primaryActionLabel ? (
             <button
               type="button"
@@ -118,14 +119,31 @@ export function CommandBar({
   );
 }
 
-export function WorkspaceLineageContext({ context }) {
+export function WorkspaceLineageContext({ context, persistenceState = "saved" }) {
   if (!context) return null;
+  const draftState = context.unsaved
+    ? "Unsaved changes"
+    : context.draft_state === "No saved Version"
+      ? "Draft saved locally"
+      : context.draft_state;
+  const compactDraftState = context.unsaved || context.draft_state === "No saved Version"
+    ? "Local draft"
+    : context.draft_state;
+  const versionSummary = context.version_label === "No saved Version" ? "No Version" : context.version_label;
   return (
     <details className="workspace-lineage-context">
-      <summary aria-label={`Workspace lineage: ${context.scenario_name}, ${context.version_label}, ${context.draft_state}`}>
-        <span className="workspace-lineage-scenario">{context.scenario_name}</span>
-        <span>{context.version_label}</span>
-        <b className={context.unsaved ? "unsaved" : "saved"}>{context.draft_state}</b>
+      <summary aria-label={`Workspace: ${context.project_name}, ${context.scenario_name}, ${context.version_label}, ${draftState}`}>
+        <span className="workspace-lineage-primary">
+          <strong className="workspace-lineage-project" title={context.project_name}>{context.project_name}</strong>
+          <span className="workspace-lineage-scenario">{context.scenario_name}</span>
+        </span>
+        <span className="workspace-lineage-secondary">
+          <span title={context.version_label}>{versionSummary}</span>
+          <b className={context.unsaved ? "unsaved" : "saved"}>
+            <span className="workspace-lineage-draft-full">{draftState}</span>
+            <span className="workspace-lineage-draft-compact">{compactDraftState}</span>
+          </b>
+        </span>
       </summary>
       <div className="workspace-lineage-popover">
         <strong>Workspace lineage</strong>
@@ -133,8 +151,17 @@ export function WorkspaceLineageContext({ context }) {
           <div><dt>Project</dt><dd>{context.project_name}</dd></div>
           <div><dt>Scenario</dt><dd>{context.scenario_name}</dd></div>
           <div><dt>Version</dt><dd>{context.version_label}</dd></div>
-          <div><dt>Draft</dt><dd>{context.draft_state}</dd></div>
+          <div><dt>Draft</dt><dd>{draftState}</dd></div>
         </dl>
+        <p className={`workspace-lineage-persistence ${persistenceState}`}>
+          {persistenceState === "saving"
+            ? "Saving the browser draft…"
+            : persistenceState === "error"
+              ? "The browser draft could not be saved."
+              : context.unsaved
+                ? "The draft is saved locally in this browser; it is not an immutable Version."
+                : "Draft saved locally in this browser."}
+        </p>
       </div>
     </details>
   );
@@ -290,77 +317,159 @@ function slug(value) {
   return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "atom-project";
 }
 
-export function WorkflowRail({ activeTool, drawerMode, drawerOpen, onSelectTool, toolState }) {
+export function StageToolChoices({
+  activeTool,
+  autoFocusSelected = false,
+  id,
+  onSelectTool,
+  stage,
+  toolState,
+}) {
+  const choicesRef = useRef(null);
+  const tools = WORKSPACE_TOOLS.filter((tool) => tool.stage === stage.id);
+
+  useEffect(() => {
+    if (!autoFocusSelected) return undefined;
+    const timer = window.setTimeout(() => {
+      const selected = choicesRef.current?.querySelector('[aria-current="page"]');
+      const firstAvailable = choicesRef.current?.querySelector('button:not([aria-disabled="true"])');
+      (selected ?? firstAvailable)?.focus();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [activeTool, autoFocusSelected, stage.id]);
+
+  return (
+    <div
+      ref={choicesRef}
+      id={id}
+      className="stage-tool-choices"
+      role="group"
+      aria-label={`${stage.label} tools`}
+      data-stage-chooser
+    >
+      {tools.map((tool) => {
+        const Icon = tool.icon;
+        const state = toolState?.[tool.id] ?? {};
+        const isActive = tool.id === activeTool;
+        const unavailable = Boolean(state.unavailable);
+        const stateLabel = isActive
+          ? "Current tool"
+          : unavailable
+            ? "Unavailable"
+            : state.tone === "warning" && state.badge
+              ? "Needs attention"
+              : state.badge && state.tone === "success"
+                ? tool.id === "history"
+                  ? `${state.badge} ${state.badge === "1" ? "run" : "runs"}`
+                  : "Result available"
+                : state.badge === "…"
+                  ? "Loading"
+                  : state.badge && tool.id === "setup"
+                    ? `${state.badge} cells selected`
+                    : tool.description;
+
+        return (
+          <button
+            key={tool.id}
+            id={`stage-tool-${stage.id}-${tool.id}`}
+            type="button"
+            className={`stage-tool-choice${isActive ? " current" : ""}${unavailable ? " unavailable" : ""}`}
+            onClick={() => { if (!unavailable) onSelectTool(tool.id); }}
+            aria-label={tool.label}
+            aria-current={isActive ? "page" : undefined}
+            aria-disabled={unavailable || undefined}
+            aria-describedby={`stage-tool-${stage.id}-${tool.id}-description${unavailable ? ` stage-tool-${stage.id}-${tool.id}-reason` : ""}`}
+          >
+            <Icon className="stage-tool-choice-icon" size={17} aria-hidden="true" />
+            <span className="stage-tool-choice-copy">
+              <span className="stage-tool-choice-name">{tool.label}</span>
+              <span
+                id={`stage-tool-${stage.id}-${tool.id}-description`}
+                className={isActive ? "visually-hidden" : "stage-tool-choice-description"}
+              >
+                {stateLabel}
+              </span>
+              {unavailable ? (
+                <span id={`stage-tool-${stage.id}-${tool.id}-reason`} className="stage-tool-choice-reason">{state.reason ?? "Unavailable in the current workspace."}</span>
+              ) : null}
+            </span>
+            {isActive ? <span className="stage-tool-current-mark">Current</span> : null}
+            {!isActive && state.tone === "warning" && state.badge ? <span className="stage-tool-attention-mark">!</span> : null}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export function WorkflowRail({
+  activeTool,
+  chooserStage,
+  onToggleChooser,
+  phoneLayout = false,
+  toolState,
+  onSelectTool,
+}) {
   const activeButtonRef = useRef(null);
   const activeDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
 
   useEffect(() => {
-    if (drawerMode === "tool" && drawerOpen) {
-      activeButtonRef.current?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
-    }
-  }, [activeTool, drawerMode, drawerOpen]);
+    activeButtonRef.current?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+  }, [activeTool]);
 
   return (
     <nav className="workflow-rail" aria-label="Workspace stages">
       {WORKSPACE_STAGES.map((stage) => {
         const Icon = stage.icon;
         const tools = WORKSPACE_TOOLS.filter((tool) => tool.stage === stage.id);
-        const target = tools.find((tool) => !toolState?.[tool.id]?.unavailable) ?? tools[0];
-        const isActive = drawerMode === "tool" && drawerOpen && activeDefinition.stage === stage.id;
+        const isActive = activeDefinition.stage === stage.id;
+        const isChooserOpen = chooserStage === stage.id;
         const hasResult = tools.some((tool) => toolState?.[tool.id]?.tone === "success" && toolState?.[tool.id]?.badge);
         const hasWarning = tools.some((tool) => toolState?.[tool.id]?.tone === "warning" && toolState?.[tool.id]?.badge);
         const tooltipID = `workspace-stage-${stage.id}-tip`;
+        const attentionID = `workspace-stage-${stage.id}-attention`;
+        const attentionDescription = hasWarning ? "Attention available in this stage." : hasResult ? "Results available in this stage." : "";
         return (
           <div className="rail-item rail-stage" key={stage.id}>
             <button
               ref={isActive ? activeButtonRef : null}
               id={`workspace-stage-${stage.id}`}
               type="button"
-              className={isActive ? "active" : ""}
-              onClick={() => onSelectTool(isActive ? activeTool : target.id)}
+              className={`${isActive ? "active" : ""}${isChooserOpen ? " chooser-open" : ""}`.trim()}
+              data-stage-trigger
+              onClick={() => onToggleChooser(stage.id)}
               aria-label={`${stage.label} workspace`}
-              aria-current={isActive ? "page" : undefined}
-              aria-describedby={tooltipID}
-              aria-expanded={isActive}
+              aria-current={isActive ? "step" : undefined}
+              aria-describedby={attentionDescription ? `${tooltipID} ${attentionID}` : tooltipID}
+              aria-haspopup="dialog"
+              aria-expanded={isChooserOpen}
+              aria-controls={isChooserOpen ? `stage-chooser-${stage.id}` : undefined}
               title={stage.label}
             >
               <Icon size={19} />
               <span className="rail-label">{stage.label}</span>
-              {hasResult || hasWarning ? <span className={`rail-badge ${hasWarning ? "warning" : "success"}`}>{hasWarning ? "!" : "•"}</span> : null}
+              {hasResult || hasWarning ? <span className={`rail-badge ${hasWarning ? "warning" : "success"}`} aria-hidden="true">{hasWarning ? "!" : "•"}</span> : null}
               <span id={tooltipID} className="rail-tooltip" role="tooltip">{stage.label}</span>
+              {attentionDescription ? <span id={attentionID} className="visually-hidden">{attentionDescription}</span> : null}
             </button>
+            {isChooserOpen && !phoneLayout ? (
+              <div
+                id={`stage-chooser-${stage.id}`}
+                className="stage-tool-chooser-flyout"
+                role="dialog"
+                aria-modal="false"
+                aria-label={`${stage.label} tools`}
+                data-stage-chooser
+              >
+                <StageToolChoices
+                  activeTool={activeTool}
+                  onSelectTool={onSelectTool}
+                  stage={stage}
+                  toolState={toolState}
+                />
+              </div>
+            ) : null}
           </div>
-        );
-      })}
-    </nav>
-  );
-}
-
-export function ToolSubnav({ activeTool, onSelectTool, toolState }) {
-  const activeDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
-  const tools = WORKSPACE_TOOLS.filter((tool) => tool.stage === activeDefinition.stage);
-
-  return (
-    <nav className="tool-subnav" aria-label={`${WORKSPACE_STAGES.find((stage) => stage.id === activeDefinition.stage)?.label ?? "Workspace"} tools`}>
-      {tools.map((tool) => {
-        const Icon = tool.icon;
-        const state = toolState?.[tool.id] ?? {};
-        const isActive = tool.id === activeTool;
-        return (
-          <button
-            key={tool.id}
-            id={`workspace-tool-${tool.id}`}
-            type="button"
-            className={`${isActive ? "active" : ""} ${state.unavailable ? "unavailable" : ""}`.trim()}
-            onClick={() => { if (!isActive && !state.unavailable) onSelectTool(tool.id); }}
-            aria-current={isActive ? "page" : undefined}
-            aria-disabled={state.unavailable || undefined}
-            title={state.reason ?? tool.label}
-          >
-            <Icon size={15} aria-hidden="true" />
-            <span>{tool.label}</span>
-            {state.badge ? <i className={`tool-subnav-badge ${state.tone ?? "neutral"}`} aria-hidden="true">{state.badge}</i> : null}
-          </button>
         );
       })}
     </nav>
@@ -369,6 +478,7 @@ export function ToolSubnav({ activeTool, onSelectTool, toolState }) {
 
 export function ToolDrawer({
   children,
+  chooser = null,
   drawerMode,
   error,
   footer,
@@ -378,7 +488,6 @@ export function ToolDrawer({
   onClose,
   open,
   subtitle,
-  subnav,
   title,
 }) {
   const headingRef = useRef(null);
@@ -396,11 +505,37 @@ export function ToolDrawer({
   return (
     <dialog
       open
+      id={chooser ? `stage-chooser-${chooser.stage.id}` : undefined}
       className={`tool-drawer ${drawerMode === "inspector" ? "inspector-mode" : ""}`}
       aria-modal="false"
       aria-labelledby="tool-drawer-title"
+      data-stage-chooser={chooser ? "true" : undefined}
     >
-      <header className="tool-drawer-header">
+      {chooser ? (
+        <>
+          <header className="tool-drawer-header tool-drawer-chooser-header">
+            <div>
+              <h2 id="tool-drawer-title" ref={headingRef} tabIndex={-1}>{chooser.stage.label}</h2>
+              <p>Choose a tool for this stage</p>
+            </div>
+            <button type="button" className="drawer-icon-button drawer-close" onClick={onClose} aria-label="Close tool chooser">
+              <X size={18} />
+            </button>
+          </header>
+          <div className="tool-drawer-body stage-tool-chooser-mobile">
+            <StageToolChoices
+              id={`stage-chooser-content-${chooser.stage.id}`}
+              activeTool={chooser.activeTool}
+              autoFocusSelected
+              onSelectTool={chooser.onSelectTool}
+              stage={chooser.stage}
+              toolState={chooser.toolState}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <header className="tool-drawer-header">
         {drawerMode === "inspector" ? (
           <button type="button" className="drawer-icon-button" onClick={onBack} aria-label="Back to previous tool">
             <ChevronLeft size={18} />
@@ -416,12 +551,13 @@ export function ToolDrawer({
           <X size={18} />
         </button>
       </header>
-      {subnav}
       <div className="tool-drawer-body">
         {error ? <div className="drawer-error" role="alert">{error}</div> : null}
         {children}
       </div>
       {footer ? <footer className="tool-drawer-footer">{footer}</footer> : null}
+        </>
+      )}
     </dialog>
   );
 }

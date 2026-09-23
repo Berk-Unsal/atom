@@ -11,6 +11,8 @@ const STATE_LABELS = Object.freeze({
 export default function ResultContextBadge({
   context,
   compact = false,
+  sourceRunOnly = false,
+  interactive = false,
   currentWorkspace = null,
   onPrimaryAction,
   primaryLabel = "",
@@ -28,10 +30,30 @@ export default function ResultContextBadge({
     : context.run_label ?? "Run unavailable";
 
   if (compact) {
-    return (
-      <div className={`result-context-compact state-${context.freshness}`} aria-label={`${stateLabel} · ${sourceLine} · ${runLine}`} title={`${stateLabel} · ${sourceLine} · ${runLine}`} role="status" aria-live="polite">
+    const compactRunLine = context.run_id ? context.run_label : context.run_label ?? "Run unavailable";
+    const compactCopy = sourceRunOnly
+      ? compactRunLine
+      : `${sourceLine}${context.run_id ? ` · ${context.run_label}` : ""}`;
+    const content = (
+      <>
         <span className={`result-context-state state-${context.freshness}`}>{stateLabel}</span>
-        <span className="result-context-compact-copy">{sourceLine}{context.run_id ? ` · ${context.run_label}` : ""}</span>
+        <span className="result-context-compact-copy">{compactCopy}</span>
+      </>
+    );
+    return interactive ? (
+      <button
+        type="button"
+        className={`result-context-compact state-${context.freshness}`}
+        aria-label={`Open ${humanStateLabel} details for ${sourceLine} · ${runLine}`}
+        title={`${humanStateLabel} · ${sourceLine} · ${runLine}`}
+        onClick={onPrimaryAction}
+        disabled={!onPrimaryAction}
+      >
+        {content}
+      </button>
+    ) : (
+      <div className={`result-context-compact state-${context.freshness}`} aria-label={`${stateLabel} · ${sourceLine} · ${runLine}`} title={`${humanStateLabel} · ${sourceLine} · ${runLine}`} role="status" aria-live="polite">
+        {content}
       </div>
     );
   }

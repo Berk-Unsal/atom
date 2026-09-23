@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { AlertTriangle, CheckCircle2, CircleHelp, PlayCircle, Waves } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
-import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 const INITIAL_OPTIONS = {
   frequencyGHz: 140,
@@ -56,13 +55,11 @@ export default function SpecularReflectionReferencePanel({ analysis, isAnalyzing
   return (
     <section className="specular-reflection-panel" aria-label="Specular reflection reference">
       <header className="specular-reflection-heading">
-        <div className="panel-title"><Waves size={16} /><span>Specular Reflection Reference</span><ResearchReferenceBadge /></div>
-        <span className="specular-reference-chip">Opt-in diagnostic</span>
+        <div className="panel-title"><Waves size={16} /><span>Specular Reflection Reference</span></div>
       </header>
-      <p className="specular-reference-subtitle">Isolated one-bounce reference — not used by network simulation.</p>
+      <p className="specular-reference-subtitle">Reference-only one-bounce diagnostic. It is not canonical and is not used by network simulation.</p>
       <div className="specular-reference-identity">
-        <code>single_bounce_specular_reflection_reference_v1</code>
-        <span>reference_only · canonical false · network coupled false</span>
+        <span>ITU-R P.2040 reflection coefficient</span>
       </div>
 
       <div className="specular-reference-section">
@@ -159,7 +156,7 @@ function SpecularReflectionResult({ analysis }) {
       </div>
       <div className="specular-reference-directions"><span><small>Tx departure</small><strong>{formatDirection(analysis.antennas?.tx, "departure")}</strong></span><span><small>Rx look / arrival</small><strong>{formatDirection(analysis.antennas?.rx, "arrival")}</strong></span></div>
       {reasons.length > 0 ? <div className="specular-reference-warnings"><strong>Evidence and gates</strong>{reasons.map((reason) => <span key={reason}><AlertTriangle size={13} />{reason}</span>)}</div> : null}
-      <details className="specular-reference-details"><summary>Inspect assumptions, visibility, and fingerprint</summary><p className="data-note">Leg 1: {analysis.visibility?.leg1_visibility?.status ?? "unknown"} · Leg 2: {analysis.visibility?.leg2_visibility?.status ?? "unknown"} · diffuse modelled: {analysis.diffuse_scattering_modelled ? "yes" : "no"}</p><p className="data-note">{(analysis.assumptions ?? []).join(" · ")}</p><p className="data-note">Fingerprint <code>{analysis.fingerprint ?? "—"}</code></p></details>
+      <details className="specular-reference-details"><summary>Details / Provenance: assumptions and visibility</summary><p className="data-note">Contract <code>single_bounce_specular_reflection_reference_v1</code> · reference-only · canonical false · network coupled false.</p><p className="data-note">Leg 1: {analysis.visibility?.leg1_visibility?.status ?? "unknown"} · Leg 2: {analysis.visibility?.leg2_visibility?.status ?? "unknown"} · diffuse modelled: {analysis.diffuse_scattering_modelled ? "yes" : "no"}</p><p className="data-note">{(analysis.assumptions ?? []).join(" · ")}</p><p className="data-note">Fingerprint <code>{analysis.fingerprint ?? "—"}</code></p></details>
     </section>
   );
 }

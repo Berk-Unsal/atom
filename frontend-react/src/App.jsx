@@ -29,11 +29,10 @@ import {
   MapToolbar,
   ProjectMenu,
   ToolDrawer,
-  ToolSubnav,
   UndoToast,
   WorkflowRail,
 } from "./components/WorkspaceChrome.jsx";
-import { WORKSPACE_TOOLS } from "./components/workspaceTools.js";
+import { WORKSPACE_STAGES, WORKSPACE_TOOLS } from "./components/workspaceTools.js";
 import useRequestCoordinator from "./hooks/useRequestCoordinator.js";
 import useProjectWorkspace from "./hooks/useProjectWorkspace.js";
 import useRunHistory from "./hooks/useRunHistory.js";
@@ -177,6 +176,10 @@ export default function App() {
   const [activeTool, setActiveTool] = useState("setup");
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [drawerMode, setDrawerMode] = useState("tool");
+  const [chooserStage, setChooserStage] = useState(null);
+  const [phoneLayout, setPhoneLayout] = useState(() => typeof window !== "undefined" && Boolean(window.matchMedia?.("(max-width: 640px)").matches));
+  const chooserOriginRef = useRef(null);
+  const previousActiveToolRef = useRef(activeTool);
   const [propagationResearchSettings, setPropagationResearchSettings] = useState(null);
   const propagationToolWasActive = useRef(false);
   const [previousTool, setPreviousTool] = useState("setup");
@@ -2098,7 +2101,50 @@ export default function App() {
     setFitRequestVersion((current) => current + 1);
   }, []);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia?.("(max-width: 640px)");
+    if (!mediaQuery) return undefined;
+    const updateLayout = (event) => setPhoneLayout(event.matches);
+    setPhoneLayout(mediaQuery.matches);
+    mediaQuery.addEventListener?.("change", updateLayout);
+    if (!mediaQuery.addEventListener) mediaQuery.addListener?.(updateLayout);
+    return () => {
+      mediaQuery.removeEventListener?.("change", updateLayout);
+      if (!mediaQuery.removeEventListener) mediaQuery.removeListener?.(updateLayout);
+    };
+  }, []);
+
+  const dismissStageChooser = useCallback(({ restoreOrigin = false, returnFocus = false } = {}) => {
+    const stageID = chooserStage;
+    const origin = chooserOriginRef.current;
+    setChooserStage(null);
+    chooserOriginRef.current = null;
+    if (restoreOrigin && phoneLayout && origin) {
+      setDrawerOpen(origin.drawerOpen);
+      setDrawerMode(origin.drawerMode);
+    }
+    if (returnFocus && stageID) {
+      window.setTimeout(() => document.getElementById(`workspace-stage-${stageID}`)?.focus(), 0);
+    }
+  }, [chooserStage, phoneLayout]);
+
+  const toggleStageChooser = useCallback((stageID) => {
+    if (chooserStage === stageID) {
+      dismissStageChooser({ restoreOrigin: true });
+      return;
+    }
+    if (!chooserOriginRef.current) {
+      chooserOriginRef.current = { drawerOpen, drawerMode };
+    }
+    setChooserStage(stageID);
+    if (phoneLayout) {
+      setDrawerMode("tool");
+      setDrawerOpen(true);
+    }
+  }, [chooserStage, dismissStageChooser, drawerMode, drawerOpen, phoneLayout]);
+
   const closeDrawer = useCallback((focusTarget = "tool") => {
+    dismissStageChooser();
     setDrawerOpen(false);
     setDrawerMode("tool");
     window.setTimeout(() => {
@@ -2106,24 +2152,52 @@ export default function App() {
         document.querySelector(".leaflet-container")?.focus();
         return;
       }
-      document.getElementById(`workspace-tool-${activeTool}`)?.focus();
+      const activeDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
+      document.getElementById(`workspace-stage-${activeDefinition.stage}`)?.focus();
     }, 0);
-  }, [activeTool]);
+  }, [activeTool, dismissStageChooser]);
 
   const selectWorkspaceTool = useCallback((tool) => {
+		dismissStageChooser();
 		if (tool !== "inventory") setIsPlacingCell(false);
     if (tool !== "propagation") setIsSelectingPathEndpoint(false);
     if (tool !== activeTool) setResearchActivity(false);
-    if (drawerOpen && drawerMode === "tool" && activeTool === tool) {
-      closeDrawer();
-      return;
-    }
     setPreviousTool(activeTool);
     setActiveTool(tool);
     setDrawerMode("tool");
     setDrawerOpen(true);
     setSelectedMapObject(null);
-  }, [activeTool, closeDrawer, drawerMode, drawerOpen]);
+  }, [activeTool, dismissStageChooser]);
+
+  const chooseWorkspaceTool = useCallback((tool) => {
+    dismissStageChooser();
+    if (tool === activeTool) {
+      setDrawerMode("tool");
+      setDrawerOpen(true);
+      setSelectedMapObject(null);
+      return;
+    }
+    selectWorkspaceTool(tool);
+  }, [activeTool, dismissStageChooser, selectWorkspaceTool]);
+
+  useEffect(() => {
+    if (!chooserStage) return undefined;
+    const closeOnOutsidePointer = (event) => {
+      const target = event.target;
+      if (target?.closest?.("[data-stage-chooser], [data-stage-trigger]")) return;
+      dismissStageChooser({ restoreOrigin: true });
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer);
+  }, [chooserStage, dismissStageChooser]);
+
+  useEffect(() => {
+    if (previousActiveToolRef.current !== activeTool && chooserStage) {
+      setChooserStage(null);
+      chooserOriginRef.current = null;
+    }
+    previousActiveToolRef.current = activeTool;
+  }, [activeTool, chooserStage]);
 
   const openPathProfileDiagnostics = useCallback(() => {
     setOpenPropagationAdvancedRequest((current) => current + 1);
@@ -2131,13 +2205,14 @@ export default function App() {
   }, [selectWorkspaceTool]);
 
   const openResults = useCallback((view = activeResultsView) => {
+    dismissStageChooser();
     setActiveResultsView(view);
     setPreviousTool(activeTool);
     setActiveTool("results");
     setDrawerMode("tool");
     setDrawerOpen(true);
     setSelectedMapObject(null);
-  }, [activeResultsView, activeTool]);
+  }, [activeResultsView, activeTool, dismissStageChooser]);
 
   const selectMapObject = useCallback((mapObject) => {
     if (!mapObject) {
@@ -2150,15 +2225,22 @@ export default function App() {
   }, [activeTool]);
 
   const returnFromInspector = useCallback(() => {
+    dismissStageChooser();
     setSelectedMapObject(null);
     setActiveTool(previousTool);
     setDrawerMode("tool");
     setDrawerOpen(true);
-  }, [previousTool]);
+  }, [dismissStageChooser, previousTool]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") {
+        return;
+      }
+      if (chooserStage) {
+        event.preventDefault();
+        event.stopPropagation();
+        dismissStageChooser({ restoreOrigin: true, returnFocus: true });
         return;
       }
       if (layerMenuOpen) {
@@ -2179,7 +2261,7 @@ export default function App() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [cancelAreaSelection, closeDrawer, drawerMode, drawerOpen, isDrawingSelection, isSelectingPathEndpoint, layerMenuOpen]);
+  }, [cancelAreaSelection, chooserStage, closeDrawer, dismissStageChooser, drawerMode, drawerOpen, isDrawingSelection, isSelectingPathEndpoint, layerMenuOpen]);
 
   useEffect(() => {
     if (!coreLabEnabled || !coreLabApplicable) {
@@ -2299,7 +2381,6 @@ export default function App() {
   const contextLabel = planningMode === "network"
     ? `Network · ${selectedCellCount} ${selectedCellCount === 1 ? "cell" : "cells"}`
     : `Single · Cell ${selectedTowerLabel}`;
-  const planSummary = `${formatNumber(settings.frequencyGHz, 1)} GHz · ${formatNumber(settings.txPowerDbm, 0)} dBm · ${formatNumber(settings.radiusMeters, 0)} m`;
   const hasInterferenceData = (interferenceAnalysis.geojson?.features ?? []).length > 0;
   const currentBuildingEntryAnalysis = buildingEntryIsCurrent ? buildingEntryAnalysis : null;
   const hasResults = Boolean(simulation?.stats || networkOptimization?.stats || interferenceAnalysis.stats || siteRecommendations || measurementAnalysis || currentBuildingEntryAnalysis);
@@ -2582,6 +2663,7 @@ export default function App() {
       setNavigationNotice("Save the current draft as a Version before opening another Scenario. Your draft has been kept.");
       return;
     }
+    dismissStageChooser();
     setNavigationNotice("");
     setFocusedRunId(null);
     if (!sameCurrentScenario && !openSavedScenario(scenario)) return;
@@ -2590,7 +2672,7 @@ export default function App() {
     setActiveTool("setup");
     setDrawerMode("tool");
     setDrawerOpen(true);
-  }, [activeProject, openSavedScenario, workspaceLineage.scenario_id]);
+  }, [activeProject, dismissStageChooser, openSavedScenario, workspaceLineage.scenario_id]);
 
   const handleBranchScenario = useCallback(async ({ name, revisionId, scenarioId }) => {
     try {
@@ -2640,6 +2722,7 @@ export default function App() {
   }, [projectWorkspace, restorePlanningSnapshot]);
 
   const openRunSource = useCallback((run) => {
+    dismissStageChooser();
     if (!run?.scenario_id || !run?.scenario_revision_id) {
       setActiveTool("history");
       setDrawerMode("tool");
@@ -2647,16 +2730,18 @@ export default function App() {
       return;
     }
     openScenarioRevision(run.scenario_id, run.scenario_revision_id);
-  }, [openScenarioRevision]);
+  }, [dismissStageChooser, openScenarioRevision]);
 
   const openRunHistory = useCallback((run) => {
+    dismissStageChooser();
     setFocusedRunId(run?.run_id ?? null);
     setActiveTool("history");
     setDrawerMode("tool");
     setDrawerOpen(true);
-  }, []);
+  }, [dismissStageChooser]);
 
   const openReportSource = useCallback((artifact) => {
+    dismissStageChooser();
     if (artifact?.scenario_id && artifact?.scenario_revision_id) {
       openScenarioRevision(artifact.scenario_id, artifact.scenario_revision_id);
       return;
@@ -2665,20 +2750,22 @@ export default function App() {
     setActiveTool("report");
     setDrawerMode("tool");
     setDrawerOpen(true);
-  }, [openScenarioRevision]);
+  }, [dismissStageChooser, openScenarioRevision]);
 
   const inspectReport = useCallback((artifact) => {
+    dismissStageChooser();
     setSelectedArtifactId(artifact?.artifact_id ?? null);
     setActiveTool("report");
     setDrawerMode("tool");
     setDrawerOpen(true);
-  }, []);
+  }, [dismissStageChooser]);
 
   const openReports = useCallback(() => {
+    dismissStageChooser();
     setActiveTool("report");
     setDrawerMode("tool");
     setDrawerOpen(true);
-  }, []);
+  }, [dismissStageChooser]);
 
   const historyDatasetUnavailable = useMemo(
     () => Boolean(appMeta && runHistory.runs.some((run) => !runDatasetMatches(run, appMeta))),
@@ -2785,6 +2872,7 @@ export default function App() {
   }, [applyHistoricalSolution, currentResultRun]);
 
   const runAgainFromHistory = useCallback(async (run) => {
+    dismissStageChooser();
     if (!runDatasetMatches(run, appMeta)) {
       setError("UNAVAILABLE · The dataset recorded for this Run is not active; rerun was not started.");
       return;
@@ -2844,7 +2932,7 @@ export default function App() {
       await persistRunHistoryRecord(finalRun);
       setError(rerunError.message);
     }
-  }, [appMeta, persistRunHistoryRecord]);
+  }, [appMeta, dismissStageChooser, persistRunHistoryRecord]);
 
   const applyRecommendation = useCallback((recommendation) => {
     const candidate = towers.find((tower) => String(tower.cellId) === String(recommendation.cell_id) || tower.id === recommendation.id);
@@ -2946,9 +3034,10 @@ export default function App() {
     stats,
   ]);
   const focusHistoricalReport = useCallback(() => {
+    dismissStageChooser();
     setActiveTool("report");
     setDrawerOpen(true);
-  }, []);
+  }, [dismissStageChooser]);
   const reportWorkflow = useReportWorkflow({
     activeProject,
     activeScenario,
@@ -3033,6 +3122,7 @@ export default function App() {
         appIconUrl={APP_ICON_URL}
         contextLabel={contextLabel}
         error={drawerOpen && !projectWorkspace.error ? navigationNotice : visibleError}
+        frequencyGHz={formatNumber(settings.frequencyGHz, 1)}
         lineageContext={workspaceLineage}
         networkTech={activeNetworkTech}
         onDismissError={() => {
@@ -3042,7 +3132,8 @@ export default function App() {
         }}
         onOpenResults={() => openResults(resultSummary?.view)}
         onRun={planningMode === "network" ? evaluateNetwork : runSimulation}
-        planSummary={planSummary}
+        txPowerDbm={formatNumber(settings.txPowerDbm, 0)}
+        radiusMeters={formatNumber(settings.radiusMeters, 0)}
         projectControl={(
           <ProjectMenu
             key={projectWorkspace.activeProject?.id}
@@ -3066,7 +3157,6 @@ export default function App() {
         draftUnsaved={workspaceLineage.unsaved}
         primaryActionLabel={primaryActionLabel}
 		primaryDisabled={!workspaceLoaded || !workspaceRestored || hydratedDatasetRevision !== datasetRevision || activeRFTask !== null || invalidProfileCount > 0 || (planningMode === "network" ? selectedCellCount < 2 : !selectedTower)}
-        resultSummary={resultSummary}
         resultContext={resultContext}
         runState={runState}
         statusTone={visibleError ? "error" : activeRFTask !== null ? "busy" : planDirty ? "pending" : "ready"}
@@ -3075,9 +3165,10 @@ export default function App() {
       <section className={`workspace-frame ${drawerOpen ? "drawer-open" : ""}`}>
         <WorkflowRail
           activeTool={activeTool}
-          drawerMode={drawerMode}
-          drawerOpen={drawerOpen}
-          onSelectTool={selectWorkspaceTool}
+          chooserStage={chooserStage}
+          onSelectTool={chooseWorkspaceTool}
+          onToggleChooser={toggleStageChooser}
+          phoneLayout={phoneLayout}
           toolState={toolState}
         />
 
@@ -3189,6 +3280,12 @@ export default function App() {
         </section>
 
         <ToolDrawer
+          chooser={phoneLayout && chooserStage ? {
+            activeTool,
+            onSelectTool: chooseWorkspaceTool,
+            stage: WORKSPACE_STAGES.find((stage) => stage.id === chooserStage),
+            toolState,
+          } : null}
           drawerMode={drawerMode}
           error={error}
           focusKey={`${drawerMode}-${activeTool}-${selectedMapObject?.type ?? "none"}`}
@@ -3197,9 +3294,6 @@ export default function App() {
           onClose={() => closeDrawer(drawerMode === "inspector" ? "map" : "tool")}
           open={drawerOpen}
           subtitle={drawerMode === "inspector" ? formatScenario(selectedMapObject?.type ?? "selection") : drawerSubtitles[activeTool]}
-          subnav={drawerMode === "tool" ? (
-            <ToolSubnav activeTool={activeTool} onSelectTool={selectWorkspaceTool} toolState={toolState} />
-          ) : null}
           title={drawerMode === "inspector" ? "Map Inspector" : activeToolDefinition.label}
         >
           {drawerMode === "inspector" ? <MapInspector selectedMapObject={selectedMapObject} /> : null}

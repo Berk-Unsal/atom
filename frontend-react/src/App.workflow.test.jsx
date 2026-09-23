@@ -34,6 +34,33 @@ vi.mock("./components/MapCanvas.jsx", () => ({
 
 import App from "./App.jsx";
 
+const TOOL_TARGETS = {
+  Setup: ["plan", "Plan", "setup"],
+  Inventory: ["plan", "Plan", "inventory"],
+  Propagation: ["simulate", "Simulate", "propagation"],
+  Experiments: ["simulate", "Simulate", "experiments"],
+  "Signal surface": ["simulate", "Simulate", "surfaces"],
+  Interference: ["analyze", "Analyze", "interference"],
+  "RF Diagnostics": ["analyze", "Analyze", "validation"],
+  "Building entry": ["analyze", "Analyze", "building-entry"],
+  "5G Core": ["analyze", "Analyze", "core"],
+  Results: ["review", "Review", "results"],
+  "Run history": ["review", "Review", "history"],
+  Data: ["review", "Review", "data"],
+  Report: ["review", "Review", "report"],
+};
+
+function openWorkspaceTool(label) {
+  const [stageID, stageLabel, toolID] = TOOL_TARGETS[label];
+  let toolButton = document.getElementById(`stage-tool-${stageID}-${toolID}`);
+  if (!toolButton) {
+    fireEvent.click(screen.getByRole("button", { name: `${stageLabel} workspace` }));
+    toolButton = document.getElementById(`stage-tool-${stageID}-${toolID}`);
+  }
+  if (!toolButton) throw new Error(`Tool chooser did not expose ${label}`);
+  fireEvent.click(toolButton);
+}
+
 const towerGeoJSON = {
   type: "FeatureCollection",
   features: [
@@ -257,11 +284,55 @@ describe("App planning workflow", () => {
     expect(screen.queryByText("Run needed", { selector: ".run-state" })).not.toBeInTheDocument();
   });
 
+  it("opens the rail chooser without changing the active tool and returns focus on Escape", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    const activeStage = screen.getByRole("button", { name: "Plan workspace" });
+    const simulateStage = screen.getByRole("button", { name: "Simulate workspace" });
+
+    fireEvent.click(simulateStage);
+    expect(screen.getByRole("dialog", { name: "Setup" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Propagation", exact: true })).toBeInTheDocument();
+    expect(activeStage).toHaveAttribute("aria-current", "step");
+    expect(simulateStage).toHaveAttribute("aria-expanded", "true");
+    expect(api.postJSON).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByRole("button", { name: "Propagation", exact: true })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Setup" })).toBeInTheDocument();
+    await waitFor(() => expect(simulateStage).toHaveFocus());
+    expect(api.postJSON).not.toHaveBeenCalled();
+  });
+
+  it("dismisses an exploratory chooser on outside pointer without changing tools", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
+    expect(screen.getByRole("button", { name: "Propagation", exact: true })).toBeInTheDocument();
+
+    fireEvent.pointerDown(screen.getByTestId("map-canvas"));
+
+    expect(screen.queryByRole("button", { name: "Propagation", exact: true })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Setup" })).toBeInTheDocument();
+    expect(api.postJSON).not.toHaveBeenCalled();
+  });
+
+  it("returns drawer focus to the owning stage trigger after close", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    const owningStage = screen.getByRole("button", { name: "Plan workspace" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Close tool drawer" }));
+    expect(screen.queryByRole("dialog", { name: "Setup" })).not.toBeInTheDocument();
+    await waitFor(() => expect(owningStage).toHaveFocus());
+    expect(api.postJSON).not.toHaveBeenCalled();
+  });
+
   it("keeps Research collapsed by default and preserves isolated reference inputs through collapse", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
-    fireEvent.click(screen.getByRole("button", { name: "Propagation" }));
+    openWorkspaceTool("Propagation");
 
     expect(screen.getByRole("button", { name: "Planning" })).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("button", { name: /^Advanced analysis/ })).toHaveAttribute("aria-expanded", "false");
@@ -288,7 +359,7 @@ describe("App planning workflow", () => {
     const requestCount = api.postJSON.mock.calls.length;
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
-    fireEvent.click(screen.getByRole("button", { name: "Propagation" }));
+    openWorkspaceTool("Propagation");
     const advanced = screen.getByRole("button", { name: /^Advanced analysis/ });
     const research = screen.getByRole("button", { name: /^Research \/ reference/ });
     fireEvent.click(advanced);
@@ -303,7 +374,7 @@ describe("App planning workflow", () => {
   it("keeps hidden per-cell antenna values and marks RF edits dirty", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
-    fireEvent.click(screen.getByRole("button", { name: "Inventory" }));
+    openWorkspaceTool("Inventory");
     const advanced = screen.getByRole("button", { name: /^Advanced/ });
     expect(advanced).toHaveAttribute("aria-expanded", "false");
     fireEvent.click(advanced);
@@ -469,7 +540,8 @@ describe("App planning workflow", () => {
     expect(api.postJSON).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Add 1 cell" })).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "Analyze workspace" }));
-    expect(screen.getByRole("button", { name: "Interference" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Interference" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByText("Select at least two cells")).toBeInTheDocument();
   });
 
   it("explores Pareto solutions without changing the recommendation or rerunning RF", async () => {
@@ -484,6 +556,7 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 2 selected" })).toHaveAttribute("aria-pressed", "true"));
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
+    openWorkspaceTool("Propagation");
     await waitFor(() => expect(screen.getByRole("button", { name: "Optimize Network" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
     await waitFor(() => expect(api.postJSON).toHaveBeenCalledWith(
@@ -495,6 +568,7 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
 
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
+    openWorkspaceTool("Results");
     fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
     expect(screen.getByRole("region", { name: "Pareto alternative solutions" })).toBeInTheDocument();
     expect(screen.getByText("2 feasible · non-dominated solutions")).toBeInTheDocument();
@@ -523,11 +597,13 @@ describe("App planning workflow", () => {
     fireEvent.click(screen.getByRole("button", { name: "Select map tower 102" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 2 selected" })).toHaveAttribute("aria-pressed", "true"));
     fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
+    openWorkspaceTool("Propagation");
     await waitFor(() => expect(screen.getByRole("button", { name: "Optimize Network" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
     await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
 
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
+    openWorkspaceTool("Results");
     fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
     const explainButton = screen.getByRole("button", { name: "Explain Cell 101 marginal effect" });
     fireEvent.click(explainButton);
@@ -543,11 +619,12 @@ describe("App planning workflow", () => {
     expect(explanationCalls).toHaveLength(1);
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
-    fireEvent.click(screen.getByRole("button", { name: "Propagation" }));
+    openWorkspaceTool("Propagation");
     fireEvent.click(screen.getByRole("button", { name: /^Advanced analysis/ }));
     fireEvent.change(screen.getByRole("slider", { name: "Demand importance" }), { target: { value: "100" } });
     await act(async () => Promise.resolve());
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
+    openWorkspaceTool("Results");
     fireEvent.click(screen.getByRole("button", { name: "Explain Cell 101 marginal effect" }));
     expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/explain-network-cell")).toHaveLength(1);
     expect(screen.getByText("Selected solution − cell reverted to baseline")).toBeInTheDocument();
@@ -570,7 +647,7 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
-    fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    openWorkspaceTool("Data");
     fireEvent.click(screen.getByRole("button", { name: "Advanced model details" }));
     expect(screen.getByRole("region", { name: "Propagation model assumptions" })).toBeInTheDocument();
     expect(screen.getByText("FSPL + footprint obstruction")).toBeInTheDocument();
@@ -581,10 +658,10 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
-    fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
+    openWorkspaceTool("Results");
     expect(screen.queryByRole("button", { name: "Run Sector" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Plan workspace" }));
+    openWorkspaceTool("Setup");
     expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled();
   });
 
@@ -592,7 +669,7 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
-    fireEvent.click(screen.getByRole("button", { name: "Inventory" }));
+    openWorkspaceTool("Inventory");
     fireEvent.click(screen.getByRole("button", { name: "Delete 101" }));
     expect(screen.getByText("Deleted cell 101.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Delete 101" })).not.toBeInTheDocument();
@@ -605,7 +682,7 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
-    fireEvent.click(screen.getByRole("button", { name: "Inventory" }));
+    openWorkspaceTool("Inventory");
     const cellPower = screen.getByRole("spinbutton", { name: /TX power/i });
     fireEvent.change(cellPower, { target: { value: "41" } });
     expect(screen.getByText(/Profile valid/)).toBeInTheDocument();
@@ -646,7 +723,7 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
-    fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    openWorkspaceTool("Data");
     fireEvent.click(screen.getByRole("button", { name: /^Dataset details/ }));
     fireEvent.click(await screen.findByRole("button", { name: /Second pack.*Activate/i }));
 
@@ -701,10 +778,10 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: /Open Sector result results/i })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: /Open Current result details/i })).toBeInTheDocument());
 
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
-    fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    openWorkspaceTool("Data");
     fireEvent.click(screen.getByRole("button", { name: /^Research \/ reference/ }));
     const fileInput = screen.getByLabelText(/Import measurement CSV/i);
     const measurementCsv = "id,longitude,latitude,technology,rsrp_dbm\nm-1,32.85,39.92,5g,-80";
@@ -718,7 +795,7 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Apply correction to plan" })).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: "Apply correction to plan" }));
 
-    expect(screen.queryByRole("button", { name: /Open Sector result results/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Open Current result details/i })).not.toBeInTheDocument();
     expect(screen.queryByText("Apply correction to plan")).not.toBeInTheDocument();
     expect(screen.getByText("Result out of date", { selector: ".run-state" })).toBeInTheDocument();
   });

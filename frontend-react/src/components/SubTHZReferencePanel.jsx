@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Activity, CloudFog, CloudRain, PlayCircle, Radio } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
-import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 function initialOptions(settings) {
   return {
@@ -40,11 +39,10 @@ export default function SubTHZReferencePanel({ endpoint, isAnalyzing, onActivity
 
   return (
     <section className="sub-thz-reference-panel" aria-label="Sub-THz atmospheric reference">
-      <header className="panel-title"><Activity size={16} /><span>Sub-THz atmospheric reference</span><ResearchReferenceBadge /></header>
+      <header className="panel-title"><Activity size={16} /><span>Sub-THz atmospheric reference</span></header>
       <p className="data-note">Opt-in, non-canonical ledger. It evaluates P.525 free space plus explicitly enabled atmosphere terms and never changes network RF, coverage, interference, or optimization.</p>
 
       <div className="sub-thz-reference-status">
-        <span><strong>Model</strong><code>sub_thz_atmospheric_reference_v1</code></span>
         <span><strong>Path</strong>{endpoint ? "Selected map receiver" : "Choose a map receiver"}</span>
       </div>
 
@@ -125,7 +123,7 @@ function SubTHZReferenceResult({ reference }) {
       <details className="sub-thz-reference-audit-details">
         <summary>Inspect standards, assumptions, and fingerprint</summary>
         <div className="sub-thz-reference-audit-grid">
-          <span><small>Model</small><code>{reference.reference_model_id}</code></span>
+          <span><small>Model ID</small><code>{reference.reference_model_id}</code></span>
           <span><small>Fingerprint</small><code>{reference.experiment_fingerprint}</code></span>
           <span><small>Gas dry / water</small><strong>{formatNumber(reference.gas?.dry_air_db_per_km, 4)} / {formatNumber(reference.gas?.water_vapour_db_per_km, 4)} dB/km</strong></span>
           <span><small>Rain k / α</small><strong>{formatNumber(reference.rain?.k, 4)} / {formatNumber(reference.rain?.alpha, 4)}</strong></span>

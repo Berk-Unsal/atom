@@ -1,0 +1,41 @@
+{
+  "concept": "8A",
+  "levelTaxonomy": [
+    { "level": "Stage", "classification": "application navigation", "currentLocation": "Left workflow rail", "purpose": "Plan, Simulate, Analyze, Review" },
+    { "level": "Tool", "classification": "tool navigation", "currentLocation": "Drawer sibling tab row", "purpose": "Choose one operation within a stage" },
+    { "level": "Capability", "classification": "capability disclosure", "currentLocation": "Drawer sections and nested view selectors", "purpose": "Show Planning, Advanced, Research/reference, or result subview content" },
+    { "level": "Details / Provenance", "classification": "detail/provenance", "currentLocation": "Details toggles, source cards, Run history, model/source panels", "purpose": "Explain evidence, source, method, IDs, and lineage" }
+  ],
+  "currentHierarchy": ["Stage", "Tool", "Capability disclosure or result subview", "Controls/data", "Optional Details / Provenance"],
+  "paths": [
+    { "tool": "Setup", "path": ["Plan", "Setup", "Planning", "Mode / technology / model / power controls"], "navigationDepth": 2, "additionalDisclosureDepth": 1 },
+    { "tool": "Inventory", "path": ["Plan", "Inventory", "Cell inventory", "Selected-cell editor and RF profile"], "navigationDepth": 2, "additionalDisclosureDepth": 1 },
+    { "tool": "Propagation", "path": ["Simulate", "Propagation", "Planning", "Ray/radius/azimuth/beam controls"], "navigationDepth": 2, "additionalDisclosureDepth": 1 },
+    { "tool": "Propagation advanced", "path": ["Simulate", "Propagation", "Advanced analysis", "Path-profile or advanced optimizer detail"], "navigationDepth": 2, "additionalDisclosureDepth": 2 },
+    { "tool": "Propagation research", "path": ["Simulate", "Propagation", "Research / reference", "Isolated candidate/reference panel", "Method/source detail"], "navigationDepth": 2, "additionalDisclosureDepth": 2 },
+    { "tool": "Experiments", "path": ["Simulate", "Experiments", "Scenario matrix inputs", "Queue matrix", "Definition/results"], "navigationDepth": 2, "additionalDisclosureDepth": 1 },
+    { "tool": "Signal surface", "path": ["Simulate", "Signal surface", "Raster/contour inputs", "Generate raster + contours", "Export"], "navigationDepth": 2, "additionalDisclosureDepth": 1 },
+    { "tool": "Interference", "preconditions": ["Network mode", "at least two cells", "eligible non-6G profile"], "path": ["Analyze", "Interference", "Bandwidth/load/reuse controls", "Advanced assumptions", "Analyze Interference"], "navigationDepth": 2, "additionalDisclosureDepth": 1 },
+    { "tool": "RF Diagnostics", "path": ["Analyze", "RF Diagnostics", "Open current RF result or Open vertical path profile; or Research / reference", "Validation/material/reference panel", "Details or source clause"], "navigationDepth": 2, "additionalDisclosureDepth": 2 },
+    { "tool": "Building entry", "path": ["Analyze", "Building entry", "Advanced analysis applicability", "Run building-entry estimate", "Result/source detail"], "navigationDepth": 2, "additionalDisclosureDepth": 1 },
+    { "tool": "5G Core", "path": ["Analyze", "5G Core", "Core Lab overlay", "Enable optional local sidecar", "Lab scenarios"], "navigationDepth": 2, "additionalDisclosureDepth": 1 },
+    { "tool": "Results", "path": ["Review", "Results", "RF / Optimization / Interference / Compare / Candidates result view", "Result card and Details / Provenance"], "navigationDepth": 3, "additionalDisclosureDepth": 1 },
+    { "tool": "Run history", "path": ["Review", "Run history", "Scope/type/status filters", "Select Run", "Details / Provenance and retained summary"], "navigationDepth": 3, "additionalDisclosureDepth": 1 },
+    { "tool": "Data", "path": ["Review", "Data", "Planning data", "Dataset details / Advanced model details / Research-reference evidence"], "navigationDepth": 2, "additionalDisclosureDepth": 2 },
+    { "tool": "Report", "path": ["Review", "Report", "Select report source", "Generate/export", "Stored artifact source lineage"], "navigationDepth": 2, "additionalDisclosureDepth": 1 }
+  ],
+  "stageToolDistinction": {
+    "useful": "The four stages group tools by user intent and should remain.",
+    "redundant": "The stage rail and selected tool row both show the same active stage context; the current tool is then repeated as drawer title and selected row.",
+    "uniqueToolRowJobs": ["One-activation sibling switching", "per-tool availability", "per-tool result/attention badges"],
+    "replacementRequirement": "The rail-owned chooser must preserve full sibling names, availability reason, result/attention badges, and direct tool selection."
+  },
+  "directNavigation": [
+    { "entry": "Open current RF result", "destination": "Review > Results > RF view", "shouldBypassMenu": true },
+    { "entry": "Open vertical path profile", "destination": "Simulate > Propagation > Advanced path-profile section", "shouldBypassMenu": true },
+    { "entry": "Run History source / Run again from this Run", "destination": "The chosen Run or its current-results regeneration action", "shouldBypassMenu": true },
+    { "entry": "Report source action", "destination": "The exact Scenario/Version/Run or current plan source", "shouldBypassMenu": true },
+    { "entry": "Validation/attention navigation", "destination": "The exact tool requiring attention", "shouldBypassMenu": true }
+  ],
+  "conceptualFinding": "Navigation, capability disclosure, and provenance are distinguishable in the implementation, but repeated stage/tool/category labels make them look like one deeper hierarchy. 8B should make stage/tool selection transient and keep capability/provenance inside the chosen tool."
+}

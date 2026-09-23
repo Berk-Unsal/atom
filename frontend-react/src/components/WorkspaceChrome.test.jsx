@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { CommandBar, MapLegend, MapToolbar, ProjectMenu } from "./WorkspaceChrome.jsx";
+import { CommandBar, MapLegend, MapToolbar, ProjectMenu, ToolDrawer, WorkflowRail } from "./WorkspaceChrome.jsx";
+import { WORKSPACE_STAGES } from "./workspaceTools.js";
 
 const toolbarProps = {
   availableLayers: { buildings: true, gaps: true, selectedCells: true, communicationPaths: true, interference: true, measurements: true },
@@ -92,9 +93,11 @@ describe("persistent result and workspace context", () => {
       <CommandBar
         appIconUrl="/icon.svg"
         contextLabel="Single · Cell 101"
-        draftUnsaved
         lineageContext={{ project_name: "Ankara", scenario_name: "Capacity Plan", version_label: "Version 4", draft_state: "Unsaved changes", unsaved: true }}
         networkTech="5G"
+        frequencyGHz="28"
+        txPowerDbm="30"
+        radiusMeters="400"
         projectControl={<button type="button">Ankara</button>}
         runState="Result out of date"
         resultContext={{ freshness: "stale", scenario_name: "Capacity Plan", version_label: "Version 4", run_id: "run-21", run_label: "Run 21" }}
@@ -102,17 +105,21 @@ describe("persistent result and workspace context", () => {
     );
 
     const lineage = document.querySelector(".workspace-lineage-context > summary");
-    expect(lineage).toHaveAttribute("aria-label", "Workspace lineage: Capacity Plan, Version 4, Unsaved changes");
+    expect(lineage).toHaveAttribute("aria-label", "Workspace: Ankara, Capacity Plan, Version 4, Unsaved changes");
     expect(lineage).toHaveTextContent("Version 4");
     expect(lineage).toHaveTextContent("Unsaved changes");
     lineage.focus();
     expect(lineage).toHaveFocus();
     expect(screen.getByText("STALE")).toBeInTheDocument();
-    expect(screen.getByText("Draft saved locally")).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Workspace" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "RF context" })).toHaveTextContent("Single · Cell 101");
+    expect(screen.getByRole("group", { name: "Status" })).toHaveTextContent("Result out of date");
+    expect(screen.queryByText("Draft saved locally")).not.toBeInTheDocument();
 
     fireEvent.click(lineage);
     expect(screen.getByText("Workspace lineage")).toBeInTheDocument();
     expect(document.querySelector(".workspace-lineage-popover")).toHaveTextContent("Ankara");
+    expect(screen.getByText(/saved locally in this browser; it is not an immutable Version/i)).toBeInTheDocument();
   });
 
   it("clarifies that saving a Version records the current plan when a stale Run exists", () => {
@@ -136,5 +143,95 @@ describe("persistent result and workspace context", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
     expect(screen.getByText("Save Version records the current plan. Run 21 remains tied to the input that produced it.")).toBeInTheDocument();
+  });
+});
+
+describe("stage-owned tool choices", () => {
+  it("keeps all thirteen workspace destinations discoverable from their owning stage", () => {
+    const expectedTools = {
+      plan: ["Setup", "Inventory"],
+      simulate: ["Propagation", "Experiments", "Signal surface"],
+      analyze: ["Interference", "RF Diagnostics", "Building entry", "5G Core"],
+      review: ["Results", "Run history", "Data", "Report"],
+    };
+    const { rerender } = render(
+      <WorkflowRail activeTool="setup" chooserStage="plan" onSelectTool={vi.fn()} onToggleChooser={vi.fn()} toolState={{}} />,
+    );
+
+    for (const stage of WORKSPACE_STAGES) {
+      rerender(
+        <WorkflowRail activeTool="setup" chooserStage={stage.id} onSelectTool={vi.fn()} onToggleChooser={vi.fn()} toolState={{}} />,
+      );
+      expect(screen.getByRole("dialog", { name: `${stage.label} tools` })).toBeInTheDocument();
+      for (const label of expectedTools[stage.id]) {
+        expect(screen.getByRole("button", { name: label, exact: true })).toBeInTheDocument();
+      }
+      if (stage.id === "plan") {
+        expect(screen.getByRole("button", { name: "Setup", exact: true })).toHaveAttribute("aria-current", "page");
+      }
+    }
+  });
+
+  it("opens a stage chooser without selecting a different tool and marks the current tool", () => {
+    const onToggleChooser = vi.fn();
+    const onSelectTool = vi.fn();
+    const props = { activeTool: "setup", chooserStage: null, onToggleChooser, onSelectTool, toolState: {} };
+    const { rerender } = render(<WorkflowRail {...props} />);
+    const plan = screen.getByRole("button", { name: "Plan workspace" });
+    const simulate = screen.getByRole("button", { name: "Simulate workspace" });
+
+    expect(plan).toHaveAttribute("aria-current", "step");
+    expect(simulate).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(simulate);
+    expect(onToggleChooser).toHaveBeenCalledWith("simulate");
+    expect(onSelectTool).not.toHaveBeenCalled();
+
+    rerender(<WorkflowRail {...props} chooserStage="plan" />);
+    expect(screen.getByRole("button", { name: "Setup", exact: true })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Plan workspace" })).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Inventory", exact: true }));
+    expect(onSelectTool).toHaveBeenCalledWith("inventory");
+  });
+
+  it("keeps unavailable choices visible and exposes their resolved reason", () => {
+    const onSelectTool = vi.fn();
+    render(
+      <WorkflowRail
+        activeTool="setup"
+        chooserStage="analyze"
+        onSelectTool={onSelectTool}
+        onToggleChooser={vi.fn()}
+        toolState={{ interference: { unavailable: true, reason: "Select at least two cells" } }}
+      />,
+    );
+
+    const interference = screen.getByRole("button", { name: "Interference", exact: true });
+    expect(interference).toHaveAttribute("aria-disabled", "true");
+    expect(interference).toHaveAccessibleDescription("Unavailable Select at least two cells");
+    fireEvent.click(interference);
+    expect(onSelectTool).not.toHaveBeenCalled();
+  });
+
+  it("renders the mobile chooser inside the existing drawer dialog", () => {
+    render(
+      <ToolDrawer
+        chooser={{
+          activeTool: "setup",
+          onSelectTool: vi.fn(),
+          stage: WORKSPACE_STAGES.find((stage) => stage.id === "review"),
+          toolState: {},
+        }}
+        drawerMode="tool"
+        focusKey="review-chooser"
+        onClose={vi.fn()}
+        open
+        title="Setup"
+      />,
+    );
+
+    expect(screen.getByRole("dialog", { name: "Review" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Review tools" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Run history", exact: true })).toBeInTheDocument();
+    expect(screen.queryByRole("navigation", { name: /tools/ })).not.toBeInTheDocument();
   });
 });

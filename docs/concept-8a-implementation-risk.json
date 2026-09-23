@@ -1,0 +1,116 @@
+{
+  "concept": "8A",
+  "scope": "Risks for a future Concept 8B implementation only; no product changes were made during this audit.",
+  "risks": [
+    {
+      "id": "active_tool_state",
+      "risk": "Rail flyout selection sets a tool inconsistent with activeTool, activeStage, drawerMode, or drawerOpen.",
+      "impact": "Wrong tool content, stale stage highlight, or drawer unexpectedly closing.",
+      "mitigation": "Keep App's activeTool as the source of selected tool; derive active stage from the existing WORKSPACE_TOOLS entry; keep navigation state UI-only.",
+      "verify": ["Every stage/tool selection", "Tool selection while drawer is closed", "Inspector back/close", "Stage default to first available"]
+    },
+    {
+      "id": "direct_navigation",
+      "risk": "A programmatic destination begins requiring an extra user click in the flyout.",
+      "impact": "Existing RF-result, path-profile, Run-history, report, and attention workflows regress.",
+      "mitigation": "Keep selectWorkspaceTool/openResults/openPathProfileDiagnostics and source actions as direct state transitions that bypass menu selection.",
+      "verify": ["Open current RF result", "Open vertical path profile", "Run source", "Report source", "Validation attention"]
+    },
+    {
+      "id": "availability_attention",
+      "risk": "Unavailable tools disappear or lose their reason/badges in a vertical menu.",
+      "impact": "Users cannot discover features or understand why Interference/Core is not selectable.",
+      "mitigation": "Render every stage tool from the shared metadata; pass App-owned availability, reason, success, and warning state to the flyout.",
+      "verify": ["Default single-cell Analyze stage", "Eligible two-cell Network state", "6G ineligible state", "Core Lab compatibility"]
+    },
+    {
+      "id": "lazy_chunks",
+      "risk": "Opening a stage menu or building registry metadata eagerly imports a lazy feature.",
+      "impact": "Bundle cost and safe lazy boundaries from Concept 7I regress.",
+      "mitigation": "Menu consumes labels/icons/descriptive metadata only. Do not store executable import functions in the registry. Selection continues through existing lazy boundaries.",
+      "verify": ["Experiments", "Research features", "Core Lab", "Run history", "Report", "build chunk manifest"]
+    },
+    {
+      "id": "keyboard_and_focus",
+      "risk": "Flyout traps focus, uses inaccurate aria-expanded state, fails Escape, or returns focus to an unmounted tab.",
+      "impact": "Keyboard and screen-reader users lose their place or cannot find tools.",
+      "mitigation": "Use explicit expanded state; follow one keyboard model; restore focus to stage trigger on Escape; focus active tool heading after selection; ensure drawer close returns to a mounted stage button.",
+      "verify": ["Tab order", "Arrow/Home/End", "Enter/Space", "Escape", "close drawer focus return", "screen-reader announced unavailable reason"]
+    },
+    {
+      "id": "pointer_touch_dismissal",
+      "risk": "Popover blocks drawer/map clicks, opens only on hover, or cannot be operated by touch.",
+      "impact": "Pointer/touch users lose map interaction or tool selection.",
+      "mitigation": "Click must open; hover may assist only. Dismiss outside without swallowing the intended click. Use a sheet selector below 640 px.",
+      "verify": ["Pointer open/select/outside click", "touch tap stage/select", "map remains usable after close"]
+    },
+    {
+      "id": "current_tool_identity",
+      "risk": "Removing tabs also removes visible current-tool and stage identity.",
+      "impact": "Users lose orientation after direct destination or stage switch.",
+      "mitigation": "Keep drawer icon/title/subtitle and active stage rail state; ensure title remains readable on phone.",
+      "verify": ["Every tool header", "inspector mode", "direct destinations"]
+    },
+    {
+      "id": "command_bar_lineage",
+      "risk": "Grouping hides Project/Scenario/Version/draft identity or collapses currentness into a color/dot.",
+      "impact": "Users cannot tell which plan or result they are inspecting.",
+      "mitigation": "Keep all names/Version-or-no-Version, draft, explicit result state, and short source Run answerable in the persistent header; details disclosure is for full IDs.",
+      "verify": ["Saved Version", "working draft", "CURRENT/STALE/HISTORICAL/UNAVAILABLE/UNSUPPORTED", "narrow viewports"]
+    },
+    {
+      "id": "local_save_vs_version",
+      "risk": "Compact persistence display confuses browser-local draft autosave with immutable Version save.",
+      "impact": "Users may believe a Version exists or that local data was not saved.",
+      "mitigation": "Keep Version label in Workspace identity and local autosave as a separate, clearly named state.",
+      "verify": ["local save complete", "saving", "save failure", "no saved Version", "saved Version"]
+    },
+    {
+      "id": "viewport_map_share",
+      "risk": "Flyout, nested rail, or command-bar group changes resize map or overflow narrow layouts.",
+      "impact": "Spatial planning loses map visibility and immediate feedback.",
+      "mitigation": "Flyout overlays, does not reflow. Keep drawer width. Use existing responsive structure and one-sheet mobile chooser.",
+      "verify": ["1440", "1280", "1024", "768", "390", "document scrollWidth", "map dimensions"]
+    },
+    {
+      "id": "result_metrics",
+      "risk": "Moving global metrics makes current result less discoverable or loses active-layer source.",
+      "impact": "Users cannot find score or judge whether map is historical/stale.",
+      "mitigation": "Retain a global Result state/source chip to open Results; keep metrics in Results; keep source in the map legend only while layer is visible.",
+      "verify": ["RF result", "optimization result", "interference result", "stale and historical states"]
+    },
+    {
+      "id": "tool_row_attention",
+      "risk": "Removing selected stage tabs loses success/warning/count badges and attention jumps.",
+      "impact": "Users miss unavailable state, results, or validation needs.",
+      "mitigation": "Carry tool-level badges/reasons into flyout and stage aggregate; programmatic attention jumps bypass it.",
+      "verify": ["Interference warning/success", "validation result", "history count/error", "core warning"]
+    },
+    {
+      "id": "drawer_content_and_subviews",
+      "risk": "Removing shared tabs accidentally removes Results' RF/Optimization/Interference/Compare/Candidates subviews.",
+      "impact": "Result analysis becomes inaccessible.",
+      "mitigation": "Remove only WORKSPACE_TOOLS sibling row; do not conflate it with tool-internal result-view tabs or capability disclosures.",
+      "verify": ["All five Results views", "Planning/Advanced/Research disclosure open state"]
+    },
+    {
+      "id": "primary_action",
+      "risk": "Grouping the command bar hides or changes Run Sector/Evaluate Network semantics/readiness.",
+      "impact": "User may evaluate the wrong plan or be unable to compute.",
+      "mitigation": "Preserve exact mode-aware labels, disabled rules, and placement in existing Plan/Simulate scope; keep tool-specific actions local.",
+      "verify": ["single mode", "network with <2 cells", "eligible network", "active compute/loading"]
+    },
+    {
+      "id": "scope_creep",
+      "risk": "Navigation work expands into map toolbar/style, RF, optimizer, persistence, or route architecture.",
+      "impact": "Concept 8A's bounded structural hypothesis becomes hard to verify.",
+      "mitigation": "Keep 8B focused on rail/tool navigation and command-bar grouping. Defer map toolbar to 8C. Keep all domain and persistence code invariant.",
+      "verify": ["request/fingerprint invariance", "diff limited to navigation/chrome/docs/tests"]
+    }
+  ],
+  "invarianceContract": {
+    "mustNotChange": ["RF requests", "optimizer behavior and fingerprints", "Project/Scenario state", "Run semantics", "Report semantics", "result freshness", "lazy chunks", "Planning/Advanced/Research meaning", "scientific terminology", "local-first architecture"],
+    "navigationState": "UI-only; do not persist stage/tool choice without separate evidence.",
+    "mapToolbar": "No structural change in 8B."
+  }
+}

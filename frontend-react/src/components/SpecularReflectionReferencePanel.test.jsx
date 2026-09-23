@@ -7,7 +7,8 @@ describe("SpecularReflectionReferencePanel", () => {
     const onRun = vi.fn();
     render(<SpecularReflectionReferencePanel analysis={null} isAnalyzing={false} onRun={onRun} />);
 
-    expect(screen.getByText(/Isolated one-bounce reference — not used by network simulation/i)).toBeInTheDocument();
+    expect(screen.getByText(/Reference-only one-bounce diagnostic\. It is not canonical and is not used by network simulation/i)).toBeInTheDocument();
+    expect(screen.queryByText("single_bounce_specular_reflection_reference_v1")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Evaluate reflected path" }));
 
     expect(onRun).toHaveBeenCalledWith(expect.objectContaining({
@@ -46,5 +47,7 @@ describe("SpecularReflectionReferencePanel", () => {
     expect(screen.getByText("118.381 dB")).toBeInTheDocument();
     expect(screen.getByText("roughness_unknown")).toBeInTheDocument();
     expect(screen.getByText("antenna_far_field_unknown")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Details / Provenance: assumptions and visibility"));
+    expect(screen.getByText("single_bounce_specular_reflection_reference_v1")).toBeInTheDocument();
   });
 });

@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { BookOpen, FlaskConical, PlayCircle } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
-import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 const PRESETS = [
 	["concrete_1_100", "Concrete · 1–100 GHz"],
@@ -111,11 +110,10 @@ export default function MaterialReferencePanel({ analysis, isAnalyzing, onActivi
 
   return (
     <section className="material-reference-panel" aria-label="Material and facade interaction reference">
-      <header className="panel-title"><FlaskConical size={16} /><span>Material & facade reference</span><ResearchReferenceBadge /><span className="panel-title-badge">4I.4 · isolated</span></header>
+      <header className="panel-title"><FlaskConical size={16} /><span>Material & facade reference</span></header>
       <p className="material-reference-callout"><strong>Material reference only — not used by network simulation.</strong> This is a declared homogeneous slab ledger for P.2040-4 comparison. It does not estimate whole-building entry loss, indoor coverage, or an urban reflected path.</p>
 
       <div className="material-reference-status">
-        <span><strong>Model</strong><code>p2040_material_slab_reference_v1</code></span>
         <span><strong>Reference</strong><span>ITU-R P.2040-4 · Table 3</span></span>
       </div>
 
@@ -208,7 +206,7 @@ function MaterialReferenceResult({ analysis }) {
 
       <details className="material-reference-audit-details">
         <summary>Inspect provenance, assumptions, limitations, and fingerprint</summary>
-        <div className="material-reference-audit-grid"><span><small>Model</small><code>{analysis.model_id ?? "—"}</code></span><span><small>Revision</small><strong>{analysis.reference?.revision ?? "—"}</strong></span><span><small>Fingerprint</small><code>{analysis.fingerprint ?? "—"}</code></span><span><small>Media</small><strong>{analysis.media?.incident?.name ?? "—"} → {analysis.media?.exit?.name ?? "—"}</strong></span></div>
+        <div className="material-reference-audit-grid"><span><small>Model ID</small><code>{analysis.model_id ?? "p2040_material_slab_reference_v1"}</code></span><span><small>Method clause</small><strong>ITU-R P.2040-4 §4I.4</strong></span><span><small>Revision</small><strong>{analysis.reference?.revision ?? "—"}</strong></span><span><small>Fingerprint</small><code>{analysis.fingerprint ?? "—"}</code></span><span><small>Media</small><strong>{analysis.media?.incident?.name ?? "—"} → {analysis.media?.exit?.name ?? "—"}</strong></span></div>
         <p className="data-note">{(analysis.assumptions ?? []).join(" · ")}</p>
         <p className="data-note">{(analysis.limitations ?? []).join(" · ")}</p>
       </details>

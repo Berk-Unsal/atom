@@ -268,7 +268,7 @@ describe("App planning workflow", () => {
     const research = screen.getByRole("button", { name: /^Research \/ reference/ });
     expect(research).toHaveAttribute("aria-expanded", "false");
     fireEvent.click(research);
-    const subThzPanel = screen.getByRole("region", { name: "Sub-THz atmospheric reference" });
+    const subThzPanel = await screen.findByRole("region", { name: "Sub-THz atmospheric reference" });
     const frequency = within(subThzPanel).getByRole("spinbutton", { name: /Frequency/i });
     fireEvent.change(frequency, { target: { value: "145" } });
     expect(screen.getByText("Research activity available")).toBeInTheDocument();

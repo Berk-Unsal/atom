@@ -1,0 +1,153 @@
+{
+  "concept": "7J",
+  "status": "implemented boundaries after extraction; static and deferred module edges reviewed",
+  "layers": [
+    {
+      "name": "App",
+      "responsibilities": [
+        "composition root",
+        "active Project/Scenario and plan state",
+        "cross-feature workflow guards",
+        "feature activation",
+        "map and workspace presentation wiring"
+      ],
+      "mayDependOn": [
+        "orchestration hooks",
+        "domain operations",
+        "repository hooks",
+        "API helpers",
+        "feature UI and lazy boundaries"
+      ],
+      "mustNotBeImportedBy": [
+        "domain",
+        "repository",
+        "lazy feature modules"
+      ]
+    },
+    {
+      "name": "orchestration hooks",
+      "responsibilities": [
+        "shared Run record lifecycle",
+        "report/artifact transaction coordination"
+      ],
+      "mayDependOn": [
+        "domain/runCapture",
+        "domain/run",
+        "domain/report",
+        "repository hooks",
+        "API-independent app callbacks",
+        "deferred module import functions"
+      ],
+      "mustNotDependOn": [
+        "App",
+        "Leaflet components",
+        "drawer styling",
+        "feature-internal mutable state"
+      ],
+      "importsMustPreserve": [
+        "reportExport",
+        "reportArtifact",
+        "reportArtifactDownload remain dynamic imports within the report workflow boundary"
+      ]
+    },
+    {
+      "name": "domain",
+      "responsibilities": [
+        "pure Project/Scenario/Version operations",
+        "Run/Report contracts and serialization",
+        "result lineage/freshness rules",
+        "request/snapshot canonicalization"
+      ],
+      "mayDependOn": [
+        "other pure domain modules"
+      ],
+      "mustNotDependOn": [
+        "React",
+        "App",
+        "repository implementation",
+        "UI components"
+      ]
+    },
+    {
+      "name": "repository",
+      "responsibilities": [
+        "LocalRepository",
+        "Run History IndexedDB",
+        "LocalArtifactStore and existing storage schemas"
+      ],
+      "mayDependOn": [
+        "domain",
+        "browser storage primitives"
+      ],
+      "mustNotDependOn": [
+        "React UI",
+        "App",
+        "lazy feature modules"
+      ]
+    },
+    {
+      "name": "API helpers",
+      "responsibilities": [
+        "existing HTTP/error normalization only"
+      ],
+      "mayDependOn": [
+        "browser fetch"
+      ],
+      "mustNotDependOn": [
+        "domain mutation",
+        "React UI",
+        "feature presentation"
+      ]
+    },
+    {
+      "name": "feature UI",
+      "responsibilities": [
+        "presentation, local transient feature state, accessible feature interactions"
+      ],
+      "mayDependOn": [
+        "explicit props/actions",
+        "domain selectors or formatters where already used"
+      ],
+      "mustNotDependOn": [
+        "another feature's private state",
+        "App imports from feature internals"
+      ]
+    },
+    {
+      "name": "lazy feature modules",
+      "responsibilities": [
+        "Propagation Research, RF Diagnostics Research, Experiments, Core Lab, Run History and Reports UI/implementation"
+      ],
+      "mayDependOn": [
+        "feature UI components",
+        "explicit props/actions",
+        "feature-specific helpers"
+      ],
+      "mustNotDependOn": [
+        "App",
+        "eagerly imported implementation from report workflow"
+      ]
+    }
+  ],
+  "allowedDirection": [
+    "App → orchestration hooks → domain/repository/API helpers",
+    "App → repository hooks and domain operations for app-level workspace transactions",
+    "App → explicit props/actions → feature UI",
+    "App → dynamic import → LazyFeatureBoundary → lazy feature implementation",
+    "lazy report workflow action → dynamic import → report renderer/artifact/download code"
+  ],
+  "forbiddenDirection": [
+    "domain → React or UI",
+    "repository → UI",
+    "lazy feature → App",
+    "feature A → feature B internal state",
+    "report workflow static import → report implementation",
+    "controller → service locator/global store"
+  ],
+  "cycleCheck": {
+    "method": "Local import-graph scan over frontend-react/src, including static and literal dynamic relative imports; production Vite build also completed.",
+    "modulesScanned": 143,
+    "internalCycles": [],
+    "result": "No local module cycles found in the scan. Dynamic feature chunks remain split in the production build."
+  }
+}

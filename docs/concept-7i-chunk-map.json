@@ -1,0 +1,28 @@
+{
+  "concept": "7I",
+  "date": "2026-09-23",
+  "analysisBuilds": {
+    "before": {"command": "npm run build; npx vite build --manifest --outDir /tmp/atom-7i-baseline", "vite": "6.4.3", "staticEntry": "assets/index-D6cTVo8H.js", "staticImports": [], "dynamicImports": [], "initialJsRawBytes": 957782, "initialJsGzipBytesLevel9": 262186, "jsChunkCount": 1},
+    "after": {"command": "npm run build; npx vite build --manifest --outDir /tmp/atom-7i-post-final", "vite": "6.4.3", "staticEntry": "assets/index-D1ELEa05.js", "staticImports": [], "dynamicImportRoots": ["PropagationResearchFeature.jsx", "RFDiagnosticsResearchFeature.jsx", "ExperimentPanel.jsx", "CoreLabFeature.jsx", "RunHistoryPanel.jsx", "ReportFeature.jsx", "reportExport.js", "reportArtifact.js", "reportArtifactDownload.js"], "initialJsRawBytes": 769861, "initialJsGzipBytesLevel9": 217661, "jsChunkCount": 12, "initialJsChunkCount": 1}
+  },
+  "afterAssets": [
+    {"semanticName":"application entry","file":"assets/index-D1ELEa05.js","kind":"javascript","classification":"initial","rawBytes":769861,"gzipBytesLevel9":217661,"trigger":"initial page load"},
+    {"semanticName":"Propagation Research","file":"assets/PropagationResearchFeature-DFD-3iyH.js","kind":"javascript","classification":"deferred","rawBytes":26558,"gzipBytesLevel9":5782,"trigger":"open Simulate > Propagation > Research / reference"},
+    {"semanticName":"RF Diagnostics Research","file":"assets/RFDiagnosticsResearchFeature-SdGLf6fi.js","kind":"javascript","classification":"deferred","rawBytes":43195,"gzipBytesLevel9":10850,"trigger":"open Analyze > RF Diagnostics > Research / reference"},
+    {"semanticName":"Experiments","file":"assets/ExperimentPanel-8h152Nfb.js","kind":"javascript","classification":"deferred","rawBytes":7376,"gzipBytesLevel9":3048,"trigger":"select Simulate > Experiments"},
+    {"semanticName":"Core Lab","file":"assets/CoreLabFeature-wGpPaJLe.js","kind":"javascript","classification":"deferred","rawBytes":5020,"gzipBytesLevel9":1767,"trigger":"select Analyze > 5G Core"},
+    {"semanticName":"Run History","file":"assets/RunHistoryPanel-CkEBGdT0.js","kind":"javascript","classification":"deferred","rawBytes":13623,"gzipBytesLevel9":4245,"trigger":"select Review > Run History"},
+    {"semanticName":"Report UI","file":"assets/ReportFeature-BtXrKZIO.js","kind":"javascript","classification":"deferred","rawBytes":9757,"gzipBytesLevel9":2861,"trigger":"select Review > Report"},
+    {"semanticName":"Report renderer/export","file":"assets/reportExport-CGhXqfL2.js","kind":"javascript","classification":"deferred","rawBytes":86701,"gzipBytesLevel9":23217,"trigger":"explicit export, report regeneration, or historical Generate report"},
+    {"semanticName":"Report artifact builder","file":"assets/reportArtifact-BgRR4Olp.js","kind":"javascript","classification":"deferred","rawBytes":2158,"gzipBytesLevel9":909,"trigger":"persist/regenerate a Report"},
+    {"semanticName":"Stored report download helper","file":"assets/reportArtifactDownload-DAtwu9uU.js","kind":"javascript","classification":"deferred","rawBytes":638,"gzipBytesLevel9":423,"trigger":"download/open retained Report bytes"},
+    {"semanticName":"shared book-open icon","file":"assets/book-open-BQ1nU44E.js","kind":"javascript","classification":"async shared","rawBytes":447,"gzipBytesLevel9":308,"trigger":"Propagation or RF Diagnostics Research first open"},
+    {"semanticName":"shared refresh-cw icon","file":"assets/refresh-cw-BlsqOEe3.js","kind":"javascript","classification":"async shared","rawBytes":795,"gzipBytesLevel9":397,"trigger":"Run History or Report UI first open"}
+  ],
+  "css": {
+    "before": {"files":["assets/index-EPaW6lXB.css"],"initial":true,"rawBytes":151599,"gzipBytesLevel9":28419},
+    "after": {"files":["assets/index-zTiVlQb_.css"],"initial":true,"rawBytes":152345,"gzipBytesLevel9":28559,"deferredFeatureCss":[]},
+    "note": "The app continues to ship one global stylesheet at initial load; no feature-specific CSS split was forced."
+  },
+  "hashPolicy": "Generated hashes are copied as build evidence only. Feature behavior and tests use semantic source/chunk family names, not fixed hashes."
+}

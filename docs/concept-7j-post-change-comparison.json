@@ -1,0 +1,74 @@
+{
+  "concept": "7J",
+  "comparison": "Concept 7I starting working tree immediately before 7J source changes vs post-7J working tree",
+  "metrics": {
+    "appFile": {
+      "beforeLines": 5493,
+      "afterLines": 5216,
+      "beforeImportDeclarations": 43,
+      "afterImportDeclarations": 44
+    },
+    "appComponent": {
+      "beforeStateDeclarations": 84,
+      "afterStateDeclarations": 81,
+      "beforeRefs": 7,
+      "afterRefs": 6,
+      "beforeEffects": 15,
+      "afterEffects": 15,
+      "beforeMemoizedValues": 29,
+      "afterMemoizedValues": 28,
+      "beforeCallbacks": 102,
+      "afterCallbacks": 90
+    },
+    "appFileWide": {
+      "beforeStateDeclarations": 88,
+      "afterStateDeclarations": 85,
+      "beforeRefs": 7,
+      "afterRefs": 6,
+      "beforeEffects": 16,
+      "afterEffects": 16,
+      "beforeMemoizedValues": 29,
+      "afterMemoizedValues": 28,
+      "beforeCallbacks": 102,
+      "afterCallbacks": 90
+    },
+    "newHookFiles": [
+      {
+        "file": "frontend-react/src/hooks/useRunExecution.js",
+        "lines": 143,
+        "responsibility": "Run queued/running/success/failure/cancellation record lifecycle; persistence warnings; successful current Run association; Pareto selection lifecycle metadata."
+      },
+      {
+        "file": "frontend-react/src/hooks/useReportWorkflow.js",
+        "lines": 270,
+        "responsibility": "Current/historical report definitions, deferred report modules, artifact retention/download/regeneration/deletion coordination and report warning."
+      }
+    ]
+  },
+  "responsibilitiesMoved": [
+    "Run record capture and persistence coordination, persistence warning and currentResultRun association from App into useRunExecution.",
+    "Report/artifact generation, deferred rendering imports, historical source resolution, retention/download/regeneration actions and report warning from App into useReportWorkflow.",
+    "Project artifact cleanup now uses useReportArtifacts public action and keeps its transaction failure visible to App."
+  ],
+  "responsibilitiesRemaining": [
+    "App remains the composition root for dataset/bootstrap ordering, Project/Scenario hydration and guards, RF request builders/API calls, simulation and optimization result interpretation, map/result overlays, central invalidation, apply/rerun transactions and cross-feature navigation.",
+    "useProjectWorkspace remains the existing persistence/domain boundary; no wrapper was added.",
+    "RF equations, optimizer policy, request schemas, repository schemas and report domain/rendering semantics remain in their existing layers."
+  ],
+  "bundle": {
+    "concept7iInitialRawBytes": 769861,
+    "concept7iInitialGzipLevel9Bytes": 217661,
+    "post7jInitialRawBytes": 771408,
+    "post7jInitialGzipLevel9Bytes": 218425,
+    "rawDeltaBytes": 1547,
+    "gzipDeltaBytesLevel9": 764,
+    "post7jJavaScriptChunkCount": 12,
+    "post7jTotalJavaScriptRawBytes": 967676,
+    "coldContexts": 5,
+    "initialScriptsPerContext": [
+      "index-CXcsYZlG.js"
+    ],
+    "specializedChunksRequestedBeforeAction": false
+  },
+  "interpretation": "App responsibilities are clearer because two cohesive workflow lifecycles now have named owners and hook-level tests. LOC/import and byte counts are descriptive; no percentage improvement claim is made."
+}

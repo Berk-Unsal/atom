@@ -85,7 +85,7 @@ export default function useReportArtifacts({ projectId = null } = {}) {
       return count;
     } catch (deleteError) {
       setError(deleteError.message);
-      return 0;
+      throw deleteError;
     }
   }, [projectId, refresh, repository]);
 

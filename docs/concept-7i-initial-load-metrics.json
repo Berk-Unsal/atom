@@ -1,0 +1,55 @@
+{
+  "concept": "7I",
+  "capturedAt": "2026-09-23",
+  "environment": {
+    "node": "v26.8.1",
+    "npm": "11.19.0",
+    "vite": "6.4.3",
+    "react": "18.3.1",
+    "browser": "Headless Chromium 149.0.7827.55 via Playwright 1.61.1",
+    "os": "Darwin 27.0.0 arm64",
+    "server": "Vite production preview http://127.0.0.1:4173",
+    "viewport": "1440x900"
+  },
+  "sizeMethod": "Production minified asset byte length and Node zlib gzipSync(level 9); consistent with pre-change baseline. Vite displayed gzip is retained separately in baseline/build output; browser transfer includes HTTP headers.",
+  "bundle": {
+    "baseline": {"initialJavascriptChunks":1,"initialJavascriptRawBytes":957782,"initialJavascriptGzipBytesLevel9":262186,"totalJavascriptRawBytes":957782,"totalJavascriptGzipBytesLevel9":262186,"initialCssRawBytes":151599,"initialCssGzipBytesLevel9":28419},
+    "after": {"initialJavascriptChunks":1,"initialJavascriptRawBytes":769861,"initialJavascriptGzipBytesLevel9":217661,"totalJavascriptChunks":12,"totalJavascriptRawBytes":966129,"totalJavascriptGzipBytesLevel9":271468,"initialCssRawBytes":152345,"initialCssGzipBytesLevel9":28559},
+    "initialJavascriptReduction": {"absoluteRawBytes":187921,"percentRaw":19.620,"absoluteGzipBytesLevel9":44525,"percentGzip":16.982},
+    "allJavascriptDelta": {"rawBytes":8347,"percentRaw":0.871,"gzipBytesLevel9":9282,"percentGzip":3.540},
+    "largestEagerChunk": {"semanticName":"application entry","rawBytes":769861,"gzipBytesLevel9":217661},
+    "largestLazyChunk": {"semanticName":"reportExport","rawBytes":86701,"gzipBytesLevel9":23216},
+    "viteAdvisory": "Still emitted: main application entry is 769.97 kB minified, above default 500 kB advisory. Threshold and warning policy are unchanged."
+  },
+  "coldBrowserResources": {
+    "method": "Five fresh Playwright Chromium contexts, fresh context cache, no specialized action before recording script resources.",
+    "baseline": [
+      {"run":1,"js":"index-D6cTVo8H.js","jsRawBytes":957782,"jsTransferBytes":263303,"cssRawBytes":151599,"cssTransferBytes":29049},
+      {"run":2,"js":"index-D6cTVo8H.js","jsRawBytes":957782,"jsTransferBytes":263303,"cssRawBytes":151599,"cssTransferBytes":29049},
+      {"run":3,"js":"index-D6cTVo8H.js","jsRawBytes":957782,"jsTransferBytes":263303,"cssRawBytes":151599,"cssTransferBytes":29049},
+      {"run":4,"js":"index-D6cTVo8H.js","jsRawBytes":957782,"jsTransferBytes":263303,"cssRawBytes":151599,"cssTransferBytes":29049},
+      {"run":5,"js":"index-D6cTVo8H.js","jsRawBytes":957782,"jsTransferBytes":263303,"cssRawBytes":151599,"cssTransferBytes":29049}
+    ],
+    "after": [
+      {"run":1,"js":"index-D1ELEa05.js","jsRawBytes":769861,"jsTransferBytes":218584,"cssRawBytes":152345,"cssTransferBytes":29192,"lazyFeatureJsRequested":false},
+      {"run":2,"js":"index-D1ELEa05.js","jsRawBytes":769861,"jsTransferBytes":218584,"cssRawBytes":152345,"cssTransferBytes":29192,"lazyFeatureJsRequested":false},
+      {"run":3,"js":"index-D1ELEa05.js","jsRawBytes":769861,"jsTransferBytes":218584,"cssRawBytes":152345,"cssTransferBytes":29192,"lazyFeatureJsRequested":false},
+      {"run":4,"js":"index-D1ELEa05.js","jsRawBytes":769861,"jsTransferBytes":218584,"cssRawBytes":152345,"cssTransferBytes":29192,"lazyFeatureJsRequested":false},
+      {"run":5,"js":"index-D1ELEa05.js","jsRawBytes":769861,"jsTransferBytes":218584,"cssRawBytes":152345,"cssTransferBytes":29192,"lazyFeatureJsRequested":false}
+    ],
+    "otherInitialRequests": "Map tiles and API requests are separate from JS/CSS. No backend was running for the cold preview metric, so API calls returned 500 and dataset-ready time is unavailable."
+  },
+  "coldStartupTimingMs": {
+    "milestones": "Elapsed from page.goto start until DOMContentLoaded, visible Setup heading, and visible .leaflet-container.",
+    "baselineSamples": [{"document":41,"setup":109,"map":113},{"document":40,"setup":107,"map":111},{"document":40,"setup":107,"map":109},{"document":39,"setup":110,"map":114},{"document":40,"setup":108,"map":111}],
+    "baselineSummary": {"document":{"min":39,"median":40,"max":41},"setup":{"min":107,"median":108,"max":110},"map":{"min":109,"median":111,"max":114}},
+    "afterSamples": [{"document":36,"setup":90,"map":94},{"document":34,"setup":87,"map":91},{"document":33,"setup":94,"map":95},{"document":33,"setup":85,"map":89},{"document":33,"setup":86,"map":90}],
+    "afterSummary": {"document":{"min":33,"median":33,"max":36},"setup":{"min":85,"median":87,"max":94},"map":{"min":89,"median":91,"max":95}},
+    "interpretation": "Indicative local timings improved in these small samples, but are noisy and not proof of universal startup speed. Deterministic asset/request evidence is stronger."
+  },
+  "limitations": [
+    "No backend was started for the cold-load metric; dataset readiness and ordinary RF were not measured in that sample.",
+    "Local production preview is not representative of CDN, cellular networks, or all hardware.",
+    "The post entry remains large and Vite's default large-chunk advisory remains."
+  ]
+}

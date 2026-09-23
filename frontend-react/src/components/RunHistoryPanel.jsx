@@ -41,6 +41,7 @@ export default function RunHistoryPanel({
     () => visibleRuns.find((run) => run.run_id === selectedRunId) ?? visibleRuns[0] ?? null,
     [selectedRunId, visibleRuns],
   );
+  const warningIsModuleLoadFailure = warning.includes("could not be loaded");
 
   return (
     <section className="run-history-panel" aria-label="Durable local run history">
@@ -56,7 +57,13 @@ export default function RunHistoryPanel({
       {runs.length > 0 ? <button type="button" className="run-history-clear" onClick={() => onClearUnreferenced?.()}>Clear unreferenced records</button> : null}
 
       {error ? <div className="run-history-message error" role="alert"><AlertTriangle size={15} />{error}</div> : null}
-      {warning ? <div className="run-history-message warning" role="status"><AlertTriangle size={15} />{warning}</div> : null}
+      {warning ? (
+        <div className="run-history-message warning" role={warningIsModuleLoadFailure ? "alert" : "status"}>
+          <AlertTriangle size={15} />
+          <span>{warning}</span>
+          {warningIsModuleLoadFailure ? <button type="button" className="run-history-message-reload" onClick={() => window.location.reload()}>Reload application</button> : null}
+        </div>
+      ) : null}
       {issues.length > 0 ? <div className="run-history-message warning" role="status"><AlertTriangle size={15} />{issues.length} invalid history record{issues.length === 1 ? "" : "s"} skipped.</div> : null}
       {datasetUnavailable ? <div className="run-history-message warning" role="status"><AlertTriangle size={15} />The recorded dataset is unavailable. Historical results remain inspectable; rerun is disabled.</div> : null}
 

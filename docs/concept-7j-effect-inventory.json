@@ -1,0 +1,483 @@
+{
+  "concept": "7J",
+  "capturedAt": "2026-09-23",
+  "source": "frontend-react/src/App.jsx at the Concept 7I checkpoint, before Concept 7J source edits",
+  "counts": {
+    "effectsInsideAppComponent": 15,
+    "componentLocalEffectsInSameFile": 1,
+    "totalUseEffectCallsInFile": 16
+  },
+  "effects": [
+    {
+      "id": "propagation-entry-snapshot",
+      "line": 205,
+      "purpose": "Capture settings when the Propagation tool first becomes active, and clear the entry snapshot after leaving the tool.",
+      "dependencies": [
+        "activeTool",
+        "drawerMode",
+        "settings"
+      ],
+      "sideEffects": [
+        "setPropagationResearchSettings",
+        "mutates propagationToolWasActive ref"
+      ],
+      "externalSystem": null,
+      "cleanup": "none",
+      "stateMutated": [
+        "propagationResearchSettings"
+      ],
+      "featureLocal": true,
+      "applicationLevel": false,
+      "orderingAssumptions": [
+        "The ref detects the transition into the active Propagation tool; subsequent settings edits while still active do not replace the first-entry snapshot."
+      ],
+      "hiddenCoupling": [
+        "This preserves Concept 7I first-mount defaults and intentionally differs from the latest settings value."
+      ],
+      "candidateExtraction": "Keep at the App/feature activation seam unless Propagation owns the snapshot without mounting early; do not move into an eager shared controller."
+    },
+    {
+      "id": "last-active-scenario-source",
+      "line": 298,
+      "purpose": "Remember the most recent active Scenario for draft/source lineage fallback.",
+      "dependencies": [
+        "activeProject?.id",
+        "activeScenario"
+      ],
+      "sideEffects": [
+        "mutates lastScenarioSourceRef"
+      ],
+      "externalSystem": null,
+      "cleanup": "none",
+      "stateMutated": [],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "scenarioSource reads the ref only when the active Scenario is absent and only when the ref's Project ID matches the current Project."
+      ],
+      "hiddenCoupling": [
+        "The ref is a previous-value snapshot and must not leak a source Scenario across Project switches."
+      ],
+      "candidateExtraction": "Keep in App composition beside activeProject, activeScenario and scenarioSource."
+    },
+    {
+      "id": "undo-notice-timeout",
+      "line": 484,
+      "purpose": "Dismiss an undo notice after six seconds.",
+      "dependencies": [
+        "undoNotice"
+      ],
+      "sideEffects": [
+        "window.setTimeout",
+        "setUndoNotice"
+      ],
+      "externalSystem": "browser timer",
+      "cleanup": "clearTimeout on notice change or unmount",
+      "stateMutated": [
+        "undoNotice"
+      ],
+      "featureLocal": false,
+      "applicationLevel": false,
+      "orderingAssumptions": [],
+      "hiddenCoupling": [],
+      "candidateExtraction": "Presentation-level UndoToast ownership is preferred if the notice action and timer move together; not an orchestration controller."
+    },
+    {
+      "id": "load-app-metadata",
+      "line": 490,
+      "purpose": "Load API metadata initially and after a dataset switch revision changes.",
+      "dependencies": [
+        "datasetRevision"
+      ],
+      "sideEffects": [
+        "GET /api/meta",
+        "setAppMeta"
+      ],
+      "externalSystem": "backend API",
+      "cleanup": "isMounted guard suppresses state updates after unmount",
+      "stateMutated": [
+        "appMeta"
+      ],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "Metadata participates in dataset compatibility, RF defaults, project hydration and fingerprint/result lineage."
+      ],
+      "hiddenCoupling": [
+        "Dataset switching intentionally increments datasetRevision to reload metadata."
+      ],
+      "candidateExtraction": "Application bootstrap remains App-owned; no new bootstrap service is justified by one request."
+    },
+    {
+      "id": "load-dataset-catalog",
+      "line": 498,
+      "purpose": "Load the installed dataset catalog initially and after dataset switching.",
+      "dependencies": [
+        "datasetRevision"
+      ],
+      "sideEffects": [
+        "GET /api/datasets",
+        "setInstalledDatasets",
+        "setDatasetMessage on failure"
+      ],
+      "externalSystem": "backend API",
+      "cleanup": "isMounted guard suppresses state updates after unmount",
+      "stateMutated": [
+        "installedDatasets",
+        "datasetMessage"
+      ],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "switchDataset uses the refreshed active_id to decide whether a later switch is needed."
+      ],
+      "hiddenCoupling": [
+        "Catalog failure is presented in dataset UI and does not abort app bootstrap."
+      ],
+      "candidateExtraction": "Keep with application bootstrap and dataset selection in App."
+    },
+    {
+      "id": "load-tower-inventory",
+      "line": 506,
+      "purpose": "Load the active dataset's tower GeoJSON, map it into inventory cells, select a valid tower and mark the dataset revision hydrated.",
+      "dependencies": [
+        "datasetRevision"
+      ],
+      "sideEffects": [
+        "GET /api/towers",
+        "setTowers",
+        "setSelectedTower",
+        "setHydratedDatasetRevision",
+        "setIsSwitchingDataset",
+        "setError on failure"
+      ],
+      "externalSystem": "backend API",
+      "cleanup": "isMounted guard suppresses state updates after unmount",
+      "stateMutated": [
+        "towers",
+        "selectedTower",
+        "hydratedDatasetRevision",
+        "isSwitchingDataset",
+        "error"
+      ],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "Workspace restore waits for non-empty towers; draft save waits for hydratedDatasetRevision to equal datasetRevision."
+      ],
+      "hiddenCoupling": [
+        "Dataset switch clears towers before changing datasetRevision. This effect is a synchronization barrier for project restore and draft persistence."
+      ],
+      "candidateExtraction": "Keep in the explicit App bootstrap/dataset boundary unless hydration tests prove a hook preserves the same ordering."
+    },
+    {
+      "id": "load-building-summary",
+      "line": 547,
+      "purpose": "Load the active dataset's building summary.",
+      "dependencies": [
+        "datasetRevision"
+      ],
+      "sideEffects": [
+        "GET /api/buildings/summary",
+        "setBuildingSummary"
+      ],
+      "externalSystem": "backend API",
+      "cleanup": "isMounted guard suppresses state updates after unmount",
+      "stateMutated": [
+        "buildingSummary"
+      ],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "The summary is consumed by current RF reports and building-entry UI."
+      ],
+      "hiddenCoupling": [
+        "Failure clears summary and does not fail the rest of bootstrap."
+      ],
+      "candidateExtraction": "Keep with bootstrap data until a dedicated dataset-owned state boundary exists."
+    },
+    {
+      "id": "normalize-network-selection",
+      "line": 565,
+      "purpose": "Drop or reorder selected network IDs that are invalid under the current tower inventory.",
+      "dependencies": [
+        "towers"
+      ],
+      "sideEffects": [
+        "setSelectedNetworkTowerIds"
+      ],
+      "externalSystem": null,
+      "cleanup": "none",
+      "stateMutated": [
+        "selectedNetworkTowerIds"
+      ],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "Runs after dataset inventory changes; returns the same array when IDs are already canonical."
+      ],
+      "hiddenCoupling": [
+        "Must not rewrite a valid saved selection or cause unnecessary project draft changes."
+      ],
+      "candidateExtraction": "Keep adjacent to inventory ownership; a pure normalization helper already owns the rule."
+    },
+    {
+      "id": "validate-scenario-dataset-and-calibration",
+      "line": 652,
+      "purpose": "Mark an incompatible project snapshot stale and clear a calibration profile when current metadata/settings make it incompatible.",
+      "dependencies": [
+        "activeProject",
+        "appMeta",
+        "calibrationProfile",
+        "settings"
+      ],
+      "sideEffects": [
+        "setPlanDirty",
+        "setCalibrationProfile",
+        "setSettings"
+      ],
+      "externalSystem": null,
+      "cleanup": "none",
+      "stateMutated": [
+        "planDirty",
+        "calibrationProfile",
+        "settings"
+      ],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "Uses active project snapshot and API metadata; can run around restorePlanningSnapshot and dataset metadata refresh."
+      ],
+      "hiddenCoupling": [
+        "Clearing calibration also resets calibrationOffsetDb and marks the working plan dirty."
+      ],
+      "candidateExtraction": "Keep in App workspace/RF coordination; extracting separately could change hydration ordering."
+    },
+    {
+      "id": "restore-active-project-plan",
+      "line": 665,
+      "purpose": "Restore the selected Project's active Scenario or draft once repository hydration and tower loading are ready.",
+      "dependencies": [
+        "activeProject",
+        "restorePlanningSnapshot",
+        "towers.length",
+        "workspaceLoaded"
+      ],
+      "sideEffects": [
+        "restorePlanningSnapshot",
+        "mutates restoredProjectRef",
+        "setWorkspaceRestored"
+      ],
+      "externalSystem": null,
+      "cleanup": "none",
+      "stateMutated": [
+        "workspaceRestored",
+        "all plan/result fields restored by restorePlanningSnapshot"
+      ],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "Must wait for local workspace load and non-empty dataset inventory; runs once per active Project ID."
+      ],
+      "hiddenCoupling": [
+        "Uses restoredProjectRef to avoid replacing live user edits after hydration."
+      ],
+      "candidateExtraction": "Keep in App composition unless hydration controller API preserves Project, Scenario, inventory and dataset ordering explicitly."
+    },
+    {
+      "id": "debounced-draft-persistence",
+      "line": 676,
+      "purpose": "Persist current plan, inventory and selected map visibility after a 500 ms debounce.",
+      "dependencies": [
+        "layerVisibility",
+        "planningMode",
+        "activeProject?.id",
+        "saveProjectDraft",
+        "selectedNetworkTowerIds",
+        "networkAzimuths",
+        "optimizationConfig",
+        "selectedTower?.id",
+        "selectionPolygon",
+        "settings",
+        "towers",
+        "datasetRevision",
+        "hydratedDatasetRevision",
+        "workspaceLoaded"
+      ],
+      "sideEffects": [
+        "window.setTimeout",
+        "saveProjectDraft"
+      ],
+      "externalSystem": "LocalRepository through useProjectWorkspace",
+      "cleanup": "clearTimeout on dependency change or unmount",
+      "stateMutated": [
+        "persisted Project draft, asynchronously"
+      ],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "Requires loaded workspace, matching restoredProjectRef and completed tower hydration before writing."
+      ],
+      "hiddenCoupling": [
+        "Captures a plan/inventory snapshot; it is not equivalent to deriving current plan from result data. It intentionally excludes transient analysis/research inputs."
+      ],
+      "candidateExtraction": "Candidate for a small workspace-draft synchronization hook only if the restore/save barrier and dependency set remain explicit; do not wrap useProjectWorkspace pass-through."
+    },
+    {
+      "id": "clamp-map-cell-selection-to-ray-result",
+      "line": 1445,
+      "purpose": "Keep selected map cell on a cell represented by the currently rendered ray result.",
+      "dependencies": [
+        "rayCellIDs"
+      ],
+      "sideEffects": [
+        "setSelectedMapCellId"
+      ],
+      "externalSystem": null,
+      "cleanup": "none",
+      "stateMutated": [
+        "selectedMapCellId"
+      ],
+      "featureLocal": true,
+      "applicationLevel": false,
+      "orderingAssumptions": [
+        "Runs after current simulation and network cell identity derivation."
+      ],
+      "hiddenCoupling": [
+        "Changing this can change map inspection but should not invalidate RF inputs or result identity."
+      ],
+      "candidateExtraction": "Keep near map/result rendering; no new controller needed."
+    },
+    {
+      "id": "escape-key-routing",
+      "line": 2242,
+      "purpose": "Route Escape through open layer menu, path endpoint selection, polygon drawing and drawer/inspector states in priority order.",
+      "dependencies": [
+        "cancelAreaSelection",
+        "closeDrawer",
+        "drawerMode",
+        "drawerOpen",
+        "isDrawingSelection",
+        "isSelectingPathEndpoint",
+        "layerMenuOpen"
+      ],
+      "sideEffects": [
+        "window.addEventListener/removeEventListener",
+        "multiple presentation state setters"
+      ],
+      "externalSystem": "browser keyboard events",
+      "cleanup": "remove keydown listener",
+      "stateMutated": [
+        "layerMenuOpen",
+        "isSelectingPathEndpoint",
+        "isDrawingSelection",
+        "drawerOpen",
+        "drawerMode",
+        "selectedMapObject"
+      ],
+      "featureLocal": false,
+      "applicationLevel": true,
+      "orderingAssumptions": [
+        "Escape closes the narrowest active interaction first, then the drawer."
+      ],
+      "hiddenCoupling": [
+        "Priority order is an accessibility and interaction contract."
+      ],
+      "candidateExtraction": "Keep at App composition with the existing drawer/map actions; do not move keyboard focus logic into an execution controller."
+    },
+    {
+      "id": "core-lab-polling",
+      "line": 2267,
+      "purpose": "Refresh Core Lab status/topology/session/event data immediately and every seven seconds while enabled and applicable.",
+      "dependencies": [
+        "coreLabApplicable",
+        "coreLabEnabled",
+        "refreshCoreLab"
+      ],
+      "sideEffects": [
+        "refreshCoreLab",
+        "window.setInterval"
+      ],
+      "externalSystem": "Core Lab API and browser timer",
+      "cleanup": "clearInterval on dependency change or unmount",
+      "stateMutated": [
+        "coreLab through refreshCoreLab"
+      ],
+      "featureLocal": true,
+      "applicationLevel": false,
+      "orderingAssumptions": [
+        "No polling while disabled or incompatible with the current 5G plan."
+      ],
+      "hiddenCoupling": [
+        "The effect is the lifecycle owner for polling, while loading/error state and the lazy Core Lab view remain gated."
+      ],
+      "candidateExtraction": "Keep local to Core Lab activation when lazy lifecycle APIs can be preserved; avoid adding another general controller."
+    },
+    {
+      "id": "clear-inapplicable-core-lab-state",
+      "line": 2276,
+      "purpose": "Clear cached Core Lab details and show not-applicable status when the current plan no longer supports the feature.",
+      "dependencies": [
+        "coreLabApplicable",
+        "coreLabEnabled"
+      ],
+      "sideEffects": [
+        "setCoreLab"
+      ],
+      "externalSystem": null,
+      "cleanup": "none",
+      "stateMutated": [
+        "coreLab"
+      ],
+      "featureLocal": true,
+      "applicationLevel": false,
+      "orderingAssumptions": [
+        "Runs after plan technology/profile changes; next applicable activation can refresh the API values."
+      ],
+      "hiddenCoupling": [
+        "The selected Core Lab enabled flag survives as a UI selection, but stale topology/events/status are removed."
+      ],
+      "candidateExtraction": "Core Lab feature-local lifecycle candidate, but deferred until the feature contract can own this state without eagerly importing its implementation."
+    },
+    {
+      "id": "building-inspector-evidence-load",
+      "line": 3887,
+      "purpose": "Load spatial evidence for the currently inspected building.",
+      "dependencies": [
+        "buildingID"
+      ],
+      "sideEffects": [
+        "GET /api/spatial-evidence/buildings/{id}",
+        "set local inspector state"
+      ],
+      "externalSystem": "backend API",
+      "cleanup": "AbortController aborts the previous request on ID change or unmount; AbortError is suppressed.",
+      "stateMutated": [
+        "BuildingInspector local state"
+      ],
+      "featureLocal": true,
+      "applicationLevel": false,
+      "orderingAssumptions": [
+        "The rendered evidence state is keyed by buildingID to avoid briefly showing a prior building response."
+      ],
+      "hiddenCoupling": [
+        "Spatial evidence is diagnostic only and explicitly does not feed canonical RF behavior."
+      ],
+      "candidateExtraction": "Already local to the owning inspector; keep."
+    }
+  ],
+  "hiddenCouplingSummary": [
+    "Project restore waits for both repository hydration and tower inventory; draft persistence additionally waits for dataset revision hydration.",
+    "Dataset switch increments a revision used by four independent fetch effects and clears the restore guard before these fetches complete.",
+    "PropagationResearchSettings captures first entry settings and must not be replaced by a latest-settings selector.",
+    "Core Lab polling and applicability cleanup are different lifecycle effects with different triggers.",
+    "Scenario source fallback is guarded by Project ID to avoid lineage leakage."
+  ],
+  "postChangeAudit": {
+    "status": "No App effect was extracted in 7J; App still contains 15 root effects and one same-file child effect.",
+    "rootEffectsAfter": 15,
+    "sameFileChildEffectsAfter": 1,
+    "decision": "Hydration ordering and propagation first-entry snapshot remain in App because they depend on composition/lazy activation. Durable Run and report workflows were event-driven callback lifecycles; their extracted hooks require no lifecycle effects.",
+    "propagationSnapshotInvariant": "The entry effect still captures settings on first activation and clears on leaving Propagation; it does not subscribe the lazy feature to subsequent settings edits."
+  }
+}

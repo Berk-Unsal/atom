@@ -1,0 +1,233 @@
+{
+  "concept": "7J",
+  "captureStage": "fixed-time historical report semantics captured before extraction and compared after extraction",
+  "fixture": {
+    "reportDefinition": {
+      "schema_version": 1,
+      "report_id": "report-1",
+      "project_id": "project-1",
+      "scenario_id": "scenario-1",
+      "scenario_revision_id": "revision-1",
+      "run_ids": [
+        "simulation-run-1",
+        "optimization-run-1"
+      ],
+      "title": "Historic report",
+      "sections": [
+        "executive_summary",
+        "evidence",
+        "result",
+        "configuration",
+        "methodology"
+      ],
+      "presentation_options": {},
+      "source_kind": "historical_run",
+      "source_binding": null,
+      "created_at": "2026-09-23T10:14:24.862Z",
+      "updated_at": "2026-09-23T10:14:24.862Z"
+    },
+    "projectId": "project-1",
+    "scenarioId": "scenario-1",
+    "scenarioRevisionId": "revision-1",
+    "runIds": [
+      "simulation-run-1",
+      "optimization-run-1"
+    ],
+    "generatedAt": "2026-09-23T00:00:00.000Z"
+  },
+  "exclusions": [
+    "generated artifact_id and content metadata are not part of report semantics; fixed generatedAt avoids timestamp drift"
+  ],
+  "before": {
+    "sourceBinding": {
+      "source_kind": "comparison_runs",
+      "project_id": "project-1",
+      "scenario_id": "scenario-1",
+      "scenario_revision_id": "revision-1",
+      "run_ids": [
+        "simulation-run-1",
+        "optimization-run-1"
+      ],
+      "scenario_fingerprint": "scenario-fingerprint-1",
+      "input_fingerprints": [],
+      "dataset_references": [],
+      "run_fingerprints": [
+        {
+          "run_id": "simulation-run-1",
+          "scenario_fingerprint": "scenario-fingerprint-1",
+          "input_fingerprint": null
+        },
+        {
+          "run_id": "optimization-run-1",
+          "scenario_fingerprint": "scenario-fingerprint-1",
+          "input_fingerprint": null
+        }
+      ]
+    },
+    "historicalSource": {
+      "binding": {
+        "source_kind": "comparison_runs",
+        "project_id": "project-1",
+        "scenario_id": "scenario-1",
+        "scenario_revision_id": "revision-1",
+        "run_ids": [
+          "simulation-run-1",
+          "optimization-run-1"
+        ],
+        "scenario_fingerprint": "scenario-fingerprint-1",
+        "input_fingerprints": [],
+        "dataset_references": [],
+        "run_fingerprints": [
+          {
+            "run_id": "simulation-run-1",
+            "scenario_fingerprint": "scenario-fingerprint-1",
+            "input_fingerprint": null
+          },
+          {
+            "run_id": "optimization-run-1",
+            "scenario_fingerprint": "scenario-fingerprint-1",
+            "input_fingerprint": null
+          }
+        ]
+      },
+      "evidence": {
+        "historical": true,
+        "no_silent_recompute": true,
+        "sources": {
+          "scenario_inputs": "ScenarioRevision",
+          "run_results": "stored Run result",
+          "retained_artifacts": "none"
+        },
+        "unavailable": [
+          "Detailed signal surface and ray geometry were not retained for this historical Run.",
+          "Full optimizer evaluation ledger was not retained; this report uses the public baseline and Pareto summaries."
+        ],
+        "retained": [
+          "Compact RF and coverage summaries",
+          "Optimization baseline summary",
+          "Public Pareto solutions",
+          "Recommendation and objective policy",
+          "Selected solution identity"
+        ]
+      }
+    },
+    "view": {
+      "title": "A.T.O.M Network Planning Report",
+      "scenarioName": "Historic network",
+      "sectionIds": null,
+      "availableEvidence": null,
+      "unavailableEvidence": [
+        "Detailed signal surface and ray geometry were not retained for this historical Run.",
+        "Full optimizer evaluation ledger was not retained; this report uses the public baseline and Pareto summaries."
+      ],
+      "selectedSolutionId": "solution-2",
+      "paretoIds": [
+        "solution-1",
+        "solution-2"
+      ]
+    },
+    "markdown": {
+      "sha256": "356eaab57acc25a03c9e3252997a5fa0ccb37798c7adfa2cf2709cf35803932d",
+      "utf8Bytes": 8200
+    }
+  },
+  "after": {
+    "sourceBinding": {
+      "source_kind": "comparison_runs",
+      "project_id": "project-1",
+      "scenario_id": "scenario-1",
+      "scenario_revision_id": "revision-1",
+      "run_ids": [
+        "simulation-run-1",
+        "optimization-run-1"
+      ],
+      "scenario_fingerprint": "scenario-fingerprint-1",
+      "input_fingerprints": [],
+      "dataset_references": [],
+      "run_fingerprints": [
+        {
+          "run_id": "simulation-run-1",
+          "scenario_fingerprint": "scenario-fingerprint-1",
+          "input_fingerprint": null
+        },
+        {
+          "run_id": "optimization-run-1",
+          "scenario_fingerprint": "scenario-fingerprint-1",
+          "input_fingerprint": null
+        }
+      ]
+    },
+    "historicalSource": {
+      "binding": {
+        "source_kind": "comparison_runs",
+        "project_id": "project-1",
+        "scenario_id": "scenario-1",
+        "scenario_revision_id": "revision-1",
+        "run_ids": [
+          "simulation-run-1",
+          "optimization-run-1"
+        ],
+        "scenario_fingerprint": "scenario-fingerprint-1",
+        "input_fingerprints": [],
+        "dataset_references": [],
+        "run_fingerprints": [
+          {
+            "run_id": "simulation-run-1",
+            "scenario_fingerprint": "scenario-fingerprint-1",
+            "input_fingerprint": null
+          },
+          {
+            "run_id": "optimization-run-1",
+            "scenario_fingerprint": "scenario-fingerprint-1",
+            "input_fingerprint": null
+          }
+        ]
+      },
+      "evidence": {
+        "historical": true,
+        "no_silent_recompute": true,
+        "sources": {
+          "scenario_inputs": "ScenarioRevision",
+          "run_results": "stored Run result",
+          "retained_artifacts": "none"
+        },
+        "unavailable": [
+          "Detailed signal surface and ray geometry were not retained for this historical Run.",
+          "Full optimizer evaluation ledger was not retained; this report uses the public baseline and Pareto summaries."
+        ],
+        "retained": [
+          "Compact RF and coverage summaries",
+          "Optimization baseline summary",
+          "Public Pareto solutions",
+          "Recommendation and objective policy",
+          "Selected solution identity"
+        ]
+      }
+    },
+    "view": {
+      "title": "A.T.O.M Network Planning Report",
+      "scenarioName": "Historic network",
+      "sectionIds": null,
+      "availableEvidence": null,
+      "unavailableEvidence": [
+        "Detailed signal surface and ray geometry were not retained for this historical Run.",
+        "Full optimizer evaluation ledger was not retained; this report uses the public baseline and Pareto summaries."
+      ],
+      "selectedSolutionId": "solution-2",
+      "paretoIds": [
+        "solution-1",
+        "solution-2"
+      ]
+    },
+    "markdown": {
+      "sha256": "356eaab57acc25a03c9e3252997a5fa0ccb37798c7adfa2cf2709cf35803932d",
+      "utf8Bytes": 8200
+    }
+  },
+  "verification": {
+    "test": "frontend-react/src/domain/reportSource.test.js — \"matches the normalized Concept 7J historical Report golden\"",
+    "workflowTest": "frontend-react/src/hooks/useReportWorkflow.test.jsx — historical report uses the retained exact source Run and Version; output remains usable if artifact retention fails.",
+    "comparison": "Source binding, historical evidence, selected solution, public Pareto IDs and generated Markdown SHA-256/UTF-8 byte count match the pre-extraction fixture.",
+    "result": "pass"
+  }
+}

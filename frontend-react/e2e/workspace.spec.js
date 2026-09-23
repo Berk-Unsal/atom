@@ -327,6 +327,177 @@ test("runs a sector and preserves a named scenario", async ({ page }) => {
   await expect(page.getByRole("dialog", { name: "Project and scenarios" })).toContainText("Sector plan 1");
 });
 
+test("switching Projects clears the live Run association and scopes Run History", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  const history = page.getByRole("region", { name: "Durable local run history" });
+  await expect(history.getByRole("button", { name: /Simulation/ })).toBeVisible();
+
+  await page.getByRole("button", { name: "Open project menu" }).click();
+  const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  const projectSelect = projectMenu.getByRole("combobox", { name: "Project" });
+  const sourceProjectID = await projectSelect.locator("option").first().getAttribute("value");
+  await projectMenu.getByRole("button", { name: "New" }).click();
+  await page.getByRole("button", { name: "Open project menu" }).click();
+  await expect(projectSelect.locator("option")).toHaveCount(2);
+  await page.getByRole("button", { name: "Open project menu" }).click();
+
+  await expect(history.getByText("No saved Runs yet.")).toBeVisible();
+  await expect(history.getByRole("button", { name: /Simulation/ })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("combobox", { name: "Project" }).selectOption(sourceProjectID);
+  await expect(history.getByRole("button", { name: /Simulation/ })).toBeVisible();
+});
+
+test("completes the Run, optimization, apply, Version, and historical Report journey", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "The complete planning journey runs once at desktop size");
+
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+
+  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  await projectMenuButton.click();
+  const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
+  await projectMenuButton.click();
+
+  await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await expect(page.getByRole("dialog", { name: "Results" })).toContainText("-72.0 dBm");
+
+  await page.getByRole("button", { name: "Plan workspace" }).click();
+  await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
+  await expect(page.getByRole("button", { name: "Network mode, 1 selected" })).toBeVisible();
+  const closeToolDrawer = page.getByRole("button", { name: "Close tool drawer" });
+  if (await closeToolDrawer.isVisible()) await closeToolDrawer.click();
+  const map = page.locator(".leaflet-container");
+  const mapBox = await map.boundingBox();
+  expect(mapBox).not.toBeNull();
+  const target = projectMapPoint(32.854, 39.922, 12);
+  const center = projectMapPoint(32.8541, 39.9208, 12);
+  await map.click({
+    position: {
+      x: mapBox.width / 2 + target.x - center.x,
+      y: mapBox.height / 2 + target.y - center.y,
+    },
+  });
+  await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
+
+  await projectMenuButton.click();
+  const updatedScenarioMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await updatedScenarioMenu.getByRole("button", { name: "Save current" }).click();
+  await expect(updatedScenarioMenu.getByRole("status")).toHaveText("Version saved");
+  await expect(page.locator(".workspace-lineage-context > summary")).toContainText("Version 2");
+  await projectMenuButton.click();
+
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Optimize Network" }).click();
+  await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible();
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("tab", { name: "Solutions" }).click();
+  await expect(page.getByRole("region", { name: "Pareto alternative solutions" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  const history = page.getByRole("region", { name: "Durable local run history" });
+  await expect(history).toBeVisible();
+  const optimizationRow = history.locator(".run-history-row").filter({ hasText: "Optimization" }).first();
+  await expect(optimizationRow.locator(".run-status")).toHaveText("Succeeded");
+  await expect(optimizationRow).toContainText("Version 2");
+  await optimizationRow.click();
+  const applyButton = history.getByRole("button", { name: /Apply solution from/ }).first();
+  await expect(applyButton).toBeEnabled();
+  await applyButton.click();
+  const applyDialog = page.getByRole("dialog", { name: "Apply optimization solution?" });
+  await applyDialog.getByRole("button", { name: "Create new Version" }).click();
+
+  const lineageSummary = page.locator(".workspace-lineage-context > summary");
+  await projectMenuButton.click();
+  const projectMenuAfterApply = page.getByRole("dialog", { name: "Project and scenarios" });
+  await expect(projectMenuAfterApply).toContainText("Version 3");
+  await projectMenuButton.click();
+  const activeLineageBeforeSourceInspection = await lineageSummary.getAttribute("aria-label");
+  expect(activeLineageBeforeSourceInspection).toMatch(/Version [23]/);
+  await history.getByRole("button", { name: "Open source Version" }).click();
+  await expect(page.getByRole("button", { name: /Version 2/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(lineageSummary).toHaveAttribute("aria-label", activeLineageBeforeSourceInspection);
+
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  const historicalReport = page.getByRole("button", { name: /Generate report from/ });
+  await expect(historicalReport).toBeEnabled();
+  await historicalReport.click();
+  const confirmation = page.getByRole("dialog", { name: "Generate a Report from this Run?" });
+  await confirmation.getByRole("button", { name: /Generate report from/ }).click();
+  await expect(page.getByRole("region", { name: "Planning report export" })).toBeVisible();
+});
+
+test("generates a historical Report from cold Run History without opening Report first", async ({ page }) => {
+  const computeRequests = [];
+  const reportModules = [];
+  let reportImportAttempts = 0;
+  const failFirstReportImport = async (route) => {
+    reportImportAttempts += 1;
+    if (reportImportAttempts === 1) {
+      await route.abort();
+      return;
+    }
+    await route.continue();
+  };
+  await page.route("**/src/utils/reportExport.js*", failFirstReportImport);
+  await page.route("**/assets/reportExport-*.js", failFirstReportImport);
+  page.on("request", (request) => {
+    const path = new URL(request.url()).pathname;
+    if (/\/api\/(analyze-sector|simulate|optimize)/.test(path)) computeRequests.push(path);
+    if (/reportExport|reportArtifact|ReportFeature/.test(path)) reportModules.push(path);
+  });
+
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await expect(page.locator(".workspace-save-state")).toHaveText("Draft saved locally");
+  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  await projectMenuButton.click();
+  const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
+  await projectMenuButton.click();
+
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Durable local run history" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Generate report from/ })).toBeEnabled();
+  expect(reportModules.some((path) => path.includes("ReportFeature"))).toBe(false);
+
+  await page.getByRole("button", { name: /Generate report from/ }).click();
+  const confirmation = page.getByRole("dialog", { name: "Generate a Report from this Run?" });
+  await confirmation.getByRole("button", { name: /Generate report from/ }).click();
+  const generationFailure = page.getByRole("alert").filter({ hasText: "Report generation code could not be loaded" });
+  await expect(generationFailure).toBeVisible();
+  await expect(generationFailure.getByRole("button", { name: "Reload application" })).toBeVisible();
+
+  await generationFailure.getByRole("button", { name: "Reload application" }).click();
+  await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Durable local run history" })).toBeVisible();
+  await page.getByRole("button", { name: /Generate report from/ }).click();
+  const retryConfirmation = page.getByRole("dialog", { name: "Generate a Report from this Run?" });
+  await retryConfirmation.getByRole("button", { name: /Generate report from/ }).click();
+
+  await expect(page.getByRole("region", { name: "Planning report export" })).toBeVisible();
+  await expect.poll(() => reportModules.some((path) => path.includes("reportExport"))).toBe(true);
+  await expect.poll(() => reportModules.some((path) => path.includes("reportArtifact"))).toBe(true);
+  await expect.poll(() => reportModules.some((path) => path.includes("ReportFeature"))).toBe(true);
+  expect(reportImportAttempts).toBe(2);
+  expect(computeRequests).toHaveLength(1);
+});
+
 test("keeps an unsaved draft when opening a different Scenario is blocked", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
@@ -700,6 +871,104 @@ test("supports keyboard disclosure navigation without starting RF work", async (
   await research.click();
   await expect(subThz.getByRole("spinbutton").first()).toHaveValue("145");
   expect(analysisRequests).toHaveLength(0);
+});
+
+test("loads specialized feature modules only after their workspace action", async ({ page }) => {
+  const scriptRequests = [];
+  page.on("request", (request) => {
+    if (request.resourceType() === "script") scriptRequests.push(new URL(request.url()).pathname);
+  });
+  const featurePaths = {
+    propagation: "PropagationResearchFeature",
+    diagnostics: "RFDiagnosticsResearchFeature",
+    experiments: "ExperimentPanel",
+    coreLab: "CoreLabFeature",
+    history: "RunHistoryPanel",
+    reports: "ReportFeature",
+  };
+  const wasRequested = (featurePath) => scriptRequests.some((path) => path.includes(featurePath));
+
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ankara propagation map" })).toBeVisible();
+  expect(Object.values(featurePaths).some(wasRequested)).toBe(false);
+
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  const propagationResearch = page.getByRole("button", { name: /^Research \/ reference/ });
+  await expect(propagationResearch).toHaveAttribute("aria-expanded", "false");
+  expect(wasRequested(featurePaths.propagation)).toBe(false);
+  await propagationResearch.focus();
+  await propagationResearch.press("Enter");
+  const subThz = page.getByRole("region", { name: "Sub-THz atmospheric reference" });
+  await expect(subThz).toBeVisible();
+  await expect.poll(() => wasRequested(featurePaths.propagation)).toBe(true);
+  await subThz.getByRole("spinbutton").first().fill("145");
+  await propagationResearch.press("Space");
+  await expect(propagationResearch).toHaveAttribute("aria-expanded", "false");
+  await propagationResearch.click();
+  await expect(subThz.getByRole("spinbutton").first()).toHaveValue("145");
+
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+  await page.getByRole("button", { name: "RF Diagnostics", exact: true }).click();
+  const diagnosticsResearch = page.getByRole("button", { name: /^Research \/ reference/ });
+  expect(wasRequested(featurePaths.diagnostics)).toBe(false);
+  await diagnosticsResearch.click();
+  await expect(page.getByRole("region", { name: "RF diagnostics and measurement validation" })).toBeVisible();
+  await expect.poll(() => wasRequested(featurePaths.diagnostics)).toBe(true);
+
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Experiments", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Batch experiments" })).toBeVisible();
+  await expect.poll(() => wasRequested(featurePaths.experiments)).toBe(true);
+
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+  await page.getByRole("button", { name: "5G Core", exact: true }).click();
+  await expect(page.getByRole("region", { name: "5G Core Lab controls" })).toBeVisible();
+  await expect.poll(() => wasRequested(featurePaths.coreLab)).toBe(true);
+
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await page.getByRole("button", { name: "Run history", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Durable local run history" })).toBeVisible();
+  await expect.poll(() => wasRequested(featurePaths.history)).toBe(true);
+  await page.getByRole("button", { name: "Report", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Planning report export" })).toBeVisible();
+  await expect.poll(() => wasRequested(featurePaths.reports)).toBe(true);
+  await expect(page.getByRole("region", { name: "Ankara propagation map" })).toBeVisible();
+});
+
+test("recovers from a failed research import by reloading the application", async ({ page }) => {
+  let importRequests = 0;
+  let failedFirstImport = false;
+  const failOnce = async (route) => {
+    importRequests += 1;
+    if (!failedFirstImport) {
+      failedFirstImport = true;
+      await route.abort();
+      return;
+    }
+    await route.continue();
+  };
+  await page.route("**/src/features/propagation-research/PropagationResearchFeature.jsx*", failOnce);
+  await page.route("**/assets/PropagationResearchFeature-*.js", failOnce);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await page.getByRole("button", { name: /^Research \/ reference/ }).click();
+
+  const failure = page.getByRole("alert", { name: "Propagation Research could not be loaded" });
+  await expect(failure).toBeVisible();
+  await expect(failure.getByRole("button", { name: "Reload application" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ankara propagation map" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeVisible();
+
+  await failure.getByRole("button", { name: "Reload application" }).click();
+  await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await page.getByRole("button", { name: "Propagation", exact: true }).click();
+  await page.getByRole("button", { name: /^Research \/ reference/ }).click();
+  await expect(page.getByRole("region", { name: "Sub-THz atmospheric reference" })).toBeVisible();
+  expect(importRequests).toBe(2);
 });
 
 test("keeps disclosure headers and the propagation drawer usable at target widths", async ({ page }) => {

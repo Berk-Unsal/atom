@@ -6985,6 +6985,19 @@ a:focus-visible {
   background: var(--amber-soft);
 }
 
+.run-history-message-reload {
+  flex: 0 0 auto;
+  min-height: 30px;
+  margin-left: auto;
+  padding: 4px 8px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.72);
+  font: inherit;
+  cursor: pointer;
+}
+
 .run-history-layout {
   display: grid;
   gap: 10px;
@@ -8388,6 +8401,26 @@ a:focus-visible {
 
 .disclosure-content { min-width: 0; padding: 2px 0 4px; }
 .disclosure-content[hidden] { display: none !important; }
+
+.lazy-feature-loading,
+.lazy-feature-error {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 56px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  background: var(--panel-strong);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+.lazy-feature-loading { display: flex; align-items: center; }
+.lazy-feature-error { display: grid; gap: 6px; }
+.lazy-feature-error strong { color: var(--ink); }
+.lazy-feature-error p { margin: 0; }
+.lazy-feature-error-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.lazy-feature-error-actions button { min-height: 34px; padding: 6px 11px; }
 
 .model-limit-details { margin-top: 8px; padding: 7px 0 2px; border-top: 1px solid var(--line); }
 .model-limit-details summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--slate); font-size: 0.68rem; font-weight: 800; cursor: pointer; }

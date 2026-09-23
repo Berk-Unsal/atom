@@ -1,0 +1,80 @@
+{
+  "concept": "7J",
+  "status": "implemented; invalidation owner remains App because it spans plan, request cancellation, rendered outputs and Concept 7G lineage",
+  "contract": {
+    "operation": "invalidatePlanResults",
+    "effects": [
+      "cancel RF and dependent analysis channels",
+      "clear rendered simulation/coverage/diagnostic artifacts",
+      "mark planDirty",
+      "retain currentResultRun as stale-source identity"
+    ],
+    "clearCurrentAssociationOn": [
+      "opening a different saved Scenario after the draft guard accepts",
+      "Project selection/add/duplicate/import/delete transitions"
+    ],
+    "freshness": "Existing buildResultContext/resolveRunFreshness determines current, stale, historical, unavailable or unsupported."
+  },
+  "cases": [
+    {
+      "event": "RF settings edit (frequency, TX power, radius, beam/profile settings)",
+      "invalidate": true,
+      "association": "retain as stale source",
+      "coverage": "App.workflow.test.jsx: \"clears the current surface when RF inputs change and exposes Signal again after rerun\""
+    },
+    {
+      "event": "Inventory geometry, RF profile, add/delete/duplicate/import, selected RF cell changes",
+      "invalidate": true,
+      "association": "retain as stale source",
+      "coverage": "App updateInventoryTower/selectInventoryCell/placeInventoryCell/deleteInventoryTower/importInventoryCells call invalidatePlanResults"
+    },
+    {
+      "event": "Network planning mode, selected network cell set or applied calibration changes",
+      "invalidate": true,
+      "association": "retain as stale source",
+      "coverage": "App changePlanningMode/selectTower/clearNetworkSelection/finishAreaSelection/applyCalibration call invalidatePlanResults"
+    },
+    {
+      "event": "Optimization constraints change",
+      "invalidate": true,
+      "association": "retain as stale source",
+      "coverage": "App updateOptimizationConfig invalidates when normalized constraints differ"
+    },
+    {
+      "event": "Dataset switch",
+      "invalidate": true,
+      "association": "retain old Run identity as stale source evidence; clear rendered results and set planDirty",
+      "coverage": "App switchDataset transaction clears data-bound outputs and advances datasetRevision; no dedicated local-backend E2E"
+    },
+    {
+      "event": "Open another saved Scenario or select/add/duplicate/import/delete a Project",
+      "invalidate": true,
+      "association": "clear current association for accepted saved-Scenario and Project transitions",
+      "coverage": "App.workflow.test.jsx Scenario draft guard; e2e/workspace.spec.js Project switch scopes Run History and clears live association"
+    },
+    {
+      "event": "Continue from Version, branch, duplicate Scenario, or apply optimization solution",
+      "invalidate": true,
+      "association": "retain source Run identity for stale lineage; restored destination draft requires a rerun",
+      "coverage": "App transaction handlers restore destination snapshots and mark them dirty/requiresRerun; Scenario/Version workflow E2E covers source/destination lineage"
+    },
+    {
+      "event": "Version source inspection/open",
+      "invalidate": false,
+      "association": "keep current active draft/result; historical source navigation is inspect-only",
+      "coverage": "e2e/workspace.spec.js: \"opens the exact Run source Version while keeping the current Version active\""
+    },
+    {
+      "event": "Disclosure, panel/tool navigation, lazy feature activation, report inspection, map viewport/legend",
+      "invalidate": false,
+      "association": "retain unchanged",
+      "coverage": "App.workflow.test.jsx: \"does not make a current result stale when disclosure state changes\"; \"supports keyboard disclosure navigation without starting RF work\"; lazy feature E2E verifies deferred activation"
+    },
+    {
+      "event": "Pareto solution selection",
+      "invalidate": false,
+      "association": "same optimization Run; persist selected solution metadata only",
+      "coverage": "App.workflow.test.jsx: \"explores Pareto solutions without changing the recommendation or rerunning RF\"; useRunExecution test verifies selected-solution lifecycle update"
+    }
+  ]
+}

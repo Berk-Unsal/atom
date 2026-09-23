@@ -1,4 +1,6 @@
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
+import reportGolden from "../../../docs/concept-7j-report-equivalence.json";
 import { createReportDefinition, validateReportDefinition } from "./report.js";
 import { resolveReportSource } from "./reportSource.js";
 import { captureOptimizationRun, captureSimulationRun } from "./runCapture.js";
@@ -138,5 +140,81 @@ describe("Concept 7D report source boundary", () => {
     expect(markdown).toContain("solution-2");
     expect(markdown).toContain("Public Pareto solutions");
     expect(markdown).toContain("Full optimizer evaluation ledger was not retained");
+  });
+
+  it("matches the normalized Concept 7J historical Report golden", () => {
+    const generatedAt = "2026-09-23T00:00:00.000Z";
+    const simulationRun = captureSimulationRun({
+      context: {
+        run_id: "simulation-run-1",
+        project_id: "project-1",
+        scenario_id: "scenario-1",
+        scenario_revision_id: "revision-1",
+        scenario_fingerprint: "scenario-fingerprint-1",
+        created_at: generatedAt,
+      },
+      request: { frequency_ghz: 28 },
+      result: {
+        simulation: { stats: { avg_rx_dbm: -88, max_range_m: 400, min_range_m: 50, blocked_pct: 12 }, geojson: { features: [{ private: "map" }] } },
+        coverage_gaps: { stats: { gap_buildings: 3 }, geojson: { features: [{ private: "gap" }] } },
+      },
+    });
+    const capturedOptimizationRun = captureOptimizationRun({
+      context: {
+        run_id: "optimization-run-1",
+        project_id: "project-1",
+        scenario_id: "scenario-1",
+        scenario_revision_id: "revision-1",
+        scenario_fingerprint: "scenario-fingerprint-1",
+        created_at: generatedAt,
+      },
+      request: { frequency_ghz: 28 },
+      response: {
+        optimization_run_id: "optimizer-compute-1",
+        baseline: { id: "baseline", stats: { score: 42 }, towers: [{ id: "cell-1", optimal_azimuth: 30 }] },
+        pareto_frontier: [
+          { id: "solution-1", score: 88, stats: { score: 88 }, towers: [{ id: "cell-1", optimal_azimuth: 55 }] },
+          { id: "solution-2", score: 80, stats: { score: 80 }, towers: [{ id: "cell-1", optimal_azimuth: 80 }] },
+        ],
+        optimization: {
+          recommended_solution_id: "solution-1",
+          priorities: { demand: 70, coverage: 30 },
+          objective_status: { demand: { available: true } },
+          constraints: { min_coverage_score: 1 },
+        },
+      },
+    });
+    const optimizationRun = {
+      ...capturedOptimizationRun,
+      details: {
+        ...capturedOptimizationRun.details,
+        effective_priorities: { demand: 70, coverage: 30 },
+        selected_solution_id: "solution-2",
+        search_policy: { strategy: "bounded" },
+      },
+    };
+    const report = buildHistoricalPlanningReport({
+      appMeta: { model_version: "rf-model-1", dataset: { id: "dataset-1", version: "2026.09" } },
+      generatedAt,
+      project: { id: "project-1", name: "Historic project" },
+      scenario: { ...SCENARIO, plan: REVISION.canonical_input_snapshot },
+      scenarioRevision: REVISION,
+      runs: [simulationRun, optimizationRun],
+    });
+    const markdown = renderMarkdownReport(report);
+    const semanticOutput = {
+      sourceBinding: report.domainBinding,
+      selectedSolutionId: report.selectedSolutionId,
+      paretoSolutionIds: report.networkOptimization.pareto_frontier.map((solution) => solution.id),
+      markdown: {
+        sha256: createHash("sha256").update(markdown).digest("hex"),
+        utf8Bytes: new TextEncoder().encode(markdown).byteLength,
+      },
+    };
+
+    expect(semanticOutput.sourceBinding).toEqual(reportGolden.before.sourceBinding);
+    expect(semanticOutput.selectedSolutionId).toBe(reportGolden.before.view.selectedSolutionId);
+    expect(semanticOutput.paretoSolutionIds).toEqual(reportGolden.before.view.paretoIds);
+    expect(semanticOutput.markdown).toEqual(reportGolden.before.markdown);
   });
 });

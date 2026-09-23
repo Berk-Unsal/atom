@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import LazyFeatureBoundary from "./LazyFeatureBoundary.jsx";
 import ResearchReferenceBadge from "./ResearchReferenceBadge.jsx";
 
 export default function DisclosureSection({
@@ -12,6 +13,7 @@ export default function DisclosureSection({
   defaultOpen = false,
   description,
   focusInvalid = false,
+  lazyFeature = null,
   openRequest = 0,
   research = false,
   status = "",
@@ -22,6 +24,7 @@ export default function DisclosureSection({
   const rootRef = useRef(null);
   const triggerRef = useRef(null);
   const [manuallyOpen, setManuallyOpen] = useState(defaultOpen);
+  const [hasEverOpened, setHasEverOpened] = useState(defaultOpen);
   const [acknowledgedOpenRequest, setAcknowledgedOpenRequest] = useState(0);
   const requestOpen = openRequest > acknowledgedOpenRequest;
   const open = attention || manuallyOpen || requestOpen;
@@ -42,11 +45,13 @@ export default function DisclosureSection({
       return;
     }
     if (requestOpen) {
+      setHasEverOpened(true);
       setAcknowledgedOpenRequest(openRequest);
       setManuallyOpen(false);
       return;
     }
-    setManuallyOpen((current) => !current);
+    if (!open) setHasEverOpened(true);
+    setManuallyOpen(!open);
   };
 
   const accessibleName = attention ? `${title}, ${attentionMessage}` : title;
@@ -77,7 +82,11 @@ export default function DisclosureSection({
       </h3>
       {description ? <p className="disclosure-description" id={descriptionId}>{description}</p> : null}
       <div className="disclosure-content" id={contentId} hidden={!open}>
-        {children}
+        {lazyFeature
+          ? hasEverOpened || open
+            ? <LazyFeatureBoundary {...lazyFeature} active />
+            : null
+          : children}
       </div>
     </section>
   );

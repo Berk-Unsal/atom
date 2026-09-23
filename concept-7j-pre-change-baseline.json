@@ -1,0 +1,131 @@
+{
+  "concept": "7J",
+  "capturedAt": "2026-09-23",
+  "checkpoint": {
+    "repository": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "commit": "5bd064a653f726d7eefe2284fb299b4145dd7afb",
+    "branch": "main",
+    "startingTree": "Concept 7I working tree; intentionally dirty and preserved",
+    "gitStatus": [
+      "M frontend-react/e2e/workspace.spec.js",
+      "M frontend-react/src/App.jsx",
+      "M frontend-react/src/App.workflow.test.jsx",
+      "M frontend-react/src/components/DisclosureSection.jsx",
+      "M frontend-react/src/components/RunHistoryPanel.jsx",
+      "M frontend-react/src/styles.css",
+      "M frontend-react/src/utils/reportArtifact.js",
+      "M frontend-react/src/utils/reportExport.js",
+      "?? docs/concept-7i-chunk-map.json",
+      "?? docs/concept-7i-feature-load-matrix.json",
+      "?? docs/concept-7i-initial-load-metrics.json",
+      "?? docs/concept-7i-module-inventory.json",
+      "?? docs/concept-7i-post-change-comparison.json",
+      "?? docs/concept-7i-pre-change-baseline.json",
+      "?? docs/concept-7i-safe-lazy-loading.md",
+      "?? docs/concept-7i-split-plan.json",
+      "?? docs/concept-7i-state-continuity.json",
+      "?? docs/concept-7i-test-evidence.json",
+      "?? frontend-react/src/components/LazyFeatureBoundary.jsx",
+      "?? frontend-react/src/components/LazyFeatureBoundary.test.jsx",
+      "?? frontend-react/src/features/",
+      "?? frontend-react/src/utils/comparisonCharts.js",
+      "?? frontend-react/src/utils/reportArtifactDownload.js"
+    ],
+    "startingDiffStat": {
+      "trackedFilesChanged": 8,
+      "insertions": 427,
+      "deletions": 505
+    },
+    "handling": "These pre-existing Concept 7I changes are part of the requested starting checkpoint. No reset or cleanup was performed."
+  },
+  "application": {
+    "file": "frontend-react/src/App.jsx",
+    "lineCount": 5493,
+    "importDeclarations": 43,
+    "appFunctionCounts": {
+      "stateDeclarations": 84,
+      "refs": 7,
+      "effects": 15,
+      "memoizedValues": 29,
+      "callbacks": 102
+    },
+    "fileWideCounts": {
+      "stateDeclarations": 88,
+      "refs": 7,
+      "effects": 16,
+      "memoizedValues": 29,
+      "callbacks": 102
+    },
+    "additionalFileScopeCounts": {
+      "effectsOutsideApp": 1,
+      "stateDeclarationsOutsideApp": 4
+    },
+    "majorResponsibilities": [
+      "application metadata, dataset, tower, building-summary bootstrap and error handling",
+      "Project/Scenario selection, draft hydration and synchronization around useProjectWorkspace",
+      "RF settings, inventory editing, network planning and Scenario snapshot capture",
+      "simulation, single-cell and network optimization, network evaluation, diagnostics and related API lifecycles",
+      "Run creation/capture/persistence and current-result association",
+      "result invalidation, freshness inputs, map layers, selection, focus and inspection state",
+      "Run History interaction, historical rerun, historic optimization apply and deletion",
+      "current and historical report definition/generation, artifact persistence and downloads",
+      "lazy-feature activation and shared feature error boundaries",
+      "global navigation, map/workspace presentation, notices and dialogs"
+    ],
+    "directRepositoryAndPersistenceBoundaries": [
+      "useProjectWorkspace: project draft/scenario/version/project operations; App coordinates hydration, selection transitions and workflow guards",
+      "useRunHistory: saveRun, updateRunLifecycle, deleteRun, clearUnreferenced, clearAllUnreferenced, refresh; App coordinates execution and historical workflows",
+      "useReportArtifacts: saveArtifact, getArtifact, deleteArtifact, refresh; App coordinates report generation and project cleanup",
+      "reportArtifacts.repository.deleteProjectArtifacts: one direct artifact-store repository access during project deletion"
+    ],
+    "directComputeAndApiBoundaries": [
+      "RF and network compute orchestration calls postJSON for simulation, optimization, network evaluation, analysis, measurement, recommendations, and Core Lab operations",
+      "getJSON bootstraps metadata, installed datasets, towers, building summary, and Core Lab state",
+      "postBlob exports generated coverage surfaces",
+      "runNetworkSimulationQueue composes per-cell API simulations for network execution"
+    ],
+    "directReportAndArtifactBoundaries": [
+      "dynamic reportExport/reportArtifact/reportArtifactDownload module imports",
+      "createPlanningReport coordinates report definition, report rendering and bytes",
+      "persistReportArtifact coordinates artifact generation, artifact store, download and warning handling",
+      "historical report context, regeneration, stored-artifact download and deletion"
+    ],
+    "lazyFeatureBoundaries": [
+      "PropagationResearchFeature",
+      "RFDiagnosticsResearchFeature",
+      "ExperimentPanel",
+      "CoreLabFeature",
+      "RunHistoryPanel",
+      "ReportFeature",
+      "reportExport module",
+      "reportArtifact module",
+      "reportArtifactDownload module"
+    ],
+    "primaryChildComponents": [
+      "WorkspaceChrome: CommandBar, MapLegend, MapToolbar, ProjectMenu, ToolDrawer, ToolSubnav, UndoToast, WorkflowRail",
+      "MapCanvas",
+      "ControlPanel",
+      "ScenarioPanel",
+      "InventoryPanel",
+      "OptimizationGoalsPanel",
+      "InterferenceResultsPanel",
+      "BuildingEntryPanel",
+      "PathProfilePanel",
+      "SurfacePanel",
+      "ApplySolutionDialog",
+      "RunHistoryPanel (lazy)",
+      "ReportFeature (lazy)",
+      "PropagationResearchFeature (lazy)",
+      "RFDiagnosticsResearchFeature (lazy)",
+      "ExperimentPanel (lazy)",
+      "CoreLabFeature (lazy)"
+    ]
+  },
+  "priorEvidence": {
+    "concept7iInitialJavascriptRawBytes": 769861,
+    "concept7iInitialJavascriptGzipBytesLevel9": 217661,
+    "concept7iTotalJavascriptChunks": 12,
+    "source": "docs/concept-7i-initial-load-metrics.json"
+  },
+  "method": "Counts were captured from the Concept 7I working tree before Concept 7J implementation changes. LOC/import counts are descriptive only."
+}

@@ -1,0 +1,37 @@
+{
+  "concept": "7I",
+  "date": "2026-09-23",
+  "principles": {
+    "moduleCacheIsNotDomainState": true,
+    "AppAndHooksRemainDomainStateOwners": true,
+    "lazyImportHasNoRequestOrPersistenceAction": true,
+    "globalScenarioCanonicalizationUnchanged": true
+  },
+  "cases": [
+    {"case":"Research disclosure collapse/reopen after first load","expected":"Loaded child remains mounted while its owning tool remains active; component-local value survives.","evidence":"LazyFeatureBoundary unit test sets Sub-THz-style local value to 145, closes/reopens, and checks same value; production E2E repeats keyboard open and collapse/reopen.","status":"verified"},
+    {"case":"Research never opened; normal planning","expected":"No Research implementation request and no research action.","evidence":"Production E2E resource assertion sees Propagation/RF Diagnostics chunks absent on cold startup and Propagation absent after selecting ordinary Propagation until disclosure opens.","status":"verified"},
+    {"case":"Profile change before first Research open","expected":"First-mount defaults match the settings from Propagation tool entry, as under the former eager child mount.","evidence":"App captures propagation settings on tool-entry transition and passes snapshot on first lazy mount; SubTHZ/P1411 option initializers read only that supplied settings object. No dedicated profile-switch E2E fixture.","status":"code-audited; targeted switch scenario not independently exercised"},
+    {"case":"Profile change after Research loaded","expected":"Parent settings/result props track current workspace; transient component-local research options follow existing behavior.","evidence":"Current settings and results are passed as props, with transient controls owned by feature component. Existing suite tests profile/domain behavior; no added focused profile-after-open lazy test.","status":"code-audited; no targeted new switch fixture"},
+    {"case":"Persisted Advanced RF override collapse/save/reload","expected":"Persisted override restores; remains independent of research module loading.","evidence":"Advanced control remains eager and App-owned; production E2E test `keeps a collapsed Advanced cell RF value through Version save and reload` passes at all configured projects.","status":"verified by existing E2E"},
+    {"case":"Scenario switch and Version navigation","expected":"Active Scenario/Version/result props come from the existing workspace state; module cache does not retain domain data for another Scenario.","evidence":"Lazy modules receive current App-owned props; current/stale/historical badges and Run source actions remain in existing components. Existing Run source-Version and blocked draft-switch E2E cases pass. No new case switches Scenario after loading every lazy feature.","status":"architecture audited; related workflow E2Es pass; full cross-feature matrix not separately exercised"},
+    {"case":"Project switch","expected":"Loaded JavaScript may stay cached, while app/domain props resolve against the active Project.","evidence":"No lazy entry stores Project state; Run/Report contents are passed from App and repository hooks. Existing project persistence/workflow tests pass; no focused project switch after every lazy boundary.","status":"architecture audited; targeted full matrix not separately exercised"},
+    {"case":"CURRENT/STALE/HISTORICAL result context while loading","expected":"Local feature fallback does not replace the map or domain lineage; the feature receives currentWorkspace/result context after mount.","evidence":"Result badges remain existing shared components; RunHistoryPanel and ReportFeature receive current workspace lineage. Cold historical Report E2E verifies source Run/Version action and preserved existing record.","status":"verified by architecture and related E2E"},
+    {"case":"Run snapshot and Scenario fingerprint","expected":"Loading/opening a feature does not enter canonical Run or Scenario input data.","evidence":"No request builder, run capture, scenario canonicalizer, or domain schema was modified; lazy state lives in component/loader. Full 275-unit suite passes. No separately serialized pre/post representative Run/fingerprint pair was captured.","status":"source boundary and regression-suite evidence; no standalone byte-for-byte snapshot comparison"},
+    {"case":"Report source and retained artifact continuity","expected":"Existing source binding, artifact bytes, content hash, availability and local download behavior remain unchanged; download does not rerun RF.","evidence":"Existing domain/report/repository helpers remain in use; download helper consumes exact stored bytes. Cold historical report E2E generates from the source Run after one initial compute request and displays retained report with source context. No pre/post artifact hash golden comparison captured.","status":"workflow verified; no independent prior-vs-new hash comparison"},
+    {"case":"Validation attention/focus navigation","expected":"An invalid Advanced control remains available without waiting on a lazy feature; any lazy feature focus must happen after mount.","evidence":"OptimizationGoalsPanel and path-profile validation section remain eager; existing attention/focus behavior is not moved across the lazy boundary. Focused path-profile action E2E passes.","status":"kept eager; related E2E verified"},
+    {"case":"Lazy import failure","expected":"Feature error remains local with recovery; map and Run Sector control survive. Reload resets the browser module registry, then the feature can be requested again.","evidence":"Vitest verifies the feature-local alert and reload action. Production E2E aborts the first chunk request, reloads the app, requests the feature again successfully, and verifies the control is usable.","status":"verified"}
+  ],
+  "requestAndComputeInvariance": {
+    "requestSchemasChanged": false,
+    "backendOrRequestBuilderChanged": false,
+    "lazyMetadataAddedToPayload": false,
+    "RFOnImport": false,
+    "ordinaryPlanningE2E": "One compute request is observed for the initial Run in cold Run History report-generation workflow; report generation adds none.",
+    "coverage": "Existing request-equivalence/domain tests remain in the full passing frontend suite. The implementation changes import timing and presentation module placement only."
+  },
+  "limits": [
+    "This phase does not create a dedicated exhaustive Cartesian test across every lazy feature and Project/Scenario/profile transition.",
+    "A module remains in browser memory after first use; closing a tool is not module unloading.",
+    "Exact byte-for-byte report artifact hash and Run snapshot pre/post fixture comparisons were not separately captured for this phase."
+  ]
+}

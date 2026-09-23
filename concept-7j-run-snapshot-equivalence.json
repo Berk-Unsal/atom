@@ -1,0 +1,939 @@
+{
+  "concept": "7J",
+  "captureStage": "pre-extraction deterministic Run fixtures; post-extraction hook output compared against the retained fixtures",
+  "normalizedFrom": "frontend-react/src/domain/runCapture.js and frontend-react/src/domain/run.js",
+  "fixtures": {
+    "appMeta": {
+      "model_version": "rf-model-7j-golden",
+      "git_commit": "fixture-commit",
+      "dataset": {
+        "id": "dataset-ankara",
+        "version": "2026.09",
+        "sha256": {
+          "buildings": "bldg-hash",
+          "towers": "tower-hash"
+        }
+      }
+    },
+    "project": {
+      "id": "project-local-1",
+      "domain": {
+        "project_id": "project-domain-1",
+        "inventory_revision_id": "inventory-rev-1"
+      },
+      "datasetRef": {
+        "id": "dataset-ankara",
+        "version": "2026.09",
+        "hashes": {
+          "buildings": "bldg-hash",
+          "towers": "tower-hash"
+        }
+      }
+    },
+    "scenario": {
+      "id": "scenario-local-1",
+      "domain": {
+        "scenario_id": "scenario-1",
+        "current_revision_id": "revision-1",
+        "scenario_fingerprint": "scenario-fingerprint-1",
+        "inventory_revision_id": "inventory-rev-1"
+      },
+      "request": {
+        "scenario_fingerprint": "scenario-fingerprint-1",
+        "input_fingerprint": "input-fingerprint-1"
+      }
+    },
+    "rfContract": {
+      "model_version": "rf-model-7j-golden",
+      "receiver": {
+        "sensitivity_dbm": -115,
+        "noise_figure_db": 7,
+        "required_snr_db": 5
+      },
+      "interference": {
+        "bandwidth_mhz": 100,
+        "load_pct": 60
+      },
+      "applied_defaults": {
+        "frequency_ghz": 28,
+        "tx_power_dbm": 30,
+        "radius_m": 400,
+        "beam_width_deg": 90
+      }
+    },
+    "simulationRequest": {
+      "frequency_ghz": 28,
+      "tx_power_dbm": 30,
+      "radius_m": 400,
+      "towers": [
+        {
+          "id": "cell-1",
+          "azimuth_deg": 90
+        }
+      ]
+    },
+    "optimizationRequest": {
+      "frequency_ghz": 28,
+      "towers": [
+        {
+          "id": "cell-1",
+          "azimuth_deg": 90
+        },
+        {
+          "id": "cell-2",
+          "azimuth_deg": 270
+        }
+      ]
+    },
+    "optimizationResponse": {
+      "optimization_run_id": "optimizer-run-golden-1",
+      "baseline": {
+        "id": "baseline",
+        "score": 52,
+        "stats": {
+          "score": 52
+        },
+        "towers": [
+          {
+            "id": "cell-1",
+            "optimal_azimuth": 90
+          },
+          {
+            "id": "cell-2",
+            "optimal_azimuth": 270
+          }
+        ]
+      },
+      "pareto_frontier": [
+        {
+          "id": "public-pareto-alpha",
+          "score": 84,
+          "stats": {
+            "score": 84
+          },
+          "towers": [
+            {
+              "id": "cell-1",
+              "optimal_azimuth": 115
+            },
+            {
+              "id": "cell-2",
+              "optimal_azimuth": 250
+            }
+          ]
+        },
+        {
+          "id": "public-pareto-beta",
+          "score": 79,
+          "stats": {
+            "score": 79
+          },
+          "towers": [
+            {
+              "id": "cell-1",
+              "optimal_azimuth": 130
+            },
+            {
+              "id": "cell-2",
+              "optimal_azimuth": 240
+            }
+          ]
+        }
+      ],
+      "optimization": {
+        "recommended_solution_id": "public-pareto-alpha",
+        "priorities": {
+          "demand": 70,
+          "coverage": 30
+        },
+        "objective_status": {
+          "demand": {
+            "available": true
+          },
+          "coverage": {
+            "available": true
+          }
+        },
+        "constraints": {
+          "max_overlap_ratio": 0.2
+        }
+      }
+    }
+  },
+  "excludedFields": [
+    "run_id at every nesting level",
+    "created_at",
+    "started_at",
+    "completed_at",
+    "optimization_solution_id (generated internal identity; public id and optimizer_solution_id remain compared)"
+  ],
+  "before": {
+    "simulation": {
+      "run_type": "simulation",
+      "project_id": "project-domain-1",
+      "scenario_id": "scenario-1",
+      "scenario_revision_id": "revision-1",
+      "scenario_fingerprint": "scenario-fingerprint-1",
+      "input_fingerprint": "input-fingerprint-1",
+      "dataset_references": [
+        {
+          "dataset_id": "dataset-ankara",
+          "version": "2026.09",
+          "manifest_hash": null,
+          "content_hashes": {
+            "buildings": "bldg-hash",
+            "towers": "tower-hash"
+          },
+          "crs": null
+        }
+      ],
+      "engine": {
+        "name": "A.T.O.M",
+        "version": "rf-model-7j-golden",
+        "commit": "fixture-commit"
+      },
+      "rf_contract": {
+        "model_version": "rf-model-7j-golden",
+        "receiver": {
+          "sensitivity_dbm": -115,
+          "noise_figure_db": 7,
+          "required_snr_db": 5
+        },
+        "interference": {
+          "bandwidth_mhz": 100,
+          "load_pct": 60
+        },
+        "applied_defaults": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "beam_width_deg": 90
+        }
+      },
+      "optimizer_contract": null,
+      "canonical_input_snapshot": {
+        "schema_version": 1,
+        "request_schema": "atom.rf.request.v1",
+        "request": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "towers": [
+            {
+              "id": "cell-1",
+              "azimuth_deg": 90
+            }
+          ]
+        },
+        "source_scenario_revision_id": "revision-1",
+        "source_kind": "scenario_revision",
+        "draft_execution": false,
+        "draft_differs_from_source": false,
+        "inventory_revision_id": "inventory-rev-1",
+        "dataset_references": [
+          {
+            "dataset_id": "dataset-ankara",
+            "version": "2026.09",
+            "manifest_hash": null,
+            "content_hashes": {
+              "buildings": "bldg-hash",
+              "towers": "tower-hash"
+            },
+            "crs": null
+          }
+        ],
+        "receiver_assumptions": {
+          "sensitivity_dbm": -115,
+          "noise_figure_db": 7,
+          "required_snr_db": 5
+        },
+        "interference": {
+          "bandwidth_mhz": 100,
+          "load_pct": 60
+        },
+        "optimization": null,
+        "applied_defaults": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "beam_width_deg": 90
+        }
+      },
+      "status": "succeeded",
+      "warnings": [],
+      "error": null,
+      "summary": {
+        "simulation": {
+          "avg_rx_dbm": -88,
+          "max_range_m": 400,
+          "min_range_m": 45,
+          "blocked_pct": 10
+        },
+        "coverage_gaps": {
+          "gap_buildings": 4,
+          "gap_pct": 2
+        },
+        "scenario_fingerprint": "scenario-fingerprint-1"
+      },
+      "artifact_references": [],
+      "details": {
+        "result_summary": {
+          "simulation": {
+            "avg_rx_dbm": -88,
+            "max_range_m": 400,
+            "min_range_m": 45,
+            "blocked_pct": 10
+          },
+          "coverage_gaps": {
+            "gap_buildings": 4,
+            "gap_pct": 2
+          },
+          "scenario_fingerprint": "scenario-fingerprint-1"
+        }
+      },
+      "metadata": {
+        "source_kind": "scenario_revision",
+        "exact_request_retained": true
+      }
+    },
+    "optimization": {
+      "run_type": "optimization",
+      "project_id": "project-domain-1",
+      "scenario_id": "scenario-1",
+      "scenario_revision_id": "revision-1",
+      "scenario_fingerprint": "scenario-fingerprint-1",
+      "input_fingerprint": "input-fingerprint-1",
+      "dataset_references": [
+        {
+          "dataset_id": "dataset-ankara",
+          "version": "2026.09",
+          "manifest_hash": null,
+          "content_hashes": {
+            "buildings": "bldg-hash",
+            "towers": "tower-hash"
+          },
+          "crs": null
+        }
+      ],
+      "engine": {
+        "name": "A.T.O.M",
+        "version": "rf-model-7j-golden",
+        "commit": "fixture-commit"
+      },
+      "rf_contract": {
+        "model_version": "rf-model-7j-golden",
+        "receiver": {
+          "sensitivity_dbm": -115,
+          "noise_figure_db": 7,
+          "required_snr_db": 5
+        },
+        "interference": {
+          "bandwidth_mhz": 100,
+          "load_pct": 60
+        },
+        "applied_defaults": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "beam_width_deg": 90
+        }
+      },
+      "optimizer_contract": {
+        "kind": "network",
+        "objectives": [
+          {
+            "id": "demand",
+            "weight": 70
+          },
+          {
+            "id": "coverage",
+            "weight": 30
+          }
+        ],
+        "constraints": {
+          "max_overlap_ratio": 0.2
+        }
+      },
+      "canonical_input_snapshot": {
+        "schema_version": 1,
+        "request_schema": "atom.optimization.request.v1",
+        "request": {
+          "frequency_ghz": 28,
+          "towers": [
+            {
+              "id": "cell-1",
+              "azimuth_deg": 90
+            },
+            {
+              "id": "cell-2",
+              "azimuth_deg": 270
+            }
+          ]
+        },
+        "source_scenario_revision_id": "revision-1",
+        "source_kind": "scenario_revision",
+        "draft_execution": false,
+        "draft_differs_from_source": false,
+        "inventory_revision_id": "inventory-rev-1",
+        "dataset_references": [
+          {
+            "dataset_id": "dataset-ankara",
+            "version": "2026.09",
+            "manifest_hash": null,
+            "content_hashes": {
+              "buildings": "bldg-hash",
+              "towers": "tower-hash"
+            },
+            "crs": null
+          }
+        ],
+        "receiver_assumptions": {
+          "sensitivity_dbm": -115,
+          "noise_figure_db": 7,
+          "required_snr_db": 5
+        },
+        "interference": {
+          "bandwidth_mhz": 100,
+          "load_pct": 60
+        },
+        "optimization": {
+          "kind": "network",
+          "objectives": [
+            {
+              "id": "demand",
+              "weight": 70
+            },
+            {
+              "id": "coverage",
+              "weight": 30
+            }
+          ],
+          "constraints": {
+            "max_overlap_ratio": 0.2
+          }
+        },
+        "applied_defaults": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "beam_width_deg": 90
+        }
+      },
+      "status": "succeeded",
+      "warnings": [],
+      "error": null,
+      "summary": {
+        "optimization": {
+          "recommended_solution_id": "public-pareto-alpha",
+          "priorities": {
+            "demand": 70,
+            "coverage": 30
+          },
+          "objective_status": {
+            "demand": {
+              "available": true
+            },
+            "coverage": {
+              "available": true
+            }
+          },
+          "constraints": {
+            "max_overlap_ratio": 0.2
+          }
+        },
+        "optimization_run_id": "optimizer-run-golden-1",
+        "pareto_solution_count": 2
+      },
+      "artifact_references": [],
+      "details": {
+        "kind": "optimization",
+        "baseline_solution": {
+          "optimizer_solution_id": "baseline",
+          "id": "baseline",
+          "cell_configurations": [
+            {
+              "id": "cell-1",
+              "optimal_azimuth": 90
+            },
+            {
+              "id": "cell-2",
+              "optimal_azimuth": 270
+            }
+          ],
+          "objectives": {},
+          "stats": {
+            "score": 52
+          },
+          "score": 52,
+          "constraints_satisfied": true,
+          "violations": [],
+          "explanation_summary": null,
+          "metadata": {}
+        },
+        "public_pareto_solutions": [
+          {
+            "optimizer_solution_id": "public-pareto-alpha",
+            "id": "public-pareto-alpha",
+            "cell_configurations": [
+              {
+                "id": "cell-1",
+                "optimal_azimuth": 115
+              },
+              {
+                "id": "cell-2",
+                "optimal_azimuth": 250
+              }
+            ],
+            "objectives": {},
+            "stats": {
+              "score": 84
+            },
+            "score": 84,
+            "constraints_satisfied": true,
+            "violations": [],
+            "explanation_summary": null,
+            "metadata": {}
+          },
+          {
+            "optimizer_solution_id": "public-pareto-beta",
+            "id": "public-pareto-beta",
+            "cell_configurations": [
+              {
+                "id": "cell-1",
+                "optimal_azimuth": 130
+              },
+              {
+                "id": "cell-2",
+                "optimal_azimuth": 240
+              }
+            ],
+            "objectives": {},
+            "stats": {
+              "score": 79
+            },
+            "score": 79,
+            "constraints_satisfied": true,
+            "violations": [],
+            "explanation_summary": null,
+            "metadata": {}
+          }
+        ],
+        "recommended_solution_id": "public-pareto-alpha",
+        "selected_solution_id": null,
+        "effective_priorities": {
+          "demand": 70,
+          "coverage": 30
+        },
+        "objective_availability": {
+          "demand": {
+            "available": true
+          },
+          "coverage": {
+            "available": true
+          }
+        },
+        "constraints": {
+          "max_overlap_ratio": 0.2
+        },
+        "search_policy": null,
+        "budgets": null,
+        "evaluated_count": null,
+        "cache_summary": null,
+        "optimizer_identity": null,
+        "rf_contract": null,
+        "optimization_run_id": "optimizer-run-golden-1"
+      },
+      "metadata": {
+        "source_kind": "scenario_revision",
+        "exact_request_retained": true
+      }
+    }
+  },
+  "after": {
+    "simulation": {
+      "run_type": "simulation",
+      "project_id": "project-domain-1",
+      "scenario_id": "scenario-1",
+      "scenario_revision_id": "revision-1",
+      "scenario_fingerprint": "scenario-fingerprint-1",
+      "input_fingerprint": "input-fingerprint-1",
+      "dataset_references": [
+        {
+          "dataset_id": "dataset-ankara",
+          "version": "2026.09",
+          "manifest_hash": null,
+          "content_hashes": {
+            "buildings": "bldg-hash",
+            "towers": "tower-hash"
+          },
+          "crs": null
+        }
+      ],
+      "engine": {
+        "name": "A.T.O.M",
+        "version": "rf-model-7j-golden",
+        "commit": "fixture-commit"
+      },
+      "rf_contract": {
+        "model_version": "rf-model-7j-golden",
+        "receiver": {
+          "sensitivity_dbm": -115,
+          "noise_figure_db": 7,
+          "required_snr_db": 5
+        },
+        "interference": {
+          "bandwidth_mhz": 100,
+          "load_pct": 60
+        },
+        "applied_defaults": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "beam_width_deg": 90
+        }
+      },
+      "optimizer_contract": null,
+      "canonical_input_snapshot": {
+        "schema_version": 1,
+        "request_schema": "atom.rf.request.v1",
+        "request": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "towers": [
+            {
+              "id": "cell-1",
+              "azimuth_deg": 90
+            }
+          ]
+        },
+        "source_scenario_revision_id": "revision-1",
+        "source_kind": "scenario_revision",
+        "draft_execution": false,
+        "draft_differs_from_source": false,
+        "inventory_revision_id": "inventory-rev-1",
+        "dataset_references": [
+          {
+            "dataset_id": "dataset-ankara",
+            "version": "2026.09",
+            "manifest_hash": null,
+            "content_hashes": {
+              "buildings": "bldg-hash",
+              "towers": "tower-hash"
+            },
+            "crs": null
+          }
+        ],
+        "receiver_assumptions": {
+          "sensitivity_dbm": -115,
+          "noise_figure_db": 7,
+          "required_snr_db": 5
+        },
+        "interference": {
+          "bandwidth_mhz": 100,
+          "load_pct": 60
+        },
+        "optimization": null,
+        "applied_defaults": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "beam_width_deg": 90
+        }
+      },
+      "status": "succeeded",
+      "warnings": [],
+      "error": null,
+      "summary": {
+        "simulation": {
+          "avg_rx_dbm": -88,
+          "max_range_m": 400,
+          "min_range_m": 45,
+          "blocked_pct": 10
+        },
+        "coverage_gaps": {
+          "gap_buildings": 4,
+          "gap_pct": 2
+        },
+        "scenario_fingerprint": "scenario-fingerprint-1"
+      },
+      "artifact_references": [],
+      "details": {
+        "result_summary": {
+          "simulation": {
+            "avg_rx_dbm": -88,
+            "max_range_m": 400,
+            "min_range_m": 45,
+            "blocked_pct": 10
+          },
+          "coverage_gaps": {
+            "gap_buildings": 4,
+            "gap_pct": 2
+          },
+          "scenario_fingerprint": "scenario-fingerprint-1"
+        }
+      },
+      "metadata": {
+        "source_kind": "scenario_revision",
+        "exact_request_retained": true
+      }
+    },
+    "optimization": {
+      "run_type": "optimization",
+      "project_id": "project-domain-1",
+      "scenario_id": "scenario-1",
+      "scenario_revision_id": "revision-1",
+      "scenario_fingerprint": "scenario-fingerprint-1",
+      "input_fingerprint": "input-fingerprint-1",
+      "dataset_references": [
+        {
+          "dataset_id": "dataset-ankara",
+          "version": "2026.09",
+          "manifest_hash": null,
+          "content_hashes": {
+            "buildings": "bldg-hash",
+            "towers": "tower-hash"
+          },
+          "crs": null
+        }
+      ],
+      "engine": {
+        "name": "A.T.O.M",
+        "version": "rf-model-7j-golden",
+        "commit": "fixture-commit"
+      },
+      "rf_contract": {
+        "model_version": "rf-model-7j-golden",
+        "receiver": {
+          "sensitivity_dbm": -115,
+          "noise_figure_db": 7,
+          "required_snr_db": 5
+        },
+        "interference": {
+          "bandwidth_mhz": 100,
+          "load_pct": 60
+        },
+        "applied_defaults": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "beam_width_deg": 90
+        }
+      },
+      "optimizer_contract": {
+        "kind": "network",
+        "objectives": [
+          {
+            "id": "demand",
+            "weight": 70
+          },
+          {
+            "id": "coverage",
+            "weight": 30
+          }
+        ],
+        "constraints": {
+          "max_overlap_ratio": 0.2
+        }
+      },
+      "canonical_input_snapshot": {
+        "schema_version": 1,
+        "request_schema": "atom.optimization.request.v1",
+        "request": {
+          "frequency_ghz": 28,
+          "towers": [
+            {
+              "id": "cell-1",
+              "azimuth_deg": 90
+            },
+            {
+              "id": "cell-2",
+              "azimuth_deg": 270
+            }
+          ]
+        },
+        "source_scenario_revision_id": "revision-1",
+        "source_kind": "scenario_revision",
+        "draft_execution": false,
+        "draft_differs_from_source": false,
+        "inventory_revision_id": "inventory-rev-1",
+        "dataset_references": [
+          {
+            "dataset_id": "dataset-ankara",
+            "version": "2026.09",
+            "manifest_hash": null,
+            "content_hashes": {
+              "buildings": "bldg-hash",
+              "towers": "tower-hash"
+            },
+            "crs": null
+          }
+        ],
+        "receiver_assumptions": {
+          "sensitivity_dbm": -115,
+          "noise_figure_db": 7,
+          "required_snr_db": 5
+        },
+        "interference": {
+          "bandwidth_mhz": 100,
+          "load_pct": 60
+        },
+        "optimization": {
+          "kind": "network",
+          "objectives": [
+            {
+              "id": "demand",
+              "weight": 70
+            },
+            {
+              "id": "coverage",
+              "weight": 30
+            }
+          ],
+          "constraints": {
+            "max_overlap_ratio": 0.2
+          }
+        },
+        "applied_defaults": {
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "radius_m": 400,
+          "beam_width_deg": 90
+        }
+      },
+      "status": "succeeded",
+      "warnings": [],
+      "error": null,
+      "summary": {
+        "optimization": {
+          "recommended_solution_id": "public-pareto-alpha",
+          "priorities": {
+            "demand": 70,
+            "coverage": 30
+          },
+          "objective_status": {
+            "demand": {
+              "available": true
+            },
+            "coverage": {
+              "available": true
+            }
+          },
+          "constraints": {
+            "max_overlap_ratio": 0.2
+          }
+        },
+        "optimization_run_id": "optimizer-run-golden-1",
+        "pareto_solution_count": 2
+      },
+      "artifact_references": [],
+      "details": {
+        "kind": "optimization",
+        "baseline_solution": {
+          "optimizer_solution_id": "baseline",
+          "id": "baseline",
+          "cell_configurations": [
+            {
+              "id": "cell-1",
+              "optimal_azimuth": 90
+            },
+            {
+              "id": "cell-2",
+              "optimal_azimuth": 270
+            }
+          ],
+          "objectives": {},
+          "stats": {
+            "score": 52
+          },
+          "score": 52,
+          "constraints_satisfied": true,
+          "violations": [],
+          "explanation_summary": null,
+          "metadata": {}
+        },
+        "public_pareto_solutions": [
+          {
+            "optimizer_solution_id": "public-pareto-alpha",
+            "id": "public-pareto-alpha",
+            "cell_configurations": [
+              {
+                "id": "cell-1",
+                "optimal_azimuth": 115
+              },
+              {
+                "id": "cell-2",
+                "optimal_azimuth": 250
+              }
+            ],
+            "objectives": {},
+            "stats": {
+              "score": 84
+            },
+            "score": 84,
+            "constraints_satisfied": true,
+            "violations": [],
+            "explanation_summary": null,
+            "metadata": {}
+          },
+          {
+            "optimizer_solution_id": "public-pareto-beta",
+            "id": "public-pareto-beta",
+            "cell_configurations": [
+              {
+                "id": "cell-1",
+                "optimal_azimuth": 130
+              },
+              {
+                "id": "cell-2",
+                "optimal_azimuth": 240
+              }
+            ],
+            "objectives": {},
+            "stats": {
+              "score": 79
+            },
+            "score": 79,
+            "constraints_satisfied": true,
+            "violations": [],
+            "explanation_summary": null,
+            "metadata": {}
+          }
+        ],
+        "recommended_solution_id": "public-pareto-alpha",
+        "selected_solution_id": null,
+        "effective_priorities": {
+          "demand": 70,
+          "coverage": 30
+        },
+        "objective_availability": {
+          "demand": {
+            "available": true
+          },
+          "coverage": {
+            "available": true
+          }
+        },
+        "constraints": {
+          "max_overlap_ratio": 0.2
+        },
+        "search_policy": null,
+        "budgets": null,
+        "evaluated_count": null,
+        "cache_summary": null,
+        "optimizer_identity": null,
+        "rf_contract": null,
+        "optimization_run_id": "optimizer-run-golden-1"
+      },
+      "metadata": {
+        "source_kind": "scenario_revision",
+        "exact_request_retained": true
+      }
+    }
+  },
+  "verification": {
+    "test": "frontend-react/src/hooks/useRunExecution.test.jsx — \"preserves normalized simulation and optimization Run snapshots\"",
+    "comparison": "Normalized simulation and optimization Run records deep-equal the before fixtures; excludes only generated run/time IDs and internal optimization_solution_id; public Pareto IDs remain included.",
+    "result": "pass"
+  }
+}

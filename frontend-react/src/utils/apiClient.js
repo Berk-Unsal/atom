@@ -1,4 +1,5 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+assertSecureBaseUrl(API_BASE_URL);
 export const MAX_JSON_RESPONSE_BYTES = 32 * 1024 * 1024;
 export const MAX_BLOB_RESPONSE_BYTES = 64 * 1024 * 1024;
 const MAX_ERROR_TEXT_BYTES = 4096;
@@ -60,6 +61,14 @@ export async function postBlob(path, payload, fallbackMessage = "Export failed",
 
 export function isAbortError(error) {
   return error?.name === "AbortError";
+}
+
+function assertSecureBaseUrl(baseUrl) {
+  if (!baseUrl) return;
+  const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(baseUrl);
+  if (!/^https:\/\//i.test(baseUrl) && !isLocalhost) {
+    throw new Error("VITE_API_BASE_URL must use HTTPS to prevent downgrade/MITM attacks");
+  }
 }
 
 async function readResponsePayload(response) {

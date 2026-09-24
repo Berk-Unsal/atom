@@ -1,0 +1,73 @@
+{
+  "concept": "8B.1",
+  "verifiedBy": "Source diff audit plus request-equivalence, frontend, E2E, persistence, and backend suites (results recorded in concept-8b1-test-evidence.json).",
+  "invariants": [
+    {
+      "area": "Stage navigation",
+      "status": "unchanged",
+      "evidence": "WORKSPACE_STAGES and WORKSPACE_TOOLS registry file is unchanged; 4 stages and 13 existing tool IDs."
+    },
+    {
+      "area": "Availability and direct destinations",
+      "status": "unchanged",
+      "evidence": "Only row rendering/copy/ARIA in StageToolChoices changed; state computation and selection callbacks are unchanged."
+    },
+    {
+      "area": "One active drawer",
+      "status": "unchanged",
+      "evidence": "ToolDrawer mode and stage ownership remain; no routing/store added."
+    },
+    {
+      "area": "Command-bar semantics",
+      "status": "unchanged",
+      "evidence": "Project/Scenario/Version/draft, RF context, operation state, freshness/source Run, persistence status, and primary action remain. CSS now stacks RF values at 901–1120px to avoid overlap."
+    },
+    {
+      "area": "Scientific safety",
+      "status": "preserved",
+      "evidence": "140GHz remains explicitly outside canonical validation/production-calibrated scope and radio-quality output remains UNSUPPORTED; only duplicate phrasing and label chip were shortened."
+    },
+    {
+      "area": "Research/Advanced/Planning disclosures",
+      "status": "unchanged",
+      "evidence": "Disclosure components and expanded semantics unchanged; internal model identifier moved from summary into Details body."
+    },
+    {
+      "area": "Lazy-loading",
+      "status": "unchanged",
+      "evidence": "No lazy import/module boundary changed; chooser still reads static workspace metadata."
+    },
+    {
+      "area": "Map toolbar",
+      "status": "unchanged",
+      "evidence": "No toolbar component or control semantics changed; only chooser position and map-plan prompt styling are affected."
+    },
+    {
+      "area": "Map legend",
+      "status": "unchanged",
+      "evidence": "No legend component, source, thresholds, categories, or accessibility semantics changed."
+    },
+    {
+      "area": "Run/RF/optimizer/request/fingerprint",
+      "status": "unchanged",
+      "evidence": "No request construction, calculation, optimizer, result freshness, fingerprint, Pareto, or API code changed; request equivalence suite is run separately."
+    },
+    {
+      "area": "Scenario/ProjectV2/persistence/Run History/Report",
+      "status": "unchanged",
+      "evidence": "No persistence/schema/report artifact code changed; E2E coverage remains."
+    },
+    {
+      "area": "Dependencies",
+      "status": "unchanged",
+      "evidence": "No package manifest or lockfile change."
+    }
+  ],
+  "presentationFilesChanged": [
+    "frontend-react/src/components/WorkspaceChrome.jsx",
+    "frontend-react/src/components/ResearchReferenceBadge.jsx",
+    "frontend-react/src/App.jsx",
+    "frontend-react/src/styles.css"
+  ],
+  "protectedRegistry": "frontend-react/src/components/workspaceTools.js"
+}

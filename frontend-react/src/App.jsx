@@ -18,6 +18,7 @@ import LazyFeatureBoundary from "./components/LazyFeatureBoundary.jsx";
 import ScenarioPanel from "./components/ScenarioPanel.jsx";
 import ApplySolutionDialog from "./components/ApplySolutionDialog.jsx";
 import ResultContextBadge from "./components/ResultContextBadge.jsx";
+import ContextualInspector from "./components/ContextualInspector.jsx";
 import ResearchReferenceBadge from "./components/ResearchReferenceBadge.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
@@ -44,7 +45,7 @@ import {
   captureSimulationRun,
 } from "./domain/runCapture.js";
 import { createOptimizationRun, createSimulationRun, transitionRun } from "./domain/run.js";
-import { buildResultContext, buildWorkspaceLineage } from "./domain/resultContext.js";
+import { buildResultContext, buildWorkspaceLineage, RESULT_FRESHNESS, resultStateLabel } from "./domain/resultContext.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { getJSON, isAbortError, postBlob, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
@@ -68,6 +69,15 @@ import {
   resolveSelectedParetoSolutionId,
   OPTIMIZATION_OBJECTIVES,
 } from "./utils/optimizationConfig.js";
+import {
+  explainInterferenceSample,
+  interferenceCountLabel,
+  interferenceMeasurementFamilyLabel,
+  interferenceQualityLabel,
+  interferenceServingCellLabel,
+  interferenceStrongestInterfererLabel,
+  resolveInterferenceSampleFreshness,
+} from "./utils/interferenceInspector.js";
 import { effectiveReceiverSensitivityDbm, resolveRFProfile, rfProfileOverrideFromProperties, validateRFProfile } from "./utils/rfProfile.js";
 import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
 import { compactRecommendationResponse } from "./utils/recommendations.js";
@@ -180,9 +190,14 @@ export default function App() {
   const [phoneLayout, setPhoneLayout] = useState(() => typeof window !== "undefined" && Boolean(window.matchMedia?.("(max-width: 640px)").matches));
   const chooserOriginRef = useRef(null);
   const previousActiveToolRef = useRef(activeTool);
+  const inputModalityRef = useRef("pointer");
+  const inspectorReturnElementRef = useRef(null);
+  const resultContextRef = useRef(null);
+  const workspaceLineageRef = useRef(null);
+  const interferenceAnalysisContextRef = useRef(null);
+  const interferenceAnalysisSequenceRef = useRef(0);
   const [propagationResearchSettings, setPropagationResearchSettings] = useState(null);
   const propagationToolWasActive = useRef(false);
-  const [previousTool, setPreviousTool] = useState("setup");
   const [openPropagationAdvancedRequest, setOpenPropagationAdvancedRequest] = useState(0);
   const [openScenarioWorkspaceRequest, setOpenScenarioWorkspaceRequest] = useState(0);
   const [researchActivity, setResearchActivity] = useState(false);
@@ -196,11 +211,48 @@ export default function App() {
   const [layerVisibility, setLayerVisibility] = useState(DEFAULT_LAYER_VISIBILITY);
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
   const [legendCollapsed, setLegendCollapsed] = useState(false);
-  const [selectedMapObject, setSelectedMapObject] = useState(null);
+  const legendCollapsedRef = useRef(legendCollapsed);
+  const legendCollapsedRestoreRef = useRef(null);
+  const [inspectedEntity, setInspectedEntity] = useState(null);
+  useEffect(() => {
+    legendCollapsedRef.current = legendCollapsed;
+  }, [legendCollapsed]);
+  useEffect(() => {
+    if (!selectionNotice) return undefined;
+    const timer = window.setTimeout(() => setSelectionNotice(""), 5000);
+    return () => window.clearTimeout(timer);
+  }, [selectionNotice]);
+  useEffect(() => {
+    const syncLegendForInspector = () => {
+      const constrainedByInspector = Boolean(inspectedEntity) && window.innerWidth <= 900;
+      if (constrainedByInspector && legendCollapsedRestoreRef.current === null) {
+        legendCollapsedRestoreRef.current = legendCollapsedRef.current;
+        setLegendCollapsed(true);
+      } else if (!constrainedByInspector && legendCollapsedRestoreRef.current !== null) {
+        const restoreCollapsed = legendCollapsedRestoreRef.current;
+        legendCollapsedRestoreRef.current = null;
+        setLegendCollapsed(restoreCollapsed);
+      }
+    };
+    syncLegendForInspector();
+    window.addEventListener("resize", syncLegendForInspector);
+    return () => window.removeEventListener("resize", syncLegendForInspector);
+  }, [inspectedEntity]);
+  const [mapInteractionMode, setMapInteractionMode] = useState("inspect");
+  const [mapViewportRequest, setMapViewportRequest] = useState(null);
+  const [inventoryTargetCellId, setInventoryTargetCellId] = useState(null);
+  const [pathProfileCellId, setPathProfileCellId] = useState(null);
   const [selectedMapCellId, setSelectedMapCellId] = useState(null);
   const [rayScope, setRayScope] = useState(RAY_SCOPE_ALL);
   const [fitRequestVersion, setFitRequestVersion] = useState(0);
   const [settings, setSettings] = useState(DEFAULT_SIMULATION);
+  const activeNetworkTech = networkTechLabelForFrequency(settings.frequencyGHz);
+  const clearSpatialContext = useCallback(() => {
+    setInspectedEntity(null);
+    setInventoryTargetCellId(null);
+    setPathProfileCellId(null);
+    setMapInteractionMode("inspect");
+  }, []);
   useEffect(() => {
     const propagationToolIsActive = drawerMode === "tool" && activeTool === "propagation";
     if (propagationToolIsActive && !propagationToolWasActive.current) {
@@ -228,6 +280,12 @@ export default function App() {
   const [coverageSurfaceError, setCoverageSurfaceError] = useState("");
   const [surfaceOptions, setSurfaceOptions] = useState({ cellSizeMeters: 25, thresholdsDBm: [-110, -100, -90, -80], opacity: 0.62, displayThresholdDBm: -110 });
   const [selectedTower, setSelectedTower] = useState(null);
+  const pathProfileTower = pathProfileCellId
+    ? towers.find((tower) => String(tower.id) === String(pathProfileCellId)) ?? null
+    : selectedTower;
+  const inventoryTargetTower = inventoryTargetCellId
+    ? towers.find((tower) => String(tower.id) === String(inventoryTargetCellId)) ?? null
+    : null;
   const [selectedNetworkTowerIds, setSelectedNetworkTowerIds] = useState([]);
   const [networkAzimuths, setNetworkAzimuths] = useState({});
   const [optimizationConfig, setOptimizationConfig] = useState(createDefaultOptimizationConfig);
@@ -236,6 +294,7 @@ export default function App() {
   const [coverageGaps, setCoverageGaps] = useState(EMPTY_COVERAGE_GAPS);
   const [coverageGapRevision, setCoverageGapRevision] = useState(0);
   const [interferenceAnalysis, setInterferenceAnalysis] = useState(EMPTY_INTERFERENCE_ANALYSIS);
+  const [interferenceAnalysisContext, setInterferenceAnalysisContext] = useState(null);
   const [interferenceRevision, setInterferenceRevision] = useState(0);
   const [interferenceMetric, setInterferenceMetric] = useState("sinr");
   const [buildingSummary, setBuildingSummary] = useState(null);
@@ -280,6 +339,20 @@ export default function App() {
   const cellExplanationCacheRef = useRef(new Map());
   const coverageSurfaceSourceKeyRef = useRef(null);
   const buildingEntrySourceKeyRef = useRef(null);
+  const selectedMapObject = inspectedEntity
+    ? { type: inspectedEntity.kind, payload: inspectedEntity.snapshot }
+    : null;
+
+  useEffect(() => {
+    const notePointer = () => { inputModalityRef.current = "pointer"; };
+    const noteKeyboard = () => { inputModalityRef.current = "keyboard"; };
+    window.addEventListener("pointerdown", notePointer, true);
+    window.addEventListener("keydown", noteKeyboard, true);
+    return () => {
+      window.removeEventListener("pointerdown", notePointer, true);
+      window.removeEventListener("keydown", noteKeyboard, true);
+    };
+  }, []);
   const clearCellExplanation = useCallback(() => {
     cellExplanationCacheRef.current.clear();
     setCellExplanationState(EMPTY_CELL_EXPLANATION_STATE);
@@ -496,10 +569,8 @@ export default function App() {
 
   const clearInterferenceAnalysis = useCallback(() => {
     setInterferenceAnalysis(EMPTY_INTERFERENCE_ANALYSIS);
+    setInterferenceAnalysisContext(null);
     setInterferenceRevision((current) => current + 1);
-    setSelectedMapObject((current) =>
-      current?.type === "interference_sample" ? null : current,
-    );
   }, []);
 
   const restorePlanningSnapshot = useCallback((snapshot) => {
@@ -539,6 +610,7 @@ export default function App() {
     setSimulation(artifacts?.simulation ?? EMPTY_SIMULATION);
     setCoverageGaps(artifacts?.coverageGaps ?? EMPTY_COVERAGE_GAPS);
     setInterferenceAnalysis(artifacts?.interferenceAnalysis ?? EMPTY_INTERFERENCE_ANALYSIS);
+    setInterferenceAnalysisContext(null);
     setNetworkOptimization(artifacts?.networkOptimization ?? null);
     setBuildingEntryAnalysis(artifacts?.buildingEntryAnalysis ?? null);
     setBuildingEntrySourceKey(artifacts?.buildingEntrySourceKey ?? null);
@@ -651,7 +723,7 @@ export default function App() {
   }, []);
 
   const analyzePathProfile = useCallback(async (options) => {
-    if (!selectedTower || !pathProfileEndpoint) {
+    if (!pathProfileTower || !pathProfileEndpoint) {
       setError("Select a transmitter cell and receiver point first");
       return;
     }
@@ -661,7 +733,7 @@ export default function App() {
     try {
       const payload = await postJSON(
         "/api/path-profile",
-        buildPathProfilePayload(selectedTower, pathProfileEndpoint, settings, options),
+        buildPathProfilePayload(pathProfileTower, pathProfileEndpoint, settings, options),
         "Path profile analysis failed",
         request.signal,
       );
@@ -674,7 +746,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [pathProfileEndpoint, requests, selectedTower, settings]);
+  }, [pathProfileEndpoint, pathProfileTower, requests, settings]);
 
   const analyzeSubTHZReference = useCallback(async (options) => {
     if (!selectedTower || !pathProfileEndpoint) {
@@ -1318,10 +1390,6 @@ export default function App() {
     const candidates = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
     return candidates.map(cellIDForTower).filter(Boolean);
   }, [planningMode, selectedNetworkTowers, selectedTower]);
-  const rayCellOptions = useMemo(
-    () => rayCellIDs.map((cellID) => ({ id: cellID, label: `Cell ${cellID}` })),
-    [rayCellIDs],
-  );
   const currentCoverageSurfaceRequest = useMemo(() => {
     if (!selectedTower) return null;
     const surfaceSettings = coverageSurfaceSettingsFor(selectedTower, settings, planningMode, networkAzimuths);
@@ -1363,8 +1431,13 @@ export default function App() {
     return tower ? effectiveReceiverSensitivityDbm(resolveRFProfile(tower, settings, index >= 0 ? index : 0)) : -115;
   }, [planningMode, renderedCoverageSurface, selectedMapCellId, selectedNetworkTowers, selectedTower, settings, simulation]);
   useEffect(() => {
-    setSelectedMapCellId((current) => rayCellIDs.includes(String(current)) ? current : rayCellIDs[0] ?? null);
-  }, [rayCellIDs]);
+    setSelectedMapCellId((current) => {
+      const focusedCellExists = towers.some((tower) => (
+        String(cellIDForTower(tower)) === String(current) || String(tower.id) === String(current)
+      ));
+      return focusedCellExists ? current : cellIDForTower(towers[0]) ?? null;
+    });
+  }, [towers]);
   const visibleRayFeatures = useMemo(
     () => filterRayFeatures(simulation.geojson?.features ?? [], {
       cellIDsByIndex: rayCellIDs,
@@ -1392,19 +1465,36 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    const requestPayload = buildInterferencePayload(selectedNetworkTowers, settings, networkOptimization, networkAzimuths);
+    const sourceLineage = workspaceLineageRef.current;
+    const analysisID = `interference-${++interferenceAnalysisSequenceRef.current}`;
     setActiveRFTask("interference");
     setError("");
     try {
       const payload = await postJSON(
         "/api/interference",
-        buildInterferencePayload(selectedNetworkTowers, settings, networkOptimization, networkAzimuths),
+        requestPayload,
         "Interference analysis failed",
         request.signal,
       );
       if (!request.isCurrent()) {
         return;
       }
+      const sourceContext = {
+        analysis_id: analysisID,
+        project_id: sourceLineage?.project_id ?? null,
+        scenario_id: sourceLineage?.scenario_id ?? null,
+        scenario_revision_id: sourceLineage?.scenario_revision_id ?? null,
+        request_fingerprint: JSON.stringify(requestPayload),
+        sample_ids: [...new Set([
+          ...(payload?.geojson?.features ?? []),
+          ...(payload?.demand_geojson?.features ?? []),
+        ].map((feature) => feature?.properties?.sample_id)
+          .filter((sampleID) => sampleID !== null && sampleID !== undefined && sampleID !== "")
+          .map(String))],
+      };
       setInterferenceAnalysis(payload);
+      setInterferenceAnalysisContext(sourceContext);
       setInterferenceRevision((current) => current + 1);
       setLayerVisibility((current) => ({ ...current, interference: true }));
       setLastAnalysisKind("interference");
@@ -1601,7 +1691,6 @@ export default function App() {
     setCoverageGaps(EMPTY_COVERAGE_GAPS);
     setSimulationRevision((current) => current + 1);
     setCoverageGapRevision((current) => current + 1);
-    setSelectedMapObject((current) => current?.type === "tower" ? current : null);
     clearCoverageSurface();
   }, [clearCoverageSurface]);
 
@@ -1633,6 +1722,7 @@ export default function App() {
 		setDatasetMessage("Validating and loading dataset…");
 		try {
 			const response = await postJSON("/api/datasets/switch", { id: datasetID }, "Dataset switch failed");
+			clearSpatialContext();
 			restoredProjectRef.current = null;
 			setWorkspaceRestored(false);
 			requests.cancel("rf");
@@ -1666,7 +1756,7 @@ export default function App() {
 			setDatasetMessage(requestError.message);
 			setIsSwitchingDataset(false);
 		}
-	}, [clearRenderedAnalysis, installedDatasets.active_id, isSwitchingDataset, requests, resetNetworkArtifacts]);
+	}, [clearRenderedAnalysis, clearSpatialContext, installedDatasets.active_id, isSwitchingDataset, requests, resetNetworkArtifacts]);
 
   const updateSettings = useCallback((nextSettings) => {
     invalidatePlanResults();
@@ -1693,7 +1783,8 @@ export default function App() {
   }, [invalidatePlanResults, optimizationConfig]);
 
   const selectTower = useCallback((tower) => {
-    setSelectedMapCellId(cellIDForTower(tower));
+    setInventoryTargetCellId(null);
+    setPathProfileCellId(null);
     if (planningMode === "network") {
       const currentSelection = normalizeNetworkSelection(selectedNetworkTowerIds, towers);
       const isSelected = currentSelection.includes(tower.id);
@@ -1725,10 +1816,10 @@ export default function App() {
   }, [invalidatePlanResults, planningMode, selectedNetworkTowerIds, towers]);
 
 	const selectInventoryCell = useCallback((tower) => {
+		setInventoryTargetCellId(null);
+		setPathProfileCellId(null);
 		if (selectedTower?.id !== tower.id) invalidatePlanResults();
 		setSelectedTower(tower);
-		setSelectedMapCellId(cellIDForTower(tower));
-		setSelectedMapObject(null);
 	}, [invalidatePlanResults, selectedTower]);
 
 	const updateInventoryTower = useCallback((towerID, updater) => {
@@ -1756,16 +1847,16 @@ export default function App() {
 	}, [updateInventoryTower]);
 
   const startPathEndpointSelection = useCallback(() => {
-    if (!selectedTower) {
+    if (!pathProfileTower) {
       setError("Select a transmitter cell first");
       return;
     }
     setIsPlacingCell(false);
     setIsDrawingSelection(false);
     setIsSelectingPathEndpoint(true);
-    setSelectionNotice("Click the map to place the path receiver.");
+    setSelectionNotice("");
     setError("");
-  }, [selectedTower]);
+  }, [pathProfileTower]);
 
   const selectPathEndpoint = useCallback((coordinates) => {
     if (!Array.isArray(coordinates) || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) return;
@@ -1875,10 +1966,11 @@ export default function App() {
     if (planningMode !== "network") {
       changePlanningMode("network");
     }
-    setSelectedMapObject(null);
+    setIsPlacingCell(false);
+    setIsSelectingPathEndpoint(false);
     setIsDrawingSelection(true);
     setSelectionPolygon([]);
-    setSelectionNotice("Click map vertices, then double-click or press Enter to finish.");
+    setSelectionNotice("");
   }, [changePlanningMode, planningMode]);
 
   const cancelAreaSelection = useCallback(() => {
@@ -1892,7 +1984,6 @@ export default function App() {
     setSelectedNetworkTowerIds([]);
     setNetworkAzimuths({});
     setSelectionPolygon([]);
-    setSelectedMapObject(null);
     setSelectionNotice("");
   }, [invalidatePlanResults]);
 
@@ -2076,17 +2167,6 @@ export default function App() {
     analyzeCoverageSurface(surfaceOptions);
   }, [analyzeCoverageSurface, coverageSurfaceIsCurrent, signalSurfaceState, surfaceOptions, toggleLayerVisibility]);
 
-  const selectMapCell = useCallback((tower) => {
-    const cellID = cellIDForTower(tower);
-    if (!cellID) return;
-    if (planningMode === "network"
-      && !selectedNetworkSelectionIDs.includes(tower.id)
-      && selectedNetworkSelectionIDs.length >= MAX_NETWORK_CELLS) {
-      return;
-    }
-    setSelectedMapCellId(cellID);
-  }, [planningMode, selectedNetworkSelectionIDs]);
-
   const changeRayScope = useCallback((scope) => {
     const nextScope = [RAY_SCOPE_ALL, RAY_SCOPE_SELECTED, RAY_SCOPE_HIDDEN].includes(scope) ? scope : RAY_SCOPE_ALL;
     setRayScope(nextScope);
@@ -2094,8 +2174,11 @@ export default function App() {
   }, []);
 
   const changeMapCellFocus = useCallback((cellID) => {
-    if (rayCellIDs.includes(String(cellID))) setSelectedMapCellId(String(cellID));
-  }, [rayCellIDs]);
+    const value = String(cellID);
+    if (towers.some((tower) => String(cellIDForTower(tower)) === value || String(tower.id) === value)) {
+      setSelectedMapCellId(value);
+    }
+  }, [towers]);
 
   const fitSelectedCells = useCallback(() => {
     setFitRequestVersion((current) => current + 1);
@@ -2162,11 +2245,10 @@ export default function App() {
 		if (tool !== "inventory") setIsPlacingCell(false);
     if (tool !== "propagation") setIsSelectingPathEndpoint(false);
     if (tool !== activeTool) setResearchActivity(false);
-    setPreviousTool(activeTool);
+    if (window.matchMedia?.("(max-width: 1360px)").matches) setInspectedEntity(null);
     setActiveTool(tool);
     setDrawerMode("tool");
     setDrawerOpen(true);
-    setSelectedMapObject(null);
   }, [activeTool, dismissStageChooser]);
 
   const chooseWorkspaceTool = useCallback((tool) => {
@@ -2174,7 +2256,7 @@ export default function App() {
     if (tool === activeTool) {
       setDrawerMode("tool");
       setDrawerOpen(true);
-      setSelectedMapObject(null);
+      if (window.matchMedia?.("(max-width: 1360px)").matches) setInspectedEntity(null);
       return;
     }
     selectWorkspaceTool(tool);
@@ -2207,34 +2289,136 @@ export default function App() {
   const openResults = useCallback((view = activeResultsView) => {
     dismissStageChooser();
     setActiveResultsView(view);
-    setPreviousTool(activeTool);
     setActiveTool("results");
     setDrawerMode("tool");
     setDrawerOpen(true);
-    setSelectedMapObject(null);
-  }, [activeResultsView, activeTool, dismissStageChooser]);
+    if (window.matchMedia?.("(max-width: 1360px)").matches) setInspectedEntity(null);
+  }, [activeResultsView, dismissStageChooser]);
 
-  const selectMapObject = useCallback((mapObject) => {
-    if (!mapObject) {
-      return;
+  const selectMapObject = useCallback((mapObject, options = {}) => {
+    const mapEvent = options?.latlng ? options : null;
+    if (isDrawingSelection || isPlacingCell || isSelectingPathEndpoint) {
+      if (!mapEvent?.latlng) return false;
+      const coordinates = [mapEvent.latlng.lng, mapEvent.latlng.lat];
+      if (isDrawingSelection) addSelectionPolygonPoint(coordinates);
+      else if (isPlacingCell) placeInventoryCell(coordinates);
+      else selectPathEndpoint(coordinates);
+      return true;
     }
-    setPreviousTool(activeTool);
-    setSelectedMapObject(mapObject);
-    setDrawerMode("inspector");
-    setDrawerOpen(true);
-  }, [activeTool]);
+    if (!mapObject || (mapInteractionMode !== "inspect" && !options.force)) {
+      return false;
+    }
+    const kind = mapObject.type;
+    const identity = mapEntityIdentity(kind, mapObject.payload);
+    const currentResultContext = resultContextRef.current;
+    const currentWorkspaceLineage = workspaceLineageRef.current;
+    const interferenceContext = kind === "interference_sample" ? interferenceAnalysisContextRef.current : null;
+    const hasRetainedInterferenceSource = Boolean(interferenceContext?.analysis_id
+      && interferenceContext.sample_ids?.includes(String(identity)));
+    const sourceRun = ["tower", "coverage_gap"].includes(kind) && currentResultContext?.run
+      ? currentResultContext.run
+      : null;
+    const sourceLabel = sourceRun
+      ? `${currentResultContext.version_label} · ${currentResultContext.run_label}`
+      : kind === "tower"
+        ? mapObject.payload?.tower?.inventorySource ?? "Project inventory"
+        : kind === "building"
+          ? "Building collection"
+          : kind === "communication_path"
+            ? "Core Lab topology · no retained Run"
+            : kind === "interference_sample"
+              ? hasRetainedInterferenceSource
+                ? `Interference analysis ${interferenceContext.analysis_id} · no durable Run`
+                : "Interference response · no exact retained context"
+              : kind === "measurement_sample"
+                ? "Measurement campaign · no retained Run"
+                : "Analysis source · no exact retained Run";
+    const openModality = inputModalityRef.current;
+    if (openModality === "keyboard") inspectorReturnElementRef.current = document.activeElement;
+    setInspectedEntity({
+      kind,
+      id: identity,
+      projectId: sourceRun?.project_id ?? currentWorkspaceLineage?.project_id ?? null,
+      scenarioId: sourceRun?.scenario_id ?? interferenceContext?.scenario_id ?? currentWorkspaceLineage?.scenario_id ?? null,
+      revisionId: sourceRun?.scenario_revision_id ?? interferenceContext?.scenario_revision_id ?? currentWorkspaceLineage?.scenario_revision_id ?? null,
+      runId: sourceRun?.run_id ?? null,
+      sourceRun,
+      interferenceContext: hasRetainedInterferenceSource ? interferenceContext : null,
+      sourceLabel,
+      sourceFreshness: sourceRun
+        ? resultStateLabel(currentResultContext.freshness)
+        : currentResultContext && kind === "tower"
+          ? resultStateLabel(currentResultContext.freshness)
+          : kind === "interference_sample"
+            ? resultStateLabel(resolveInterferenceSampleFreshness(
+              hasRetainedInterferenceSource ? interferenceContext : null,
+              identity,
+              currentWorkspaceLineage,
+              false,
+            ))
+          : ["coverage_gap", "communication_path", "interference_sample", "measurement_sample", "site_recommendation"].includes(kind)
+            ? resultStateLabel(RESULT_FRESHNESS.UNAVAILABLE)
+            : null,
+      openModality,
+      snapshot: mapObject.payload ?? {},
+    });
+    return true;
+  }, [addSelectionPolygonPoint, isDrawingSelection, isPlacingCell, isSelectingPathEndpoint, mapInteractionMode, placeInventoryCell, selectPathEndpoint]);
 
-  const returnFromInspector = useCallback(() => {
-    dismissStageChooser();
-    setSelectedMapObject(null);
-    setActiveTool(previousTool);
-    setDrawerMode("tool");
-    setDrawerOpen(true);
-  }, [dismissStageChooser, previousTool]);
+  const closeInspector = useCallback(() => {
+    setInspectedEntity(null);
+    const origin = inspectorReturnElementRef.current;
+    inspectorReturnElementRef.current = null;
+    if (inputModalityRef.current === "keyboard" && origin?.isConnected) {
+      window.setTimeout(() => origin.focus?.({ preventScroll: true }), 0);
+    }
+  }, []);
+
+  const inspectFocusedMapCell = useCallback(() => {
+    const focusedTower = towers.find((tower) => String(cellIDForTower(tower)) === String(selectedMapCellId)
+      || String(tower.id) === String(selectedMapCellId));
+    if (!focusedTower) return;
+    setMapInteractionMode("inspect");
+    selectMapObject({
+      type: "tower",
+      payload: {
+        tower: focusedTower,
+        activeNetworkTech,
+        isNetworkSelected: selectedNetworkSelectionIDs.includes(focusedTower.id),
+        order: selectedTowerOrder.get(focusedTower.id) ?? null,
+      },
+    }, { force: true });
+  }, [activeNetworkTech, selectedMapCellId, selectedNetworkSelectionIDs, selectedTowerOrder, selectMapObject, towers]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") {
+        return;
+      }
+      if (isSelectingPathEndpoint) {
+        setIsSelectingPathEndpoint(false);
+        setSelectionNotice("");
+        return;
+      }
+      if (isDrawingSelection) {
+        cancelAreaSelection();
+        return;
+      }
+      if (isPlacingCell) {
+        setIsPlacingCell(false);
+        setSelectionNotice("");
+        return;
+      }
+      if (layerMenuOpen) {
+        setLayerMenuOpen(false);
+        return;
+      }
+      if (mapInteractionMode === "select-cells") {
+        setMapInteractionMode("inspect");
+        return;
+      }
+      if (inspectedEntity) {
+        closeInspector();
         return;
       }
       if (chooserStage) {
@@ -2243,25 +2427,13 @@ export default function App() {
         dismissStageChooser({ restoreOrigin: true, returnFocus: true });
         return;
       }
-      if (layerMenuOpen) {
-        setLayerMenuOpen(false);
-        return;
-      }
-      if (isSelectingPathEndpoint) {
-        setIsSelectingPathEndpoint(false);
-        return;
-      }
-      if (isDrawingSelection) {
-        cancelAreaSelection();
-        return;
-      }
       if (drawerOpen) {
-        closeDrawer(drawerMode === "inspector" ? "map" : "tool");
+        closeDrawer("tool");
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [cancelAreaSelection, chooserStage, closeDrawer, dismissStageChooser, drawerMode, drawerOpen, isDrawingSelection, isSelectingPathEndpoint, layerMenuOpen]);
+  }, [cancelAreaSelection, chooserStage, closeDrawer, closeInspector, dismissStageChooser, drawerOpen, inspectedEntity, isDrawingSelection, isPlacingCell, isSelectingPathEndpoint, layerMenuOpen, mapInteractionMode]);
 
   useEffect(() => {
     if (!coreLabEnabled || !coreLabApplicable) {
@@ -2305,7 +2477,6 @@ export default function App() {
     };
   }, [simulation, towers]);
   const gapStats = coverageGaps?.stats ?? null;
-  const activeNetworkTech = networkTechLabelForFrequency(settings.frequencyGHz);
   const selectedTowerLabel = selectedTower?.cellId ?? "No tower";
   const runState = error
     ? "Action needed"
@@ -2391,6 +2562,8 @@ export default function App() {
     draft: activeProject?.draft,
     scenarios: activeProject?.scenarios ?? [],
   }), [activeProject, activeScenario, scenarioSource]);
+  workspaceLineageRef.current = workspaceLineage;
+  interferenceAnalysisContextRef.current = interferenceAnalysisContext;
   const activeRevisionId = activeScenario?.domain?.current_revision_id
     ?? activeProject?.draft?.sourceRevisionId
     ?? activeProject?.draft?.source_revision_id
@@ -2420,6 +2593,23 @@ export default function App() {
       unavailableReason: matchingResultRun ? "" : "The restored result has no unambiguous retained Run.",
     })
     : null;
+  resultContextRef.current = resultContext;
+  const inspectedResultContext = useMemo(() => {
+    const sourceRun = inspectedEntity?.sourceRun;
+    if (!sourceRun) return null;
+    return buildResultContext({
+      activeProjectId: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
+      activeScenarioId: workspaceLineage.scenario_id,
+      activeRevisionId,
+      currentInputFingerprint: workspaceLineage.unsaved ? null : currentRevision?.resolved_fingerprints?.input_fingerprint ?? null,
+      currentScenarioFingerprint: workspaceLineage.unsaved ? null : currentRevision?.resolved_fingerprints?.scenario_fingerprint ?? null,
+      draftChangedSinceRun: planDirty,
+      project: activeProject,
+      run: sourceRun,
+      resultType: sourceRun.run_type,
+      scenarios: activeProject?.scenarios ?? [],
+    });
+  }, [activeProject, activeRevisionId, currentRevision?.resolved_fingerprints?.input_fingerprint, currentRevision?.resolved_fingerprints?.scenario_fingerprint, inspectedEntity?.sourceRun, planDirty, workspaceLineage.scenario_id, workspaceLineage.unsaved]);
   const rerunCurrentResult = useCallback(() => {
     if (resultContext?.run_type === "optimization") {
       if (planningMode === "network") return optimizeNetwork();
@@ -2485,11 +2675,17 @@ export default function App() {
   };
   const activeToolDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
   const cellsNeeded = Math.max(0, 2 - selectedCellCount);
+  const specialMapToolArmed = isDrawingSelection || isPlacingCell || isSelectingPathEndpoint;
+  const isSelectingCellsOnMap = mapInteractionMode === "select-cells" && !specialMapToolArmed;
+  const startMapCellSelection = useCallback(() => {
+    setMapInteractionMode("select-cells");
+    if (activeTool !== "setup" || window.matchMedia?.("(max-width: 900px)").matches) closeDrawer("map");
+  }, [activeTool, closeDrawer]);
   const runPlanActionLabel = isEvaluatingNetwork
     ? "Evaluating..."
     : planningMode === "network"
       ? cellsNeeded > 0
-        ? `Add ${cellsNeeded} ${cellsNeeded === 1 ? "cell" : "cells"}`
+        ? isSelectingCellsOnMap || specialMapToolArmed ? null : "Select cells"
         : "Evaluate Network"
       : isLoading
         ? "Running..."
@@ -2498,24 +2694,17 @@ export default function App() {
     ? runPlanActionLabel
     : null;
   const mapPlanPrompt = planDirty
-		? invalidProfileCount > 0
-			? {
-				title: "RF profile needs attention",
-				detail: `Fix ${invalidProfileCount} invalid selected cell profile${invalidProfileCount === 1 ? "" : "s"} in Inventory.`,
-			}
-			: planningMode === "network" && cellsNeeded > 0
+    ? invalidProfileCount > 0
       ? {
-          title: `Add ${cellsNeeded} more ${cellsNeeded === 1 ? "cell" : "cells"}`,
-          detail: "Select towers on the map or draw an area to build the cluster.",
+        title: "RF profile needs attention",
+        detail: `Fix ${invalidProfileCount} invalid selected cell profile${invalidProfileCount === 1 ? "" : "s"} in Inventory.`,
+      }
+      : currentResultRun
+        ? {
+          title: "Result out of date",
+          detail: `${currentResultRun.run_type === "optimization" ? "Optimization" : "Simulation"} ${shortRunLabel(currentResultRun.run_id)} came from its original input. Run again for this plan.`,
         }
-              : {
-          title: currentResultRun ? "Result out of date" : "Plan changed",
-          detail: currentResultRun
-            ? `${currentResultRun.run_type === "optimization" ? "Optimization" : "Simulation"} ${shortRunLabel(currentResultRun.run_id)} came from its original input. Run again for this plan.`
-            : planningMode === "network"
-              ? "Evaluate the network to refresh the map and KPIs."
-              : "Run the sector to refresh the map and KPIs.",
-        }
+        : null
     : null;
 
   const buildCurrentScenarioSnapshot = useCallback((overrides = {}) => ({
@@ -2632,10 +2821,23 @@ export default function App() {
   const openSavedScenario = useCallback((scenario) => {
     if (!scenario) return false;
     if (activeProject?.draft && activeProject.activeScenarioId === null) {
+      const draftSourceIDs = [activeProject.draft.sourceScenarioId, activeProject.draft.source_scenario_id]
+        .filter((value) => value !== null && value !== undefined)
+        .map(String);
+      const targetScenarioIDs = [scenario.id, scenario.domain?.scenario_id]
+        .filter((value) => value !== null && value !== undefined)
+        .map(String);
+      const currentScenarioID = String(workspaceLineage.scenario_id ?? "");
+      if (draftSourceIDs.some((id) => targetScenarioIDs.includes(id))
+        || targetScenarioIDs.includes(currentScenarioID)) {
+        setNavigationNotice("");
+        return true;
+      }
       setNavigationNotice("Save the current draft as a Version before opening another Scenario. Your draft has been kept.");
       return false;
     }
     setNavigationNotice("");
+    clearSpatialContext();
     clearCurrentResultRun();
     setFocusedRunId(null);
     projectWorkspace.activateScenario(scenario.id);
@@ -2643,7 +2845,7 @@ export default function App() {
     restorePlanningSnapshot(scenario);
     setError(scenario.requiresRerun ? "This scenario retains its inputs and summary; rerun it to restore uncached map layers." : "");
     return true;
-  }, [activeProject, clearCurrentResultRun, projectWorkspace, restorePlanningSnapshot]);
+  }, [activeProject, clearCurrentResultRun, clearSpatialContext, projectWorkspace, restorePlanningSnapshot, workspaceLineage.scenario_id]);
 
   const openScenarioRevision = useCallback((scenarioID, revisionID) => {
     const scenario = (activeProject?.scenarios ?? []).find((candidate) => (
@@ -2663,6 +2865,7 @@ export default function App() {
       setNavigationNotice("Save the current draft as a Version before opening another Scenario. Your draft has been kept.");
       return;
     }
+    clearSpatialContext();
     dismissStageChooser();
     setNavigationNotice("");
     setFocusedRunId(null);
@@ -2672,9 +2875,10 @@ export default function App() {
     setActiveTool("setup");
     setDrawerMode("tool");
     setDrawerOpen(true);
-  }, [activeProject, dismissStageChooser, openSavedScenario, workspaceLineage.scenario_id]);
+  }, [activeProject, clearSpatialContext, dismissStageChooser, openSavedScenario, workspaceLineage.scenario_id]);
 
   const handleBranchScenario = useCallback(async ({ name, revisionId, scenarioId }) => {
+    clearSpatialContext();
     try {
       const saved = await projectWorkspace.branchScenario({ name, revisionId, scenarioId });
       const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
@@ -2688,9 +2892,10 @@ export default function App() {
       setError(branchError.message);
       throw branchError;
     }
-  }, [projectWorkspace, restorePlanningSnapshot]);
+  }, [clearSpatialContext, projectWorkspace, restorePlanningSnapshot]);
 
   const handleDuplicateScenario = useCallback(async ({ name, scenarioId }) => {
+    clearSpatialContext();
     try {
       const saved = await projectWorkspace.duplicateScenario({ name, scenarioId });
       const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
@@ -2704,9 +2909,10 @@ export default function App() {
       setError(duplicateError.message);
       throw duplicateError;
     }
-  }, [projectWorkspace, restorePlanningSnapshot]);
+  }, [clearSpatialContext, projectWorkspace, restorePlanningSnapshot]);
 
   const handleContinueFromVersion = useCallback(async ({ scenarioId, revisionId }) => {
+    clearSpatialContext();
     try {
       const saved = await projectWorkspace.continueFromScenarioRevision({ scenarioId, revisionId });
       const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
@@ -2719,7 +2925,7 @@ export default function App() {
       setError(continueError.message);
       throw continueError;
     }
-  }, [projectWorkspace, restorePlanningSnapshot]);
+  }, [clearSpatialContext, projectWorkspace, restorePlanningSnapshot]);
 
   const openRunSource = useCallback((run) => {
     dismissStageChooser();
@@ -2734,11 +2940,12 @@ export default function App() {
 
   const openRunHistory = useCallback((run) => {
     dismissStageChooser();
+    clearSpatialContext();
     setFocusedRunId(run?.run_id ?? null);
     setActiveTool("history");
     setDrawerMode("tool");
     setDrawerOpen(true);
-  }, [dismissStageChooser]);
+  }, [clearSpatialContext, dismissStageChooser]);
 
   const openReportSource = useCallback((artifact) => {
     dismissStageChooser();
@@ -3093,9 +3300,11 @@ export default function App() {
       isLoading={isLoading}
       isOptimizing={isOptimizing}
       networkSelectionCount={selectedCellCount}
+      isSelectingCellsOnMap={isSelectingCellsOnMap}
+      isDrawingSelection={isDrawingSelection}
       onOptimizeNetwork={optimizeNetwork}
       onAnalyzeInterference={analyzeInterference}
-      onFocusMap={() => closeDrawer("map")}
+      onFocusMap={startMapCellSelection}
       onPlanningModeChange={changePlanningMode}
       optimizationConfigValid={!optimizationConfigValidationMessage(optimizationConfig)}
       selectionNotice={selectionNotice}
@@ -3114,6 +3323,71 @@ export default function App() {
     Number(objective.weight) !== Number(defaultOptimizationConfig.objectives.find((item) => item.id === objective.id)?.weight ?? 0)
   )).length + Object.keys(optimizationConfig.constraints ?? {}).length;
   const advancedPropagationCount = advancedOptimizationCount;
+  const inspectedTower = inspectedEntity?.kind === "tower"
+    ? towers.find((tower) => String(tower.id) === String(inspectedEntity.snapshot?.tower?.id)
+      || String(cellIDForTower(tower)) === String(inspectedEntity.id)) ?? null
+    : null;
+  const focusedMapTower = towers.find((tower) => String(cellIDForTower(tower)) === String(selectedMapCellId)
+    || String(tower.id) === String(selectedMapCellId)) ?? null;
+  const mapFocusIsInspected = Boolean(focusedMapTower && inspectedTower
+    && String(focusedMapTower.id) === String(inspectedTower.id));
+  const inspectedBuilding = inspectedEntity?.kind === "building" ? inspectedEntity.snapshot?.feature : null;
+  const inspectedInterferenceFreshness = inspectedEntity?.kind === "interference_sample"
+    ? resultStateLabel(resolveInterferenceSampleFreshness(
+      inspectedEntity.interferenceContext,
+      inspectedEntity.id,
+      workspaceLineage,
+      planDirty,
+    ))
+    : null;
+  const inspectorFreshness = inspectedResultContext
+    ? resultStateLabel(inspectedResultContext.freshness)
+    : inspectedEntity?.kind === "tower" && !inspectedTower
+      ? resultStateLabel(RESULT_FRESHNESS.UNAVAILABLE)
+      : inspectedInterferenceFreshness
+        ? inspectedInterferenceFreshness
+      : inspectedEntity?.sourceFreshness;
+  const inspectorSourceLabel = inspectedEntity?.kind === "tower" && !inspectedTower
+    ? "Inventory cell unavailable · retained selection snapshot"
+    : inspectedEntity?.sourceLabel;
+  const inspectorActions = [];
+  if (inspectedEntity?.kind === "tower") {
+    if (!mapFocusIsInspected) {
+      inspectorActions.push(
+        { id: "focus-cell", label: "Focus", disabled: !inspectedTower, onClick: () => {
+        if (!inspectedTower) return;
+        const cellID = cellIDForTower(inspectedTower);
+        changeMapCellFocus(cellID);
+        setMapViewportRequest({ coordinates: inspectedTower.coordinates });
+        } },
+      );
+    }
+    inspectorActions.push(
+      { id: "edit-cell", label: "Edit in Inventory", disabled: !inspectedTower, onClick: () => {
+        if (!inspectedTower) return;
+        setInventoryTargetCellId(inspectedTower.id);
+        selectWorkspaceTool("inventory");
+      } },
+      { id: "path-profile", label: "Open Path profile", disabled: !inspectedTower, onClick: () => {
+        if (!inspectedTower) return;
+        setPathProfileCellId(inspectedTower.id);
+        setPathProfileEndpoint(null);
+        setPathProfile(null);
+        setIsSelectingPathEndpoint(false);
+        setOpenPropagationAdvancedRequest((current) => current + 1);
+        selectWorkspaceTool("propagation");
+      } },
+    );
+  }
+  if (inspectedEntity?.kind === "building") {
+    inspectorActions.push(
+      { id: "focus-building", label: "Focus", disabled: !mapObjectFocusCoordinates(inspectedBuilding), onClick: () => {
+        const coordinates = mapObjectFocusCoordinates(inspectedBuilding);
+        if (coordinates) setMapViewportRequest({ coordinates });
+      } },
+      { id: "building-entry", label: "Open Building entry", onClick: () => selectWorkspaceTool("building-entry") },
+    );
+  }
 
   return (
     <main className="focused-app-shell">
@@ -3131,7 +3405,9 @@ export default function App() {
           projectWorkspace.clearError();
         }}
         onOpenResults={() => openResults(resultSummary?.view)}
-        onRun={planningMode === "network" ? evaluateNetwork : runSimulation}
+        onRun={() => planningMode === "network" && selectedCellCount < 2
+          ? startMapCellSelection()
+          : planningMode === "network" ? evaluateNetwork() : runSimulation()}
         txPowerDbm={formatNumber(settings.txPowerDbm, 0)}
         radiusMeters={formatNumber(settings.radiusMeters, 0)}
         projectControl={(
@@ -3140,15 +3416,15 @@ export default function App() {
             activeProject={projectWorkspace.activeProject}
             compatible={isDatasetCompatible(projectWorkspace.activeProject, appMeta)}
             exportContent={projectWorkspace.exportActiveProject}
-            onAddProject={() => { clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.addProject(); }}
-            onDeleteProject={deleteProjectWithHistory}
+            onAddProject={() => { clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.addProject(); }}
+            onDeleteProject={(id) => { clearSpatialContext(); deleteProjectWithHistory(id); }}
             onDeleteScenario={deleteScenarioWithUndo}
-            onDuplicateProject={() => { clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.duplicateProject(); }}
-            onImportProject={(text) => { clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); return projectWorkspace.importProject(text); }}
+            onDuplicateProject={() => { clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.duplicateProject(); }}
+            onImportProject={(text) => { clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); return projectWorkspace.importProject(text); }}
             onOpenScenario={openSavedScenario}
             onRenameProject={projectWorkspace.renameProject}
             onSaveScenario={saveCurrentScenario}
-            onSelectProject={(id) => { clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.selectProject(id); }}
+            onSelectProject={(id) => { clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.selectProject(id); }}
             projects={projectWorkspace.workspace.projects}
             staleResultRunLabel={resultContext?.freshness === "stale" ? resultContext.run_label : ""}
           />
@@ -3156,13 +3432,13 @@ export default function App() {
         persistenceState={projectWorkspace.persistenceState}
         draftUnsaved={workspaceLineage.unsaved}
         primaryActionLabel={primaryActionLabel}
-		primaryDisabled={!workspaceLoaded || !workspaceRestored || hydratedDatasetRevision !== datasetRevision || activeRFTask !== null || invalidProfileCount > 0 || (planningMode === "network" ? selectedCellCount < 2 : !selectedTower)}
+		primaryDisabled={!workspaceLoaded || !workspaceRestored || hydratedDatasetRevision !== datasetRevision || activeRFTask !== null || invalidProfileCount > 0 || (planningMode === "single" && !selectedTower)}
         resultContext={resultContext}
         runState={runState}
         statusTone={visibleError ? "error" : activeRFTask !== null ? "busy" : planDirty ? "pending" : "ready"}
       />
 
-      <section className={`workspace-frame ${drawerOpen ? "drawer-open" : ""}`}>
+      <section className={`workspace-frame ${drawerOpen ? "drawer-open" : ""} ${inspectedEntity ? "inspector-open" : ""} ${inspectedEntity && chooserStage ? "inspector-suspended" : ""}`}>
         <WorkflowRail
           activeTool={activeTool}
           chooserStage={chooserStage}
@@ -3187,10 +3463,19 @@ export default function App() {
             hasRays={Boolean(simulation?.geojson?.features?.length)}
             hasSignalSurface={Boolean(renderedCoverageSurface?.grid?.values?.length)}
             signalSurfaceState={signalSurfaceState}
+            interactionMode={mapInteractionMode}
+            onInteractionModeChange={setMapInteractionMode}
+            canInspectMapFocus={Boolean(focusedMapTower)}
+            mapFocusIsInspected={mapFocusIsInspected}
+            onInspectMapFocus={inspectFocusedMapCell}
             isDrawingSelection={isDrawingSelection}
+            isPlacingCell={isPlacingCell}
+            isSelectingPathEndpoint={isSelectingPathEndpoint}
             layerMenuOpen={layerMenuOpen}
             layerVisibility={layerVisibility}
             onCancelAreaSelection={cancelAreaSelection}
+            onCancelPlacement={() => { setIsPlacingCell(false); setSelectionNotice(""); }}
+            onCancelPathEndpoint={() => { setIsSelectingPathEndpoint(false); setSelectionNotice(""); }}
             onClearNetworkSelection={clearNetworkSelection}
             onDrawArea={startAreaSelection}
             onFinishAreaSelection={() => finishAreaSelection()}
@@ -3204,7 +3489,7 @@ export default function App() {
             onInterferenceMetricChange={setInterferenceMetric}
             hasInterferenceData={hasInterferenceData}
             planningMode={planningMode}
-            rayCellOptions={rayCellOptions}
+            focusCellOptions={towers.map((tower) => ({ id: String(cellIDForTower(tower)), label: String(tower.cellId ?? tower.id) }))}
             rayScope={rayScope}
             selectionCanFinish={selectionPolygon.length >= 3}
             selectedMapCellId={selectedMapCellId}
@@ -3217,7 +3502,7 @@ export default function App() {
             selectedTowerOrder={selectedTowerOrder}
             selectedMapCellId={selectedMapCellId}
             onSelectTower={selectTower}
-            onSelectMapCell={selectMapCell}
+            interactionMode={mapInteractionMode}
             simulation={simulation.geojson}
             rayLayerKey={simulationRevision}
             coverageGaps={coverageGaps.geojson}
@@ -3247,6 +3532,7 @@ export default function App() {
             isSelectingPathEndpoint={isSelectingPathEndpoint}
             onSelectPathEndpoint={selectPathEndpoint}
             pathProfile={pathProfile}
+            mapViewportRequest={mapViewportRequest}
             coverageSurface={renderedCoverageSurface}
             surfaceOpacity={surfaceOptions.opacity}
             surfaceDisplayThresholdDBm={surfaceOptions.displayThresholdDBm}
@@ -3274,7 +3560,11 @@ export default function App() {
               || layerVisibility.gaps && Boolean(coverageGaps.geojson?.features?.length)
               || layerVisibility.interference && hasInterferenceData) ? resultContext : null}
             metric={interferenceMetric}
-            onToggle={() => setLegendCollapsed((current) => !current)}
+            onToggle={() => setLegendCollapsed((current) => {
+              const next = !current;
+              if (legendCollapsedRestoreRef.current !== null) legendCollapsedRestoreRef.current = next;
+              return next;
+            })}
             planningMode={planningMode}
           />
         </section>
@@ -3287,17 +3577,15 @@ export default function App() {
             toolState,
           } : null}
           drawerMode={drawerMode}
+          concealed={Boolean(inspectedEntity && drawerOpen)}
           error={error}
-          focusKey={`${drawerMode}-${activeTool}-${selectedMapObject?.type ?? "none"}`}
-          icon={drawerMode === "tool" ? activeToolDefinition.icon : MapPin}
-          onBack={returnFromInspector}
-          onClose={() => closeDrawer(drawerMode === "inspector" ? "map" : "tool")}
+          focusKey={activeTool}
+          icon={activeToolDefinition.icon}
+          onClose={() => closeDrawer("tool")}
           open={drawerOpen}
-          subtitle={drawerMode === "inspector" ? formatScenario(selectedMapObject?.type ?? "selection") : drawerSubtitles[activeTool]}
-          title={drawerMode === "inspector" ? "Map Inspector" : activeToolDefinition.label}
+          subtitle={drawerSubtitles[activeTool]}
+          title={activeToolDefinition.label}
         >
-          {drawerMode === "inspector" ? <MapInspector selectedMapObject={selectedMapObject} /> : null}
-
           {drawerMode === "tool" && ["setup", "propagation", "interference"].includes(activeTool) ? (
             ["setup", "propagation"].includes(activeTool) ? (
               <DisclosureSection
@@ -3307,7 +3595,7 @@ export default function App() {
                 research={activeTool === "setup" && researchProfileActive}
               >
                 {activeTool === "setup" && researchProfileActive ? (
-                  <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz is not canonical validation or production-calibrated. Radio-quality output is UNSUPPORTED for this research profile.</p>
+                  <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz is not canonical validation or production-calibrated. Radio-quality output is UNSUPPORTED at this frequency.</p>
                 ) : null}
                 {controlPanel}
               </DisclosureSection>
@@ -3359,7 +3647,7 @@ export default function App() {
           {drawerMode === "tool" && activeTool === "propagation" ? (
             <>
               {researchProfileActive ? (
-                <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz propagation is a research/reference profile. It is not canonical validation or production-calibrated; radio-quality output is UNSUPPORTED.</p>
+                <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz is not canonical validation or production-calibrated. Radio-quality output is UNSUPPORTED at this frequency.</p>
               ) : null}
               <DisclosureSection
                 title="Advanced analysis"
@@ -3379,11 +3667,11 @@ export default function App() {
                   isAnalyzing={isAnalyzingPathProfile}
                   isSelectingEndpoint={isSelectingPathEndpoint}
                   onAnalyze={analyzePathProfile}
-                  onCancelSelection={() => setIsSelectingPathEndpoint(false)}
+                  onCancelSelection={() => { setIsSelectingPathEndpoint(false); setSelectionNotice(""); }}
                   onEndpointChange={selectPathEndpoint}
                   onStartSelection={startPathEndpointSelection}
                   profile={pathProfile}
-                  selectedTower={selectedTower}
+                  selectedTower={pathProfileTower}
                   settings={settings}
                 />
               </DisclosureSection>
@@ -3470,21 +3758,23 @@ export default function App() {
           ) : null}
 
 			{drawerMode === "tool" && activeTool === "inventory" ? (
-				<InventoryPanel
+            <InventoryPanel
 					isPlacingCell={isPlacingCell}
-					onCancelPlacement={() => setIsPlacingCell(false)}
+					onCancelPlacement={() => { setIsPlacingCell(false); setSelectionNotice(""); }}
 					onDeleteCell={deleteInventoryTower}
 					onDuplicateCell={duplicateInventoryTower}
 					onImportCells={importInventoryCells}
 					onMoveCell={moveInventoryCell}
 					onResetProfile={resetInventoryProfile}
-					onSelectCell={selectInventoryCell}
+              onSelectCell={(tower) => { setInventoryTargetCellId(null); selectInventoryCell(tower); }}
 					onStartPlacement={() => {
+						setIsDrawingSelection(false);
+						setIsSelectingPathEndpoint(false);
 						setIsPlacingCell(true);
-						setSelectionNotice("Click the map to place a new cell.");
+						setSelectionNotice("");
 					}}
 					onUpdateProfile={updateInventoryProfile}
-					selectedTower={selectedTower}
+              selectedTower={inventoryTargetCellId ? inventoryTargetTower : selectedTower}
 					settings={settings}
 					towers={towers}
 				/>
@@ -3643,6 +3933,39 @@ export default function App() {
             />
           ) : null}
         </ToolDrawer>
+        {inspectedEntity ? (
+          <ContextualInspector
+            actions={inspectorActions}
+            entityID={inspectedEntity.id}
+            entityLabel={mapEntityLabel(inspectedEntity.kind)}
+            focusOnOpen={inspectedEntity.openModality === "keyboard"}
+            freshness={inspectorFreshness}
+            onBack={drawerOpen ? closeInspector : undefined}
+            onClose={closeInspector}
+            onViewRun={openRunHistory}
+            provenance={{
+              projectId: inspectedEntity.projectId,
+              scenarioId: inspectedEntity.scenarioId,
+              versionId: inspectedResultContext?.scenario_revision_id ?? inspectedEntity.revisionId,
+            }}
+            sourceLabel={inspectorSourceLabel}
+            sourceRun={inspectedEntity.sourceRun}
+            summary={(
+              <MapInspectorSummary
+                entity={inspectedEntity}
+                inventory={towers}
+                mapFocusCellId={selectedMapCellId}
+                selectedNetworkTowerIds={selectedNetworkSelectionIDs}
+                selectedTower={selectedTower}
+                networkAzimuths={networkAzimuths}
+                planningMode={planningMode}
+                settings={settings}
+              />
+            )}
+          >
+            <MapInspector selectedMapObject={selectedMapObject} />
+          </ContextualInspector>
+        ) : null}
       </section>
       <UndoToast
         message={undoNotice?.message}
@@ -3676,6 +3999,60 @@ function shortRunLabel(value) {
   return text.length > 18 ? `${text.slice(0, 8)}…${text.slice(-6)}` : text || "Run unavailable";
 }
 
+function mapEntityIdentity(kind, payload = {}) {
+  const properties = payload.properties ?? {};
+  const route = payload.route ?? {};
+  const values = {
+    tower: payload.tower?.cellId ?? payload.tower?.id,
+    building: payload.feature?.properties?.building_id ?? payload.feature?.id,
+    coverage_gap: properties.building_id ?? properties.id,
+    communication_path: [route.from, route.to, route.route_type, route.status].filter(Boolean).join(" · "),
+    interference_sample: properties.sample_id,
+    measurement_sample: properties.id,
+    site_recommendation: properties.cell_id ?? properties.id,
+  };
+  const identity = values[kind];
+  return identity === null || identity === undefined || identity === "" ? "Identity unavailable" : String(identity);
+}
+
+function mapEntityLabel(kind) {
+  const labels = {
+    tower: "Cell",
+    building: "Building",
+    coverage_gap: "Coverage gap",
+    communication_path: "Communication path",
+    interference_sample: "Interference sample",
+    measurement_sample: "Measurement sample",
+    site_recommendation: "Site recommendation",
+  };
+  return labels[kind] ?? "Map entity";
+}
+
+function mapObjectFocusCoordinates(feature) {
+  const properties = feature?.properties ?? {};
+  const direct = [properties.longitude ?? properties.lon, properties.latitude ?? properties.lat];
+  if (direct.every((value) => value !== null && value !== undefined && Number.isFinite(Number(value)))) return direct.map(Number);
+  const coordinates = feature?.geometry?.coordinates;
+  if (!coordinates) return null;
+  const points = [];
+  const visit = (value) => {
+    if (!Array.isArray(value)) return;
+    if (value.length >= 2 && Number.isFinite(Number(value[0])) && Number.isFinite(Number(value[1]))) {
+      points.push([Number(value[0]), Number(value[1])]);
+      return;
+    }
+    value.forEach(visit);
+  };
+  visit(coordinates);
+  if (!points.length) return null;
+  const longitudes = points.map(([longitude]) => longitude);
+  const latitudes = points.map(([, latitude]) => latitude);
+  return [
+    (Math.min(...longitudes) + Math.max(...longitudes)) / 2,
+    (Math.min(...latitudes) + Math.max(...latitudes)) / 2,
+  ];
+}
+
 function MapInspector({ selectedMapObject }) {
   if (!selectedMapObject) {
     return null;
@@ -3683,7 +4060,7 @@ function MapInspector({ selectedMapObject }) {
   const { type, payload } = selectedMapObject;
 
   return (
-    <section className="map-inspector-card" aria-label="Map selection inspector">
+    <section className="map-inspector-content" aria-label="Selected entity details">
       {type === "tower" ? <TowerInspector payload={payload} /> : null}
       {type === "building" ? <BuildingInspector payload={payload} /> : null}
       {type === "coverage_gap" ? <GapInspector payload={payload} /> : null}
@@ -3695,10 +4072,57 @@ function MapInspector({ selectedMapObject }) {
   );
 }
 
+function MapInspectorSummary({ entity, inventory, mapFocusCellId, selectedNetworkTowerIds, selectedTower, networkAzimuths, planningMode, settings }) {
+  if (!entity) return null;
+  const payload = entity.snapshot ?? {};
+  const properties = payload.properties ?? {};
+  if (entity.kind === "tower") {
+    const tower = inventory.find((candidate) => String(candidate.id) === String(payload.tower?.id)) ?? payload.tower ?? {};
+    const profile = resolveRFProfile(tower, settings, inventory.findIndex((candidate) => candidate.id === tower.id));
+    const cellID = cellIDForTower(tower);
+    const azimuth = planningMode === "network"
+      ? networkAzimuthFor(tower, networkAzimuths, settings.azimuthDeg)
+      : settings.azimuthDeg;
+    return (
+      <div className="inspector-grid">
+        <MiniDatum label="Cell" value={tower.cellId ?? tower.id ?? UNAVAILABLE_VALUE} />
+        <MiniDatum label="Active transmitter" value={String(selectedTower?.id) === String(tower.id) ? "Yes" : "No"} />
+        <MiniDatum label="Selected cluster" value={selectedNetworkTowerIds.includes(tower.id) ? "Yes" : "No"} />
+        <MiniDatum label="Map Focus" value={String(mapFocusCellId) === String(cellID) ? "Focused" : "Not focused"} />
+        <MiniDatum label="Network" value={profile.networkTech?.toUpperCase() ?? UNAVAILABLE_VALUE} />
+        <MiniDatum label="Frequency" value={formatMetric(profile.frequencyGHz, "GHz")} />
+        <MiniDatum label="TX power" value={formatMetric(profile.txPowerDbm, "dBm")} />
+        <MiniDatum label="Azimuth" value={formatMetric(azimuth, "°")} />
+        <MiniDatum label="Beam width" value={formatMetric(profile.beamWidthDeg, "°")} />
+        <MiniDatum label="Radius" value={formatMetric(profile.radiusMeters, "m")} />
+        <MiniDatum label="Source" value={tower.inventorySource ?? "Project inventory"} />
+      </div>
+    );
+  }
+  if (entity.kind === "building") {
+    const feature = payload.feature ?? {};
+    return <div className="inspector-grid"><MiniDatum label="Building" value={feature.id ?? UNAVAILABLE_VALUE} /><MiniDatum label="Planning height" value={formatMetric(feature.properties?.height_m, "m")} /><MiniDatum label="Evidence" value={feature.properties?.height_source ?? UNAVAILABLE_VALUE} /></div>;
+  }
+  if (entity.kind === "coverage_gap") {
+    return <div className="inspector-grid"><MiniDatum label="Severity" value={properties.severity ?? UNAVAILABLE_VALUE} /><MiniDatum label="Received power" value={formatMetric(properties.rx_dbm, "dBm")} /><MiniDatum label="Demand" value={formatNumber(properties.total_demand, 1)} /></div>;
+  }
+  if (entity.kind === "communication_path") {
+    const route = payload.route ?? {};
+    return <div className="inspector-grid"><MiniDatum label="Route" value={formatScenario(route.route_type ?? UNAVAILABLE_VALUE)} /><MiniDatum label="Status" value={route.status ?? UNAVAILABLE_VALUE} /><MiniDatum label="Endpoints" value={`${route.from ?? UNAVAILABLE_VALUE} → ${route.to ?? UNAVAILABLE_VALUE}`} /></div>;
+  }
+  if (entity.kind === "interference_sample") {
+    return <div className="inspector-grid"><MiniDatum label="Serving cell" value={interferenceServingCellLabel(properties)} /><MiniDatum label="RSRP" value={formatMetric(properties.rsrp_dbm, "dBm")} /><MiniDatum label="SINR" value={formatMetric(properties.sinr_db, "dB")} /><MiniDatum label="Strongest interferer" value={interferenceStrongestInterfererLabel(properties)} /></div>;
+  }
+  if (entity.kind === "measurement_sample") {
+    return <div className="inspector-grid"><MiniDatum label="Sample" value={properties.id ?? UNAVAILABLE_VALUE} /><MiniDatum label="Measured RSRP" value={formatMetric(properties.measured_rsrp_dbm, "dBm")} /><MiniDatum label="Predicted RSRP" value={formatMetric(properties.predicted_rsrp_dbm, "dBm")} /><MiniDatum label="Residual" value={formatMetric(properties.residual_db, "dB")} /></div>;
+  }
+  return <div className="inspector-grid"><MiniDatum label="Candidate" value={properties.cell_id ?? properties.id ?? UNAVAILABLE_VALUE} /><MiniDatum label="Score delta" value={formatCompactNumber(properties.marginal_network_score)} /><MiniDatum label="Azimuth" value={formatMetric(properties.optimal_azimuth, "°")} /></div>;
+}
+
 function BuildingInspector({ payload }) {
   const feature = payload?.feature ?? {};
   const properties = feature.properties ?? {};
-  const buildingID = String(feature.id ?? "").trim();
+  const buildingID = String(properties.building_id ?? feature.id ?? "").trim();
   const [state, setState] = useState({ buildingID: "", loading: false, data: null, error: null });
 
   useEffect(() => {
@@ -3723,7 +4147,7 @@ function BuildingInspector({ payload }) {
   const selectedProvenance = ledger.selected_provenance ?? {};
   return (
     <div className="inspector-grid">
-      <MiniDatum label="Building" value={feature.id ?? UNAVAILABLE_VALUE} />
+      <MiniDatum label="Building" value={buildingID || UNAVAILABLE_VALUE} />
       <MiniDatum label="Planning AGL" value={formatMetric(properties.height_m, "m")} />
       <MiniDatum label="Selected AGL" value={formatMetric(ledger.selected_height_agl_m, "m")} />
       <MiniDatum label="Evidence class" value={ledger.selected_confidence ?? properties.height_source ?? UNAVAILABLE_VALUE} />
@@ -3791,7 +4215,7 @@ function InterferenceInspector({ payload }) {
   const model = payload?.model ?? {};
   return (
     <div className="inspector-grid">
-      <MiniDatum label="Serving cell" value={properties.serving_cell_id ?? "No signal"} />
+      <MiniDatum label="Serving cell" value={interferenceServingCellLabel(properties)} />
       <MiniDatum label="Channel" value={properties.channel_id ?? UNAVAILABLE_VALUE} />
       <MiniDatum label="Serving carrier power" value={formatMetric(properties.serving_received_carrier_power_dbm, "dBm")} />
       <MiniDatum label="RSRP" value={formatMetric(properties.rsrp_dbm, "dBm")} />
@@ -3804,18 +4228,18 @@ function InterferenceInspector({ payload }) {
       <MiniDatum label="Noise power" value={formatMetric(properties.thermal_noise_power_mw, "mW")} />
       <MiniDatum label="Receiver threshold" value={properties.receiver_threshold ? `${properties.receiver_threshold.mode ?? "manual"} · ${formatMetric(properties.receiver_threshold.sensitivity_dbm, "dBm")}` : UNAVAILABLE_VALUE} />
       <MiniDatum label="Receiver margin" value={formatMetric(properties.receiver_link_margin_db, "dB")} />
-      <MiniDatum label="Strongest interferer" value={properties.strongest_interferer_id ?? "Noise-limited"} />
+      <MiniDatum label="Strongest interferer" value={interferenceStrongestInterfererLabel(properties)} />
       <MiniDatum label="Interference" value={formatMetric(properties.interference_dbm, "dBm")} />
-      <MiniDatum label="Interferers" value={(properties.interferer_count ?? 0).toLocaleString()} />
+      <MiniDatum label="Interferers" value={interferenceCountLabel(properties.interferer_count)} />
       <MiniDatum label="Selection" value={properties.serving_selection_mode ?? UNAVAILABLE_VALUE} />
       <MiniDatum label="Serviceability" value={properties.serviceability_status ?? UNAVAILABLE_VALUE} />
-      <MiniDatum label="Walls" value={(properties.wall_count ?? 0).toLocaleString()} />
-      <MiniDatum label="Quality" value={formatScenario(properties.quality_class ?? "no_signal")} />
+      <MiniDatum label="Walls" value={interferenceCountLabel(properties.wall_count)} />
+      <MiniDatum label="Quality" value={interferenceQualityLabel(properties)} />
       {properties.building_id ? (
         <MiniDatum label="Affected demand" value={formatNumber(properties.total_demand, 1)} />
       ) : null}
       <p className="data-note">
-        {model.measurement_family === "nr_ss" ? "Modeled SS-RSRP / SS-RSRQ" : "Modeled LTE CRS RSRP / RSRQ"}
+        {interferenceMeasurementFamilyLabel(model)}
         {` · ${formatNumber(model.bandwidth_mhz, 0)} MHz · ${formatNumber(model.load_factor * 100, 0)}% load`}
       </p>
       <p className="result-explanation">{explainInterferenceSample(properties)}</p>
@@ -3849,25 +4273,6 @@ function RecommendationInspector({ payload }) {
       <p className="result-explanation">{properties.reason ?? "Candidate scored from known planning records."}</p>
     </div>
   );
-}
-
-function explainInterferenceSample(properties) {
-  if (properties.rsrp_dbm === null || properties.rsrp_dbm === undefined) {
-    return "No modeled carrier passed the active radius, beam-sector, wall-loss, and receiver-sensitivity checks at this point.";
-  }
-  const sinr = Number(properties.sinr_db);
-  if (Number.isFinite(sinr) && Math.abs(sinr) <= 1 && properties.strongest_interferer_id) {
-    return "SINR is near 0 dB because the serving carrier and strongest co-channel interferer have approximately equal received power.";
-  }
-  if (Number.isFinite(sinr) && sinr < 0) {
-    return "Co-channel interference is stronger than the serving signal at this sample. Review cell azimuths, load, or frequency reuse.";
-  }
-  if (Number(properties.wall_count) > 0) {
-    return `The serving path crosses ${properties.wall_count} modeled wall${properties.wall_count === 1 ? "" : "s"}; frequency-dependent penetration loss is included.`;
-  }
-  return properties.strongest_interferer_id
-    ? "The sample is interference-limited by another cell on the serving channel."
-    : "The sample is primarily noise-limited under the current deterministic assumptions.";
 }
 
 function buildCoreLabQuery(towerIDs, selectedNetworkTowers, selectedTower) {
@@ -5107,10 +5512,11 @@ function ModelApplicabilityDetails({ appMeta, settings }) {
 
   return (
     <section className="model-applicability-details" aria-label="Propagation model applicability">
-      <p><strong>{modelName}</strong> · {isResearch ? "research/reference profile; radio quality unsupported" : "urban planning profile; runtime frequency ceiling 100 GHz"}</p>
+      <p><strong>{modelName}</strong> · {isResearch ? "radio quality unsupported" : "urban planning profile; runtime frequency ceiling 100 GHz"}</p>
       {isResearch ? <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz is not canonical validation or production-calibrated. It remains outside ordinary radio-quality analysis.</p> : null}
       <details className="model-limit-details">
-        <summary>Model scope, RF contract, and assumptions <span>{appMeta?.model_id ?? modelID}</span></summary>
+        <summary>Model scope, RF contract, and assumptions</summary>
+        <p className="model-applicability-id">Model identifier: <code>{appMeta?.model_id ?? modelID}</code></p>
         <p>For <code>urban_short_range</code>, A.T.O.M runs the deterministic UMa LOS/NLOS path-loss subset for its normal 2.6/28 GHz planning profiles. The documented mathematical envelope is 0.5–100 GHz, 10–5,000 m ground distance, 10–150 m transmitter height, and 1.5–&lt;13 m receiver height; full 3GPP channel-model conformance is not claimed.</p>
         <p>The canonical RF contract carries the selected propagation model and per-cell RF profile into the existing request. Conducted power, absolute TX gain, pattern attenuation, RX gain, system and polarization losses, calibration, propagation loss, building loss, and receiver thresholds remain distinct terms.</p>
         <ul>

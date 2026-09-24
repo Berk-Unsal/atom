@@ -18,6 +18,8 @@ export default function ControlPanel({
   interferenceApplicable,
   optimizationConfigValid = true,
   networkSelectionCount,
+  isSelectingCellsOnMap = false,
+  isDrawingSelection = false,
   planningMode,
   selectionNotice,
 }) {
@@ -119,12 +121,18 @@ export default function ControlPanel({
               <span>Selected cluster</span>
               <strong>{networkSelectionCount} / {MAX_NETWORK_CELLS} cells</strong>
             </div>
-            {selectionNotice ? <p className="selection-note">{selectionNotice}</p> : null}
-            <p className="selection-note">Select cells directly on the map or use the area tool.</p>
-            <button type="button" className="selection-map-action" onClick={onFocusMap}>
-              <MapPin size={15} />
-              <span>Select cells on map</span>
-            </button>
+            <p className="selection-minimum-note">At least 2 cells are required to evaluate; {MAX_NETWORK_CELLS} is the maximum cluster size.</p>
+            {isDrawingSelection ? (
+              <p className="selection-map-mode" role="status">Drawing selection area…</p>
+            ) : isSelectingCellsOnMap ? (
+              <p className="selection-map-mode" role="status">Selecting cells on map…</p>
+            ) : (
+              <button type="button" className="selection-map-action" onClick={onFocusMap}>
+                <MapPin size={15} />
+                <span>Select cells on map</span>
+              </button>
+            )}
+            {selectionNotice ? <p className="selection-note map-selection-feedback" role="status">{selectionNotice}</p> : null}
           </div>
         ) : null}
       </section>
@@ -200,10 +208,14 @@ export default function ControlPanel({
           {planningMode === "network" && networkSelectionCount < 2 ? (
             <>
               <p className="selection-note">Select at least two cells before optimization.</p>
-              <button type="button" className="selection-map-action" onClick={onFocusMap}>
-                <MapPin size={15} />
-                <span>Select cells on map</span>
-              </button>
+              {isSelectingCellsOnMap ? (
+                <p className="selection-map-mode" role="status">Selecting cells on map…</p>
+              ) : (
+                <button type="button" className="selection-map-action" onClick={onFocusMap}>
+                  <MapPin size={15} />
+                  <span>Select cells on map</span>
+                </button>
+              )}
             </>
           ) : null}
           {planningMode === "network" && networkSelectionCount >= 2 && !optimizationConfigValid ? (
@@ -317,10 +329,14 @@ export default function ControlPanel({
               {networkSelectionCount < 2 ? (
                 <>
                   <p className="selection-note">Requires at least two selected cells.</p>
-                  <button type="button" className="selection-map-action" onClick={onFocusMap}>
-                    <MapPin size={15} />
-                    <span>Select cells on map</span>
-                  </button>
+                  {isSelectingCellsOnMap ? (
+                    <p className="selection-map-mode" role="status">Selecting cells on map…</p>
+                  ) : (
+                    <button type="button" className="selection-map-action" onClick={onFocusMap}>
+                      <MapPin size={15} />
+                      <span>Select cells on map</span>
+                    </button>
+                  )}
                 </>
               ) : null}
             </div>

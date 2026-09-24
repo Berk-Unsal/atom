@@ -86,7 +86,10 @@ export function isDatasetCompatible(project, meta) {
 export function updateProjectDraft(project, draft) {
   const activeScenario = project.scenarios.find((scenario) => scenario.id === project.activeScenarioId);
   const stillMatchesActiveScenario = Boolean(
-    activeScenario && equalSerializableValues(activeScenario.plan, draft?.plan),
+    activeScenario && equalPlanInputs(
+      planInputsForScenarioIdentity(activeScenario.plan),
+      planInputsForScenarioIdentity(draft?.plan),
+    ),
   );
   return {
     ...project,
@@ -97,6 +100,25 @@ export function updateProjectDraft(project, draft) {
       updatedAt: new Date().toISOString(),
     },
   };
+}
+
+function planInputsForScenarioIdentity(plan) {
+  const inputs = { ...(plan ?? {}) };
+  delete inputs.selectedMapCellId;
+  delete inputs.rayScope;
+  return inputs;
+}
+
+function equalPlanInputs(left, right) {
+  return JSON.stringify(sortSerializableObjectKeys(left)) === JSON.stringify(sortSerializableObjectKeys(right));
+}
+
+function sortSerializableObjectKeys(value) {
+  if (Array.isArray(value)) return value.map(sortSerializableObjectKeys);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, sortSerializableObjectKeys(value[key])]));
+  }
+  return value;
 }
 
 export function normalizeWorkspace(candidate, datasetRef = null) {

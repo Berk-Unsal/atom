@@ -4,6 +4,17 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Added
+
+- Add a read-only contextual inspector for map-linked Cells, Buildings, Interference samples, and existing map entities, with exact source/freshness context and direct Inventory and Path Profile actions.
+- Separate map Inspect and Select cells modes, preserve task state across supported panel layouts, and give area drawing, cell placement, and path endpoint selection priority over inspection.
+- Consolidate map chrome into interaction, result visualization, View context, and Layers controls; remove duplicate map popups, clarify Network selection guidance, and keep the compact interaction, View, and Layers controls reachable on phones.
+
+### Fixed
+
+- Keep retained Interference samples inspectable when switching map interaction modes and show unavailable values when the response lacks evidence.
+- Keep active Scenario lineage when draft and saved plan values differ only by object key order or map-only focus/ray scope.
+
 ## [0.9.0] - 2026-09-23
 
 ### Added

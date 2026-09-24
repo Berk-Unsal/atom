@@ -1,0 +1,112 @@
+{
+  "concept": "8D",
+  "measurement_basis": {
+    "units": "CSS px",
+    "current_stage_rail": 88,
+    "current_left_drawer": "clamp(320px, 27vw, 360px); measured in 8B.1 evidence as 360px at 1440, 345.6px at 1280, 320px at 1024/768, and full viewport width at 390.",
+    "proposed_inspector_width": 320,
+    "method": "Layout arithmetic uses actual CSS widths and 8B.1 measured drawer widths. Map usability judgments are qualitative and must be rechecked with live map/data after 8E.",
+    "limitation": "The available 8B.1 screenshots show the shell and drawer but do not include a paired right inspector. Captured base-map tiles were unavailable, so screenshots prove panel geometry/density, not live map usability."
+  },
+  "layouts": {
+    "A_rail_map": {
+      "status": "allowed",
+      "purpose": "Map-first idle/closed-panel state."
+    },
+    "B_rail_left_task_drawer_map": {
+      "status": "allowed",
+      "purpose": "Current task configuration/action; drawer stays independent from inspected entity."
+    },
+    "C_rail_map_right_inspector": {
+      "status": "allowed",
+      "purpose": "Inspect spatial entity when no left task drawer is visible or at responsive replacement widths."
+    },
+    "D_rail_left_task_map_right_inspector": {
+      "status_by_width": {
+        "1920": "allowed_push",
+        "1600": "allowed_push",
+        "1440": "allowed_right_overlay",
+        "1280": "prohibited_replace_left_drawer",
+        "1024": "prohibited_replace_left_drawer",
+        "768": "prohibited_one_bottom_sheet",
+        "390": "prohibited_one_bottom_sheet"
+      },
+      "purpose": "Keep workflow and entity ownership distinct without making map interaction impractical."
+    }
+  },
+  "width_budget": [
+    {
+      "viewport": 1920,
+      "rail": 88,
+      "left_drawer": 360,
+      "inspector": 320,
+      "map_region": 1152,
+      "behavior": "Push both panels. Map remains a broad working canvas with cell, building, and RF-layer interaction."
+    },
+    {
+      "viewport": 1600,
+      "rail": 88,
+      "left_drawer": 360,
+      "inspector": 320,
+      "map_region": 832,
+      "behavior": "Push both; comfortable enough for regional/local map with the inspector kept compact. Validate with real tile/map and toolbar controls."
+    },
+    {
+      "viewport": 1440,
+      "rail": 88,
+      "left_drawer": 360,
+      "inspector": 320,
+      "map_region": 672,
+      "behavior": "Right inspector overlays the map while left tool remains open; the unobstructed corridor is about 672px. The map remains navigable but this is the lower desktop dual-panel limit."
+    },
+    {
+      "viewport": 1280,
+      "rail": 88,
+      "left_drawer": 345.6,
+      "inspector": 320,
+      "map_region": 872,
+      "behavior": "Do not keep both side panels. Inspector temporarily occupies the left tool-drawer slot with a Back-to-Propagation/owning-tool action; map has one panel footprint and task state is retained."
+    },
+    {
+      "viewport": 1024,
+      "rail": 88,
+      "left_drawer": 320,
+      "inspector": 320,
+      "map_region": 616,
+      "behavior": "Single inspector panel replaces the left task drawer; map remains a 616px-wide workspace. Back restores tool; no dual panels."
+    },
+    {
+      "viewport": 768,
+      "rail": 88,
+      "left_drawer": 320,
+      "inspector": 320,
+      "map_region": 680,
+      "behavior": "One full-width bottom sheet at a time, max about 55vh; preserve a broad upper map area instead of a 360px side strip."
+    },
+    {
+      "viewport": 390,
+      "rail": "64px bottom stage rail",
+      "left_drawer": "full-width sheet",
+      "inspector": "same single sheet",
+      "map_region": "390px wide; sheet overlays lower viewport",
+      "behavior": "One sheet at a time. Keep entity title/close/back visible, scroll details inside the sheet, and leave a useful map strip. No three-column layout."
+    }
+  ],
+  "panel_policy": {
+    "1920": "Push; independent collapse/close for each panel.",
+    "1600": "Push; 832px map region is the minimum width for dual desktop panes.",
+    "1440": "Keep current left overlay behavior; right inspector overlays the map at the opposite edge. When map operations need more space, close either panel independently. Do not close task drawer on every inspect action.",
+    "1280": "Inspector replaces/temporarily occupies task drawer host. Back restores exact prior tool and state; only one side panel visible.",
+    "1024": "Same single-panel replacement; right edge anchoring is acceptable because the left drawer is hidden.",
+    "768": "One bottom sheet at a time using current sheet language; no competing side overlays.",
+    "390": "One bottom sheet at a time, with a compact/collapsed header and explicit Back/Close semantics."
+  },
+  "keyboard_and_accessibility": {
+    "landmark": "Named complementary/region landmark, heading includes selected entity type and ID.",
+    "open_focus": "Keyboard activation of Inspect moves focus to the inspector heading; pointer selection does not steal focus or announce every hover.",
+    "close_focus": "Close returns focus to the initiating map feature/action when it still exists; otherwise to the map toolbar/owning tool.",
+    "escape": "Escape closes transient submenus first, then inspector, then drawer according to existing chooser/map-tool priority.",
+    "status": "Freshness and entity state use text plus icon/structure; color is supplementary.",
+    "touch": "Keep close/back and primary context actions at accessible touch sizes; mobile details scroll within the sheet."
+  }
+}

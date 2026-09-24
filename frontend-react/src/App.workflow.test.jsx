@@ -455,20 +455,21 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(1);
   });
 
-  it("changes RF map presentation without launching another RF request", async () => {
+  it("changes map presentation without launching another RF request", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
     await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
-    expect(screen.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(document.querySelector(".map-visualization-quick-controls")).getByRole("button", { name: "Propagation rays layer" })).toHaveAttribute("aria-pressed", "true");
 
     const rfRequestCount = api.postJSON.mock.calls.length;
-    fireEvent.click(screen.getByRole("button", { name: "Toggle propagation rays" }));
+    fireEvent.click(screen.getByRole("button", { name: "Propagation rays layer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Map view options" }));
     fireEvent.change(screen.getByRole("combobox", { name: "Ray scope" }), { target: { value: "selected" } });
     fireEvent.change(screen.getByRole("combobox", { name: "Map focus cell" }), { target: { value: "101" } });
 
-    expect(screen.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(document.querySelector(".map-visualization-quick-controls")).getByRole("button", { name: "Propagation rays layer" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("combobox", { name: "Ray scope" })).toHaveValue("selected");
     expect(api.postJSON).toHaveBeenCalledTimes(rfRequestCount);
   });
@@ -487,7 +488,7 @@ describe("App planning workflow", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
     await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
 
-    const signalButton = screen.getByRole("button", { name: "Toggle received signal surface" });
+    const signalButton = screen.getByRole("button", { name: "Signal layer" });
     expect(signalButton).toBeEnabled();
     expect(signalButton).toHaveAttribute("data-surface-state", "available");
 
@@ -502,9 +503,9 @@ describe("App planning workflow", () => {
     );
     expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/analyze-sector").length).toBe(1);
 
-    expect(screen.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "false");
-    fireEvent.click(screen.getByRole("button", { name: "Toggle propagation rays" }));
-    expect(screen.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Propagation rays layer" })).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(screen.getByRole("button", { name: "Propagation rays layer" }));
+    expect(screen.getByRole("button", { name: "Propagation rays layer" })).toHaveAttribute("aria-pressed", "true");
     expect(api.postJSON.mock.calls.length).toBe(rfRequestCount + 1);
   });
 
@@ -519,7 +520,7 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
     await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
-    const signalButton = screen.getByRole("button", { name: "Toggle received signal surface" });
+    const signalButton = screen.getByRole("button", { name: "Signal layer" });
     fireEvent.click(signalButton);
     await waitFor(() => expect(signalButton).toHaveAttribute("data-surface-state", "ready"));
 
@@ -538,10 +539,33 @@ describe("App planning workflow", () => {
     await act(async () => Promise.resolve());
 
     expect(api.postJSON).not.toHaveBeenCalled();
-    expect(screen.getByRole("button", { name: "Add 1 cell" })).toBeDisabled();
+    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select cells" })).toBeEnabled();
+    expect(screen.getByText(/at least 2 cells are required to evaluate; 6 is the maximum cluster size/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Analyze workspace" }));
     expect(screen.getByRole("button", { name: "Interference" })).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByText("Select at least two cells")).toBeInTheDocument();
+  });
+
+  it("keeps Setup as the owner of map selection and removes its CTA while selection is active", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    const setup = screen.getByRole("dialog", { name: "Setup" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    const selectOnMap = within(setup).getByRole("button", { name: "Select cells on map" });
+    expect(selectOnMap).toBeInTheDocument();
+    fireEvent.click(selectOnMap);
+
+    expect(screen.getByRole("dialog", { name: "Setup" })).toBeInTheDocument();
+    expect(screen.getByText("Selecting cells on map…")).toHaveAttribute("role", "status");
+    expect(within(screen.getByRole("group", { name: "Primary action" })).queryByRole("button", { name: "Select cells" })).not.toBeInTheDocument();
+    expect(within(setup).queryByRole("button", { name: "Select cells on map" })).not.toBeInTheDocument();
+    expect(api.postJSON).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.getByRole("button", { name: "Inspect" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(setup).getByRole("button", { name: "Select cells on map" })).toBeInTheDocument();
+    expect(api.postJSON).not.toHaveBeenCalled();
   });
 
   it("explores Pareto solutions without changing the recommendation or rerunning RF", async () => {
@@ -634,11 +658,17 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "Setup" })).getByRole("button", { name: "Select cells on map" }));
+    expect(screen.getByText("Selecting cells on map…")).toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "Map interaction mode" })).getByRole("button", { name: "Select cells" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "Draw selection area" }));
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Select cells" })).not.toBeInTheDocument();
 
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "Map interaction mode" })).getByRole("button", { name: "Select cells" })).toHaveAttribute("aria-pressed", "true");
     expect(api.postJSON).not.toHaveBeenCalled();
   });
 

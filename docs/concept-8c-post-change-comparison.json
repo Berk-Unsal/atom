@@ -1,0 +1,54 @@
+{
+  "concept": "8C",
+  "phase": "post-change comparison",
+  "baseline": {
+    "source": "concept-8c-pre-change-baseline.json and concept-8c-map-control-inventory.json",
+    "head": "b57b1efc98bda9ac37c75fe32d1d8b9618feea8c",
+    "branch": "main",
+    "version": "0.9.0",
+    "dirty": true,
+    "inheritedWork": "Existing 8B.1, 8D, and 8E edits/artifacts were present before this phase and preserved.",
+    "issue": "Separate ordinary Inspect/Select cells choices coexisted with an ambiguous pointer-shaped Draw area action, detailed map popups duplicated inspector content, and Scope/Map Focus/Inspect focus occupied persistent toolbar width. Selection CTA/count copy could be read as a fixed target, and 390px controls wrapped into a tall block."
+  },
+  "after": {
+    "interaction": "One explicit ordinary mode choice; contextual special tools replace those choices while armed; clear and fit have separate, named semantics.",
+    "entityDetail": "Detailed Cell, gap, and recommendation map popups are removed. Inspector is authoritative; communication-path tooltip retains only the compact interface-family label.",
+    "visualization": "Signal, Rays, and conditional one-select radio-quality metric are grouped as visualization controls. Scope and Map Focus share View; Layers stays separate.",
+    "selectionMessaging": "Setup owns cluster progress, command bar owns next action, map control owns click mode, and transient status expires after 5 seconds.",
+    "responsive": "Toolbar is one 44px row at desktop/tablet captures and 42px at 390px; no document horizontal overflow or measured toolbar/inspector, legend/inspector, View/legend, or View/zoom overlap in 15 post-change states."
+  },
+  "responsiveGeometry": {
+    "source": "concept-8c-responsive-evidence.json",
+    "widths": [1920, 1600, 1440, 1280, 1024, 768, 390],
+    "postToolbarHeightPx": {"1920": 44, "1600": 44, "1440": 44, "1280": 44, "1024": 44, "768": 44, "390": 42},
+    "inspectorLayout": {
+      "1920": "Push inspector; map toolbar and legend end at x=1588 with 12px before inspector at x=1600.",
+      "1600": "Push inspector; toolbar and legend end at x=1268 with 12px before inspector at x=1280.",
+      "1440": "Inspector overlays the right edge; toolbar and legend end at x=1108, exactly at inspector's left edge.",
+      "1280": "Inspector uses the existing single-panel slot; task drawer is not stacked with it.",
+      "1024": "Single-panel inspector layout; toolbar stays within map bounds.",
+      "768": "One bottom sheet; Map key is collapsed while inspector occupies the lower region.",
+      "390": "One bottom sheet; 42px map toolbar. When View is open, Map key and Leaflet zoom are temporarily hidden because they overlap the mobile View menu; both return when it closes."
+    },
+    "assertions": {"documentOverflowX": 0, "toolbarInspectorOverlap": false, "legendInspectorOverlap": false, "viewMenuLegendOverlap": false, "viewMenuZoomOverlap": false, "viewMenuWithinViewport": true}
+  },
+  "screenshotEvidence": {
+    "before": {
+      "directory": "Existing Concept 8E and 8B.1 evidence, referenced in place to avoid duplicate binary assets.",
+      "files": ["docs/assets/concept-8e/inspector-1920.png", "docs/assets/concept-8e/inspector-1600.png", "docs/assets/concept-8e/inspector-1440.png", "docs/assets/concept-8e/inspector-1280.png", "docs/assets/concept-8e/inspector-1024.png", "docs/assets/concept-8e/inspector-768.png", "docs/assets/concept-8e/inspector-390.png", "docs/assets/concept-8b1/after/1440-setup.jpg"],
+      "provenance": "Inspector screenshots are pre-8C Concept 8E captures; the setup image is the closest prior Concept 8B.1 setup-shell capture. They document the inherited UI but are not a newly captured pixel-paired baseline for every 8C toolbar state."
+    },
+    "after": {
+      "directory": "docs/assets/concept-8c/after/",
+      "files": ["1920-inspector-view.png", "1600-inspector-view.png", "1440-inspector-view.png", "1280-inspector-view.png", "1024-inspector-view.png", "768-inspector-view.png", "390-inspector-view.png", "1440-setup-inspect.png", "1440-view-context.png", "1440-layers.png", "1440-select-cells.png", "1440-area-draw.png", "1920-select-cells-mode.png", "1600-select-cells-mode.png", "1440-select-cells-mode.png", "1280-select-cells-mode.png", "1024-select-cells-mode.png", "768-select-cells-mode.png", "390-select-cells-mode.png", "390-interaction-menu.png", "390-select-cells.png", "390-special-mode.png", "390-network-edit-actions.png", "1440-place-cell.png", "1440-pick-receiver.png"],
+      "provenance": "Captured from the post-change E2E evidence workflow; the corresponding exact measurements are in concept-8c-responsive-evidence.json."
+    }
+  },
+  "bundle": {
+    "baseline": {"chunks": 12, "initialJavaScriptRawKiB": 796.62, "initialJavaScriptGzipKiB": 225.44, "cssRawKiB": 174.7, "cssGzipKiB": 32.25},
+    "after": {"chunks": 12, "initialJavaScriptRawKiB": 801.83, "initialJavaScriptGzipKiB": 226.62, "cssRawKiB": 184.31, "cssGzipKiB": 33.58},
+    "change": {"initialJavaScriptRawKiB": 5.21, "initialJavaScriptGzipKiB": 1.18, "cssRawKiB": 9.61, "cssGzipKiB": 1.33, "thirdPartyDependencies": 0, "initialJavaScriptPercent": {"raw": 0.65, "gzip": 0.52}},
+    "warning": "The existing Vite initial JavaScript chunk >500 kB advisory remains."
+  },
+  "scopeBoundary": "No Plan > Scenarios extraction, RF Diagnostics subview restructuring, Results, Run History, Data, Experiments, Building Entry, Core Lab, or marker-clustering work was implemented."
+}

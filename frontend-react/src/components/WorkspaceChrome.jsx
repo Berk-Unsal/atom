@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronUp,
   Eraser,
+  Eye,
   Copy,
   Download,
   FilePlus2,
@@ -13,6 +15,7 @@ import {
   Trash2,
   Upload,
   Layers3,
+  LassoSelect,
   LocateFixed,
   MousePointer2,
   Play,
@@ -65,8 +68,11 @@ export function CommandBar({
           <details className="rf-context-details">
             <summary aria-label="More RF context"><ChevronDown size={14} /><span>RF details</span></summary>
             <div className="rf-context-popover">
-              <span>TX power <strong>{txPowerDbm} dBm</strong></span>
-              <span>Planning radius <strong>{radiusMeters} m</strong></span>
+              <strong className="rf-context-popover-title">RF configuration</strong>
+              <dl>
+                <div><dt>TX power</dt><dd>{txPowerDbm} dBm</dd></div>
+                <div><dt>Planning radius</dt><dd>{radiusMeters} m</dd></div>
+              </dl>
               <a
                 className="planning-estimate-link"
                 href="https://github.com/Berk-Unsal/atom/blob/main/docs/modeling-limits.md"
@@ -74,7 +80,7 @@ export function CommandBar({
                 rel="noreferrer"
                 title="Open deterministic model limitations"
               >
-                Planning estimate: model limitations
+                Model limitations
               </a>
             </div>
           </details>
@@ -352,6 +358,7 @@ export function StageToolChoices({
         const state = toolState?.[tool.id] ?? {};
         const isActive = tool.id === activeTool;
         const unavailable = Boolean(state.unavailable);
+        const unavailableReason = state.reason ?? "Unavailable in the current workspace.";
         const stateLabel = isActive
           ? "Current tool"
           : unavailable
@@ -364,9 +371,30 @@ export function StageToolChoices({
                   : "Result available"
                 : state.badge === "…"
                   ? "Loading"
-                  : state.badge && tool.id === "setup"
-                    ? `${state.badge} cells selected`
-                    : tool.description;
+                  : "";
+        const visibleState = unavailable
+          ? tool.id === "interference" && unavailableReason.startsWith("Interference requires Network")
+            ? "Requires Network mode"
+            : tool.id === "interference" && unavailableReason.includes("6G research profile")
+              ? "Not supported for 6G research"
+            : tool.id === "core" && unavailableReason.startsWith("5G Core requires")
+              ? "Requires 5G defaults and active 5G cells"
+                : unavailableReason
+          : state.tone === "warning" && state.badge
+            ? "Attention"
+            : isActive
+              ? ""
+              : state.badge && state.tone === "success"
+              ? tool.id === "history"
+                ? stateLabel
+                : "Result"
+              : state.badge === "…"
+                ? "Loading"
+                : "";
+        const stateID = `stage-tool-${stage.id}-${tool.id}-description`;
+        const reasonID = `stage-tool-${stage.id}-${tool.id}-reason`;
+        const visibleStateIsDescription = Boolean(!unavailable && stateLabel && visibleState === stateLabel);
+        const visibleReasonIsDescription = Boolean(unavailable && visibleState === unavailableReason);
 
         return (
           <button
@@ -378,23 +406,28 @@ export function StageToolChoices({
             aria-label={tool.label}
             aria-current={isActive ? "page" : undefined}
             aria-disabled={unavailable || undefined}
-            aria-describedby={`stage-tool-${stage.id}-${tool.id}-description${unavailable ? ` stage-tool-${stage.id}-${tool.id}-reason` : ""}`}
+            aria-describedby={[stateLabel ? stateID : null, unavailable ? reasonID : null].filter(Boolean).join(" ") || undefined}
           >
             <Icon className="stage-tool-choice-icon" size={17} aria-hidden="true" />
             <span className="stage-tool-choice-copy">
               <span className="stage-tool-choice-name">{tool.label}</span>
-              <span
-                id={`stage-tool-${stage.id}-${tool.id}-description`}
-                className={isActive ? "visually-hidden" : "stage-tool-choice-description"}
-              >
-                {stateLabel}
-              </span>
               {unavailable ? (
-                <span id={`stage-tool-${stage.id}-${tool.id}-reason`} className="stage-tool-choice-reason">{state.reason ?? "Unavailable in the current workspace."}</span>
+                <span id={visibleReasonIsDescription ? reasonID : undefined} className="stage-tool-choice-reason">
+                  {visibleState}
+                </span>
               ) : null}
+              {!unavailable && visibleState ? (
+                <span
+                  id={visibleStateIsDescription ? stateID : undefined}
+                  className={`stage-tool-choice-state${state.tone === "warning" ? " warning" : ""}`}
+                >
+                  {visibleState}
+                </span>
+              ) : null}
+              {stateLabel && !visibleStateIsDescription ? <span id={stateID} className="visually-hidden">{stateLabel}</span> : null}
+              {unavailable && !visibleReasonIsDescription ? <span id={reasonID} className="visually-hidden">{unavailableReason}</span> : null}
             </span>
-            {isActive ? <span className="stage-tool-current-mark">Current</span> : null}
-            {!isActive && state.tone === "warning" && state.badge ? <span className="stage-tool-attention-mark">!</span> : null}
+            {isActive ? <span className="stage-tool-current-mark" aria-hidden="true">Current</span> : null}
           </button>
         );
       })}
@@ -478,6 +511,7 @@ export function WorkflowRail({
 
 export function ToolDrawer({
   children,
+  concealed = false,
   chooser = null,
   drawerMode,
   error,
@@ -506,7 +540,7 @@ export function ToolDrawer({
     <dialog
       open
       id={chooser ? `stage-chooser-${chooser.stage.id}` : undefined}
-      className={`tool-drawer ${drawerMode === "inspector" ? "inspector-mode" : ""}`}
+      className={`tool-drawer ${drawerMode === "inspector" ? "inspector-mode" : ""} ${concealed ? "concealed" : ""}`.trim()}
       aria-modal="false"
       aria-labelledby="tool-drawer-title"
       data-stage-chooser={chooser ? "true" : undefined}
@@ -516,7 +550,6 @@ export function ToolDrawer({
           <header className="tool-drawer-header tool-drawer-chooser-header">
             <div>
               <h2 id="tool-drawer-title" ref={headingRef} tabIndex={-1}>{chooser.stage.label}</h2>
-              <p>Choose a tool for this stage</p>
             </div>
             <button type="button" className="drawer-icon-button drawer-close" onClick={onClose} aria-label="Close tool chooser">
               <X size={18} />
@@ -535,7 +568,7 @@ export function ToolDrawer({
         </>
       ) : (
         <>
-          <header className="tool-drawer-header">
+        <header className="tool-drawer-header">
         {drawerMode === "inspector" ? (
           <button type="button" className="drawer-icon-button" onClick={onBack} aria-label="Back to previous tool">
             <ChevronLeft size={18} />
@@ -581,30 +614,58 @@ export function MapToolbar({
   signalSurfaceState,
   hasInterferenceData,
   interferenceMetric,
+  interactionMode = "inspect",
+  canInspectMapFocus = false,
+  mapFocusIsInspected = false,
   isDrawingSelection,
+  isPlacingCell = false,
+  isSelectingPathEndpoint = false,
   layerMenuOpen,
   layerVisibility,
   onCancelAreaSelection,
+  onCancelPlacement,
+  onCancelPathEndpoint,
   onClearNetworkSelection,
   onDrawArea,
   onFinishAreaSelection,
   onFitSelectedCells,
   onInterferenceMetricChange,
+  onInspectMapFocus,
   onLayerMenuToggle,
+  onInteractionModeChange,
   onToggleLayer,
   onRayScopeChange,
   onSelectedMapCellChange,
   planningMode,
-  rayCellOptions = [],
+  focusCellOptions = [],
   rayScope = "all",
   selectionCanFinish,
   selectedMapCellId = null,
   selectedCount,
 }) {
+  const toolbarRef = useRef(null);
   const layerMenuRef = useRef(null);
   const layerTriggerRef = useRef(null);
+  const viewMenuRef = useRef(null);
+  const viewTriggerRef = useRef(null);
+  const interactionMenuRef = useRef(null);
+  const interactionTriggerRef = useRef(null);
+  const [viewMenuOpen, setViewMenuOpen] = useState(false);
+  const [interactionMenuOpen, setInteractionMenuOpen] = useState(false);
   const resolvedSignalSurfaceState = signalSurfaceState ?? (hasSignalSurface ? "ready" : "unavailable");
   const handleSignalToggle = onSignalToggle ?? (() => onToggleLayer("surfaces"));
+  const specialMode = isDrawingSelection
+    ? "draw-area"
+    : isPlacingCell
+      ? "place-cell"
+      : isSelectingPathEndpoint
+        ? "pick-receiver"
+        : null;
+  const canDrawArea = planningMode === "network" && interactionMode === "select-cells";
+  const canClearSelection = planningMode === "network" && selectedCount > 0;
+  const canFitSelection = selectedCount > 0 || planningMode === "single";
+  const signalActive = Boolean(layerVisibility?.surfaces && hasSignalSurface && resolvedSignalSurfaceState === "ready");
+  const raysActive = Boolean(layerVisibility?.rays && hasRays && rayScope !== "hidden");
   const layers = [
     { id: "buildings", label: "Viewport buildings" },
     { id: "gaps", label: "Coverage gaps" },
@@ -627,132 +688,277 @@ export function MapToolbar({
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [layerMenuOpen, onLayerMenuToggle]);
 
-  const handleLayerMenuKeyDown = (event) => {
-    if (event.key !== "Escape" || !layerMenuOpen) {
+  useEffect(() => {
+    if (!viewMenuOpen && !interactionMenuOpen) return undefined;
+    const handlePointerDown = (event) => {
+      if (toolbarRef.current?.contains(event.target)) return;
+      setViewMenuOpen(false);
+      setInteractionMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [interactionMenuOpen, viewMenuOpen]);
+
+  const handleMenuEscape = (event) => {
+    if (event.key !== "Escape" || specialMode) return;
+    if (layerMenuOpen) {
+      event.preventDefault();
+      event.stopPropagation();
+      onLayerMenuToggle(false);
+      layerTriggerRef.current?.focus();
       return;
     }
-    event.preventDefault();
-    event.stopPropagation();
-    onLayerMenuToggle(false);
-    layerTriggerRef.current?.focus();
+    if (viewMenuOpen) {
+      event.preventDefault();
+      event.stopPropagation();
+      setViewMenuOpen(false);
+      viewTriggerRef.current?.focus();
+      return;
+    }
+    if (interactionMenuOpen) {
+      event.preventDefault();
+      event.stopPropagation();
+      setInteractionMenuOpen(false);
+      interactionTriggerRef.current?.focus();
+    }
   };
 
+  const handleInteractionModeChange = (mode) => {
+    setInteractionMenuOpen(false);
+    onInteractionModeChange?.(mode);
+  };
+
+  const renderMetricSelect = () => (
+    <label className="map-control-select">
+      <span>Metric</span>
+      <select
+        aria-label="Radio-quality metric"
+        value={interferenceMetric}
+        onChange={(event) => onInterferenceMetricChange?.(event.target.value)}
+      >
+        <option value="sinr">SINR</option>
+        <option value="rsrp">RSRP</option>
+        <option value="rsrq">RSRQ</option>
+      </select>
+    </label>
+  );
+
+  const renderSignalToggle = () => (
+    <button
+      type="button"
+      className={signalActive ? "active" : ""}
+      aria-pressed={signalActive}
+      aria-label="Signal layer"
+      aria-busy={resolvedSignalSurfaceState === "loading" || undefined}
+      data-surface-state={resolvedSignalSurfaceState}
+      disabled={resolvedSignalSurfaceState === "unavailable"}
+      title={resolvedSignalSurfaceState === "ready"
+        ? "Toggle received signal surface"
+        : resolvedSignalSurfaceState === "available"
+          ? "Load received signal surface"
+          : resolvedSignalSurfaceState === "loading"
+            ? "Loading received signal surface"
+            : resolvedSignalSurfaceState === "error"
+              ? "Retry received signal surface"
+              : "Run a current RF or network analysis first"}
+      onClick={handleSignalToggle}
+    >
+      {signalActive ? <Check size={12} aria-hidden="true" /> : null}
+      <span>Signal</span>
+    </button>
+  );
+
+  const renderRaysToggle = () => (
+    <button
+      type="button"
+      className={raysActive ? "active" : ""}
+      aria-pressed={raysActive}
+      aria-label="Propagation rays layer"
+      disabled={!hasRays}
+      title={hasRays ? "Toggle propagation rays" : "Run a sector or network analysis first"}
+      onClick={() => onToggleLayer("rays")}
+    >
+      {raysActive ? <Check size={12} aria-hidden="true" /> : null}
+      <span>Rays</span>
+    </button>
+  );
+
+  const renderViewContext = () => (
+    <div className="map-view-section" role="group" aria-label="View context">
+      <label className="map-control-select">
+        <span>Scope</span>
+        <select
+          aria-label="Ray scope"
+          value={rayScope}
+          disabled={!hasRays}
+          onChange={(event) => onRayScopeChange?.(event.target.value)}
+        >
+          <option value="all">All cells</option>
+          <option value="selected">Map Focus cell</option>
+          <option value="hidden">Hidden</option>
+        </select>
+      </label>
+      <label className="map-control-select map-focus-select">
+        <span>Map Focus</span>
+        <select
+          aria-label="Map focus cell"
+          value={selectedMapCellId ?? ""}
+          disabled={focusCellOptions.length === 0}
+          onChange={(event) => onSelectedMapCellChange?.(event.target.value)}
+        >
+          {focusCellOptions.length === 0 ? <option value="">No cell</option> : null}
+          {focusCellOptions.map((cell) => <option key={cell.id} value={cell.id}>{cell.label}</option>)}
+        </select>
+      </label>
+      {canInspectMapFocus && !mapFocusIsInspected ? (
+        <button
+          type="button"
+          className="map-focus-inspect"
+          aria-label="Inspect focused cell"
+          title="Inspect the current Map Focus Cell"
+          onClick={() => {
+            setViewMenuOpen(false);
+            viewTriggerRef.current?.focus();
+            onInspectMapFocus?.();
+          }}
+        >
+          <Eye size={15} aria-hidden="true" />
+          <span>Inspect focused cell</span>
+        </button>
+      ) : null}
+    </div>
+  );
+
+  const currentInteractionLabel = specialMode === "draw-area"
+    ? "Draw area"
+    : specialMode === "place-cell"
+      ? "Place cell"
+      : specialMode === "pick-receiver"
+        ? "Pick receiver"
+        : interactionMode === "select-cells"
+          ? "Select cells"
+          : "Inspect";
+
   return (
-    <div className="focused-map-toolbar" aria-label="Map tools">
-      <div className="spatial-tools">
-        <button
-          type="button"
-          className={isDrawingSelection ? "active" : ""}
-          onClick={onDrawArea}
-          aria-label="Draw selection area"
-          title="Draw selection area"
-        >
-          <MousePointer2 size={17} />
-        </button>
-        {isDrawingSelection ? (
-          <>
-            <button type="button" onClick={onFinishAreaSelection} disabled={!selectionCanFinish}>Finish</button>
-            <button type="button" onClick={onCancelAreaSelection}>Cancel</button>
-          </>
+    <div ref={toolbarRef} className={`focused-map-toolbar${specialMode ? " special-map-mode-active" : ""}`} role="group" aria-label="Map controls" onKeyDown={handleMenuEscape}>
+      <div className="spatial-tools" aria-label="Map interaction and navigation">
+        {specialMode ? (
+          <div className="map-special-mode" role="status" aria-live="polite">
+            <span className="map-special-mode-label">
+              {specialMode === "draw-area" ? <LassoSelect size={15} aria-hidden="true" /> : null}
+              {specialMode === "place-cell" ? <LocateFixed size={15} aria-hidden="true" /> : null}
+              {specialMode === "pick-receiver" ? <MousePointer2 size={15} aria-hidden="true" /> : null}
+              <strong>{currentInteractionLabel}</strong>
+              <small>{specialMode === "draw-area" ? "Click map points" : specialMode === "place-cell" ? "Click a position on the map" : "Click a receiver position"}</small>
+            </span>
+            {specialMode === "draw-area" ? (
+              <button type="button" onClick={onFinishAreaSelection} disabled={!selectionCanFinish}>Finish</button>
+            ) : null}
+            <button
+              type="button"
+              className="map-mode-cancel"
+              onClick={specialMode === "draw-area" ? onCancelAreaSelection : specialMode === "place-cell" ? onCancelPlacement : onCancelPathEndpoint}
+            >
+              Cancel
+            </button>
+          </div>
         ) : (
-          <button
-            type="button"
-            onClick={onClearNetworkSelection}
-            disabled={selectedCount === 0}
-            aria-label="Clear selected cells"
-            title="Clear selected cells"
-          >
-            <Eraser size={17} />
-          </button>
+          <>
+            <div className="map-inspection-modes map-desktop-interaction" role="group" aria-label="Map interaction mode">
+              <button type="button" className={interactionMode === "inspect" ? "active" : ""} aria-pressed={interactionMode === "inspect"} onClick={() => handleInteractionModeChange("inspect")}>
+                <Eye size={15} aria-hidden="true" /><span>Inspect</span>{interactionMode === "inspect" ? <Check size={12} aria-hidden="true" /> : null}
+              </button>
+              <button type="button" className={interactionMode === "select-cells" ? "active" : ""} aria-pressed={interactionMode === "select-cells"} onClick={() => handleInteractionModeChange("select-cells")}>
+                <MousePointer2 size={15} aria-hidden="true" /><span>Select cells</span>{interactionMode === "select-cells" ? <Check size={12} aria-hidden="true" /> : null}
+              </button>
+            </div>
+            <div className="map-interaction-menu map-mobile-interaction" ref={interactionMenuRef}>
+              <button
+                ref={interactionTriggerRef}
+                type="button"
+                className="map-interaction-trigger"
+                aria-label={"Map interaction: " + currentInteractionLabel}
+                aria-expanded={interactionMenuOpen}
+                aria-controls="map-interaction-menu"
+                onClick={() => {
+                  setViewMenuOpen(false);
+                  onLayerMenuToggle(false);
+                  setInteractionMenuOpen((current) => !current);
+                }}
+              >
+                {interactionMode === "inspect" ? <Eye size={15} aria-hidden="true" /> : <MousePointer2 size={15} aria-hidden="true" />}
+                <span>{currentInteractionLabel}</span>
+                <ChevronDown size={14} aria-hidden="true" />
+              </button>
+              {interactionMenuOpen ? (
+                <div id="map-interaction-menu" className="map-interaction-popover" role="group" aria-label="Map interaction mode">
+                  <button type="button" className={interactionMode === "inspect" ? "active" : ""} aria-pressed={interactionMode === "inspect"} onClick={() => handleInteractionModeChange("inspect")}>
+                    <Eye size={15} aria-hidden="true" /><span>Inspect</span>{interactionMode === "inspect" ? <Check size={12} aria-hidden="true" /> : null}
+                  </button>
+                  <button type="button" className={interactionMode === "select-cells" ? "active" : ""} aria-pressed={interactionMode === "select-cells"} onClick={() => handleInteractionModeChange("select-cells")}>
+                    <MousePointer2 size={15} aria-hidden="true" /><span>Select cells</span>{interactionMode === "select-cells" ? <Check size={12} aria-hidden="true" /> : null}
+                  </button>
+                  {canDrawArea ? <button type="button" onClick={() => { setInteractionMenuOpen(false); onDrawArea?.(); }}><LassoSelect size={15} aria-hidden="true" /><span>Draw area</span></button> : null}
+                  {canClearSelection ? <button type="button" onClick={() => { setInteractionMenuOpen(false); onClearNetworkSelection?.(); }}><Eraser size={15} aria-hidden="true" /><span>Clear selected cluster</span></button> : null}
+                  {canFitSelection ? <button type="button" onClick={() => { setInteractionMenuOpen(false); onFitSelectedCells?.(); }}><LocateFixed size={15} aria-hidden="true" /><span>Fit selected cells</span></button> : null}
+                </div>
+              ) : null}
+            </div>
+            {canDrawArea ? (
+              <button type="button" className="map-icon-tool map-area-action" onClick={onDrawArea} aria-label="Draw selection area" title="Draw area selection">
+                <LassoSelect size={16} aria-hidden="true" />
+              </button>
+            ) : null}
+            {canClearSelection ? (
+              <button type="button" className="map-icon-tool map-clear-selection" onClick={onClearNetworkSelection} aria-label="Clear selected cluster" title="Clear selected cluster">
+                <Eraser size={16} aria-hidden="true" />
+              </button>
+            ) : null}
+            {canFitSelection ? (
+              <button type="button" className="map-icon-tool map-fit-selection" onClick={onFitSelectedCells} aria-label="Fit selected cells" title="Fit selected cells in view">
+                <LocateFixed size={16} aria-hidden="true" />
+              </button>
+            ) : null}
+          </>
         )}
-        <button
-          type="button"
-          onClick={onFitSelectedCells}
-          disabled={selectedCount === 0 && planningMode !== "single"}
-          aria-label="Fit selected cells"
-          title="Fit selected cells"
-        >
-          <LocateFixed size={17} />
-        </button>
       </div>
 
-      <div className="map-display-tools">
-        {hasInterferenceData ? (
-          <div className="metric-switch" aria-label="Interference metric">
-            {["sinr", "rsrp", "rsrq"].map((metric) => (
-              <button
-                key={metric}
-                type="button"
-                className={interferenceMetric === metric ? "active" : ""}
-                aria-pressed={interferenceMetric === metric}
-                onClick={() => onInterferenceMetricChange(metric)}
-              >
-                {metric.toUpperCase()}
-              </button>
-            ))}
-            </div>
-        ) : null}
-        <div className="rf-display-tools" aria-label="RF map display">
-          <span className="rf-display-label">RF</span>
-          <button
-            type="button"
-            className={layerVisibility?.surfaces && hasSignalSurface && resolvedSignalSurfaceState === "ready" ? "active" : ""}
-            aria-pressed={Boolean(layerVisibility?.surfaces && hasSignalSurface && resolvedSignalSurfaceState === "ready")}
-            aria-busy={resolvedSignalSurfaceState === "loading" || undefined}
-            aria-label="Toggle received signal surface"
-            data-surface-state={resolvedSignalSurfaceState}
-            disabled={resolvedSignalSurfaceState === "unavailable"}
-            title={resolvedSignalSurfaceState === "ready"
-              ? "Toggle received signal surface"
-              : resolvedSignalSurfaceState === "available"
-                ? "Load received signal surface"
-                : resolvedSignalSurfaceState === "loading"
-                  ? "Loading received signal surface"
-                  : resolvedSignalSurfaceState === "error"
-                    ? "Retry received signal surface"
-                    : "Run a current RF or network analysis first"}
-            onClick={handleSignalToggle}
-          >
-            Signal
-          </button>
-          <button
-            type="button"
-            className={layerVisibility?.rays && hasRays && rayScope !== "hidden" ? "active" : ""}
-            aria-pressed={Boolean(layerVisibility?.rays && hasRays && rayScope !== "hidden")}
-            aria-label="Toggle propagation rays"
-            disabled={!hasRays}
-            title={hasRays ? "Toggle propagation rays" : "Run a sector or network analysis first"}
-            onClick={() => onToggleLayer("rays")}
-          >
-            Rays
-          </button>
-          <label className="rf-display-select">
-            <span>Scope</span>
-            <select
-              aria-label="Ray scope"
-              value={rayScope}
-              disabled={!hasRays}
-              onChange={(event) => onRayScopeChange?.(event.target.value)}
-            >
-              <option value="all">All cells</option>
-              <option value="selected">Selected cell</option>
-              <option value="hidden">Hidden</option>
-            </select>
-          </label>
-          <label className="rf-display-select">
-            <span>Focus</span>
-            <select
-              aria-label="Map focus cell"
-              value={selectedMapCellId ?? ""}
-              disabled={rayCellOptions.length === 0}
-              onChange={(event) => onSelectedMapCellChange?.(event.target.value)}
-            >
-              {rayCellOptions.length === 0 ? <option value="">No cell</option> : null}
-              {rayCellOptions.map((cell) => <option key={cell.id} value={cell.id}>{cell.label}</option>)}
-            </select>
-          </label>
+      <div className="map-display-tools" aria-label="Map visualization and view context">
+        <div className="map-visualization-quick-controls" role="group" aria-label="Result visualization">
+          {hasInterferenceData ? renderMetricSelect() : null}
+          {renderSignalToggle()}
+          {renderRaysToggle()}
         </div>
-        <div className="layer-menu-wrap" ref={layerMenuRef} onKeyDown={handleLayerMenuKeyDown}>
+        <div className="view-menu-wrap" ref={viewMenuRef}>
+          <button
+            ref={viewTriggerRef}
+            type="button"
+            className={viewMenuOpen ? "active view-trigger" : "view-trigger"}
+            aria-label="Map view options"
+            aria-expanded={viewMenuOpen}
+            aria-controls="map-view-menu"
+            onClick={() => {
+              setInteractionMenuOpen(false);
+              onLayerMenuToggle(false);
+              setViewMenuOpen((current) => !current);
+            }}
+          >
+            <Eye size={15} aria-hidden="true" />
+            <span>View</span>
+            <ChevronDown size={14} aria-hidden="true" />
+          </button>
+          {viewMenuOpen ? (
+            <div id="map-view-menu" className="map-view-menu" role="group" aria-label="Map view controls">
+              <section className="map-view-section map-mobile-result-controls" role="group" aria-label="Result visualization">
+                {hasInterferenceData ? renderMetricSelect() : null}
+                {renderSignalToggle()}
+                {renderRaysToggle()}
+              </section>
+              {renderViewContext()}
+            </div>
+          ) : null}
+        </div>
+        <div className="layer-menu-wrap" ref={layerMenuRef}>
           <button
             ref={layerTriggerRef}
             type="button"
@@ -760,9 +966,13 @@ export function MapToolbar({
             aria-label="Map layers"
             aria-expanded={layerMenuOpen}
             aria-controls="map-layer-menu"
-            onClick={() => onLayerMenuToggle(!layerMenuOpen)}
+            onClick={() => {
+              setInteractionMenuOpen(false);
+              setViewMenuOpen(false);
+              onLayerMenuToggle(!layerMenuOpen);
+            }}
           >
-            <Layers3 size={17} />
+            <Layers3 size={16} aria-hidden="true" />
             <span>Layers</span>
             <ChevronDown size={14} />
           </button>
@@ -793,13 +1003,12 @@ export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, ha
     rsrq: ["< -20", "-20–-15", "-15–-10", "≥ -10 dB"],
   };
   return (
-    <div className={`focused-map-legend ${collapsed ? "collapsed" : ""}`} aria-label="Map legend">
-      <button type="button" onClick={onToggle} aria-expanded={!collapsed}>
+    <aside className={`focused-map-legend ${collapsed ? "collapsed" : ""}`} role="region" aria-label="Map key">
+      <button type="button" onClick={onToggle} aria-expanded={!collapsed} aria-controls="map-legend-content">
         <strong>Map key</strong>
         {collapsed ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </button>
-      {collapsed ? null : (
-        <div>
+      <div id="map-legend-content" hidden={collapsed}>
           <section aria-label="Cell markers">
             <strong>Cells</strong>
             <span><i className="map-key-marker active-cell" aria-hidden="true" />Active cell</span>
@@ -863,9 +1072,8 @@ export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, ha
               <span><i className="quality-swatch no-signal" aria-hidden="true" />No signal</span>
             </section>
           ) : null}
-        </div>
-      )}
-    </div>
+      </div>
+    </aside>
   );
 }
 

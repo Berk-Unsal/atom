@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { CommandBar, MapLegend, MapToolbar, ProjectMenu, ToolDrawer, WorkflowRail } from "./WorkspaceChrome.jsx";
 import { WORKSPACE_STAGES } from "./workspaceTools.js";
@@ -9,6 +9,8 @@ const toolbarProps = {
   hasRays: true,
   hasSignalSurface: true,
   interferenceMetric: "sinr",
+  interactionMode: "inspect",
+  canInspectMapFocus: true,
   isDrawingSelection: false,
   layerMenuOpen: false,
   layerVisibility: { rays: true, surfaces: true, buildings: false, gaps: true, selectedCells: true, communicationPaths: true, interference: true, measurements: true },
@@ -18,12 +20,14 @@ const toolbarProps = {
   onFinishAreaSelection: vi.fn(),
   onFitSelectedCells: vi.fn(),
   onInterferenceMetricChange: vi.fn(),
+  onInteractionModeChange: vi.fn(),
+  onInspectMapFocus: vi.fn(),
   onLayerMenuToggle: vi.fn(),
   onToggleLayer: vi.fn(),
   onRayScopeChange: vi.fn(),
   onSelectedMapCellChange: vi.fn(),
   planningMode: "network",
-  rayCellOptions: [{ id: "cell-a", label: "Cell cell-a" }, { id: "cell-b", label: "Cell cell-b" }],
+  focusCellOptions: [{ id: "cell-a", label: "Cell cell-a" }, { id: "cell-b", label: "Cell cell-b" }],
   rayScope: "all",
   selectedCount: 2,
   selectedMapCellId: "cell-a",
@@ -31,11 +35,12 @@ const toolbarProps = {
 };
 
 describe("map display controls", () => {
-  it("keeps RF visibility, ray scope, and map focus as presentation controls", () => {
-    render(<MapToolbar {...toolbarProps} />);
+  it("keeps result visibility, ray scope, and Map Focus as presentation controls", () => {
+    const { rerender } = render(<MapToolbar {...toolbarProps} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Toggle received signal surface" }));
-    fireEvent.click(screen.getByRole("button", { name: "Toggle propagation rays" }));
+    fireEvent.click(screen.getByRole("button", { name: "Signal layer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Propagation rays layer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Map view options" }));
     fireEvent.change(screen.getByRole("combobox", { name: "Ray scope" }), { target: { value: "selected" } });
     fireEvent.change(screen.getByRole("combobox", { name: "Map focus cell" }), { target: { value: "cell-b" } });
 
@@ -44,6 +49,82 @@ describe("map display controls", () => {
     expect(toolbarProps.onRayScopeChange).toHaveBeenCalledWith("selected");
     expect(toolbarProps.onSelectedMapCellChange).toHaveBeenCalledWith("cell-b");
     expect(screen.getByRole("option", { name: "Hidden" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Inspect" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Select cells" })).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(screen.getByRole("button", { name: "Select cells" }));
+    expect(toolbarProps.onInteractionModeChange).toHaveBeenCalledWith("select-cells");
+    fireEvent.click(screen.getByRole("button", { name: "Inspect focused cell" }));
+    expect(toolbarProps.onInspectMapFocus).toHaveBeenCalledOnce();
+
+    rerender(<MapToolbar {...toolbarProps} mapFocusIsInspected />);
+    fireEvent.click(screen.getByRole("button", { name: "Map view options" }));
+    expect(screen.queryByRole("button", { name: "Inspect focused cell" })).not.toBeInTheDocument();
+  });
+
+  it("shows only the current special map tool and contextualizes area drawing", () => {
+    const { rerender } = render(
+      <MapToolbar {...toolbarProps} interactionMode="select-cells" isDrawingSelection />,
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("Draw area");
+    expect(screen.getByRole("status")).toHaveTextContent("Click map points");
+    expect(screen.getByRole("button", { name: "Finish" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Inspect" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Select cells" })).not.toBeInTheDocument();
+
+    rerender(<MapToolbar {...toolbarProps} planningMode="single" interactionMode="select-cells" />);
+    expect(screen.queryByRole("button", { name: "Draw selection area" })).not.toBeInTheDocument();
+    rerender(<MapToolbar {...toolbarProps} planningMode="network" interactionMode="select-cells" />);
+    expect(screen.getByRole("button", { name: "Draw selection area" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Clear selected cluster" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Fit selected cells" })).toBeInTheDocument();
+  });
+
+  it("keeps clearing cluster membership and fitting the map as separate immediate actions", () => {
+    const onClearNetworkSelection = vi.fn();
+    const onFitSelectedCells = vi.fn();
+    const onInteractionModeChange = vi.fn();
+    render(
+      <MapToolbar
+        {...toolbarProps}
+        interactionMode="select-cells"
+        onClearNetworkSelection={onClearNetworkSelection}
+        onFitSelectedCells={onFitSelectedCells}
+        onInteractionModeChange={onInteractionModeChange}
+        planningMode="network"
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear selected cluster" }));
+    fireEvent.click(screen.getByRole("button", { name: "Fit selected cells" }));
+    expect(onClearNetworkSelection).toHaveBeenCalledOnce();
+    expect(onFitSelectedCells).toHaveBeenCalledOnce();
+    expect(onInteractionModeChange).not.toHaveBeenCalled();
+  });
+
+  it("offers one radio-quality metric selector only when interference data exists", () => {
+    const { rerender } = render(<MapToolbar {...toolbarProps} hasInterferenceData />);
+    const metric = screen.getByRole("combobox", { name: "Radio-quality metric" });
+    expect(metric).toHaveValue("sinr");
+    expect(within(metric).getAllByRole("option").map((option) => option.value)).toEqual(["sinr", "rsrp", "rsrq"]);
+    fireEvent.change(metric, { target: { value: "rsrq" } });
+    expect(toolbarProps.onInterferenceMetricChange).toHaveBeenCalledWith("rsrq");
+    expect(screen.queryByRole("button", { name: "SINR" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "RSRP" })).not.toBeInTheDocument();
+
+    rerender(<MapToolbar {...toolbarProps} hasInterferenceData={false} />);
+    expect(screen.queryByRole("combobox", { name: "Radio-quality metric" })).not.toBeInTheDocument();
+  });
+
+  it("returns focus to the View trigger when its disclosure closes with Escape", () => {
+    render(<MapToolbar {...toolbarProps} />);
+    const trigger = screen.getByRole("button", { name: "Map view options" });
+    fireEvent.click(trigger);
+    const focusCell = screen.getByRole("combobox", { name: "Map focus cell" });
+    fireEvent.keyDown(focusCell, { key: "Escape" });
+
+    expect(screen.queryByRole("group", { name: "Map view controls" })).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
   });
 
   it("shows the active received-power range and source cell in the legend", () => {
@@ -63,6 +144,8 @@ describe("map display controls", () => {
       />,
     );
 
+    expect(screen.getByRole("region", { name: "Map key" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Map key" })).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("region", { name: "Received signal surface" })).toBeInTheDocument();
     expect(screen.getByText("Visible ≥ −100 dBm · Cell cell-a")).toBeInTheDocument();
   });
@@ -84,6 +167,24 @@ describe("map display controls", () => {
 
     expect(screen.getByRole("region", { name: "Result source" })).toHaveTextContent("STALE");
     expect(screen.getByRole("region", { name: "Result source" })).toHaveTextContent("Capacity Plan · Version 4 · Run 21");
+  });
+
+  it("removes collapsed map-key content from the visible and pointer-accessible layout", () => {
+    render(
+      <MapLegend
+        collapsed
+        hasGaps={false}
+        hasInterferenceData={false}
+        hasRays={false}
+        hasSignalSurface={false}
+        metric="sinr"
+        onToggle={vi.fn()}
+        planningMode="single"
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Map key" })).toHaveAttribute("aria-expanded", "false");
+    expect(document.getElementById("map-legend-content")).toHaveAttribute("hidden");
   });
 });
 
@@ -208,8 +309,35 @@ describe("stage-owned tool choices", () => {
     const interference = screen.getByRole("button", { name: "Interference", exact: true });
     expect(interference).toHaveAttribute("aria-disabled", "true");
     expect(interference).toHaveAccessibleDescription("Unavailable Select at least two cells");
+    expect(interference.querySelector(".stage-tool-choice-reason")).toHaveTextContent("Select at least two cells");
     fireEvent.click(interference);
     expect(onSelectTool).not.toHaveBeenCalled();
+  });
+
+  it("shows navigation labels without generic descriptions and retains concise status context", () => {
+    render(
+      <WorkflowRail
+        activeTool="data"
+        chooserStage="review"
+        onSelectTool={vi.fn()}
+        onToggleChooser={vi.fn()}
+        toolState={{
+          results: { badge: "•", tone: "success" },
+          history: { badge: "3", tone: "success" },
+          report: { badge: "!", tone: "warning" },
+        }}
+      />,
+    );
+
+    const choices = screen.getByRole("group", { name: "Review tools" });
+    expect(choices).toHaveTextContent("Results");
+    expect(choices).toHaveTextContent("Current");
+    expect(choices).toHaveTextContent("Result");
+    expect(choices).toHaveTextContent("3 runs");
+    expect(choices).toHaveTextContent("Attention");
+    expect(choices).not.toHaveTextContent("RF, optimization, and network comparisons");
+    expect(screen.getByRole("button", { name: "Data", exact: true })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Run history", exact: true })).toHaveAccessibleDescription("3 runs");
   });
 
   it("renders the mobile chooser inside the existing drawer dialog", () => {
@@ -233,5 +361,22 @@ describe("stage-owned tool choices", () => {
     expect(screen.getByRole("group", { name: "Review tools" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Run history", exact: true })).toBeInTheDocument();
     expect(screen.queryByRole("navigation", { name: /tools/ })).not.toBeInTheDocument();
+  });
+
+  it("keeps the tool drawer mounted while it is concealed by inspection", () => {
+    const { rerender } = render(
+      <ToolDrawer drawerMode="tool" focusKey="setup" onClose={vi.fn()} open title="Setup">
+        <div>Planning controls</div>
+      </ToolDrawer>,
+    );
+
+    rerender(
+      <ToolDrawer drawerMode="tool" focusKey="setup" concealed onClose={vi.fn()} open title="Setup">
+        <div>Planning controls</div>
+      </ToolDrawer>,
+    );
+
+    expect(screen.getByRole("dialog", { name: "Setup" })).toHaveClass("concealed");
+    expect(screen.getByText("Planning controls")).toBeInTheDocument();
   });
 });

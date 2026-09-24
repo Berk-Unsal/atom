@@ -40,6 +40,7 @@ export default function PathProfilePanel({
     <section className="path-profile-panel" aria-label="Vertical path profile">
       <header className="panel-title"><Mountain size={16} /><span>Vertical path profile</span></header>
       <p className="data-note">Advanced diagnostic only: inspect terrain, roof screens, Fresnel clearance, and enabled loss terms along one selected path. It does not change canonical network RF.</p>
+      <p className="path-profile-source">Transmitter cell: <strong>{selectedTower?.cellId ?? selectedTower?.id ?? "Unavailable"}</strong></p>
 
       <div className="path-endpoint-controls">
         <button type="button" className={isSelectingEndpoint ? "active" : ""} onClick={isSelectingEndpoint ? onCancelSelection : onStartSelection} disabled={!selectedTower}>

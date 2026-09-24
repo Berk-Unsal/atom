@@ -74,16 +74,39 @@ describe("projectStore", () => {
 
   it("keeps an active scenario only while the autosaved draft still matches it", () => {
     const project = createProjectWorkspace().projects[0];
-    const scenario = createScenario("Baseline", { plan: { settings: { rays: 60 } } });
+    const scenario = createScenario("Baseline", { plan: { settings: { rays: 60, power: 30 } } });
     project.scenarios.push(scenario);
     project.activeScenarioId = scenario.id;
 
-    const matching = updateProjectDraft(project, { plan: { settings: { rays: 60 } } });
-    const changed = updateProjectDraft(matching, { plan: { settings: { rays: 120 } } });
+    const matching = updateProjectDraft(project, { plan: { settings: { power: 30, rays: 60 } } });
+    const changed = updateProjectDraft(matching, { plan: { settings: { power: 30, rays: 120 } } });
 
     expect(matching.activeScenarioId).toBe(scenario.id);
     expect(changed.activeScenarioId).toBeNull();
     expect(changed.draft.requiresRerun).toBe(true);
+  });
+
+  it("keeps Map Focus and ray Scope out of Scenario identity", () => {
+    const project = createProjectWorkspace().projects[0];
+    const scenario = createScenario("Baseline", {
+      plan: {
+        settings: { rays: 60 },
+        selectedMapCellId: "cell-2",
+        rayScope: "all",
+      },
+    });
+    project.scenarios.push(scenario);
+    project.activeScenarioId = scenario.id;
+
+    const mapOnlyChange = updateProjectDraft(project, {
+      plan: { settings: { rays: 60 }, selectedMapCellId: "cell-3", rayScope: "selected" },
+    });
+    const rfInputChange = updateProjectDraft(mapOnlyChange, {
+      plan: { settings: { rays: 120 }, selectedMapCellId: "cell-3", rayScope: "selected" },
+    });
+
+    expect(mapOnlyChange.activeScenarioId).toBe(scenario.id);
+    expect(rfInputChange.activeScenarioId).toBeNull();
   });
 
   it("rejects unsupported future schemas", () => {

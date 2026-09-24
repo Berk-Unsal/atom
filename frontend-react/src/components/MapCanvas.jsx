@@ -1,14 +1,20 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { circleMarker, divIcon, latLngBounds } from "leaflet";
-import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Polyline, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Polyline, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import { rxPowerColor } from "../utils/geojson.js";
 import { getJSON } from "../utils/apiClient.js";
-import { formatNumber } from "../utils/appWorkspace.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
 import { fanOutSelectionOffset } from "../utils/networkSelection.js";
 import { filterRayFeatures, RAY_SCOPE_ALL } from "../utils/rfVisualization.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
+
+function dispatchMapObjectClick(event, onSelectMapObject, mapObject) {
+  const accepted = onSelectMapObject?.(mapObject, event);
+  if (accepted === false) return false;
+  event.originalEvent?.stopPropagation();
+  return true;
+}
 
 export default function MapCanvas({
   towers,
@@ -17,7 +23,7 @@ export default function MapCanvas({
   selectedMapCellId = null,
   selectedTowerOrder,
   onSelectTower,
-  onSelectMapCell,
+  interactionMode = "inspect",
   simulation,
   rayLayerKey,
   coverageGaps,
@@ -41,7 +47,7 @@ export default function MapCanvas({
   interferenceModel,
   measurements,
   recommendations,
-	isPlacingCell,
+  isPlacingCell,
 	onPlaceCell,
 	onMoveTower,
   isSelectingPathEndpoint,
@@ -52,6 +58,7 @@ export default function MapCanvas({
   surfaceDisplayThresholdDBm = -110,
   rayScope = RAY_SCOPE_ALL,
   rayCellIDs = [],
+  mapViewportRequest = null,
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map" preferCanvas>
@@ -65,6 +72,7 @@ export default function MapCanvas({
       />
 		<CellPlacementLayer active={isPlacingCell} onPlace={onPlaceCell} />
       <PathEndpointSelectionLayer active={isSelectingPathEndpoint} onSelect={onSelectPathEndpoint} />
+      <MapViewportRequestLayer request={mapViewportRequest} />
       <FitSelectionLayer
         fitRequestVersion={fitRequestVersion}
         selectedNetworkTowerIds={selectedNetworkTowerIds}
@@ -81,18 +89,6 @@ export default function MapCanvas({
       )}
 
       {layerVisibility?.buildings ? <ViewportBuildingLayer onSelectMapObject={onSelectMapObject} selectedMapObject={selectedMapObject} /> : null}
-
-      {layerVisibility?.interference === false ? null : (
-        <InterferenceLayer
-          demand={interferenceDemand}
-          layerKey={interferenceLayerKey}
-          metric={interferenceMetric}
-          model={interferenceModel}
-          onSelectMapObject={onSelectMapObject}
-          selectedMapObject={selectedMapObject}
-          surface={interference}
-        />
-      )}
 
       {layerVisibility?.measurements === false ? null : (
         <MeasurementLayer
@@ -111,9 +107,11 @@ export default function MapCanvas({
       <TowerMarkersLayer
         activeNetworkTech={activeNetworkTech}
         isDrawingSelection={isDrawingSelection}
+        isPlacingCell={isPlacingCell}
+        isSelectingPathEndpoint={isSelectingPathEndpoint}
+        interactionMode={interactionMode}
         layerVisibility={layerVisibility}
         onMoveTower={onMoveTower}
-        onSelectMapCell={onSelectMapCell}
         onSelectMapObject={onSelectMapObject}
         onSelectTower={onSelectTower}
         planningMode={planningMode}
@@ -152,6 +150,19 @@ export default function MapCanvas({
         />
       )}
       <PathProfileMapLayer profile={pathProfile} />
+
+      {layerVisibility?.interference === false ? null : (
+        <InterferenceLayer
+          demand={interferenceDemand}
+          interactive={interactionMode !== "select-cells"}
+          layerKey={interferenceLayerKey}
+          metric={interferenceMetric}
+          model={interferenceModel}
+          onSelectMapObject={onSelectMapObject}
+          selectedMapObject={selectedMapObject}
+          surface={interference}
+        />
+      )}
     </MapContainer>
   );
 }
@@ -177,12 +188,24 @@ function OpenStreetMapLayer() {
   );
 }
 
+function MapViewportRequestLayer({ request }) {
+  const map = useMap();
+  useEffect(() => {
+    const coordinates = request?.coordinates;
+    if (!Array.isArray(coordinates) || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) return;
+    map.panTo([coordinates[1], coordinates[0]], { animate: true, duration: 0.35 });
+  }, [map, request]);
+  return null;
+}
+
 function TowerMarkersLayer({
   activeNetworkTech,
   isDrawingSelection,
+  isPlacingCell,
+  isSelectingPathEndpoint,
+  interactionMode,
   layerVisibility,
   onMoveTower,
-  onSelectMapCell,
   onSelectMapObject,
   onSelectTower,
   planningMode,
@@ -227,48 +250,24 @@ function TowerMarkersLayer({
           }}
           eventHandlers={{
             click: (event) => {
-              if (isDrawingSelection) {
+              const editModeArmed = isDrawingSelection || isPlacingCell || isSelectingPathEndpoint;
+              if (interactionMode === "select-cells" && !editModeArmed) {
+                event.originalEvent?.stopPropagation();
+                onSelectTower(tower);
                 return;
               }
-              event.originalEvent?.stopPropagation();
-              onSelectMapCell?.(tower);
-              onSelectMapObject?.({
+              dispatchMapObjectClick(event, onSelectMapObject, {
                 type: "tower",
                 payload: {
                   tower,
                   activeNetworkTech,
-                  isNetworkSelected: planningMode === "network" ? !isNetworkSelected : isNetworkSelected,
-                  order:
-                    planningMode === "network" && !isNetworkSelected
-                      ? order ?? selectedNetworkTowerIds.length + 1
-                      : planningMode === "network"
-                        ? null
-                        : order,
+                  isNetworkSelected,
+                  order: planningMode === "network" ? order : null,
                 },
               });
-              onSelectTower(tower);
             },
           }}
-        >
-          <Popup>
-            <dl className="tower-popup">
-              <div>
-                <dt>Cell ID</dt>
-                <dd>{tower.cellId}</dd>
-              </div>
-              <div>
-                <dt>Active Node</dt>
-                <dd>{activeNetworkTech}</dd>
-              </div>
-              {planningMode === "network" ? (
-                <div>
-                  <dt>Cluster</dt>
-                  <dd>{isNetworkSelected ? "Selected" : "Click to add"}</dd>
-                </div>
-              ) : null}
-            </dl>
-          </Popup>
-        </CircleMarker>
+        />
         {isNetworkVisible && order ? (
           <Marker
             position={[lat, lon]}
@@ -388,8 +387,7 @@ function ViewportBuildingLayer({ onSelectMapObject, selectedMapObject }) {
       style={(feature) => buildingOverlayStyle(feature?.properties, selectedMapObject?.payload?.feature?.id === feature?.id)}
       onEachFeature={(feature, layer) => {
         layer.on("click", (event) => {
-          event.originalEvent?.stopPropagation();
-          onSelectMapObject?.({
+          dispatchMapObjectClick(event, onSelectMapObject, {
             type: "building",
             payload: { feature },
           });
@@ -552,13 +550,10 @@ function RecommendationLayer({ onSelectMapObject, recommendations, selectedMapOb
         }}
         eventHandlers={{
           click: (event) => {
-            event.originalEvent?.stopPropagation();
-            onSelectMapObject?.({ type: "site_recommendation", payload: { properties, coordinates: [lon, lat] } });
+            dispatchMapObjectClick(event, onSelectMapObject, { type: "site_recommendation", payload: { properties, coordinates: [lon, lat] } });
           },
         }}
-      >
-        <Popup>Candidate {properties.cell_id ?? properties.id}: raw Δ {formatNumber(properties.marginal_network_score)} (legacy compatibility score)</Popup>
-      </CircleMarker>
+      />
     );
   });
 }
@@ -581,8 +576,7 @@ function MeasurementLayer({ measurements, onSelectMapObject, selectedMapObject }
         pathOptions={{ color: selected ? "#0f172a" : color, fillColor: color, fillOpacity: 0.82, weight: selected ? 4 : 2 }}
         eventHandlers={{
           click: (event) => {
-            event.originalEvent?.stopPropagation();
-            onSelectMapObject?.({ type: "measurement_sample", payload: { properties, coordinates: [lon, lat] } });
+            dispatchMapObjectClick(event, onSelectMapObject, { type: "measurement_sample", payload: { properties, coordinates: [lon, lat] } });
           },
         }}
       />
@@ -659,34 +653,14 @@ function CommunicationPathLayer({ onSelectMapObject, selectedMapObject, topology
         }}
         eventHandlers={{
           click: (event) => {
-            event.originalEvent?.stopPropagation();
-            onSelectMapObject?.({
+            dispatchMapObjectClick(event, onSelectMapObject, {
               type: "communication_path",
               payload: { route },
             });
           },
         }}
       >
-        <Popup>
-          <dl className="path-popup">
-            <div>
-              <dt>Route</dt>
-              <dd>{formatRouteType(route.route_type)}</dd>
-            </div>
-            <div>
-              <dt>Status</dt>
-              <dd>{route.status ?? "active"}</dd>
-            </div>
-            <div>
-              <dt>Interfaces</dt>
-              <dd>{isFallback ? "N2 via AMF" : "Xn-C / Xn-U"}</dd>
-            </div>
-            <div>
-              <dt>Reason</dt>
-              <dd>{route.reason ?? "selected 5G neighbor pair"}</dd>
-            </div>
-          </dl>
-        </Popup>
+        <Tooltip direction="center">{isFallback ? "N2 via AMF" : "Xn-C / Xn-U"}</Tooltip>
       </Polyline>
     );
   });
@@ -825,8 +799,7 @@ function CoverageGapLayer({ gaps, layerKey, onSelectMapObject, selectedMapObject
         }}
         eventHandlers={{
           click: (event) => {
-            event.originalEvent?.stopPropagation();
-            onSelectMapObject?.({
+            dispatchMapObjectClick(event, onSelectMapObject, {
               type: "coverage_gap",
               payload: {
                 properties,
@@ -835,33 +808,12 @@ function CoverageGapLayer({ gaps, layerKey, onSelectMapObject, selectedMapObject
             });
           },
         }}
-      >
-        <Popup>
-          <dl className="gap-popup">
-            <div>
-              <dt>Coverage Gap</dt>
-              <dd>{properties.severity ?? "weak"}</dd>
-            </div>
-            <div>
-              <dt>Rx</dt>
-              <dd>{formatNumber(properties.rx_dbm)} dBm</dd>
-            </div>
-            <div>
-              <dt>Demand</dt>
-              <dd>{formatNumber(properties.total_demand)}</dd>
-            </div>
-            <div>
-              <dt>Reason</dt>
-              <dd>{properties.reason ?? "demand"}</dd>
-            </div>
-          </dl>
-        </Popup>
-      </CircleMarker>
+      />
     );
   });
 }
 
-function InterferenceLayer({ demand, layerKey, metric, model, onSelectMapObject, selectedMapObject, surface }) {
+function InterferenceLayer({ demand, interactive, layerKey, metric, model, onSelectMapObject, selectedMapObject, surface }) {
   const surfaceFeatures = surface?.features ?? [];
   const demandFeatures = demand?.features ?? [];
   if (surfaceFeatures.length === 0 && demandFeatures.length === 0) {
@@ -875,8 +827,7 @@ function InterferenceLayer({ demand, layerKey, metric, model, onSelectMapObject,
     : null;
   const bindFeature = (feature, layer) => {
     layer.on("click", (event) => {
-      event.originalEvent?.stopPropagation();
-      onSelectMapObject?.({
+      dispatchMapObjectClick(event, onSelectMapObject, {
         type: "interference_sample",
         payload: {
           properties: feature.properties ?? {},
@@ -895,6 +846,7 @@ function InterferenceLayer({ demand, layerKey, metric, model, onSelectMapObject,
       color: isDemand ? "#7f1d1d" : color,
       fillColor: color,
       fillOpacity: isDemand ? 0.88 : 0.58,
+      interactive,
       opacity: 0.92,
       weight: isDemand ? 2 : 1,
     });
@@ -905,7 +857,7 @@ function InterferenceLayer({ demand, layerKey, metric, model, onSelectMapObject,
     <>
       {surfaceFeatures.length > 0 ? (
         <GeoJSON
-          key={`interference-surface-${layerKey}-${metric}`}
+          key={`interference-surface-${layerKey}-${metric}-${interactive ? "inspect" : "select"}`}
           data={surface}
           pointToLayer={makeMarker(false)}
           onEachFeature={bindFeature}
@@ -913,7 +865,7 @@ function InterferenceLayer({ demand, layerKey, metric, model, onSelectMapObject,
       ) : null}
       {demandFeatures.length > 0 ? (
         <GeoJSON
-          key={`interference-demand-${layerKey}-${metric}`}
+          key={`interference-demand-${layerKey}-${metric}-${interactive ? "inspect" : "select"}`}
           data={demand}
           pointToLayer={makeMarker(true)}
           onEachFeature={bindFeature}
@@ -957,11 +909,4 @@ function interferenceMetricColor(metric, properties) {
     return "#2563eb";
   }
   return "#0f766e";
-}
-
-function formatRouteType(value) {
-  return String(value ?? "direct_xn")
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
 }

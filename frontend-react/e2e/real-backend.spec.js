@@ -21,7 +21,7 @@ test.describe("Concept 3 RF surface with the real backend", () => {
     await page.getByRole("button", { name: "Run Sector" }).click();
     await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible({ timeout: 120_000 });
 
-    const signal = page.getByRole("button", { name: "Toggle received signal surface" });
+    const signal = page.getByRole("button", { name: "Signal layer" });
     await expect(signal).toBeEnabled();
     await expect(signal).toHaveAttribute("data-surface-state", "available");
     const rfRequestCount = observation.rfRequests();
@@ -29,12 +29,12 @@ test.describe("Concept 3 RF surface with the real backend", () => {
     await signal.click();
     await expect(signal).toHaveAttribute("data-surface-state", "ready", { timeout: 120_000 });
     await expect(page.locator(".leaflet-image-layer")).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "false");
+    await expect(page.getByRole("button", { name: "Propagation rays layer" })).toHaveAttribute("aria-pressed", "false");
     expect(observation.rfRequests()).toBe(rfRequestCount);
     expect(observation.surfaceRequests()).toBe(1);
 
-    await page.getByRole("button", { name: "Toggle propagation rays" }).click();
-    await expect(page.getByRole("button", { name: "Toggle propagation rays" })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Propagation rays layer" }).click();
+    await expect(page.getByRole("button", { name: "Propagation rays layer" })).toHaveAttribute("aria-pressed", "true");
     expect(observation.rfRequests()).toBe(rfRequestCount);
 
     await assertTileRequestsSettled(page, observation);
@@ -52,7 +52,7 @@ test.describe("Concept 3 RF surface with the real backend", () => {
     await page.getByRole("button", { name: "Evaluate Network" }).click();
     await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible({ timeout: 120_000 });
     const rfRequestCount = observation.rfRequests();
-    const signal = page.getByRole("button", { name: "Toggle received signal surface" });
+    const signal = page.getByRole("button", { name: "Signal layer" });
     await expect(signal).toBeEnabled();
     await expect(signal).toHaveAttribute("data-surface-state", "available");
 
@@ -67,10 +67,11 @@ test.describe("Concept 3 RF surface with the real backend", () => {
       tower_lon: expect.any(Number),
     }));
 
-    const rays = page.getByRole("button", { name: "Toggle propagation rays" });
+    const rays = page.getByRole("button", { name: "Propagation rays layer" });
     await expect(rays).toHaveAttribute("aria-pressed", "false");
     await rays.click();
     await expect(rays).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Map view options" }).click();
     await page.getByRole("combobox", { name: "Ray scope" }).selectOption("selected");
     await expect(page.getByRole("combobox", { name: "Ray scope" })).toHaveValue("selected");
     await page.getByRole("combobox", { name: "Ray scope" }).selectOption("all");
@@ -156,6 +157,15 @@ async function assertTileRequestsSettled(page, observation) {
 }
 
 async function selectDenseNetworkArea(page) {
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  const interaction = page.getByRole("button", { name: "Select cells", exact: true });
+  if (await interaction.isVisible()) {
+    await interaction.click();
+  } else {
+    const trigger = page.getByRole("button", { name: /^Map interaction:/ });
+    if (await trigger.getAttribute("aria-expanded") !== "true") await trigger.click();
+    await page.locator(".map-interaction-popover").getByRole("button", { name: "Select cells", exact: true }).click();
+  }
   const map = page.locator(".leaflet-container");
   const box = await map.boundingBox();
   expect(box).not.toBeNull();

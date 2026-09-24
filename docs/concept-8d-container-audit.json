@@ -1,0 +1,82 @@
+{
+  "concept": "8D",
+  "scope": "Container ownership audit only; not a general CSS audit.",
+  "findings": [
+    {
+      "surface": "Setup > Scenario workspace",
+      "severity": "major",
+      "container_problem": "One disclosure contains multiple independent workspace-management tasks and its selected-Version inspector/comparison.",
+      "recommendation": "Move it to a dedicated Plan > Scenarios tool. Keep common plan controls as the only primary Setup content.",
+      "why_it_misrepresents_boundary": "Scenario/Version management is not a Setup input; the disclosure is long enough to become a second tool."
+    },
+    {
+      "surface": "RF Diagnostics Research",
+      "severity": "major",
+      "container_problem": "Validation, Material, and Reflection are all stacked inside one lazy Research disclosure.",
+      "recommendation": "One small internal subview selector; mount only the chosen workflow. Keep the outer Research boundary and canonical actions.",
+      "why_it_misrepresents_boundary": "Three independent evidence workflows each own inputs, actions, output, and status, making a single accordion a long mixed-responsibility form."
+    },
+    {
+      "surface": "Run History",
+      "severity": "major",
+      "container_problem": "Filters/list and complete Run details/solutions use one drawer, while CSS attempts nested master/detail columns in only 320–360px.",
+      "recommendation": "Single-column master/detail within the History tool: list/filter state, then selected Run detail with Back. Put full lineage under details; solution selection remains inside the Run detail.",
+      "why_it_misrepresents_boundary": "History browsing, selected record inspection, provenance, and Apply/Report workflows receive equal vertical/column weight."
+    },
+    {
+      "surface": "Results Optimization",
+      "severity": "major",
+      "container_problem": "Score, individual metric cards, feasibility, cell configuration, explanation, and provenance compete as peer blocks.",
+      "recommendation": "Score + feasibility + primary objectives first; compact metric rows next; configuration and explanation progressively disclosed; provenance tertiary.",
+      "why_it_misrepresents_boundary": "A summary metric and raw evidence/provenance answer different user questions."
+    },
+    {
+      "surface": "Data Planning data",
+      "severity": "moderate",
+      "container_problem": "Quality, counts, dataset/model/application versions are rendered as similar mini-datum tiles.",
+      "recommendation": "Compact the planning summary and split Dataset QA/Provenance details from a clearly named Measurements & calibration workflow. Keep field calibration separate from RF Diagnostics campaign validation: the former can explicitly apply a plan correction; the latter is an evidence ledger that never promotes a model.",
+      "why_it_misrepresents_boundary": "Planning confidence and implementation metadata are not peer-level facts."
+    },
+    {
+      "surface": "Optimization priorities",
+      "severity": "moderate",
+      "container_problem": "Each objective is a large card with label, direction, slider and full description.",
+      "recommendation": "One objective per compact row with visible label/direction/value/slider; keep a short meaning always visible and long help in info/disclosure.",
+      "why_it_misrepresents_boundary": "Repeated card framing makes five equivalent weights look like five separate tasks and inflates drawer height."
+    },
+    {
+      "surface": "Building Entry",
+      "severity": "moderate",
+      "container_problem": "Sparse initial tool is nested inside an Advanced disclosure and can grow into summary/detail/diagnostics cards.",
+      "recommendation": "Keep the top-level tool and show scope, one Run action, then one result/empty state; no placeholders or cards for absent values.",
+      "why_it_misrepresents_boundary": "One explicit action does not need empty boxes; output/limits are one workflow."
+    },
+    {
+      "surface": "5G Core",
+      "severity": "moderate",
+      "container_problem": "Status, developer command, path summary, functions, scenarios, sessions and event timeline form a large stack when enabled.",
+      "recommendation": "Keep a compact status/toggle and path summary primary; tuck developer command and verbose events under explicit details.",
+      "why_it_misrepresents_boundary": "Optional connection setup and live network evidence have different audiences/frequency."
+    },
+    {
+      "surface": "MapInspector sample panels",
+      "severity": "major",
+      "container_problem": "Interference sample renders about twenty mini-datum facts and explanation with equal weight.",
+      "recommendation": "Inspector key facts first; model/power decomposition and source details under Details/Provenance.",
+      "why_it_misrepresents_boundary": "Primary radio-quality outcome, supporting power terms, and evidence fields are currently peer facts."
+    },
+    {
+      "surface": "Current result context",
+      "severity": "positive",
+      "container_problem": "A result source/context disclosure precedes Results subviews.",
+      "recommendation": "Retain compact source/freshness placement; do not promote hashes or full lineage to peer cards.",
+      "why_it_misrepresents_boundary": "This is a useful distinct lineage container."
+    }
+  ],
+  "visual_principles": [
+    "Prefer compact key/value rows to one-card-per-fact layouts.",
+    "Use containers only where ownership changes: task, entity, result, or evidence.",
+    "Avoid nested cards; a small section header/divider is enough for one subtask.",
+    "Do not visually imply equal confidence or priority for data quality, summary metrics, and hashes."
+  ]
+}

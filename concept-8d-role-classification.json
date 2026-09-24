@@ -1,0 +1,333 @@
+{
+  "concept": "8D",
+  "primary_role_vocabulary": [
+    "GLOBAL_CONTEXT",
+    "NAVIGATION",
+    "TASK_CONFIGURATION",
+    "SPATIAL_INSPECTION",
+    "MAP_VISUALIZATION",
+    "RESULT_ANALYSIS",
+    "WORKSPACE_MANAGEMENT",
+    "HISTORY",
+    "PROVENANCE_EVIDENCE",
+    "TRANSIENT_FEEDBACK"
+  ],
+  "elements": [
+    {
+      "element": "Project picker and import/export",
+      "primary_role": "WORKSPACE_MANAGEMENT",
+      "secondary_roles": [
+        "NAVIGATION"
+      ],
+      "mixed_ownership": true,
+      "finding": "One control changes the active project and manages local project files."
+    },
+    {
+      "element": "Project / Scenario / Version / draft identity in command bar",
+      "primary_role": "GLOBAL_CONTEXT",
+      "secondary_roles": [
+        "PROVENANCE_EVIDENCE"
+      ],
+      "mixed_ownership": false,
+      "finding": "Compact lineage context should remain global and human-readable."
+    },
+    {
+      "element": "Technology/frequency and RF details",
+      "primary_role": "GLOBAL_CONTEXT",
+      "secondary_roles": [
+        "TASK_CONFIGURATION"
+      ],
+      "mixed_ownership": true,
+      "finding": "Header is a read-only summary; changes remain in Setup/Inventory."
+    },
+    {
+      "element": "Run Sector / Evaluate Network primary action",
+      "primary_role": "TASK_CONFIGURATION",
+      "secondary_roles": [
+        "TRANSIENT_FEEDBACK"
+      ],
+      "mixed_ownership": false,
+      "finding": "Explicit compute is appropriate and must remain tied to active task/context."
+    },
+    {
+      "element": "Plan / Simulate / Analyze / Review stage rail",
+      "primary_role": "NAVIGATION",
+      "secondary_roles": [],
+      "mixed_ownership": false,
+      "finding": "High-level navigation only; chooser owns stage-specific tools."
+    },
+    {
+      "element": "Stage tool chooser",
+      "primary_role": "NAVIGATION",
+      "secondary_roles": [
+        "TRANSIENT_FEEDBACK"
+      ],
+      "mixed_ownership": true,
+      "finding": "Shows tool availability, result badges, and attention cues."
+    },
+    {
+      "element": "Left tool drawer",
+      "primary_role": "TASK_CONFIGURATION",
+      "secondary_roles": [
+        "RESULT_ANALYSIS"
+      ],
+      "mixed_ownership": true,
+      "finding": "Correct owner for active workflow; Results/History are task-owned review surfaces."
+    },
+    {
+      "element": "Planning mode, technology, TX power, ray count, radius, azimuth, beam width",
+      "primary_role": "TASK_CONFIGURATION",
+      "secondary_roles": [
+        "GLOBAL_CONTEXT"
+      ],
+      "mixed_ownership": true,
+      "finding": "Plan inputs, not selected-entity details."
+    },
+    {
+      "element": "Selected cell count and selected cluster membership",
+      "primary_role": "TASK_CONFIGURATION",
+      "secondary_roles": [
+        "TRANSIENT_FEEDBACK"
+      ],
+      "mixed_ownership": false,
+      "finding": "Selection changes the optimizer/RF input and can invalidate current results."
+    },
+    {
+      "element": "Scenario list, Save Version, branch, duplicate, Continue",
+      "primary_role": "WORKSPACE_MANAGEMENT",
+      "secondary_roles": [
+        "HISTORY",
+        "NAVIGATION"
+      ],
+      "mixed_ownership": true,
+      "finding": "Embedded in Setup even though primary role is managing durable workspace lineage."
+    },
+    {
+      "element": "Selected Version and revision comparison",
+      "primary_role": "HISTORY",
+      "secondary_roles": [
+        "WORKSPACE_MANAGEMENT",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "mixed_ownership": true,
+      "finding": "Selection inspects immutable history; Continue/Branch are explicit actions that create a new draft/lineage."
+    },
+    {
+      "element": "Run History filters/list",
+      "primary_role": "HISTORY",
+      "secondary_roles": [
+        "NAVIGATION"
+      ],
+      "mixed_ownership": true,
+      "finding": "Run selection is history browsing and does not activate the current plan."
+    },
+    {
+      "element": "Run identity/source summary",
+      "primary_role": "PROVENANCE_EVIDENCE",
+      "secondary_roles": [
+        "HISTORY"
+      ],
+      "mixed_ownership": true,
+      "finding": "Run source facts should be compact; hashes/fingerprints are tertiary."
+    },
+    {
+      "element": "Pareto solution selector and objective detail",
+      "primary_role": "RESULT_ANALYSIS",
+      "secondary_roles": [
+        "HISTORY"
+      ],
+      "mixed_ownership": true,
+      "finding": "Candidate selection changes only which retained optimization alternative is inspected."
+    },
+    {
+      "element": "Cell azimuth / RF profile facts",
+      "primary_role": "SPATIAL_INSPECTION",
+      "secondary_roles": [
+        "TASK_CONFIGURATION",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "mixed_ownership": true,
+      "finding": "Inspector should be read-only and link to Inventory for edits."
+    },
+    {
+      "element": "Interference RSRP/SINR/RSRQ sample",
+      "primary_role": "SPATIAL_INSPECTION",
+      "secondary_roles": [
+        "RESULT_ANALYSIS",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "mixed_ownership": true,
+      "finding": "Point detail belongs to a selected result sample; source Run/freshness stays attached."
+    },
+    {
+      "element": "Building spatial-evidence facts",
+      "primary_role": "SPATIAL_INSPECTION",
+      "secondary_roles": [
+        "PROVENANCE_EVIDENCE"
+      ],
+      "mixed_ownership": true,
+      "finding": "Building AGL/terrain/source context is selected-object detail and must retain diagnostic-only boundary."
+    },
+    {
+      "element": "Map Scope / Focus / ray scope",
+      "primary_role": "MAP_VISUALIZATION",
+      "secondary_roles": [
+        "SPATIAL_INSPECTION"
+      ],
+      "mixed_ownership": true,
+      "finding": "Changes visible layers/focus only; it must not change serving cell, cluster membership, or inspector identity."
+    },
+    {
+      "element": "Map layer toggles and aggregate legend",
+      "primary_role": "MAP_VISUALIZATION",
+      "secondary_roles": [
+        "RESULT_ANALYSIS"
+      ],
+      "mixed_ownership": true,
+      "finding": "Legend explains a whole layer; inspector explains one selected sample/entity."
+    },
+    {
+      "element": "Current/stale/historical/unsupported result state",
+      "primary_role": "GLOBAL_CONTEXT",
+      "secondary_roles": [
+        "PROVENANCE_EVIDENCE",
+        "TRANSIENT_FEEDBACK"
+      ],
+      "mixed_ownership": true,
+      "finding": "State must identify source Run and never imply recomputation."
+    },
+    {
+      "element": "Stale toast/map prompt and async progress",
+      "primary_role": "TRANSIENT_FEEDBACK",
+      "secondary_roles": [
+        "GLOBAL_CONTEXT"
+      ],
+      "mixed_ownership": true,
+      "finding": "Explain what changed and provide one safe next action."
+    },
+    {
+      "element": "Dataset quality, buildings, POI demand, residential count",
+      "primary_role": "RESULT_ANALYSIS",
+      "secondary_roles": [
+        "PROVENANCE_EVIDENCE"
+      ],
+      "mixed_ownership": true,
+      "finding": "Data confidence is useful planning context; QA should be compact, provenance belongs in details."
+    },
+    {
+      "element": "Dataset/model/application versions and hashes",
+      "primary_role": "PROVENANCE_EVIDENCE",
+      "secondary_roles": [
+        "GLOBAL_CONTEXT"
+      ],
+      "mixed_ownership": true,
+      "finding": "These facts do not deserve equal weight with planning data quality/counts."
+    },
+    {
+      "element": "Dataset switch and pack administration",
+      "primary_role": "WORKSPACE_MANAGEMENT",
+      "secondary_roles": [
+        "TRANSIENT_FEEDBACK",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "mixed_ownership": true,
+      "finding": "Explicit dataset management; incompatible results must remain stale/unavailable."
+    },
+    {
+      "element": "Measurement residual/calibration form",
+      "primary_role": "RESULT_ANALYSIS",
+      "secondary_roles": [
+        "TASK_CONFIGURATION",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "mixed_ownership": true,
+      "finding": "Evidence workflow can explicitly propose a plan correction; not generic dataset metadata."
+    },
+    {
+      "element": "Pack-building CLI commands",
+      "primary_role": "PROVENANCE_EVIDENCE",
+      "secondary_roles": [
+        "WORKSPACE_MANAGEMENT"
+      ],
+      "mixed_ownership": true,
+      "finding": "Developer/admin instructions should not be primary ordinary planning UI."
+    },
+    {
+      "element": "Report definition/artifact list",
+      "primary_role": "WORKSPACE_MANAGEMENT",
+      "secondary_roles": [
+        "HISTORY",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "mixed_ownership": true,
+      "finding": "Create/export first; retained artifact and integrity detail remain inspectable."
+    },
+    {
+      "element": "Tool availability badges and errors",
+      "primary_role": "TRANSIENT_FEEDBACK",
+      "secondary_roles": [
+        "NAVIGATION"
+      ],
+      "mixed_ownership": true,
+      "finding": "Always pair icon/color with readable reason and next step."
+    }
+  ],
+  "mixed_responsibility_findings": [
+    {
+      "surface": "Setup",
+      "roles": [
+        "TASK_CONFIGURATION",
+        "WORKSPACE_MANAGEMENT",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "recommendation": "Move Scenario/Version management to a dedicated Plan > Scenarios tool; keep Setup for current plan inputs."
+    },
+    {
+      "surface": "RF Diagnostics",
+      "roles": [
+        "RESULT_ANALYSIS",
+        "TASK_CONFIGURATION",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "recommendation": "Keep canonical actions visible and give independent Validation, Materials, and Reflection research workflows one-at-a-time internal subviews."
+    },
+    {
+      "surface": "Run History",
+      "roles": [
+        "HISTORY",
+        "RESULT_ANALYSIS",
+        "PROVENANCE_EVIDENCE",
+        "WORKSPACE_MANAGEMENT"
+      ],
+      "recommendation": "Keep history master/detail inside Review; group full provenance and public solution detail under the selected Run, not a global inspector."
+    },
+    {
+      "surface": "Results",
+      "roles": [
+        "RESULT_ANALYSIS",
+        "HISTORY",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "recommendation": "Lead with result kind, freshness/source, score/feasibility, and primary objective values; progressively disclose metrics/configuration/evidence."
+    },
+    {
+      "surface": "Data",
+      "roles": [
+        "WORKSPACE_MANAGEMENT",
+        "RESULT_ANALYSIS",
+        "PROVENANCE_EVIDENCE",
+        "TASK_CONFIGURATION"
+      ],
+      "recommendation": "Lead with compact planning data and data quality; details/QA/provenance/dev commands are secondary or tertiary; keep measurement calibration explicitly separate."
+    },
+    {
+      "surface": "Map cell click",
+      "roles": [
+        "TASK_CONFIGURATION",
+        "MAP_VISUALIZATION",
+        "SPATIAL_INSPECTION"
+      ],
+      "recommendation": "Separate Inspect from Select when clicking a cell can change active RF source/cluster membership."
+    }
+  ]
+}

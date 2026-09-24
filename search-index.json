@@ -819,6 +819,18 @@
     },
     {
       "page": "Changelog",
+      "title": "Added",
+      "url": "./changelog.html#added",
+      "text": "Add a read-only contextual inspector for map-linked Cells, Buildings, Interference samples, and existing map entities, with exact source/freshness context and direct Inventory and Path Profile actions. Separate map Inspect and Select cells modes, preserve task state across supported panel layouts, and give area drawing, cell placement, and path endpoint selection priority over inspection. Consolidate map chrome into interaction, result visualization, View context, and Layers controls; remove duplicate map popups, clarify Network selection guidance, and keep the compact interaction, View, and Layers controls reachable on phones."
+    },
+    {
+      "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed",
+      "text": "Keep retained Interference samples inspectable when switching map interaction modes and show unavailable values when the response lacks evidence. Keep active Scenario lineage when draft and saved plan values differ only by object key order or map-only focus/ray scope."
+    },
+    {
+      "page": "Changelog",
       "title": "0.9.0 - 2026-09-23",
       "url": "./changelog.html#090---2026-09-23",
       "text": ""
@@ -826,7 +838,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added",
+      "url": "./changelog.html#added-1",
       "text": "Add local-first Concept 7D report artifacts with exact ScenarioRevision/Run lineage, SHA-256 verification, separate IndexedDB retention, historical Run generation, offline download, regeneration, corruption handling, and explicit cleanup/quota behavior. Add local-first Concept 7E Scenario UX with explicit immutable Versions, draft/Save version semantics, Scenario switching, input diffs, branch and duplicate lineage, optimization application choices, friendly Run/Report navigation, and safe input-first comparison. Add Concept 7G result freshness and source lineage across the workspace, Results, Run History, Reports, map legend, and optimization actions, with explicit stale/history safety, draft-source clarity, and accessible state labels. Add Concept 7H RF configuration progressive disclosure, keeping Planning visible while grouping specialist and reference controls under Advanced and Research / reference without changing RF behavior or saved inputs."
     },
     {
@@ -838,7 +850,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-1",
+      "url": "./changelog.html#added-2",
       "text": "Add opt-in deterministic_pareto_archive_search_v1 for bounded priority-independent Pareto candidate discovery, exact evaluated-state archiving, post-discovery priority reranking, deterministic discovery/ranking fingerprints, and Concept 5C audit artifacts; legacy and Concept 5B search policies remain available. Add opt-in deterministic_multistart_coordinate_v1 network search with until-stable coordinate descent, deterministic starts, request-scoped memoization, evaluated-state archive/Pareto metadata, explicit budgets, and Concept 5B audit artifacts while preserving the legacy default. Add Concept 4F.3A.5 diagnostic terrain-clearance primitive with radio-minus-terrain endpoint/sign/no-data/datum/interpolation contracts, NASADEM/FABDEM 432-path regression artifacts, and no canonical RF coupling. Add Concept 4F.1 deterministic height-aware urban_short_range centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts. Add Concept 4F.2 p526-single-edge-v1 diffraction diagnostics with independent P.526-16 reference fixtures, known-height obstruction ledgers, deterministic roof-edge selection, canonical UMa comparison, Fresnel separation, restrained Path Profile UI, and no network/optimizer/surface/interference/building-entry coupling. Add Concept 4F.3A spatial-evidence foundations with explicit DTM/DSM and vertical-datum semantics, windowed GeoTIFF sampling, terrain path evidence, robust building-base/roof ledgers, source-independent external-height matching, conflict/precedence policies, deterministic fingerprints, Ankara readiness artifacts, diagnostic-only inspector routes, and no canonical RF coupling. Add Concept 4F.3A.1 bounded Ankara external-height acquisition and matching pilot with exact Microsoft GlobalMLBuildingFootprints tile selection, raw checksums, input QA, normalized sidecar output, deterministic STRtree matching, source-agreement audits, diagnostic impact, reproducibility, and an honest NO-GO for numeric promotion when the active tiles contain no positive heights. Add Concept 4F.3A.2 diagnostic-only GlobalBuildingAtlas GBA.Height Ankara acquisition with official index/tile checksums, CC BY-NC license gate, windowed raster sa"
     },
     {
@@ -850,7 +862,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-2",
+      "url": "./changelog.html#added-3",
       "text": "Add Concept 4E building-entry analysis for deterministic 2.6/28 GHz service estimates immediately inside representative facades, with standard-derived low/high O2I scenarios, material-data auditing, one batched API request, RF-aware caching, and restrained Analyze/report surfaces."
     },
     {
@@ -862,7 +874,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed",
+      "url": "./changelog.html#fixed-1",
       "text": "Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows. Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on main reach the published site."
     },
     {
@@ -874,7 +886,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-3",
+      "url": "./changelog.html#added-4",
       "text": "Add a unified map key, visible local-save status, and recoverable deletion controls."
     },
     {
@@ -886,7 +898,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-1",
+      "url": "./changelog.html#fixed-2",
       "text": "Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary. Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport. Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly. Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image."
     },
     {
@@ -898,7 +910,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-4",
+      "url": "./changelog.html#added-5",
       "text": "Add an inspectable 2.5D point-to-point path profiler with optional COG/GeoTIFF terrain, building heights, LOS/Fresnel classification, single knife-edge diffraction, material-aware penetration, environmental sensitivity terms, uncertainty ranges, and an interactive vertical cross section. Add asynchronous batch experiment matrices with cancellation, deterministic dataset/model fingerprints, bounded caching, a headless CLI, progress UI, scenario tables, and Pareto evidence. Add configurable network objectives, weights, hard constraints, feasibility evidence, and non-dominated azimuth solutions while keeping unsupported tilt, power, candidate-site, cost, fiber, and permitting inputs explicit. Add spatially blocked five-fold calibration validation, spatial-diversity rejection, per-cell/per-band and distance/obstruction residual summaries, robust outlier flags, uncertainty quantiles, confidence intervals, and campaign provenance/expiration support. Add regular-grid analytical coverage surfaces, marching-square isolines, opacity and display-threshold controls, plus GeoTIFF, contour GeoJSON, and CSV exports. Add OGC API Features-style, viewport-bounded building queries with pagination and GeoJSON/CSV representations so clients need not transfer the full building dataset. Add a persistent cell Inventory workspace with manual map placement, dragging, duplication, deletion, bounded CSV/GeoJSON import, search, validation, and independent per-cell RF profiles across propagation, network, interference, recommendation, measurement, and report workflows. Add Dataset Pack Studio for arbitrary-region source inspection, geometry repair, reprojection/cropping, schema-v2 manifests, hashes, provenance/licenses/confidence, QA evidence, and optional terrain, clutter, building-height, and material layers. Add a local installed-dataset catalog and atomic manifest-ID switching that retains the active immutable pack on validation failure, with optional administration-key protection."
     },
     {
@@ -922,7 +934,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-2",
+      "url": "./changelog.html#fixed-3",
       "text": "Keep focused-drawer actions in normal layout flow so the propagation optimizer cannot overlap the vertical path-profile panel."
     },
     {
@@ -940,7 +952,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-3",
+      "url": "./changelog.html#fixed-4",
       "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts. Generate backend, Core Lab adapter, and frontend scenario/RF policy bindings from one canonical source, and share one tower input type across RF endpoints."
     },
     {
@@ -952,7 +964,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-4",
+      "url": "./changelog.html#fixed-5",
       "text": "Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests. Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation."
     },
     {
@@ -964,7 +976,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-5",
+      "url": "./changelog.html#added-6",
       "text": "Add keyboard-accessible full-site search to the static documentation website. Publish the canonical project changelog as a searchable documentation page."
     },
     {
@@ -976,7 +988,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-5",
+      "url": "./changelog.html#fixed-6",
       "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
     },
     {
@@ -994,7 +1006,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-6",
+      "url": "./changelog.html#added-7",
       "text": "Deterministic sector, network, optimization, interference, recommendation, and measurement-validation workflows. Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths. Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing."
     },
     {

@@ -1,0 +1,56 @@
+{
+  "concept": "8C",
+  "phase": "post-change visualization contract",
+  "responsibilities": {
+    "interaction": "Inspect / Select cells and contextual one-shot spatial tools.",
+    "resultVisualization": "Metric, Signal, and Rays.",
+    "viewContext": "Scope and Map Focus, with a conditional Inspect focused cell action.",
+    "interpretation": "Layers and the Map key legend.",
+    "taskConfiguration": "Left workflow drawer.",
+    "entityDetail": "Read-only right contextual inspector."
+  },
+  "resultVisualization": {
+    "legacyRFLabel": "The previous RF category label was not itself actionable. It is replaced by the explicit Result visualization group name.",
+    "signal": {
+      "control": "Signal toggle",
+      "meaning": "Received-signal surface layer.",
+      "availability": "State remains explicit: unavailable, available, loading, ready, or error/retry.",
+      "request": "The existing lazy /api/coverage-surface fetch may occur when the user first loads the surface; it does not rerun RF analysis."
+    },
+    "rays": {
+      "control": "Rays toggle",
+      "meaning": "Show or hide existing propagation rays.",
+      "availability": "Disabled until rays exist; checked state includes a check icon and aria-pressed."
+    },
+    "radioQualityMetric": {
+      "control": "One native select labelled Radio-quality metric, shown only when interference data exists.",
+      "options": ["SINR", "RSRP", "RSRQ"],
+      "unsupported": "Selector stays absent without interference data; supported values remain exactly the existing analysis values."
+    }
+  },
+  "viewContext": {
+    "desktop": "Scope and Map Focus are grouped inside the View disclosure; frequent Signal/Rays and supported metric controls remain directly available.",
+    "phone": "View opens one compact menu containing result visualization controls and view context in labelled sections; Layers stays a separate disclosure.",
+    "scope": {
+      "label": "Scope",
+      "options": ["All cells", "Map Focus cell", "Hidden"],
+      "meaning": "Filters existing ray display. The selected value is not Network cluster membership."
+    },
+    "mapFocus": {
+      "label": "Map Focus",
+      "meaning": "Visualization emphasis and selected-ray reference; does not inspect or change cluster membership.",
+      "inspectAction": "Inspect focused cell is available only when a focused Cell exists and differs from the Cell already being inspected. Changing Map Focus never inspects automatically."
+    }
+  },
+  "layers": {
+    "control": "Separate Map layers disclosure, adjacent to View.",
+    "examples": ["Viewport buildings", "Coverage gaps", "Selected cells", "Communication paths", "Interference surface", "Measurement residuals"],
+    "meaning": "Existing visibility toggles only."
+  },
+  "legend": {
+    "label": "Map key",
+    "role": "Named region containing a native disclosure button and conditionally hidden contents.",
+    "preserves": "Existing signal/ray meaning, result source/freshness, metric thresholds, and exact sample ranges."
+  },
+  "noScientificChanges": "No RF quantity, formula, threshold, ray calculation, interference value, or unsupported-state semantics were changed."
+}

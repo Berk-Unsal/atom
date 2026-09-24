@@ -1,0 +1,58 @@
+{
+  "concept": "8C",
+  "phase": "post-change request and domain invariance",
+  "backendChanges": false,
+  "requestBuilderChanges": false,
+  "requestFixtureChanges": false,
+  "contracts": {
+    "Inspect": "Read-only; no RF compute request, active transmitter change, cluster mutation, or result invalidation.",
+    "Map Focus": "Visualization emphasis and map viewport only; no RF compute request or Scenario identity change.",
+    "Scope": "Filters existing rays; no RF compute request or Scenario identity change.",
+    "Signal": "May lazily request the existing coverage-surface endpoint after explicit user action; it does not call analyze-sector, simulate, optimize-network, interference, or change plan inputs.",
+    "Rays": "Visibility only; no additional RF compute request.",
+    "Metric": "Selects an existing SINR/RSRP/RSRQ result presentation; no new computation.",
+    "LayersAndMenus": "Visibility/disclosure state only; no RF compute request.",
+    "SelectCells": "Changes Network cluster plan membership using existing semantics; no computation until the explicit Evaluate Network action.",
+    "PlacementAndClear": "Retain existing plan-edit/result invalidation behavior."
+  },
+  "evidence": [
+    {
+      "source": "frontend-react/src/App.workflow.test.jsx",
+      "test": "changes map presentation without launching another RF request",
+      "result": "Pass; Rays, Ray scope, and Map Focus are changed after a completed run without increasing API post count."
+    },
+    {
+      "source": "frontend-react/src/App.workflow.test.jsx",
+      "test": "enables Signal after RF completes, loads the surface lazily, and keeps ray toggles presentation-only",
+      "result": "Pass; one explicit /api/coverage-surface request is allowed, while /api/analyze-sector remains at one request and Rays adds none."
+    },
+    {
+      "source": "frontend-react/e2e/workspace.spec.js",
+      "test": "inspects cells and opens Inventory without changing the plan",
+      "result": "Pass; zero analyze-sector, simulate, optimize-network, or interference requests during inspection, Focus, and Inventory navigation."
+    },
+    {
+      "source": "frontend-react/e2e/workspace.spec.js",
+      "test": "Select cells changes cluster membership and Clear selected cluster reverses it",
+      "result": "Pass; zero compute requests across membership change and clear."
+    },
+    {
+      "source": "frontend-react/src/utils/projectStore.test.js",
+      "test": "keeps Map Focus and ray Scope out of Scenario identity",
+      "result": "Pass; Map Focus/Scope-only edits preserve active Scenario identity; an RF-affecting ray-count edit still clears it."
+    },
+    {
+      "source": "frontend-react/src/domain/requestEquivalence.test.js",
+      "test": "Concept 7B request equivalence",
+      "result": "Pass, 3 tests: canonical 2.6 GHz and 28 GHz simulation inputs plus optimization/interference request input equivalence."
+    }
+  ],
+  "canonicalInvariants": [
+    "RF equations, propagation and interference outputs, building entry, link budget, serviceability, and thresholds unchanged.",
+    "Optimizer scoring, search, constraints, recommendation semantics, Pareto membership/IDs, and public result identifiers unchanged.",
+    "ScenarioRevision, ProjectV2, Run, Report, artifact, result freshness, and atom-scenario-v1 contracts unchanged.",
+    "Existing selectedMapCellId and rayScope presentation values remain handled as before and excluded from Scenario identity; no new mode/popover persistence was introduced.",
+    "No frontend dependency was added."
+  ],
+  "limits": "The request-equivalence suite compares existing simulation, optimization, and interference payloads; the map work adds no new request schema or server route."
+}

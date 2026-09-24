@@ -1,0 +1,378 @@
+{
+  "concept": "8E",
+  "recorded_at": "2026-09-24",
+  "test_plan": "docs/concept-8d-8e-test-plan.json",
+  "suite_results": [
+    {
+      "name": "Frontend unit and workflow",
+      "command": "cd frontend-react && npm test",
+      "status": "passed",
+      "files": 56,
+      "tests": 295
+    },
+    {
+      "name": "Frontend lint",
+      "command": "cd frontend-react && npm run lint",
+      "status": "passed"
+    },
+    {
+      "name": "Production build",
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "modules_transformed": 1707,
+      "entry_chunk_raw_bytes": 796620,
+      "entry_chunk_gzip_bytes": 225440,
+      "warning": "Vite reports the existing large initial JavaScript chunk warning."
+    },
+    {
+      "name": "Playwright browser suite",
+      "command": "cd frontend-react && npm run test:e2e -- --workers=1",
+      "status": "passed",
+      "projects": [
+        "desktop-1440",
+        "desktop-1024",
+        "tablet-768",
+        "mobile-390"
+      ],
+      "passed": 100,
+      "skipped": 60,
+      "failed": 0,
+      "total": 160
+    },
+    {
+      "name": "Concept 8E responsive capture",
+      "command": "cd frontend-react && ATOM_8E_CAPTURE=after npx playwright test e2e/workspace.spec.js --project=desktop-1440 --workers=1 --grep 'seven Concept 8E reference widths'",
+      "status": "passed",
+      "passed": 1,
+      "evidence": [
+        "docs/concept-8e-responsive-evidence.json",
+        "docs/assets/concept-8e/inspector-1920.png",
+        "docs/assets/concept-8e/inspector-1600.png",
+        "docs/assets/concept-8e/inspector-1440.png",
+        "docs/assets/concept-8e/inspector-1280.png",
+        "docs/assets/concept-8e/inspector-1024.png",
+        "docs/assets/concept-8e/inspector-768.png",
+        "docs/assets/concept-8e/inspector-390.png"
+      ]
+    },
+    {
+      "name": "Backend Go",
+      "command": "cd backend-go && go vet ./... && go test -race ./...",
+      "status": "passed",
+      "tested_packages": 2,
+      "packages_without_tests": 3
+    },
+    {
+      "name": "Core Lab adapter Go",
+      "command": "cd core-lab-adapter && go vet ./... && go test -race ./...",
+      "status": "passed",
+      "tested_packages": 1
+    },
+    {
+      "name": "Reference documentation build",
+      "command": "sh docs/build-reference-pages.sh",
+      "status": "passed",
+      "warnings": "Pandoc reports the existing --mathml option deprecation."
+    },
+    {
+      "name": "Documentation validation",
+      "command": "PYTHONPATH=/tmp/urban-ray-tracer-docs-validator-deps python3 docs/validate_docs.py",
+      "status": "passed",
+      "html_pages": 41,
+      "api_paths": 41
+    },
+    {
+      "name": "Version metadata",
+      "command": "python3 scripts/versioning.py check",
+      "status": "passed",
+      "version": "0.9.0"
+    },
+    {
+      "name": "Diff whitespace and evidence JSON",
+      "command": "git diff --check plus python3 -m json.tool for Concept 8E evidence JSON",
+      "status": "passed"
+    }
+  ],
+  "cases": [
+    {
+      "id": "cell-inspection",
+      "status": "passed",
+      "tests": [
+        "inspects cells and opens Inventory without changing the plan",
+        "supports keyboard map inspection and returns focus to the Map Focus control"
+      ],
+      "assertions": [
+        "Cell cell-2 identity and available RF values",
+        "Map Focus is distinct from active transmitter",
+        "pointer open does not focus the inspector heading",
+        "inspection makes no RF or optimizer request"
+      ]
+    },
+    {
+      "id": "select-cell-existing-semantics",
+      "status": "passed_with_coverage_note",
+      "tests": [
+        "map clicks change the plan only after Select cells is armed",
+        "completes the Run, optimization, apply, Version, and historical Report journey",
+        "src/utils/networkSelection.test.js"
+      ],
+      "assertions": [
+        "Single mode selects the active transmitter only in Select cells mode",
+        "Network mode adds a clicked member and runs the existing optimization workflow",
+        "networkSelection unit tests cover member removal, order, and capacity"
+      ],
+      "coverage_note": "The browser workflow exercises Single selection and Network addition; Network removal/order is additionally covered by the existing selection utility tests rather than a second marker click."
+    },
+    {
+      "id": "edit-mode-priority",
+      "status": "passed",
+      "tests": [
+        "area drawing consumes map clicks before entity inspection",
+        "cell placement consumes a tower click before entity inspection",
+        "opens the exact Cell path profile and gives endpoint picking priority over inspection"
+      ],
+      "assertions": [
+        "area draw, cell placement, and path endpoint selection consume map clicks without opening an inspector"
+      ]
+    },
+    {
+      "id": "building-inspection",
+      "status": "passed",
+      "tests": [
+        "inspects viewport Buildings, ignores an older detail response, and reports unavailable evidence"
+      ],
+      "assertions": [
+        "stable building identity and returned evidence",
+        "older detail response does not overwrite newer inspection",
+        "failed evidence request exposes an owning-tool action"
+      ]
+    },
+    {
+      "id": "interference-sample-inspection",
+      "status": "passed",
+      "tests": [
+        "inspects an Interference sample from its exact retained analysis and marks it stale after editing",
+        "src/utils/interferenceInspector.test.js"
+      ],
+      "assertions": [
+        "retained live sample resolves to CURRENT and exact local analysis identity",
+        "source-backed RSRP/SINR/RSRQ and serving/interferer facts",
+        "missing RSSI and thermal-noise fields display unavailable",
+        "editing marks the sample STALE without a second Interference request",
+        "tests missing-field and no-inference behavior"
+      ]
+    },
+    {
+      "id": "close-inspector",
+      "status": "passed",
+      "tests": [
+        "map clicks change the plan only after Select cells is armed",
+        "supports keyboard map inspection and returns focus to the Map Focus control"
+      ],
+      "assertions": [
+        "pointer Close preserves current plan state",
+        "Escape closes keyboard-open inspector and restores initiating focus"
+      ]
+    },
+    {
+      "id": "task-continuity",
+      "status": "passed",
+      "tests": [
+        "keeps Propagation task state while inspecting a Cell and switching desktop tools",
+        "Back from the single-slot inspector restores the prior tool and draft"
+      ],
+      "assertions": [
+        "Propagation draft survives desktop tool switches",
+        "Back restores tool and draft in the single inspector slot"
+      ]
+    },
+    {
+      "id": "scenario-switch-lifecycle",
+      "status": "passed",
+      "tests": [
+        "clears the inspected Cell when switching to another Scenario",
+        "switching Projects clears the live Run association and scopes Run History",
+        "keeps an unsaved draft when opening a different Scenario is blocked"
+      ],
+      "assertions": [
+        "successful Scenario and Project switches clear the inspector",
+        "same-Scenario draft click preserves the draft",
+        "cross-Scenario switch stays blocked until the draft is saved"
+      ]
+    },
+    {
+      "id": "stale-context-retained",
+      "status": "passed",
+      "tests": [
+        "retains the inspected Cell source Run and marks it stale after a plan edit",
+        "inspects an Interference sample from its exact retained analysis and marks it stale after editing"
+      ],
+      "assertions": [
+        "Run source label remains exact and STALE after a plan edit",
+        "no recompute on inspection or stale transition",
+        "Interference sample freshness is tied to its exact retained local analysis context"
+      ]
+    },
+    {
+      "id": "unavailable-entity",
+      "status": "passed",
+      "tests": [
+        "inspects viewport Buildings, ignores an older detail response, and reports unavailable evidence",
+        "src/utils/interferenceInspector.test.js"
+      ],
+      "assertions": [
+        "failed Building detail shows explicit unavailable evidence and owning-tool action",
+        "absent interference fields remain unavailable instead of inferred zero/no-signal/LTE facts"
+      ]
+    },
+    {
+      "id": "inventory-direct-action",
+      "status": "passed",
+      "tests": [
+        "inspects cells and opens Inventory without changing the plan",
+        "manual Inventory selection takes over the inspected Cell target"
+      ],
+      "assertions": [
+        "Inventory opens on the exact inspected cell",
+        "active transmitter and compute count remain unchanged until Inventory owns an edit"
+      ]
+    },
+    {
+      "id": "path-profile-direct-action",
+      "status": "passed",
+      "tests": [
+        "opens the exact Cell path profile and gives endpoint picking priority over inspection"
+      ],
+      "assertions": [
+        "exact transmitter cell is used",
+        "opening the profile makes no path request",
+        "endpoint selection takes priority over inspection"
+      ]
+    },
+    {
+      "id": "pareto-source-exact",
+      "status": "passed",
+      "tests": [
+        "completes the Run, optimization, apply, Version, and historical Report journey",
+        "explores a retained Pareto alternative without another RF request"
+      ],
+      "assertions": [
+        "Pareto remains Results-owned",
+        "apply uses the selected optimization Run/solution and Version lineage",
+        "opening an alternate solution does not trigger another RF/optimizer request",
+        "historical Run source Version navigation does not replace the active Version"
+      ]
+    },
+    {
+      "id": "responsive-1920-1600",
+      "status": "passed",
+      "evidence": "docs/concept-8e-responsive-evidence.json",
+      "assertions": [
+        "task drawer and inspector both visible and separated",
+        "map retains broad usable corridor",
+        "no horizontal document overflow"
+      ]
+    },
+    {
+      "id": "responsive-1440",
+      "status": "passed",
+      "evidence": "docs/concept-8e-responsive-evidence.json",
+      "assertions": [
+        "inspector overlays map while task drawer remains open",
+        "Map Focus controls remain outside inspector bounds",
+        "map remains usable"
+      ]
+    },
+    {
+      "id": "responsive-1280-1024",
+      "status": "passed",
+      "evidence": "docs/concept-8e-responsive-evidence.json",
+      "tests": [
+        "Back from the single-slot inspector restores the prior tool and draft"
+      ],
+      "assertions": [
+        "one inspector/tool slot at each width",
+        "Back restores previous tool state"
+      ]
+    },
+    {
+      "id": "responsive-768-390",
+      "status": "passed",
+      "evidence": "docs/concept-8e-responsive-evidence.json",
+      "assertions": [
+        "one bottom sheet at a time",
+        "map retains visible space",
+        "no horizontal overflow"
+      ]
+    },
+    {
+      "id": "keyboard-a11y",
+      "status": "automated_pass_manual_AT_not_run",
+      "tests": [
+        "supports keyboard map inspection and returns focus to the Map Focus control",
+        "inspects cells and opens Inventory without changing the plan"
+      ],
+      "assertions": [
+        "named complementary inspector and heading",
+        "keyboard open, focus visibility, Escape close and focus return",
+        "Tab can leave the non-modal inspector",
+        "freshness is text, not color alone",
+        "pointer inspection does not auto-focus the heading"
+      ],
+      "limitation": "Automated browser/ARIA and keyboard checks passed; a manual screen-reader session was not run."
+    },
+    {
+      "id": "lazy-loading",
+      "status": "passed",
+      "tests": [
+        "loads specialized feature modules only after their workspace action",
+        "inspects cells and opens Inventory without changing the plan"
+      ],
+      "assertions": [
+        "inspector opens without preloading Research, Run History, Report, or Core Lab chunks",
+        "specialized feature modules load only on their owning action"
+      ]
+    },
+    {
+      "id": "request-invariance",
+      "status": "passed",
+      "tests": [
+        "inspects cells and opens Inventory without changing the plan",
+        "opens the exact Cell path profile and gives endpoint picking priority over inspection",
+        "inspects an Interference sample from its exact retained analysis and marks it stale after editing",
+        "explores a retained Pareto alternative without another RF request"
+      ],
+      "assertions": [
+        "no compute request on inspect/open/close/tool navigation",
+        "no Path Profile request before explicit Analyze",
+        "no Interference rerun after inspect/edit",
+        "retained Pareto inspection adds no RF/optimizer request"
+      ]
+    },
+    {
+      "id": "domain-schema-invariance",
+      "status": "passed_by_diff_audit_and_workflow_tests",
+      "evidence": [
+        "git diff --name-only",
+        "src/utils/projectStore.test.js",
+        "completes the Run, optimization, apply, Version, and historical Report journey"
+      ],
+      "assertions": [
+        "no backend, API contract, domain schema, Scenario/Run/Report type, dataset, or RF/optimizer file changed",
+        "new inspector and Interference context remain App-local",
+        "Project serialization fields and request builders remain unchanged",
+        "workspace equality now ignores object key order and map-only focus/ray scope without changing serialized shape"
+      ],
+      "coverage_note": "Schema invariance is verified by a source-diff audit plus existing persistence and Run/Report workflow tests; no byte-for-byte pre/post artifact corpus comparison was recorded."
+    }
+  ],
+  "manual_limitations": [
+    "No manual screen-reader run was captured; keyboard, focus, accessible names, landmarks, and textual freshness are covered in Playwright.",
+    "Base-map tiles were unavailable during browser capture; geometry and interactions were verified with deterministic RF/map fixtures."
+  ],
+  "baseline_preservation": {
+    "record": "docs/concept-8e-pre-change-baseline.json",
+    "preexisting_concept_8b_assets_restored_after_e2e": true,
+    "preexisting_concept_8b1_and_8d_artifacts_preserved": true
+  }
+}

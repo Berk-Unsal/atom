@@ -1,0 +1,299 @@
+{
+  "concept": "8C",
+  "capturedAt": "2026-09-24T08:16:13Z",
+  "phase": "pre-change map control inventory",
+  "inventoryMethod": "Static source and interaction audit of WorkspaceChrome, MapCanvas, App, ControlPanel, InventoryPanel, PathProfilePanel, and MapLegend before Concept 8C UI edits.",
+  "ordinaryMapModes": [
+    "inspect",
+    "select-cells"
+  ],
+  "specialModeState": [
+    "App.isDrawingSelection",
+    "App.isPlacingCell",
+    "App.isSelectingPathEndpoint"
+  ],
+  "controls": [
+    {
+      "id": "inspect",
+      "meaning": "Open the read-only contextual inspector for a map entity.",
+      "owner": "MapToolbar / App.selectMapObject",
+      "state": "App.mapInteractionMode = inspect",
+      "clickBehavior": "Sets the ordinary interaction mode; clicking a Cell opens the right inspector without changing the plan.",
+      "mutualExclusion": "Exclusive with Select cells as ordinary modes; special armed tool booleans take map-click priority.",
+      "duplicateElsewhere": "Entity detail duplicates in legacy click popups for Cells, gaps, paths, and recommendations.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "select-cells",
+      "meaning": "Select or deselect Cell membership in the Network cluster.",
+      "owner": "MapToolbar / App.selectTower",
+      "state": "App.mapInteractionMode = select-cells",
+      "clickBehavior": "Toggles the clicked Cell in the selected Network cluster and invalidates existing RF results as before.",
+      "mutualExclusion": "Exclusive with Inspect as ordinary modes; special armed tool booleans take priority.",
+      "duplicateElsewhere": "Setup, Propagation, and Interference expose Select cells on map entry actions; command bar says Add N cells; map prompt repeats instructions.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx; frontend-react/src/components/ControlPanel.jsx"
+    },
+    {
+      "id": "pointer-looking-area-icon",
+      "meaning": "Draw a polygon for Network cell selection; this is not a generic pointer/select mode.",
+      "owner": "MapToolbar / App.startAreaSelection / SelectionPolygonLayer",
+      "state": "App.isDrawingSelection and App.selectionPolygon",
+      "clickBehavior": "Arms area drawing; map clicks add vertices; Finish/double-click/Enter applies selection; Cancel/Escape discards the draft polygon.",
+      "mutualExclusion": "Special one-shot spatial mode; it is not mutually exclusive in UI with the visible ordinary mode buttons, though App callback priority consumes clicks.",
+      "duplicateElsewhere": "Setup static guidance also describes using the area tool; currently shares the MousePointer2 icon with Select cells.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx; frontend-react/src/components/MapCanvas.jsx"
+    },
+    {
+      "id": "eraser-clear-selection",
+      "meaning": "Immediately clear Network cluster membership and related selection azimuth state; it is not an armed erase mode.",
+      "owner": "MapToolbar / App.clearNetworkSelection",
+      "state": "App.selectedNetworkTowerIds, App.networkAzimuths, App.selectionPolygon, App.selectionNotice",
+      "clickBehavior": "Invalidates current results, clears selected cluster membership and selection polygon/azimuths.",
+      "mutualExclusion": "Immediate plan edit; no mode state.",
+      "duplicateElsewhere": "Selected cluster count and map marker styling show resulting state.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "target-fit-selection",
+      "meaning": "Fit the map viewport to selected Network cells or the active single Cell.",
+      "owner": "MapToolbar / App.fitSelectedCells / FitSelectionLayer",
+      "state": "App.fitRequestVersion; Leaflet map viewport",
+      "clickBehavior": "Changes map viewport only; no plan or result changes.",
+      "mutualExclusion": "Independent map navigation action.",
+      "duplicateElsewhere": "Distinct from Map Focus, which emphasizes one Cell and scopes rays.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/components/MapCanvas.jsx"
+    },
+    {
+      "id": "place-cell",
+      "meaning": "Add a manual Cell at a map coordinate.",
+      "owner": "InventoryPanel / App.placeInventoryCell / CellPlacementLayer",
+      "state": "App.isPlacingCell",
+      "clickBehavior": "Arms placement; next map coordinate creates a Cell and dirties the plan; selected marker can then be dragged.",
+      "mutualExclusion": "Special one-shot tool; App currently consumes the map click before inspection.",
+      "duplicateElsewhere": "InventoryPanel has its own active Cancel placement state and helper text.",
+      "persistentVisibility": false,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/InventoryPanel.jsx; frontend-react/src/App.jsx; frontend-react/src/components/MapCanvas.jsx"
+    },
+    {
+      "id": "pick-path-receiver",
+      "meaning": "Choose a receiver coordinate for the selected Cell path profile.",
+      "owner": "PathProfilePanel / App.selectPathEndpoint / PathEndpointSelectionLayer",
+      "state": "App.isSelectingPathEndpoint; path profile endpoint state",
+      "clickBehavior": "Arms endpoint pick; next map click records the receiver coordinate and does not inspect/select a Cell.",
+      "mutualExclusion": "Special one-shot tool; start callback clears area and placement modes.",
+      "duplicateElsewhere": "PathProfilePanel shows Pick receiver on map / Cancel map pick and a short placeholder instruction.",
+      "persistentVisibility": false,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/PathProfilePanel.jsx; frontend-react/src/App.jsx; frontend-react/src/components/MapCanvas.jsx"
+    },
+    {
+      "id": "signal-layer",
+      "meaning": "Show/hide or load received signal surface.",
+      "owner": "MapToolbar / App.toggleSignalLayer",
+      "state": "App.layerVisibility.surfaces; coverageSurfaceState",
+      "clickBehavior": "Toggles a current surface or requests the existing lazy surface endpoint when available; does not mutate plan.",
+      "mutualExclusion": "Independent visualization toggle.",
+      "duplicateElsewhere": "Layers menu also lists signal surface checkbox when available.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "rays-layer",
+      "meaning": "Show/hide propagation rays.",
+      "owner": "MapToolbar / App.toggleLayerVisibility",
+      "state": "App.layerVisibility.rays and App.rayScope",
+      "clickBehavior": "Toggles rays and switches hidden scope to/from all cells as existing behavior.",
+      "mutualExclusion": "Independent visualization toggle.",
+      "duplicateElsewhere": "Layers menu also lists rays when available; Scope controls visible ray subset.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "rf-label",
+      "meaning": "Category label for Signal, Rays, Scope, and Map Focus controls; it is not itself actionable.",
+      "owner": "MapToolbar",
+      "state": "None",
+      "clickBehavior": "No click behavior.",
+      "mutualExclusion": "Not applicable.",
+      "duplicateElsewhere": "Overloaded two-letter label obscures whether it means a family, mode, or layer.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx"
+    },
+    {
+      "id": "radio-quality-metric",
+      "meaning": "Choose displayed interference metric SINR, RSRP, or RSRQ.",
+      "owner": "MapToolbar / App.interferenceMetric",
+      "state": "App.interferenceMetric",
+      "clickBehavior": "Changes map layer coloring and legend only; only rendered when current interference data exists.",
+      "mutualExclusion": "Single selected metric among three buttons.",
+      "duplicateElsewhere": "Legend follows the chosen metric.",
+      "persistentVisibility": "Visible only with interference data",
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "ray-scope",
+      "meaning": "Choose which ray paths are shown: all, the Map Focus Cell, or hidden.",
+      "owner": "MapToolbar / App.changeRayScope / filterRayFeatures",
+      "state": "App.rayScope and App.layerVisibility.rays",
+      "clickBehavior": "Filters already-computed ray features; does not request a new RF run.",
+      "mutualExclusion": "Single native select value.",
+      "duplicateElsewhere": "Current label Selected cell may be confused with Network cluster selection.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx; frontend-react/src/utils/rfVisualization.js"
+    },
+    {
+      "id": "map-focus",
+      "meaning": "Choose one Cell as visualization emphasis and ray-scope reference.",
+      "owner": "MapToolbar / App.changeMapCellFocus",
+      "state": "App.selectedMapCellId (existing map presentation state)",
+      "clickBehavior": "Changes purple marker emphasis and selected-ray filtering reference; does not inspect or change cluster membership.",
+      "mutualExclusion": "Independent of Inspect and Select cells; independent of active transmitter.",
+      "duplicateElsewhere": "Contextual inspector reports Map Focus; a permanent Inspect focus action sits beside the selector.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "inspect-map-focus",
+      "meaning": "Explicitly inspect the current Map Focus Cell.",
+      "owner": "MapToolbar / App.inspectFocusedMapCell",
+      "state": "No separate state; opens App.inspectedEntity and sets ordinary mode to inspect.",
+      "clickBehavior": "Opens the Cell inspector on demand; changing Map Focus does not trigger this automatically.",
+      "mutualExclusion": "Independent action, but currently permanently visible and disabled without a valid focus; still visible when the same Cell is already inspected.",
+      "duplicateElsewhere": "Duplicates the normal Inspect mode outcome when focused Cell is clicked directly.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "layers",
+      "meaning": "Show/hide available building, gap, selected-cell, path, interference, and measurement overlays.",
+      "owner": "MapToolbar / App.toggleLayerVisibility",
+      "state": "App.layerVisibility; App.layerMenuOpen",
+      "clickBehavior": "Opens checkbox group; each checkbox toggles an existing presentation layer only.",
+      "mutualExclusion": "Independent display controls; only menu disclosure is open/closed.",
+      "duplicateElsewhere": "Signal and rays also have quick toggles outside the Layers menu.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "zoom",
+      "meaning": "Change map zoom level.",
+      "owner": "Leaflet zoom control",
+      "state": "Leaflet map instance",
+      "clickBehavior": "Map navigation only.",
+      "mutualExclusion": "Independent navigation control.",
+      "duplicateElsewhere": "Separate from Fit selected cells action.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/MapCanvas.jsx; Leaflet default control"
+    },
+    {
+      "id": "map-legend",
+      "meaning": "Interpret map marker, signal/ray, result-source, and threshold symbols.",
+      "owner": "MapLegend",
+      "state": "App.legendCollapsed",
+      "clickBehavior": "Disclosure; contents follow visible layers and retain source/freshness and exact ranges where provided.",
+      "mutualExclusion": "Independent disclosure.",
+      "duplicateElsewhere": "May be overlaid by right inspector at 1440 and mobile sheet widths.",
+      "persistentVisibility": true,
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/WorkspaceChrome.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "cell-popup",
+      "meaning": "Show Cell ID, active node, and selected/unselected cluster action hint.",
+      "owner": "TowerMarkersLayer Leaflet Popup",
+      "state": "Leaflet popup binding (local layer state)",
+      "clickBehavior": "Opens automatically on marker click in both Inspect and Select cells modes.",
+      "mutualExclusion": "Not exclusive with inspected entity; both can open for the same marker.",
+      "duplicateElsewhere": "Identity, active transmitter/network, cluster membership, Map Focus, and RF details are already available in Cell inspector; Click to add conflicts with mode ownership.",
+      "persistentVisibility": "Click-open until dismissed",
+      "keyboardAccessible": false,
+      "source": "frontend-react/src/components/MapCanvas.jsx"
+    },
+    {
+      "id": "other-map-popups",
+      "meaning": "Provide click-open details for route, coverage-gap, and site-recommendation markers.",
+      "owner": "CommunicationPathLayer, CoverageGapLayer, RecommendationLayer Leaflet Popups",
+      "state": "Leaflet popup binding (local layer state)",
+      "clickBehavior": "Opens beside the map feature on click.",
+      "mutualExclusion": "Can coexist with right inspector in Inspect mode.",
+      "duplicateElsewhere": "Route/status/reason, gap/severity/Rx/demand/reason, candidate/score/azimuth are in MapInspector; route interface family is unique in popup.",
+      "persistentVisibility": "Click-open until dismissed",
+      "keyboardAccessible": false,
+      "source": "frontend-react/src/components/MapCanvas.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "building-and-sample-inspection",
+      "meaning": "Open inspector for Buildings, interference samples, measurement samples, and recommendations.",
+      "owner": "MapCanvas feature layers / App.selectMapObject",
+      "state": "App.inspectedEntity and selectedMapObject",
+      "clickBehavior": "Click opens inspector in Inspect mode; no legacy Popup is present for Buildings/interference/measurements.",
+      "mutualExclusion": "Blocked by Select cells and pre-empted by armed spatial tools.",
+      "duplicateElsewhere": "Recommendation currently has a separate popup in addition to inspector.",
+      "persistentVisibility": "Feature overlays follow Layers/results",
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/MapCanvas.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "selection-guidance",
+      "meaning": "Tell users how to select cells and show selected cluster progress.",
+      "owner": "ControlPanel Setup / Propagation / Interference plus CommandBar and map status prompt",
+      "state": "selectedCellCount, MAX_NETWORK_CELLS, cellsNeeded, mapInteractionMode, isDrawingSelection, selectionNotice, planDirty",
+      "clickBehavior": "Setup entry sets Select-cells mode and currently closes the drawer; other panels also set selection mode and close the drawer.",
+      "mutualExclusion": "No single authoritative visible active-state signal; CTA, toolbar, command action, bottom prompt, and notes can duplicate.",
+      "duplicateElsewhere": "Selected cluster n/6, Add N cells, Select cells on map, static select/draw instruction, selection notice, map prompt.",
+      "persistentVisibility": "Some copy is static; map prompt persists while draft is dirty; selectionNotice has no expiry.",
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/components/ControlPanel.jsx; frontend-react/src/App.jsx"
+    },
+    {
+      "id": "map-transient-instructions",
+      "meaning": "Explain area drawing, placement, receiver picking, or the current minimum-cell requirement.",
+      "owner": "App.selectionNotice / ControlPanel note / mapPlanPrompt / workflow panels",
+      "state": "App.selectionNotice and derived App.mapPlanPrompt",
+      "clickBehavior": "Not actionable.",
+      "mutualExclusion": "Independent; can overlap current toolbar mode and Setup/Tool copy.",
+      "duplicateElsewhere": "Area vertices, place click, pick receiver, and Add N instruction appear on multiple surfaces.",
+      "persistentVisibility": "selectionNotice until cleared; mapPlanPrompt as long as planDirty and no active RF task.",
+      "keyboardAccessible": true,
+      "source": "frontend-react/src/App.jsx; frontend-react/src/components/ControlPanel.jsx; frontend-react/src/components/InventoryPanel.jsx; frontend-react/src/components/PathProfilePanel.jsx"
+    }
+  ],
+  "findings": {
+    "pointerIcon": "The pointer-looking toolbar icon is the Draw selection area action. It starts polygon selection; it is not a generic pointer mode. It uses the same MousePointer2 glyph as Select cells and remains permanently visible in the current toolbar.",
+    "eraser": "The eraser immediately clears the selected Network cluster; no erase interaction mode exists.",
+    "targetIcon": "Fit selected cells changes the Leaflet viewport only. It is not Map Focus.",
+    "networkSelection": {
+      "maximum": 6,
+      "minimumForEvaluation": 2,
+      "source": "MAX_NETWORK_CELLS and evaluate/optimization guards"
+    },
+    "popupAudit": {
+      "cell": "fully duplicated by Cell inspector; remove detailed popup",
+      "coverageGap": "fully duplicated by MapInspector; remove popup",
+      "recommendation": "fully duplicated by RecommendationInspector; remove popup",
+      "communicationPath": "retain only interface family if preserving its unique map-anchored datum; remove repeated route/status/reason facts"
+    },
+    "mapFocus": "App.selectedMapCellId is existing map presentation state; user-facing changes are visualization-only and are stripped from the canonical project input fingerprint by existing projectStore logic.",
+    "layout": "A single flex toolbar currently contains interaction and display controls; it wraps at 900px and the 390px layout stacks additional controls, producing a tall map chrome block."
+  }
+}

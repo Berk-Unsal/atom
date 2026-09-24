@@ -115,10 +115,32 @@ and this file follows <a
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 <h2 id="unreleased"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.9.0...HEAD">Unreleased</a></h2>
+<h3 id="added">Added</h3>
+<ul>
+<li>Add a read-only contextual inspector for map-linked Cells,
+Buildings, Interference samples, and existing map entities, with exact
+source/freshness context and direct Inventory and Path Profile
+actions.</li>
+<li>Separate map Inspect and Select cells modes, preserve task state
+across supported panel layouts, and give area drawing, cell placement,
+and path endpoint selection priority over inspection.</li>
+<li>Consolidate map chrome into interaction, result visualization, View
+context, and Layers controls; remove duplicate map popups, clarify
+Network selection guidance, and keep the compact interaction, View, and
+Layers controls reachable on phones.</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Keep retained Interference samples inspectable when switching map
+interaction modes and show unavailable values when the response lacks
+evidence.</li>
+<li>Keep active Scenario lineage when draft and saved plan values differ
+only by object key order or map-only focus/ray scope.</li>
+</ul>
 <h2 id="090---2026-09-23"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.8.0...v0.9.0">0.9.0</a>
 - 2026-09-23</h2>
-<h3 id="added">Added</h3>
+<h3 id="added-1">Added</h3>
 <ul>
 <li>Add local-first Concept 7D report artifacts with exact
 ScenarioRevision/Run lineage, SHA-256 verification, separate IndexedDB
@@ -140,7 +162,7 @@ inputs.</li>
 <h2 id="080---2026-09-19"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.7.0...v0.8.0">0.8.0</a>
 - 2026-09-19</h2>
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 <ul>
 <li>Add opt-in <code>deterministic_pareto_archive_search_v1</code> for
 bounded priority-independent Pareto candidate discovery, exact
@@ -269,7 +291,7 @@ coupling.</li>
 <h2 id="070---2026-09-17"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.6.0...v0.7.0">0.7.0</a>
 - 2026-09-17</h2>
-<h3 id="added-2">Added</h3>
+<h3 id="added-3">Added</h3>
 <ul>
 <li>Add Concept 4E building-entry analysis for deterministic 2.6/28 GHz
 service estimates immediately inside representative facades, with
@@ -303,7 +325,7 @@ omit universally unavailable PCI columns.</li>
 scoped/hidden propagation rays, and independent selected-cell focus
 without launching new RF work.</li>
 </ul>
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed-1">Fixed</h3>
 <ul>
 <li>Keep six-cell network selections unique, visible, and capped across
 map, area, restore, recommendation, and undo flows.</li>
@@ -314,7 +336,7 @@ published site.</li>
 <h2 id="060---2026-08-02"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0">0.6.0</a>
 - 2026-08-02</h2>
-<h3 id="added-3">Added</h3>
+<h3 id="added-4">Added</h3>
 <ul>
 <li>Add a unified map key, visible local-save status, and recoverable
 deletion controls.</li>
@@ -328,7 +350,7 @@ clearer focus states.</li>
 side-stripe status treatments, and align drawer, layer, and result
 transitions to one reduced-motion-safe timing system.</li>
 </ul>
-<h3 id="fixed-1">Fixed</h3>
+<h3 id="fixed-2">Fixed</h3>
 <ul>
 <li>Keep drawer headers and tool tabs fixed while long tool bodies
 scroll, preventing active-tab borders from being clipped by the content
@@ -343,7 +365,7 @@ lifecycle helpers are linked into the release image.</li>
 <h2 id="050---2026-07-31"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.4.0...v0.5.0">0.5.0</a>
 - 2026-07-31</h2>
-<h3 id="added-4">Added</h3>
+<h3 id="added-5">Added</h3>
 <ul>
 <li>Add an inspectable 2.5D point-to-point path profiler with optional
 COG/GeoTIFF terrain, building heights, LOS/Fresnel classification,
@@ -440,7 +462,7 @@ or termination signals with a bounded graceful-shutdown window.</li>
 <li>Consolidate report escaping, numeric/Markdown formatting, and
 printable table construction behind one tested utility.</li>
 </ul>
-<h3 id="fixed-2">Fixed</h3>
+<h3 id="fixed-3">Fixed</h3>
 <ul>
 <li>Keep focused-drawer actions in normal layout flow so the propagation
 optimizer cannot overlap the vertical path-profile panel.</li>
@@ -470,7 +492,7 @@ workflow dependencies in CI.</li>
 security-sensitive transitive modules, add <code>govulncheck</code> to
 backend CI, and enable weekly Go module updates.</li>
 </ul>
-<h3 id="fixed-3">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 <ul>
 <li>Serialize browser workspace commits, arbitrate IndexedDB and
 fallback copies by persistence revision, and reserve local storage for
@@ -485,7 +507,7 @@ across RF endpoints.</li>
 <h2 id="030---2026-07-26"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.2.0...v0.3.0">0.3.0</a>
 - 2026-07-26</h2>
-<h3 id="fixed-4">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 <ul>
 <li>Compute sector propagation and coverage gaps from one shared
 ray-profile pass instead of launching duplicate frontend requests.</li>
@@ -498,7 +520,7 @@ deep-loop cancellation.</li>
 <h2 id="020---2026-07-24"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.1.0...v0.2.0">0.2.0</a>
 - 2026-07-24</h2>
-<h3 id="added-5">Added</h3>
+<h3 id="added-6">Added</h3>
 <ul>
 <li>Add keyboard-accessible full-site search to the static documentation
 website.</li>
@@ -510,7 +532,7 @@ documentation page.</li>
 <li>Remove the academic report PDF and its documentation-only source and
 build assets.</li>
 </ul>
-<h3 id="fixed-5">Fixed</h3>
+<h3 id="fixed-6">Fixed</h3>
 <ul>
 <li>Bound Core Lab cluster identifiers and scenario bodies to prevent
 topology, session, and event fan-out exhaustion.</li>
@@ -550,7 +572,7 @@ releases, never prerelease tags.</li>
 <h2 id="010---2026-07-17"><a
 href="https://github.com/Berk-Unsal/atom/releases/tag/v0.1.0">0.1.0</a>
 - 2026-07-17</h2>
-<h3 id="added-6">Added</h3>
+<h3 id="added-7">Added</h3>
 <ul>
 <li>Deterministic sector, network, optimization, interference,
 recommendation, and measurement-validation workflows.</li>

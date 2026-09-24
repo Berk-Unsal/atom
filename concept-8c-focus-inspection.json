@@ -1,0 +1,34 @@
+{
+  "concept": "8C",
+  "phase": "post-change focus and inspection contract",
+  "terms": {
+    "inspectedEntity": "Read-only entity shown by Inspect in the contextual inspector.",
+    "networkSelection": "Plan membership in the Network cluster.",
+    "activeTransmitter": "Existing single-mode active cell / primary current transmitter.",
+    "mapFocus": "Existing visualization emphasis and ray-scope reference.",
+    "selectedSolution": "Optimization/Results state, unaffected by map inspection."
+  },
+  "invariants": [
+    "Inspecting a Cell does not add/remove it from the Network cluster, activate it, dirty the plan, stale the result, change the Scenario fingerprint, or change Map Focus.",
+    "Map Focus changes only the existing visualization context/viewport behavior; it does not mutate cluster membership, active transmitter, result freshness, or Scenario identity.",
+    "Changing Map Focus does not automatically open the inspector.",
+    "Inspecting a Cell reports Map Focus as Focused or Not focused; a no-op Focus action is omitted from the inspector when already focused.",
+    "The View menu omits Inspect focused cell when the focused Cell is already the inspected Cell."
+  ],
+  "explicitInspection": {
+    "entryPoints": ["Click a map entity while Inspect is active", "Conditional Inspect focused cell action in View"],
+    "result": "Read-only inspector remains authoritative for identity, source, active transmitter, cluster membership, Map Focus, RF profile, details, and existing owning-tool actions."
+  },
+  "popupDecision": {
+    "Cell": "Remove detailed click-open Leaflet popup; inspector and marker styling own Cell identity and state.",
+    "coverageGap": "Remove duplicated click-open detail popup; use the existing inspector.",
+    "recommendation": "Remove duplicated click-open detail popup; use the existing inspector.",
+    "communicationPath": "Remove repeated route/status details from click-open popup; retain its compact map-anchored interface-family tooltip (Xn-C / Xn-U or fallback N2 via AMF).",
+    "buildingAndSamples": "Use inspector where a map entity is inspectable; no parallel detailed popup was added.",
+    "hover": "No inspector facts were moved into a persistent hover card; the path tooltip retains only its spatially useful interface label."
+  },
+  "networkEvidence": {
+    "inspectorE2E": "Cell inspector opens with no .leaflet-popup, preserves RF context/run-state text, and produces zero analyze/simulate/optimize/interference requests during inspect, Focus, and Inventory navigation.",
+    "selectionE2E": "Select cells updates Network membership without opening inspector and produces zero compute requests until an explicit compute action."
+  }
+}

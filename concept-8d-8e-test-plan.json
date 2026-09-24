@@ -1,0 +1,130 @@
+{
+  "concept": "8D",
+  "selected_scope": "Contextual inspector foundation with Cell, Building, and Interference sample as the designed entity families; reuse existing read-only renderers for existing map feature types during relocation. Pareto, Run and Report remain outside inspector.",
+  "test_layers": [
+    "Component interaction tests",
+    "App workflow tests with mocked existing data/services",
+    "Responsive browser smoke at 1920/1600/1440/1280/1024/768/390",
+    "Request/lineage invariance assertions"
+  ],
+  "cases": [
+    {
+      "id": "cell-inspection",
+      "setup": "Open Select/Inspect map mode, click a stable Cell marker in Inspect mode.",
+      "assert": "Right inspector names exact Cell ID and shows only effective/available RF values; active transmitter, cluster membership, Map Focus, Run source and planDirty do not change."
+    },
+    {
+      "id": "select-cell-existing-semantics",
+      "setup": "Use Select-cells mode in Single and Network modes.",
+      "assert": "Single selects active transmitter; Network adds/removes the clicked member and updates order/count exactly as current behavior. No inspection-only action silently selects."
+    },
+    {
+      "id": "edit-mode-priority",
+      "setup": "Arm area draw, cell placement, or path-endpoint selection, then click a tower/result feature.",
+      "assert": "Armed task consumes pointer/keyboard action; inspector does not open until mode is explicitly exited."
+    },
+    {
+      "id": "building-inspection",
+      "setup": "Click a viewport building in Inspect mode.",
+      "assert": "Inspector shows stable ID and returned evidence; asynchronous response is cancelled/ignored if a different feature is inspected."
+    },
+    {
+      "id": "interference-sample-inspection",
+      "setup": "Open current interference layer and inspect a sample.",
+      "assert": "Only source-backed RSRP/SINR/RSRQ/serving/interferer facts display; sample stays tied to exact result context."
+    },
+    {
+      "id": "close-inspector",
+      "setup": "Open inspector by pointer and keyboard, then Close/Escape.",
+      "assert": "Inspector closes without changing Plan selection or left tool; keyboard focus returns to initiating feature/toolbar when available."
+    },
+    {
+      "id": "task-continuity",
+      "setup": "Configure Propagation, inspect a Cell, then change tool or return.",
+      "assert": "Propagation controls and unsaved state are preserved; inspector can stay open across supported desktop tool switches."
+    },
+    {
+      "id": "scenario-switch-lifecycle",
+      "setup": "Inspect a Cell, then switch Scenario/Project.",
+      "assert": "Inspector closes/clears before new plan data loads; no prior Scenario tower/payload survives or flashes."
+    },
+    {
+      "id": "stale-context-retained",
+      "setup": "Inspect a result sample, then make RF-affecting plan edit.",
+      "assert": "No computation occurs; retained sample is labeled STALE with exact source Run, or UNAVAILABLE if source sample bytes are not retained."
+    },
+    {
+      "id": "unavailable-entity",
+      "setup": "Inspect entity whose data is missing/removed or whose async detail request fails.",
+      "assert": "Show explicit UNAVAILABLE reason and owning-tool action; do not substitute nearby feature or fabricate metrics."
+    },
+    {
+      "id": "inventory-direct-action",
+      "setup": "Activate Edit in Inventory from Cell inspector.",
+      "assert": "Inventory opens with exact cell selected; only Inventory owns editable profile fields; edit invalidation follows current policy."
+    },
+    {
+      "id": "path-profile-direct-action",
+      "setup": "Open path profile for a cell/sample with supported endpoints.",
+      "assert": "Propagation > Advanced path profile opens with exact target/endpoints, no RF rerun and no silently changed plan inputs."
+    },
+    {
+      "id": "pareto-source-exact",
+      "setup": "Open existing Pareto candidate detail from Results and use Apply or Run navigation.",
+      "assert": "Candidate remains Results-owned; Apply uses selected solution ID and exact Optimization Run/Version lineage; inspector does not duplicate or retarget it."
+    },
+    {
+      "id": "responsive-1920-1600",
+      "setup": "Open left task drawer and inspector at 1920 and 1600.",
+      "assert": "Both push; map remains broad and controls/layers do not overlap or clip."
+    },
+    {
+      "id": "responsive-1440",
+      "setup": "Open both panels at 1440.",
+      "assert": "Right inspector overlays map, left task state stays intact, unobstructed map corridor remains usable; independent close recovers map."
+    },
+    {
+      "id": "responsive-1280-1024",
+      "setup": "Open inspector with task drawer active at 1280 and 1024.",
+      "assert": "Inspector occupies single drawer slot; no dual side panels; Back restores prior tool and map remains practical."
+    },
+    {
+      "id": "responsive-768-390",
+      "setup": "Open tool and inspector at 768 and 390.",
+      "assert": "One bottom sheet at a time; map retains broad visible region; no three-column layout or competing overlays."
+    },
+    {
+      "id": "keyboard-a11y",
+      "setup": "Navigate stage, map inspect action, inspector actions and close using keyboard/AT.",
+      "assert": "Named inspector landmark and heading; source feature accessible name; visible focus; no focus trap; freshness is not color-only; pointer selection does not steal focus."
+    },
+    {
+      "id": "lazy-loading",
+      "setup": "Cold start, open inspector for Cell/sample, then separately open RF Diagnostics Research, History, Report, Core Lab.",
+      "assert": "Inspector does not preload these chunks or issue requests; RF Diagnostics internal selection loads only the chosen research subview if split."
+    },
+    {
+      "id": "request-invariance",
+      "setup": "Repeat existing compute workflows before/after inspector navigation.",
+      "assert": "RF/optimization payloads, request counts, fingerprint/source identities and explicit compute action behavior are unchanged by inspect/open/close/tool navigation."
+    },
+    {
+      "id": "domain-schema-invariance",
+      "setup": "Compare serialized workspace and Run/Report outputs across inspector use.",
+      "assert": "No changes to ProjectV2, ScenarioRevision, Run schema, Reports, artifact bytes/integrity, data packs or API contracts."
+    }
+  ],
+  "required_invariants": [
+    "No new global store, event bus, URL routing or plugin framework.",
+    "No inspector-open RF/optimizer request.",
+    "Result freshness remains CURRENT/STALE/HISTORICAL/UNAVAILABLE/UNSUPPORTED.",
+    "Current selection and inspector identity remain distinct.",
+    "Report artifact integrity and exact source lineage remain intact."
+  ],
+  "not_in_8e": [
+    "Pareto solution inspector",
+    "Run/Report inspector",
+    "full 8C map-toolbar redesign",
+    "optimizer/RF/model/persistence changes"
+  ]
+}

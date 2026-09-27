@@ -9,6 +9,7 @@ import {
 import { useMemo, useState } from "react";
 import { buildScenarioRevisionDiff } from "../domain/scenarioDiff.js";
 import { getScenarioRevisionRecords } from "../domain/scenario.js";
+import { KeyValueRows, TechnicalDetails, ToolEmptyState, ToolSection } from "./ToolPrimitives.jsx";
 
 export default function ScenarioPanel({
   activeProject,
@@ -28,7 +29,6 @@ export default function ScenarioPanel({
   onSaveVersion,
   staleResultRunLabel = "",
   persistenceState = "saved",
-  planDirty = false,
   reportArtifacts = [],
   reportDefinitions = [],
   runs = [],
@@ -57,8 +57,15 @@ export default function ScenarioPanel({
     ?? latestRevision;
   const scenarioID = sourceScenario?.domain?.scenario_id ?? sourceScenario?.id ?? null;
   const scenarioName = scenarioNameSourceID === sourceScenario?.id ? scenarioNameDraft : sourceScenario?.name ?? "";
-  const hasUnsavedChanges = Boolean(activeProject?.activeScenarioId === null && activeProject?.draft && sourceScenario);
-  const statusLabel = hasUnsavedChanges ? "Unsaved changes" : "Saved";
+  const hasWorkingDraft = Boolean(activeProject?.activeScenarioId === null && activeProject?.draft);
+  const hasUnsavedChanges = Boolean(hasWorkingDraft && sourceScenario);
+  const canSaveVersion = scenarios.length === 0 || hasWorkingDraft;
+  const rfProfileID = sourceScenario?.plan?.settings?.propagationModelID
+    ?? sourceScenario?.plan?.settings?.propagation_model
+    ?? sourceScenario?.plan?.planningMode;
+  const statusLabel = hasWorkingDraft
+    ? sourceScenario ? "Working draft · Unsaved changes" : "Working draft · No saved Version"
+    : `Saved · Version ${latestRevision?.revision ?? 1}`;
 
   const compareScenarioAID = compareA || scenarioListID(scenarios[0]);
   const compareScenarioBID = compareB || scenarioListID(scenarios[1]) || compareScenarioAID;
@@ -99,10 +106,7 @@ export default function ScenarioPanel({
   const datasetLabel = sourceScenario?.datasetRef?.id
     ? `${sourceScenario.datasetRef.id} ${sourceScenario.datasetRef.version ?? ""}`.trim()
     : "Not recorded";
-  const rfProfileLabel = sourceScenario?.plan?.settings?.propagationModelID
-    ?? sourceScenario?.plan?.settings?.propagation_model
-    ?? sourceScenario?.plan?.planningMode
-    ?? "Default";
+  const rfProfileLabel = rfProfileID ? String(rfProfileID).replaceAll("_", " ") : "Default";
 
   const runAction = async (key, action, success) => {
     setBusy(key);
@@ -140,130 +144,101 @@ export default function ScenarioPanel({
     }), "Draft opened from the selected Version");
   };
 
-  if (!sourceScenario) {
-    return (
-      <section className="scenario-panel" aria-label="Scenario workspace">
-        <div className="scenario-panel-heading">
-          <div><span className="scenario-kicker">Scenario workspace</span><h3>Save a Version</h3></div>
-          <span className="scenario-status unsaved">Unsaved changes</span>
-        </div>
-        <p className="empty-note">The current plan is a draft. Save it to create the first immutable Scenario and Version.</p>
-        <div className="scenario-save-row">
-          <input value={changeSummary} onChange={(event) => setChangeSummary(event.target.value)} placeholder="Optional change summary" aria-label="Change summary" />
-          <button type="button" className="panel-primary-action" onClick={saveVersion} disabled={busy === "save"}><Save size={14} /> {busy === "save" ? "Saving…" : "Save version"}</button>
-        </div>
-        {message ? <p className="scenario-message" role="status">{message}</p> : null}
-      </section>
-    );
-  }
-
   return (
-    <section className="scenario-panel" aria-label="Scenario workspace">
-      <div className="scenario-panel-heading">
-        <div>
-          <span className="scenario-kicker">Scenario workspace</span>
-          <h3>Scenario and Versions</h3>
-          <p>RF compute reads the working draft; saved Versions are immutable input records.</p>
-        </div>
-        <span className={`scenario-status ${hasUnsavedChanges ? "unsaved" : "saved"}`} role="status" aria-label={statusLabel}>{statusLabel}</span>
-      </div>
-
-      <div className="scenario-switcher" aria-label="Scenario switcher">
-        <div className="scenario-section-heading"><strong>Scenarios</strong><span>{scenarios.length} saved</span></div>
-        {scenarios.map((scenario) => {
-          const records = getScenarioRevisionRecords(scenario);
-          const latest = records[records.length - 1];
-          const isCurrent = String(scenarioListID(scenario)) === String(scenarioID);
-          const isDraftSource = String(scenarioListID(scenario)) === String(scenarioID) && hasUnsavedChanges;
-          const parent = scenarios.find((candidate) => String(scenarioListID(candidate)) === String(scenario.domain?.parent_scenario_id));
-          const sourceRevision = findRevisionAcrossScenarios(latest?.parent_revision_id, scenarios);
-          return (
-            <button
-              type="button"
-              key={scenario.id}
-              className={`scenario-switch-row ${isCurrent ? "active" : ""}`.trim()}
-              onClick={() => onOpenScenario?.(scenario)}
-              aria-current={isCurrent ? "true" : undefined}
-            >
-              <span className="scenario-switch-copy">
-                <strong>{scenario.name}</strong>
-                <small>Version {latest?.revision ?? 1} · {formatTimestamp(scenario.updatedAt)}</small>
-                {parent ? <small><GitBranch size={11} /> Based on {parent.name}{sourceRevision ? ` · Version ${sourceRevision.revision}` : ""}</small> : null}
-              </span>
-              <span className="scenario-switch-state">{isDraftSource ? "Unsaved changes" : isCurrent ? "Open" : ""}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="scenario-overview">
-        <div className="scenario-overview-heading">
-          <div>
-            <span className="scenario-kicker">Active Scenario</span>
-            <div className="scenario-name-row">
-              <input value={scenarioName} onChange={(event) => { setScenarioNameSourceID(sourceScenario.id); setScenarioNameDraft(event.target.value); }} aria-label="Scenario name" />
-              <button type="button" className="icon-button" onClick={() => onRenameScenario?.(sourceScenario.id, scenarioName)} aria-label="Save scenario name" title="Save scenario name"><Save size={14} /></button>
-            </div>
+    <section className="scenario-panel" aria-label="Scenarios">
+      <ToolSection
+        className="scenario-overview"
+        title="Active Scenario"
+        description={sourceScenario?.description || "RF compute reads the working draft; saved Versions keep their original inputs."}
+        actions={<span className={`scenario-status ${hasWorkingDraft ? "unsaved" : "saved"}`} role="status">{statusLabel}</span>}
+      >
+        {sourceScenario ? (
+          <div className="scenario-name-row">
+            <input value={scenarioName} onChange={(event) => { setScenarioNameSourceID(sourceScenario.id); setScenarioNameDraft(event.target.value); }} aria-label="Scenario name" />
+            <button type="button" className="icon-button" onClick={() => onRenameScenario?.(sourceScenario.id, scenarioName)} aria-label="Save scenario name" title="Save scenario name"><Save size={14} /></button>
           </div>
-          <div className="scenario-overview-actions">
-            <button type="button" className="scenario-button" onClick={duplicateCurrentScenario} disabled={busy === "duplicate"}><Link2 size={13} /> Duplicate scenario</button>
-            <button type="button" className="icon-button danger" onClick={() => onDeleteScenario?.(sourceScenario.id)} aria-label={`Delete scenario ${sourceScenario.name}`} title="Delete scenario"><Trash2 size={14} /></button>
-          </div>
-        </div>
-        <p className="scenario-description">{sourceScenario.description || "No description"}</p>
-        <div className="scenario-overview-grid">
-          <Datum label="Versions" value={String(scenarioRecords.length)} />
-          <Datum label="Parent" value={parentScenario?.name ?? "Independent"} />
-          <Datum label="Last Run" value={latestRun ? `${capitalize(latestRun.run_type)} · ${formatTimestamp(latestRun.created_at)}` : "None"} />
-          <Datum label="Last optimization" value={latestOptimization ? formatTimestamp(latestOptimization.created_at) : "None"} />
-          <Datum label="Last Report" value={latestReport ? formatTimestamp(latestReport.generated_at) : "None"} />
-          <Datum label="Dataset" value={datasetLabel} />
-          <Datum label="RF mode" value={sourceScenario.plan?.planningMode ?? "single"} />
-          <Datum label="RF profile" value={rfProfileLabel} />
-        </div>
-      </div>
+        ) : <strong className="scenario-draft-name">Working draft</strong>}
+        <KeyValueRows
+          className="scenario-primary-facts"
+          label="Active Scenario summary"
+          items={[
+            ["Latest saved Version", latestRevision ? `Version ${latestRevision.revision}` : "None"],
+            ["Plan", sourceScenario?.plan?.planningMode === "network" ? "Network" : sourceScenario ? "Single cell" : "Current plan"],
+            ["RF profile", rfProfileLabel],
+          ]}
+        />
+      </ToolSection>
 
-      <div className="scenario-save-card">
-        <div>
-          <strong>Save a new Version</strong>
-          <small>{staleResultRunLabel
-            ? `Save Version saves the current plan. ${staleResultRunLabel} remains tied to the input that produced it.`
-            : planDirty
-              ? "The working plan needs a fresh RF run."
-              : "Saved Versions never change."}</small>
-        </div>
+      <ToolSection className="scenario-save-card" title="Save Version" description={staleResultRunLabel
+        ? `Save the current plan as a new Version. ${staleResultRunLabel} remains tied to its original input.`
+        : hasWorkingDraft
+          ? "This working draft differs from the saved Scenario input."
+          : scenarios.length === 0
+            ? "Save the current plan to create the first Scenario and Version."
+            : "Save another Version after editing the working plan."}>
         <div className="scenario-save-row">
-          <input value={changeSummary} onChange={(event) => setChangeSummary(event.target.value)} placeholder="What changed? (optional)" aria-label="Version change summary" />
-          <button type="button" className="panel-primary-action" onClick={saveVersion} disabled={busy === "save"}><Save size={14} /> {busy === "save" ? "Saving…" : "Save version"}</button>
+          {canSaveVersion
+            ? <input value={changeSummary} onChange={(event) => setChangeSummary(event.target.value)} placeholder="Change summary (optional)" aria-label="Version change summary" />
+            : <span className="scenario-save-state">No unsaved Scenario input changes.</span>}
+          <button type="button" className="panel-primary-action" onClick={saveVersion} disabled={busy === "save" || !canSaveVersion}><Save size={14} /> {busy === "save" ? "Saving…" : "Save Version"}</button>
         </div>
-      </div>
+      </ToolSection>
 
-      <div className="scenario-history" aria-label="Version history">
-        <div className="scenario-section-heading"><strong><History size={14} /> Version history</strong><span>Input metadata only</span></div>
-        <div className="scenario-version-list">
-          {scenarioRecords.map((revision) => {
-            const isSelected = String(selectedRevision?.scenario_revision_id) === String(revision.scenario_revision_id);
-            const runsForRevision = runs.filter((run) => String(run.scenario_revision_id) === String(revision.scenario_revision_id));
-            const reportsForRevision = [
-              ...reportArtifacts.filter((artifact) => String(artifact.scenario_revision_id) === String(revision.scenario_revision_id)),
-              ...reportDefinitions.filter((definition) => String(definition.scenario_revision_id) === String(revision.scenario_revision_id)),
-            ];
-            return (
-              <button
-                type="button"
-                key={revision.scenario_revision_id}
-                className={`scenario-version-row ${isSelected ? "active" : ""}`.trim()}
-                onClick={() => { setSelectedRevisionId(revision.scenario_revision_id); onFocusRevision?.(revision.scenario_revision_id); }}
-                aria-pressed={isSelected}
-              >
-                <span><strong>Version {revision.revision}</strong><small>{formatTimestamp(revision.created_at)}</small></span>
-                <span><small>{revision.change_summary || "No change summary"}</small><small>{revision.provenance ?? "user_configured"}</small></span>
-                <span className="scenario-version-counts"><small>{runsForRevision.length} Run{runsForRevision.length === 1 ? "" : "s"}</small><small>{reportsForRevision.length} Report{reportsForRevision.length === 1 ? "" : "s"}</small></span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <ToolSection className="scenario-switcher" title="Scenarios" description={`${scenarios.length} saved Scenario${scenarios.length === 1 ? "" : "s"}`}>
+        {scenarios.length === 0 ? (
+          <ToolEmptyState title="No saved Scenarios yet" description="Save a Version to create the first named planning Scenario." />
+        ) : (
+          <div className="scenario-list">
+            {scenarios.map((scenario) => {
+              const records = getScenarioRevisionRecords(scenario);
+              const latest = records[records.length - 1];
+              const isCurrent = String(scenarioListID(scenario)) === String(scenarioID);
+              const isDraftSource = isCurrent && hasUnsavedChanges;
+              return (
+                <button
+                  type="button"
+                  key={scenario.id}
+                  className={`scenario-switch-row ${isCurrent ? "active" : ""}`.trim()}
+                  onClick={() => onOpenScenario?.(scenario)}
+                  aria-current={isCurrent ? "true" : undefined}
+                  aria-label={`${scenario.name}, Version ${latest?.revision ?? 1}${isDraftSource ? ", working draft with unsaved changes" : isCurrent ? ", current Scenario" : ", saved Scenario"}`}
+                >
+                  <span className="scenario-switch-copy">
+                    <strong>{scenario.name}</strong>
+                    <small>Version {latest?.revision ?? 1} · {formatTimestamp(scenario.updatedAt)}</small>
+                  </span>
+                  <span className="scenario-switch-state">{isDraftSource ? "Working draft" : isCurrent ? "Current" : "Saved"}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </ToolSection>
+
+      {scenarioRecords.length ? (
+        <ToolSection className="scenario-history" title="Version history" description="Select a saved input state to inspect its changes and continue from it.">
+          <div className="scenario-version-list" aria-label="Version history">
+            {scenarioRecords.map((revision, index) => {
+              const isSelected = String(selectedRevision?.scenario_revision_id) === String(revision.scenario_revision_id);
+              const isLatest = index === scenarioRecords.length - 1;
+              return (
+                <button
+                  type="button"
+                  key={revision.scenario_revision_id}
+                  className={`scenario-version-row ${isSelected ? "active" : ""}`.trim()}
+                  onClick={() => { setSelectedRevisionId(revision.scenario_revision_id); onFocusRevision?.(revision.scenario_revision_id); }}
+                  aria-pressed={isSelected}
+                  aria-label={`Version ${revision.revision}, ${formatTimestamp(revision.created_at)}${isSelected ? ", selected" : ""}`}
+                >
+                  <span><strong>Version {revision.revision}</strong><small>{formatTimestamp(revision.created_at)}</small></span>
+                  <span><small>{revision.change_summary || "Initial saved inputs"}</small></span>
+                  <span className="scenario-version-state">{isLatest ? "Latest" : isSelected ? "Selected" : ""}</span>
+                </button>
+              );
+            })}
+          </div>
+        </ToolSection>
+      ) : null}
 
       {selectedRevision ? <RevisionInspector
         onBranch={branchVersion}
@@ -280,65 +255,99 @@ export default function ScenarioPanel({
         previousRevision={previousRevisionFor(selectedRevision, scenarioRecords, scenarios)}
       /> : null}
 
-      {scenarios.length > 1 ? <ScenarioCompare
-        compareA={compareScenarioAID}
-        compareB={compareScenarioBID}
-        compareRecordsA={compareRecordsA}
-        compareRecordsB={compareRecordsB}
-        compareRevisionA={compareVersionA?.scenario_revision_id ?? compareRevisionA}
-        compareRevisionB={compareVersionB?.scenario_revision_id ?? compareRevisionB}
-        comparisonDiff={comparisonDiff}
-        onOpenRun={onOpenRun}
-        runs={runs}
-        scenarios={scenarios}
-        setCompareA={(value) => { setCompareA(value); setCompareRevisionA(""); }}
-        setCompareB={(value) => { setCompareB(value); setCompareRevisionB(""); }}
-        setCompareRevisionA={setCompareRevisionA}
-        setCompareRevisionB={setCompareRevisionB}
-      /> : null}
+      {scenarios.length > 1 ? <details className="scenario-secondary-details">
+        <summary>Compare Scenarios and Versions</summary>
+        <ScenarioCompare
+          compareA={compareScenarioAID}
+          compareB={compareScenarioBID}
+          compareRecordsA={compareRecordsA}
+          compareRecordsB={compareRecordsB}
+          compareRevisionA={compareVersionA?.scenario_revision_id ?? compareRevisionA}
+          compareRevisionB={compareVersionB?.scenario_revision_id ?? compareRevisionB}
+          comparisonDiff={comparisonDiff}
+          onOpenRun={onOpenRun}
+          runs={runs}
+          scenarios={scenarios}
+          setCompareA={(value) => { setCompareA(value); setCompareRevisionA(""); }}
+          setCompareB={(value) => { setCompareB(value); setCompareRevisionB(""); }}
+          setCompareRevisionA={setCompareRevisionA}
+          setCompareRevisionB={setCompareRevisionB}
+        />
+      </details> : null}
 
-      <div className="scenario-duplicate-row">
-        <label><span>Independent copy name</span><input value={duplicateName} onChange={(event) => setDuplicateName(event.target.value)} placeholder={`${sourceScenario.name} copy`} /></label>
-        <span className="data-note">Duplicate Scenario starts a separate lineage. Branch keeps the parent link.</span>
-      </div>
+      {sourceScenario ? <details className="scenario-secondary-details">
+        <summary>More Scenario actions</summary>
+        <div className="scenario-secondary-actions">
+          <label><span>Independent copy name</span><input value={duplicateName} onChange={(event) => setDuplicateName(event.target.value)} placeholder={`${sourceScenario.name} copy`} /></label>
+          <button type="button" className="scenario-button" onClick={duplicateCurrentScenario} disabled={busy === "duplicate"}><Link2 size={13} /> Duplicate Scenario</button>
+          <button type="button" className="scenario-button danger" onClick={() => onDeleteScenario?.(sourceScenario.id)}><Trash2 size={14} /> Delete Scenario</button>
+          <p className="data-note">Duplicate creates an independent lineage. Branching keeps the selected Version’s parent link.</p>
+        </div>
+      </details> : null}
       {persistenceState === "saving" ? <p className="scenario-message" role="status">Saving workspace…</p> : null}
       {message ? <p className="scenario-message" role="status">{message}</p> : null}
-      <p className="scenario-retention-note"><WandSparkles size={13} /> Runs and Reports link to exact Versions; inspecting them does not hydrate retained bytes or mutate the plan.</p>
+      <TechnicalDetails summary="Scenario details / Provenance" className="scenario-provenance">
+        <KeyValueRows label="Scenario lineage and associations" items={[
+          ["Parent Scenario", parentScenario?.name ?? "Independent"],
+          ["Last Run", latestRun ? `${capitalize(latestRun.run_type)} · ${formatTimestamp(latestRun.created_at)}` : "None"],
+          ["Last optimization", latestOptimization ? formatTimestamp(latestOptimization.created_at) : "None"],
+          ["Last Report", latestReport ? formatTimestamp(latestReport.generated_at) : "None"],
+          ["Dataset", datasetLabel],
+        ]} />
+        <p className="scenario-retention-note"><WandSparkles size={13} /> Runs and Reports link to exact Versions; inspecting them does not hydrate retained bytes or mutate the plan.</p>
+      </TechnicalDetails>
     </section>
   );
 }
 
 function RevisionInspector({ branchName, busy, onBranch, onContinue, onOpenReport, onOpenReports, onOpenRun, previousRevision, revision, revisionReports, revisionRuns, setBranchName }) {
   const diff = previousRevision ? buildScenarioRevisionDiff(previousRevision, revision) : null;
+  const origin = revision.originating_solution_id
+    ? "Created from an optimization solution"
+    : revision.originating_run_id
+      ? "Created from a saved Run"
+      : revision.parent_revision_id
+        ? "Continued from a prior Version"
+        : "Saved planning inputs";
   return (
     <section className="scenario-version-inspector" aria-label={`Version ${revision.revision} details`}>
       <div className="scenario-inspector-heading">
-        <div><span className="scenario-kicker">Selected Version</span><h4>Version {revision.revision}</h4><small>{formatTimestamp(revision.created_at)} · {revision.change_summary || "No change summary"}</small></div>
+        <div><h3>Version {revision.revision}</h3><small>{formatTimestamp(revision.created_at)} · {origin}</small></div>
         <div className="scenario-inspector-actions">
           <button type="button" className="scenario-button primary" onClick={onContinue} disabled={busy === "continue"}><History size={13} /> {busy === "continue" ? "Opening…" : "Continue from Version"}</button>
+        </div>
+      </div>
+      <details className="scenario-secondary-details">
+        <summary>Branch from this Version</summary>
+        <div className="scenario-branch-action">
           <label className="scenario-inline-action"><span>Branch name</span><input value={branchName} onChange={(event) => setBranchName(event.target.value)} placeholder="New branch" /></label>
           <button type="button" className="scenario-button" onClick={onBranch} disabled={busy === "branch"}><GitBranch size={13} /> {busy === "branch" ? "Branching…" : "Branch from here"}</button>
         </div>
-      </div>
-      <div className="scenario-lineage-facts">
-        <Datum label="Source Version" value={revision.parent_revision_id ? `Version ${previousRevision?.revision ?? "?"}` : "Initial Version"} />
-        <Datum label="Originating Run" value={revision.originating_run_id ?? "User configured"} />
-        <Datum label="Originating solution" value={revision.originating_solution_id ?? "None"} />
-        <Datum label="Fingerprint" value={revision.resolved_fingerprints?.scenario_fingerprint ?? "Not recorded"} />
-      </div>
+      </details>
       <div className="scenario-diff-block">
-        <div className="scenario-section-heading"><strong>Input changes</strong><span>{diff?.changed ? `${diff.changed_fields.length} changed field${diff.changed_fields.length === 1 ? "" : "s"}` : "No changes from parent"}</span></div>
+        <div className="scenario-section-heading"><h4>Input changes</h4><span>{revision.change_summary || (diff?.changed ? `${diff.changed_fields.length} changed field${diff.changed_fields.length === 1 ? "" : "s"}` : "No changes from parent")}</span></div>
         {diff?.changed ? <div className="scenario-diff-sections">{diff.sections.filter((section) => section.changed).map((section) => (
           <div className="scenario-diff-section" key={section.id}><strong>{section.label}</strong>{section.items.map((item) => <DiffItem item={item} key={item.path} />)}</div>
         ))}</div> : <p className="data-note">This Version is the first saved input state in its lineage.</p>}
       </div>
-      <AssociatedRecords
-        onOpenReport={onOpenReport}
-        onOpenReports={onOpenReports}
-        onOpenRun={onOpenRun}
-        reports={revisionReports}
-        runs={revisionRuns}
-      />
+      <TechnicalDetails summary="Version lineage / Provenance">
+        <KeyValueRows label="Version lineage" items={[
+          ["Source Version", revision.parent_revision_id ? `Version ${previousRevision?.revision ?? "?"}` : "Initial Version"],
+          ["Originating Run", revision.originating_run_id ?? "User configured"],
+          ["Originating solution", revision.originating_solution_id ?? "None"],
+          ["Fingerprint", revision.resolved_fingerprints?.scenario_fingerprint ?? "Not recorded"],
+        ]} />
+      </TechnicalDetails>
+      <details className="scenario-associated-details">
+        <summary>Associated Runs and Reports · {revisionRuns.length} Runs, {revisionReports.length} Reports</summary>
+        <AssociatedRecords
+          onOpenReport={onOpenReport}
+          onOpenReports={onOpenReports}
+          onOpenRun={onOpenRun}
+          reports={revisionReports}
+          runs={revisionRuns}
+        />
+      </details>
     </section>
   );
 }
@@ -392,10 +401,6 @@ function DiffItem({ item }) {
     return <div className="scenario-diff-item"><span>{item.label}</span>{item.changes.map((change) => <small key={change.label}>{change.label}: {valueLabel(change.before)} → {valueLabel(change.after)}</small>)}</div>;
   }
   return <div className="scenario-diff-item"><span>{item.label}</span><small>{valueLabel(item.before)} → {valueLabel(item.after)}</small></div>;
-}
-
-function Datum({ label, value }) {
-  return <div><dt>{label}</dt><dd title={String(value ?? "")}>{value ?? "Not recorded"}</dd></div>;
 }
 
 function scenarioListID(scenario) {

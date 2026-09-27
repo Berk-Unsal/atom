@@ -1,0 +1,120 @@
+{
+  "concept": "8G",
+  "capturedOn": "2026-09-24",
+  "sourceRevision": "0e4f624a1e08826e4381bc3ff11747eae140bd66 plus the pre-existing dirty Concept 8F working tree",
+  "inventoryCount": {
+    "normalAnkaraFixture": 451,
+    "evidence": ["data-pipeline/manifest.json: quality.feature_counts.towers", "data-pipeline/ankara_5g_nodes.geojson: 451 Point features"]
+  },
+  "ownership": {
+    "loadedInventory": "App.jsx loads /api/towers into App-owned towers state and restores Project inventory where present.",
+    "browseAndEditUI": "components/InventoryPanel.jsx owns local query/message state and the current combined list/editor surface.",
+    "activeCell": "App.jsx selectedTower state is shared by single-cell RF planning and several map/RF features.",
+    "inspectorHandoff": "App.jsx inventoryTargetCellId resolves an inspected Cell independently of selectedTower until a list row is clicked.",
+    "networkMembership": "App.jsx selectedNetworkTowerIds, normalized by utils/networkSelection.js while preserving membership/request order.",
+    "mapFocus": "App.jsx selectedMapCellId is separate from selectedTower and selectedNetworkTowerIds.",
+    "map": "components/MapCanvas.jsx owns Leaflet MapContainer, CircleMarker rendering, and draggable markers for the selected editable Cell."
+  },
+  "browse": {
+    "queryState": "InventoryPanel local query string; not written into ScenarioRevision or Project inventory.",
+    "emptyQuery": "Matches all loaded Cells before the 250-result cap.",
+    "matching": ["tower.id substring", "tower.cellId substring"],
+    "caseHandling": "Trimmed and lowercased; substring includes matching.",
+    "ordering": "Original towers array order (dataset/Project inventory order); no relevance ranking.",
+    "cap": 250,
+    "rendering": "The first 250 matching Cell buttons are mounted together inside a 210px list scroller; the editor also remains mounted below.",
+    "rowContent": ["cellId or id", "internal id", "resolved technology"],
+    "semantics": "role=listbox with option buttons; aria-selected reflects selectedTower id."
+  },
+  "rowSelection": {
+    "handler": "InventoryPanel onSelectCell -> App selectInventoryCell",
+    "effects": [
+      "Clears inventoryTargetCellId and pathProfileCellId.",
+      "Invalidates current results if selectedTower id differs.",
+      "Sets selectedTower to the clicked Cell."
+    ],
+    "activeTransmitter": "Changes selectedTower; this changes the active Cell in Single mode and can change RF inputs. No compute starts automatically.",
+    "networkMembership": "Does not toggle selectedNetworkTowerIds.",
+    "mapFocus": "Does not call changeMapCellFocus.",
+    "inspection": "Does not open the ContextualInspector.",
+    "resultFreshness": "A row click to another Cell invalidates results through invalidatePlanResults even though no profile field changed."
+  },
+  "directInspectorHandoff": {
+    "path": "ContextualInspector Edit in Inventory sets inventoryTargetCellId to the inspected Cell id and opens the Inventory tool.",
+    "exactTarget": "The editor resolves inventoryTargetCellId against current towers, so no list search is needed.",
+    "sideEffects": "The handoff does not itself change selectedTower, network membership, Map Focus, Scenario, or compute requests."
+  },
+  "editor": {
+    "currentState": "Selected Cell editor is rendered beneath the list rather than replacing it.",
+    "primaryFields": [
+      { "path": "coordinates[0]", "ui": "Longitude", "unit": "degrees", "effect": "RF-affecting position update" },
+      { "path": "coordinates[1]", "ui": "Latitude", "unit": "degrees", "effect": "RF-affecting position update" },
+      { "path": "rfProfile.networkTech", "ui": "Technology", "effect": "Changing technology applies coupled technologyDefaults for technology, frequency, band, bandwidth, and duplex." },
+      { "path": "rfProfile.frequencyGHz", "ui": "Frequency", "unit": "GHz" },
+      { "path": "rfProfile.bandwidthMHz", "ui": "Bandwidth", "unit": "MHz" },
+      { "path": "rfProfile.txPowerDbm", "ui": "Conducted TX power", "unit": "dBm" },
+      { "path": "rfProfile.radiusMeters", "ui": "Radius", "unit": "m" },
+      { "path": "rfProfile.beamWidthDeg", "ui": "Beam width", "unit": "degrees" },
+      { "path": "rfProfile.antennaHeightM", "ui": "Antenna height", "unit": "m" },
+      { "path": "rfProfile.orientationDeg", "ui": "Orientation", "unit": "degrees" },
+      { "path": "rfProfile.receiverHeightM", "ui": "Receiver height", "unit": "m" },
+      { "path": "rfProfile.receiverSensitivityMode", "ui": "Threshold mode", "effect": "Manual and derived modes show different input sets." },
+      { "path": "rfProfile.receiverSensitivityDbm", "ui": "RX sensitivity", "unit": "dBm", "condition": "Manual threshold mode" }
+    ],
+    "advancedFields": [
+      { "path": "rfProfile.band", "ui": "Band" },
+      { "path": "rfProfile.channelId", "ui": "Channel" },
+      { "path": "rfProfile.duplexMode", "ui": "Duplex" },
+      { "path": "rfProfile.antennaGainDbi", "ui": "TX boresight gain", "unit": "dBi" },
+      { "path": "rfProfile.rxAntennaGainDbi", "ui": "RX antenna gain", "unit": "dBi" },
+      { "path": "rfProfile.systemLossDb", "ui": "System loss", "unit": "dB" },
+      { "path": "rfProfile.polarizationLossDb", "ui": "Polarization loss", "unit": "dB" },
+      { "path": "rfProfile.mechanicalDowntiltDeg", "ui": "Mechanical tilt", "unit": "degrees" },
+      { "path": "rfProfile.electricalDowntiltDeg", "ui": "Electrical tilt", "unit": "degrees" },
+      { "path": "rfProfile.loadFactor", "ui": "Cell load", "unit": "0–1" },
+      { "path": "rfProfile.reuseFactor", "ui": "Reuse factor" },
+      { "path": "rfProfile.pci", "ui": "PCI", "unit": "optional integer" },
+      { "path": "rfProfile.horizontalPatternId", "ui": "Horizontal pattern" },
+      { "path": "rfProfile.verticalPatternId", "ui": "Vertical pattern" },
+      { "path": "rfProfile.receiverNoiseBandwidthHz", "ui": "Noise bandwidth", "unit": "MHz", "condition": "Derived threshold mode" },
+      { "path": "rfProfile.receiverNoiseFigureDb", "ui": "Noise figure", "unit": "dB", "condition": "Derived threshold mode" },
+      { "path": "rfProfile.receiverRequiredSnrDb", "ui": "Required SNR", "unit": "dB", "condition": "Derived threshold mode" },
+      { "path": "rfProfile.receiverMarginDb", "ui": "Receiver margin", "unit": "dB", "condition": "Derived threshold mode" }
+    ],
+    "notEditorFields": ["rfProfile.propagationModelID", "rfProfile.receiverNoiseBandwidthSource", "rfProfile.schemaVersion", "tower.id", "tower.cellId", "tower.inventorySource"],
+    "inheritance": "resolveRFProfile overlays the per-Cell rfProfile object on current Plan settings and policy defaults. Missing fields inherit; channel defaults depend on the Cell's inventory index and reuse factor. The Technology handler uses technologyDefaults and therefore updates coupled profile fields.",
+    "singleFieldUpdate": "The current update helper spreads the resolved profile into the new rfProfile object. After an edit, inherited resolved values are materialized as per-Cell values; Reset removes the entire rfProfile object.",
+    "validation": "validateRFProfile validates the resolved profile and marks profile errors before RF analysis."
+  },
+  "mutations": {
+    "profileEdit": "Calls invalidatePlanResults, updates towers and selectedTower, and changes dataset source to project override when applicable.",
+    "positionEdit": "Validates longitude/latitude ranges, calls the same invalidation path, and updates coordinates while retaining identity.",
+    "markerDrag": "MapCanvas renders a draggable marker only for the selected editable tower; dragend calls the position update handler.",
+    "resetOverrides": "Deletes tower.rfProfile; keeps Cell id, cellId, source record, and coordinates. It is not Cell deletion or Network clearing.",
+    "duplicate": "duplicateInventoryCell deep-clones the source, creates a unique '-copy' id, offsets longitude by 0.00015 and latitude by 0.0001, marks source 'duplicate', adds the Cell, selects it, and invalidates results.",
+    "delete": "The current Delete action is available for all current sources. It removes the Cell from inventory, Network membership, and Network azimuth overrides, invalidates results, and offers Undo to restore the Cell and previous membership/azimuth. There is no separate confirmation dialog.",
+    "import": "Import remains an Inventory-level action. Imported Cells are appended, selectedTower becomes the first imported Cell, and results are invalidated.",
+    "place": "Place new Cell remains Inventory-owned; map placement consumes the next map click, creates a manual Cell, selects it, and invalidates results."
+  },
+  "sourceAndOverrideVisibility": {
+    "displayedSource": "Raw inventorySource or 'dataset'. Existing values include dataset, project override, import, manual, and duplicate.",
+    "overrideCount": "Not reliable as a count of user overrides: imported/dataset profiles may contain source values and normal editing materializes the full resolved profile. Current UI counts only Advanced profile keys, which is not a complete override count.",
+    "modifiedFilter": "No authoritative modified-only field or filter currently exists."
+  },
+  "persistenceAndFingerprint": {
+    "persistedDomainState": "The Plan snapshot includes towers (inventory), selectedNetworkTowerIds, settings, network azimuths, and selectedTowerId.",
+    "localInventoryUIState": "The InventoryPanel query is component-local and is not in the Plan snapshot.",
+    "requestIdentity": "Per-Cell positions and resolved RF profiles are used by existing requests. Inventory query/list scroll does not enter request builders.",
+    "invalidation": "Profile and position edits invalidate results. Browsing another row also invalidates through active selectedTower state."
+  },
+  "networkOrdering": {
+    "membershipSource": "selectedNetworkTowerIds normalized against loaded tower ids.",
+    "order": "normalizeNetworkSelection preserves existing selection/request order while dropping missing and duplicate IDs; this is the correct presentation order for the Network working set.",
+    "maxCells": 6
+  },
+  "mapAndResultDensity": {
+    "mapCellRendering": "TowerMarkersLayer maps all loaded towers to CircleMarker components; map uses Leaflet preferCanvas. There is no marker clustering or inventory viewport filtering.",
+    "rayRendering": "RayGeoJSONLayer receives exact simulation GeoJSON features; filterRayFeatures applies only All/Selected/Hidden presentation scope. No ray decimation is present.",
+    "densityAuditEvidence": "Separate Concept 8G marker and result density audits are required; do not implement density changes in this phase."
+  }
+}

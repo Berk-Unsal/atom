@@ -1,0 +1,10 @@
+{
+  "concept": "8G",
+  "uiOnlyStateExcludedFromRequests": ["scope", "query", "technology filter", "viewport bounds/snapshot", "visible page limit", "Inventory edit selection", "batch form/preview state", "browse scroll position", "inventoryTargetCellId"],
+  "mapBoundsFlow": "MapCanvas reports Leaflet bounds to App UI state only; no API client or RF request builder receives them.",
+  "browseFlow": "Opening/backing out of Cell detail changes the exact Inventory target only and issues zero compute requests.",
+  "bulkFlow": "Successful batch edit invalidates results once; it does not call an RF endpoint. A later user-initiated Run uses the changed profile via existing request builders.",
+  "requestEquivalence": { "test": "src/domain/requestEquivalence.test.js", "result": "3 tests passed before and after the UI work; no RF/request-builder code changed." },
+  "browserEvidence": "Inspector → Inventory and browsing another Cell do not issue analyze, simulate, optimize, or interference requests; batch test also observes zero compute requests.",
+  "fingerprint": "No Inventory working-set state enters Plan snapshots, ScenarioRevision canonical inputs, or result fingerprinting. Profile/position changes retain existing intentional freshness semantics."
+}

@@ -1,20 +1,28 @@
 import { PlayCircle, Server } from "lucide-react";
-import ResearchReferenceBadge from "../../components/ResearchReferenceBadge.jsx";
 import { formatCoreLabState, formatScenario, UNAVAILABLE_VALUE } from "../../utils/appWorkspace.js";
 
 export default function CoreLabTool({ applicable, coreLab, enabled, scenarios, startCommand, towerIDs, onRunScenario, onToggle, onUse5G }) {
+  const connectionState = !applicable
+    ? "Not applicable"
+    : coreLab?.status?.state
+      ? formatCoreLabState(coreLab.status.state)
+      : enabled ? "Connecting" : "Disabled";
   return (
-    <section className="core-tool" aria-label="5G Core Lab controls">
+    <section className="core-tool" aria-label="5G Core Lab">
+      <div className="core-tool-heading">
+        <div><h3>Core Lab overlay</h3><p>Optional local 5G Core integration for the active 5G plan.</p></div>
+        <span className="core-connection-state" role="status">{connectionState}</span>
+      </div>
       <label className="core-toggle-row">
         <span>
-          <strong>Core Lab overlay</strong>
-          <small>{enabled ? "Path monitoring enabled" : "Optional local Open5GS integration"}</small>
+          <strong>{enabled ? "Overlay enabled" : "Enable Core Lab overlay"}</strong>
+          <small>{enabled ? "Monitor the 5G communication path" : "Connect the local sidecar when needed"}</small>
         </span>
-        <ResearchReferenceBadge label="Lab overlay" />
         <input
           type="checkbox"
           checked={enabled}
           disabled={!applicable}
+          aria-label="Enable Core Lab overlay"
           onChange={(event) => onToggle(event.target.checked)}
         />
       </label>
@@ -30,8 +38,7 @@ export default function CoreLabTool({ applicable, coreLab, enabled, scenarios, s
       ) : null}
       {applicable && !enabled ? (
         <div className="command-note">
-          <span>Enable the overlay, then start the optional sidecar stack when live Core functions are needed.</span>
-          <code>{startCommand}</code>
+          <span>Enable the overlay when you are ready to connect the local Core Lab sidecar.</span>
         </div>
       ) : null}
       <CoreLabPanel
@@ -39,15 +46,19 @@ export default function CoreLabTool({ applicable, coreLab, enabled, scenarios, s
         coreLab={coreLab}
         enabled={enabled}
         scenarios={scenarios}
-        startCommand={startCommand}
         towerIDs={towerIDs}
         onRunScenario={onRunScenario}
       />
+      <details className="core-developer-details">
+        <summary>Developer details</summary>
+        <p>Start the optional local sidecar stack before enabling the overlay.</p>
+        <code>{startCommand}</code>
+      </details>
     </section>
   );
 }
 
-function CoreLabPanel({ applicable, coreLab, enabled, scenarios, startCommand, towerIDs, onRunScenario }) {
+function CoreLabPanel({ applicable, coreLab, enabled, scenarios, towerIDs, onRunScenario }) {
   if (!enabled && !coreLab?.status) {
     return null;
   }
@@ -67,7 +78,6 @@ function CoreLabPanel({ applicable, coreLab, enabled, scenarios, startCommand, t
       <div className="panel-title">
         <Server size={16} />
         <span>5G Communication Path</span>
-        <ResearchReferenceBadge label="Lab overlay" />
       </div>
       <div className="core-state-row">
         <span className={`core-state-pill ${state}`}>{stateLabel}</span>
@@ -80,8 +90,7 @@ function CoreLabPanel({ applicable, coreLab, enabled, scenarios, startCommand, t
       ) : null}
       {applicable && (state === "disabled" || state === "disconnected") ? (
         <div className="command-note">
-          <span>{status.message ?? "Start the optional sidecar stack to connect Core Lab."}</span>
-          <code>{startCommand}</code>
+          <span>{status.message ?? "The local sidecar is disconnected. Check Developer details for setup instructions."}</span>
         </div>
       ) : null}
       {applicable && towerIDs.length > 0 ? (
@@ -126,14 +135,17 @@ function CoreLabPanel({ applicable, coreLab, enabled, scenarios, startCommand, t
       </div>
       {coreLab?.lastError ? <p className="core-error">{coreLab.lastError}</p> : null}
       {events.length > 0 ? (
-        <div className="event-timeline">
-          {events.slice(0, 5).map((event) => (
-            <div key={event.id} className={`event-row ${event.severity}`}>
-              <span>{event.stage}</span>
-              <strong>{event.message}</strong>
-            </div>
-          ))}
-        </div>
+        <details className="core-event-details">
+          <summary>Event history · {events.length}</summary>
+          <div className="event-timeline">
+            {events.slice(0, 5).map((event) => (
+              <div key={event.id} className={`event-row ${event.severity}`}>
+                <span>{event.stage}</span>
+                <strong>{event.message}</strong>
+              </div>
+            ))}
+          </div>
+        </details>
       ) : null}
     </section>
   );

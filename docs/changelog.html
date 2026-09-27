@@ -74,6 +74,7 @@ changelog." />
     <aside class="page-toc reference-toc" aria-label="Changelog page contents">
       <strong>On this page</strong>
       <ul>
+      <li><a href="#unreleased" id="toc-unreleased">Unreleased</a></li>
       <li><a href="#091---2026-09-24" id="toc-091---2026-09-24">0.9.1 -
       2026-09-24</a></li>
       <li><a href="#090---2026-09-23" id="toc-090---2026-09-23">0.9.0 -
@@ -114,6 +115,20 @@ milestones generated from the canonical project changelog.</p>
 <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>
 and this file follows <a
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
+<h2 id="unreleased"><a
+href="https://github.com/Berk-Unsal/atom/compare/v0.9.1...HEAD">Unreleased</a></h2>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Restructure workspace tools around clearer primary, secondary, and
+provenance details; add Plan &gt; Scenarios, compact Run History
+list/detail, single-workflow RF Diagnostics research views, and denser
+optimization, Results, Data, Experiments, Building Entry, and Core Lab
+presentations without changing RF or persistence semantics.</li>
+<li>Replace full-list Cell browsing with explicit Network, Map area, and
+Search / Filter working sets; separate Cell detail editing, keep browse
+selection outside RF state, and add reviewed batch edits for three
+validated scalar fields.</li>
+</ul>
 <h2 id="091---2026-09-24"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.9.0...v0.9.1">0.9.1</a>
 - 2026-09-24</h2>
@@ -301,7 +316,7 @@ standard-derived low/high O2I scenarios, material-data auditing, one
 batched API request, RF-aware caching, and restrained Analyze/report
 surfaces.</li>
 </ul>
-<h3 id="changed">Changed</h3>
+<h3 id="changed-1">Changed</h3>
 <ul>
 <li>Replace network optimization's arbitrary raw weighted score with
 stable 0–1 objective utilities, normalized importance priorities, a
@@ -343,7 +358,7 @@ href="https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0">0.6.0</a>
 <li>Add a unified map key, visible local-save status, and recoverable
 deletion controls.</li>
 </ul>
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed-2">Changed</h3>
 <ul>
 <li>Reorganize the frontend into four labeled workflow stages with
 contextual tool navigation and run actions, stronger text contrast, and
@@ -445,7 +460,7 @@ cannot escape the configured dataset directory.</li>
 <li>Remove duplicate root copies of propagation screenshots and keep the
 documentation asset paths canonical.</li>
 </ul>
-<h3 id="changed-2">Changed</h3>
+<h3 id="changed-3">Changed</h3>
 <ul>
 <li>Upgrade project files and dataset manifests to schema v2 with
 backward-compatible v1 import/loading migrations.</li>
@@ -564,7 +579,7 @@ saved scenarios, and recommendation application.</li>
 <li>Align the Markdown documentation entry point with the maintained
 static docs hub, current version, and model limitations.</li>
 </ul>
-<h3 id="changed-3">Changed</h3>
+<h3 id="changed-4">Changed</h3>
 <ul>
 <li>Establish a canonical <code>VERSION</code> file, automated version
 checks, release-note generation, and tag-driven GitHub Releases.</li>

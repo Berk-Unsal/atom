@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { BookOpen, FlaskConical, PlayCircle } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
+import { ToolEmptyState } from "./ToolPrimitives.jsx";
 
 const PRESETS = [
 	["concrete_1_100", "Concrete · 1–100 GHz"],
@@ -126,30 +127,34 @@ export default function MaterialReferencePanel({ analysis, isAnalyzing, onActivi
           <label><span>Material name</span><input aria-label="User material name" value={options.userName} onChange={(event) => update("userName", event.target.value)} /></label>
         )}
         <label><span>Thickness <small>m</small></span><input aria-label="Slab thickness" type="number" min="0" max="1000" step="0.001" value={inputValue("thicknessM")} onChange={(event) => update("thicknessM", Number(event.target.value))} /></label>
-        <label><span>Thickness provenance</span><select aria-label="Thickness provenance" value={options.thicknessProvenance} onChange={(event) => update("thicknessProvenance", event.target.value)}><option value="user_declared">User declared</option><option value="controlled_reference_fixture">Controlled fixture</option></select></label>
-        <label><span>Incidence angle <small>deg from normal</small></span><input aria-label="Incidence angle" type="number" min="0" max="89.999" step="1" value={inputValue("incidenceAngleDeg")} onChange={(event) => update("incidenceAngleDeg", Number(event.target.value))} /></label>
-        <label><span>Polarization</span><select aria-label="Slab polarization" value={options.polarization} onChange={(event) => update("polarization", event.target.value)}><option value="TE">TE · electric field ⟂ incidence plane</option><option value="TM">TM · electric field ∥ incidence plane</option></select></label>
       </div>
 
-      {options.materialSource === "user_defined" ? (
-        <div className="material-reference-user-options">
-          <div className="material-reference-section-label">User property contract</div>
-          <div className="material-reference-options">
-            <label><span>Property provenance</span><select aria-label="User property provenance" value={options.userPropertySource} onChange={(event) => update("userPropertySource", event.target.value)}><option value="user_declared">User declared</option><option value="measured">Measured</option><option value="manufacturer">Manufacturer</option><option value="inferred">Inferred</option><option value="unknown">Unknown</option></select></label>
-            <label><span>Relative permittivity <small>εr′</small></span><input aria-label="User relative permittivity" type="number" min="0.000001" step="0.01" value={inputValue("userRelativePermittivity")} onChange={(event) => update("userRelativePermittivity", Number(event.target.value))} /></label>
-            <label><span>Loss form</span><select aria-label="User loss form" value={options.userPropertyForm} onChange={(event) => update("userPropertyForm", event.target.value)}><option value="conductivity">Conductivity · S/m</option><option value="loss_tangent">Loss tangent · tanδ</option></select></label>
-            {options.userPropertyForm === "loss_tangent" ? <label><span>Loss tangent <small>tanδ</small></span><input aria-label="User loss tangent" type="number" min="0" step="0.001" value={inputValue("userLossTangent")} onChange={(event) => update("userLossTangent", Number(event.target.value))} /></label> : <label><span>Conductivity <small>S/m</small></span><input aria-label="User conductivity" type="number" min="0" step="0.01" value={inputValue("userConductivity")} onChange={(event) => update("userConductivity", Number(event.target.value))} /></label>}
-            <label><span>Valid from <small>GHz</small></span><input aria-label="User minimum frequency" type="number" min="0.001" max="450" value={inputValue("userMinFrequency")} onChange={(event) => update("userMinFrequency", Number(event.target.value))} /></label>
-            <label><span>Valid to <small>GHz</small></span><input aria-label="User maximum frequency" type="number" min="0.001" max="450" value={inputValue("userMaxFrequency")} onChange={(event) => update("userMaxFrequency", Number(event.target.value))} /></label>
-          </div>
-          <p className="data-note">The request sends exactly one electrical-property form. The evaluator derives the other ledger values with P.2040 equations and labels this branch user_assumption.</p>
-        </div>
-      ) : null}
-
-      <p className="material-reference-geometry-note"><BookOpen size={14} /><span>Angle is user-declared in this panel. Reliable facade-normal and ray-intersection integration is intentionally deferred; no OSM material physics is inferred.</span></p>
       {message ? <p className="inventory-validation">{message}</p> : null}
       <button type="button" className="path-analyze-button" disabled={!canRun} onClick={run}><PlayCircle size={15} />{isAnalyzing ? "Evaluating slab reference…" : "Run material reference"}</button>
-      {analysis ? <MaterialReferenceResult analysis={analysis} /> : <p className="path-empty-state">Run one declared slab to inspect complex coefficients, power fractions, internal reflections, and the separate 80 dB comparison.</p>}
+      <details className="material-reference-advanced">
+        <summary>Incidence, polarization, and material provenance</summary>
+        <div className="material-reference-options">
+          <label><span>Thickness provenance</span><select aria-label="Thickness provenance" value={options.thicknessProvenance} onChange={(event) => update("thicknessProvenance", event.target.value)}><option value="user_declared">User declared</option><option value="controlled_reference_fixture">Controlled fixture</option></select></label>
+          <label><span>Incidence angle <small>deg from normal</small></span><input aria-label="Incidence angle" type="number" min="0" max="89.999" step="1" value={inputValue("incidenceAngleDeg")} onChange={(event) => update("incidenceAngleDeg", Number(event.target.value))} /></label>
+          <label><span>Polarization</span><select aria-label="Slab polarization" value={options.polarization} onChange={(event) => update("polarization", event.target.value)}><option value="TE">TE · electric field ⟂ incidence plane</option><option value="TM">TM · electric field ∥ incidence plane</option></select></label>
+        </div>
+        {options.materialSource === "user_defined" ? (
+          <div className="material-reference-user-options">
+            <div className="material-reference-section-label">User property contract</div>
+            <div className="material-reference-options">
+              <label><span>Property provenance</span><select aria-label="User property provenance" value={options.userPropertySource} onChange={(event) => update("userPropertySource", event.target.value)}><option value="user_declared">User declared</option><option value="measured">Measured</option><option value="manufacturer">Manufacturer</option><option value="inferred">Inferred</option><option value="unknown">Unknown</option></select></label>
+              <label><span>Relative permittivity <small>εr′</small></span><input aria-label="User relative permittivity" type="number" min="0.000001" step="0.01" value={inputValue("userRelativePermittivity")} onChange={(event) => update("userRelativePermittivity", Number(event.target.value))} /></label>
+              <label><span>Loss form</span><select aria-label="User loss form" value={options.userPropertyForm} onChange={(event) => update("userPropertyForm", event.target.value)}><option value="conductivity">Conductivity · S/m</option><option value="loss_tangent">Loss tangent · tanδ</option></select></label>
+              {options.userPropertyForm === "loss_tangent" ? <label><span>Loss tangent <small>tanδ</small></span><input aria-label="User loss tangent" type="number" min="0" step="0.001" value={inputValue("userLossTangent")} onChange={(event) => update("userLossTangent", Number(event.target.value))} /></label> : <label><span>Conductivity <small>S/m</small></span><input aria-label="User conductivity" type="number" min="0" step="0.01" value={inputValue("userConductivity")} onChange={(event) => update("userConductivity", Number(event.target.value))} /></label>}
+              <label><span>Valid from <small>GHz</small></span><input aria-label="User minimum frequency" type="number" min="0.001" max="450" value={inputValue("userMinFrequency")} onChange={(event) => update("userMinFrequency", Number(event.target.value))} /></label>
+              <label><span>Valid to <small>GHz</small></span><input aria-label="User maximum frequency" type="number" min="0.001" max="450" value={inputValue("userMaxFrequency")} onChange={(event) => update("userMaxFrequency", Number(event.target.value))} /></label>
+            </div>
+            <p className="data-note">The request sends exactly one electrical-property form. The evaluator derives the other ledger values with P.2040 equations and labels this branch user_assumption.</p>
+          </div>
+        ) : null}
+        <p className="material-reference-geometry-note"><BookOpen size={14} /><span>Angle is user-declared in this panel. Reliable facade-normal and ray-intersection integration is intentionally deferred; no OSM material physics is inferred.</span></p>
+      </details>
+      {analysis ? <MaterialReferenceResult analysis={analysis} /> : <ToolEmptyState title="No material result yet" description="Run a declared slab to inspect its reflection, transmission, and absorption ledger." />}
     </section>
   );
 }

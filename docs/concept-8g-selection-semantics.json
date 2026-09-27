@@ -1,0 +1,15 @@
+{
+  "concept": "8G",
+  "distinctStates": {
+    "networkMembership": "selectedNetworkTowerIds; controls the RF Network.",
+    "inventoryWorkingSet": "scope/query/map snapshot; controls which rows Browse displays.",
+    "inventoryEditSelection": "ephemeral IDs chosen for a staged multi-edit; presentation/edit state only.",
+    "inspectedCell": "selectedMapCellId; read-only map context owned by the inspector.",
+    "activeTransmitter": "selectedTower; Single-mode RF input and shared map context."
+  },
+  "browseRowAction": "Open exact detail by setting inventoryTargetCellId only.",
+  "notChangedByBrowsing": ["selectedTower", "selectedNetworkTowerIds", "networkAzimuths", "selectedMapCellId", "Scenario lineage", "RF requests"],
+  "mapSelectionAction": "The Network empty-state action changes planningMode to Network and arms Select cells but deliberately does not add selectedTower to Network membership.",
+  "directInspectorHandoff": "Exact Cell target; does not change active transmitter, Network, Map Focus, or compute work.",
+  "contextReset": "Clear detail and local edit/browse session when active Project, Scenario, or dataset revision changes."
+}

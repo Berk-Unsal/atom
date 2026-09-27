@@ -1,0 +1,26 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:34:20.238Z",
+  "repositoryVersion": "0.9.1",
+  "objectives": [
+    "Demand",
+    "Residential",
+    "Propagation reach",
+    "Reduce overlap",
+    "Radio quality"
+  ],
+  "rowFields": [
+    "objective name",
+    "importance direction",
+    "priority value",
+    "input control",
+    "support state"
+  ],
+  "help": "Objective meanings are grouped in a disclosure; relative priorities normalize for scoring and all-zero is invalid.",
+  "radioQuality": {
+    "defaultPriority": 0,
+    "unsupported140GHz": "Explicit UNSUPPORTED state; configured priority remains retained and is not applied."
+  },
+  "constraints": "Feasibility constraints remain in their own secondary section.",
+  "invariance": "Objective identities and semantics, input values, validation, scoring, search policy, and Pareto membership/IDs are preserved."
+}

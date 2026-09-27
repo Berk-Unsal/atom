@@ -1,5 +1,6 @@
 import { Scale, SlidersHorizontal } from "lucide-react";
 import { OPTIMIZATION_OBJECTIVES, optimizationConfigValidationMessage } from "../utils/optimizationConfig.js";
+import { ToolSection } from "./ToolPrimitives.jsx";
 
 const CONSTRAINTS = [
   { id: "min_coverage_score", label: "Minimum propagation reach", step: 100, suffix: "score" },
@@ -26,9 +27,8 @@ export default function OptimizationGoalsPanel({ config, onChange, radioQualityS
   };
 
   return (
-    <section className="optimization-goals" aria-label="Network optimization goals">
-      <div className="panel-title"><Scale size={16} /><span>Optimization priorities</span></div>
-      <p className="data-note">Set relative importance; priorities are normalized for scoring. Radio quality is opt-in and starts at 0.</p>
+    <ToolSection className="optimization-goals" title={<><Scale size={16} /> Optimization priorities</>}>
+      <p className="data-note">Priorities express relative importance and are normalized for scoring. Set at least one above 0; Radio quality is opt-in and starts at 0.</p>
       {!radioQualitySupported ? <p className="unsupported-profile-note" role="status">Radio quality · UNSUPPORTED for this 140 GHz research profile. The configured priority is retained and not applied here.</p> : null}
       <div className="optimization-objectives">
         {OPTIMIZATION_OBJECTIVES.map((objective) => {
@@ -51,11 +51,14 @@ export default function OptimizationGoalsPanel({ config, onChange, radioQualityS
                 aria-invalid={objective.id === "demand" && Boolean(priorityError) ? "true" : undefined}
                 onChange={(event) => updateObjective(objective.id, event.target.value)}
               />
-              <p>{objective.description}</p>
             </div>
           );
         })}
       </div>
+      <details className="advanced-settings optimization-meanings">
+        <summary>Objective meanings</summary>
+        <ul>{OPTIMIZATION_OBJECTIVES.map((objective) => <li key={objective.id}><strong>{objective.label} · {objective.direction}.</strong> {objective.description}</li>)}</ul>
+      </details>
       {priorityError ? (
         <p className="optimization-validation" role="alert">{priorityError}</p>
       ) : null}
@@ -78,6 +81,6 @@ export default function OptimizationGoalsPanel({ config, onChange, radioQualityS
           </label>
         ))}
       </details>
-    </section>
+    </ToolSection>
   );
 }

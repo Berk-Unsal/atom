@@ -2,6 +2,13 @@
 
 All notable changes to A.T.O.M are recorded here. The project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and this file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+
+- Restructure workspace tools around clearer primary, secondary, and provenance details; add Plan > Scenarios, compact Run History list/detail, single-workflow RF Diagnostics research views, and denser optimization, Results, Data, Experiments, Building Entry, and Core Lab presentations without changing RF or persistence semantics.
+- Replace full-list Cell browsing with explicit Network, Map area, and Search / Filter working sets; separate Cell detail editing, keep browse selection outside RF state, and add reviewed batch edits for three validated scalar fields.
+
 ## [0.9.1] - 2026-09-24
 
 ### Added

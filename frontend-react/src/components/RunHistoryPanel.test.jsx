@@ -22,16 +22,40 @@ const sourceScenario = {
   domain: { scenario_id: "scenario-1", revisions: [{ scenario_revision_id: "revision-1", revision: 1 }] },
 };
 
+function openRun(runID = "run-1") {
+  fireEvent.click(screen.getByRole("button", { name: new RegExp(`Open .*${runID}`) }));
+}
+
 describe("RunHistoryPanel", () => {
   it("renders an explicit empty state", () => {
     render(<RunHistoryPanel runs={[]} />);
-    expect(screen.getByText("No saved Runs yet. Run a simulation or optimization to create one.")).toBeInTheDocument();
+    expect(screen.getByText("No saved Runs yet")).toBeInTheDocument();
+    expect(screen.getByText("Run a simulation or optimization to create one.")).toBeInTheDocument();
   });
 
   it("inspects a simulation and explains compact visualization retention", () => {
     render(<RunHistoryPanel runs={[baseRun]} />);
+    expect(screen.queryByRole("article", { name: "Run run-1 details" })).not.toBeInTheDocument();
+    openRun();
     expect(screen.getByRole("article", { name: "Run run-1 details" })).toHaveTextContent("Simulation");
     expect(screen.getByText("Detailed visualization was not retained. Run again to regenerate the map layers.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back to Run history" }));
+    expect(screen.getByRole("button", { name: /^Open Simulation run-1/ })).toHaveFocus();
+    expect(screen.queryByRole("article", { name: "Run run-1 details" })).not.toBeInTheDocument();
+  });
+
+  it("filters the list and presents one empty state when no Runs match", () => {
+    const optimization = { ...baseRun, run_id: "run-2", run_type: "optimization" };
+    render(<RunHistoryPanel runs={[baseRun, optimization]} />);
+
+    const typeFilter = screen.getByRole("combobox", { name: "Run history type" });
+    fireEvent.change(typeFilter, { target: { value: "optimization" } });
+    expect(screen.getByRole("button", { name: /Open Optimization run-2/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Open Simulation run-1/ })).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Run history status" }), { target: { value: "failed" } });
+    expect(screen.getByText("No Runs match these filters")).toBeInTheDocument();
+    expect(screen.queryByText("No saved Runs yet")).not.toBeInTheDocument();
   });
 
   it("shows failed, cancelled, and interrupted lifecycle semantics", () => {
@@ -40,9 +64,10 @@ describe("RunHistoryPanel", () => {
     const interrupted = { ...baseRun, run_id: "interrupted", status: "failed", error: { code: "run_interrupted", message: "browser restart" } };
     render(<RunHistoryPanel runs={[failed, cancelled, interrupted]} />);
     expect(screen.getAllByText("Failed").length).toBeGreaterThan(0);
-    fireEvent.click(screen.getByRole("button", { name: /cancelled/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Open Simulation cancelled/ }));
     expect(screen.getAllByText("Cancelled").length).toBeGreaterThan(0);
-    fireEvent.click(screen.getByRole("button", { name: /interrupted/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to Run history" }));
+    fireEvent.click(screen.getByRole("button", { name: /Open Simulation interrupted/ }));
     expect(screen.getAllByText("Interrupted").length).toBeGreaterThan(0);
   });
 
@@ -64,6 +89,7 @@ describe("RunHistoryPanel", () => {
       },
     };
     render(<RunHistoryPanel runs={[optimization]} scenarios={[sourceScenario]} onApplySolution={onApplySolution} />);
+    openRun("optimization-1");
     fireEvent.click(screen.getByRole("button", { name: /Apply solution from optimization-1/i }));
     expect(screen.getByRole("dialog")).toHaveTextContent("Optimization Run optimization-1 · pareto-a");
     fireEvent.click(screen.getByRole("button", { name: "Create new Version" }));
@@ -75,6 +101,7 @@ describe("RunHistoryPanel", () => {
     const onDeleteRun = vi.fn();
     const rerunnable = { ...baseRun, canonical_input_snapshot: { request: { cell_id: "cell-1" } } };
     render(<RunHistoryPanel runs={[rerunnable]} onRunAgain={onRunAgain} onDeleteRun={onDeleteRun} />);
+    openRun();
     fireEvent.click(screen.getByRole("button", { name: "Run again from this Run" }));
     fireEvent.click(screen.getByRole("button", { name: "Delete run" }));
     expect(onRunAgain).toHaveBeenCalledWith(rerunnable);
@@ -85,6 +112,7 @@ describe("RunHistoryPanel", () => {
     const onOpenSource = vi.fn();
     const sourceRun = { ...baseRun, scenario_id: "scenario-1", scenario_revision_id: "revision-1" };
     render(<RunHistoryPanel runs={[sourceRun]} scenarios={[sourceScenario]} onOpenSource={onOpenSource} />);
+    openRun();
 
     const openSource = screen.getByRole("button", { name: "Open source Version" });
     openSource.focus();
@@ -96,6 +124,7 @@ describe("RunHistoryPanel", () => {
   it("marks a missing source Version unavailable and does not offer misleading navigation", () => {
     const run = { ...baseRun, scenario_id: "scenario-1", scenario_revision_id: "revision-missing" };
     render(<RunHistoryPanel runs={[run]} scenarios={[sourceScenario]} />);
+    openRun();
 
     expect(screen.getByText(/UNAVAILABLE · The exact source Version is not retained/)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Open source Version" })).not.toBeInTheDocument();
@@ -106,6 +135,7 @@ describe("RunHistoryPanel", () => {
     const onGenerateReport = vi.fn();
     const sourceRun = { ...baseRun, scenario_id: "scenario-1", scenario_revision_id: "revision-1" };
     render(<RunHistoryPanel runs={[sourceRun]} scenarios={[sourceScenario]} onGenerateReport={onGenerateReport} />);
+    openRun();
     fireEvent.click(screen.getByRole("button", { name: /Generate report from Run run-1/i }));
     expect(screen.getByRole("heading", { name: "Generate a Report from this Run?" })).toBeInTheDocument();
     expect(screen.getByText("The Report will use this Run’s retained source Version. No RF rerun will be started.")).toBeInTheDocument();
@@ -120,12 +150,14 @@ describe("RunHistoryPanel", () => {
       details: { public_pareto_solutions: [{ id: "pareto-a" }] },
     };
     render(<RunHistoryPanel runs={[optimization]} />);
+    openRun();
     expect(screen.getAllByText(/UNAVAILABLE · The source Scenario Version is not retained/)).toHaveLength(2);
     expect(screen.queryByRole("button", { name: /Generate report from/ })).not.toBeInTheDocument();
   });
 
   it("labels an unretained historical rerun input unavailable", () => {
     render(<RunHistoryPanel runs={[baseRun]} />);
+    openRun();
     expect(screen.getByText(/UNAVAILABLE · Exact input for this Run was not retained/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Run again from this Run" })).toBeDisabled();
   });

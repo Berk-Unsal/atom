@@ -3,6 +3,7 @@ import { Download, FlaskConical, PlayCircle, Square } from "lucide-react";
 import { getJSON, postJSON, requestJSON } from "../utils/apiClient.js";
 import { formatNumber } from "../utils/appWorkspace.js";
 import { buildExperimentDefinition, EXPERIMENT_MATRIX_FIELDS, paretoGeometry } from "../utils/experimentMatrix.js";
+import { ToolEmptyState } from "./ToolPrimitives.jsx";
 
 export default function ExperimentPanel({ selectedTower, settings }) {
   const [name, setName] = useState("Planning matrix");
@@ -11,6 +12,7 @@ export default function ExperimentPanel({ selectedTower, settings }) {
   const [job, setJob] = useState(null);
   const [error, setError] = useState("");
   const running = job?.status === "accepted" || job?.status === "running";
+  const stateLabel = job ? experimentStateLabel(job.status) : "Idle";
 
   useEffect(() => {
     if (!running || !job?.job_id) return undefined;
@@ -68,23 +70,26 @@ export default function ExperimentPanel({ selectedTower, settings }) {
   };
 
   return (
-    <section className="experiment-panel" aria-label="Batch experiments">
-      <header className="panel-title"><FlaskConical size={16} /><span>Scenario matrix</span></header>
-      <p className="data-note">Sweep comma-separated values. Blank dimensions inherit the active plan. Jobs run asynchronously and identical dataset/model fingerprints reuse deterministic results.</p>
+    <section className="experiment-panel" aria-label="Experiments">
+      <header className="experiment-heading">
+        <div className="experiment-heading-title"><FlaskConical size={16} /><span><h3>Scenario matrix</h3><p>Compare the active plan across selected RF parameter values.</p></span></div>
+        <span className={`experiment-state ${String(job?.status ?? "idle")}`} role="status">{stateLabel}</span>
+      </header>
       <label className="experiment-name"><span>Experiment name</span><input value={name} maxLength={128} onChange={(event) => setName(event.target.value)} /></label>
+      <p className="experiment-help">Add one or more comma-separated sweep values. Units are shown by each field. Leave a dimension blank to inherit its active plan value.</p>
       <div className="experiment-matrix-fields">
         {EXPERIMENT_MATRIX_FIELDS.map(([key, label, unit]) => (
-          <label key={key}><span>{label}<small>{unit}</small></span><input value={matrixText[key]} placeholder="Use active value" onChange={(event) => setMatrixText((current) => ({ ...current, [key]: event.target.value }))} /></label>
+          <label key={key}><span>{label}<small>{unit}</small></span><input value={matrixText[key]} placeholder="Leave blank" onChange={(event) => setMatrixText((current) => ({ ...current, [key]: event.target.value }))} /></label>
         ))}
       </div>
       <div className="experiment-actions">
         <button type="button" className="primary" disabled={!selectedTower || running} onClick={start}><PlayCircle size={15} />Queue matrix</button>
-        <button type="button" disabled={!running} onClick={cancel}><Square size={13} />Cancel</button>
-        <button type="button" disabled={!definition} onClick={exportDefinition}><Download size={14} />Definition</button>
+        {running ? <button type="button" onClick={cancel}><Square size={13} />Cancel experiment</button> : null}
+        {definition ? <button type="button" onClick={exportDefinition}><Download size={14} />Download definition</button> : null}
       </div>
       {!selectedTower ? <p className="inventory-validation">Select a base transmitter cell first.</p> : null}
       {error ? <p className="inventory-validation" role="alert">{error}</p> : null}
-      {job ? <ExperimentJob job={job} /> : <p className="path-empty-state">No experiment queued. Add at least one sweep dimension to compare plans.</p>}
+      {job ? <ExperimentJob job={job} /> : error ? null : <ToolEmptyState title="No experiment queued" description="Add at least one sweep dimension to compare plans." />}
     </section>
   );
 }
@@ -127,4 +132,14 @@ function ExperimentResults({ runs }) {
 }
 
 function formatLabel(value) { return String(value ?? "unknown").replaceAll("-", " "); }
+function experimentStateLabel(value) {
+  return ({
+    accepted: "Queued",
+    running: "Running",
+    completed: "Completed",
+    succeeded: "Completed",
+    failed: "Failed",
+    cancelled: "Cancelled",
+  })[value] ?? formatLabel(value);
+}
 function slug(value) { return String(value || "experiment").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "experiment"; }

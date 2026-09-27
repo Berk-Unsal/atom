@@ -5,6 +5,7 @@ import {
   Database,
   FileText,
   FlaskConical,
+  GitBranch,
   History,
   Layers3,
   Radar,
@@ -16,6 +17,7 @@ import {
 export const WORKSPACE_TOOLS = [
   { id: "setup", label: "Setup", description: "Plan mode, RF profile, and cell selection", icon: SlidersHorizontal, stage: "plan" },
 	{ id: "inventory", label: "Inventory", description: "Edit cell profiles and placements", icon: RadioTower, stage: "plan" },
+  { id: "scenarios", label: "Scenarios", description: "Saved planning hypotheses, Versions, lineage, and branches", icon: GitBranch, stage: "plan" },
   { id: "propagation", label: "Propagation", description: "Run RF propagation analysis", icon: Radar, stage: "simulate" },
 	{ id: "experiments", label: "Experiments", description: "Compare simulation experiments", icon: FlaskConical, stage: "simulate" },
 	{ id: "surfaces", label: "Signal surface", description: "Generate received-power maps", icon: Layers3, stage: "simulate" },

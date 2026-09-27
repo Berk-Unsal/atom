@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { cwd, env } from "node:process";
 
@@ -15,6 +15,7 @@ const towers = {
 const workspaceTools = {
   Setup: ["plan", "Plan", "setup"],
   Inventory: ["plan", "Plan", "inventory"],
+  Scenarios: ["plan", "Plan", "scenarios"],
   Propagation: ["simulate", "Simulate", "propagation"],
   Experiments: ["simulate", "Simulate", "experiments"],
   "Signal surface": ["simulate", "Simulate", "surfaces"],
@@ -224,10 +225,40 @@ test.beforeEach(async ({ page }) => {
         build_commit: "test",
         model_version: "fspl-walls-cell-profiles-v2",
         supported_technologies: ["4g", "5g", "6g"],
-        dataset: { id: "ankara-default", version: "1.0.0", sha256: {} },
+        dataset: {
+          id: "ankara-default",
+          name: "Ankara Open Planning Dataset",
+          version: "2026.07",
+          schema_version: 2,
+          crs: "EPSG:4326",
+          bounds: [32.45, 39.55, 33.25, 40.25],
+          generated_at: "2026-07-17",
+          sources: ["OpenStreetMap", "OpenCellID-derived planning records"],
+          licenses: ["ODbL 1.0", "Review upstream OpenCellID terms before redistribution"],
+          confidence: "Static planning dataset with synthetic demand enrichment; not an operator inventory.",
+          layers: {
+            towers: { kind: "cell_inventory", optional: false, confidence: "Planning inventory; not operator-verified." },
+            buildings: { kind: "building_footprints", optional: false, confidence: "Static footprints with heuristic demand enrichment." },
+          },
+          quality: {
+            summary: "Geometry and hashes validated; RF inventory and demand attributes remain planning-grade.",
+            feature_counts: { towers: 3, buildings: 12 },
+            geometry: {
+              towers: { invalid_input: 0, repaired: 0, dropped: 0, output: 3 },
+              buildings: { invalid_input: 0, repaired: 0, dropped: 0, output: 12 },
+            },
+            coverage: { coverage_ratio: 1 },
+          },
+          sha256: { "ankara_5g_nodes.geojson": "e2e-fixture-hash" },
+        },
+      },
+      "/api/datasets": {
+        active_id: "ankara-default",
+        datasets: [{ id: "ankara-default", name: "Ankara Open Planning Dataset", version: "2026.07", schema_version: 2, active: true }],
+        warnings: [],
       },
       "/api/towers": towers,
-      "/api/buildings/summary": { total_buildings: 12, demand_buildings: 8, confidence: "sample" },
+      "/api/buildings/summary": { total_buildings: 12, demand_weighted_buildings: 8, residential_weighted_buildings: 4, confidence: "sample" },
       "/api/analyze-sector": {
         simulation: {
           geojson: {
@@ -494,8 +525,9 @@ test("captures Concept 8B.1 workspace chrome evidence", async ({ page }, testInf
   await expect(page.getByRole("heading", { name: "RF Diagnostics" })).toBeVisible();
   await capture("1440-rf-diagnostics", "1440 RF Diagnostics");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
+  await page.locator(".rf-diagnostics-research").getByRole("button", { name: "Validation" }).click();
   await expect(page.getByRole("region", { name: "RF diagnostics and measurement validation" })).toBeVisible();
-  await capture("1440-rf-diagnostics-research", "1440 RF Diagnostics research disclosure");
+  await capture("1440-rf-diagnostics-validation", "1440 RF Diagnostics Validation");
 
   await selectWorkspaceTool(page, "Setup");
   await page.getByRole("button", { name: "Run Sector" }).click();
@@ -634,22 +666,230 @@ test("inspects cells and opens Inventory without changing the plan", async ({ pa
 
   await inspector.getByRole("button", { name: "Edit in Inventory" }).click();
   await expect(page.getByRole("dialog", { name: "Inventory" })).toBeVisible();
-  await expect(page.getByRole("region", { name: "Edit tower-2" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Edit Cell cell-2" })).toBeVisible();
   await expect(page.getByRole("group", { name: "RF context" })).toContainText("Single · Cell cell-1");
   expect(computeRequests).toHaveLength(0);
 });
 
-test("manual Inventory selection takes over the inspected Cell target", async ({ page }) => {
+test("Inventory browsing opens a separate editor without changing RF or Map Focus", async ({ page }) => {
+  const computeRequests = [];
+  page.on("request", (request) => {
+    if (/\/api\/(analyze-sector|evaluate-network|simulate|optimize-network|interference)/.test(request.url())) computeRequests.push(request.url());
+  });
   await page.goto("/");
   const closeDrawer = page.getByRole("button", { name: "Close tool drawer" });
   if (await closeDrawer.isVisible()) await closeDrawer.click();
   await selectMapFocus(page, "cell-2");
   await inspectMapFocus(page);
   await page.getByRole("complementary", { name: "Cell inspector" }).getByRole("button", { name: "Edit in Inventory" }).click();
-  await expect(page.getByRole("region", { name: "Edit tower-2" })).toBeVisible();
-  await page.getByRole("listbox", { name: "Available cells" }).getByRole("option", { name: /cell-3/ }).click();
-  await expect(page.getByRole("region", { name: "Edit tower-3" })).toBeVisible();
-  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Single · Cell cell-3");
+  await expect(page.getByRole("region", { name: "Edit Cell cell-2" })).toBeVisible();
+  await page.getByRole("button", { name: "Back to Inventory" }).click();
+  await page.getByRole("textbox", { name: "Search by Cell ID or record ID" }).fill("cell-3");
+  await page.getByRole("button", { name: "Edit Cell cell-3" }).click();
+  await expect(page.getByRole("region", { name: "Edit Cell cell-3" })).toBeVisible();
+  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Single · Cell cell-1");
+  await openMapView(page);
+  await expect(page.getByRole("combobox", { name: "Map focus cell" })).toHaveValue("cell-2");
+  expect(computeRequests).toHaveLength(0);
+});
+
+test("Inventory Search, Map area, and empty Network remain bounded working sets", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "The map-area workflow is exercised once at desktop size");
+  const computeRequests = [];
+  page.on("request", (request) => {
+    if (/\/api\/(analyze-sector|evaluate-network|simulate|optimize-network|interference)/.test(request.url())) computeRequests.push(request.url());
+  });
+  await page.goto("/");
+  await selectWorkspaceTool(page, "Inventory");
+  await expect(page.getByRole("heading", { name: "Search the inventory" })).toBeVisible();
+  await expect(page.locator(".inventory-list")).toHaveCount(0);
+
+  const search = page.getByRole("textbox", { name: "Search by Cell ID or record ID" });
+  await search.fill("cell-");
+  await expect(page.locator(".inventory-results-count")).toContainText("3 matches");
+  await expect(page.locator(".inventory-list > li")).toHaveCount(3);
+
+  await page.getByRole("button", { name: /Map area/ }).click();
+  await page.getByRole("button", { name: "Refresh area" }).waitFor({ state: "visible" });
+  await expect(page.locator(".inventory-area-status")).toContainText("Cells in the captured map area");
+  await expect(page.locator(".inventory-list > li")).toHaveCount(3);
+  await page.locator(".leaflet-control-zoom-in").click();
+  await expect(page.locator(".inventory-area-status")).toContainText("Map moved");
+  await expect(page.locator(".inventory-list > li")).toHaveCount(3);
+  await page.getByRole("button", { name: "Refresh area" }).click();
+  await expect(page.locator(".inventory-area-status")).not.toContainText("Map moved");
+
+  await page.locator(".inventory-scope-switch").getByRole("button", { name: /^Network/ }).click();
+  await expect(page.getByRole("heading", { name: "No Cells in the current Network." })).toBeVisible();
+  await page.getByRole("button", { name: "Select cells on map" }).click();
+  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 0 cells");
+  expect(computeRequests).toHaveLength(0);
+});
+
+test("Inventory multi-edit previews and applies only an enabled safe field", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "The batch edit workflow is exercised once at desktop size");
+  const computeRequests = [];
+  page.on("request", (request) => {
+    if (/\/api\/(analyze-sector|evaluate-network|simulate|optimize-network|interference)/.test(request.url())) computeRequests.push(request.url());
+  });
+
+  await page.goto("/");
+  await selectWorkspaceTool(page, "Inventory");
+  const search = page.getByRole("textbox", { name: "Search by Cell ID or record ID" });
+  await search.fill("cell-2");
+  await page.getByRole("button", { name: "Edit Cell cell-2" }).click();
+  await page.getByRole("spinbutton", { name: "Conducted TX power" }).fill("32");
+  await page.getByRole("button", { name: "Back to Inventory" }).click();
+  await search.fill("cell-");
+  await page.getByRole("button", { name: "Edit multiple" }).click();
+  await page.getByRole("checkbox", { name: "Select Cell cell-1 for editing" }).check();
+  await page.getByRole("checkbox", { name: "Select Cell cell-2 for editing" }).check();
+  await page.getByRole("button", { name: "Edit 2 Cells" }).click();
+
+  await expect(page.getByRole("heading", { name: "Edit 2 Cells" })).toBeVisible();
+  await expect(page.getByText("Only enabled fields will change.")).toBeVisible();
+  await expect(page.getByText("Mixed across selected Cells")).toBeVisible();
+  await expect(page.getByLabel("Conducted TX power batch value")).toBeDisabled();
+  await expect(page.getByLabel("Conducted TX power batch value")).toHaveValue("");
+  await page.getByRole("checkbox", { name: "Conducted TX power" }).check();
+  await page.getByLabel("Conducted TX power batch value").fill("35");
+  await page.getByRole("button", { name: "Review changes" }).click();
+  await expect(page.getByRole("heading", { name: "Apply to 2 Cells" })).toBeVisible();
+  await expect(page.getByText("→ 35 dBm")).toBeVisible();
+  await page.getByRole("button", { name: "Apply changes" }).click();
+
+  await expect(page.locator(".inventory-message")).toContainText("2 Cells updated");
+  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Single · Cell cell-1");
+  expect(computeRequests).toHaveLength(0);
+});
+
+test("Inventory editor returns keyboard focus to the exact browse row", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "The Inventory keyboard handoff is exercised once at desktop size");
+  await page.goto("/");
+  await selectWorkspaceTool(page, "Inventory");
+  await page.getByRole("textbox", { name: "Search by Cell ID or record ID" }).fill("cell-2");
+  const row = page.getByRole("button", { name: "Edit Cell cell-2" });
+  await row.focus();
+  await page.keyboard.press("Enter");
+
+  const editor = page.getByRole("region", { name: "Edit Cell cell-2" });
+  await expect(editor).toBeVisible();
+  await expect(editor.getByRole("heading", { name: "Cell cell-2" })).toBeFocused();
+  await page.getByRole("button", { name: "Back to Inventory" }).click();
+  await expect(row).toBeFocused();
+  await expect(page.getByRole("textbox", { name: "Search by Cell ID or record ID" })).toHaveValue("cell-2");
+});
+
+test("captures Concept 8G Inventory responsive and state evidence", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Capture the Inventory viewport set from one deterministic browser context");
+  test.setTimeout(120_000);
+  const assetDirectory = resolve(cwd(), "../docs/assets/concept-8g/after");
+  await mkdir(assetDirectory, { recursive: true });
+  const screenshots = [];
+  const measurements = [];
+  const capture = async (name, label) => {
+    const file = `${name}.png`;
+    await page.screenshot({ path: resolve(assetDirectory, file), type: "png", animations: "disabled" });
+    screenshots.push({ label, file: `docs/assets/concept-8g/after/${file}` });
+    const measurement = await page.evaluate((measurementLabel) => {
+      const drawer = document.querySelector(".tool-drawer-body");
+      const panel = document.querySelector(".inventory-panel");
+      const list = document.querySelector(".inventory-list");
+      return {
+        label: measurementLabel,
+        viewport: { width: innerWidth, height: innerHeight },
+        documentOverflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        drawer: drawer ? { clientWidth: drawer.clientWidth, scrollWidth: drawer.scrollWidth, clientHeight: drawer.clientHeight, scrollHeight: drawer.scrollHeight } : null,
+        panel: panel ? { clientWidth: panel.clientWidth, scrollWidth: panel.scrollWidth, height: panel.clientHeight } : null,
+        renderedRows: list?.querySelectorAll(":scope > li").length ?? 0,
+        resultCount: panel?.querySelector(".inventory-results-count")?.textContent.trim() ?? null,
+        list: list ? { clientHeight: list.clientHeight, scrollHeight: list.scrollHeight } : null,
+        visiblePrimaryInventoryActions: panel ? [...panel.querySelectorAll(".inventory-actions button")].filter((button) => button.getClientRects().length).length : 0,
+      };
+    }, label);
+    measurements.push(measurement);
+    expect(measurement.documentOverflowX).toBeLessThanOrEqual(1);
+    expect(measurement.drawer?.scrollWidth ?? 0).toBeLessThanOrEqual((measurement.drawer?.clientWidth ?? 0) + 1);
+    expect(measurement.panel?.scrollWidth ?? 0).toBeLessThanOrEqual((measurement.panel?.clientWidth ?? 0) + 1);
+    if (measurement.renderedRows) expect(measurement.renderedRows).toBeLessThanOrEqual(50);
+  };
+
+  const ankaraInventory = JSON.parse(await readFile(resolve(cwd(), "../data-pipeline/ankara_5g_nodes.geojson"), "utf8"));
+  await page.route("**/api/towers", (route) => route.fulfill({ json: ankaraInventory }));
+  await page.goto("/");
+  for (const [width, height] of [[1440, 900], [1024, 768], [768, 1024], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    await selectWorkspaceTool(page, "Inventory");
+    const scopeSwitch = page.locator(".inventory-scope-switch");
+    await scopeSwitch.getByRole("button", { name: /^Search/ }).click();
+    await page.getByRole("textbox", { name: "Search by Cell ID or record ID" }).fill("");
+    await page.getByRole("combobox", { name: "Filter by technology" }).selectOption("");
+    await expect(page.getByRole("heading", { name: "Search the inventory" })).toBeVisible();
+    await capture(`${width}-inventory-search-empty`, `${width}px empty Search / Filter state`);
+
+    await page.getByRole("combobox", { name: "Filter by technology" }).selectOption("5g");
+    await expect(page.locator(".inventory-results-count")).toContainText("451 matches");
+    await expect(page.locator(".inventory-list > li")).toHaveCount(50);
+    await capture(`${width}-inventory-search`, `${width}px Search / Filter (451 loaded Cells; 50 rendered)`);
+
+    await scopeSwitch.getByRole("button", { name: /^Network/ }).click();
+    await expect(page.getByRole("heading", { name: "No Cells in the current Network." })).toBeVisible();
+    await capture(`${width}-inventory-network`, `${width}px Network working set empty state`);
+
+    await scopeSwitch.getByRole("button", { name: /^Map area/ }).click();
+    await page.getByRole("button", { name: "Refresh area" }).click();
+    await expect(page.locator(".inventory-area-status")).toContainText("Cells");
+    expect(await page.locator(".inventory-list > li").count()).toBeLessThanOrEqual(50);
+    await capture(`${width}-inventory-map-area`, `${width}px captured Map area working set`);
+
+    await scopeSwitch.getByRole("button", { name: /^Search/ }).click();
+    await page.locator(".inventory-list .inventory-cell-open").first().click();
+    await capture(`${width}-inventory-cell-detail`, `${width}px separate Cell detail editor`);
+    await page.getByRole("button", { name: "Back to Inventory" }).click();
+
+    await page.getByRole("button", { name: "Edit multiple" }).click();
+    const batchSelection = page.locator(".inventory-bulk-checkbox input");
+    await batchSelection.nth(0).check();
+    await batchSelection.nth(1).check();
+    await page.getByRole("button", { name: "Edit 2 Cells" }).click();
+    await capture(`${width}-inventory-batch`, `${width}px reviewed multi-edit form`);
+    await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  }
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await selectMapFocus(page, "26380");
+  await inspectMapFocus(page);
+  const inspector = page.getByRole("complementary", { name: "Cell inspector" });
+  await expect(inspector).toBeVisible();
+  await inspector.getByRole("button", { name: "Edit in Inventory" }).click();
+  await expect(page.locator(".inventory-editor")).toBeVisible();
+  await capture("1440-inventory-inspector-handoff", "1440px Inspector → exact Cell editor handoff");
+
+  const evidence = {
+    concept: "8G",
+    capturedDate: new Date().toISOString().slice(0, 10),
+    viewportSet: [1440, 1024, 768, 390],
+    normalFixtureCells: 451,
+    initialRowsPerSearchResult: 50,
+    screenshots,
+    measurements,
+    keyboardEvidence: {
+      coveredInSeparateE2E: "Inventory editor returns keyboard focus to the exact browse row",
+      behavior: "Enter opens the focused exact Cell result; the editor heading receives focus; Back to Inventory restores focus to that Cell's result button and preserves the query.",
+    },
+  };
+  await writeFile(resolve(cwd(), "../docs/concept-8g-responsive-evidence.json"), `${JSON.stringify(evidence, null, 2)}\n`);
+  await writeFile(resolve(cwd(), "../docs/concept-8g-accessibility-evidence.json"), `${JSON.stringify({
+    concept: "8G",
+    checks: [
+      { check: "Named Inventory scope switch", evidence: "Role=group, aria-label=Inventory scope; scope buttons expose aria-pressed and counts." },
+      { check: "Keyboard-only row open and return", result: "passed", test: "Inventory editor returns keyboard focus to the exact browse row" },
+      { check: "Detail heading focus", result: "passed", behavior: "Cell editor heading receives programmatic focus when opened." },
+      { check: "Stable map snapshot announcement", evidence: "Map area state uses role=status and refresh is a labelled button." },
+      { check: "Batch selection labels", evidence: "Each Cell checkbox has a Cell-specific accessible name; inputs retain explicit field labels." },
+      { check: "Responsive horizontal overflow", result: measurements.every((item) => item.documentOverflowX <= 1 && (item.drawer?.scrollWidth ?? 0) <= (item.drawer?.clientWidth ?? 0) + 1 && (item.panel?.scrollWidth ?? 0) <= (item.panel?.clientWidth ?? 0) + 1) ? "passed" : "failed", viewports: measurements.map(({ label, documentOverflowX, drawer, panel }) => ({ label, documentOverflowX, drawerOverflowX: drawer ? drawer.scrollWidth - drawer.clientWidth : null, panelOverflowX: panel ? panel.scrollWidth - panel.clientWidth : null })) },
+    ],
+  }, null, 2)}\n`);
 });
 
 test("map clicks change the plan only after Select cells is armed", async ({ page }) => {
@@ -770,11 +1010,11 @@ test("cell placement consumes a tower click before entity inspection", async ({ 
   test.skip(testInfo.project.name !== "desktop-1440", "Cell placement priority is covered at the desktop map layout");
   await page.goto("/");
   await selectWorkspaceTool(page, "Inventory");
-  await page.getByRole("button", { name: "Place new cell" }).click();
-  await expect(page.locator(".inventory-placement")).toHaveText("Click the map to place the new cell.");
+  await page.getByRole("button", { name: "Place new Cell" }).click();
+  await expect(page.locator(".inventory-placement")).toHaveText("Click the map to place the new Cell.");
   await clickMapPoint(page, 32.854, 39.922);
 
-  await expect(page.getByRole("region", { name: "Edit manual-4" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Edit Cell manual-4" })).toBeVisible();
   await expect(page.getByRole("complementary", { name: "Cell inspector" })).toHaveCount(0);
   await expect(page.getByRole("group", { name: "RF context" })).toContainText("Single · Cell manual-4");
 });
@@ -1131,7 +1371,7 @@ test("switching Projects clears the live Run association and scopes Run History"
   await page.getByRole("button", { name: "Open project menu" }).click();
 
   await selectWorkspaceTool(page, "Run history");
-  await expect(history.getByText("No saved Runs yet.")).toBeVisible();
+  await expect(history.getByText("No saved Runs yet")).toBeVisible();
   await expect(history.getByRole("button", { name: /Simulation/ })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Open project menu" }).click();
@@ -1200,6 +1440,14 @@ test("completes the Run, optimization, apply, Version, and historical Report jou
   await expect(optimizationRow.locator(".run-status")).toHaveText("Succeeded");
   await expect(optimizationRow).toContainText("Version 2");
   await optimizationRow.click();
+  await expect(history.locator(".run-history-row")).toHaveCount(0);
+  await history.getByRole("button", { name: "Back to Run history" }).click();
+  await expect(history.locator(".run-history-row")).toHaveCount(2);
+  await history.getByRole("combobox", { name: "Run history type" }).selectOption("optimization");
+  await expect(history.locator(".run-history-row")).toHaveCount(1);
+  await expect(history.locator(".run-history-row").first()).toContainText("Optimization");
+  await history.locator(".run-history-row").first().click();
+  await expect(history.locator(".run-history-detail")).toBeVisible();
   const applyButton = history.getByRole("button", { name: /Apply solution from/ }).first();
   await expect(applyButton).toBeEnabled();
   await applyButton.click();
@@ -1219,12 +1467,25 @@ test("completes the Run, optimization, apply, Version, and historical Report jou
 
   await page.getByRole("button", { name: "Review workspace" }).click();
   await selectWorkspaceTool(page, "Run history");
-  const historicalReport = page.getByRole("button", { name: /Generate report from/ });
+  const historyAfterSourceNavigation = page.getByRole("region", { name: "Durable local run history" });
+  await expect(historyAfterSourceNavigation.locator(".run-history-row").filter({ hasText: "Optimization" })).toBeVisible();
+  await historyAfterSourceNavigation.locator(".run-history-row").filter({ hasText: "Optimization" }).first().click();
+  await expect(historyAfterSourceNavigation.locator(".run-history-detail")).toBeVisible();
+  const historicalReport = historyAfterSourceNavigation.getByRole("button", { name: /Generate report from/ });
   await expect(historicalReport).toBeEnabled();
   await historicalReport.click();
   const confirmation = page.getByRole("dialog", { name: "Generate a Report from this Run?" });
   await confirmation.getByRole("button", { name: /Generate report from/ }).click();
   await expect(page.getByRole("region", { name: "Planning report export" })).toBeVisible();
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await selectWorkspaceTool(page, "Report");
+  const reportList = page.getByRole("region", { name: "Reports" });
+  const reportSource = reportList.getByRole("button", { name: "Open source Version" }).first();
+  await expect(reportSource).toBeVisible();
+  await reportSource.click();
+  await expect(page.getByRole("dialog", { name: "Scenarios" })).toBeVisible();
+  await expect(page.locator(".scenario-version-row").filter({ hasText: "Version 2" })).toHaveAttribute("aria-pressed", "true");
+  await expect(lineageSummary).toHaveAttribute("aria-label", activeLineageBeforeSourceInspection);
 });
 
 test("generates a historical Report from cold Run History without opening Report first", async ({ page }) => {
@@ -1261,11 +1522,14 @@ test("generates a historical Report from cold Run History without opening Report
   await page.getByRole("button", { name: "Run Sector" }).click();
   await page.getByRole("button", { name: "Review workspace" }).click();
   await selectWorkspaceTool(page, "Run history");
-  await expect(page.getByRole("region", { name: "Durable local run history" })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Generate report from/ })).toBeEnabled();
+  const history = page.getByRole("region", { name: "Durable local run history" });
+  await expect(history).toBeVisible();
+  await history.locator(".run-history-row").first().click();
+  await expect(history.locator(".run-history-detail")).toBeVisible();
+  await expect(history.getByRole("button", { name: /Generate report from/ })).toBeEnabled();
   expect(reportModules.some((path) => path.includes("ReportFeature"))).toBe(false);
 
-  await page.getByRole("button", { name: /Generate report from/ }).click();
+  await history.getByRole("button", { name: /Generate report from/ }).click();
   const confirmation = page.getByRole("dialog", { name: "Generate a Report from this Run?" });
   await confirmation.getByRole("button", { name: /Generate report from/ }).click();
   const generationFailure = page.getByRole("alert").filter({ hasText: "Report generation code could not be loaded" });
@@ -1276,8 +1540,10 @@ test("generates a historical Report from cold Run History without opening Report
   await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
   await page.getByRole("button", { name: "Review workspace" }).click();
   await selectWorkspaceTool(page, "Run history");
-  await expect(page.getByRole("region", { name: "Durable local run history" })).toBeVisible();
-  await page.getByRole("button", { name: /Generate report from/ }).click();
+  await expect(history).toBeVisible();
+  await history.locator(".run-history-row").first().click();
+  await expect(history.locator(".run-history-detail")).toBeVisible();
+  await history.getByRole("button", { name: /Generate report from/ }).click();
   const retryConfirmation = page.getByRole("dialog", { name: "Generate a Report from this Run?" });
   await retryConfirmation.getByRole("button", { name: /Generate report from/ }).click();
 
@@ -1287,6 +1553,37 @@ test("generates a historical Report from cold Run History without opening Report
   await expect.poll(() => reportModules.some((path) => path.includes("ReportFeature"))).toBe(true);
   expect(reportImportAttempts).toBe(2);
   expect(computeRequests).toHaveLength(1);
+});
+
+test("Data hierarchy disclosures do not reload the active dataset", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Data loading invariance is measured once at desktop size");
+  const dataRequests = [];
+  page.on("request", (request) => {
+    const path = new URL(request.url()).pathname;
+    if (["/api/meta", "/api/datasets", "/api/towers", "/api/buildings/summary"].includes(path)) dataRequests.push(path);
+  });
+
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await selectWorkspaceTool(page, "Data");
+  await expect(page.getByRole("heading", { name: "Demand surface" })).toBeVisible();
+  await expect(page.getByText("Pack QA status")).toBeVisible();
+  await expect(page.locator(".dataset-primary").getByText(/Geometry and hashes validated; RF inventory and demand attributes remain planning-grade/)).toBeVisible();
+  await expect(page.locator(".dataset-primary-facts > div").nth(1).locator("dd")).toHaveText("8");
+  await expect(page.locator(".dataset-primary-facts > div").nth(2).locator("dd")).toHaveText("4");
+  const initialLoadCount = dataRequests.length;
+
+  await page.getByText(/^Dataset details/).click();
+  await expect(page.getByText("Pack QA", { exact: true })).toBeVisible();
+  await page.getByText("Details / Provenance").click();
+  await page.getByText("Developer details").click();
+  await page.getByRole("button", { name: "Advanced model details" }).click();
+  await page.getByRole("button", { name: "Research / reference" }).click();
+  await selectWorkspaceTool(page, "Setup");
+  await selectWorkspaceTool(page, "Data");
+  await expect(page.getByRole("heading", { name: "Demand surface" })).toBeVisible();
+
+  expect(dataRequests).toHaveLength(initialLoadCount);
 });
 
 test("keeps an unsaved draft when opening a different Scenario is blocked", async ({ page }) => {
@@ -1300,21 +1597,26 @@ test("keeps an unsaved draft when opening a different Scenario is blocked", asyn
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
 
-  await page.getByRole("button", { name: "Scenario workspace" }).click();
+  await selectWorkspaceTool(page, "Scenarios");
+  await page.getByText("More Scenario actions", { exact: true }).click();
   await page.getByRole("button", { name: "Duplicate scenario" }).click();
   await expect(page.getByText("Independent Scenario duplicated")).toBeVisible();
   const lineageSummary = page.locator(".workspace-lineage-context > summary");
   await expect(page.getByText("2 saved")).toBeVisible();
 
+  await selectWorkspaceTool(page, "Setup");
   const txPower = page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" });
   await txPower.fill("31");
   await expect(lineageSummary).toContainText("Unsaved changes");
 
+  await selectWorkspaceTool(page, "Scenarios");
   const currentScenarioRow = page.locator(".scenario-switch-row[aria-current='true']");
-  await expect(currentScenarioRow).toContainText("Unsaved changes");
+  await expect(currentScenarioRow).toHaveAttribute("aria-label", /working draft with unsaved changes/);
   await currentScenarioRow.click();
   await expect(page.getByText("Save the current draft as a Version before opening another Scenario")).toHaveCount(0);
   await expect(lineageSummary).toContainText("Unsaved changes");
+  await expect(page.getByText("2 saved Scenarios", { exact: true })).toBeVisible();
+  await selectWorkspaceTool(page, "Setup");
   await expect(txPower).toHaveValue("31");
 
   await projectMenuButton.click();
@@ -1323,7 +1625,6 @@ test("keeps an unsaved draft when opening a different Scenario is blocked", asyn
 
   await expect(page.getByRole("alert")).toContainText("Save the current draft as a Version before opening another Scenario");
   await expect(lineageSummary).toContainText("Unsaved changes");
-  await expect(page.getByText("2 saved")).toBeVisible();
   await expect(txPower).toHaveValue("31");
 });
 
@@ -1337,10 +1638,11 @@ test("clears the inspected Cell when switching to another Scenario", async ({ pa
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
 
-  await page.getByRole("button", { name: "Scenario workspace" }).click();
+  await selectWorkspaceTool(page, "Scenarios");
+  await page.getByText("More Scenario actions", { exact: true }).click();
   await page.getByRole("button", { name: "Duplicate scenario" }).click();
   await expect(page.getByText("Independent Scenario duplicated")).toBeVisible();
-  await expect(page.getByText("2 saved")).toBeVisible();
+  await expect(page.getByText("2 saved Scenarios", { exact: true })).toBeVisible();
 
   await selectMapFocus(page, "cell-2");
   await inspectMapFocus(page);
@@ -1357,8 +1659,8 @@ test("clears the inspected Cell when switching to another Scenario", async ({ pa
 test("keeps a collapsed Advanced cell RF value through Version save and reload", async ({ page }) => {
   await page.goto("/");
   await selectWorkspaceTool(page, "Inventory");
-  const cells = page.getByRole("listbox", { name: "Available cells" });
-  await cells.getByRole("option", { name: /cell-1/ }).click();
+  await page.getByRole("textbox", { name: "Search by Cell ID or record ID" }).fill("cell-1");
+  await page.getByRole("button", { name: "Edit Cell cell-1" }).click();
 
   const advanced = page.getByRole("button", { name: /^Advanced/ });
   await expect(advanced).toHaveAttribute("aria-expanded", "false");
@@ -1375,7 +1677,8 @@ test("keeps a collapsed Advanced cell RF value through Version save and reload",
   await page.reload();
 
   await selectWorkspaceTool(page, "Inventory");
-  await page.getByRole("listbox", { name: "Available cells" }).getByRole("option", { name: /cell-1/ }).click();
+  await page.getByRole("textbox", { name: "Search by Cell ID or record ID" }).fill("cell-1");
+  await page.getByRole("button", { name: "Edit Cell cell-1" }).click();
   const restoredAdvanced = page.getByRole("button", { name: /^Advanced/ });
   await expect(restoredAdvanced).toHaveAttribute("aria-expanded", "false");
   await restoredAdvanced.click();
@@ -1392,13 +1695,14 @@ test("opens the exact Run source Version while keeping the current Version activ
   await projectMenu.getByRole("button", { name: "Save current" }).click();
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
-  await page.getByRole("button", { name: "Scenario workspace" }).click();
+  await selectWorkspaceTool(page, "Scenarios");
   const savedScenario = page.getByRole("button", { name: /Sector plan 1.*Version 1/ });
   await savedScenario.click();
   await expect(savedScenario).toHaveAttribute("aria-current", "true");
   const lineageSummary = page.locator(".workspace-lineage-context > summary");
   await expect(lineageSummary).toContainText("Version 1");
 
+  await selectWorkspaceTool(page, "Setup");
   await page.getByRole("button", { name: "Run Sector" }).click();
   await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible();
   await expect(lineageSummary).toContainText("Version 1");
@@ -1415,12 +1719,15 @@ test("opens the exact Run source Version while keeping the current Version activ
 
   await page.getByRole("button", { name: "Review workspace" }).click();
   await selectWorkspaceTool(page, "Run history");
-  await expect(page.getByRole("article", { name: /Run .* details/ })).toBeVisible();
+  const runHistory = page.getByRole("region", { name: "Durable local run history" });
+  await runHistory.locator(".run-history-row").first().click();
+  await expect(runHistory.getByRole("article", { name: /Run .* details/ })).toBeVisible();
   await expect(page.getByRole("region", { name: "HISTORICAL context" })).toContainText("Version 1");
   await page.getByRole("button", { name: "Open source Version" }).click();
 
-  await expect(page.getByRole("button", { name: "Scenario workspace" })).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("dialog", { name: "Scenarios" })).toBeVisible();
   await expect(page.locator(".scenario-version-row").filter({ hasText: "Version 1" })).toHaveAttribute("aria-pressed", "true");
+  await selectWorkspaceTool(page, "Setup");
   await expect(lineageSummary).toContainText("Version 2");
   await expect(txPower).toHaveValue("31");
 });
@@ -1629,6 +1936,7 @@ test("runs the isolated material reference from RF Diagnostics", async ({ page }
   await page.getByRole("button", { name: "Analyze workspace" }).click();
   await selectWorkspaceTool(page, "RF Diagnostics");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
+  await page.locator(".rf-diagnostics-research").getByRole("button", { name: "Materials" }).click();
   const materialReference = page.getByRole("region", { name: "Material and facade interaction reference" });
   await expect(materialReference).toBeVisible();
   await expect(page.getByText(/Material reference only — not used by network simulation/i)).toBeVisible();
@@ -1654,6 +1962,7 @@ test("runs the isolated specular reflection reference from RF Diagnostics", asyn
   await page.getByRole("button", { name: "Analyze workspace" }).click();
   await selectWorkspaceTool(page, "RF Diagnostics");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
+  await page.locator(".rf-diagnostics-research").getByRole("button", { name: "Reflection" }).click();
   const reflectionReference = page.getByRole("region", { name: "Specular reflection reference" });
   await expect(reflectionReference).toBeVisible();
   await expect(reflectionReference.getByText(/reference-only one-bounce diagnostic/i)).toBeVisible();
@@ -1805,6 +2114,78 @@ test("supports keyboard disclosure navigation without starting RF work", async (
   expect(analysisRequests).toHaveLength(0);
 });
 
+test("supports keyboard navigation through Scenarios, RF evidence, Results, and Run History", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Cross-tool keyboard flow is covered once at desktop size");
+  await page.goto("/");
+
+  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  await projectMenuButton.click();
+  const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  const saveCurrent = projectMenu.getByRole("button", { name: "Save current" });
+  await saveCurrent.focus();
+  await saveCurrent.press("Enter");
+  await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
+  await projectMenuButton.click();
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
+  await projectMenuButton.click();
+  await projectMenu.getByRole("button", { name: "Save current" }).focus();
+  await projectMenu.getByRole("button", { name: "Save current" }).press("Enter");
+  await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
+  await projectMenuButton.click();
+
+  await selectWorkspaceTool(page, "Scenarios");
+  const firstVersion = page.locator(".scenario-version-row").filter({ hasText: "Version 1" });
+  await firstVersion.focus();
+  await firstVersion.press("Enter");
+  await expect(firstVersion).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("region", { name: "Version 1 details" })).toBeVisible();
+
+  await selectWorkspaceTool(page, "RF Diagnostics");
+  const research = page.getByRole("button", { name: /^Research \/ reference/ });
+  await research.focus();
+  await research.press("Enter");
+  const researchViews = page.locator(".rf-diagnostics-research");
+  const materials = researchViews.getByRole("button", { name: "Materials" });
+  await materials.focus();
+  await materials.press("Enter");
+  const materialPanel = page.getByRole("region", { name: "Material and facade interaction reference" });
+  await expect(materials).toHaveAttribute("aria-pressed", "true");
+  await expect(materialPanel).toBeVisible();
+  const reflection = researchViews.getByRole("button", { name: "Reflection" });
+  await reflection.focus();
+  await reflection.press("Enter");
+  await expect(reflection).toHaveAttribute("aria-pressed", "true");
+  await expect(materialPanel).toBeHidden();
+  await expect(page.getByRole("region", { name: "Specular reflection reference" })).toBeVisible();
+
+  await selectWorkspaceTool(page, "Setup");
+  const runSector = page.getByRole("button", { name: "Run Sector" });
+  await runSector.focus();
+  await runSector.press("Enter");
+  await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Review workspace" }).click();
+  await selectWorkspaceTool(page, "Results");
+  const optimizationTab = page.getByRole("tab", { name: "Optimization" });
+  await optimizationTab.focus();
+  await optimizationTab.press("Enter");
+  await expect(optimizationTab).toHaveAttribute("aria-selected", "true");
+
+  await selectWorkspaceTool(page, "Run history");
+  const runHistory = page.getByRole("region", { name: "Durable local run history" });
+  const runRow = runHistory.locator(".run-history-row").first();
+  await expect(runRow).toBeVisible();
+  await runRow.focus();
+  await runRow.press("Enter");
+  await expect(runHistory.locator(".run-history-detail")).toBeVisible();
+  const back = runHistory.getByRole("button", { name: "Back to Run history" });
+  await expect(back).toBeFocused();
+  await back.press("Enter");
+  await expect(runRow).toBeFocused();
+});
+
 test("loads specialized feature modules only after their workspace action", async ({ page }) => {
   const scriptRequests = [];
   page.on("request", (request) => {
@@ -1813,6 +2194,9 @@ test("loads specialized feature modules only after their workspace action", asyn
   const featurePaths = {
     propagation: "PropagationResearchFeature",
     diagnostics: "RFDiagnosticsResearchFeature",
+    validation: "MeasurementValidationPanel",
+    materials: "MaterialReferencePanel",
+    reflection: "SpecularReflectionReferencePanel",
     experiments: "ExperimentPanel",
     coreLab: "CoreLabFeature",
     history: "RunHistoryPanel",
@@ -1846,17 +2230,43 @@ test("loads specialized feature modules only after their workspace action", asyn
   const diagnosticsResearch = page.getByRole("button", { name: /^Research \/ reference/ });
   expect(wasRequested(featurePaths.diagnostics)).toBe(false);
   await diagnosticsResearch.click();
-  await expect(page.getByRole("region", { name: "RF diagnostics and measurement validation" })).toBeVisible();
+  const researchViews = page.locator(".rf-diagnostics-research");
+  await expect(researchViews.getByRole("button", { name: "Validation" })).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByText("Choose an evidence workflow")).toBeVisible();
   await expect.poll(() => wasRequested(featurePaths.diagnostics)).toBe(true);
+  expect(wasRequested(featurePaths.validation)).toBe(false);
+  const computeRequests = [];
+  page.on("request", (request) => {
+    if (/\/api\/(analyze-sector|simulate|optimize-network|interference)/.test(request.url())) computeRequests.push(request.url());
+  });
+  await researchViews.getByRole("button", { name: "Validation" }).click();
+  const validationPanel = page.getByRole("region", { name: "RF diagnostics and measurement validation" });
+  await expect(validationPanel).toBeVisible();
+  await expect.poll(() => wasRequested(featurePaths.validation)).toBe(true);
+  await researchViews.getByRole("button", { name: "Materials" }).click();
+  const materialPanel = page.getByRole("region", { name: "Material and facade interaction reference" });
+  await expect(materialPanel).toBeVisible();
+  await expect(validationPanel).toBeHidden();
+  await expect.poll(() => wasRequested(featurePaths.materials)).toBe(true);
+  const frequency = materialPanel.getByRole("spinbutton", { name: "Material reference frequency" });
+  await frequency.fill("137");
+  await researchViews.getByRole("button", { name: "Reflection" }).click();
+  const reflectionPanel = page.getByRole("region", { name: "Specular reflection reference" });
+  await expect(reflectionPanel).toBeVisible();
+  await expect(materialPanel).toBeHidden();
+  await expect.poll(() => wasRequested(featurePaths.reflection)).toBe(true);
+  await researchViews.getByRole("button", { name: "Materials" }).click();
+  await expect(frequency).toHaveValue("137");
+  expect(computeRequests).toHaveLength(0);
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
   await selectWorkspaceTool(page, "Experiments");
-  await expect(page.getByRole("region", { name: "Batch experiments" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Experiments" })).toBeVisible();
   await expect.poll(() => wasRequested(featurePaths.experiments)).toBe(true);
 
   await page.getByRole("button", { name: "Analyze workspace" }).click();
   await selectWorkspaceTool(page, "5G Core");
-  await expect(page.getByRole("region", { name: "5G Core Lab controls" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "5G Core Lab" })).toBeVisible();
   await expect.poll(() => wasRequested(featurePaths.coreLab)).toBe(true);
 
   await page.getByRole("button", { name: "Review workspace" }).click();
@@ -2056,8 +2466,9 @@ test("captures post-change Concept 8B chrome and responsive evidence", async ({ 
   await expect(page.getByRole("button", { name: /^Research \/ reference/ })).toHaveAttribute("aria-expanded", "false");
   await screenshot("1440-rf-diagnostics-collapsed");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
+  await page.locator(".rf-diagnostics-research").getByRole("button", { name: "Validation" }).click();
   await expect(page.getByRole("region", { name: "RF diagnostics and measurement validation" })).toBeVisible();
-  await screenshot("1440-rf-diagnostics-research");
+  await screenshot("1440-rf-diagnostics-validation");
 
   await selectWorkspaceTool(page, "Setup");
   await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
@@ -2339,7 +2750,7 @@ test("captures Concept 8C map chrome and responsive evidence", async ({ page }, 
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await selectWorkspaceTool(page, "Inventory");
-  await page.getByRole("button", { name: "Place new cell" }).click();
+  await page.getByRole("button", { name: "Place new Cell" }).click();
   await expect(page.getByRole("group", { name: "Map controls" }).getByRole("status")).toContainText("Place cell");
   await capture("1440-place-cell", "1440px Inventory-owned Place cell mode");
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
@@ -2360,6 +2771,196 @@ test("captures Concept 8C map chrome and responsive evidence", async ({ page }, 
     resolve(cwd(), "../docs/concept-8c-responsive-evidence.json"),
     `${JSON.stringify({ concept: "8C", phase: "post-change", capturedAt: new Date().toISOString(), viewportSet: [1920, 1600, 1440, 1280, 1024, 768, 390], screenshots, measurements, inspectorWidths: widthEvidence }, null, 2)}\n`,
   );
+});
+
+test("captures Concept 8F hierarchy, density, and responsive evidence", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Capture the responsive evidence set from one deterministic browser context");
+  test.setTimeout(120_000);
+  const assetDirectory = resolve(cwd(), "../docs/assets/concept-8f/after");
+  await mkdir(assetDirectory, { recursive: true });
+  const screenshots = [];
+  const measurements = [];
+  const capture = async (name, label = name) => {
+    const file = `${name}.png`;
+    await page.screenshot({ path: resolve(assetDirectory, file), type: "png", animations: "disabled" });
+    screenshots.push({ label, file: `docs/assets/concept-8f/after/${file}` });
+    measurements.push(await page.evaluate((measurementLabel) => {
+      const visible = (element) => Boolean(element && element.getClientRects().length && getComputedStyle(element).visibility !== "hidden");
+      const body = document.querySelector(".tool-drawer-body");
+      const cardSelectors = [".scenario-panel", ".network-card", ".interference-card", ".comparison-card", ".dataset-panel", ".run-history-panel", ".run-history-detail", ".experiment-panel", ".core-tool", ".building-entry-panel", ".recommendation-panel", ".report-card"];
+      return {
+        label: measurementLabel,
+        viewport: { width: innerWidth, height: innerHeight },
+        documentOverflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        drawerBody: body ? { clientWidth: body.clientWidth, scrollWidth: body.scrollWidth, clientHeight: body.clientHeight, scrollHeight: body.scrollHeight } : null,
+        visiblePersistentSections: body ? [...body.querySelectorAll(".disclosure-section")].filter(visible).map((section) => section.querySelector(".disclosure-title")?.textContent.trim()).filter(Boolean) : [],
+        primaryActionCount: body ? [...body.querySelectorAll("button.panel-primary-action")].filter(visible).length : 0,
+        topLevelContentCardCount: body ? [...body.children].filter((child) => cardSelectors.some((selector) => child.matches(selector))).length : 0,
+        visibleEmptyStateCount: body ? [...body.querySelectorAll(".tool-empty-state, .analysis-empty-state")].filter(visible).length : 0,
+        openTechnicalDetailCount: body ? [...body.querySelectorAll(".tool-technical-details[open]")].filter(visible).length : 0,
+      };
+    }, label));
+  };
+
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
+  await capture("1440-setup");
+  await page.getByRole("button", { name: "Open project menu" }).click();
+  const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
+  await page.getByRole("button", { name: "Open project menu" }).click();
+  await selectWorkspaceTool(page, "Scenarios");
+  await expect(page.getByRole("region", { name: "Scenarios" })).toBeVisible();
+  await capture("1440-scenarios-list");
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
+  await page.getByRole("button", { name: "Open project menu" }).click();
+  const updatedProjectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await updatedProjectMenu.getByRole("button", { name: "Save current" }).click();
+  await expect(updatedProjectMenu.getByRole("status")).toHaveText("Version saved");
+  await page.getByRole("button", { name: "Open project menu" }).click();
+  await selectWorkspaceTool(page, "Scenarios");
+  const versionRow = page.locator(".scenario-version-row").filter({ hasText: "Version 1" });
+  await expect(versionRow).toHaveAttribute("aria-pressed", "false");
+  await versionRow.click();
+  await expect(versionRow).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".workspace-lineage-context > summary")).toContainText("Version 2");
+  await capture("1440-scenarios-selected-version");
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
+  const closeDrawer = page.getByRole("button", { name: "Close tool drawer" });
+  if (await closeDrawer.isVisible()) await closeDrawer.click();
+  await selectMapInteraction(page, "Select cells");
+  await clickMapPoint(page, 32.854, 39.922);
+  await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
+  await selectWorkspaceTool(page, "Propagation");
+  await page.getByRole("button", { name: /^Advanced analysis/ }).click();
+  await expect(page.getByRole("heading", { name: "Optimization priorities" })).toBeVisible();
+  await capture("1440-optimization-priorities");
+
+  await selectWorkspaceTool(page, "Experiments");
+  const experimentPanel = page.getByRole("region", { name: "Experiments" });
+  await expect(experimentPanel.getByRole("button", { name: "Queue matrix" })).toBeVisible();
+  await expect(experimentPanel.getByRole("button", { name: /Cancel experiment/ })).toHaveCount(0);
+  await expect(experimentPanel.getByRole("button", { name: /Download definition/ })).toHaveCount(0);
+  await capture("1440-experiments-idle");
+  let jobPollCount = 0;
+  await page.route("**/api/processes/batch-experiment/execution", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({ job_id: "e2e-8f-experiment", status: "accepted", progress: 0, completed_runs: 0, total_runs: 2, fingerprint: "e2e-8f-fingerprint" }),
+  }));
+  await page.route("**/api/jobs/e2e-8f-experiment", async (route) => {
+    jobPollCount += 1;
+    if (jobPollCount === 1) await new Promise((resolveWait) => setTimeout(resolveWait, 900));
+    const completed = jobPollCount > 1;
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({
+      job_id: "e2e-8f-experiment",
+      status: completed ? "completed" : "running",
+      progress: completed ? 1 : 0.5,
+      completed_runs: completed ? 2 : 1,
+      total_runs: 2,
+      fingerprint: "e2e-8f-fingerprint",
+      result: { runs: [] },
+    }) });
+  });
+  await experimentPanel.getByRole("textbox", { name: "Experiment name" }).fill("8F evidence matrix");
+  await experimentPanel.getByRole("textbox", { name: /Frequency/ }).fill("28,39");
+  await experimentPanel.getByRole("button", { name: "Queue matrix" }).click();
+  await expect(experimentPanel.locator(".experiment-state")).toHaveText("Queued");
+  await capture("1440-experiments-queued");
+  await expect(experimentPanel.locator(".experiment-state")).toHaveText("Running");
+  await capture("1440-experiments-running");
+  await expect(experimentPanel.locator(".experiment-state")).toHaveText("Completed");
+  await expect(experimentPanel.getByRole("button", { name: "Download definition" })).toBeVisible();
+  await capture("1440-experiments-completed");
+
+  await selectWorkspaceTool(page, "RF Diagnostics");
+  await capture("1440-rf-diagnostics-canonical");
+  await page.getByRole("button", { name: /^Research \/ reference/ }).click();
+  const researchViews = page.locator(".rf-diagnostics-research");
+  await researchViews.getByRole("button", { name: "Validation" }).click();
+  await expect(page.getByRole("region", { name: "RF diagnostics and measurement validation" })).toBeVisible();
+  await capture("1440-rf-diagnostics-validation");
+  await researchViews.getByRole("button", { name: "Materials" }).click();
+  await expect(page.getByRole("region", { name: "Material and facade interaction reference" })).toBeVisible();
+  await capture("1440-rf-diagnostics-materials");
+  await researchViews.getByRole("button", { name: "Reflection" }).click();
+  await expect(page.getByRole("region", { name: "Specular reflection reference" })).toBeVisible();
+  await capture("1440-rf-diagnostics-reflection");
+  await selectWorkspaceTool(page, "Building entry");
+  await expect(page.getByRole("region", { name: "Building entry analysis" })).toBeVisible();
+  await capture("1440-building-entry");
+  await selectWorkspaceTool(page, "5G Core");
+  await expect(page.getByRole("region", { name: "5G Core Lab" })).toBeVisible();
+  await capture("1440-core-lab");
+
+  await selectWorkspaceTool(page, "Results");
+  await expect(page.getByRole("tab", { name: "RF", exact: true })).toHaveAttribute("aria-selected", "true");
+  await capture("1440-results-rf-unavailable");
+  await page.getByRole("tab", { name: "Candidates" }).click();
+  await capture("1440-results-candidates");
+  await selectWorkspaceTool(page, "Propagation");
+  await page.getByRole("button", { name: "Optimize Network" }).click();
+  await expect(page.getByRole("button", { name: "Optimize Network" })).toBeEnabled();
+  await selectWorkspaceTool(page, "Results");
+  await page.getByRole("tab", { name: "Optimization" }).click();
+  await expect(page.getByRole("region", { name: "Network optimization summary" })).toBeVisible();
+  await capture("1440-results-optimization");
+  await page.getByText("Configuration changes").click();
+  await capture("1440-results-configuration-details");
+  await page.getByRole("tab", { name: "Solutions" }).click();
+  await expect(page.getByRole("region", { name: "Pareto alternative solutions" })).toBeVisible();
+  await capture("1440-results-pareto");
+
+  await selectWorkspaceTool(page, "Run history");
+  const runHistory = page.getByRole("region", { name: "Durable local run history" });
+  await expect(runHistory.locator(".run-history-row").first()).toBeVisible();
+  await capture("1440-run-history-list");
+  await runHistory.locator(".run-history-row").first().click();
+  await expect(runHistory.locator(".run-history-detail")).toBeVisible();
+  await capture("1440-run-history-detail");
+
+  await selectWorkspaceTool(page, "Data");
+  await expect(page.getByRole("heading", { name: "Demand surface" })).toBeVisible();
+  await capture("1440-data-primary");
+  await page.getByText(/^Dataset details/).click();
+  await capture("1440-data-dataset-details");
+  await page.getByText("Details / Provenance").click();
+  await capture("1440-data-provenance");
+  await page.getByText("Developer details").click();
+  await capture("1440-data-developer-details");
+  await page.getByRole("button", { name: "Advanced model details" }).click();
+  await capture("1440-data-advanced-model-details");
+  await page.getByRole("button", { name: "Research / reference" }).click();
+  await capture("1440-data-research-reference");
+  await selectWorkspaceTool(page, "Report");
+  await expect(page.getByRole("region", { name: "Planning report export" })).toBeVisible();
+  await capture("1440-report");
+
+  for (const [width, height] of [[1024, 768], [768, 1024], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    for (const tool of ["Scenarios", "RF Diagnostics", "Results", "Run history", "Data"]) {
+      await selectWorkspaceTool(page, tool);
+      if (tool === "RF Diagnostics") {
+        const research = page.getByRole("button", { name: /^Research \/ reference/ });
+        if (await research.isVisible() && await research.getAttribute("aria-expanded") !== "true") await research.click();
+        const switcher = page.locator(".rf-diagnostics-research");
+        if (await switcher.count()) await switcher.getByRole("button", { name: "Validation" }).click();
+      }
+      if (tool === "Results") await page.getByRole("tab", { name: "Optimization" }).click();
+      const name = tool.toLowerCase().replaceAll(" ", "-");
+      await capture(`${width}-${name}`);
+      const measurement = measurements.at(-1);
+      expect(measurement.documentOverflowX).toBeLessThanOrEqual(1);
+      if (measurement.drawerBody) expect(measurement.drawerBody.scrollWidth).toBeLessThanOrEqual(measurement.drawerBody.clientWidth + 1);
+    }
+  }
+
+  await writeFile(resolve(cwd(), "../docs/concept-8f-responsive-evidence.json"), `${JSON.stringify({ concept: "8F", viewports: [1440, 1024, 768, 390], screenshots, measurements }, null, 2)}\n`);
+  await writeFile(resolve(cwd(), "../docs/concept-8f-density-evidence.json"), `${JSON.stringify({ concept: "8F", captureMethod: "Playwright DOM measurements from the visible workspace drawer", measures: ["persistent visible sections", "drawer client/scroll height", "primary actions", "top-level content cards", "visible empty states", "open technical details"], measurements }, null, 2)}\n`);
 });
 
 function point(id, cellID, longitude, latitude) {

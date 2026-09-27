@@ -40,6 +40,7 @@ export default function MapCanvas({
   selectedMapObject,
   onSelectMapObject,
   fitRequestVersion,
+  inventoryEditingCellId = null,
   interference,
   interferenceDemand,
   interferenceLayerKey,
@@ -59,6 +60,7 @@ export default function MapCanvas({
   rayScope = RAY_SCOPE_ALL,
   rayCellIDs = [],
   mapViewportRequest = null,
+  onViewportBoundsChange,
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map" preferCanvas>
@@ -73,6 +75,7 @@ export default function MapCanvas({
 		<CellPlacementLayer active={isPlacingCell} onPlace={onPlaceCell} />
       <PathEndpointSelectionLayer active={isSelectingPathEndpoint} onSelect={onSelectPathEndpoint} />
       <MapViewportRequestLayer request={mapViewportRequest} />
+      <ViewportBoundsLayer onBoundsChange={onViewportBoundsChange} />
       <FitSelectionLayer
         fitRequestVersion={fitRequestVersion}
         selectedNetworkTowerIds={selectedNetworkTowerIds}
@@ -109,6 +112,7 @@ export default function MapCanvas({
         isDrawingSelection={isDrawingSelection}
         isPlacingCell={isPlacingCell}
         isSelectingPathEndpoint={isSelectingPathEndpoint}
+        inventoryEditingCellId={inventoryEditingCellId}
         interactionMode={interactionMode}
         layerVisibility={layerVisibility}
         onMoveTower={onMoveTower}
@@ -198,10 +202,31 @@ function MapViewportRequestLayer({ request }) {
   return null;
 }
 
+function ViewportBoundsLayer({ onBoundsChange }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!onBoundsChange) return undefined;
+    const reportBounds = () => {
+      const bounds = map.getBounds();
+      onBoundsChange({
+        west: bounds.getWest(),
+        east: bounds.getEast(),
+        south: bounds.getSouth(),
+        north: bounds.getNorth(),
+      });
+    };
+    reportBounds();
+    map.on("moveend zoomend resize", reportBounds);
+    return () => map.off("moveend zoomend resize", reportBounds);
+  }, [map, onBoundsChange]);
+  return null;
+}
+
 function TowerMarkersLayer({
   activeNetworkTech,
   isDrawingSelection,
   isPlacingCell,
+  inventoryEditingCellId,
   isSelectingPathEndpoint,
   interactionMode,
   layerVisibility,
@@ -280,7 +305,9 @@ function TowerMarkersLayer({
             })}
           />
         ) : null}
-        {isSelected && tower.editable ? (
+        {tower.editable && (inventoryEditingCellId !== null && inventoryEditingCellId !== undefined
+          ? String(inventoryEditingCellId) === String(tower.id)
+          : isSelected) ? (
           <Marker
             position={[lat, lon]}
             draggable

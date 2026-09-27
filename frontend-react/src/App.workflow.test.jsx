@@ -61,6 +61,12 @@ function openWorkspaceTool(label) {
   fireEvent.click(toolButton);
 }
 
+function openInventoryCell(cellID) {
+  openWorkspaceTool("Inventory");
+  fireEvent.change(screen.getByRole("textbox", { name: "Search by Cell ID or record ID" }), { target: { value: cellID } });
+  fireEvent.click(screen.getByRole("button", { name: `Edit Cell ${cellID}` }));
+}
+
 const towerGeoJSON = {
   type: "FeatureCollection",
   features: [
@@ -270,18 +276,22 @@ describe("App planning workflow", () => {
     useNetworkFixture = false;
   });
 
-  it("opens Planning by default and keeps model and Scenario workspace details collapsed", async () => {
+  it("keeps Setup focused on planning and opens Scenarios as a separate Plan tool", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
     expect(screen.getByRole("button", { name: "Planning" })).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("button", { name: "Advanced model details" })).toHaveAttribute("aria-expanded", "false");
-    expect(screen.getByRole("button", { name: /Scenario workspace/ })).toHaveAttribute("aria-expanded", "false");
     fireEvent.click(screen.getByRole("button", { name: "Advanced model details" }));
-    fireEvent.click(screen.getByRole("button", { name: /^Scenario workspace/ }));
     expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled();
     expect(api.postJSON).not.toHaveBeenCalled();
     expect(screen.queryByText("Run needed", { selector: ".run-state" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Plan workspace" }));
+    fireEvent.click(screen.getByRole("button", { name: "Scenarios" }));
+    expect(screen.getByRole("dialog", { name: "Scenarios" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Scenarios" })).toBeInTheDocument();
+    expect(api.postJSON).not.toHaveBeenCalled();
   });
 
   it("opens the rail chooser without changing the active tool and returns focus on Escape", async () => {
@@ -374,7 +384,7 @@ describe("App planning workflow", () => {
   it("keeps hidden per-cell antenna values and marks RF edits dirty", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
-    openWorkspaceTool("Inventory");
+    openInventoryCell("101");
     const advanced = screen.getByRole("button", { name: /^Advanced/ });
     expect(advanced).toHaveAttribute("aria-expanded", "false");
     fireEvent.click(advanced);
@@ -568,6 +578,82 @@ describe("App planning workflow", () => {
     expect(api.postJSON).not.toHaveBeenCalled();
   });
 
+  it("sends compact priority values and feasibility limits unchanged", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Select map tower 101" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Select map tower 102" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 2 selected" })).toHaveAttribute("aria-pressed", "true"));
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate workspace" }));
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: /^Advanced analysis/ }));
+    const priorities = [
+      ["Demand importance", "80"],
+      ["Residential importance", "30"],
+      ["Propagation reach importance", "40"],
+      ["Reduce overlap importance", "20"],
+      ["Radio quality importance", "10"],
+    ];
+    for (const [label, value] of priorities) {
+      fireEvent.change(screen.getByRole("slider", { name: label }), { target: { value } });
+    }
+    fireEvent.click(screen.getByText("Feasibility constraints"));
+    fireEvent.change(screen.getByRole("spinbutton", { name: /Maximum overlap/ }), { target: { value: "5" } });
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+
+    await waitFor(() => expect(api.postJSON).toHaveBeenCalledWith(
+      "/api/optimize-network",
+      expect.any(Object),
+      "Network optimization request failed",
+      expect.any(AbortSignal),
+    ));
+    const request = api.postJSON.mock.calls.find(([path]) => path === "/api/optimize-network")[1];
+    expect(request.optimization).toEqual({
+      objectives: [
+        { id: "demand", weight: 80 },
+        { id: "residential", weight: 30 },
+        { id: "coverage", weight: 40 },
+        { id: "overlap", weight: 20 },
+        { id: "radio_quality", weight: 10 },
+      ],
+      constraints: { max_overlap_buildings: 5 },
+    });
+  });
+
+  it("labels a single network evaluation without implying a failed Pareto search", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Select map tower 101" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 1 selected" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Select map tower 102" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 2 selected" })).toHaveAttribute("aria-pressed", "true"));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Evaluate Network" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Evaluate Network" }));
+
+    await waitFor(() => expect(api.postJSON).toHaveBeenCalledWith(
+      "/api/evaluate-network",
+      expect.any(Object),
+      "Network evaluation request failed",
+      expect.any(AbortSignal),
+    ));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
+    openWorkspaceTool("Results");
+
+    const evaluation = screen.getByRole("region", { name: "Network evaluation summary" });
+    expect(evaluation).toHaveTextContent("Single configuration evaluation");
+    expect(evaluation).toHaveTextContent("This evaluates one configuration. Run network optimization to inspect Pareto alternatives.");
+    expect(within(evaluation).queryByText("No feasible non-dominated set was found under the active constraints.")).not.toBeInTheDocument();
+    expect(within(evaluation).queryByRole("button", { name: "Explore solutions" })).not.toBeInTheDocument();
+  });
+
   it("explores Pareto solutions without changing the recommendation or rerunning RF", async () => {
     useNetworkFixture = true;
     render(<App />);
@@ -699,12 +785,13 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
-    openWorkspaceTool("Inventory");
+    openInventoryCell("101");
     fireEvent.click(screen.getByRole("button", { name: "Delete 101" }));
     expect(screen.getByText("Deleted cell 101.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Delete 101" })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Edit Cell 101" }));
     expect(screen.getByRole("button", { name: "Delete 101" })).toBeInTheDocument();
   });
 
@@ -712,7 +799,7 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
-    openWorkspaceTool("Inventory");
+    openInventoryCell("101");
     const cellPower = screen.getByRole("spinbutton", { name: /TX power/i });
     fireEvent.change(cellPower, { target: { value: "41" } });
     expect(screen.getByText(/Profile valid/)).toBeInTheDocument();
@@ -754,7 +841,7 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     openWorkspaceTool("Data");
-    fireEvent.click(screen.getByRole("button", { name: /^Dataset details/ }));
+    fireEvent.click(screen.getByText(/^Dataset details/));
     fireEvent.click(await screen.findByRole("button", { name: /Second pack.*Activate/i }));
 
     await waitFor(() => expect(api.postJSON).toHaveBeenCalledWith(

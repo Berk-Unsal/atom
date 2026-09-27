@@ -1,0 +1,15 @@
+{
+  "concept": "8G",
+  "source": "selectedNetworkTowerIds normalized by normalizeNetworkSelection",
+  "resolution": "Resolve IDs against loaded towers; drop missing and duplicate IDs.",
+  "ordering": "Preserve current selection/request order. Do not sort Network rows for UI presentation.",
+  "maximumCells": 6,
+  "updates": "Live with current Network membership; scope does not create membership.",
+  "emptyState": {
+    "heading": "No Cells in the current Network.",
+    "action": "Select cells on map",
+    "selectionAction": "Enters Network selection mode without silently adding the active transmitter."
+  },
+  "separation": "Inventory edit-selection checkboxes do not change selectedNetworkTowerIds.",
+  "testEvidence": "Inventory Search, Map area, and empty Network remain bounded working sets"
+}

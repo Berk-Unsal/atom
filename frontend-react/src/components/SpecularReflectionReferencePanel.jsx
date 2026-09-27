@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { AlertTriangle, CheckCircle2, CircleHelp, PlayCircle, Waves } from "lucide-react";
+import { AlertTriangle, CheckCircle2, PlayCircle, Waves } from "lucide-react";
 import { formatNumber } from "../utils/appWorkspace.js";
+import { ToolEmptyState } from "./ToolPrimitives.jsx";
 
 const INITIAL_OPTIONS = {
   frequencyGHz: 140,
@@ -59,12 +60,13 @@ export default function SpecularReflectionReferencePanel({ analysis, isAnalyzing
       </header>
       <p className="specular-reference-subtitle">Reference-only one-bounce diagnostic. It is not canonical and is not used by network simulation.</p>
       <div className="specular-reference-identity">
-        <span>ITU-R P.2040 reflection coefficient</span>
+        <strong>Reference / model</strong>
+        <span>ITU-R P.2040 reflection coefficient · image-method single-bounce reference</span>
+        <label className="specular-reference-wide-field"><span>Frequency <small>GHz</small></span><input type="number" min="0.001" max="450" step="0.1" value={numberInput(options.frequencyGHz)} onChange={updateTopNumber("frequencyGHz")} /></label>
       </div>
 
       <div className="specular-reference-section">
-        <div className="specular-reference-section-title"><span>Geometry in local ENU metres</span><small>Explicit coordinates only</small></div>
-        <label className="specular-reference-wide-field"><span>Frequency <small>GHz</small></span><input type="number" min="0.001" max="450" step="0.1" value={numberInput(options.frequencyGHz)} onChange={updateTopNumber("frequencyGHz")} /></label>
+        <div className="specular-reference-section-title"><span>Path geometry</span><small>Local ENU metres · explicit coordinates</small></div>
         <div className="specular-reference-endpoints">
           <EndpointFields label="Tx" value={options.tx} onChange={updateNumber} />
           <EndpointFields label="Rx" value={options.rx} onChange={updateNumber} />
@@ -72,7 +74,7 @@ export default function SpecularReflectionReferencePanel({ analysis, isAnalyzing
       </div>
 
       <div className="specular-reference-section">
-        <div className="specular-reference-section-title"><span>Finite vertical facade</span><small>One horizontal segment</small></div>
+        <div className="specular-reference-section-title"><span>Facade geometry</span><small>Finite vertical surface · one horizontal segment</small></div>
         <div className="specular-reference-grid four-up">
           <NumberField label="Start X" value={options.facade.startX} onChange={updateNumber("facade", "startX")} />
           <NumberField label="Start Y" value={options.facade.startY} onChange={updateNumber("facade", "startY")} />
@@ -92,7 +94,7 @@ export default function SpecularReflectionReferencePanel({ analysis, isAnalyzing
       </div>
 
       <div className="specular-reference-section">
-        <div className="specular-reference-section-title"><span>Interface and polarization</span><small>P.2040 coefficient</small></div>
+        <div className="specular-reference-section-title"><span>Interface / material</span><small>P.2040 coefficient and polarization</small></div>
         <div className="specular-reference-toggle-row" role="group" aria-label="Reflection mode">
           <button type="button" className={options.material.mode === "interface" ? "active" : ""} onClick={() => updateNested("material", "mode", "interface")}>Interface<small>Semi-infinite</small></button>
           <button type="button" className={options.material.mode === "finite_slab" ? "active" : ""} onClick={() => updateNested("material", "mode", "finite_slab")}>Finite slab<small>Coherent total</small></button>
@@ -126,7 +128,7 @@ export default function SpecularReflectionReferencePanel({ analysis, isAnalyzing
       </details>
 
       <button type="button" className="specular-reference-run" disabled={isAnalyzing} onClick={() => onRun?.(options)}><PlayCircle size={15} />{isAnalyzing ? "Evaluating reference…" : "Evaluate reflected path"}</button>
-      {analysis ? <SpecularReflectionResult analysis={analysis} /> : <p className="specular-reference-empty"><CircleHelp size={15} />Start with the controlled 140 GHz fixture, then change one declared assumption at a time.</p>}
+      {analysis ? <SpecularReflectionResult analysis={analysis} /> : <ToolEmptyState title="No reflected path evaluated" description="Start with the controlled 140 GHz fixture, then change one declared assumption at a time." />}
     </section>
   );
 }

@@ -17,7 +17,8 @@ describe("InterferenceResultsPanel", () => {
         per_serving_cell: [],
       },
     }} />);
-    expect(screen.getByText("Avg SINR").nextElementSibling).toHaveTextContent("—");
+    expect(screen.getByText("Average SINR").nextElementSibling).toHaveTextContent("—");
+    expect(screen.getByText("Details / thresholds / per-cell results").closest("details")).not.toHaveAttribute("open");
     expect(screen.getByText("P10 SINR").nextElementSibling).toHaveTextContent("—");
     expect(screen.getByText("24")).toBeInTheDocument();
   });

@@ -69,15 +69,20 @@ describe("ScenarioPanel", () => {
     const props = baseProps();
     render(<ScenarioPanel {...props} />);
 
-    expect(screen.getByRole("heading", { name: "Scenario and Versions" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Active Scenario" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Version history" })).toBeInTheDocument();
     expect(screen.getAllByText("Version 2").length).toBeGreaterThan(0);
-    expect(screen.getByText("Add the second cell")).toBeInTheDocument();
+    expect(screen.getAllByText("Add the second cell").length).toBeGreaterThan(0);
     expect(screen.getByText("RF and propagation")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Version lineage / Provenance"));
+    fireEvent.click(screen.getByText(/Associated Runs and Reports/));
     expect(screen.getByText("Associated Runs")).toBeInTheDocument();
     expect(screen.getByText("Associated Reports")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Continue from Version" })).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Branch from this Version"));
     expect(screen.getByRole("button", { name: "Branch from here" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Duplicate scenario" })).toBeInTheDocument();
+    fireEvent.click(screen.getByText("More Scenario actions"));
+    expect(screen.getByRole("button", { name: "Duplicate Scenario" })).toBeInTheDocument();
   });
 
   it("surfaces dirty draft state and keeps save explicit", () => {
@@ -86,9 +91,9 @@ describe("ScenarioPanel", () => {
     props.draftSourceScenario = scenario;
     render(<ScenarioPanel {...props} planDirty />);
 
-    expect(screen.getByRole("status", { name: "Unsaved changes" })).toHaveTextContent("Unsaved changes");
+    expect(screen.getByText("Working draft · Unsaved changes")).toHaveAttribute("role", "status");
     fireEvent.change(screen.getByRole("textbox", { name: "Version change summary" }), { target: { value: "Try a safer azimuth" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save version" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save Version" }));
     expect(props.onSaveVersion).toHaveBeenCalledWith("Try a safer azimuth");
   });
 
@@ -99,6 +104,7 @@ describe("ScenarioPanel", () => {
     props.runs = [...props.runs, { ...props.runs[0], run_id: "run-2", scenario_id: "scenario-2" }];
     render(<ScenarioPanel {...props} />);
 
+    fireEvent.click(screen.getByText("Compare Scenarios and Versions"));
     expect(screen.getByRole("heading", { name: "Compare Scenario + Version" })).toBeInTheDocument();
     expect(screen.getByText("Input state first")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Open Run A" }));

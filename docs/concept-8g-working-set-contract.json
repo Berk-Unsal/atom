@@ -1,0 +1,21 @@
+{
+  "concept": "8G",
+  "version": 1,
+  "principle": "Inventory is the loaded dataset; a map, Network, or query defines the current working set; the drawer presents that working set.",
+  "owner": "App.jsx owns ephemeral inventorySession; InventoryPanel renders it and updates it through a controlled setter.",
+  "state": {
+    "fields": ["scope", "query", "technology", "viewportSnapshot", "visibleLimit", "selectedForEditing", "bulkStage", "batchFields", "batchValues", "browseScrollTop"],
+    "persistence": "In-memory UI state only; not part of towers, Plan snapshot, ScenarioRevision, request payload, or result fingerprint.",
+    "resetOn": ["project change", "scenario change", "dataset revision change", "browser reload"]
+  },
+  "defaultScope": "Network when planningMode is Network, otherwise Search / Filter. A user's chosen scope remains selected while the current workspace context is unchanged.",
+  "pageSize": 50,
+  "scopeContracts": {
+    "network": "Live resolution of current selectedNetworkTowerIds, preserving current request order.",
+    "map-area": "Snapshot of Cell IDs inside current map bounds; explicit Refresh area updates it.",
+    "search": "Identity query and resolved-technology filter over currently loaded towers; empty criteria return no rows."
+  },
+  "cellOpen": "Sets only inventoryTargetCellId; it does not change selectedTower, selectedNetworkTowerIds, selectedMapCellId, inspection state, or compute requests.",
+  "editing": "Position/profile changes use existing App callbacks and invalidate results; no RF task starts automatically.",
+  "nonGoals": ["global state store", "new API endpoint", "server-side pagination", "URL routing", "Scenario persistence for UI scope/query/bounds", "map clustering", "ray decimation"]
+}

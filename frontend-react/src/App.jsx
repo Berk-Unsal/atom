@@ -20,6 +20,7 @@ import ApplySolutionDialog from "./components/ApplySolutionDialog.jsx";
 import ResultContextBadge from "./components/ResultContextBadge.jsx";
 import ContextualInspector from "./components/ContextualInspector.jsx";
 import ResearchReferenceBadge from "./components/ResearchReferenceBadge.jsx";
+import { KeyValueRows, TechnicalDetails, ToolSection } from "./components/ToolPrimitives.jsx";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
 import PathProfilePanel from "./components/PathProfilePanel.jsx";
@@ -54,6 +55,7 @@ import { pointInPolygon, selectNearestTowers } from "./utils/polygonSelection.js
 import { MAX_NETWORK_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from "./utils/networkSelection.js";
 import { readMeasurementCsvFile } from "./utils/measurementCsv.js";
 import { duplicateInventoryCell } from "./utils/inventoryImport.js";
+import { applyInventoryBatchPatch, createInventorySession, viewportBoundsEqual } from "./utils/inventoryWorkingSet.js";
 import {
   buildCellExplanationCacheKey,
   buildCellMarginalEffectView,
@@ -194,12 +196,12 @@ export default function App() {
   const inspectorReturnElementRef = useRef(null);
   const resultContextRef = useRef(null);
   const workspaceLineageRef = useRef(null);
+  const inventoryContextKeyRef = useRef(null);
   const interferenceAnalysisContextRef = useRef(null);
   const interferenceAnalysisSequenceRef = useRef(0);
   const [propagationResearchSettings, setPropagationResearchSettings] = useState(null);
   const propagationToolWasActive = useRef(false);
   const [openPropagationAdvancedRequest, setOpenPropagationAdvancedRequest] = useState(0);
-  const [openScenarioWorkspaceRequest, setOpenScenarioWorkspaceRequest] = useState(0);
   const [researchActivity, setResearchActivity] = useState(false);
   const [activeResultsView, setActiveResultsView] = useState("rf");
   const [lastAnalysisKind, setLastAnalysisKind] = useState("rf");
@@ -240,7 +242,9 @@ export default function App() {
   }, [inspectedEntity]);
   const [mapInteractionMode, setMapInteractionMode] = useState("inspect");
   const [mapViewportRequest, setMapViewportRequest] = useState(null);
+  const [mapViewportBounds, setMapViewportBounds] = useState(null);
   const [inventoryTargetCellId, setInventoryTargetCellId] = useState(null);
+  const [inventorySession, setInventorySession] = useState(createInventorySession);
   const [pathProfileCellId, setPathProfileCellId] = useState(null);
   const [selectedMapCellId, setSelectedMapCellId] = useState(null);
   const [rayScope, setRayScope] = useState(RAY_SCOPE_ALL);
@@ -283,9 +287,6 @@ export default function App() {
   const pathProfileTower = pathProfileCellId
     ? towers.find((tower) => String(tower.id) === String(pathProfileCellId)) ?? null
     : selectedTower;
-  const inventoryTargetTower = inventoryTargetCellId
-    ? towers.find((tower) => String(tower.id) === String(inventoryTargetCellId)) ?? null
-    : null;
   const [selectedNetworkTowerIds, setSelectedNetworkTowerIds] = useState([]);
   const [networkAzimuths, setNetworkAzimuths] = useState({});
   const [optimizationConfig, setOptimizationConfig] = useState(createDefaultOptimizationConfig);
@@ -1815,12 +1816,9 @@ export default function App() {
     setSelectedTower(tower);
   }, [invalidatePlanResults, planningMode, selectedNetworkTowerIds, towers]);
 
-	const selectInventoryCell = useCallback((tower) => {
-		setInventoryTargetCellId(null);
-		setPathProfileCellId(null);
-		if (selectedTower?.id !== tower.id) invalidatePlanResults();
-		setSelectedTower(tower);
-	}, [invalidatePlanResults, selectedTower]);
+	const openInventoryCell = useCallback((towerID) => {
+		setInventoryTargetCellId(String(towerID));
+	}, []);
 
 	const updateInventoryTower = useCallback((towerID, updater) => {
 		invalidatePlanResults();
@@ -1831,6 +1829,17 @@ export default function App() {
 	const updateInventoryProfile = useCallback((towerID, rfProfile) => {
 		updateInventoryTower(towerID, (tower) => ({ ...tower, rfProfile, editable: true, inventorySource: tower.inventorySource === "dataset" ? "project override" : tower.inventorySource }));
 	}, [updateInventoryTower]);
+
+	const applyInventoryBulkEdit = useCallback((cellIDs, changes) => {
+		const result = applyInventoryBatchPatch(towers, settings, cellIDs, changes);
+		if (!result.ok) return result;
+		invalidatePlanResults();
+		setTowers(result.towers);
+		setSelectedTower((current) => current
+			? result.towers.find((tower) => tower.id === current.id) ?? current
+			: current);
+		return { ok: true };
+	}, [invalidatePlanResults, settings, towers]);
 
 	const resetInventoryProfile = useCallback((towerID) => {
 		updateInventoryTower(towerID, (tower) => {
@@ -1890,6 +1899,7 @@ export default function App() {
 		invalidatePlanResults();
 		setTowers((current) => [...current, tower]);
 		setSelectedTower(tower);
+		setInventoryTargetCellId(tower.id);
 		setIsPlacingCell(false);
 		setSelectionNotice(`Placed ${id}. Drag its selected marker to refine the position.`);
 	}, [invalidatePlanResults, settings, towers]);
@@ -1899,6 +1909,7 @@ export default function App() {
 		invalidatePlanResults();
 		setTowers((current) => [...current, duplicate]);
 		setSelectedTower(duplicate);
+		setInventoryTargetCellId(duplicate.id);
 	}, [invalidatePlanResults, towers]);
 
 	const deleteInventoryTower = useCallback((towerID) => {
@@ -2563,6 +2574,15 @@ export default function App() {
     scenarios: activeProject?.scenarios ?? [],
   }), [activeProject, activeScenario, scenarioSource]);
   workspaceLineageRef.current = workspaceLineage;
+  const inventoryContextKey = `${activeProject?.id ?? ""}\u0000${workspaceLineage.scenario_id ?? ""}\u0000${datasetRevision}`;
+  useEffect(() => {
+    if (!workspaceLoaded || !activeProject) return;
+    if (inventoryContextKeyRef.current !== null && inventoryContextKeyRef.current !== inventoryContextKey) {
+      setInventoryTargetCellId(null);
+      setInventorySession(createInventorySession());
+    }
+    inventoryContextKeyRef.current = inventoryContextKey;
+  }, [activeProject, inventoryContextKey, workspaceLoaded]);
   interferenceAnalysisContextRef.current = interferenceAnalysisContext;
   const activeRevisionId = activeScenario?.domain?.current_revision_id
     ?? activeProject?.draft?.sourceRevisionId
@@ -2629,6 +2649,7 @@ export default function App() {
   const toolState = {
     setup: { badge: planningMode === "network" ? String(selectedCellCount) : null },
 		inventory: { badge: invalidProfileCount ? "!" : null, tone: invalidProfileCount ? "warning" : "success" },
+    scenarios: activeProject?.draft ? { badge: "Draft", tone: "warning" } : {},
     propagation: {},
     experiments: {},
     surfaces: {
@@ -2681,6 +2702,18 @@ export default function App() {
     setMapInteractionMode("select-cells");
     if (activeTool !== "setup" || window.matchMedia?.("(max-width: 900px)").matches) closeDrawer("map");
   }, [activeTool, closeDrawer]);
+  const startNetworkCellSelection = useCallback(() => {
+    if (planningMode !== "network") {
+      invalidatePlanResults();
+      setPlanningMode("network");
+      setSelectionNotice("");
+    }
+    setMapInteractionMode("select-cells");
+    if (activeTool !== "setup" || window.matchMedia?.("(max-width: 900px)").matches) closeDrawer("map");
+  }, [activeTool, closeDrawer, invalidatePlanResults, planningMode]);
+  const updateMapViewportBounds = useCallback((bounds) => {
+    setMapViewportBounds((current) => current && viewportBoundsEqual(current, bounds) ? current : bounds);
+  }, []);
   const runPlanActionLabel = isEvaluatingNetwork
     ? "Evaluating..."
     : planningMode === "network"
@@ -2871,8 +2904,7 @@ export default function App() {
     setFocusedRunId(null);
     if (!sameCurrentScenario && !openSavedScenario(scenario)) return;
     setFocusedRevisionId(revisionID);
-    setOpenScenarioWorkspaceRequest((current) => current + 1);
-    setActiveTool("setup");
+    setActiveTool("scenarios");
     setDrawerMode("tool");
     setDrawerOpen(true);
   }, [activeProject, clearSpatialContext, dismissStageChooser, openSavedScenario, workspaceLineage.scenario_id]);
@@ -3278,6 +3310,7 @@ export default function App() {
   const drawerSubtitles = {
     setup: "Mode, technology, power, and cell selection",
 		inventory: "Local cells, map placement, imports, and per-cell RF profiles",
+    scenarios: "Saved planning hypotheses, Versions, lineage, and branches",
     propagation: "Ray geometry, coverage radius, and optimization",
     experiments: "Queued parameter sweeps, fingerprints, and Pareto comparison",
 	    surfaces: "Received signal surface, contours, and GIS exports",
@@ -3501,7 +3534,9 @@ export default function App() {
             selectedNetworkTowerIds={selectedNetworkSelectionIDs}
             selectedTowerOrder={selectedTowerOrder}
             selectedMapCellId={selectedMapCellId}
+            inventoryEditingCellId={inventoryTargetCellId}
             onSelectTower={selectTower}
+            onViewportBoundsChange={updateMapViewportBounds}
             interactionMode={mapInteractionMode}
             simulation={simulation.geojson}
             rayLayerKey={simulationRevision}
@@ -3603,45 +3638,39 @@ export default function App() {
           ) : null}
 
           {drawerMode === "tool" && activeTool === "setup" ? (
-            <>
-              <DisclosureSection
-                title="Advanced model details"
-                description="Model applicability and link-budget assumptions for the selected profile."
-              >
-                <ModelApplicabilityDetails appMeta={appMeta} settings={settings} />
-              </DisclosureSection>
-              <DisclosureSection
-                title="Scenario workspace"
-                description="Manage saved scenarios, Versions, Runs, and reports."
-                openRequest={openScenarioWorkspaceRequest}
-                status={activeScenario?.name ?? "Working draft"}
-              >
-                <ScenarioPanel
-                  activeProject={activeProject}
-                  activeScenario={activeScenario}
-                  draftSourceScenario={draftSourceScenario}
-                  focusedRevisionId={focusedRevisionId}
-                  staleResultRunLabel={resultContext?.freshness === "stale" ? resultContext.run_label : ""}
-                  onBranchScenario={handleBranchScenario}
-                  onContinueFromVersion={handleContinueFromVersion}
-                  onDeleteScenario={deleteScenarioWithUndo}
-                  onDuplicateScenario={handleDuplicateScenario}
-                  onFocusRevision={setFocusedRevisionId}
-                  onOpenReport={inspectReport}
-                  onOpenReports={openReports}
-                  onOpenRun={openRunHistory}
-                  onOpenScenario={openSavedScenario}
-                  onRenameScenario={projectWorkspace.renameScenario}
-                  onSaveVersion={saveCurrentScenario}
-                  persistenceState={projectWorkspace.persistenceState}
-                  planDirty={planDirty}
-                  reportArtifacts={reportArtifacts.artifacts}
-                  reportDefinitions={reportDefinitions}
-                  runs={runHistory.runs}
-                  scenarios={activeProject?.scenarios ?? []}
-                />
-              </DisclosureSection>
-            </>
+            <DisclosureSection
+              title="Advanced model details"
+              description="Model applicability and link-budget assumptions for the selected profile."
+            >
+              <ModelApplicabilityDetails appMeta={appMeta} settings={settings} />
+            </DisclosureSection>
+          ) : null}
+
+          {drawerMode === "tool" && activeTool === "scenarios" ? (
+            <ScenarioPanel
+              activeProject={activeProject}
+              activeScenario={activeScenario}
+              draftSourceScenario={draftSourceScenario}
+              focusedRevisionId={focusedRevisionId}
+              staleResultRunLabel={resultContext?.freshness === "stale" ? resultContext.run_label : ""}
+              onBranchScenario={handleBranchScenario}
+              onContinueFromVersion={handleContinueFromVersion}
+              onDeleteScenario={deleteScenarioWithUndo}
+              onDuplicateScenario={handleDuplicateScenario}
+              onFocusRevision={setFocusedRevisionId}
+              onOpenReport={inspectReport}
+              onOpenReports={openReports}
+              onOpenRun={openRunHistory}
+              onOpenScenario={openSavedScenario}
+              onRenameScenario={projectWorkspace.renameScenario}
+              onSaveVersion={saveCurrentScenario}
+              persistenceState={projectWorkspace.persistenceState}
+              planDirty={planDirty}
+              reportArtifacts={reportArtifacts.artifacts}
+              reportDefinitions={reportDefinitions}
+              runs={runHistory.runs}
+              scenarios={activeProject?.scenarios ?? []}
+            />
           ) : null}
 
           {drawerMode === "tool" && activeTool === "propagation" ? (
@@ -3759,14 +3788,22 @@ export default function App() {
 
 			{drawerMode === "tool" && activeTool === "inventory" ? (
             <InventoryPanel
+					activeTransmitterId={selectedTower?.id}
+					cellDetailId={inventoryTargetCellId}
+					currentMapBounds={mapViewportBounds}
+					inventorySession={inventorySession}
 					isPlacingCell={isPlacingCell}
+					onApplyBulkEdit={applyInventoryBulkEdit}
+					onBackToInventory={() => setInventoryTargetCellId(null)}
 					onCancelPlacement={() => { setIsPlacingCell(false); setSelectionNotice(""); }}
 					onDeleteCell={deleteInventoryTower}
 					onDuplicateCell={duplicateInventoryTower}
 					onImportCells={importInventoryCells}
+					onInventorySessionChange={setInventorySession}
 					onMoveCell={moveInventoryCell}
+					onOpenCell={openInventoryCell}
 					onResetProfile={resetInventoryProfile}
-              onSelectCell={(tower) => { setInventoryTargetCellId(null); selectInventoryCell(tower); }}
+					onSelectCellsOnMap={startNetworkCellSelection}
 					onStartPlacement={() => {
 						setIsDrawingSelection(false);
 						setIsSelectingPathEndpoint(false);
@@ -3774,10 +3811,11 @@ export default function App() {
 						setSelectionNotice("");
 					}}
 					onUpdateProfile={updateInventoryProfile}
-              selectedTower={inventoryTargetCellId ? inventoryTargetTower : selectedTower}
+					planningMode={planningMode}
+					selectedNetworkCellIds={selectedNetworkSelectionIDs}
 					settings={settings}
 					towers={towers}
-				/>
+            />
 			) : null}
 
           {drawerMode === "tool" && activeTool === "core" ? (
@@ -3806,16 +3844,14 @@ export default function App() {
           ) : null}
 
           {drawerMode === "tool" && activeTool === "building-entry" ? (
-            <DisclosureSection title="Advanced analysis" description="Estimate entry at representative facades; indoor or whole-building coverage is outside scope." defaultOpen>
-              <BuildingEntryPanel
-                analysis={buildingEntryAnalysis}
-                disabled={activeRFTask !== null || (planningMode === "network" ? selectedNetworkTowers.length === 0 : !selectedTower)}
-                disabledReason={planningMode === "network" ? "Select at least one network cell first." : "Select a transmitter cell first."}
-                isCurrent={buildingEntryIsCurrent}
-                isLoading={activeRFTask === "building_entry"}
-                onRun={analyzeBuildingEntry}
-              />
-            </DisclosureSection>
+            <BuildingEntryPanel
+              analysis={buildingEntryAnalysis}
+              disabled={activeRFTask !== null || (planningMode === "network" ? selectedNetworkTowers.length === 0 : !selectedTower)}
+              disabledReason={planningMode === "network" ? "Select at least one network cell first." : "Select a transmitter cell first."}
+              isCurrent={buildingEntryIsCurrent}
+              isLoading={activeRFTask === "building_entry"}
+              onRun={analyzeBuildingEntry}
+            />
           ) : null}
 
           {drawerMode === "tool" && activeTool === "results" ? (
@@ -5069,23 +5105,44 @@ function NetworkOptimizationPanel({ comparison, kind, onViewComparison, onViewSo
         ? "Not satisfied"
         : UNAVAILABLE_VALUE;
   const score = Number.isFinite(Number(stats.score)) ? `${formatNumber(stats.score, 1)} / 100` : UNAVAILABLE_VALUE;
+  const isSingleEvaluation = kind === "evaluation";
   const overlapRatio = objectiveAvailable("overlap") && Number.isFinite(Number(raw.overlap_ratio))
     ? `${formatNumber(Number(raw.overlap_ratio) * 100, 1)}%`
     : UNAVAILABLE_VALUE;
   const stateLabel = constraintsConfigured && outcome.constraints_satisfied === false
     ? "Infeasible — not recommended"
     : kind === "evaluation" || outcome.recommended === false
-      ? "Feasible evaluation"
+        ? "Feasible evaluation"
       : "Recommended solution";
+  const optimizedTowers = optimization.optimized_towers ?? [];
+  const baselineByCell = new Map((optimization.baseline?.cell_configurations ?? []).map((cell) => [
+    String(cell.cell_id ?? cell.id),
+    cell,
+  ]));
+  const configurationChanges = optimizedTowers.flatMap((tower) => {
+    const cellID = String(tower.cell_id ?? tower.id);
+    const baseline = baselineByCell.get(cellID);
+    const nextAzimuth = Number(tower.optimal_azimuth);
+    if (!baseline || !Number.isFinite(nextAzimuth)) return [];
+    const previousAzimuth = Number(baseline.azimuth_deg ?? baseline.azimuthDeg);
+    return Number.isFinite(previousAzimuth) && Math.abs(previousAzimuth - nextAzimuth) < 0.05
+      ? []
+      : [{ cellID, previousAzimuth, nextAzimuth }];
+  });
   return (
     <section className="network-card" aria-label={`${kind === "evaluation" ? "Network evaluation" : "Network optimization"} summary`}>
       <div className="panel-title">
         <RadioTower size={16} />
-        <span>{kind === "evaluation" ? "Network Evaluation" : "Network Optimization"}</span>
+        <span>{isSingleEvaluation ? "Single configuration evaluation" : "Network optimization"}</span>
       </div>
       <div className="optimization-score">
-        <span>Optimization Score</span>
+        <span>{isSingleEvaluation ? "Evaluation score" : "Optimization score"}</span>
         <strong>{score}</strong>
+      </div>
+      <div className="optimization-result-summary">
+        <span className={!constraintsConfigured ? "constraint-state not-configured" : outcome.constraints_satisfied === false ? "constraint-state failed" : "constraint-state passed"}>
+          {stateLabel}
+        </span>
       </div>
       {kind !== "evaluation" && comparison ? (
         <OptimizationImpact comparison={comparison} onViewComparison={onViewComparison} />
@@ -5093,30 +5150,16 @@ function NetworkOptimizationPanel({ comparison, kind, onViewComparison, onViewSo
       {kind !== "evaluation" && optimization.baseline && !comparison ? (
         <p className="data-note">No feasible recommended solution is available for a baseline comparison under the current constraints.</p>
       ) : null}
-      <div className="metric-list compact">
+      <div className="metric-list compact optimization-primary-objectives" aria-label="Primary optimization objectives">
         <MetricRow label="Served demand weight" value={objectiveAvailable("demand") ? `${formatNumber(raw.served_demand_weight ?? raw.served_weighted_demand, 1)} / ${formatNumber(raw.relevant_demand_weight ?? raw.total_weighted_demand, 1)}` : UNAVAILABLE_VALUE} />
         <MetricRow label="Residential buildings" value={objectiveAvailable("residential") ? `${formatCount(raw.residential_covered)} / ${formatCount(raw.relevant_residential_total ?? raw.residential_total)}` : UNAVAILABLE_VALUE} />
         <MetricRow label="Propagation reach" value={objectiveAvailable("coverage") ? `${formatNumber(raw.propagation_reach_score ?? raw.coverage_reach_score, 1)} / ${formatNumber(raw.propagation_reach_maximum ?? raw.coverage_reach_maximum, 1)}` : UNAVAILABLE_VALUE} />
         <MetricRow label="Overlap ratio" value={overlapRatio} />
-        <MetricRow label="Covered units" value={formatCount(raw.covered_units)} />
-        <MetricRow label="Overlap buildings" value={objectiveAvailable("overlap") ? (stats.overlap_buildings ?? 0).toLocaleString() : UNAVAILABLE_VALUE} />
         {radioQualityValue !== null ? <MetricRow label="Radio quality" value={radioQualityValue} /> : null}
-        <MetricRow label="Constraints" value={constraintsLabel} />
       </div>
-      <div className="optimization-result-summary">
-        <span className={!constraintsConfigured ? "constraint-state not-configured" : outcome.constraints_satisfied === false ? "constraint-state failed" : "constraint-state passed"}>
-          {stateLabel}
-        </span>
-      </div>
-      {(outcome.violations ?? []).map((violation) => <p className="optimization-violation" key={violation}>{violation}</p>)}
-      <div className="network-tower-list">
-        {(optimization.optimized_towers ?? []).map((tower) => (
-          <span key={tower.id}>
-            Cell {tower.id}: {Number(tower.optimal_azimuth ?? 0).toFixed(0)}°
-          </span>
-        ))}
-      </div>
-      {frontier.length > 0 && kind !== "evaluation" ? (
+      {isSingleEvaluation ? (
+        <p className="data-note">This evaluates one configuration. Run network optimization to inspect Pareto alternatives.</p>
+      ) : frontier.length > 0 ? (
         <div className="pareto-summary">
           <div>
             <strong>{frontier.length} feasible non-dominated solution{frontier.length === 1 ? "" : "s"}</strong>
@@ -5124,12 +5167,29 @@ function NetworkOptimizationPanel({ comparison, kind, onViewComparison, onViewSo
           </div>
           <button type="button" onClick={onViewSolutions}>Explore solutions</button>
         </div>
-      ) : frontier.length > 0 ? (
-        <p className="data-note">This evaluation is a single configuration. Run network optimization to inspect Pareto alternatives.</p>
       ) : (
         <p className="data-note">No feasible non-dominated set was found under the active constraints.</p>
       )}
-      <p className="data-note">Adjusted parameters: {(outcome.adjusted_parameters ?? ["azimuth"]).join(", ")}. Tilt, power, candidate-site, cost, fiber, and permitting inputs are not synthesized by this optimizer.</p>
+      <TechnicalDetails summary="More metrics">
+        <div className="metric-list compact optimization-supporting-metrics">
+          <MetricRow label="Covered units" value={formatCount(raw.covered_units)} />
+          <MetricRow label="Overlap buildings" value={objectiveAvailable("overlap") ? (stats.overlap_buildings ?? 0).toLocaleString() : UNAVAILABLE_VALUE} />
+          <MetricRow label="Constraint status" value={constraintsLabel} />
+          {(outcome.violations ?? []).map((violation, index) => <MetricRow label={`Constraint ${index + 1}`} value={violation} key={violation} />)}
+        </div>
+      </TechnicalDetails>
+      <TechnicalDetails summary="Configuration changes">
+        {baselineByCell.size > 0 ? configurationChanges.length > 0 ? (
+          <ul className="optimization-configuration-list">
+            {configurationChanges.map(({ cellID, previousAzimuth, nextAzimuth }) => <li key={cellID}><strong>Cell {cellID}</strong><span>{formatNumber(previousAzimuth, 0)}° → {formatNumber(nextAzimuth, 0)}°</span></li>)}
+          </ul>
+        ) : <p className="data-note">No cell orientation changes from the recorded baseline.</p> : optimizedTowers.length ? (
+          <ul className="optimization-configuration-list">{optimizedTowers.map((tower) => <li key={tower.cell_id ?? tower.id}><strong>Cell {tower.cell_id ?? tower.id}</strong><span>{formatNumber(tower.optimal_azimuth, 0)}°</span></li>)}</ul>
+        ) : <p className="data-note">No cell configuration detail was returned.</p>}
+      </TechnicalDetails>
+      <TechnicalDetails summary="Model scope">
+        <p className="data-note">The optimizer changes {(outcome.adjusted_parameters ?? ["azimuth"]).join(", ")}. Tilt, power, candidate-site, cost, fiber, and permitting inputs are not synthesized.</p>
+      </TechnicalDetails>
     </section>
   );
 }
@@ -5308,132 +5368,134 @@ function DataPanel({
 	isSwitchingDataset,
 	onSwitchDataset,
 }) {
-  const dataQuality = diagnostics?.data_quality ?? summary?.data_quality ?? "unknown";
+  const dataQuality = diagnostics?.data_quality ?? summary?.data_quality ?? (appMeta?.dataset?.quality ? "good" : "unknown");
   const totalBuildings = summary?.total_buildings ?? null;
   const residential = summary?.residential_weighted_buildings ?? null;
-  const demand = summary?.demand_weighted_buildings ?? null;
+	const demand = summary?.demand_weighted_buildings ?? null;
+	const datasetMeta = appMeta?.dataset ?? {};
+	const qualityMeaning = datasetMeta.quality?.summary
+		? `${datasetMeta.quality.summary} Demand is heuristic context, not measured subscriber demand.`
+		: `${datasetMeta.confidence ?? "Dataset confidence is unavailable."} Demand is heuristic context, not measured subscriber demand.`;
   const dataResearchStatus = measurementAnalysis
     ? "Results available"
     : measurementCount
       ? `${measurementCount.toLocaleString()} samples loaded`
       : calibrationProfile ? "Correction active" : "Available for local evidence";
+  const optionalLayerNames = Object.keys(datasetMeta.layers ?? {})
+    .filter((key) => datasetMeta.layers[key]?.optional);
+  const geometrySummary = Object.entries(datasetMeta.quality?.geometry ?? {})
+    .map(([layer, counts]) => `${layer}: ${formatNumber(counts.output, 0)} output, ${formatNumber(counts.repaired, 0)} repaired, ${formatNumber(counts.dropped, 0)} dropped`)
+    .join(" · ");
 
   return (
     <section className="dataset-panel" aria-label="Dataset confidence">
-      <DisclosureSection
-        title="Planning data"
-        description="Demand and dataset context used by ordinary planning and optimization."
-        defaultOpen
-      >
-      <div className="panel-title">
-        <Database size={16} />
-        <span>Demand Surface</span>
-      </div>
-      <div className={`quality-meter ${dataQuality}`}>
-        <span>Data quality</span>
-        <strong>{dataQuality}</strong>
-      </div>
-      <div className="dataset-grid">
-        <MiniDatum
-          label="Buildings"
-          value={totalBuildings === null ? UNAVAILABLE_VALUE : totalBuildings.toLocaleString()}
-        />
-        <MiniDatum label="POI demand" value={demand === null ? UNAVAILABLE_VALUE : demand.toLocaleString()} />
-        <MiniDatum
-          label="Residential"
-          value={residential === null ? UNAVAILABLE_VALUE : residential.toLocaleString()}
-        />
-        <MiniDatum label="Dataset" value={appMeta?.dataset?.name ?? "Unavailable"} />
-        <MiniDatum label="Dataset version" value={appMeta?.dataset?.version ?? UNAVAILABLE_VALUE} />
-        <MiniDatum label="Model version" value={appMeta?.model_version ?? UNAVAILABLE_VALUE} />
-        <MiniDatum label="Application" value={appMeta?.application_version ?? "dev"} />
-      </div>
-      <p className="data-note">
-        Static OSM/OpenCellID-derived files are loaded locally. Demand values combine explicit POI tags
-        with residential-density heuristics, so confidence is useful context for optimization results.
-      </p>
-		</DisclosureSection>
-		<DisclosureSection
-			title="Dataset details"
-			description="Installed packs, provenance, QA, and pack-building commands."
-			status={appMeta?.dataset?.name ?? "Dataset details available"}
+		<ToolSection
+			className="dataset-primary"
+			description="Planning counts from the active local pack."
+			title="Demand surface"
 		>
-		<section className="model-assumptions dataset-switcher" aria-label="Installed dataset packs">
-			<div className="panel-title"><Database size={16} /><span>Installed Dataset Packs</span></div>
-			<p className="data-note">Only packs discovered under the configured local <code>ATOM_DATASETS_ROOT</code> can be activated. A candidate is fully hash- and geometry-validated before the active in-memory snapshot changes.</p>
-			<div className="dataset-pack-list">
-				{(installedDatasets?.datasets ?? []).map((dataset) => (
-					<button key={dataset.id} type="button" className={dataset.active ? "active" : ""} disabled={dataset.active || isSwitchingDataset} onClick={() => onSwitchDataset(dataset.id)}>
-						<span><strong>{dataset.name}</strong><small>{dataset.id} · v{dataset.version} · schema {dataset.schema_version}</small></span>
-						<em>{dataset.active ? "Active" : "Activate"}</em>
-					</button>
-				))}
+			<div className={`quality-meter ${dataQuality}`}>
+				<span>Pack QA status</span>
+				<strong>{dataQuality}</strong>
 			</div>
-			{datasetMessage ? <p className="inventory-message" role="status">{datasetMessage}</p> : null}
-			{(installedDatasets?.warnings ?? []).map((warning, index) => <p className="inventory-validation" key={`${warning}-${index}`}>{warning}</p>)}
-			{appMeta?.dataset?.quality ? (
-				<div className="dataset-quality-preview">
-					<strong>Pack QA</strong>
-					<p>{appMeta.dataset.quality.summary}</p>
-					<MiniDatum label="Coverage" value={`${formatNumber((appMeta.dataset.quality.coverage?.coverage_ratio ?? 0) * 100, 1)}%`} />
-					<MiniDatum label="Optional layers" value={Object.keys(appMeta.dataset.layers ?? {}).filter((key) => appMeta.dataset.layers[key]?.optional).join(", ") || "None"} />
-					<MiniDatum label="Sources" value={(appMeta.dataset.sources ?? []).join(", ") || UNAVAILABLE_VALUE} />
-					<MiniDatum label="Licenses" value={(appMeta.dataset.licenses ?? []).join(", ") || UNAVAILABLE_VALUE} />
-					<MiniDatum label="Hashed files" value={Object.keys(appMeta.dataset.sha256 ?? {}).length.toLocaleString()} />
-					<p>{appMeta.dataset.confidence}</p>
+			<KeyValueRows className="dataset-primary-facts" label="Planning data summary" items={[
+				["Buildings", totalBuildings === null ? UNAVAILABLE_VALUE : totalBuildings.toLocaleString()],
+				["POI demand", demand === null ? UNAVAILABLE_VALUE : demand.toLocaleString()],
+				["Residential", residential === null ? UNAVAILABLE_VALUE : residential.toLocaleString()],
+				["Dataset", datasetMeta.name ?? "Unavailable"],
+				["Version", datasetMeta.version ?? UNAVAILABLE_VALUE],
+			]} />
+			<p className="data-note">{qualityMeaning}</p>
+		</ToolSection>
+		<details className="dataset-detail-disclosure">
+			<summary>Dataset details <span>{datasetMeta.name ?? "Installed packs, QA, and provenance"}</span></summary>
+			<section className="model-assumptions dataset-switcher" aria-label="Installed dataset packs">
+				<div className="panel-title"><Database size={16} /><span>Installed dataset packs</span></div>
+				<p className="data-note">Only packs discovered under the configured local <code>ATOM_DATASETS_ROOT</code> can be activated. A candidate is hash- and geometry-validated before the active in-memory snapshot changes.</p>
+				<div className="dataset-pack-list">
+					{(installedDatasets?.datasets ?? []).map((dataset) => (
+						<button key={dataset.id} type="button" className={dataset.active ? "active" : ""} disabled={dataset.active || isSwitchingDataset} onClick={() => onSwitchDataset(dataset.id)}>
+							<span><strong>{dataset.name}</strong><small>{dataset.id} · v{dataset.version} · schema {dataset.schema_version}</small></span>
+							<em>{dataset.active ? "Active" : "Activate"}</em>
+						</button>
+					))}
 				</div>
-			) : null}
-			<pre className="dataset-studio-command">python data-pipeline/pack_studio.py inspect --towers cells.geojson --buildings buildings.gpkg{"\n"}python data-pipeline/pack_studio.py build --help</pre>
-		</section>
-		</DisclosureSection>
+				{datasetMessage ? <p className="inventory-message" role="status">{datasetMessage}</p> : null}
+				{(installedDatasets?.warnings ?? []).map((warning, index) => <p className="inventory-validation" key={`${warning}-${index}`}>{warning}</p>)}
+				{datasetMeta.quality ? (
+					<div className="dataset-quality-preview">
+						<strong>Pack QA</strong>
+						<p>{datasetMeta.quality.summary}</p>
+						<KeyValueRows className="dataset-qa-rows" label="Dataset pack quality" items={[
+							["Geometry", geometrySummary || "Not recorded"],
+							["Coverage", `${formatNumber((datasetMeta.quality.coverage?.coverage_ratio ?? 0) * 100, 1)}%`],
+							["Optional layers", optionalLayerNames.join(", ") || "None"],
+							["Sources", (datasetMeta.sources ?? []).join(", ") || UNAVAILABLE_VALUE],
+							["Licenses", (datasetMeta.licenses ?? []).join(", ") || UNAVAILABLE_VALUE],
+							["Hashed files", Object.keys(datasetMeta.sha256 ?? {}).length.toLocaleString()],
+						]} />
+						<p>{datasetMeta.confidence}</p>
+					</div>
+				) : null}
+				<TechnicalDetails summary="Details / Provenance">
+					<KeyValueRows className="dataset-provenance-rows" label="Dataset provenance" items={[
+						["Pack ID", datasetMeta.id],
+						["Schema", datasetMeta.schema_version],
+						["CRS", datasetMeta.crs],
+						["Generated", datasetMeta.generated_at],
+						["Bounds", datasetMeta.bounds?.join(", ")],
+						["Model version", appMeta?.model_version],
+						["Application", appMeta?.application_version ?? "dev"],
+					]} />
+					<ul className="dataset-hash-list">{Object.entries(datasetMeta.sha256 ?? {}).map(([file, hash]) => <li key={file}><span>{file}</span><code>{hash}</code></li>)}</ul>
+				</TechnicalDetails>
+				<TechnicalDetails summary="Developer details">
+					<pre className="dataset-studio-command">python data-pipeline/pack_studio.py inspect --towers cells.geojson --buildings buildings.gpkg{"\n"}python data-pipeline/pack_studio.py build --help</pre>
+				</TechnicalDetails>
+			</section>
+		</details>
 		<DisclosureSection
 			title="Advanced model details"
-			description="Expanded propagation and radio-quality assumptions for this plan."
+			description="Propagation and radio-quality assumptions for this plan."
 			count={Number(Number.isFinite(Number(settings?.calibrationOffsetDb)) && Number(settings?.calibrationOffsetDb) !== 0)}
 		>
-      <section className="model-assumptions" aria-label="Propagation model assumptions">
-        <div className="panel-title">
-          <RadioTower size={16} />
-          <span>Propagation Model</span>
-        </div>
-        <div className="dataset-grid">
-          <MiniDatum label="RF model" value={appMeta?.model_id ?? "urban_short_range"} />
-          <MiniDatum label="Estimator" value={appMeta?.model_description ?? "FSPL + footprint obstruction"} />
-          <MiniDatum label="Technology" value={networkTech} />
-          <MiniDatum label="Frequency" value={`${formatNumber(settings?.frequencyGHz, 1)} GHz`} />
-          <MiniDatum label="Ray scope" value={`${formatNumber(settings?.rayCount, 0)} rays`} />
-          <MiniDatum label="Calibration" value={settings?.calibrationOffsetDb ? `${formatNumber(settings.calibrationOffsetDb, 1)} dB` : "None"} />
-        </div>
-        <ul className="assumption-list">
-          <li>{appMeta?.model_id === "urban_short_range" ? "Urban baseline uses 3GPP UMa LOS/NLOS path loss with a shared 2D footprint classifier; legacy wall loss is not added to empirical NLOS." : "Canonical link budget uses absolute TX/gain/system/calibration terms plus FSPL, building loss, and relative horizontal/vertical pattern attenuation."}</li>
-          <li>Receiver sensitivity defaults to Manual at −115 dBm per effective cell. Derived mode uses −174 dBm/Hz + 10 log₁₀(B<sub>noise</sub>) + NF + required SNR + receiver margin; interference remains a separate RSRP/SINR/RSRQ model.</li>
-          <li>Building service is raw received power &gt; −100 dBm. Receiver link margin is raw received power minus the effective receiver threshold; it is not a fade margin.</li>
-          <li>Fast fading, diffraction, sidelobes, MIMO scheduling, and UE measurement effects are outside the current model.</li>
-        </ul>
-      </section>
-      {interferenceModel ? (
-        <section className="model-assumptions" aria-label="Interference model assumptions">
-          <div className="panel-title">
-            <Activity size={16} />
-            <span>Radio Quality Model</span>
-          </div>
-          <div className="dataset-grid">
-            <MiniDatum label="Family" value={interferenceModel.measurement_family ?? UNAVAILABLE_VALUE} />
-            <MiniDatum label="Bandwidth" value={`${formatNumber(interferenceModel.bandwidth_mhz, 0)} MHz`} />
-            <MiniDatum label="SCS" value={`${formatNumber(interferenceModel.subcarrier_spacing_khz, 0)} kHz`} />
-            <MiniDatum label="Resource blocks" value={formatNumber(interferenceModel.resource_blocks, 0)} />
-            <MiniDatum label="Noise figure" value={`${formatNumber(interferenceModel.noise_figure_db, 1)} dB`} />
-            <MiniDatum label="Cell load" value={`${formatNumber(interferenceModel.load_factor * 100, 0)}%`} />
-            <MiniDatum label="Reuse" value={`1 / ${interferenceModel.reuse_factor ?? 1}`} />
-            <MiniDatum label="Grid" value={`${formatNumber(interferenceModel.effective_sample_spacing_m, 1)} m`} />
-          </div>
-          <ul className="assumption-list">
-            {(interferenceModel.assumptions ?? []).map((assumption) => (
-              <li key={assumption}>{assumption}</li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+			<section className="model-assumptions" aria-label="Propagation model assumptions">
+				<div className="panel-title"><RadioTower size={16} /><span>Propagation model</span></div>
+				<KeyValueRows label="Propagation model configuration" items={[
+					["RF model", appMeta?.model_id ?? "urban_short_range"],
+					["Estimator", appMeta?.model_description ?? "FSPL + footprint obstruction"],
+					["Technology", networkTech],
+					["Frequency", `${formatNumber(settings?.frequencyGHz, 1)} GHz`],
+					["Ray scope", `${formatNumber(settings?.rayCount, 0)} rays`],
+					["Calibration", settings?.calibrationOffsetDb ? `${formatNumber(settings.calibrationOffsetDb, 1)} dB` : "None"],
+				]} />
+				<TechnicalDetails summary="Model scope and assumptions">
+					<ul className="assumption-list">
+						<li>{appMeta?.model_id === "urban_short_range" ? "Urban baseline uses 3GPP UMa LOS/NLOS path loss with a shared 2D footprint classifier; legacy wall loss is not added to empirical NLOS." : "Canonical link budget uses absolute TX/gain/system/calibration terms plus FSPL, building loss, and relative horizontal/vertical pattern attenuation."}</li>
+						<li>Receiver sensitivity defaults to Manual at −115 dBm per effective cell. Derived mode uses −174 dBm/Hz + 10 log₁₀(B<sub>noise</sub>) + NF + required SNR + receiver margin; interference remains a separate RSRP/SINR/RSRQ model.</li>
+						<li>Building service is raw received power &gt; −100 dBm. Receiver link margin is raw received power minus the effective receiver threshold; it is not a fade margin.</li>
+						<li>Fast fading, diffraction, sidelobes, MIMO scheduling, and UE measurement effects are outside the current model.</li>
+					</ul>
+				</TechnicalDetails>
+			</section>
+			{interferenceModel ? (
+				<section className="model-assumptions" aria-label="Interference model assumptions">
+					<div className="panel-title"><Activity size={16} /><span>Radio quality model</span></div>
+					<KeyValueRows label="Radio quality model configuration" items={[
+						["Family", interferenceModel.measurement_family ?? UNAVAILABLE_VALUE],
+						["Bandwidth", `${formatNumber(interferenceModel.bandwidth_mhz, 0)} MHz`],
+						["SCS", `${formatNumber(interferenceModel.subcarrier_spacing_khz, 0)} kHz`],
+						["Resource blocks", formatNumber(interferenceModel.resource_blocks, 0)],
+						["Noise figure", `${formatNumber(interferenceModel.noise_figure_db, 1)} dB`],
+						["Cell load", `${formatNumber(interferenceModel.load_factor * 100, 0)}%`],
+						["Reuse", `1 / ${interferenceModel.reuse_factor ?? 1}`],
+						["Grid", `${formatNumber(interferenceModel.effective_sample_spacing_m, 1)} m`],
+					]} />
+					<TechnicalDetails summary="Radio quality assumptions">
+						<ul className="assumption-list">{(interferenceModel.assumptions ?? []).map((assumption) => <li key={assumption}>{assumption}</li>)}</ul>
+					</TechnicalDetails>
+				</section>
+			) : null}
 		</DisclosureSection>
 		<DisclosureSection
 			title="Research / reference"

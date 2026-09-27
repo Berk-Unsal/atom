@@ -1,0 +1,9 @@
+{
+  "concept": "8G",
+  "phase": "audit only; result rendering behavior unchanged",
+  "baselineImplementation": "RayGeoJSONLayer renders returned simulation GeoJSON features through filterRayFeatures. Supported All / Selected / Hidden presentation scopes filter by Cell identity only; there is no ray decimation or density cap.",
+  "fixtureEvidence": { "e2eSimulationGeoJSONFeatures": 1, "reportedTotalRays": 120, "meaning": "The E2E fixture intentionally distinguishes one returned feature from a stats total of 120; it is not a measured production ray rendering load." },
+  "postChange": "Inventory working-set and batch state are not supplied to RayGeoJSONLayer and do not change rendered result features.",
+  "decision": "No ray aggregation, decimation, or result-density behavior change.",
+  "followUpGate": "Only propose a separate visualization-density concept after a real representative run demonstrates map rendering or interaction problems."
+}

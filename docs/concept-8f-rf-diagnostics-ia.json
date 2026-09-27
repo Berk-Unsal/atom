@@ -1,0 +1,29 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:34:20.238Z",
+  "repositoryVersion": "0.9.1",
+  "canonicalActions": [
+    "Open current RF result",
+    "Open vertical path profile"
+  ],
+  "boundary": "Validation, Materials, and Reflection are separate evidence workflows and do not change canonical network RF.",
+  "researchSubviews": [
+    {
+      "label": "Validation",
+      "module": "MeasurementValidationPanel.jsx",
+      "target": "measurement residual evidence"
+    },
+    {
+      "label": "Materials",
+      "module": "MaterialReferencePanel.jsx",
+      "target": "material/facade reference evaluation"
+    },
+    {
+      "label": "Reflection",
+      "module": "SpecularReflectionReferencePanel.jsx",
+      "target": "single-bounce specular reflection reference"
+    }
+  ],
+  "mounting": "Subview shell and active workflow are lazy-loaded; only the selected workflow is mounted after first selection, with visited panels retained hidden to preserve transient form values.",
+  "requests": "Subview navigation alone produces no canonical RF request; each workflow retains its existing endpoint and request contract."
+}

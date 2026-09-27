@@ -1,0 +1,15 @@
+{
+  "concept": "8G",
+  "boundsSource": "Leaflet MapContainer getBounds() reported on mount and on moveend, zoomend, and resize.",
+  "inclusion": {
+    "geometry": "Cell point coordinates only; do not include radius or coverage overlap.",
+    "edges": "Inclusive south/north and west/east edges, with 1e-10 degree floating-point tolerance.",
+    "longitudeWrap": "Supports bounds crossing the antimeridian and bounds spanning at least 360 degrees.",
+    "invalidCoordinates": "Exclude non-finite or missing coordinates."
+  },
+  "snapshot": "Store ordered Cell IDs and the captured bounds in ephemeral inventorySession state.",
+  "stability": "Map movement does not change captured membership. It shows Map moved when bounds differ at six-decimal-degree precision. Current tower records are resolved by ID, so profile/location edits remain live; deleted IDs are omitted.",
+  "refresh": "Refresh area captures the current bounds and current Cell IDs and resets paging and batch selection.",
+  "emptyState": "If no IDs were captured, show a map-area empty state with pan/zoom then Refresh area guidance.",
+  "e2eEvidence": "Inventory Search, Map area, and empty Network remain bounded working sets; 1440px captured Map area working set screenshot"
+}

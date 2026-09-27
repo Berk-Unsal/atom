@@ -1,0 +1,12 @@
+{
+  "concept": "8G",
+  "decision": "GO with restricted client-side batch editing for SAFE_COMMON fields only.",
+  "selection": "Local Inventory IDs from the active working set; minimum two; not Network membership.",
+  "mixedValues": "Show Mixed across selected Cells and keep the replacement input blank; never choose the first Cell's value implicitly.",
+  "review": "User enables fields, enters values, reviews an explicit preview, then applies.",
+  "validation": "Existing RF profile validation runs for every selected Cell. Invalid/missing Cell aborts the whole batch before state mutation.",
+  "mutation": "Apply supported patch to all selected towers atomically; mark dataset-sourced Cells as project overrides; refresh selectedTower object by identity if it was edited.",
+  "freshness": "One invalidatePlanResults call after successful apply; no automatic RF task.",
+  "draftAndVersion": "Uses existing App-owned tower/project draft flow; no new persistence schema or auto-save. Save Version remains explicit under existing Scenario behavior.",
+  "evidence": "Inventory multi-edit previews and applies only an enabled safe field; pure utility tests cover atomic validation and field allowlisting."
+}

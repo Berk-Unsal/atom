@@ -1,0 +1,9 @@
+{
+  "concept": "8G",
+  "phase": "audit only; rendering behavior unchanged",
+  "normalFixture": { "loadedCells": 451, "markerComponents": 451, "renderer": "Leaflet MapContainer preferCanvas with one CircleMarker per loaded Cell" },
+  "baselineDOM": { "interactiveMarkerDOMNodes": 0, "note": "CircleMarkers use the canvas renderer; a selected editable Cell may add one draggable Marker DOM node." },
+  "postChange": "Map marker population is still all loaded Cell records. Inventory workset membership does not filter or cluster map markers. Editing makes only the exact editable detail Cell the draggable Inventory marker; the prior selectedTower marker is not substituted while that detail is open.",
+  "decision": "No clustering, marker culling, aggregation, or map representation change in Concept 8G.",
+  "evidence": ["concept-8g-pre-change-visual-capture.json", "1440-inventory-search.png with the actual Ankara fixture"]
+}

@@ -1,0 +1,101 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:34:20.238Z",
+  "repositoryVersion": "0.9.1",
+  "method": "Production Vite output inspection and Playwright network/import tests.",
+  "researchFeature": "RFDiagnosticsResearchFeature.jsx uses React.lazy for three independent workflow modules and conditionally mounts a workflow only once selected.",
+  "tests": [
+    "Research feature shell is not requested until the disclosure opens.",
+    "Validation module is not requested until Validation is selected.",
+    "Materials module is not requested until Materials is selected.",
+    "Reflection module is not requested until Reflection is selected.",
+    "Subview navigation makes no canonical RF compute request."
+  ],
+  "assets": "Post-build raw/gzip byte and chunk figures are recorded after the final production build below.",
+  "existingLazyFeatures": [
+    "Experiments",
+    "Run History",
+    "Report",
+    "Core Lab"
+  ],
+  "productionBuild": {
+    "javascriptChunkCount": 15,
+    "initialJavaScript": {
+      "file": "index-D-cGVw08.js",
+      "rawBytes": 803438,
+      "gzipBytes": 227842
+    },
+    "allJavaScript": {
+      "rawBytes": 1003121,
+      "gzipBytes": 284875
+    },
+    "css": {
+      "file": "index-KUfNh5W5.css",
+      "rawBytes": 194457,
+      "gzipBytes": 35199
+    },
+    "initialChunkWarning": "Vite still warns that the initial JavaScript bundle exceeds 500 kB after minification.",
+    "relevantLazyChunks": [
+      {
+        "file": "CoreLabFeature-D4bjtrrP.js",
+        "rawBytes": 5701,
+        "gzipBytes": 1966
+      },
+      {
+        "file": "ExperimentPanel-vGocLYQm.js",
+        "rawBytes": 7812,
+        "gzipBytes": 3176
+      },
+      {
+        "file": "MaterialReferencePanel-BBnGL5kV.js",
+        "rawBytes": 15923,
+        "gzipBytes": 4029
+      },
+      {
+        "file": "MeasurementValidationPanel-BB0OZi3-.js",
+        "rawBytes": 12861,
+        "gzipBytes": 4315
+      },
+      {
+        "file": "RFDiagnosticsResearchFeature-CH-lHvuu.js",
+        "rawBytes": 2320,
+        "gzipBytes": 1009
+      },
+      {
+        "file": "ReportFeature-D4P7v5P9.js",
+        "rawBytes": 9757,
+        "gzipBytes": 2863
+      },
+      {
+        "file": "RunHistoryPanel-DyxZvXfG.js",
+        "rawBytes": 13870,
+        "gzipBytes": 4526
+      },
+      {
+        "file": "SpecularReflectionReferencePanel-COxXkJRy.js",
+        "rawBytes": 14234,
+        "gzipBytes": 4102
+      }
+    ]
+  },
+  "baseline": {
+    "command": "cd frontend-react && npm run build",
+    "status": "passed",
+    "javascriptChunkCount": 12,
+    "initialJavaScript": {
+      "file": "index-CPWkdou9.js",
+      "rawBytes": 801829,
+      "gzipBytes": 226624
+    },
+    "allJavaScript": {
+      "rawBytes": 998170,
+      "gzipBytes": 280609
+    },
+    "css": {
+      "rawBytes": 184311,
+      "gzipBytes": 33582
+    },
+    "warning": "Vite reports the initial JavaScript chunk exceeds 500 kB after minification."
+  },
+  "interpretation": "Validation, Materials, and Reflection build as independent async assets and did not enter the initial JS graph. Initial JS is 1609 raw / 1218 gzip bytes larger than baseline; JavaScript chunk count increases by 3."
+}

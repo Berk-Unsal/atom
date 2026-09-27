@@ -1,0 +1,91 @@
+{
+  "concept": "8G",
+  "capturedOn": "2026-09-24",
+  "validation": [
+    {
+      "name": "Frontend unit/workflow suite",
+      "command": "cd frontend-react && npm test -- --reporter=dot",
+      "status": "passed",
+      "filesPassed": 59,
+      "testsPassed": 321,
+      "failed": 0
+    },
+    { "name": "Frontend lint", "command": "cd frontend-react && npm run lint", "status": "passed" },
+    {
+      "name": "Production build",
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "warning": "Vite still reports the initial JavaScript chunk above 500 kB after minification; this warning existed at baseline."
+    },
+    {
+      "name": "Request equivalence",
+      "command": "cd frontend-react && npx vitest run src/domain/requestEquivalence.test.js --reporter=dot",
+      "status": "passed",
+      "testsPassed": 3,
+      "failed": 0
+    },
+    {
+      "name": "Playwright E2E full suite",
+      "command": "cd frontend-react && npm run test:e2e -- --workers=1",
+      "status": "passed",
+      "total": 200,
+      "passed": 109,
+      "skipped": 91,
+      "failed": 0,
+      "note": "The full run completed in 3.4 minutes. Inventory Search/Map Area and multi-edit tests were then rerun after adding explicit request-count and mixed-value assertions; each desktop workflow passed."
+    },
+    {
+      "name": "backend-go",
+      "commands": ["cd backend-go && go vet ./...", "cd backend-go && go test -race ./..."],
+      "status": "passed",
+      "raceTestPackages": 2
+    },
+    {
+      "name": "core-lab-adapter",
+      "commands": ["cd core-lab-adapter && go vet ./...", "cd core-lab-adapter && go test -race ./..."],
+      "status": "passed",
+      "raceTestPackages": 1
+    },
+    {
+      "name": "Documentation",
+      "commands": ["sh docs/build-reference-pages.sh", "/tmp/urban-ray-tracer-doc-validation/bin/python docs/validate_docs.py"],
+      "status": "passed",
+      "htmlPages": 41,
+      "openapiPaths": 41,
+      "note": "The local interpreter initially lacked the repository-declared PyYAML dependency. PyYAML 6.0.3 was installed from docs/requirements.txt into a temporary /tmp virtual environment; the repository was not changed for that setup. The documentation build reports pre-existing --mathml deprecation warnings."
+    },
+    { "name": "Version metadata", "command": "python3 scripts/versioning.py check", "status": "passed", "version": "0.9.1" },
+    { "name": "Whitespace check", "command": "git diff --check", "status": "passed" }
+  ],
+  "bundle": {
+    "baseline": {
+      "javascriptChunks": 15,
+      "initialJavaScriptRawBytes": 803438,
+      "initialJavaScriptGzipBytes": 227842,
+      "allJavaScriptRawBytes": 1003121,
+      "allJavaScriptGzipBytes": 284875,
+      "cssRawBytes": 194457,
+      "cssGzipBytes": 35199
+    },
+    "after": {
+      "javascriptChunks": 15,
+      "initialJavaScriptRawBytes": 822925,
+      "initialJavaScriptGzipBytes": 232988,
+      "allJavaScriptRawBytes": 1022608,
+      "allJavaScriptGzipBytes": 290034,
+      "cssRawBytes": 202679,
+      "cssGzipBytes": 36374
+    },
+    "difference": {
+      "initialJavaScriptRawBytes": 19487,
+      "initialJavaScriptGzipBytes": 5146,
+      "allJavaScriptRawBytes": 19487,
+      "allJavaScriptGzipBytes": 5159,
+      "cssRawBytes": 8222,
+      "cssGzipBytes": 1175
+    },
+    "dependenciesAdded": 0,
+    "lazyLoading": "Existing lazy feature regressions passed; Inventory introduced no imports of Experiments, RF Diagnostics research, Run History, Reports, or Core Lab."
+  },
+  "performanceMeasurement": "No render-time or memory threshold was introduced. The evidence records real-fixture DOM row counts and a deterministic synthetic page-bound check instead."
+}

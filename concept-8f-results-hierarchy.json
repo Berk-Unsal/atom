@@ -1,0 +1,38 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:34:20.238Z",
+  "repositoryVersion": "0.9.1",
+  "topLevelFamilies": [
+    "RF",
+    "Optimization",
+    "Interference",
+    "Compare",
+    "Candidates"
+  ],
+  "sourceContext": [
+    "result kind",
+    "CURRENT/STALE/HISTORICAL/UNAVAILABLE state",
+    "Scenario/Version or draft source",
+    "source Run",
+    "date where useful"
+  ],
+  "unavailable": "Single unavailable state, reason, and Run current plan action; stale-looking metrics are not presented as current.",
+  "singleEvaluation": [
+    "Optimization Score and feasibility",
+    "Single configuration evaluation label",
+    "objective-aligned outcomes",
+    "More metrics, configuration changes, explanation, Model scope, provenance"
+  ],
+  "pareto": [
+    "solution identity and Recommended/Selected/Pareto alternative role",
+    "feasibility and score",
+    "objective outcomes",
+    "configuration delta",
+    "explanation and Apply actions",
+    "source/provenance"
+  ],
+  "compare": "Baseline vs optimized labels and compact changes/objective deltas; comparison math unchanged.",
+  "rf": "Model/source and headline lead; specialist evidence is secondary.",
+  "interference": "Serviceability, SINR/RSRP/RSRQ headline and source/coverage domain lead; thresholds and sample details remain accessible.",
+  "inspectorOwnership": "Pareto and result detail remain in Results; the right inspector remains read-only."
+}

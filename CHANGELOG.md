@@ -2,6 +2,12 @@
 
 All notable changes to A.T.O.M are recorded here. The project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and this file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- Update vulnerable frontend and Go module dependencies, move Go builds to 1.26.6, and refresh the Alpine 3.24 image digest to patched releases.
+
 ## [0.9.2] - 2026-09-27
 
 ### Changed

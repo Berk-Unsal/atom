@@ -545,7 +545,7 @@
       "page": "System Architecture",
       "title": "From a map action to an inspectable RF result",
       "url": "./architecture.html",
-      "text": "A.T.O.M is a local-first React and Go application. The browser owns planning state and map presentation; the Go service owns validation, bounded computation, spatial queries, and deterministic RF analysis. An optional sidecar adds 5G communication-path state without changing the radio model. Follow a request Open API reference Read RF algorithms Primary runtime Single container Backend Go 1.26.5 + Gin Frontend React + Leaflet Project persistence Browser IndexedDB Default RF capacity 2 concurrent jobs"
+      "text": "A.T.O.M is a local-first React and Go application. The browser owns planning state and map presentation; the Go service owns validation, bounded computation, spatial queries, and deterministic RF analysis. An optional sidecar adds 5G communication-path state without changing the radio model. Follow a request Open API reference Read RF algorithms Primary runtime Single container Backend Go 1.26.6 + Gin Frontend React + Leaflet Project persistence Browser IndexedDB Default RF capacity 2 concurrent jobs"
     },
     {
       "page": "System Architecture",
@@ -813,6 +813,18 @@
     },
     {
       "page": "Changelog",
+      "title": "Unreleased",
+      "url": "./changelog.html#unreleased",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed",
+      "text": "Update vulnerable frontend and Go module dependencies, move Go builds to 1.26.6, and refresh the Alpine 3.24 image digest to patched releases."
+    },
+    {
+      "page": "Changelog",
       "title": "0.9.2 - 2026-09-27",
       "url": "./changelog.html#092---2026-09-27",
       "text": ""
@@ -838,7 +850,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed",
+      "url": "./changelog.html#fixed-1",
       "text": "Keep retained Interference samples inspectable when switching map interaction modes and show unavailable values when the response lacks evidence. Keep active Scenario lineage when draft and saved plan values differ only by object key order or map-only focus/ray scope."
     },
     {
@@ -886,7 +898,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-1",
+      "url": "./changelog.html#fixed-2",
       "text": "Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows. Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on main reach the published site."
     },
     {
@@ -910,7 +922,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-2",
+      "url": "./changelog.html#fixed-3",
       "text": "Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary. Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport. Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly. Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image."
     },
     {
@@ -946,7 +958,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-3",
+      "url": "./changelog.html#fixed-4",
       "text": "Keep focused-drawer actions in normal layout flow so the propagation optimizer cannot overlap the vertical path-profile panel."
     },
     {
@@ -964,7 +976,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-4",
+      "url": "./changelog.html#fixed-5",
       "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts. Generate backend, Core Lab adapter, and frontend scenario/RF policy bindings from one canonical source, and share one tower input type across RF endpoints."
     },
     {
@@ -976,7 +988,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-5",
+      "url": "./changelog.html#fixed-6",
       "text": "Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests. Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation."
     },
     {
@@ -1000,7 +1012,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-6",
+      "url": "./changelog.html#fixed-7",
       "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
     },
     {
@@ -3239,7 +3251,7 @@
       "page": "Contributing",
       "title": "Setup Development Environment",
       "url": "./contributing.html#setup-development-environment",
-      "text": "Backend : # Install Go 1.26.5+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Python tooling : Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution: python -m pip install --require-hashes --only-binary = :all: -r data-pipeline/Requirements.txt python -m pip install --require-hashes --only-binary = :all: -r docs/requirements.txt After deliberately changing either .in file, install uv==0.12.0 and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles. Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
+      "text": "Backend : # Install Go 1.26.6+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Python tooling : Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution: python -m pip install --require-hashes --only-binary = :all: -r data-pipeline/Requirements.txt python -m pip install --require-hashes --only-binary = :all: -r docs/requirements.txt After deliberately changing either .in file, install uv==0.12.0 and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles. Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
     },
     {
       "page": "Contributing",
@@ -3509,7 +3521,7 @@
       "page": "Download and Use",
       "title": "Start locally, then follow the workflow you need",
       "url": "./download.html",
-      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.26.5 Frontend Node 24+"
+      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.26.6 Frontend Node 24+"
     },
     {
       "page": "Download and Use",
@@ -3569,7 +3581,7 @@
       "page": "Download and Use",
       "title": "Terminal 1: Go API",
       "url": "./download.html#development-heading",
-      "text": "Requires Go 1.26.5 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
+      "text": "Requires Go 1.26.6 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
     },
     {
       "page": "Download and Use",

@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "campaign_id": "ankara-real-pilot-2026-10-02",
+  "campaign_version": "2026.10.02.1",
+  "title": "Ankara real Signal Collector pilot, stationary control and walking session",
+  "campaign_date": "2026-10-02",
+  "source_type": "local_field",
+  "collection_mode": "handset_field_measurement",
+  "raw_format": "SIGNAL_COLLECTOR_TXT_V6",
+  "session_ids": [
+    "1",
+    "2"
+  ],
+  "raw_preservation": {
+    "keep_raw": true,
+    "canonical_output_separate": true,
+    "hash_algorithm": "sha256",
+    "raw_artifact_pattern": "operator-supplied external Signal Collector V6 files; immutable SHA-256 recorded separately",
+    "no_overwrite": true
+  },
+  "collector": {
+    "name": "Signal Collector",
+    "version": "not_reported_in_export",
+    "platform": "Android",
+    "hardware_requirements": [
+      "Android handset with LTE/NR modem",
+      "GNSS receiver",
+      "operator SIM/eSIM permitted for the campaign"
+    ],
+    "root_required": false,
+    "export_format": "SIGNAL_COLLECTOR_TXT_V6",
+    "quantities": [
+      "rsrp_dbm",
+      "rsrq_db",
+      "sinr_db",
+      "rssi_dbm",
+      "serving_cell_id",
+      "pci",
+      "earfcn_or_nrarfcn",
+      "band",
+      "frequency_mhz",
+      "gps",
+      "timestamp"
+    ],
+    "serving_identity": [
+      "registered",
+      "connection_status",
+      "cell_id",
+      "nci",
+      "pci",
+      "plmn",
+      "tac"
+    ],
+    "frequency_metadata": [
+      "earfcn",
+      "nrarfcn",
+      "band",
+      "frequency_mhz",
+      "bandwidth for LTE when exported"
+    ],
+    "gps_metadata": [
+      "WGS84 latitude",
+      "WGS84 longitude",
+      "altitude",
+      "horizontal accuracy",
+      "fix timestamp"
+    ],
+    "automation": "manual start/stop export; no unattended upload or cloud dependency",
+    "licensing": "operator-provided local collection; raw recordings are not redistributed",
+    "permissions": [
+      "location while collecting",
+      "phone state/cell information",
+      "local file export"
+    ]
+  },
+  "device": {
+    "pseudonymous_id": "ankara-pilot-handset-20261002",
+    "manufacturer": "samsung",
+    "model": "SM-A325F",
+    "android_version": "13",
+    "antenna_id": "built-in-handset-antenna",
+    "antenna_basis": "built-in handset antenna; modem-reported values have no device calibration correction",
+    "calibration_id": "none-recorded",
+    "calibration_state": "uncalibrated"
+  },
+  "receiver": {
+    "height_agl_m": 1.4,
+    "height_source": "assumed",
+    "antenna_id": "built-in-handset-antenna",
+    "antenna_basis": "built-in handset antenna",
+    "calibration_id": "none-recorded",
+    "calibration_state": "uncalibrated"
+  },
+  "coordinate": {
+    "provider": "GPS",
+    "crs": "EPSG:4326",
+    "max_accuracy_m": 20,
+    "timezone": "UTC",
+    "normalize_to_utc": true,
+    "poor_position_action": "retain source row and accuracy; exclude coordinates over the declared threshold from canonical geometry"
+  },
+  "operator": {
+    "operator_name": "Turk Telekom",
+    "plmn": "28603",
+    "network_context": "receive-side handset observation only; no operator-side transmitter data supplied",
+    "consent_note": "user-provided local field recordings; no operator-side access or site permission is inferred"
+  },
+  "measurement": {
+    "mode": "stationary_control_and_walking_pilot",
+    "sampling_interval_ms": 1000,
+    "fixed_point_window_seconds": 30,
+    "default_motion_state": "unclassified",
+    "keep_stationary_separate": true,
+    "aggregation_method": "raw",
+    "preserve_repeated_samples": true,
+    "neighbor_context_complete": false,
+    "censoring_supported": false,
+    "censoring_limitation": "empty or unavailable source fields remain missing; no detection floor is invented and no missing row is called censored",
+    "los_annotation_policy": "unknown unless explicitly field-annotated; no model-derived labels",
+    "outdoor_annotation_policy": "unknown unless explicitly field-annotated; no location-derived labels"
+  },
+  "detection": {
+    "available": false,
+    "unavailable_representation": "empty source field retained as missing",
+    "invalid_representation": "invalid source field retained as an import issue and excluded from the quantity row",
+    "censoring_representation": "not available in selected V6 export; do not substitute a floor"
+  },
+  "point_annotations": [],
+  "known_limitations": [
+    "Real local field evidence from two sessions; repeated route observations are autocorrelated.",
+    "Receiver height is nominal 1.4 m AGL, supplied by the operator as user-estimated with an approximately 1.3–1.5 m carry range. The current schema has no user_estimated enum, so height_source is recorded as assumed; the handset was handheld/chest height and approximately constant relative to local ground while terrain changed. No correction is applied.",
+    "The manifest schema stores campaign session IDs but has no per-session motion-classification field. Session 1 is stationary_control and session 2 is walking_pilot in the evidence artifacts; default_motion_state remains unclassified.",
+    "Outdoor state and LOS/NLOS annotations were not supplied and remain unknown.",
+    "Built-in handset antenna and device response are uncalibrated.",
+    "The export contains conflicting serving indicators: registered=true cell snapshots all report connection_status=NONE, while separate events are labeled SERVING_CELL_CHANGED. The existing adapter emits no canonical observations from those snapshots.",
+    "The export does not establish complete serving-resource or neighbor context for radio-quality validation.",
+    "Planning inventory defaults are not transmitter truth and are not copied into measured observations.",
+    "No calibration or model parameter changes are authorized by this campaign."
+  ],
+  "privacy": {
+    "personal_identifiers_excluded": [
+      "subscriber name",
+      "phone number",
+      "IMSI",
+      "IMEI",
+      "account identifier",
+      "raw device advertising identifier",
+      "precise route coordinates in tracked artifacts"
+    ],
+    "cell_identifiers_retained": true,
+    "raw_access": "restricted local campaign custody; raw files remain at operator-supplied external paths",
+    "sharing_policy": "tracked artifacts contain aggregate or pseudonymous evidence only; never publish raw files or precise receiver routes"
+  }
+}

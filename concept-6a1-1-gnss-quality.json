@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "gnss-quality",
+  "coordinate_values_included": false,
+  "declared_canonical_provider": "GPS",
+  "declared_max_horizontal_accuracy_m": 20,
+  "sessions": [
+    {
+      "session_id": "1",
+      "session_role": "stationary_control",
+      "location_source_rows": 131,
+      "gps_fix_count": 122,
+      "network_location_fix_count": 7,
+      "other_or_nonfix_location_rows": 2,
+      "gps_horizontal_accuracy_m": {
+        "count": 122,
+        "p50": 1.8,
+        "p90": 2.0,
+        "p95": 2.495,
+        "max": 10.2
+      },
+      "gps_vertical_accuracy_m": {
+        "count": 122,
+        "p50": 11.3,
+        "p90": 14.15,
+        "p95": 15.395,
+        "max": 129.8
+      },
+      "gps_speed_mps": {
+        "count": 122,
+        "p50": 0.0,
+        "p90": 0.091,
+        "p95": 0.357,
+        "max": 1.586
+      },
+      "gps_altitude_m": {
+        "count": 122,
+        "p50": 852.5,
+        "p90": 855.09,
+        "p95": 855.4,
+        "max": 858.2
+      },
+      "gps_cadence_s": {
+        "count": 121,
+        "p50": 1.001,
+        "p90": 1.038,
+        "p95": 1.057,
+        "max": 1.148
+      },
+      "gps_gaps_over_5s": 0,
+      "gps_max_gap_s": 1.148,
+      "network_horizontal_accuracy_m": {
+        "count": 7,
+        "p50": 18.479,
+        "p90": 22.067,
+        "p95": 22.452,
+        "max": 22.837
+      },
+      "gps_fixes_with_accuracy_le_20m": 122,
+      "stationary_jitter": {
+        "robust_center_method": "coordinate-wise median; exact center not published",
+        "accuracy_gates": {
+          "le_20m": {
+            "fixes": 122,
+            "radial_excursion_m": {
+              "count": 122,
+              "p50": 4.0,
+              "p90": 7.05,
+              "p95": 7.05,
+              "max": 19.19
+            },
+            "accumulated_polyline_m": 44.45
+          },
+          "le_10m": {
+            "fixes": 121,
+            "radial_excursion_m": {
+              "count": 121,
+              "p50": 4.0,
+              "p90": 7.05,
+              "p95": 7.05,
+              "max": 9.0
+            },
+            "accumulated_polyline_m": 31.01
+          },
+          "le_5m": {
+            "fixes": 120,
+            "radial_excursion_m": {
+              "count": 120,
+              "p50": 3.85,
+              "p90": 7.17,
+              "p95": 7.17,
+              "max": 7.18
+            },
+            "accumulated_polyline_m": 28.07
+          }
+        },
+        "collector_reported_distance_m": 226.4,
+        "collector_minus_gps_polyline_m": 181.95,
+        "interpretation": "GNSS point-to-point accumulation includes stationary jitter and is not physical travel distance; the collector distance is not RF geometry. The export does not identify the exact cause of the difference."
+      }
+    },
+    {
+      "session_id": "2",
+      "session_role": "walking_pilot",
+      "location_source_rows": 868,
+      "gps_fix_count": 823,
+      "network_location_fix_count": 43,
+      "other_or_nonfix_location_rows": 2,
+      "gps_horizontal_accuracy_m": {
+        "count": 823,
+        "p50": 1.7,
+        "p90": 1.9,
+        "p95": 1.9,
+        "max": 21.2
+      },
+      "gps_vertical_accuracy_m": {
+        "count": 823,
+        "p50": 8.5,
+        "p90": 10.58,
+        "p95": 11.29,
+        "max": 303.3
+      },
+      "gps_speed_mps": {
+        "count": 823,
+        "p50": 1.168,
+        "p90": 1.447,
+        "p95": 1.536,
+        "max": 1.709
+      },
+      "gps_altitude_m": {
+        "count": 823,
+        "p50": 871.3,
+        "p90": 880.3,
+        "p95": 882.09,
+        "max": 885.4
+      },
+      "gps_cadence_s": {
+        "count": 822,
+        "p50": 1.001,
+        "p90": 1.038,
+        "p95": 1.053,
+        "max": 4.041
+      },
+      "gps_gaps_over_5s": 0,
+      "gps_max_gap_s": 4.041,
+      "network_horizontal_accuracy_m": {
+        "count": 43,
+        "p50": 27.329,
+        "p90": 70.085,
+        "p95": 99.84,
+        "max": 100.0
+      },
+      "gps_fixes_with_accuracy_le_20m": 822,
+      "gps_fixes_over_20m": 1,
+      "collector_reported_distance_m": 1297.6,
+      "gps_polyline_using_fixes_le_20m_m": 1153.85,
+      "collector_minus_gps_polyline_m": 143.75,
+      "gps_polyline_accuracy_sensitivity_m": {
+        "le_10m": 1118.61,
+        "le_5m": 1100.26
+      },
+      "interpretation": "GPS polyline is approximate; collector distance remains a separate source quantity. No route coordinates are published."
+    }
+  ],
+  "combined": {
+    "gps_fix_count": 945,
+    "network_location_fix_count": 50,
+    "providers_merged": false
+  },
+  "cell_time_association": {
+    "method_used_by_existing_importer": "latest same-session location fix observed before the cell row, overridden only by an inline last_location payload when it contains a valid coordinate; no nearest-fix association was added",
+    "diagnostic_nearest_gps_age_s": {
+      "stationary_candidate_rows": {
+        "count": 11,
+        "p50": 0.223,
+        "p90": 1.811,
+        "p95": 1.817,
+        "max": 1.824
+      },
+      "walking_candidate_rows": {
+        "count": 72,
+        "p50": 0.228,
+        "p90": 0.461,
+        "p95": 0.886,
+        "max": 1.697
+      }
+    },
+    "diagnostic_latest_prior_gps_age_s": {
+      "stationary_rows_with_prior_fix": {
+        "count": 8,
+        "p50": 0.468,
+        "p90": 0.804,
+        "p95": 0.827,
+        "max": 0.849
+      },
+      "walking_rows_with_prior_fix": {
+        "count": 69,
+        "p50": 0.392,
+        "p90": 0.851,
+        "p95": 0.905,
+        "max": 2.344
+      }
+    },
+    "registered_flag_rows_with_inline_last_location": {
+      "stationary": 8,
+      "walking": 69
+    },
+    "b7_registered_flag_rows_with_usable_coordinate_le_20m": 28,
+    "b7_rows_with_both_rsrp_and_usable_coordinate": 27,
+    "canonical_observation_coordinates": 0
+  },
+  "height_note": "GNSS altitude is exported height above the GNSS reference and is not receiver height AGL. Receiver height stays nominal 1.4 m AGL by operator estimate, approximately constant relative to local ground while walking."
+}

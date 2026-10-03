@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "raw-file-audit",
+  "campaign_id": "ankara-real-pilot-2026-10-02",
+  "campaign_date": "2026-10-02",
+  "raw_files_modified": false,
+  "raw_files_tracked": false,
+  "combined": {
+    "raw_bytes": 25818270,
+    "parsed_data_rows": 53005,
+    "malformed_rows": 0,
+    "dropped_samples": 0,
+    "source_counts": {
+      "collector_heartbeat": 181,
+      "gnss_antenna": 2,
+      "gnss_navigation": 1929,
+      "gnss_satellite": 47859,
+      "location": 999,
+      "mobile_network": 2031,
+      "session": 4
+    },
+    "mobile_record_type_counts": {
+      "cell": 224,
+      "event": 1005,
+      "signal_strength": 802
+    },
+    "event_type_counts": {
+      "SERVING_CELL_CHANGED": 37,
+      "SERVICE_STATE_CHANGED": 79,
+      "SIGNAL_STRENGTH_CHANGED": 802,
+      "CELL_LIST_CHANGED": 83,
+      "DATA_CONNECTION_CHANGED": 2,
+      "DISPLAY_INFO_CHANGED": 2
+    },
+    "elapsed_realtime_nonmonotonic_warnings": 1858,
+    "timestamp_epoch_decreases": 0,
+    "timestamp_epoch_skew_rows": 0,
+    "sequence_gaps": 0,
+    "duplicate_sequence_rows": 0
+  },
+  "sessions": [
+    {
+      "session_role": "stationary_control",
+      "source_session_id": "1",
+      "source_filename": "data-stationary-test.txt",
+      "sha256": "ae4c62426eb02e6de158220fbb43a5eb978fdfa72b5550483b5cf25d12680fc7",
+      "raw_bytes": 3642965,
+      "physical_lines": 7410,
+      "parsed_data_rows": 7374,
+      "source_counts": {
+        "collector_heartbeat": 23,
+        "gnss_antenna": 1,
+        "gnss_navigation": 482,
+        "gnss_satellite": 6459,
+        "location": 131,
+        "mobile_network": 276,
+        "session": 2
+      },
+      "mobile_record_type_counts": {
+        "cell": 36,
+        "event": 137,
+        "signal_strength": 103
+      },
+      "event_type_counts": {
+        "SERVING_CELL_CHANGED": 7,
+        "SERVICE_STATE_CHANGED": 14,
+        "SIGNAL_STRENGTH_CHANGED": 103,
+        "CELL_LIST_CHANGED": 11,
+        "other_mobile_events": 2
+      },
+      "header": {
+        "format": "SIGNAL_COLLECTOR_TXT_V6",
+        "session_status": "COMPLETED",
+        "end_reason": "USER_STOP",
+        "running_ms": 121199,
+        "record_count": 7374,
+        "session_record_count": 7374,
+        "accepted_samples": 7374,
+        "written_samples": 7374,
+        "dropped_samples": 0,
+        "collector_reported_distance_m": 226.4,
+        "distance_max_accuracy_m": 20.0,
+        "distance_gap_count": 0,
+        "distance_gap_m": 0.0,
+        "tail_gap_ms": 0,
+        "writer_error": "",
+        "device": {
+          "manufacturer": "samsung",
+          "model": "SM-A325F",
+          "android_version": "13",
+          "sdk": 33
+        }
+      },
+      "sequence_check": {
+        "first_sequence": 1,
+        "last_sequence": 7374,
+        "unique_sequences": 7374,
+        "missing_sequence_numbers": 0,
+        "duplicate_sequence_rows": 0,
+        "epoch_timestamp_decreases": 0,
+        "timestamp_epoch_skew_rows": 0,
+        "elapsed_realtime_nonmonotonic_warnings": 237
+      },
+      "parse": {
+        "all_data_rows_parsed": true,
+        "malformed_rows": 0,
+        "dropped_rows_reported": 0,
+        "issues": {
+          "elapsed_realtime_not_monotonic/warning": 237
+        }
+      },
+      "existing_importer_first_run": {
+        "exit_status": 0,
+        "command_transmitter_map": "examples/concept-6a1-dry-run-transmitter-map.json (unmatched sentinel only; not a real map)",
+        "local_report_file": "/tmp/concept-6a1-1-stationary-import.json",
+        "local_report_sha256": "cc73495e4bf537195d10e268ceb5ced9ef535e54421f71659e332374f7a9cb21",
+        "local_report_bytes": 62484,
+        "canonical_observations": 0,
+        "importer_registered_cell_rows": 0,
+        "importer_neighbor_cell_rows": 36
+      }
+    },
+    {
+      "session_role": "walking_pilot",
+      "source_session_id": "2",
+      "source_filename": "data-walking-test.txt",
+      "sha256": "9d7aa4830391304a1a255c059c4c15dcb1b48c6f0de623dad4d934f7966c8f2f",
+      "raw_bytes": 22175305,
+      "physical_lines": 45667,
+      "parsed_data_rows": 45631,
+      "source_counts": {
+        "collector_heartbeat": 158,
+        "gnss_antenna": 1,
+        "gnss_navigation": 1447,
+        "gnss_satellite": 41400,
+        "location": 868,
+        "mobile_network": 1755,
+        "session": 2
+      },
+      "mobile_record_type_counts": {
+        "cell": 188,
+        "event": 868,
+        "signal_strength": 699
+      },
+      "event_type_counts": {
+        "SERVING_CELL_CHANGED": 30,
+        "SERVICE_STATE_CHANGED": 65,
+        "SIGNAL_STRENGTH_CHANGED": 699,
+        "CELL_LIST_CHANGED": 72,
+        "other_mobile_events": 2
+      },
+      "header": {
+        "format": "SIGNAL_COLLECTOR_TXT_V6",
+        "session_status": "COMPLETED",
+        "end_reason": "USER_STOP",
+        "running_ms": 823293,
+        "record_count": 45631,
+        "session_record_count": 45631,
+        "accepted_samples": 45631,
+        "written_samples": 45631,
+        "dropped_samples": 0,
+        "collector_reported_distance_m": 1297.6,
+        "distance_max_accuracy_m": 20.0,
+        "distance_gap_count": 0,
+        "distance_gap_m": 0.0,
+        "tail_gap_ms": 0,
+        "writer_error": "",
+        "device": {
+          "manufacturer": "samsung",
+          "model": "SM-A325F",
+          "android_version": "13",
+          "sdk": 33
+        }
+      },
+      "sequence_check": {
+        "first_sequence": 1,
+        "last_sequence": 45631,
+        "unique_sequences": 45631,
+        "missing_sequence_numbers": 0,
+        "duplicate_sequence_rows": 0,
+        "epoch_timestamp_decreases": 0,
+        "timestamp_epoch_skew_rows": 0,
+        "elapsed_realtime_nonmonotonic_warnings": 1621
+      },
+      "parse": {
+        "all_data_rows_parsed": true,
+        "malformed_rows": 0,
+        "dropped_rows_reported": 0,
+        "issues": {
+          "elapsed_realtime_not_monotonic/warning": 1621
+        }
+      },
+      "existing_importer_first_run": {
+        "exit_status": 0,
+        "command_transmitter_map": "examples/concept-6a1-dry-run-transmitter-map.json (unmatched sentinel only; not a real map)",
+        "local_report_file": "/tmp/concept-6a1-1-walking-import.json",
+        "local_report_sha256": "2aeedca099e63862319aa6920ccda4d61505fbb629130e9534b9bfe6e963612a",
+        "local_report_bytes": 384850,
+        "canonical_observations": 0,
+        "importer_registered_cell_rows": 0,
+        "importer_neighbor_cell_rows": 188
+      }
+    }
+  ],
+  "device_consistency": "Both raw headers independently report Samsung SM-A325F, Android 13, SDK 33; collector app version is absent from the export.",
+  "issue_interpretation": "All 1858 parser issues are warnings for nonmonotonic elapsed_realtime_ns values across asynchronously serialized source records. Epoch timestamps and sequence numbers are monotonic/continuous; source values were not repaired.",
+  "existing_importer_first_run_outcome": "Both unmodified CLI imports exited successfully, parsed every row, classified all CellInfo snapshots as neighbor/context, and wrote zero canonical observations. The unmatched synthetic map entry was used only to satisfy the strict non-empty map schema; it did not match or promote any observation."
+}

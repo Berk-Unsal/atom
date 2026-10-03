@@ -87,6 +87,8 @@ build_page concept-6a-canonical-rf-validation.md concept-6a-canonical-rf-validat
   "Source-independent 2.6/28 GHz RF observation semantics, canonical primitive reuse, deterministic matching, applicability gates, residual diagnostics, spatial holdouts, and conservative readiness."
 build_page concept-6a1-campaign-tooling.md concept-6a1-campaign-tooling.html "Concept 6A.1 Campaign Tooling" "Measurement acquisition" \
   "Ankara receive-side campaign tooling, Signal Collector V6 raw preservation, transmitter truth mapping, quantity-specific readiness, dry-run validation, and the Concept 6B gate."
+build_page concept-6a1-1-real-pilot-ingestion.md concept-6a1-1-real-pilot-ingestion.html "Concept 6A.1.1 Real Ankara Pilot Ingestion" "Scientific evidence" \
+  "Sanitized real Signal Collector ingestion, GNSS and LTE quality, B7 evidence, transmitter reconciliation, and the conservative validation readiness decision."
 build_page concept-7c-run-history.md concept-7c-run-history.html "Concept 7C Durable Local Run History" "Local persistence" \
   "Separate browser-local run history for exact draft execution snapshots, compact results, lifecycle recovery, lineage, deletion, and safe historical inspection."
 build_page concept-7d-report-artifacts.md concept-7d-report-artifacts.html "Concept 7D Local Report and Artifact Delivery" "Local evidence" \

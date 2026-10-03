@@ -155,6 +155,9 @@ Campaign Tooling page contents">
       <li><a href="#28-files-commands-and-recommendation"
       id="toc-28-files-commands-and-recommendation">28. Files, commands,
       and recommendation</a></li>
+      <li><a href="#29-concept-6a11-real-ankara-pilot"
+      id="toc-29-concept-6a11-real-ankara-pilot">29. Concept 6A.1.1 real
+      Ankara pilot</a></li>
       </ul>
     </aside>
 
@@ -179,11 +182,22 @@ GHz/28 GHz RF model, the UMa implementation, antenna/link-budget
 semantics, interference/radio-quality primitives, optimizer behavior,
 terrain behavior, or Concept 6A’s matching, applicability, residual,
 readiness, and calibration rules.</p>
-<p>The current result is
-<code>dry_run_ready_real_data_unavailable</code>. The repository
-contains a synthetic controlled export that exercises the complete
-import path; it is not field evidence. No real pilot data was supplied,
-so no <code>concept-6a1-pilot-validation.json</code> is created.</p>
+<p>The original Concept 6A.1 result was
+<code>dry_run_ready_real_data_unavailable</code>; that historical
+dry-run and its readiness snapshot remain in <a
+href="concept-6a1-dry-run-validation.json"><code>concept-6a1-dry-run-validation.json</code></a>
+and <a
+href="concept-6a1-dry-run-readiness.json"><code>concept-6a1-dry-run-readiness.json</code></a>.
+Two local Ankara Signal Collector recordings were added on 2026-10-02.
+Their raw V6 rows parse, but the existing importer produces zero
+trustworthy canonical observations because all CellInfo rows report
+<code>connection_status=NONE</code> even where
+<code>registered=true</code>, while separate records report
+<code>SERVING_CELL_CHANGED</code>. The current state is
+<code>real_data_ingested_validation_blocked</code>; the details are in
+<a
+href="./concept-6a1-1-real-pilot-ingestion.html"><code>concept-6a1-1-real-pilot-ingestion.md</code></a>.
+No <code>concept-6a1-pilot-validation.json</code> is created.</p>
 <h2 id="1-scope-and-frozen-boundary">1. Scope and frozen boundary</h2>
 <p>The implementation is the receive-side campaign tooling in <a
 href="../backend-go/raytracer/concept_6a1_campaign_tooling.go"><code>concept_6a1_campaign_tooling.go</code></a>,
@@ -197,13 +211,15 @@ GHz or 28 GHz propagation, infer a transmitter from strongest signal,
 invent missing frequency/bandwidth/height/LOS/antenna/calibration data,
 smooth measurements, replace SINR with RSRP, or feed observations into
 planning, optimization, or recommendation routes.</p>
-<p>The exact Concept 6A snapshots and optimizer-independent fingerprint
-are recorded in <a
+<p>The original Concept 6A snapshots and optimizer-independent
+fingerprint are recorded in <a
 href="concept-6a1-pre-change-baseline.json"><code>concept-6a1-pre-change-baseline.json</code></a>
 and <a
 href="concept-6a1-post-change-comparison.json"><code>concept-6a1-post-change-comparison.json</code></a>.
-The post-change comparison reports exact snapshot equality and keeps
-Concept 6A readiness at <code>no_measurement_data</code>.</p>
+Concept 6A remains <code>no_measurement_data</code> at the canonical
+layer because this pilot yielded zero canonical observations. The new
+evidence phase changes no RF, optimizer, request, persistence, or UI
+behavior.</p>
 <h2 id="2-acquisition-modes-considered">2. Acquisition modes
 considered</h2>
 <p>The pilot keeps three modes available:</p>
@@ -523,13 +539,18 @@ mapping, quantity semantics, GPS handling, fixed-point grouping,
 canonical invocation, holdout retention, and readiness reporting. It
 does not prove handset accuracy, transmitter truth, device calibration,
 or Ankara field conditions.</p>
-<p>Because no real data was supplied, the implementation stops at a
-dry-run report. The optional pilot validation artifact is deliberately
-absent. No synthetic residual is promoted as a field result.</p>
+<p>For the original Concept 6A.1 phase, no real data had been supplied,
+so that implementation stopped at the synthetic dry-run report. The
+optional pilot validation artifact was deliberately absent. No synthetic
+residual was promoted as a field result. The later real-recording result
+is documented separately in <a
+href="./concept-6a1-1-real-pilot-ingestion.html"><code>concept-6a1-1-real-pilot-ingestion.md</code></a>;
+it also stops before residual evaluation because canonical serving
+observations could not be constructed.</p>
 <h2 id="20-per-quantity-readiness">20. Per-quantity readiness</h2>
-<p>The generated <a
-href="concept-6a1-readiness.json"><code>concept-6a1-readiness.json</code></a>
-reports:</p>
+<p>The original synthetic dry-run readiness, preserved in <a
+href="concept-6a1-dry-run-readiness.json"><code>concept-6a1-dry-run-readiness.json</code></a>,
+reported:</p>
 <ul>
 <li>2.6 GHz <code>rsrp_dbm</code>: two applicable controlled
 observations and suitable for the dry-run validation path;</li>
@@ -543,8 +564,13 @@ missing bandwidth before radio-quality evaluation; and</li>
 <li><code>received_power_dbm</code>: no rows, because the adapter never
 fabricates it from RSRP.</li>
 </ul>
-<p>These are tooling readiness results, not a claim that the canonical
-RF model is validated.</p>
+<p>These were tooling readiness results, not a claim that the canonical
+RF model is validated. The active <a
+href="concept-6a1-readiness.json"><code>concept-6a1-readiness.json</code></a>
+now records the real pilot as
+<code>real_data_ingested_validation_blocked</code>; source-level
+candidate quantities do not count as canonical validation
+observations.</p>
 <h2 id="21-independence-and-holdouts">21. Independence and holdouts</h2>
 <p>The canonical response retains the existing spatial-block holdout
 policy with primary holdout enabled. The real campaign plan must reserve
@@ -576,18 +602,17 @@ evaluator’s diagnostic calibration output, when present, is not
 activated or promoted.</p>
 <h2 id="24-concept-6b-gate-and-next-step">24. Concept 6B gate and next
 step</h2>
-<p>Concept 6B is not ready. The remaining gates are lawful real
-receive-side observations, complete
-quantity/device/antenna/calibration/resource metadata, deterministic
-serving-cell truth, independent spatial/site/campaign holdouts, stable
-frequency-specific behavior, reproducible provenance, no configuration
-bias, complete radio-quality context where claimed, and independent
-review.</p>
-<p>The recommended next step is a small consented handset pilot using
-the selected V6 mode at a few fixed points and one moving route per
-frequency, with a separate truth-map review and an explicit engineering
-fallback for NR resource metadata. Keep the campaign uncalibrated until
-the quality report passes.</p>
+<p>Concept 6B is not ready. The real recordings establish that raw local
+field data exists, but the importer generated zero canonical
+observations. The immediate blocker is the source-contract conflict
+between <code>registered=true</code>,
+<code>connection_status=NONE</code>, and collector
+<code>SERVING_CELL_CHANGED</code> events. The next action is to obtain
+authoritative Signal Collector semantics for that relationship before
+deciding whether a deterministic additive adapter rule is justified. Do
+not collect another campaign automatically. Other validation gates
+remain separately documented in the Concept 6A.1.1 readiness
+artifact.</p>
 <h2 id="25-privacy-licensing-and-safety">25. Privacy, licensing, and
 safety</h2>
 <p>The manifest excludes subscriber name, phone number, IMSI, IMEI,
@@ -647,6 +672,8 @@ selected tool and alternatives audit;</li>
 <li><a
 href="concept-6a1-dry-run-validation.json"><code>concept-6a1-dry-run-validation.json</code></a>,
 <a
+href="concept-6a1-dry-run-readiness.json"><code>concept-6a1-dry-run-readiness.json</code></a>,
+active <a
 href="concept-6a1-readiness.json"><code>concept-6a1-readiness.json</code></a>,
 <a
 href="concept-6a1-pre-change-baseline.json"><code>concept-6a1-pre-change-baseline.json</code></a>,
@@ -674,6 +701,40 @@ git diff --check</code></pre>
 quality auditing only. Do not call the current dry run validation
 evidence, do not activate calibration, and do not open the Concept 6B
 gate until real-data and independent-review requirements are met.</p>
+<h2 id="29-concept-6a11-real-ankara-pilot">29. Concept 6A.1.1 real
+Ankara pilot</h2>
+<p>The 2026-10-02 stationary-control and walking-pilot files were parsed
+exactly: 53,005 of 53,005 data rows, no malformed or dropped samples,
+and 1,858 elapsed-realtime ordering warnings. The export contains 83
+<code>registered=true</code> CellInfo snapshots, all with
+<code>connection_status=NONE</code>, plus 37 explicit
+<code>SERVING_CELL_CHANGED</code> events. The events are reported as
+collector serving-cell changes, not protocol handovers; they do not
+override the conflicting CellInfo status.</p>
+<p>LTE B7/EARFCN 3200 at 2665 MHz appears in 29 registered-flag
+snapshots, with two pseudonymous candidate identities and 28 source RSRP
+values. The Android CellInfo connection status prevents promotion to
+canonical serving observations. The active Ankara planning pack has no
+exact identity matches. Bandwidth is unavailable on each B7 cell row,
+and ServiceState bandwidth vectors cannot be associated with an exact B7
+identity. No residuals were computed.</p>
+<p>The receiver height is recorded as nominal 1.4 m AGL,
+operator-estimated, approximately 1.3–1.5 m, handheld/chest height and
+approximately constant relative to local ground. The manifest uses
+<code>height_source: assumed</code> because the existing schema does not
+offer <code>user_estimated</code>. Outdoor and LOS/NLOS remain unknown.
+No calibration, RF change, optimizer change, UI work, or Concept 6B work
+occurred.</p>
+<p>The sanitized record set is <a
+href="./concept-6a1-1-real-pilot-ingestion.html"><code>concept-6a1-1-real-pilot-ingestion.md</code></a>,
+<a
+href="concept-6a1-1-readiness.json"><code>concept-6a1-1-readiness.json</code></a>,
+and the linked audit JSON files. The raw files and exact route
+coordinates remain outside the repository.</p>
+<p>Historical recommendation: use a consented real pilot for acquisition
+and QA only. Current recommendation: resolve the Signal Collector
+serving-status semantics before considering additional adapter work. The
+synthetic dry run remains historical evidence, not a field result.</p>
       </div>
     </article>
   </main>

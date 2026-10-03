@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "session-quality",
+  "session_classification": {
+    "1": "stationary_control",
+    "2": "walking_pilot"
+  },
+  "combined": {
+    "raw_records": 53005,
+    "mobile_network_records": 2031,
+    "cell_snapshots": 224,
+    "registered_flag_true_cell_snapshots": 83,
+    "registered_flag_false_neighbor_snapshots": 141,
+    "connection_status_counts": {
+      "NONE": 224
+    },
+    "confirmed_serving_snapshots_under_existing_adapter_contract": 0,
+    "collector_serving_cell_changed_events": 37,
+    "collector_event_identity_changes_are_handover_evidence": false,
+    "distinct_registered_flag_identity_tuples": 8,
+    "valid_raw_rsrp_cell_rows": 221,
+    "missing_raw_rsrp_cell_rows": 3,
+    "valid_raw_rsrq_cell_rows": 224,
+    "valid_raw_rssi_cell_rows": 224,
+    "valid_raw_sinr_rssnr_cell_rows": 224,
+    "valid_raw_frequency_cell_rows": 224,
+    "missing_raw_bandwidth_cell_rows": 224,
+    "cell_snapshots_with_location_under_existing_ordered_fix_policy_and_accuracy_le_20m": 212,
+    "importer_canonical_observations": 0,
+    "importer_mapping_counts": {
+      "exact": 0,
+      "deterministic": 0,
+      "ambiguous": 0,
+      "unresolved_canonical_rows": 0
+    },
+    "candidate_identity_reconciliation_is_separate": true,
+    "neighbor_context_complete": false,
+    "suitable_for_calibration_study": false
+  },
+  "sessions": [
+    {
+      "session_id": "1",
+      "session_role": "stationary_control",
+      "duration_ms": 121199,
+      "raw_rows": 7374,
+      "mobile_network_rows": 276,
+      "cell_rows": 36,
+      "registered_flag_true_rows": 11,
+      "registered_flag_false_rows": 25,
+      "connection_status_counts": {
+        "NONE": 36
+      },
+      "confirmed_serving_rows": 0,
+      "collector_serving_cell_changed_events": 7,
+      "distinct_registered_flag_identity_tuples": 5,
+      "candidate_identity_transitions_between_cell_snapshot_groups": 7,
+      "raw_cell_quantity_availability": {
+        "rsrp_dbm": {
+          "valid": 36,
+          "missing": 0
+        },
+        "rsrq_db": {
+          "valid": 36,
+          "missing": 0
+        },
+        "rssi_dbm": {
+          "valid": 36,
+          "missing": 0
+        },
+        "sinr_db": {
+          "valid": 36,
+          "missing": 0
+        },
+        "frequency": {
+          "valid": 36,
+          "missing": 0
+        },
+        "bandwidth": {
+          "valid": 0,
+          "missing": 36
+        }
+      },
+      "registered_flag_true_rows_with_usable_location_le_20m": 8,
+      "neighbor_snapshot_groups": 10,
+      "groups_with_unregistered_neighbor": 9,
+      "groups_without_unregistered_neighbor": 1,
+      "cell_snapshot_interval_s": {
+        "count": 9,
+        "p50": 20.898,
+        "p90": 22.431,
+        "p95": 25.418,
+        "max": 28.405
+      },
+      "signal_callback_interval_s": {
+        "count": 102,
+        "p50": 1.272,
+        "p90": 1.31,
+        "p95": 1.327,
+        "max": 2.107
+      },
+      "raw_imported_canonical_observations": 0,
+      "parser_warnings": {
+        "elapsed_realtime_not_monotonic": 237
+      }
+    },
+    {
+      "session_id": "2",
+      "session_role": "walking_pilot",
+      "duration_ms": 823293,
+      "raw_rows": 45631,
+      "mobile_network_rows": 1755,
+      "cell_rows": 188,
+      "registered_flag_true_rows": 72,
+      "registered_flag_false_rows": 116,
+      "connection_status_counts": {
+        "NONE": 188
+      },
+      "confirmed_serving_rows": 0,
+      "collector_serving_cell_changed_events": 30,
+      "distinct_registered_flag_identity_tuples": 6,
+      "candidate_identity_transitions_between_cell_snapshot_groups": 30,
+      "raw_cell_quantity_availability": {
+        "rsrp_dbm": {
+          "valid": 185,
+          "missing": 3
+        },
+        "rsrq_db": {
+          "valid": 188,
+          "missing": 0
+        },
+        "rssi_dbm": {
+          "valid": 188,
+          "missing": 0
+        },
+        "sinr_db": {
+          "valid": 188,
+          "missing": 0
+        },
+        "frequency": {
+          "valid": 188,
+          "missing": 0
+        },
+        "bandwidth": {
+          "valid": 0,
+          "missing": 188
+        }
+      },
+      "registered_flag_true_rows_with_usable_location_le_20m": 69,
+      "neighbor_snapshot_groups": 71,
+      "groups_with_unregistered_neighbor": 50,
+      "groups_without_unregistered_neighbor": 21,
+      "cell_snapshot_interval_s": {
+        "count": 70,
+        "p50": 10.736,
+        "p90": 20.927,
+        "p95": 20.993,
+        "max": 38.444
+      },
+      "signal_callback_interval_s": {
+        "count": 698,
+        "p50": 1.252,
+        "p90": 1.305,
+        "p95": 1.375,
+        "max": 3.842
+      },
+      "raw_imported_canonical_observations": 0,
+      "parser_warnings": {
+        "elapsed_realtime_not_monotonic": 1621
+      }
+    }
+  ],
+  "serving_status_interpretation": "All cell snapshots have connection_status=NONE. The 83 registered=true flags and the 37 explicit SERVING_CELL_CHANGED events are preserved as collector/source evidence, but the source and existing adapter provide no trustworthy canonical serving snapshot while these fields conflict.",
+  "event_interpretation": "The files contain collector-reported SERVING_CELL_CHANGED events (7 stationary, 30 walking). They are not called protocol-level handovers. Event identity pairs enumerate changes but do not override the contradictory CellInfo connection status for quantity-preserving canonical import.",
+  "quantity_semantics": {
+    "rsrp": "rsrp_dbm",
+    "rsrq": "rsrq_db",
+    "rssnr_or_sinr": "sinr_db",
+    "rssi": "rssi_dbm",
+    "generic_dbm_callback": "unassociated generic field; never converted to RSRP or received_power_dbm",
+    "zero_sinr": "retained as valid 0 dB, not missing"
+  },
+  "signal_callback_policy": {
+    "rows": 802,
+    "rows_with_cell_id": 0,
+    "rows_with_pci": 0,
+    "rows_with_earfcn": 0,
+    "canonical_observations_from_callbacks": 0,
+    "association": "no callback-to-cell join; cell snapshots remain distinct source records"
+  },
+  "duplicate_policy": "No repeated raw measurements were deduplicated. Sequence numbers are unique and continuous.",
+  "independence": "Repeated observations within each single route/session are temporally and spatially autocorrelated. Row count is not the independent sample count; suitable_for_calibration_study=false."
+}

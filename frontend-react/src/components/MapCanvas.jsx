@@ -21,6 +21,7 @@ function dispatchMapObjectClick(event, onSelectMapObject, mapObject) {
 
 export default function MapCanvas({
   basemapId = DEFAULT_BASEMAP_ID,
+  theme = "light",
   towers,
   selectedTower,
   selectedNetworkTowerIds = [],
@@ -112,6 +113,7 @@ export default function MapCanvas({
       />
 
       <TowerMarkersLayer
+        theme={theme}
         activeNetworkTech={activeNetworkTech}
         isDrawingSelection={isDrawingSelection}
         isPlacingCell={isPlacingCell}
@@ -206,6 +208,7 @@ function ViewportBoundsLayer({ onBoundsChange }) {
 }
 
 function TowerMarkersLayer({
+  theme,
   activeNetworkTech,
   isDrawingSelection,
   isPlacingCell,
@@ -240,7 +243,7 @@ function TowerMarkersLayer({
     const isNetworkVisible = layerVisibility?.selectedCells !== false && isNetworkSelected;
     const order = selectedTowerOrder?.get(tower.id);
     const isInspectorSelected = selectedMapObject?.type === "tower" && selectedMapObject?.payload?.tower?.id === tower.id;
-    const marker = cellMarkerPresentation({ active: isSelected, selected: isNetworkVisible, inspected: isInspectorSelected, focused: isMapFocused, order, zoom });
+    const marker = cellMarkerPresentation({ active: isSelected, selected: isNetworkVisible, inspected: isInspectorSelected, focused: isMapFocused, order, zoom, theme });
     return (
       <Fragment key={tower.id}>
         {marker.rings.map((ring) => (

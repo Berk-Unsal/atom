@@ -6,7 +6,7 @@ describe("raster basemap configuration", () => {
   it("uses the visually evaluated light default and resolves invalid choices", () => {
     expect(DEFAULT_BASEMAP_ID).toBe("alidade-smooth");
     expect(getBasemap("invalid")).toBe(getBasemap(DEFAULT_BASEMAP_ID));
-    expect(BASEMAPS.map(({ id }) => id)).toEqual(["osm-standard", "alidade-smooth"]);
+    expect(BASEMAPS.map(({ id }) => id)).toEqual(["osm-standard", "alidade-smooth", "alidade-smooth-dark"]);
   });
   it("owns the provider URL, attribution and raster presentation", () => {
     const osm = getBasemap("osm-standard");
@@ -32,4 +32,16 @@ describe("raster basemap configuration", () => {
       }
     } finally { Browser.retina = previous; }
   });
+});
+
+
+it("registers a native dark raster with complete attribution and the existing authentication model", () => {
+  const dark = getBasemap("alidade-smooth-dark");
+  expect(dark.theme).toBe("dark");
+  expect(dark.url).toBe("https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png");
+  expect(dark.attribution).toBe(getBasemap("alidade-smooth").attribution);
+  expect(dark.authentication).toBe("domain");
+  expect(dark.maxZoom).toBe(20);
+  expect(dark.retina).toBe(true);
+  expect(dark.className).toBe("atom-basemap atom-basemap-dark");
 });

@@ -38,6 +38,8 @@ Use the [documentation hub](index.html) for the maintained browser experience. I
 - [API reference](api.html) and [OpenAPI contract](openapi.yaml): documented REST interfaces and response behavior.
 - [Bug-fix register](bug-fixes.html): confirmed defects, priority, correction, and regression evidence.
 
+- [Application appearance and dark basemap](dark-mode.md): Light/Dark/System preference, semantic themes, provider licensing/authentication, and [matched visual comparisons](dark-mode-visual-comparison.md).
+
 ## Release Status
 
 The current source version is [`0.9.3`](../VERSION). User-visible changes are published in the documentation [changelog](changelog.html), generated from the canonical root `CHANGELOG.md`. A matching `vX.Y.Z` tag validates metadata, publishes the container images, and creates the GitHub Release announcement from that changelog section.

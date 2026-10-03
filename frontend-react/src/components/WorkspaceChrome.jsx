@@ -602,6 +602,9 @@ export function UndoToast({ message, onDismiss, onUndo }) {
 }
 
 export function MapToolbar({
+  themePreference = "system",
+  resolvedTheme = "light",
+  onThemeChange,
   basemapId = DEFAULT_BASEMAP_ID,
   onBasemapChange,
   availableLayers,
@@ -975,9 +978,18 @@ export function MapToolbar({
           </button>
           {layerMenuOpen ? (
             <div id="map-layer-menu" className="layer-menu" role="group" aria-label="Map layer visibility">
+              <fieldset className="theme-choices">
+                <legend>Appearance</legend>
+                {["light", "dark", "system"].map((theme) => (
+                  <label key={theme}>
+                    <input type="radio" name="theme" value={theme} checked={themePreference === theme} onChange={() => onThemeChange?.(theme)} />
+                    <span>{theme[0].toUpperCase() + theme.slice(1)}</span>
+                  </label>
+                ))}
+              </fieldset>
               <fieldset className="basemap-choices">
                 <legend>Basemap</legend>
-                {BASEMAPS.map((basemap) => (
+                {BASEMAPS.filter((basemap) => resolvedTheme === "dark" || basemap.theme === "light").map((basemap) => (
                   <label key={basemap.id}>
                     <input type="radio" name="basemap" value={basemap.id} checked={basemapId === basemap.id} onChange={() => onBasemapChange?.(basemap.id)} />
                     <span>{basemap.label}</span>

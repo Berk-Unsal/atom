@@ -45,7 +45,7 @@ async function verifyProviders(page, live) {
   expect(policy).toBeTruthy();
   const imageDirective = policy.split(";").map((directive) => directive.trim()).find((directive) => directive.startsWith("img-src "));
   expect(imageDirective.split(/\s+/)).toEqual([
-    "img-src", "'self'", "data:", ...BASEMAPS.map((provider) => new URL(provider.url).origin),
+    "img-src", "'self'", "data:", ...new Set(BASEMAPS.map((provider) => new URL(provider.url).origin)),
   ]);
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
   if (await page.getByRole("button", { name: "Close tool drawer" }).isVisible()) {
@@ -72,6 +72,16 @@ async function verifyProviders(page, live) {
     expect(loaded.every((tile) => new URL(tile.url).hostname === host && tile.width >= (live ? 256 : 1))).toBe(true);
     expect(responses.some((tile) => new URL(tile.url).hostname === host && tile.status === 200)).toBe(true);
   }
+  await page.getByRole("button", { name: "Map layers" }).click();
+  await page.getByRole("group", { name: "Appearance" }).getByRole("radio", { name: "Dark", exact: true }).check();
+  await page.getByRole("button", { name: "Map layers" }).click();
+  await waitForBasemap(page);
+  await expect(page.locator(".atom-basemap-dark")).toHaveCount(1);
+  await expect(page.locator(".leaflet-control-attribution")).toContainText("Stadia Maps");
+  const dark = await basemapSnapshot(page);
+  for (const field of ["mapTransform", "tileViewport", "selectedMarkers", "context", "status", "primary"]) expect(dark[field]).toEqual(before[field]);
+  expect(dark.filter).toBe("none");
+  expect(dark.paneFilters.every((filter) => filter === "none")).toBe(true);
   expect(await page.evaluate(() => window.basemapCspViolations)).toEqual([]);
   expect(cspErrors).toEqual([]);
   if (live) console.log("Live basemap CSP verification", JSON.stringify({ policy, responses, cspErrors }));

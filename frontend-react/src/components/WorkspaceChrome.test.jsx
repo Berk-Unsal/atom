@@ -423,3 +423,17 @@ it("exposes basemaps as a labeled radio group and leaves overlay toggles alone",
   fireEvent.click(screen.getByRole("radio", { name: "OpenStreetMap" }));
   expect(onBasemapChange).toHaveBeenLastCalledWith("osm-standard");
 });
+
+
+it("offers Light, Dark and System as explicit choices, and exposes the dark provider in dark mode", () => {
+  const onThemeChange = vi.fn();
+  const onBasemapChange = vi.fn();
+  render(<MapToolbar {...toolbarProps} layerMenuOpen resolvedTheme="dark" themePreference="dark" basemapId="alidade-smooth-dark" onThemeChange={onThemeChange} onBasemapChange={onBasemapChange} />);
+  const appearance = screen.getByRole("group", { name: "Appearance" });
+  expect(within(appearance).getByRole("radio", { name: "Dark", exact: true })).toBeChecked();
+  fireEvent.click(within(appearance).getByRole("radio", { name: "System", exact: true }));
+  expect(onThemeChange).toHaveBeenCalledWith("system");
+  expect(screen.getByRole("radio", { name: "Alidade Smooth Dark", exact: true })).toBeChecked();
+  fireEvent.click(screen.getByRole("radio", { name: "OpenStreetMap", exact: true }));
+  expect(onBasemapChange).toHaveBeenCalledWith("osm-standard");
+});

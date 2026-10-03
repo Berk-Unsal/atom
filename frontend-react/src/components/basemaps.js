@@ -1,8 +1,10 @@
 // Presentation only: never include this choice in a plan, RF request or fingerprint.
 export const DEFAULT_BASEMAP_ID = "alidade-smooth";
+export const DARK_BASEMAP_ID = "alidade-smooth-dark";
 
 export const BASEMAPS = Object.freeze([
   Object.freeze({
+    theme: "light",
     id: "osm-standard",
     label: "OpenStreetMap",
     url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -13,6 +15,7 @@ export const BASEMAPS = Object.freeze([
     provider: "OpenStreetMap",
   }),
   Object.freeze({
+    theme: "light",
     id: "alidade-smooth",
     label: "Alidade Smooth",
     url: "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png",
@@ -22,6 +25,18 @@ export const BASEMAPS = Object.freeze([
     className: "atom-basemap atom-basemap-alidade",
     provider: "Stadia Maps",
     authentication: "domain", // localhost/127.0.0.1 need no configuration.
+  }),
+  Object.freeze({
+    id: DARK_BASEMAP_ID,
+    theme: "dark",
+    label: "Alidade Smooth Dark",
+    url: "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+    attribution: '&copy; <a href="https://stadiamaps.com/attribution/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+    maxZoom: 20,
+    retina: true,
+    className: "atom-basemap atom-basemap-dark",
+    provider: "Stadia Maps",
+    authentication: "domain",
   }),
 ]);
 

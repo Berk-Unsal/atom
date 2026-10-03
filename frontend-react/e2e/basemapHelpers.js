@@ -62,6 +62,8 @@ export async function basemapSnapshot(page) {
     }));
     return {
       overlayCanvasHashes,
+      scientificPalette: [...document.querySelectorAll(".quality-swatch, .map-key-line, .signal-surface-scale i")].map((e) => [e.className, getComputedStyle(e).backgroundColor]),
+      signalImages: [...document.querySelectorAll(".leaflet-image-layer")].map((e) => e.getAttribute("src")),
       palette: [...document.querySelectorAll(".focused-map-legend i")].map((e) => { const css = getComputedStyle(e); return [e.className, css.color, css.backgroundColor, css.borderColor]; }),
       tileViewport,
       mapTransform: pane?.style.transform,

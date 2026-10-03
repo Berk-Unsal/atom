@@ -19,3 +19,13 @@ it("makes provider errors observable and resets failure when the provider change
   expect(screen.getByRole("button")).toHaveAttribute("data-opacity", "1");
   expect(screen.getByRole("button")).toHaveClass("atom-basemap-osm");
 });
+
+
+it("keeps dark provider failure observable and resets it on fallback", () => {
+  const { rerender } = render(<BasemapLayer basemap={getBasemap("alidade-smooth-dark")} />);
+  fireEvent.click(screen.getByRole("button"));
+  expect(screen.getByRole("status")).toHaveTextContent("Alidade Smooth Dark: Base map unavailable");
+  expect(screen.getByRole("status")).toHaveTextContent("choose OpenStreetMap in Layers");
+  rerender(<BasemapLayer basemap={getBasemap("osm-standard")} />);
+  expect(screen.queryByRole("status")).not.toBeInTheDocument();
+});

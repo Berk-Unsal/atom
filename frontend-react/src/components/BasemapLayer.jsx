@@ -29,7 +29,7 @@ export default function BasemapLayer({ basemap }) {
       />
       {unavailable ? (
         <div className="map-basemap-status" role="status">
-          {basemap.label}: Base map unavailable. RF layers remain available; choose {basemap.id === "alidade-smooth" ? "OpenStreetMap" : "Alidade Smooth"} in Layers or check provider deployment settings.
+          {basemap.label}: Base map unavailable. RF layers remain available; choose {basemap.provider === "Stadia Maps" ? "OpenStreetMap" : "Alidade Smooth"} in Layers or check provider deployment settings.
         </div>
       ) : null}
     </>

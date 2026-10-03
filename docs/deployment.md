@@ -21,7 +21,7 @@ Open `http://localhost:8080`. Stop the service with `docker compose down`.
 |---|---|---|
 | `atom` container | Required | Static frontend, REST API, RF engines, spatial index, active dataset pack |
 | Browser IndexedDB | Required for projects | Local project/scenario history; not shared across users |
-| OpenStreetMap tiles | External by default | Visual basemap only; RF computation remains local |
+| Stadia Maps / OpenStreetMap tiles | External by default | Alidade Smooth light/dark and selectable OSM; visual basemap only; RF computation remains local |
 | `core-lab-adapter` | Optional profile | Deterministic 5G path state and optional Open5GS probes |
 
 The Go server does not persist projects, jobs, reports, or measurements. Multiple API replicas can serve independent requests, but browser projects do not become collaborative storage.
@@ -172,3 +172,8 @@ Imported projects include a schema version and dataset reference. A mismatch is 
 - Public deployments enforce TLS and user authentication at the gateway and set `RF_API_KEY` plus `BUILDINGS_API_KEY` on the backend hop.
 
 See [Download and Use](download.html), [System Architecture](architecture.html), and the [OpenAPI contract](openapi.yaml).
+
+
+## Basemap access and appearance
+
+Alidade Smooth and Alidade Smooth Dark use Stadia Maps. Production browser deployments require domain registration with Stadia and an appropriate subscription (commercial use requires a paid plan). Localhost development has a rate-limited keyless exemption; private LAN addresses do not. Keep linked attribution visible and preserve Origin/Referer headers. OpenStreetMap remains an explicit alternative in Layers, subject to its own tile usage policy. See [theme/provider guidance](dark-mode.md) for authentication, licensing, and failure recovery.

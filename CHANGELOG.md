@@ -4,6 +4,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Added
+
+- Add locally persisted Light, Dark and System appearance, semantic dark shell tokens, and a native Alidade Smooth Dark basemap; preserve light rendering, RF palettes, camera, selection, result identity and explicit provider fallbacks. Include matched visual evidence and provider deployment guidance.
+
 ### Fixed
 
 - Allow the exact Stadia Maps tile origin in the application's image CSP so Alidade Smooth loads in Go-served and container deployments while preserving OpenStreetMap support and all other directives.

@@ -14,6 +14,6 @@ Use Stadia's [official Alidade configuration](https://docs.stadiamaps.com/map-st
 
 Captures use `ATOM_BASEMAP_CAPTURE=1 npx playwright test --project=desktop-1440 --workers=1 --grep 'captures Alidade basemap'` from `frontend-react`. Successful real PNGs are cached only in `/tmp/atom-basemap-tiles`. The shared capture helper waits for loaded opaque visible tiles, full viewport coverage, settled canvas sizing and status. It records one active raster container, camera/overlay invariance, scientific canvas hashes, palette values, tile counts and layout collisions. Remote pixels are excluded from contract tests. A stabilized exported-draft wait corrects the existing baseline 8H test's hydration race without changing persistence code.
 
-A future `alidade-smooth-dark` registry entry can reuse this layer and selector when dark-theme work is authorized. No dark entry, dark tokens, vector tiles, MapLibre or new UI concept is shipped.
+The subsequent [application theme work](dark-mode.md) adds `alidade-smooth-dark` through this registry and layer. This document records the original light-provider evaluation; its matched evidence predates the theme system.
 
 Recommended next action: register the intended production domain with Stadia before deploying, then verify authenticated live tiles on that domain. The explicit OSM fallback remains available.

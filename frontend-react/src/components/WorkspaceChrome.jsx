@@ -24,6 +24,7 @@ import {
 import { WORKSPACE_STAGES, WORKSPACE_TOOLS } from "./workspaceTools.js";
 import { MAX_PROJECT_FILE_BYTES } from "../utils/projectStore.js";
 import ResultContextBadge from "./ResultContextBadge.jsx";
+import PanelHeader from "./PanelHeader.jsx";
 
 export function CommandBar({
   appIconUrl,
@@ -51,7 +52,7 @@ export function CommandBar({
         <div className="command-group command-workspace" role="group" aria-label="Workspace">
           <div className="command-brand" aria-label="A.T.O.M workspace">
             <img src={appIconUrl} alt="" />
-            <span><strong>A.T.O.M</strong><small>Ankara Telecom Optimization Model</small></span>
+            <span><strong>A.T.O.M</strong><small><span className="brand-description-full">Ankara Telecom Optimization Model</span><span className="brand-description-short">Telecom planning</span></small></span>
           </div>
           <div className="workspace-group-content">
             {projectControl}
@@ -128,11 +129,13 @@ export function CommandBar({
 export function WorkspaceLineageContext({ context, persistenceState = "saved" }) {
   if (!context) return null;
   const draftState = context.unsaved
-    ? "Unsaved changes"
+    ? "Unsaved"
     : context.draft_state === "No saved Version"
       ? "Draft saved locally"
       : context.draft_state;
-  const compactDraftState = context.unsaved || context.draft_state === "No saved Version"
+  const compactDraftState = context.unsaved
+    ? "Unsaved"
+    : context.draft_state === "No saved Version"
     ? "Local draft"
     : context.draft_state;
   const versionSummary = context.version_label === "No saved Version" ? "No Version" : context.version_label;
@@ -352,6 +355,16 @@ export function StageToolChoices({
       role="group"
       aria-label={`${stage.label} tools`}
       data-stage-chooser
+      onKeyDown={(event) => {
+        if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+        const choices = [...choicesRef.current.querySelectorAll("button")];
+        const index = choices.indexOf(document.activeElement);
+        if (index < 0) return;
+        event.preventDefault();
+        const next = event.key === "Home" ? 0 : event.key === "End" ? choices.length - 1
+          : (index + (event.key === "ArrowDown" ? 1 : -1) + choices.length) % choices.length;
+        choices[next]?.focus();
+      }}
     >
       {tools.map((tool) => {
         const Icon = tool.icon;
@@ -435,6 +448,14 @@ export function StageToolChoices({
   );
 }
 
+export function StageMenu({ activeTool, onSelectTool, stage, toolState }) {
+  return (
+    <div id={`stage-chooser-${stage.id}`} className="stage-tool-chooser-flyout" role="dialog" aria-modal="false" aria-label={`${stage.label} tools`} data-stage-chooser>
+      <StageToolChoices activeTool={activeTool} onSelectTool={onSelectTool} stage={stage} toolState={toolState} />
+    </div>
+  );
+}
+
 export function WorkflowRail({
   activeTool,
   chooserStage,
@@ -457,11 +478,13 @@ export function WorkflowRail({
         const tools = WORKSPACE_TOOLS.filter((tool) => tool.stage === stage.id);
         const isActive = activeDefinition.stage === stage.id;
         const isChooserOpen = chooserStage === stage.id;
-        const hasResult = tools.some((tool) => toolState?.[tool.id]?.tone === "success" && toolState?.[tool.id]?.badge);
-        const hasWarning = tools.some((tool) => toolState?.[tool.id]?.tone === "warning" && toolState?.[tool.id]?.badge);
+        const hasWarning = tools.some((tool) => {
+          const state = toolState?.[tool.id];
+          return state?.tone === "warning" && state.badge && state.badge !== "Draft" && !state.unavailable;
+        });
         const tooltipID = `workspace-stage-${stage.id}-tip`;
         const attentionID = `workspace-stage-${stage.id}-attention`;
-        const attentionDescription = hasWarning ? "Attention available in this stage." : hasResult ? "Results available in this stage." : "";
+        const attentionDescription = hasWarning ? "Attention available in this stage." : "";
         return (
           <div className="rail-item rail-stage" key={stage.id}>
             <button
@@ -473,34 +496,19 @@ export function WorkflowRail({
               onClick={() => onToggleChooser(stage.id)}
               aria-label={`${stage.label} workspace`}
               aria-current={isActive ? "step" : undefined}
-              aria-describedby={attentionDescription ? `${tooltipID} ${attentionID}` : tooltipID}
+              aria-describedby={[!chooserStage ? tooltipID : null, attentionDescription ? attentionID : null].filter(Boolean).join(" ") || undefined}
               aria-haspopup="dialog"
               aria-expanded={isChooserOpen}
               aria-controls={isChooserOpen ? `stage-chooser-${stage.id}` : undefined}
-              title={stage.label}
             >
               <Icon size={19} />
               <span className="rail-label">{stage.label}</span>
-              {hasResult || hasWarning ? <span className={`rail-badge ${hasWarning ? "warning" : "success"}`} aria-hidden="true">{hasWarning ? "!" : "•"}</span> : null}
-              <span id={tooltipID} className="rail-tooltip" role="tooltip">{stage.label}</span>
+              {hasWarning ? <span className="rail-badge warning" aria-hidden="true">!</span> : null}
+              {!chooserStage ? <span id={tooltipID} className="rail-tooltip" role="tooltip">{stage.label}</span> : null}
               {attentionDescription ? <span id={attentionID} className="visually-hidden">{attentionDescription}</span> : null}
             </button>
             {isChooserOpen && !phoneLayout ? (
-              <div
-                id={`stage-chooser-${stage.id}`}
-                className="stage-tool-chooser-flyout"
-                role="dialog"
-                aria-modal="false"
-                aria-label={`${stage.label} tools`}
-                data-stage-chooser
-              >
-                <StageToolChoices
-                  activeTool={activeTool}
-                  onSelectTool={onSelectTool}
-                  stage={stage}
-                  toolState={toolState}
-                />
-              </div>
+              <StageMenu activeTool={activeTool} onSelectTool={onSelectTool} stage={stage} toolState={toolState} />
             ) : null}
           </div>
         );
@@ -547,14 +555,7 @@ export function ToolDrawer({
     >
       {chooser ? (
         <>
-          <header className="tool-drawer-header tool-drawer-chooser-header">
-            <div>
-              <h2 id="tool-drawer-title" ref={headingRef} tabIndex={-1}>{chooser.stage.label}</h2>
-            </div>
-            <button type="button" className="drawer-icon-button drawer-close" onClick={onClose} aria-label="Close tool chooser">
-              <X size={18} />
-            </button>
-          </header>
+          <PanelHeader className="tool-drawer-header tool-drawer-chooser-header" id="tool-drawer-title" headingRef={headingRef} title={chooser.stage.label} onClose={onClose} closeLabel="Close tool chooser" />
           <div className="tool-drawer-body stage-tool-chooser-mobile">
             <StageToolChoices
               id={`stage-chooser-content-${chooser.stage.id}`}
@@ -568,7 +569,7 @@ export function ToolDrawer({
         </>
       ) : (
         <>
-        <header className="tool-drawer-header">
+        <PanelHeader className="tool-drawer-header" id="tool-drawer-title" headingRef={headingRef} title={title} subtitle={subtitle} onClose={onClose} closeLabel="Close tool drawer">
         {drawerMode === "inspector" ? (
           <button type="button" className="drawer-icon-button" onClick={onBack} aria-label="Back to previous tool">
             <ChevronLeft size={18} />
@@ -576,14 +577,7 @@ export function ToolDrawer({
         ) : Icon ? (
           <span className="drawer-tool-icon" aria-hidden="true"><Icon size={18} /></span>
         ) : null}
-        <div>
-          <h2 id="tool-drawer-title" ref={headingRef} tabIndex={-1}>{title}</h2>
-          {subtitle ? <p>{subtitle}</p> : null}
-        </div>
-        <button type="button" className="drawer-icon-button drawer-close" onClick={onClose} aria-label="Close tool drawer">
-          <X size={18} />
-        </button>
-      </header>
+        </PanelHeader>
       <div className="tool-drawer-body">
         {error ? <div className="drawer-error" role="alert">{error}</div> : null}
         {children}
@@ -1012,8 +1006,13 @@ export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, ha
           <section aria-label="Cell markers">
             <strong>Cells</strong>
             <span><i className="map-key-marker active-cell" aria-hidden="true" />Active cell</span>
-            {planningMode === "network" ? <span><i className="map-key-marker cluster-cell" aria-hidden="true" />Selected cluster</span> : null}
+            {planningMode === "network" ? <>
+              <span><i className="map-key-marker cluster-cell" aria-hidden="true">1</i>Selected cell · order</span>
+              <span><i className="map-key-marker active-selected-cell" aria-hidden="true">1</i>Active + selected</span>
+            </> : null}
             <span><i className="map-key-marker available-cell" aria-hidden="true" />Available cell</span>
+            <span><i className="map-key-marker inspected-cell" aria-hidden="true" />Inspected cell</span>
+            <span><i className="map-key-marker focused-cell" aria-hidden="true" />Map Focus</span>
           </section>
           {resultContext ? (
             <section aria-label="Result source">

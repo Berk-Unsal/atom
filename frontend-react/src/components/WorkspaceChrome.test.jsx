@@ -206,9 +206,9 @@ describe("persistent result and workspace context", () => {
     );
 
     const lineage = document.querySelector(".workspace-lineage-context > summary");
-    expect(lineage).toHaveAttribute("aria-label", "Workspace: Ankara, Capacity Plan, Version 4, Unsaved changes");
+    expect(lineage).toHaveAttribute("aria-label", "Workspace: Ankara, Capacity Plan, Version 4, Unsaved");
     expect(lineage).toHaveTextContent("Version 4");
-    expect(lineage).toHaveTextContent("Unsaved changes");
+    expect(lineage).toHaveTextContent("Unsaved");
     lineage.focus();
     expect(lineage).toHaveFocus();
     expect(screen.getByText("STALE")).toBeInTheDocument();
@@ -248,6 +248,31 @@ describe("persistent result and workspace context", () => {
 });
 
 describe("stage-owned tool choices", () => {
+  it("suppresses every stage tooltip while a chooser is open", () => {
+    const props = { activeTool: "setup", onSelectTool: vi.fn(), onToggleChooser: vi.fn(), toolState: {} };
+    const { rerender } = render(<WorkflowRail {...props} chooserStage={null} />);
+    expect(screen.getAllByRole("tooltip")).toHaveLength(4);
+    rerender(<WorkflowRail {...props} chooserStage="plan" />);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    for (const label of ["Plan", "Simulate", "Analyze", "Review"]) expect(screen.getByRole("button", { name: `${label} workspace` })).not.toHaveAttribute("title");
+  });
+
+  it("shows rail badges only for actionable local attention", () => {
+    render(<WorkflowRail activeTool="setup" onSelectTool={vi.fn()} onToggleChooser={vi.fn()} toolState={{ results: { badge: "•", tone: "success" }, scenarios: { badge: "Draft", tone: "warning" }, core: { badge: "!", tone: "warning", unavailable: true }, inventory: { badge: "!", tone: "warning" } }} />);
+    expect(document.querySelectorAll(".rail-badge")).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "Plan workspace" }).querySelector(".rail-badge")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Review workspace" }).querySelector(".rail-badge")).not.toBeInTheDocument();
+  });
+
+  it("supports arrow navigation through the shared StageMenu including disabled explanations", () => {
+    render(<WorkflowRail activeTool="setup" chooserStage="plan" onSelectTool={vi.fn()} onToggleChooser={vi.fn()} toolState={{}} />);
+    const setup = screen.getByRole("button", { name: "Setup", exact: true });
+    setup.focus();
+    fireEvent.keyDown(setup, { key: "ArrowDown" });
+    expect(screen.getByRole("button", { name: "Inventory", exact: true })).toHaveFocus();
+    fireEvent.keyDown(document.activeElement, { key: "Home" });
+    expect(setup).toHaveFocus();
+  });
   it("keeps all thirteen workspace destinations discoverable from their owning stage", () => {
     const expectedTools = {
       plan: ["Setup", "Inventory"],

@@ -12,6 +12,8 @@ import {
 import ControlPanel from "./components/ControlPanel.jsx";
 import DisclosureSection from "./components/DisclosureSection.jsx";
 import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
+import AnalysisEmptyState from "./components/AnalysisEmptyState.jsx";
+import ResultTabs from "./components/ResultTabs.jsx";
 import BuildingEntryPanel from "./components/BuildingEntryPanel.jsx";
 import InventoryPanel from "./components/InventoryPanel.jsx";
 import LazyFeatureBoundary from "./components/LazyFeatureBoundary.jsx";
@@ -2489,29 +2491,6 @@ export default function App() {
   }, [simulation, towers]);
   const gapStats = coverageGaps?.stats ?? null;
   const selectedTowerLabel = selectedTower?.cellId ?? "No tower";
-  const runState = error
-    ? "Action needed"
-    : isGeneratingSurface
-      ? "Loading surface"
-    : isEvaluatingNetwork
-      ? "Evaluating"
-      : activeRFTask === "simulation"
-        ? "Simulating"
-        : isOptimizing
-          ? "Optimizing"
-          : isAnalyzingInterference
-            ? "Analyzing"
-            : isRecommendingSites
-              ? "Recommending"
-              : isEvaluatingMeasurements
-                ? "Validating"
-                : isAnalyzingMaterialReference
-                  ? "Evaluating reference"
-                : activeRFTask === "building_entry"
-                  ? "Estimating entry"
-    : planDirty
-              ? currentResultRun ? "Result out of date" : "Run needed"
-              : "Ready";
   const resultSummary = useMemo(() => {
     if (lastAnalysisKind === "building-entry" && buildingEntryAnalysis?.summary) {
       return {
@@ -2566,6 +2545,29 @@ export default function App() {
   const hasInterferenceData = (interferenceAnalysis.geojson?.features ?? []).length > 0;
   const currentBuildingEntryAnalysis = buildingEntryIsCurrent ? buildingEntryAnalysis : null;
   const hasResults = Boolean(simulation?.stats || networkOptimization?.stats || interferenceAnalysis.stats || siteRecommendations || measurementAnalysis || currentBuildingEntryAnalysis);
+  const runState = error
+    ? "Action needed"
+    : isGeneratingSurface
+      ? "Loading surface"
+    : isEvaluatingNetwork
+      ? "Evaluating"
+      : activeRFTask === "simulation"
+        ? "Simulating"
+        : isOptimizing
+          ? "Optimizing"
+          : isAnalyzingInterference
+            ? "Analyzing"
+            : isRecommendingSites
+              ? "Recommending"
+              : isEvaluatingMeasurements
+                ? "Validating"
+                : isAnalyzingMaterialReference
+                  ? "Evaluating reference"
+                : activeRFTask === "building_entry"
+                  ? "Estimating entry"
+    : planDirty
+              ? currentResultRun ? "Result out of date" : "Run needed"
+              : hasResults ? "Ready" : "Run needed";
   const workspaceLineage = useMemo(() => buildWorkspaceLineage({
     project: activeProject,
     activeScenario,
@@ -2649,7 +2651,7 @@ export default function App() {
   const toolState = {
     setup: { badge: planningMode === "network" ? String(selectedCellCount) : null },
 		inventory: { badge: invalidProfileCount ? "!" : null, tone: invalidProfileCount ? "warning" : "success" },
-    scenarios: activeProject?.draft ? { badge: "Draft", tone: "warning" } : {},
+    scenarios: {},
     propagation: {},
     experiments: {},
     surfaces: {
@@ -2718,14 +2720,18 @@ export default function App() {
     ? "Evaluating..."
     : planningMode === "network"
       ? cellsNeeded > 0
-        ? isSelectingCellsOnMap || specialMapToolArmed ? null : "Select cells"
+        ? "Select cells"
         : "Evaluate Network"
       : isLoading
         ? "Running..."
         : "Run Sector";
-  const primaryActionLabel = ["setup", "inventory", "propagation"].includes(activeTool)
-    ? runPlanActionLabel
-    : null;
+  const primaryActionLabel = invalidProfileCount > 0 ? "Resolve setup issues" : runPlanActionLabel;
+  const primaryDisabled = !workspaceLoaded || !workspaceRestored || hydratedDatasetRevision !== datasetRevision
+    || activeRFTask !== null || invalidProfileCount > 0 || (planningMode === "single" && !selectedTower)
+    || (specialMapToolArmed && planningMode === "network" && cellsNeeded > 0);
+  const runCurrentPlan = () => planningMode === "network" && selectedCellCount < 2
+    ? startMapCellSelection()
+    : planningMode === "network" ? evaluateNetwork() : runSimulation();
   const mapPlanPrompt = planDirty
     ? invalidProfileCount > 0
       ? {
@@ -3318,7 +3324,7 @@ export default function App() {
 	    validation: "Measurement, material, and facade reference diagnostics",
 	    "building-entry": "Estimated service just inside representative building facades",
 	    core: "Xn, N2, N3, sessions, and lab scenarios",
-    results: "Focused analysis from the latest RF operation",
+    results: "Inspect RF, interference, and optimization outputs",
     history: "Durable local simulation and optimization records",
     data: "Dataset confidence and model assumptions",
     report: "Export the current planning state",
@@ -3438,9 +3444,7 @@ export default function App() {
           projectWorkspace.clearError();
         }}
         onOpenResults={() => openResults(resultSummary?.view)}
-        onRun={() => planningMode === "network" && selectedCellCount < 2
-          ? startMapCellSelection()
-          : planningMode === "network" ? evaluateNetwork() : runSimulation()}
+        onRun={runCurrentPlan}
         txPowerDbm={formatNumber(settings.txPowerDbm, 0)}
         radiusMeters={formatNumber(settings.radiusMeters, 0)}
         projectControl={(
@@ -3465,10 +3469,10 @@ export default function App() {
         persistenceState={projectWorkspace.persistenceState}
         draftUnsaved={workspaceLineage.unsaved}
         primaryActionLabel={primaryActionLabel}
-		primaryDisabled={!workspaceLoaded || !workspaceRestored || hydratedDatasetRevision !== datasetRevision || activeRFTask !== null || invalidProfileCount > 0 || (planningMode === "single" && !selectedTower)}
+        primaryDisabled={primaryDisabled}
         resultContext={resultContext}
         runState={runState}
-        statusTone={visibleError ? "error" : activeRFTask !== null ? "busy" : planDirty ? "pending" : "ready"}
+        statusTone={visibleError ? "error" : activeRFTask !== null ? "busy" : planDirty || runState === "Run needed" ? "pending" : "ready"}
       />
 
       <section className={`workspace-frame ${drawerOpen ? "drawer-open" : ""} ${inspectedEntity ? "inspector-open" : ""} ${inspectedEntity && chooserStage ? "inspector-suspended" : ""}`}>
@@ -3625,7 +3629,7 @@ export default function App() {
             ["setup", "propagation"].includes(activeTool) ? (
               <DisclosureSection
                 title="Planning"
-                description="Controls used for normal RF planning. Run Sector remains available in the global command bar."
+                description="Configure the current plan; run it from the command bar."
                 defaultOpen
                 research={activeTool === "setup" && researchProfileActive}
               >
@@ -3856,6 +3860,12 @@ export default function App() {
 
           {drawerMode === "tool" && activeTool === "results" ? (
             <ResultsPanel
+              primaryActionLabel={primaryActionLabel}
+              primaryDisabled={primaryDisabled}
+              onRunCurrentPlan={runCurrentPlan}
+              planningMode={planningMode}
+              selectedCellCount={selectedCellCount}
+              onOpenTool={selectWorkspaceTool}
               activeView={activeResultsView}
               resultContext={resultContext}
               currentWorkspace={workspaceLineage}
@@ -4346,6 +4356,12 @@ function buildCoreLabQuery(towerIDs, selectedNetworkTowers, selectedTower) {
 }
 
 function ResultsPanel({
+  primaryActionLabel,
+  primaryDisabled,
+  onRunCurrentPlan,
+  planningMode,
+  selectedCellCount,
+  onOpenTool,
   activeView,
   cellExplanation,
   comparison,
@@ -4403,20 +4419,7 @@ function ResultsPanel({
           onSecondaryAction={resultContext.run ? () => onOpenRun?.(resultContext.run) : undefined}
         />
       ) : null}
-      <div className="result-view-tabs" role="tablist" aria-label="Result views">
-        {views.map((view) => (
-          <button
-            key={view.id}
-            type="button"
-            role="tab"
-            aria-selected={activeView === view.id}
-            className={activeView === view.id ? "active" : ""}
-            onClick={() => onViewChange(view.id)}
-          >
-            {view.label}
-          </button>
-        ))}
-      </div>
+      <ResultTabs views={views} value={activeView} onChange={onViewChange} />
 
       {activeView === "rf" ? (
         hasRFResults ? (
@@ -4442,7 +4445,14 @@ function ResultsPanel({
           <AnalysisEmptyState
             icon={RadioTower}
             title="No current RF result"
-            description="Run the selected sector or evaluate a network cluster to populate map rays and RF metrics."
+            description={planningMode === "network"
+              ? selectedCellCount >= 2
+                ? `Evaluate the current ${selectedCellCount}-cell network to generate RF results.`
+                : "Select at least two cells to evaluate the current network."
+              : "Run the current sector to generate RF results."}
+            actionLabel={primaryActionLabel}
+            actionDisabled={primaryDisabled}
+            onAction={onRunCurrentPlan}
           />
         )
       ) : null}
@@ -4465,6 +4475,8 @@ function ResultsPanel({
             icon={BarChart3}
             title="No optimization result"
             description="Open Propagation and optimize the current sector or network to capture a before-and-after comparison."
+            actionLabel="Open Propagation"
+            onAction={() => onOpenTool("propagation")}
           />
         )
       ) : null}
@@ -4482,6 +4494,8 @@ function ResultsPanel({
             icon={Activity}
             title="No interference result"
             description="Select two or more 4G or 5G cells, then analyze interference to compare SINR, RSRP, and RSRQ."
+            actionLabel={planningMode === "network" && selectedCellCount >= 2 ? "Open Interference" : "Open Setup"}
+            onAction={() => onOpenTool(planningMode === "network" && selectedCellCount >= 2 ? "interference" : "setup")}
           />
         )
       ) : null}
@@ -4582,16 +4596,6 @@ function RecommendationPanel({ disabled, loading, onApply, onRun, response }) {
 
 function formatScenarioMetric(value, unit) {
   return Number.isFinite(value) ? `${formatNumber(value, 1)}${unit ? ` ${unit}` : ""}` : UNAVAILABLE_VALUE;
-}
-
-function AnalysisEmptyState({ description, icon: Icon, title }) {
-  return (
-    <div className="analysis-empty-state" role="status">
-      <Icon size={20} aria-hidden="true" />
-      <strong>{title}</strong>
-      <p>{description}</p>
-    </div>
-  );
 }
 
 function OptimizationImpact({ comparison, onViewComparison }) {

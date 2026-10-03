@@ -2,7 +2,7 @@
 
 All notable changes to A.T.O.M are recorded here. The project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and this file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [0.10.0] - 2026-10-03
 
 ### Added
 
@@ -237,7 +237,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.9.3...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/Berk-Unsal/atom/compare/v0.9.3...v0.10.0
 [0.9.3]: https://github.com/Berk-Unsal/atom/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/Berk-Unsal/atom/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Berk-Unsal/atom/compare/v0.9.0...v0.9.1

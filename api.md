@@ -897,6 +897,8 @@ The separate experimental `search_policy: "deterministic_pareto_archive_search_v
 
 `POST /api/optimize-network` additionally returns `baseline`, an authoritative compact snapshot of the exact normalized selected-cell configuration that entered that optimization execution. It includes each cell's coordinates, original azimuth, resolved RF profile, request-level RF parameters, prepared-domain raw metrics/utilities, and baseline constraint status. It also returns `optimization_run_id`, a stable identity for RF-affecting state that excludes objective priorities. Baseline and Pareto statistics are evaluated through the same prepared domain, so their demand denominator, residential denominator, propagation-reach maximum, overlap semantics, and objective availability are directly comparable. The frontend can re-score both sides with new effective priorities from the stored frontier without repeating RF evaluation. `POST /api/evaluate-network` does not claim an optimization baseline.
 
+The legacy network optimizer caches independent per-cell RF contributions within each request, using the exact resolved cell configuration and azimuth. It still evaluates every original network proposal and applies the same aggregation, interference, constraints, Pareto membership and ranking. The shared bounded deadline remains 60 seconds. See the [network optimization deadline audit](network-optimization-deadline-audit.md) for runtime and invariance evidence.
+
 ### Explain One Pareto Cell
 
 **Endpoint**: `POST /api/explain-network-cell`
@@ -1269,6 +1271,10 @@ const coverage = await simulateRF({
 The server allows two RF jobs globally but only one active job per client by default. A client also has a 20-request-per-minute budget. Configure these with `MAX_CONCURRENT_RF_REQUESTS`, `MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT`, and `RF_REQUESTS_PER_MINUTE`.
 
 Rejected requests return `429` with `Retry-After`, `RateLimit-Limit`, `RateLimit-Remaining`, and `RateLimit-Reset`. Client identity comes from the socket peer unless `TRUSTED_PROXIES` explicitly lists the proxy CIDRs allowed to supply forwarding headers. These controls are process-local; a multi-replica deployment still needs a gateway-level shared budget.
+
+The budget counts protected HTTP POST attempts before handler validation and computation, including failures, cancellations, and concurrency/capacity rejections. Requests already denied for exhausted budget do not add a charge or extend the window. The 60-second fixed window starts on the client's first protected request; reset occurs on the next request at or after expiry. `RateLimit-Reset` and budget-exhaustion `Retry-After` are relative seconds rounded up to expiry. Concurrency/capacity rejections use `Retry-After: 1`.
+
+All protected RF routes share this bucket, including interference, diagnostics, signal-surface exports, and optimizer API calls. Internal optimizer evaluations do not consume HTTP request units. A six-cell Evaluate Network action sends one `/api/evaluate-network` plus six sequential `/api/simulate` requests; Interference sends one `/api/interference`. Evaluate → Interference → Re-evaluate costs 15 of 20 requests in a fresh window. Earlier runs and other tabs on the same IP also count. Denied admissions log operation, limiter-local request ID, process-local hashed client key, remaining budget, retry timing, and reason without request payloads. See the [request-budget audit](rf-analysis-request-budget-audit.md) for the measured trace and regression evidence.
 
 Set `RF_REQUEST_TIMEOUT_SECONDS` to bound compute time; the default is 60 seconds and expiration returns `504`. Keep RF concurrency aligned with CPU allocation and set `RF_API_KEY` for any non-private backend hop.
 

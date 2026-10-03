@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Measured optimizer phases, repeated
+per-cell RF work, bounded memoization, cancellation, and unchanged
+scientific results." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Network Optimization Deadline
+Audit | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Network
+Optimization Deadline Audit page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#starting-baseline"
+      id="toc-starting-baseline">Starting baseline</a></li>
+      <li><a href="#deadline-ownership"
+      id="toc-deadline-ownership">Deadline ownership</a></li>
+      <li><a href="#reproduction-protocol"
+      id="toc-reproduction-protocol">Reproduction protocol</a></li>
+      <li><a href="#confirmed-affected-case-and-reproduction"
+      id="toc-confirmed-affected-case-and-reproduction">Confirmed
+      affected case and reproduction</a></li>
+      <li><a href="#active-policy-and-exact-search-budget"
+      id="toc-active-policy-and-exact-search-budget">Active policy and
+      exact search budget</a></li>
+      <li><a href="#candidate-accounting-and-memoization"
+      id="toc-candidate-accounting-and-memoization">Candidate accounting
+      and memoization</a></li>
+      <li><a href="#wall-clock-phases-and-per-candidate-cost"
+      id="toc-wall-clock-phases-and-per-candidate-cost">Wall-clock
+      phases and per-candidate cost</a></li>
+      <li><a href="#rf-subsystem-spatial-data-and-cpu-findings"
+      id="toc-rf-subsystem-spatial-data-and-cpu-findings">RF subsystem,
+      spatial data and CPU findings</a></li>
+      <li><a href="#frequency-and-selected-cell-scaling"
+      id="toc-frequency-and-selected-cell-scaling">Frequency and
+      selected-cell scaling</a></li>
+      <li><a href="#history-deadline-intent-and-workload-classification"
+      id="toc-history-deadline-intent-and-workload-classification">History,
+      deadline intent and workload classification</a></li>
+      <li><a href="#root-cause-and-chosen-correction"
+      id="toc-root-cause-and-chosen-correction">Root cause and chosen
+      correction</a></li>
+      <li><a href="#acceptance-cancellation-and-invariance"
+      id="toc-acceptance-cancellation-and-invariance">Acceptance,
+      cancellation and invariance</a></li>
+      <li><a
+      href="#observability-and-future-optimization-progress-ux-opportunities"
+      id="toc-observability-and-future-optimization-progress-ux-opportunities">Observability
+      and future optimization progress UX opportunities</a></li>
+      <li><a href="#re-running-the-audit"
+      id="toc-re-running-the-audit">Re-running the audit</a></li>
+      <li><a href="#validation-and-limitations"
+      id="toc-validation-and-limitations">Validation and
+      limitations</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Runtime evidence</span>
+        <h1>Network Optimization Deadline Audit</h1>
+        <p>Measured optimizer phases, repeated per-cell RF work, bounded
+memoization, cancellation, and unchanged scientific results.</p>
+        <div class="hero-actions">
+          <a class="button" href="./network-optimization-deadline-audit.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Audit dated 2026-10-03. Goal: explain and correct
+<code>RF analysis exceeded its request deadline</code> without changing
+scientific/search semantics, request accounting, or progress UI.</p>
+<h2 id="starting-baseline">Starting baseline</h2>
+<ul>
+<li>Branch <code>main</code>, HEAD
+<code>9617f37dd74de1843731cbefefd3c00a83c07f13</code>, VERSION
+<code>0.10.0</code>.</li>
+<li>Checkout already contained the RF request-budget audit: 10 tracked
+files, 192 insertions / 21 deletions, plus its backend test, frontend
+E2E and Markdown/HTML audit. These edits are preserved.</li>
+<li>Baseline <code>go test ./...</code>: pass (main 1.093 s, raytracer
+cached); <code>go test -race ./...</code>: pass (main 1.874 s, raytracer
+cached); <code>go vet ./...</code>: pass.</li>
+<li>Baseline frontend: 65 files / 357 tests pass (8.06 s). Focused
+retained-Pareto E2E: 1 pass (2.2 s). Initial broad E2E filter: 1 pass /
+1 real-backend test skipped, recorded rather than treating the skip as
+coverage.</li>
+<li>Focused optimizer/fingerprint baseline:
+<code>go test ./raytracer -run 'TestOptimizeNetwork|TestNetworkSearch|TestNetworkScenario' -count=1</code>
+passes (0.558 s).</li>
+</ul>
+<h2 id="deadline-ownership">Deadline ownership</h2>
+<p><code>main.go</code> reads <code>RF_REQUEST_TIMEOUT_SECONDS</code>
+through <code>envInt</code> (missing, malformed, nonpositive values use
+60). <code>protectExpensiveRFRoutes</code> owns
+<code>context.WithTimeout</code> for protected POST routes, including
+network and single-cell optimization, evaluation, simulation, sector
+analysis, interference, surfaces, experiments and reference diagnostics.
+The timer begins after API-key validation, before limiter admission and
+body decoding. Admission does not queue; it accepts or immediately
+rejects. The derived context is passed through the production network
+handler into optimizer/domain preparation and deep RF loops.</p>
+<p><code>writeRFResponse</code> returns HTTP 504 with exactly
+<code>{"error":"RF analysis exceeded its request deadline"}</code> on
+<code>context.DeadlineExceeded</code>; canceled clients return without a
+result. No partial recommendation is serialized. The limiter releases
+global/client slots when synchronous handler work unwinds. The HTTP
+server separately has 120 s WriteTimeout; this is not the source of the
+quoted JSON error.</p>
+<p>Frontend <code>optimizeNetwork</code> makes one
+<code>postJSON('/api/optimize-network', ...)</code>.
+<code>apiClient.requestJSON</code> throws the response's
+<code>error</code>; App's catch displays that text. Sequential per-cell
+map simulations begin only on success. Durable-run setup precedes this
+request, so UI elapsed time can exceed the backend deadline; it is not
+proof of a longer RF deadline. No frontend auto-retry or additional
+candidate HTTP calls occur.</p>
+<h2 id="reproduction-protocol">Reproduction protocol</h2>
+<p><code>node scripts/network-optimization-deadline-fixtures.mjs /tmp/atom-deadline-fixtures</code>
+uses the unchanged actual frontend request builder, defaults, and
+canonical Ankara tower positions. It generates 2–6-cell cases at 28 and
+2.6 GHz, 120 rays, 400 m, 30 dBm, 120-degree beam, current default
+priorities, no positive radio-quality objective, and no explicit
+search-policy override. This is a closest deterministic reproduction;
+the user's exact selected-cell payload was not supplied.</p>
+<p>The gated <code>TestNetworkOptimizationDeadlineWallClockAudit</code>
+uses the same extracted production route registration, decoding,
+validation, RF protection and serialization. Deadline zero is
+controlled-test-only. Detailed request-local timing stays outside
+responses/fingerprints. Natural timings are run without competing test
+workloads. Dataset loading is recorded separately from admitted-request
+runtime.</p>
+<h2 id="confirmed-affected-case-and-reproduction">Confirmed affected
+case and reproduction</h2>
+<p>The user clarified that the affected network has
+<strong>six</strong>, rather than five, cells: <code>9664800</code>,
+<code>26390</code>, <code>9664790</code>, <code>9664795</code>,
+<code>9664791</code>, <code>9664794</code>, in that order. Their
+coordinates are taken from the existing Ankara tower dataset. The user
+confirmed 5G / 28 GHz; ray count, radius, azimuth overrides and
+priorities were not supplied, so the reproduction uses current UI
+defaults: 120 rays, 400 m per cell, 30 dBm, 120-degree beam, starting
+azimuth 90 degrees, default priorities 50/50/50/50/0, no hard
+constraints. Although the inventory source tags say LTE, the UI's
+resolved RF profile is 5G / 28 GHz; the fixture uses the frontend
+builder and does not infer a different RF profile from those tags.</p>
+<ul>
+<li>Existing running <code>atom-app</code>: affected payload returns
+<strong>504 after 60.008531 s</strong>, exact quoted deadline error. An
+earlier five-cell canonical control also returns 504 after 60.006305
+s.</li>
+<li>Controlled audit container using the same <code>atom:local</code>
+runtime image, original instrumented backend test binary, same dataset
+and no outer deadline: affected payload naturally completes in
+<strong>112.731062 s</strong>.</li>
+<li>Two subsequent isolated natural runs: <strong>94.706742 s</strong>,
+<strong>95.015039 s</strong>. Min/median/max across the three:
+<strong>94.707 / 95.015 / 112.731 s</strong>. The first run overlapped
+host control measurements; this can explain part of its larger time. All
+three are above 60 s. These are tiny-sample observations, not population
+percentiles.</li>
+<li>The full successful response SHA-256 is
+<code>651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0</code>;
+scenario fingerprint
+<code>network-d7a9f6c9a1b34208e5eceb368960fc61</code>; recommendation
+<code>220.0,220.0,350.0,120.0,90.0,90.0</code>.</li>
+<li>Environment: Apple M4, 10 logical CPUs; Go module-selected toolchain
+<strong>go1.26.6</strong> on darwin/arm64 and linux/arm64,
+GOMAXPROCS=10. The shell reports go1.27.1 but the module selects 1.26.6.
+Docker <code>cpu.max</code> is <code>max 100000</code>, with no
+container CPU/memory quota. Observed original process RSS was
+approximately 835 MiB (RSS 855008 KiB), live container memory
+approximately 822 MiB. These are samples, not measured peaks.</li>
+</ul>
+<h2 id="active-policy-and-exact-search-budget">Active policy and exact
+search budget</h2>
+<p>The unchanged frontend payload omits <code>search_policy</code>,
+<code>max_search_passes</code> and <code>max_unique_evaluations</code>.
+Therefore production selects
+<strong><code>legacy_two_pass_coordinate</code></strong>, not either
+opt-in policy. It has one start, two unconditional passes, each selected
+cell in request order, and 36 absolute azimuth candidates (0 through 350
+degrees, step 10). It does not stop until stable. For N cells it
+proposes <strong>72N + 2</strong> network evaluations, including
+baseline and final incumbent recomputation. Its budget is a fixed loop
+count independent of wall time; configured opt-in bounds do not replace
+these loops.</p>
+<p>For comparison, <code>deterministic_multistart_coordinate_v1</code>
+uses four starts (baseline and uniform rotations 90/180/270), up to 8
+default passes per start, and a default 5000 <strong>unique expensive
+network-state evaluations</strong> shared across the request; memo hits
+do not consume that unique budget. It terminates on stability, repeated
+state or a configured bound.
+<code>deterministic_pareto_archive_search_v1</code> also seeds four
+starts, defaults to 5000 unique RF states / 128 expanded states / 16
+rounds, and preserves its priority-independent FIFO/archive rules.
+Neither opt-in policy was changed by the runtime fix.</p>
+<h2 id="candidate-accounting-and-memoization">Candidate accounting and
+memoization</h2>
+<p>For the affected six-cell legacy case:</p>
+<table>
+<thead>
+<tr>
+<th>Counter</th>
+<th style="text-align: right;">Before</th>
+<th style="text-align: right;">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Proposed / aggregated network candidates</td>
+<td style="text-align: right;">434</td>
+<td style="text-align: right;">434</td>
+</tr>
+<tr>
+<td>Unique complete network states</td>
+<td style="text-align: right;">421</td>
+<td style="text-align: right;">421</td>
+</tr>
+<tr>
+<td>Duplicate network proposals / aggregations</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>Feasible / infeasible proposal evaluations</td>
+<td style="text-align: right;">434 / 0</td>
+<td style="text-align: right;">434 / 0</td>
+</tr>
+<tr>
+<td>Unique feasible states scored for Pareto processing</td>
+<td style="text-align: right;">421</td>
+<td style="text-align: right;">421</td>
+</tr>
+<tr>
+<td>Non-dominated states ranked before public truncation</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr>
+<td>Ranked solutions returned</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr>
+<td>Independent per-cell RF contribution requests</td>
+<td style="text-align: right;">2604</td>
+<td style="text-align: right;">2604</td>
+</tr>
+<tr>
+<td>Per-cell memoization hits / misses</td>
+<td style="text-align: right;">0 / 2604</td>
+<td style="text-align: right;">2424 / 180</td>
+</tr>
+<tr>
+<td>Duplicate expensive per-cell computations</td>
+<td style="text-align: right;">2424</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>The last two lines count <strong>cell contributions</strong>, not
+network states. Before the fix all 434 network calls repeated RF work,
+including repeated complete states; afterward each network proposal is
+still aggregated and checked. A candidate can reuse all contributions,
+or compute just its newly changed cell. Every cache miss still executes
+the existing reach and building-coverage functions; this task did not
+combine those RF algorithms or change their equations. Final
+compatibility per-tower summaries are still recomputed independently and
+are outside the 2604/180 counters.</p>
+<p>There are only five distinct spatial/profile combinations among the
+six affected cells: <code>9664791</code> and <code>9664794</code> are
+co-located with identical resolved RF profiles. Thus 5 × 36 =
+<strong>180</strong> distinct cell configurations suffice. Cells remain
+distinct during network aggregation, including overlap and interference;
+only their identical independent RF contribution is shared.</p>
+<p>Legacy had no whole-state cache. The new map is request-scoped inside
+its prepared context and keyed by the complete comparable
+<code>StaticSimulationRequest</code>: coordinates, exact normalized
+azimuth, ray count, calibration, and full resolved profile (including
+frequency, antenna, radius, channel and receiver inputs). No
+floating-point rounding or truncated hash is used. Pointer-valued PCI
+fields can cause a conservative missed reuse when equivalent values use
+different pointers, but cannot alias unequal RF inputs. No state is
+shared between requests or persisted. At most 37 entries per cell cover
+the 36 grid angles plus an off-grid baseline: <strong>at most 222
+entries</strong> for six cells. Entries retain reach scalars and
+building-power maps, not ray geometry.</p>
+<p>Existing opt-in whole-state memoization remains intact: sorted
+cell-ID/normalized-azimuth JSON, six-decimal azimuth normalization and a
+96-bit SHA-256 prefix, scoped to invariant request physics. Tower
+ordering normalizes identically in that key; collision probability is
+negligible but not mathematically zero. Existing deterministic ledger
+tests verify hit/miss and budget behavior. This audit found no broken
+opt-in memoization; it did not redesign that key.</p>
+<h2 id="wall-clock-phases-and-per-candidate-cost">Wall-clock phases and
+per-candidate cost</h2>
+<p>First affected controlled-container natural run, before
+correction:</p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th style="text-align: right;">Wall time</th>
+<th style="text-align: right;">Share of 112.731 s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Setup including fixed domain preparation</td>
+<td style="text-align: right;">1.188 ms</td>
+<td style="text-align: right;">0.001%</td>
+</tr>
+<tr>
+<td>Domain preparation (nested in setup)</td>
+<td style="text-align: right;">1.024 ms</td>
+<td style="text-align: right;">0.001%</td>
+</tr>
+<tr>
+<td>Search initialization</td>
+<td style="text-align: right;">0.004917 ms</td>
+<td style="text-align: right;">&lt;0.001%</td>
+</tr>
+<tr>
+<td>Baseline network evaluation</td>
+<td style="text-align: right;">300.158 ms</td>
+<td style="text-align: right;">0.266%</td>
+</tr>
+<tr>
+<td>Search</td>
+<td style="text-align: right;">111956.710 ms</td>
+<td style="text-align: right;">99.313%</td>
+</tr>
+<tr>
+<td>Candidate generation</td>
+<td style="text-align: right;">0.084670 ms</td>
+<td style="text-align: right;">&lt;0.001%</td>
+</tr>
+<tr>
+<td>Objective / constraint acceptance</td>
+<td style="text-align: right;">3.672 ms</td>
+<td style="text-align: right;">0.003%</td>
+</tr>
+<tr>
+<td>RF reach evaluations</td>
+<td style="text-align: right;">72447.711 ms</td>
+<td style="text-align: right;">64.266%</td>
+</tr>
+<tr>
+<td>Building coverage evaluations</td>
+<td style="text-align: right;">39872.544 ms</td>
+<td style="text-align: right;">35.370%</td>
+</tr>
+<tr>
+<td>Prepared-domain aggregation</td>
+<td style="text-align: right;">52.376 ms</td>
+<td style="text-align: right;">0.046%</td>
+</tr>
+<tr>
+<td>Pareto/archive processing</td>
+<td style="text-align: right;">31.339 ms</td>
+<td style="text-align: right;">0.028%</td>
+</tr>
+<tr>
+<td>Ranking / recommendation (includes archive and dataset quality
+summary)</td>
+<td style="text-align: right;">103.945 ms</td>
+<td style="text-align: right;">0.092%</td>
+</tr>
+<tr>
+<td>Final compatibility tower summaries</td>
+<td style="text-align: right;">151.953 ms</td>
+<td style="text-align: right;">0.135%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nested phase timings must not be summed.</strong> Each
+start/pass/coordinate duration is retained in the JSON measurement
+ledger. First pass 57.580 s; second pass 54.377 s. Coordinates ranged
+approximately 7.753–10.132 s. No initialization/search explosion was
+hidden in setup.</p>
+<p>Candidate elapsed distributions (434 calls, empirical order
+statistics; includes baseline/final):</p>
+<table>
+<thead>
+<tr>
+<th>Affected container case</th>
+<th style="text-align: right;">Min</th>
+<th style="text-align: right;">Median</th>
+<th style="text-align: right;">p90</th>
+<th style="text-align: right;">p95</th>
+<th style="text-align: right;">Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Before</td>
+<td style="text-align: right;">199.515 ms</td>
+<td style="text-align: right;">265.543 ms</td>
+<td style="text-align: right;">277.382 ms</td>
+<td style="text-align: right;">287.820 ms</td>
+<td style="text-align: right;">394.505 ms</td>
+</tr>
+<tr>
+<td>After, first same-container run</td>
+<td style="text-align: right;">0.081 ms</td>
+<td style="text-align: right;">0.135 ms</td>
+<td style="text-align: right;">38.874 ms</td>
+<td style="text-align: right;">44.977 ms</td>
+<td style="text-align: right;">205.846 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Afterward the distribution mixes full-cache network aggregations and
+new-cell RF evaluations; it is not the latency distribution of 180 cache
+misses alone. The post-fix baseline was 205.871 ms, initialization
+0.020750 ms, Pareto/archive 33.245 ms, ranking/recommendation 105.062
+ms, serialization 0.392 ms, decoding/validation 0.201 ms, cell memo
+lookup 1.218 ms total. RF reach/building coverage fell to 4.042/2.363 s.
+The final detailed run separately measured admission, dominance and
+ranking; those values are in the ledger.</p>
+<h2 id="rf-subsystem-spatial-data-and-cpu-findings">RF subsystem,
+spatial data and CPU findings</h2>
+<p>Ankara <code>ankara-open-planning</code> version 2026.07 has
+<strong>161626 GeoJSON building features / 161784 indexed polygon
+footprints</strong>, and 451 inventory cells. Multipart polygons explain
+the differing building counts. The affected selected-radius union
+contains 801 relevant building entities, 9 demand entities and 759
+residential entities. The default radio-quality objective has weight
+zero, so this case prepares no interference sampling domain and performs
+no radio-quality candidate evaluation. Coverage is building-based; it
+does not secretly add a spatial coverage grid.</p>
+<p>Before: <strong>10636560</strong> spatial queries,
+<strong>63202457</strong> accumulated candidate checks, maximum 125
+candidates per query; mean approximately 5.94. After:
+<strong>746640</strong> queries and <strong>4387073</strong> candidate
+checks, same maximum 125, approximately 14.25× fewer queries. These
+include full-path geometry and short segment queries across the reach
+and building-coverage passes, plus compatibility summaries. Spatial
+access is indexed; it does not scan all 161784 footprints for every ray.
+The dataset adds real geometry work, but the repeated invocation count
+magnifies it.</p>
+<p>Controlled empty-building-index comparison with the same affected
+cells, ray/radius settings and legacy proposal count: <strong>27.341 s
+before / 2.202 s after</strong>, versus the production dataset's
+isolated baseline approximately 95 s and corrected approximately 6.75 s.
+The empty fixture changes objective availability and recommendation
+naturally; it is a cost control, not scientific equivalence to Ankara.
+The existing controlled-building regression fixture additionally proves
+cached/uncached output equality. Production geometry is roughly 3.5×
+slower than the empty-index baseline in these runs; this does not
+establish a pathological spatial-index defect.</p>
+<p>A host CPU profile of the original five-cell canonical run sampled
+91.57 CPU seconds over 45 s including dataset setup (~204% average CPU).
+Cumulative ray simulation consumed 29.10 sampled CPU seconds;
+propagation-link evaluation 10.63 s, RTree search approximately 3.97 s;
+considerable samples were in GC scanning and scheduler signaling. These
+CPU values overlap and are not wall-clock phase shares. The profile
+supports repeated RF calculation/allocation and GC pressure; it does not
+isolate a unique defective intersection formula.</p>
+<p>Candidate/network-cell evaluation is sequential. Reach rays are
+sequential; building-coverage profiles use
+<code>min(4, NumCPU, rays)</code> workers with disjoint indexed result
+slots, shared feature-budget atomics and context cancellation. The
+dispatcher closes jobs and joins every worker before returning. No
+candidate parallelism, worker count, scheduling, antenna math, LOS/NLOS
+classification, link budget, interference or objective calculation was
+changed. New per-cell memoization is accessed only by the existing
+synchronous candidate loop; spatial debug counters use a mutex because
+ray workers can report them concurrently.</p>
+<h2 id="frequency-and-selected-cell-scaling">Frequency and selected-cell
+scaling</h2>
+<p>Comparable canonical frontend payloads, same dataset / 120 rays / 400
+m / legacy policy:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Selected cells</th>
+<th style="text-align: right;">Proposals</th>
+<th style="text-align: right;">Unique states at 28 GHz</th>
+<th style="text-align: right;">Before 28 GHz host</th>
+<th style="text-align: right;">After 28 GHz host</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">146</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">7.666 s</td>
+<td style="text-align: right;">1.776 s</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">218</td>
+<td style="text-align: right;">176</td>
+<td style="text-align: right;">19.913 s</td>
+<td style="text-align: right;">2.861 s</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">290</td>
+<td style="text-align: right;">246</td>
+<td style="text-align: right;">36.113 s</td>
+<td style="text-align: right;">3.813 s</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">362</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">43.044 s</td>
+<td style="text-align: right;">4.732 s</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">434</td>
+<td style="text-align: right;">386</td>
+<td style="text-align: right;">64.587 s</td>
+<td style="text-align: right;">5.028 s</td>
+</tr>
+</tbody>
+</table>
+<p>Host timing controls partly overlapped the initial live/container
+reproduction, and one six-cell outlier overlapped cross-compilation;
+treat this as descriptive scaling rather than a clean fitted benchmark.
+The loop accounting establishes the important trend independently:
+before, N coordinates × N cells per candidate produces roughly quadratic
+RF repetition; after, 36 independent RF settings per distinct cell gives
+approximately linear expensive RF work, while all original network
+aggregation/Pareto processing remains.</p>
+<table>
+<thead>
+<tr>
+<th>Frequency / count</th>
+<th style="text-align: right;">Before host</th>
+<th style="text-align: right;">After host</th>
+<th style="text-align: right;">After controlled container</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.6 GHz / canonical 5 cells</td>
+<td style="text-align: right;">45.839 s</td>
+<td style="text-align: right;">4.085 s</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>28 GHz / canonical 5 cells</td>
+<td style="text-align: right;">43.044 s</td>
+<td style="text-align: right;">4.732 s</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>2.6 GHz / canonical 6 cells</td>
+<td style="text-align: right;">70.383 s</td>
+<td style="text-align: right;">4.625 s</td>
+<td style="text-align: right;">5.948 s</td>
+</tr>
+<tr>
+<td>28 GHz / canonical 6 cells</td>
+<td style="text-align: right;">64.587 s</td>
+<td style="text-align: right;">5.028 s</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>2.6 GHz / affected 6 cells</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">5.516 s</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>28 GHz / affected 6 cells</td>
+<td style="text-align: right;">94.707–112.731 s container</td>
+<td style="text-align: right;">5.414 s</td>
+<td style="text-align: right;">6.721–6.761 s</td>
+</tr>
+</tbody>
+</table>
+<p>Both comparable frequency cases use the same urban-short-range
+propagation implementation, ray/segment loops and indexed geometry
+handling. Frequency changes propagation/receiver terms and outcomes, not
+candidate policy or the number of spatial passes. Measurements do not
+support a special 28 GHz computational explosion. The affected cluster
+differs spatially from canonical controls, so cross-cluster timings
+should not be attributed to frequency.</p>
+<h2 id="history-deadline-intent-and-workload-classification">History,
+deadline intent and workload classification</h2>
+<p>Protection commit <code>a6234d8</code> (2026-07-26) introduced the
+60-second context ceiling and already listed
+<code>optimize-network</code>, evaluation, simulation,
+optimization-azimuth and interference. Its docs described bounded
+expensive RF work and concurrency/resource protection. There is no
+evidence that it excluded optimization or promised modern optimization
+workloads a longer ceiling. Reference, surface and experiment routes
+were added later under that shared protection.</p>
+<p>A safe historical comparison exists for <strong>v0.9.3</strong>,
+commit <code>9db0e9baa5c333be0fa0efcd2e694de908f98a05</code>: RF/search
+files, main route, RF protection, dataset and relevant frontend
+payload/default code are identical to HEAD. Only unrelated backend
+security-header changes differ. An archived v0.9.3 checkout, same
+affected frontend payload/dataset and no outer deadline, naturally
+completed on the host in <strong>74.821749 s</strong> with the
+<strong>same full response hash</strong> as current uncached and
+corrected code. Thus this is <strong>not a new v0.10.0 RF/search
+regression relative to v0.9.3</strong>. Regression status relative to
+materially older RF models is unknown; comparing their different
+equations would be invalid.</p>
+<p>Workload classes differ: analyze-sector shares one propagation/gap
+execution; evaluate-network evaluates one network plus compatibility
+summaries; interference builds a bounded sampling domain;
+optimize-network traverses candidate networks; optimize-azimuth
+evaluates 36 orientations using its existing worker pool;
+diagnostics/reference routes compute their respective bounded analyses;
+coverage surfaces evaluate samples; experiment execution uses its
+manager's bounded contexts. That difference alone is not evidence to
+split deadlines. Removing demonstrated redundant RF work gives the
+normal network optimizer substantial headroom under the existing
+ceiling. No deadline classes or request budgets were changed.</p>
+<h2 id="root-cause-and-chosen-correction">Root cause and chosen
+correction</h2>
+<p><strong>Classification I — Other: accidental repeated independent
+per-cell RF work in the default legacy network scorer.</strong> This is
+not an excessive candidate-generation defect, broken opt-in state
+memoization, an established recent regression, or evidence that this
+normal workload inherently needs a longer deadline.</p>
+<p>Each coordinate proposal changes one cell, yet the original scorer
+reran both reach and building-coverage RF work for all selected cells.
+Only 180 independent cell configurations were needed for the affected
+case, but the scorer computed 2604. Cache those independent
+contributions inside one legacy request, while preserving every original
+network proposal, exact floating-point addition order,
+demand/residential denominators, network aggregation, radio-quality
+evaluation, constraints, tie-breaking, feasible Pareto candidate set,
+public 25-solution truncation, ranking and recommendation.</p>
+<p><strong>Deadline before/after: 60 / 60 seconds.</strong> The existing
+env override, malformed/nonpositive fallback, API key, global/client
+concurrency, 20/min fixed-window budget, cancellation and timeout
+message remain unchanged. No timeout increase or unbounded production
+path is required. New cache size is structurally bounded by the
+unchanged legacy grid. No scientific inputs were reduced.</p>
+<h2 id="acceptance-cancellation-and-invariance">Acceptance, cancellation
+and invariance</h2>
+<ul>
+<li>Affected six-cell defaults: first same-container corrected run
+<strong>6.720739 s</strong>, repeats <strong>6.760776 s / 6.749160
+s</strong> (exact ledger values authoritative). All are successful under
+the real 60-second middleware. Min/median/max for this three-run
+sequence: <strong>6.721 / 6.749 / 6.761 s</strong>. A subsequent final
+detailed run overlapped the host middleware-disabled control and took
+<strong>7.441 s</strong>; it is also recorded in the ledger. The normal
+HTTP E2E with production spatial diagnostics disabled took <strong>5.380
+s</strong>.</li>
+<li>Original requested five-cell acceptance: first five supplied cells,
+28 GHz, <strong>6.650231 s</strong> controlled container, success.</li>
+<li>Representative six-cell 2.6 GHz: <strong>5.947744 s</strong>
+controlled container, success.</li>
+<li>Two-cell canonical control: <strong>1.776 s</strong> host,
+success.</li>
+<li>Same affected corrected payload with RF middleware disabled only in
+the test: <strong>5.977124 s</strong> host; identical response hash. The
+small timing difference from protected controls is not evidence that
+admission is material.</li>
+<li>Intentionally excessive opt-in multistart case: same six cells and
+RF settings, 64-pass / 100000-unique-state limits. It returned the exact
+504 error after <strong>60.006989 s</strong>. Context deadline was
+60.000004 s; the observer noticed cancellation at 60.006806 s and
+response/cleanup completed <strong>0.182918 ms</strong> later. Overall
+deadline overshoot was <strong>6.984751 ms</strong>, including
+scheduling, deep-loop unwind and serialization. Three goroutines
+remained (the harness baseline), global/client slots were empty, and the
+response contained no recommendation, fingerprint or partial success.
+Opt-in candidate totals are unknown on this canceled path because
+completed search metadata is not returned; the diagnostic zero
+placeholders in the raw run are normalized to null in the ledger. RF
+subsystem counters show 1650 cell contribution attempts before
+cancellation.</li>
+<li>Deterministic fast regression sends 360 rays / 1500 m through the
+actual handler with a 10 ms deadline, confirms exact 504 and no partial
+payload, joined workers, empty global/client slots and one budget debit;
+a subsequent protected request immediately reacquires the slots. A
+direct optimizer 5 ms deadline test also requires a zero response and
+prompt deep-work termination. A canceled context must fail even for a
+memo hit.</li>
+<li>Seven measured canonical full before/after JSON responses are
+byte-identical. The affected response is identical across all three
+original natural runs, corrected repeats and historical v0.9.3.
+Controlled regressions compare complete JSON and candidate-state
+proposal multiplicities with mixed 4G/5G profiles, off-grid azimuths,
+calibration, impossible constraints, radio-quality enabled and standard
+urban propagation.</li>
+<li>Cache-key regressions change azimuth by 1e-8, ray count,
+calibration, coordinates, transmit power and frequency and require
+distinct misses. Cache-hit/candidate bounds are deterministic; existing
+opt-in search/ledger tests remain required.</li>
+<li>The only frontend code added is a focused <strong>test</strong>:
+real backend optimization using the actual unchanged frontend builder,
+exact original response hash and <code>RateLimit-Remaining: 19</code>.
+No application/request builder, scientific payload, fingerprint or
+persistence code was modified.</li>
+<li>Rate accounting remains one protected optimization request; later
+successful map-ray requests retain one debit each. Internal
+cell/candidate evaluation consumes no HTTP budget. The existing
+RF-budget real E2E verifies Evaluate → Interference → Re-evaluate →
+deliberate abuse separately.</li>
+</ul>
+<h2
+id="observability-and-future-optimization-progress-ux-opportunities">Observability
+and future optimization progress UX opportunities</h2>
+<p>The production route emits <strong>one structured completion
+summary</strong>, including operation, normalized search policy,
+selected-cell count, proposal/unique-state counts, cell memo
+hits/misses, elapsed/deadline milliseconds and completion reason. No
+scenario payload, cell location/ID, building geometry or per-candidate
+production log is emitted. Canceled opt-in search counts without
+completed ledger metadata are reported as unknown (-1), rather than
+false zero. Detailed timings, candidate distributions,
+start/pass/coordinate events and mutex-protected spatial counts are
+confined to the explicit audit collector; detailed spatial counters are
+disabled in normal production.</p>
+<p>The legacy loop has a truthful baseline phase, one start, two passes,
+N coordinates/pass, and 72N+2 proposed evaluation calls. A current
+azimuth vector and best candidate exist internally; each completed
+coordinate/pass is meaningful, but canceled phase timings do not imply
+phase completion. Independent RF misses have a known upper bound (37N),
+not an exact known total when profiles/locations duplicate. Pareto
+archive size and ranking/recommendation are distinct end phases. Opt-in
+metadata already exposes four starts, accepted updates, completed
+starts, evaluation requests, unique evaluations, cache hits, archive
+sizes and termination reasons; until-stable and archive-growth phases do
+<strong>not</strong> have an exact completion percentage.</p>
+<p>These can support later truthful phase/candidate/count reporting. A
+proposal fraction is not an elapsed-time estimate because memo hits and
+misses have very different costs. This task returns no
+incumbent/best-so-far or partial recommendation and implements no event
+stream, fake percentage, progress UI or spinner redesign.
+<strong>Progress UX: NOT IMPLEMENTED.</strong></p>
+<h2 id="re-running-the-audit">Re-running the audit</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> scripts/network-optimization-deadline-fixtures.mjs /tmp/atom-deadline-fixtures</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">ATOM_RUN_DEADLINE_AUDIT</span><span class="op">=</span>1 <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="va">ATOM_DEADLINE_FIXTURES</span><span class="op">=</span>/tmp/atom-deadline-fixtures <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="va">ATOM_DEADLINE_CASES</span><span class="op">=</span>user-6-28,user-5-28,6-2.6,pathological-6-28 <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="va">ATOM_DEADLINE_SECONDS</span><span class="op">=</span>60 <span class="va">ATOM_DEADLINE_STAGE</span><span class="op">=</span>verification <span class="dt">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="va">ATOM_DEADLINE_OUTPUT</span><span class="op">=</span>/tmp/atom-deadline-results <span class="dt">\</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test . <span class="at">-run</span> <span class="st">&#39;^TestNetworkOptimizationDeadlineWallClockAudit$&#39;</span> <span class="at">-count</span><span class="op">=</span>1 <span class="at">-v</span> <span class="at">-timeout</span><span class="op">=</span>15m</span></code></pre></div>
+<p>A controlled natural run uses <code>ATOM_DEADLINE_SECONDS=0</code>;
+production configuration is not changed.
+<code>ATOM_DEADLINE_UNPROTECTED=1</code> removes the protected
+middleware only in the gated harness;
+<code>ATOM_DEADLINE_SYNTHETIC=1</code> selects the existing empty
+building-index fixture. Raw phase/count/hash measurements are retained
+in <a href="network-optimization-deadline-measurements.json">the
+measurement ledger</a>.</p>
+<h2 id="validation-and-limitations">Validation and limitations</h2>
+<p>Final check results are listed below. The fix is in this checkout and
+has been verified in isolated test containers; the user's existing
+<code>atom-app</code> was <strong>not rebuilt or replaced</strong>.
+Exact ray/radius/azimuth/priority overrides from the original session
+were not available, so the confirmed IDs are tested with current
+defaults. Extremely large/opt-in workloads remain deadline-bounded; this
+task does not promise every combination of supported maxima finishes in
+60 s. Historical regression conclusions extend only to the equivalent
+v0.9.3 baseline. Hardware, concurrent load and detailed instrumentation
+affect timing; candidate accounting and full response hashes provide the
+strongest invariance evidence.</p>
+<h3 id="final-validation-results">Final validation results</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backend <code>go test ./... -count=1</code></td>
+<td>Pass: main 0.574 s, raytracer 10.026 s</td>
+</tr>
+<tr>
+<td>Backend <code>go test -race ./... -count=1</code></td>
+<td>Pass: main 1.758 s, raytracer 16.887 s</td>
+</tr>
+<tr>
+<td>Backend <code>go vet ./...</code></td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Gated detailed collector + deadline observer under
+<code>-race</code>, 20 ms cancellation</td>
+<td>Pass: 24.692 s including dataset loading; cancellation at 20.327 ms,
+cleanup 0.363 ms later, 3 remaining harness goroutines</td>
+</tr>
+<tr>
+<td>Core Lab adapter <code>go vet ./...</code>,
+<code>go test -race ./... -count=1</code></td>
+<td>Pass: tests 1.443 s</td>
+</tr>
+<tr>
+<td>Focused optimizer/memoization/scenario tests,
+<code>-count=1</code></td>
+<td>Pass: 0.689 s</td>
+</tr>
+<tr>
+<td>Frontend <code>npm test</code></td>
+<td>Pass: 65 files / 357 tests, 11.41 s</td>
+</tr>
+<tr>
+<td>Focused request-builder/workflow tests</td>
+<td>Pass: 2 files / 42 tests, 4.83 s</td>
+</tr>
+<tr>
+<td>Frontend lint</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Production build</td>
+<td>Pass: 4.93 s; existing large-chunk advisory</td>
+</tr>
+<tr>
+<td>Real backend affected-six-cell E2E</td>
+<td>Pass: 1 test, 5.4 s request/test, 10.5 s including server setup;
+production summary 5380 ms, original full response hash and one budget
+unit</td>
+</tr>
+<tr>
+<td>Real backend RF-budget workflow E2E</td>
+<td>Pass: 1 test, 5.3 s test, 9.6 s including setup; explicit abuse
+still denied at attempt 21</td>
+</tr>
+<tr>
+<td>Focused UI E2E</td>
+<td>Pass: retained Pareto + visible RF-budget errors, 2 tests / 3.3 s;
+the real-backend-only test is skipped in this mocked-server invocation
+and executed separately above</td>
+</tr>
+<tr>
+<td>Docs build</td>
+<td>Pass; existing Pandoc MathML deprecation advisories</td>
+</tr>
+<tr>
+<td>Docs validation</td>
+<td>Pass: 45 HTML pages / 41 API paths</td>
+</tr>
+<tr>
+<td>Dataset validator</td>
+<td>Pass: 451 towers / 161784 footprints</td>
+</tr>
+<tr>
+<td>Version metadata check</td>
+<td>Pass: 0.10.0</td>
+</tr>
+<tr>
+<td><code>git diff --check</code></td>
+<td>Pass</td>
+</tr>
+</tbody>
+</table>
+<p>The default <code>python3 docs/validate_docs.py</code> initially
+failed because that Python lacks PyYAML. Reusing the existing
+<code>/tmp/atom-rf-budget-docs-venv/bin/python docs/validate_docs.py</code>
+(with the repository's pinned docs dependencies, created by the prior
+budget audit) passed. No repository dependency or global Python
+environment was changed.</p>
+<p>The new live-backend E2E calls the normal HTTP route with the actual
+frontend request builder; existing App workflow tests and
+retained-Pareto browser tests cover UI dispatch/sequence and local
+reranking. It is not presented as a new full browser click-through of
+the supplied cells.</p>
+<p>Files added: <code>backend-go/network_optimization_route.go</code>,
+<code>backend-go/network_optimization_route_test.go</code>,
+<code>backend-go/network_optimization_deadline_audit_test.go</code>,
+<code>backend-go/raytracer/optimization_cell_cache.go</code>,
+<code>backend-go/raytracer/optimization_cell_cache_test.go</code>,
+<code>backend-go/raytracer/optimization_timing.go</code>,
+<code>frontend-react/e2e/network-deadline.spec.js</code>,
+<code>scripts/network-optimization-deadline-fixtures.mjs</code>, this
+Markdown/HTML report and
+<code>network-optimization-deadline-measurements.json</code>. Existing
+files changed by this task: <code>backend-go/main.go</code>, raytracer
+<code>static_simulation.go</code>, <code>optimization_context.go</code>,
+<code>optimization_config.go</code>, <code>propagation_model.go</code>,
+<code>CHANGELOG.md</code>, API Markdown/HTML, reference-page build/link
+mapping, generated changelog/search index. Preexisting RF-budget audit
+files and unrelated dark-mode/source-test edits were preserved.</p>
+<p><strong>Resolution:</strong> the reproduced default workload now
+completes with unchanged output and the original 60-second bound.
+Rebuild/restart the existing local app when ready to adopt the code.
+Truthful progress UX remains a separate task.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

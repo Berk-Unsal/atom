@@ -819,6 +819,12 @@
     },
     {
       "page": "Changelog",
+      "title": "Added",
+      "url": "./changelog.html#added",
+      "text": "Add locally persisted Light, Dark and System appearance, semantic dark shell tokens, and a native Alidade Smooth Dark basemap; preserve light rendering, RF palettes, camera, selection, result identity and explicit provider fallbacks. Include matched visual evidence and provider deployment guidance."
+    },
+    {
+      "page": "Changelog",
       "title": "Fixed",
       "url": "./changelog.html#fixed",
       "text": "Allow the exact Stadia Maps tile origin in the application's image CSP so Alidade Smooth loads in Go-served and container deployments while preserving OpenStreetMap support and all other directives."
@@ -838,7 +844,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added",
+      "url": "./changelog.html#added-1",
       "text": "Add sanitized real Ankara Concept 6A.1.1 ingestion, GNSS/radio QA, transmitter reconciliation, and blocked-readiness evidence without calibration or RF behavior changes."
     },
     {
@@ -868,7 +874,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-1",
+      "url": "./changelog.html#added-2",
       "text": "Add a read-only contextual inspector for map-linked Cells, Buildings, Interference samples, and existing map entities, with exact source/freshness context and direct Inventory and Path Profile actions. Separate map Inspect and Select cells modes, preserve task state across supported panel layouts, and give area drawing, cell placement, and path endpoint selection priority over inspection. Consolidate map chrome into interaction, result visualization, View context, and Layers controls; remove duplicate map popups, clarify Network selection guidance, and keep the compact interaction, View, and Layers controls reachable on phones."
     },
     {
@@ -886,7 +892,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-2",
+      "url": "./changelog.html#added-3",
       "text": "Add local-first Concept 7D report artifacts with exact ScenarioRevision/Run lineage, SHA-256 verification, separate IndexedDB retention, historical Run generation, offline download, regeneration, corruption handling, and explicit cleanup/quota behavior. Add local-first Concept 7E Scenario UX with explicit immutable Versions, draft/Save version semantics, Scenario switching, input diffs, branch and duplicate lineage, optimization application choices, friendly Run/Report navigation, and safe input-first comparison. Add Concept 7G result freshness and source lineage across the workspace, Results, Run History, Reports, map legend, and optimization actions, with explicit stale/history safety, draft-source clarity, and accessible state labels. Add Concept 7H RF configuration progressive disclosure, keeping Planning visible while grouping specialist and reference controls under Advanced and Research / reference without changing RF behavior or saved inputs."
     },
     {
@@ -898,7 +904,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-3",
+      "url": "./changelog.html#added-4",
       "text": "Add opt-in deterministic_pareto_archive_search_v1 for bounded priority-independent Pareto candidate discovery, exact evaluated-state archiving, post-discovery priority reranking, deterministic discovery/ranking fingerprints, and Concept 5C audit artifacts; legacy and Concept 5B search policies remain available. Add opt-in deterministic_multistart_coordinate_v1 network search with until-stable coordinate descent, deterministic starts, request-scoped memoization, evaluated-state archive/Pareto metadata, explicit budgets, and Concept 5B audit artifacts while preserving the legacy default. Add Concept 4F.3A.5 diagnostic terrain-clearance primitive with radio-minus-terrain endpoint/sign/no-data/datum/interpolation contracts, NASADEM/FABDEM 432-path regression artifacts, and no canonical RF coupling. Add Concept 4F.1 deterministic height-aware urban_short_range centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts. Add Concept 4F.2 p526-single-edge-v1 diffraction diagnostics with independent P.526-16 reference fixtures, known-height obstruction ledgers, deterministic roof-edge selection, canonical UMa comparison, Fresnel separation, restrained Path Profile UI, and no network/optimizer/surface/interference/building-entry coupling. Add Concept 4F.3A spatial-evidence foundations with explicit DTM/DSM and vertical-datum semantics, windowed GeoTIFF sampling, terrain path evidence, robust building-base/roof ledgers, source-independent external-height matching, conflict/precedence policies, deterministic fingerprints, Ankara readiness artifacts, diagnostic-only inspector routes, and no canonical RF coupling. Add Concept 4F.3A.1 bounded Ankara external-height acquisition and matching pilot with exact Microsoft GlobalMLBuildingFootprints tile selection, raw checksums, input QA, normalized sidecar output, deterministic STRtree matching, source-agreement audits, diagnostic impact, reproducibility, and an honest NO-GO for numeric promotion when the active tiles contain no positive heights. Add Concept 4F.3A.2 diagnostic-only GlobalBuildingAtlas GBA.Height Ankara acquisition with official index/tile checksums, CC BY-NC license gate, windowed raster sa"
     },
     {
@@ -910,7 +916,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-4",
+      "url": "./changelog.html#added-5",
       "text": "Add Concept 4E building-entry analysis for deterministic 2.6/28 GHz service estimates immediately inside representative facades, with standard-derived low/high O2I scenarios, material-data auditing, one batched API request, RF-aware caching, and restrained Analyze/report surfaces."
     },
     {
@@ -934,7 +940,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-5",
+      "url": "./changelog.html#added-6",
       "text": "Add a unified map key, visible local-save status, and recoverable deletion controls."
     },
     {
@@ -958,7 +964,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-6",
+      "url": "./changelog.html#added-7",
       "text": "Add an inspectable 2.5D point-to-point path profiler with optional COG/GeoTIFF terrain, building heights, LOS/Fresnel classification, single knife-edge diffraction, material-aware penetration, environmental sensitivity terms, uncertainty ranges, and an interactive vertical cross section. Add asynchronous batch experiment matrices with cancellation, deterministic dataset/model fingerprints, bounded caching, a headless CLI, progress UI, scenario tables, and Pareto evidence. Add configurable network objectives, weights, hard constraints, feasibility evidence, and non-dominated azimuth solutions while keeping unsupported tilt, power, candidate-site, cost, fiber, and permitting inputs explicit. Add spatially blocked five-fold calibration validation, spatial-diversity rejection, per-cell/per-band and distance/obstruction residual summaries, robust outlier flags, uncertainty quantiles, confidence intervals, and campaign provenance/expiration support. Add regular-grid analytical coverage surfaces, marching-square isolines, opacity and display-threshold controls, plus GeoTIFF, contour GeoJSON, and CSV exports. Add OGC API Features-style, viewport-bounded building queries with pagination and GeoJSON/CSV representations so clients need not transfer the full building dataset. Add a persistent cell Inventory workspace with manual map placement, dragging, duplication, deletion, bounded CSV/GeoJSON import, search, validation, and independent per-cell RF profiles across propagation, network, interference, recommendation, measurement, and report workflows. Add Dataset Pack Studio for arbitrary-region source inspection, geometry repair, reprojection/cropping, schema-v2 manifests, hashes, provenance/licenses/confidence, QA evidence, and optional terrain, clutter, building-height, and material layers. Add a local installed-dataset catalog and atomic manifest-ID switching that retains the active immutable pack on validation failure, with optional administration-key protection."
     },
     {
@@ -1024,7 +1030,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-7",
+      "url": "./changelog.html#added-8",
       "text": "Add keyboard-accessible full-site search to the static documentation website. Publish the canonical project changelog as a searchable documentation page."
     },
     {
@@ -1054,7 +1060,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-8",
+      "url": "./changelog.html#added-9",
       "text": "Deterministic sector, network, optimization, interference, recommendation, and measurement-validation workflows. Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths. Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing."
     },
     {
@@ -3605,7 +3611,7 @@
       "page": "Deployment",
       "title": "Runtime Topology",
       "url": "./deployment.html#runtime-topology",
-      "text": "Component Default Responsibility atom container Required Static frontend, REST API, RF engines, spatial index, active dataset pack Browser IndexedDB Required for projects Local project/scenario history; not shared across users OpenStreetMap tiles External by default Visual basemap only; RF computation remains local core-lab-adapter Optional profile Deterministic 5G path state and optional Open5GS probes The Go server does not persist projects, jobs, reports, or measurements. Multiple API replicas can serve independent requests, but browser projects do not become collaborative storage."
+      "text": "Component Default Responsibility atom container Required Static frontend, REST API, RF engines, spatial index, active dataset pack Browser IndexedDB Required for projects Local project/scenario history; not shared across users Stadia Maps / OpenStreetMap tiles External by default Alidade Smooth light/dark and selectable OSM; visual basemap only; RF computation remains local core-lab-adapter Optional profile Deterministic 5G path state and optional Open5GS probes The Go server does not persist projects, jobs, reports, or measurements. Multiple API replicas can serve independent requests, but browser projects do not become collaborative storage."
     },
     {
       "page": "Deployment",
@@ -3654,6 +3660,12 @@
       "title": "Verification Checklist",
       "url": "./deployment.html#verification-checklist",
       "text": "/healthz , /readyz , and /api/meta return expected process, version, model, and dataset details. The Data tool shows the intended pack provenance and hashes. A single sector run completes and report metadata matches /api/meta . A concurrent-capacity test returns bounded 429 behavior instead of unbounded CPU growth. Project export/import works in a clean browser profile. Public deployments enforce TLS and user authentication at the gateway and set RF_API_KEY plus BUILDINGS_API_KEY on the backend hop. See Download and Use , System Architecture , and the OpenAPI contract ."
+    },
+    {
+      "page": "Deployment",
+      "title": "Basemap access and appearance",
+      "url": "./deployment.html#basemap-access-and-appearance",
+      "text": "Alidade Smooth and Alidade Smooth Dark use Stadia Maps. Production browser deployments require domain registration with Stadia and an appropriate subscription (commercial use requires a paid plan). Localhost development has a rate-limited keyless exemption; private LAN addresses do not. Keep linked attribution visible and preserve Origin/Referer headers. OpenStreetMap remains an explicit alternative in Layers, subject to its own tile usage policy. See theme/provider guidance for authentication, licensing, and failure recovery."
     },
     {
       "page": "Download and Use",
@@ -4392,6 +4404,12 @@
       "title": "Export and Integration",
       "url": "./visualization.html#export-and-integration",
       "text": "Analytical surfaces can be exported as float32 EPSG:4326 GeoTIFF, contour GeoJSON, or grid-center CSV. Viewport building queries return GeoJSON or CSV/WKT. These can be used in: 🗺️ ArcGIS : Professional GIS analysis 🌍 Google Earth : 3D visualization 📋 QGIS : Open-source mapping 🔗 Custom applications : Any GeoJSON-compatible tool Next : Learn the physics behind these visualizations in Algorithms & Physics ."
+    },
+    {
+      "page": "Reading Propagation Maps",
+      "title": "Application appearance",
+      "url": "./visualization.html#application-appearance",
+      "text": "Use Layers → Appearance to select Light, Dark, or System. The preference is local to the browser. Dark uses a native Alidade Smooth Dark basemap and semantic shell colors; RF categories, thresholds, geometry, results and exported identity stay fixed. Active, selected, inspected and focused cells retain separate ring/order semantics. OpenStreetMap and Alidade Smooth remain selectable. See appearance details and the matched comparison report."
     }
   ]
 }

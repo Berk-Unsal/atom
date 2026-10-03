@@ -95,6 +95,9 @@ capacity, scaling, and production-hardening guidance for A.T.O.M." />
       id="toc-upgrade-and-rollback">Upgrade And Rollback</a></li>
       <li><a href="#verification-checklist"
       id="toc-verification-checklist">Verification Checklist</a></li>
+      <li><a href="#basemap-access-and-appearance"
+      id="toc-basemap-access-and-appearance">Basemap access and
+      appearance</a></li>
       </ul>
     </aside>
 
@@ -146,9 +149,10 @@ pack</td>
 <td>Local project/scenario history; not shared across users</td>
 </tr>
 <tr>
-<td>OpenStreetMap tiles</td>
+<td>Stadia Maps / OpenStreetMap tiles</td>
 <td>External by default</td>
-<td>Visual basemap only; RF computation remains local</td>
+<td>Alidade Smooth light/dark and selectable OSM; visual basemap only;
+RF computation remains local</td>
 </tr>
 <tr>
 <td><code>core-lab-adapter</code></td>
@@ -487,6 +491,16 @@ gateway and set <code>RF_API_KEY</code> plus
 <p>See <a href="download.html">Download and Use</a>, <a
 href="architecture.html">System Architecture</a>, and the <a
 href="openapi.yaml">OpenAPI contract</a>.</p>
+<h2 id="basemap-access-and-appearance">Basemap access and
+appearance</h2>
+<p>Alidade Smooth and Alidade Smooth Dark use Stadia Maps. Production
+browser deployments require domain registration with Stadia and an
+appropriate subscription (commercial use requires a paid plan).
+Localhost development has a rate-limited keyless exemption; private LAN
+addresses do not. Keep linked attribution visible and preserve
+Origin/Referer headers. OpenStreetMap remains an explicit alternative in
+Layers, subject to its own tile usage policy. See theme/provider
+guidance for authentication, licensing, and failure recovery.</p>
       </div>
     </article>
   </main>

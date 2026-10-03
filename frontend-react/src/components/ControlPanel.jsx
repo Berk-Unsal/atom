@@ -2,6 +2,7 @@ import { Activity, Compass, Gauge, MapPin, Sparkles, SlidersHorizontal, Zap } fr
 import { NETWORK_TECH_OPTIONS } from "../utils/networkTech.js";
 import { MAX_NETWORK_CELLS } from "../utils/networkSelection.js";
 import { defaultPropagationModelForFrequency } from "../utils/rfProfile.js";
+import OptimizationOperationFeedback from "./OptimizationOperationFeedback.jsx";
 
 export default function ControlPanel({
   activeTool,
@@ -14,6 +15,7 @@ export default function ControlPanel({
   onPlanningModeChange,
   isLoading,
   isOptimizing,
+  networkOptimizationOperation = null,
   isAnalyzingInterference,
   interferenceApplicable,
   optimizationConfigValid = true,
@@ -200,12 +202,18 @@ export default function ControlPanel({
               type="button"
               className="optimize-button network"
               onClick={onOptimizeNetwork}
+              aria-busy={isOptimizing}
               disabled={isLoading || isOptimizing || isAnalyzingInterference || networkSelectionCount < 2 || !optimizationConfigValid}
             >
-              <Sparkles size={16} className={isOptimizing ? "spin" : ""} />
-              <span>{isOptimizing ? "Optimizing..." : "Optimize Network"}</span>
+              <Sparkles size={16} aria-hidden="true" />
+              <span>{isOptimizing ? "Optimizing network…" : "Optimize Network"}</span>
             </button>
           )}
+          {planningMode === "network" ? (
+            <div className="optimization-operation-slot">
+              {networkOptimizationOperation ? <OptimizationOperationFeedback key={networkOptimizationOperation.startedAt} operation={networkOptimizationOperation} /> : null}
+            </div>
+          ) : null}
           {planningMode === "network" && networkSelectionCount < 2 ? (
             <>
               <p className="selection-note">Select at least two cells before optimization.</p>

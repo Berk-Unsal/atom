@@ -89,6 +89,15 @@
   color: var(--disabled);
   opacity: 1;
 }
+/* A running action retains native disabled behavior with a quiet active surface.
+   This also outranks disabled and hover styling in either resolved theme. */
+:root .focused-app-shell .focused-tool-actions .optimize-button.network[aria-busy="true"]:disabled {
+  color: var(--ui-accent-strong, var(--teal-dark));
+  background: var(--panel-strong);
+  border-color: var(--ui-accent, var(--teal));
+  cursor: wait;
+  opacity: 1;
+}
 :root[data-theme="dark"] .leaflet-container { background: var(--bg); }
 :root[data-theme="dark"] .leaflet-control-attribution { color: var(--muted); background: var(--panel-strong); }
 :root[data-theme="dark"] .leaflet-control-attribution a { color: var(--text-info); }

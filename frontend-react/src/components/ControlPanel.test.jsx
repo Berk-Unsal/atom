@@ -39,6 +39,32 @@ function renderPanel(overrides = {}) {
 }
 
 describe("ControlPanel interference controls", () => {
+  it.each([
+    { networkSelectionCount: 6, disabled: false },
+    { networkSelectionCount: 1, disabled: true },
+    { networkSelectionCount: 6, optimizationConfigValid: false, disabled: true },
+  ])("keeps idle and unavailable network actions separate from busy semantics: %j", ({ disabled, ...overrides }) => {
+    renderPanel({ activeTool: "propagation", ...overrides });
+    const button = screen.getByRole("button", { name: "Optimize Network" });
+    expect(button).toHaveAttribute("aria-busy", "false");
+    if (disabled) expect(button).toBeDisabled();
+    else expect(button).toBeEnabled();
+    expect(button.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    expect(button.querySelector("svg")).not.toHaveClass("spin");
+  });
+
+  it("keeps the network busy action native, quiet, and protected from repeat clicks", () => {
+    const onOptimizeNetwork = vi.fn();
+    renderPanel({ activeTool: "propagation", networkSelectionCount: 6, isOptimizing: true, onOptimizeNetwork });
+    const button = screen.getByRole("button", { name: "Optimizing network…" });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-busy", "true");
+    expect(button.querySelector("svg")).not.toHaveClass("spin");
+    fireEvent.click(button);
+    fireEvent.click(button);
+    expect(onOptimizeNetwork).not.toHaveBeenCalled();
+  });
+
   it("formats angular controls without a space before the degree symbol", () => {
     renderPanel({ activeTool: "propagation", planningMode: "single" });
     expect(screen.getByText("90°")).toBeInTheDocument();

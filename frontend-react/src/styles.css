@@ -7104,6 +7104,51 @@ a:focus-visible {
   background: transparent;
 }
 
+/* Reserve the operation's footprint so disclosure and elapsed text never move
+   the action or the following optimization settings. No progress animation. */
+.focused-tool-actions .optimize-button.network {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: var(--control-primary);
+  white-space: nowrap;
+  transform: none;
+}
+.optimization-operation-slot {
+  --optimization-feedback-gap: calc(var(--space-1) / 2);
+  --optimization-feedback-padding: var(--space-1);
+  grid-column: 1 / -1;
+  min-width: 0;
+  /* One title, scope, timer, and two supporting lines at the narrowest drawer:
+     about 104px, scaling with typography and growing naturally if needed. */
+  min-height: calc((var(--text-label) + 4 * var(--text-meta)) * var(--leading-body) + 3 * var(--optimization-feedback-gap) + 2 * var(--optimization-feedback-padding) + 1px);
+}
+.optimization-operation-feedback {
+  display: grid;
+  gap: var(--optimization-feedback-gap);
+  padding-block: var(--optimization-feedback-padding);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: var(--text-meta);
+  line-height: var(--leading-body);
+  overflow-wrap: break-word;
+}
+.optimization-operation-feedback strong {
+  color: var(--ink);
+  font-size: var(--text-label);
+  font-weight: var(--weight-label);
+}
+.optimization-operation-feedback p { margin: 0; }
+.optimization-elapsed { font-variant-numeric: tabular-nums; }
+.optimization-start-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .focused-map-toolbar {
   position: absolute;
   top: 12px;

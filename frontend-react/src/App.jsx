@@ -10,6 +10,7 @@ import {
   Upload,
 } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
+import { describeOptimizationScope } from "./utils/optimizationOperation.js";
 import DisclosureSection from "./components/DisclosureSection.jsx";
 import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
 import AnalysisEmptyState from "./components/AnalysisEmptyState.jsx";
@@ -322,6 +323,7 @@ export default function App() {
   const [measurementAnalysis, setMeasurementAnalysis] = useState(null);
   const [calibrationProfile, setCalibrationProfile] = useState(null);
   const [activeRFTask, setActiveRFTask] = useState(null);
+  const [networkOptimizationOperation, setNetworkOptimizationOperation] = useState(null);
   const [optimizationDiagnostics, setOptimizationDiagnostics] = useState(null);
   const [networkOptimization, setNetworkOptimization] = useState(null);
   const [selectedParetoSolutionId, setSelectedParetoSolutionId] = useState(null);
@@ -1157,6 +1159,10 @@ export default function App() {
     clearCellExplanation();
     clearInterferenceAnalysis();
     const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig);
+    const operation = { startedAt: performance.now(), scope: describeOptimizationScope(networkRequest), signal: request.signal };
+    const clearOperation = () => setNetworkOptimizationOperation((current) => current === operation ? null : current);
+    setNetworkOptimizationOperation(operation);
+    request.signal.addEventListener("abort", clearOperation, { once: true });
     let durableRun = null;
     try {
       durableRun = (await beginDurableRun({
@@ -1170,6 +1176,7 @@ export default function App() {
         "Network optimization request failed",
         request.signal,
       );
+      clearOperation();
       const optimizedByID = new Map(
         (payload.optimized_towers ?? []).map((tower) => [String(tower.id), tower]),
       );
@@ -1225,6 +1232,7 @@ export default function App() {
         running: durableRun,
       });
     } catch (requestError) {
+      clearOperation();
       await finishDurableRun({
         error: isAbortError(requestError)
           ? { code: "run_cancelled", message: "Network optimization was cancelled." }
@@ -1237,6 +1245,8 @@ export default function App() {
         setError(requestError.message);
       }
     } finally {
+      request.signal.removeEventListener("abort", clearOperation);
+      clearOperation();
       if (request.isCurrent()) {
         setActiveRFTask(null);
         request.finish();
@@ -3344,6 +3354,7 @@ export default function App() {
       onOptimizeAzimuth={optimizeAzimuth}
       isLoading={isLoading}
       isOptimizing={isOptimizing}
+      networkOptimizationOperation={networkOptimizationOperation}
       networkSelectionCount={selectedCellCount}
       isSelectingCellsOnMap={isSelectingCellsOnMap}
       isDrawingSelection={isDrawingSelection}

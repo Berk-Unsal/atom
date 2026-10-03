@@ -1,7 +1,7 @@
 import { createThemeCaptureWriter } from "./themeCaptureHelpers.js";
 import { waitForBasemap, selectBasemap, basemapSnapshot } from "./basemapHelpers.js";
 import { expect, test } from "@playwright/test";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 import { Buffer } from "node:buffer";
@@ -413,6 +413,307 @@ test.beforeEach(async ({ page }) => {
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
   });
 });
+
+async function prepareOptimizationFeedback(page) {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
+  await expect(page.getByRole("button", { name: "Network mode, 1 selected" })).toBeVisible();
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await selectMapInteraction(page, "Select cells");
+  await clickMapPoint(page, 32.854, 39.922);
+  await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
+  await selectWorkspaceTool(page, "Propagation");
+  await expect(page.getByRole("button", { name: "Optimize Network" })).toBeEnabled();
+}
+
+async function captureOptimizationFeedback(page, testInfo, state) {
+  const name = `${testInfo.project.name}-${state}.png`;
+  const directory = resolve(cwd(), "../docs/assets/optimization-operation-feedback");
+  if (env.ATOM_OPERATION_CAPTURE === "1") await mkdir(directory, { recursive: true });
+  let path = env.ATOM_OPERATION_CAPTURE === "1" ? resolve(directory, name) : testInfo.outputPath(name);
+  const screenshot = await page.screenshot({ animations: "disabled" });
+  if (env.ATOM_OPERATION_CAPTURE === "1" && state.startsWith("active-system-")) {
+    const resolvedThemePath = resolve(directory, `${testInfo.project.name}-${state.replace("system-", "")}.png`);
+    if (screenshot.equals(await readFile(resolvedThemePath))) {
+      await rm(path, { force: true });
+      path = resolvedThemePath;
+    }
+  }
+  await writeFile(path, screenshot);
+  await testInfo.attach(state, { path, contentType: "image/png" });
+}
+
+async function positionOptimizationFeedback(page) {
+  const actions = page.locator(".control-actions");
+  await actions.scrollIntoViewIfNeeded();
+  if (page.viewportSize().width <= 640) {
+    // Bring the whole reserve clear of the existing map attribution overlay
+    // before starting; disclosure itself must never scroll the drawer.
+    await actions.evaluate((el) => el.scrollIntoView({ block: "center" }));
+  }
+}
+
+async function optimizationActionStyle(button) {
+  return button.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { color: style.color, background: style.backgroundColor, border: style.borderColor, opacity: style.opacity, cursor: style.cursor };
+  });
+}
+
+test("optimization operation feedback distinguishes unavailable actions in both themes", async ({ page }, testInfo) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
+  await selectWorkspaceTool(page, "Propagation");
+  const button = page.getByRole("button", { name: "Optimize Network" });
+  for (const theme of ["Light", "Dark"]) {
+    await selectTheme(page, theme);
+    await button.scrollIntoViewIfNeeded();
+    await expect(button).toBeDisabled();
+    await expect(button).toHaveAttribute("aria-busy", "false");
+    const unavailableStyle = await optimizationActionStyle(button);
+    expect(unavailableStyle.cursor).not.toBe("pointer");
+    await captureOptimizationFeedback(page, testInfo, `unavailable-${theme.toLowerCase()}`);
+    // Sample the busy CSS variant on a detached-from-interaction copy only;
+    // the real unavailable action above remains governed by readiness.
+    const busyStyle = await button.evaluate((el) => {
+      const sample = el.cloneNode(true);
+      sample.setAttribute("aria-busy", "true");
+      sample.style.position = "absolute";
+      sample.style.visibility = "hidden";
+      el.parentElement.append(sample);
+      const style = getComputedStyle(sample);
+      const result = { color: style.color, background: style.backgroundColor, border: style.borderColor, opacity: style.opacity, cursor: style.cursor };
+      sample.remove();
+      return result;
+    });
+    expect(busyStyle).not.toEqual(unavailableStyle);
+    expect(busyStyle.opacity).toBe("1");
+    expect(busyStyle.cursor).toBe("wait");
+    expect(busyStyle.border).not.toBe(unavailableStyle.border);
+  }
+});
+
+test("optimization operation feedback stays calm and stable across elapsed states and themes", async ({ page }, testInfo) => {
+  let release;
+  let submitted;
+  let requests = 0;
+  const gate = new Promise((resolveGate) => { release = resolveGate; });
+  await page.route("**/api/optimize-network", async (route) => {
+    requests += 1;
+    submitted = route.request().postDataJSON();
+    await gate;
+    await route.fulfill({ json: networkOptimization });
+  });
+  await prepareOptimizationFeedback(page);
+  await selectTheme(page, "Light");
+  const capture = (state) => captureOptimizationFeedback(page, testInfo, state);
+  const button = page.locator(".optimize-button.network");
+  // The reserved footprint is scrollable before starting, including on phones.
+  await positionOptimizationFeedback(page);
+  const advanced = page.getByRole("button", { name: /^Advanced analysis/ });
+  await selectTheme(page, "Dark");
+  await capture("idle-dark");
+  await selectTheme(page, "Light");
+  await capture("idle-light");
+  const clockStart = new Date("2026-10-03T12:00:00Z");
+  await page.clock.install({ time: clockStart });
+  await page.clock.pauseAt(new Date(clockStart.getTime() + 1000));
+  const idleBox = await button.boundingBox();
+  const advancedBox = await advanced.boundingBox();
+  const slot = page.locator(".optimization-operation-slot");
+  const slotBox = await slot.boundingBox();
+  expect(slotBox.height).toBeGreaterThanOrEqual(95);
+  expect(slotBox.height).toBeLessThanOrEqual(105);
+  const idleStyle = await optimizationActionStyle(button);
+  const drawer = page.locator(".tool-drawer-body");
+  const idleScroll = await drawer.evaluate((el) => el.scrollTop);
+  const expectStableGeometry = async () => {
+    expect(await button.boundingBox()).toEqual(idleBox);
+    expect(await advanced.boundingBox()).toEqual(advancedBox);
+    expect(await slot.boundingBox()).toEqual(slotBox);
+    expect(await drawer.evaluate((el) => el.scrollTop)).toBe(idleScroll);
+    const visibleFeedback = page.locator(".optimization-operation-feedback");
+    if (await visibleFeedback.count()) {
+      expect((await visibleFeedback.boundingBox()).height).toBeLessThanOrEqual(slotBox.height);
+    }
+  };
+  const expectBusyStyle = async () => {
+    // Finish the inherited action color transition before comparing hover/themes.
+    await button.evaluate((el) => el.getAnimations().forEach((animation) => animation.finish()));
+    const style = await optimizationActionStyle(button);
+    expect(style.opacity).toBe("1");
+    expect(style.cursor).toBe("wait");
+    expect(style).not.toEqual(idleStyle);
+    await button.hover({ force: true });
+    expect(await optimizationActionStyle(button)).toEqual(style);
+    // Text and the inherited static icon must remain readable on the busy surface.
+    const luminance = (rgb) => rgb.match(/\d+/g).slice(0, 3).map(Number).map((value) => {
+      const channel = value / 255;
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    }).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+    const foreground = luminance(style.color);
+    const background = luminance(style.background);
+    expect((Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05)).toBeGreaterThanOrEqual(4.5);
+    expect(await button.locator("svg").evaluate((el) => getComputedStyle(el).color)).toBe(style.color);
+    return style;
+  };
+  await button.click();
+  await expect(button).toHaveText("Optimizing network…");
+  await expect(button).toBeDisabled();
+  await expect(button).toHaveAttribute("aria-busy", "true");
+  await expect(page.locator(".optimization-operation-feedback")).toHaveCount(0);
+  await expect.poll(() => requests).toBe(1);
+  await expectStableGeometry();
+  const lightBusyStyle = await expectBusyStyle();
+  await capture("busy-before-disclosure");
+  // Native disabled controls reject subsequent pointer dispatches.
+  await button.dispatchEvent("click");
+  await button.dispatchEvent("click");
+  expect(requests).toBe(1);
+  await page.clock.runFor(750);
+  const feedback = page.getByLabel("Network optimization activity");
+  await expect(feedback).toContainText("2 cells · 2 passes · 146 proposals");
+  await expect(feedback).toContainText("0.8 s elapsed");
+  await expect(feedback).toHaveAttribute("aria-live", "off");
+  expect(await button.locator("svg").evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
+  await expectStableGeometry();
+  await capture("active-light");
+  await selectTheme(page, "Dark");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  const darkBusyStyle = await expectBusyStyle();
+  await capture("active-dark");
+  for (const colorScheme of ["light", "dark"]) {
+    await page.emulateMedia({ colorScheme });
+    await selectTheme(page, "System");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", colorScheme);
+    await expect(feedback).toContainText("2 cells · 2 passes · 146 proposals");
+    expect(await expectBusyStyle()).toEqual(colorScheme === "light" ? lightBusyStyle : darkBusyStyle);
+    await capture(`active-system-${colorScheme}`);
+    await expectStableGeometry();
+  }
+  await page.clock.runFor(9500);
+  await expect(feedback).toContainText("Taking longer than usual");
+  await expect(feedback).toContainText("Optimization is still running.");
+  await expectStableGeometry();
+  await capture("long-dark");
+  await page.clock.runFor(20_000);
+  await expect(feedback).toContainText("Still optimizing");
+  await expect(feedback).toContainText("Complex geometry or search settings can require more time.");
+  await capture("very-long-dark");
+  await expectStableGeometry();
+  const layout = await feedback.evaluate((el) => ({ width: el.clientWidth, contentWidth: el.scrollWidth, viewportWidth: document.documentElement.clientWidth, documentWidth: document.documentElement.scrollWidth }));
+  expect(layout.contentWidth).toBeLessThanOrEqual(layout.width);
+  expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth);
+  const feedbackBox = await feedback.boundingBox();
+  expect(feedbackBox.height).toBeLessThanOrEqual(slotBox.height);
+  expect(feedbackBox.y + feedbackBox.height).toBeLessThanOrEqual(advancedBox.y);
+  const measuredLayout = await feedback.evaluate((el) => {
+    const slot = el.parentElement;
+    const style = getComputedStyle(el);
+    return {
+      slotWidth: slot.getBoundingClientRect().width,
+      slotHeight: slot.getBoundingClientRect().height,
+      feedbackHeight: el.getBoundingClientRect().height,
+      gap: style.gap,
+      padding: style.paddingBlock,
+      lines: [...el.children].map((child) => ({
+        text: child.textContent,
+        height: child.getBoundingClientRect().height,
+        lineHeight: getComputedStyle(child).lineHeight,
+      })),
+    };
+  });
+  await testInfo.attach("feedback-layout", { body: JSON.stringify(measuredLayout, null, 2), contentType: "application/json" });
+  const drawerBox = await page.locator(".tool-drawer-body").boundingBox();
+  expect(feedbackBox.y).toBeGreaterThanOrEqual(drawerBox.y);
+  expect(feedbackBox.y + feedbackBox.height).toBeLessThanOrEqual(drawerBox.y + drawerBox.height);
+  if (page.viewportSize().width <= 640) {
+    const attributionBox = await page.locator(".leaflet-control-attribution").boundingBox();
+    expect(feedbackBox.y + feedbackBox.height).toBeLessThanOrEqual(attributionBox.y);
+  }
+  expect(submitted.towers).toHaveLength(2);
+  expect(submitted).not.toHaveProperty("search_policy");
+  expect(submitted).not.toHaveProperty("startedAt");
+  expect(requests).toBe(1);
+  release();
+  await expect(feedback).toHaveCount(0);
+  await expect(button).toHaveText("Optimize Network");
+  await expect(button).toBeEnabled();
+  await expectStableGeometry();
+  await capture("success-dark");
+  await page.clock.runFor(30_000);
+  await expect(feedback).toHaveCount(0);
+});
+
+for (const outcome of ["deadline", "budget", "cancellation", "fast"]) {
+  test(`optimization operation feedback clears on ${outcome}`, async ({ page }, testInfo) => {
+    let release;
+    let requestCount = 0;
+    const gate = new Promise((resolveGate) => { release = resolveGate; });
+    const error = outcome === "deadline" ? "RF analysis exceeded its request deadline" : "RF request budget exceeded";
+    await page.route("**/api/optimize-network", async (route) => {
+      requestCount += 1;
+      await gate;
+      await route.fulfill(outcome === "fast" || outcome === "cancellation"
+        ? { json: networkOptimization }
+        : { status: outcome === "deadline" ? 504 : 429, json: { error } });
+    });
+    await prepareOptimizationFeedback(page);
+    await positionOptimizationFeedback(page);
+    const action = page.locator(".optimize-button.network");
+    const advanced = page.getByRole("button", { name: /^Advanced analysis/ });
+    const planning = page.getByLabel("Propagation controls");
+    const idlePlanningBox = await planning.boundingBox();
+    const idleActionBox = await action.boundingBox();
+    const idleAdvancedBox = await advanced.boundingBox();
+    const slot = page.locator(".optimization-operation-slot");
+    const idleSlotBox = await slot.boundingBox();
+    const drawer = page.locator(".tool-drawer-body");
+    const idleScroll = await drawer.evaluate((el) => el.scrollTop);
+    const clockStart = new Date("2026-10-03T12:00:00Z");
+    await page.clock.install({ time: clockStart });
+    await page.clock.pauseAt(new Date(clockStart.getTime() + 1000));
+    await page.getByRole("button", { name: "Optimize Network" }).click();
+    await expect.poll(() => requestCount).toBe(1);
+    if (outcome !== "fast") {
+      await page.clock.runFor(1000);
+      await expect(page.getByLabel("Network optimization activity")).toBeVisible();
+    }
+    if (outcome === "cancellation") await page.getByRole("slider", { name: "Ray count" }).fill("84");
+    release();
+    await expect(page.getByLabel("Network optimization activity")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Optimize Network" })).toBeEnabled();
+    if (["deadline", "budget", "cancellation"].includes(outcome)) {
+      // The accepted error alert precedes Planning; editing the ray slider can
+      // also scroll it into view. Check feedback geometry relative to Planning.
+      const planningShift = (await planning.boundingBox()).y - idlePlanningBox.y;
+      for (const [control, idleBox] of [[action, idleActionBox], [advanced, idleAdvancedBox], [slot, idleSlotBox]]) {
+        expect(await control.boundingBox()).toEqual({ ...idleBox, y: idleBox.y + planningShift });
+      }
+    } else {
+      expect(await action.boundingBox()).toEqual(idleActionBox);
+      expect(await advanced.boundingBox()).toEqual(idleAdvancedBox);
+      expect(await slot.boundingBox()).toEqual(idleSlotBox);
+      expect(await drawer.evaluate((el) => el.scrollTop)).toBe(idleScroll);
+    }
+    if (["deadline", "budget"].includes(outcome)) {
+      const errorSurface = page.locator(".drawer-error");
+      await expect(errorSurface).toHaveText(error);
+      await errorSurface.scrollIntoViewIfNeeded();
+      const name = `${testInfo.project.name}-error-${outcome}.png`;
+      const directory = resolve(cwd(), "../docs/assets/optimization-operation-feedback");
+      if (env.ATOM_OPERATION_CAPTURE === "1") await mkdir(directory, { recursive: true });
+      const path = env.ATOM_OPERATION_CAPTURE === "1" ? resolve(directory, name) : testInfo.outputPath(name);
+      await page.screenshot({ path, animations: "disabled" });
+      await testInfo.attach(`error-${outcome}`, { path, contentType: "image/png" });
+    }
+    await page.clock.runFor(30_000);
+    await expect(page.getByLabel("Network optimization activity")).toHaveCount(0);
+    expect(requestCount).toBe(1);
+  });
+}
 
 test("captures Concept 8H visual system evidence", async ({ page }, testInfo) => {
   const phase = env.ATOM_8H_CAPTURE;

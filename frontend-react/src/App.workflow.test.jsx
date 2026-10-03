@@ -579,6 +579,67 @@ describe("App planning workflow", () => {
     expect(api.postJSON).not.toHaveBeenCalled();
   });
 
+  it.each(["success", "error", "cancellation", "supersession"])("removes active feedback and clears its timer on %s", async (outcome) => {
+    useNetworkFixture = true;
+    let resolveOptimization;
+    let rejectOptimization;
+    const deferred = new Promise((resolve, reject) => { resolveOptimization = resolve; rejectOptimization = reject; });
+    let resolveReplacement;
+    const replacement = new Promise((resolve) => { resolveReplacement = resolve; });
+    let optimizationCalls = 0;
+    api.postJSON.mockImplementation((path) => path === "/api/optimize-network"
+      ? (++optimizationCalls === 1 ? deferred : replacement)
+      : Promise.resolve(simulationPayload));
+    const intervals = vi.spyOn(window, "setInterval");
+    const clearInterval = vi.spyOn(window, "clearInterval");
+    const view = render(<App />);
+    try {
+      await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+      fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+      await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 1 selected" })).toBeInTheDocument());
+      fireEvent.click(screen.getByRole("button", { name: "Select map tower 102" }));
+      openWorkspaceTool("Propagation");
+      fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+      await waitFor(() => expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/optimize-network")).toHaveLength(1));
+      const busy = screen.getByRole("button", { name: "Optimizing network…" });
+      fireEvent.click(busy);
+      fireEvent.click(busy);
+      expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/optimize-network")).toHaveLength(1);
+      await waitFor(() => expect(screen.getByLabelText("Network optimization activity")).toHaveTextContent("2 cells · 2 passes · 146 proposals"));
+      const timerIndex = intervals.mock.calls.findIndex(([, delay]) => delay === 250);
+      const timer = intervals.mock.results[timerIndex].value;
+      if (outcome === "success") {
+        await act(async () => resolveOptimization(networkOptimizationPayload));
+      } else if (outcome === "error") {
+        await act(async () => rejectOptimization(new Error("RF analysis exceeded its request deadline")));
+        expect(screen.getByText("RF analysis exceeded its request deadline")).toBeInTheDocument();
+      } else {
+        const signal = api.postJSON.mock.calls.find(([path]) => path === "/api/optimize-network")[3];
+        fireEvent.change(screen.getByRole("slider", { name: "Ray count" }), { target: { value: "84" } });
+        expect(signal.aborted).toBe(true);
+        // Feedback stops before the cancelled request's promise settles.
+        expect(screen.queryByLabelText("Network optimization activity")).not.toBeInTheDocument();
+        if (outcome === "supersession") {
+          fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+          await waitFor(() => expect(optimizationCalls).toBe(2));
+        }
+        await act(async () => rejectOptimization(Object.assign(new Error("Cancelled"), { name: "AbortError" })));
+        if (outcome === "supersession") {
+          expect(screen.getByRole("button", { name: "Optimizing network…" })).toBeDisabled();
+          await waitFor(() => expect(screen.getByLabelText("Network optimization activity")).toHaveTextContent("2 cells · 2 passes · 146 proposals"));
+          await act(async () => resolveReplacement(networkOptimizationPayload));
+        }
+      }
+      expect(screen.queryByLabelText("Network optimization activity")).not.toBeInTheDocument();
+      expect(clearInterval).toHaveBeenCalledWith(timer);
+      expect(screen.getByRole("button", { name: "Optimize Network" })).toBeEnabled();
+    } finally {
+      view.unmount();
+      intervals.mockRestore();
+      clearInterval.mockRestore();
+    }
+  });
+
   it("sends compact priority values and feasibility limits unchanged", async () => {
     useNetworkFixture = true;
     render(<App />);

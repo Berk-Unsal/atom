@@ -2,6 +2,13 @@
 
 All notable changes to A.T.O.M are recorded here. The project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and this file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+
+- Give network optimization a stable, quiet busy action and delayed inline search scope plus elapsed time, with truthful long-running feedback and unchanged requests, search behavior, results, and deadlines.
+- Distinguish running network optimization from unavailable actions using a readable teal-accented surface, and compact its stable feedback reserve from 126 px to approximately 104 px.
+
 ## [0.10.1] - 2026-10-03
 
 ### Fixed

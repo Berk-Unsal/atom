@@ -40,3 +40,11 @@ ATOM_REAL_E2E=1 npx playwright test e2e/basemap-csp.spec.js --project=desktop-14
 ```
 
 The gated capture compares all computed light styles and screenshot pixels in place (at most two 8-bit channel values across less than 0.2% of pixels for Chromium corner-antialias rounding) against the pre-theme basemap stylesheet (`7765e62`), except the intentionally expanded Appearance/Layers menu. Each matched pair checks camera position/zoom, selection ordering, context/status/action, scientific key palette and Signal image identity. Browser contracts additionally compare full exported projects and API request counts while switching themes/providers, preserve the inspected and focused cell, and test persisted and live System preference behavior. Unit tests cover denied storage, corruption, cross-tab changes and listener cleanup.
+
+## Narrow presentation follow-up
+
+See [ray and action comparison](dark-mode-follow-up.md) for matched dense RSRP, sparse-sector and Interference action evidence. Ray strokes are now 1.25 px at 0.45 opacity in both themes; scientific colors, features and requests are unchanged. Shared dark action variants include Interference and diagnostic Run/Evaluate, with explicit enabled hover and disabled treatments. Light action rendering is unchanged.
+
+## Deferred RF request-budget issue
+
+Observed UI message: **“RF analysis request budget exceeded; retry after the current rate-limit window”** during an RF analysis request. Investigation is deferred to a separate task. Likely area to inspect later: RF request-budget/rate-limit admission and the current limit window. This presentation follow-up does not investigate the cause or change budgets, throttling, retries, APIs, error handling or message visibility.

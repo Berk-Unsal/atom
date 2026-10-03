@@ -1,0 +1,234 @@
+{
+  "concept": "8H",
+  "date": "2026-10-03T11:54:15.980289+00:00",
+  "baseline_commit": "ed7268f25a9faa4d1c76d6043a3b213147eada00",
+  "branch": "codex/concept-8h-visual-system",
+  "validation": {
+    "unit": {
+      "command": "npm test -- --maxWorkers=4",
+      "passed": 330,
+      "files": 62,
+      "failed": 0
+    },
+    "marker_final_delta": {
+      "command": "npx vitest run src/components/cellMarkerPresentation.test.js",
+      "passed": 3,
+      "failed": 0
+    },
+    "lint": {
+      "command": "npm run lint",
+      "result": "passed"
+    },
+    "type_check": {
+      "result": "not configured",
+      "reason": "JavaScript project; no type-check script or tsconfig"
+    },
+    "build": {
+      "command": "npm run build",
+      "result": "passed",
+      "warning": "Existing initial chunk exceeds 500kB; unchanged warning category"
+    },
+    "e2e": {
+      "command": "npm run test:e2e",
+      "passed": 115,
+      "skipped": 101,
+      "failed": 0,
+      "projects": [
+        "desktop-1440",
+        "desktop-1024",
+        "tablet-768",
+        "mobile-390"
+      ],
+      "skip_reason": "Existing real-backend and capture gates plus desktop-only regression measurements"
+    },
+    "focused_e2e": {
+      "command": "npx playwright test --grep 'Concept 8H|switching Projects clears'",
+      "passed": 10,
+      "skipped": 10,
+      "failed": 0
+    },
+    "screenshots": {
+      "before_command": "ATOM_8H_CAPTURE=before npx playwright test --config=/tmp/atom-8h-baseline.config.mjs --project=desktop-1440 --grep 'captures Concept 8H visual system evidence'",
+      "after_command": "ATOM_8H_CAPTURE=after npx playwright test --project=desktop-1440 --grep 'captures Concept 8H visual system evidence'",
+      "passed_each": 1,
+      "pairs": 24,
+      "matching_state_names": true,
+      "maximum_document_horizontal_overflow": 0
+    },
+    "docs_build": {
+      "command": "sh docs/build-reference-pages.sh",
+      "result": "passed",
+      "warning": "Existing Pandoc --mathml deprecation"
+    },
+    "docs_validation": {
+      "command": "/tmp/atom-8h-docs-venv/bin/python docs/validate_docs.py",
+      "result": "passed",
+      "html_pages": 43,
+      "api_paths": 41,
+      "environment": "Temporary venv with repository-pinned, hash-verified docs/requirements.txt; system Python lacked PyYAML. No repository dependency changed."
+    },
+    "version": {
+      "command": "python3 scripts/versioning.py check",
+      "result": "passed",
+      "version": "0.9.3"
+    },
+    "diff": {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    "backend": {
+      "result": "not rerun",
+      "reason": "Frontend-only task; no all-project completion policy; source hashes unchanged"
+    }
+  },
+  "regressions": [
+    "Shared StageMenu click, toggle, Escape, outside click, focus restoration and arrow navigation",
+    "Tooltip suppression and actionable rail badges",
+    "Persistent primary action across all four stages without incidental RF requests",
+    "RF empty-state sector and Network evaluation use existing API actions",
+    "Single-row Results category navigation with Home/End and scroll access",
+    "Centered selected numbers; compound active+selected rings; preserved transparent hit area",
+    "Readable 6G option, TX bounds and structured selected-network summary",
+    "Toolbar accessible labels and tablet layout separation",
+    "Header popovers above map zoom controls",
+    "Exact exported plan, viewport transform, RF context, freshness and Run context unchanged after menu-only interactions"
+  ],
+  "existing_invariance_suites": [
+    "src/domain/requestEquivalence.test.js: canonical 2.6GHz and 28GHz simulation, optimization and interference requests",
+    "src/utils/requestPayloads.test.js: selected order, per-cell profiles/azimuths, reference request isolation, surface fingerprints and analytical requests",
+    "src/utils/optimizationConfig.test.js: utilities, score, priorities, Pareto reranking, stable identities, deterministic ordering and unavailable values",
+    "src/domain/resultContext.test.js: current/stale/historical/unsupported states, source Run and saved Version lineage",
+    "src/utils/projectStore.test.js: schemas, migration, Map Focus exclusion, IndexedDB saves and serialization",
+    "src/hooks/useRunExecution.test.jsx, useProjectWorkspace.test.jsx, useReportArtifacts.test.jsx, useReportWorkflow.test.jsx",
+    "App.workflow.test.jsx and existing E2E: analysis ownership, RF diagnostics, inspector precedence, Inventory batch semantics, stale safety, Run history and report lineage"
+  ],
+  "invariance": {
+    "source_hash_algorithm": "SHA-256 of sorted path + NUL + content SHA-256; compare LFS smudged content against baseline pointer OID",
+    "protected_files_unchanged": 262,
+    "source_groups": {
+      "backend-go/": {
+        "files": 143,
+        "baseline_sha256": "08a3fbfc5c7539806f0d9db7d03de3c10eb20a11cd9fc9733ad2a611298213ab",
+        "post_sha256": "08a3fbfc5c7539806f0d9db7d03de3c10eb20a11cd9fc9733ad2a611298213ab",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": []
+      },
+      "core-lab-adapter/": {
+        "files": 7,
+        "baseline_sha256": "a46542bf51af1e34724b4127e5eb36d0c3dd198530fe08e85477fd23bdb8dfb7",
+        "post_sha256": "a46542bf51af1e34724b4127e5eb36d0c3dd198530fe08e85477fd23bdb8dfb7",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": []
+      },
+      "data-pipeline/": {
+        "files": 23,
+        "baseline_sha256": "6c90e08af5b2a1236877697b105fb0e2b43dad612f41e1843be8fc998ce675cd",
+        "post_sha256": "6c90e08af5b2a1236877697b105fb0e2b43dad612f41e1843be8fc998ce675cd",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": [
+          "data-pipeline/ankara_buildings.geojson"
+        ]
+      },
+      "frontend-react/src/domain/": {
+        "files": 21,
+        "baseline_sha256": "721cd7cc9dd6073ed4b17249efb04e75168f6b0798ff89518846f5a7bbcdb163",
+        "post_sha256": "721cd7cc9dd6073ed4b17249efb04e75168f6b0798ff89518846f5a7bbcdb163",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": []
+      },
+      "frontend-react/src/hooks/": {
+        "files": 11,
+        "baseline_sha256": "56482b459fb626291c1b9512502fe2be6dc38deb1b785965c2b9035669f7e822",
+        "post_sha256": "56482b459fb626291c1b9512502fe2be6dc38deb1b785965c2b9035669f7e822",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": []
+      },
+      "frontend-react/src/utils/": {
+        "files": 50,
+        "baseline_sha256": "01d35b19c8a117d59f1e8f4ca120c31251973f80ac29b2379efe51faa789818b",
+        "post_sha256": "01d35b19c8a117d59f1e8f4ca120c31251973f80ac29b2379efe51faa789818b",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": []
+      },
+      "frontend-react/src/features/": {
+        "files": 4,
+        "baseline_sha256": "91ea62040411c0b59ca438b8d9e278d62db72a55ae5b599be96e923718fac522",
+        "post_sha256": "91ea62040411c0b59ca438b8d9e278d62db72a55ae5b599be96e923718fac522",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": []
+      },
+      "frontend-react/package.json": {
+        "files": 1,
+        "baseline_sha256": "db9ca38d406943f8f7527efdaf58cc77090c37ec33ba8546a1e35cf9a6b9c18b",
+        "post_sha256": "db9ca38d406943f8f7527efdaf58cc77090c37ec33ba8546a1e35cf9a6b9c18b",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": []
+      },
+      "frontend-react/package-lock.json": {
+        "files": 1,
+        "baseline_sha256": "325d79d92dc85de97d21a09c8478416e930e66c7b477afa4059c859e5c2bf0fd",
+        "post_sha256": "325d79d92dc85de97d21a09c8478416e930e66c7b477afa4059c859e5c2bf0fd",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": []
+      },
+      "frontend-react/src/components/workspaceTools.js": {
+        "files": 1,
+        "baseline_sha256": "2e4a8c29af05bb6b0f8d8a4c0fa06c0121923ec8ada9d15ba3aa38c62a0836b4",
+        "post_sha256": "2e4a8c29af05bb6b0f8d8a4c0fa06c0121923ec8ada9d15ba3aa38c62a0836b4",
+        "changed_files": [],
+        "identical": true,
+        "lfs_content_oid_checks": []
+      }
+    },
+    "domain": "selectedNetworkTowerIds, active transmitter, inspection/Map Focus, Scenario, freshness, Run and Report identity logic unchanged",
+    "requests": "No builder, request payload, route, or execution-hook change; existing equivalence suites pass",
+    "rf": "Backend and reference feature implementations unchanged; no RF output algorithm or experiment added",
+    "optimizer": "No search, objective, utility, constraint, recommendation or Pareto implementation change",
+    "persistence": "No ProjectV2/ScenarioRevision/Run/Report schema, IndexedDB store, fingerprint or serialization change",
+    "scientific_freeze": "Concept 6A/6A.1 remains frozen",
+    "limitation": "Source identity plus existing frontend contracts; no newly claimed numerical RF validation"
+  },
+  "logs": {
+    "unit": {
+      "path": "/tmp/atom-8h-post-tests.log",
+      "sha256": "ed51f18e6e450edbe7c386c35de0d02eac1443884640ef8b3a68dde4695beb86"
+    },
+    "e2e": {
+      "path": "/tmp/atom-8h-post-e2e.log",
+      "sha256": "3a31ccee736c7d9ea467622053412ab555c7775d9122c19ce19b90d024050713"
+    },
+    "capture_before": {
+      "path": "/tmp/atom-8h-baseline-final-capture.log",
+      "sha256": "aee189bea5a9fbe3ae83e36109a99df206865e50e7c6d02006415828fc3676ef"
+    },
+    "capture_after": {
+      "path": "/tmp/atom-8h-final-capture.log",
+      "sha256": "b3291c5a8d890775c46f1259924134b0392484187567767a458d84a18afe32f7"
+    },
+    "lint": {
+      "path": "/tmp/atom-8h-post-lint.log",
+      "sha256": "116817ce61fdd8ca41b853905a4f02d1e7aa6e272dd6b69a5429133ea62180db"
+    },
+    "build": {
+      "path": "/tmp/atom-8h-post-build.log",
+      "sha256": "b35f6f5aab88a0aac550fef0acd203f2295250b7580f886176c0e40a1c868a1a"
+    },
+    "docs_build": {
+      "path": "/tmp/atom-8h-docs-build.log",
+      "sha256": "3464cb53fbfab4a748b9c9d834baf469a61c767e31ca859a791a5450d72fdb6e"
+    },
+    "docs_validation": {
+      "path": "/tmp/atom-8h-docs-validation.log",
+      "sha256": "beca530a327d77aa9d8d40d8a70bd9db6be7bc975dd5b99e8a92ef72de6399f5"
+    }
+  }
+}

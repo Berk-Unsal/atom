@@ -81,7 +81,7 @@ export default function ControlPanel({
                 aria-pressed={settings.frequencyGHz === option.frequencyGHz}
                 onClick={() => updateNetworkTech(option)}
               >
-                <span>{option.label}</span>
+                <span>{option.id === "6g" ? "6G research" : option.label}</span>
                 <small>{option.frequencyGHz} GHz</small>
               </button>
             ))}
@@ -108,6 +108,7 @@ export default function ControlPanel({
           icon={<Zap size={18} />}
           label="Conducted TX power"
           suffix="dBm"
+          showRange
           min={0}
           max={60}
           step={1}
@@ -118,10 +119,10 @@ export default function ControlPanel({
         {planningMode === "network" ? (
           <div className="network-selection-tools">
             <div className="selection-summary-row">
-              <span>Selected cluster</span>
-              <strong>{networkSelectionCount} / {MAX_NETWORK_CELLS} cells</strong>
+              <span>Selected network</span>
+              <strong>{networkSelectionCount} of {MAX_NETWORK_CELLS} cells selected</strong>
             </div>
-            <p className="selection-minimum-note">At least 2 cells are required to evaluate; {MAX_NETWORK_CELLS} is the maximum cluster size.</p>
+            <p className="selection-minimum-note">Minimum 2 · Maximum {MAX_NETWORK_CELLS}</p>
             {isDrawingSelection ? (
               <p className="selection-map-mode" role="status">Drawing selection area…</p>
             ) : isSelectingCellsOnMap ? (
@@ -360,7 +361,7 @@ function ToolReadinessState({ actionLabel, description, onAction, title }) {
   );
 }
 
-function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {
+function NumberField({ icon, label, suffix, min, max, step, value, onChange, showRange = false }) {
   return (
     <label className="input-row">
       <span className="input-label">{icon}{label}</span>
@@ -376,6 +377,7 @@ function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {
         />
         <small>{suffix}</small>
       </span>
+      {showRange ? <span className="field-support">Valid range: {min}–{max} {suffix}</span> : null}
     </label>
   );
 }

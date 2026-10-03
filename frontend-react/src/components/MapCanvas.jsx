@@ -4,7 +4,7 @@ import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Pol
 import { rxPowerColor } from "../utils/geojson.js";
 import { getJSON } from "../utils/apiClient.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
-import { fanOutSelectionOffset } from "../utils/networkSelection.js";
+import { cellMarkerPresentation } from "./cellMarkerPresentation.js";
 import { filterRayFeatures, RAY_SCOPE_ALL } from "../utils/rfVisualization.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
@@ -178,6 +178,7 @@ function OpenStreetMapLayer() {
   return (
     <>
       <TileLayer
+        className="atom-basemap"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         eventHandlers={{ tileerror: handleTileError }}
         opacity={unavailable ? 0 : 1}
@@ -242,16 +243,12 @@ function TowerMarkersLayer({
   towers,
 }) {
   const map = useMap();
-  const [, refreshOffsets] = useState(0);
-
+  const [zoom, setZoom] = useState(() => map.getZoom());
   useEffect(() => {
-    const handleViewportChange = () => refreshOffsets((current) => current + 1);
-    map.on("moveend zoomend resize", handleViewportChange);
-    return () => map.off("moveend zoomend resize", handleViewportChange);
+    const updateZoom = () => setZoom(map.getZoom());
+    map.on("zoomend", updateZoom);
+    return () => map.off("zoomend", updateZoom);
   }, [map]);
-
-  const selectionOffsets = buildSelectionMarkerOffsets(towers, selectedNetworkTowerIds, map);
-
   return towers.map((tower) => {
     const [lon, lat] = tower.coordinates;
     const isSelected = selectedTower?.id === tower.id;
@@ -261,18 +258,22 @@ function TowerMarkersLayer({
     const isNetworkVisible = layerVisibility?.selectedCells !== false && isNetworkSelected;
     const order = selectedTowerOrder?.get(tower.id);
     const isInspectorSelected = selectedMapObject?.type === "tower" && selectedMapObject?.payload?.tower?.id === tower.id;
-    const badgeOffset = selectionOffsets.get(tower.id) ?? [0, 0];
+    const marker = cellMarkerPresentation({ active: isSelected, selected: isNetworkVisible, inspected: isInspectorSelected, focused: isMapFocused, order, zoom });
     return (
       <Fragment key={tower.id}>
+        {marker.rings.map((ring) => (
+          <CircleMarker key={ring.state} center={[lat, lon]} radius={ring.radius} pathOptions={ring.pathOptions} interactive={false} />
+        ))}
         <CircleMarker
           center={[lat, lon]}
-          radius={isNetworkVisible || isSelected || isMapFocused ? 8 : 5}
-          pathOptions={{
-            color: isInspectorSelected ? "#be123c" : isMapFocused ? "#6d28d9" : isNetworkVisible ? "#b45309" : isSelected ? "#0b4f49" : "#1d4ed8",
-            fillColor: isNetworkVisible ? "#fef3c7" : isSelected ? "#ffffff" : isMapFocused ? "#ede9fe" : "#60a5fa",
-            fillOpacity: isNetworkVisible || isSelected || isMapFocused ? 1 : 0.82,
-            weight: isInspectorSelected ? 4 : isMapFocused ? 4 : isNetworkVisible || isSelected ? 3 : 2,
-          }}
+          radius={marker.radius}
+          pathOptions={marker.pathOptions}
+          interactive={false}
+        />
+        <CircleMarker
+          center={[lat, lon]}
+          radius={marker.hitRadius}
+          pathOptions={{ className: "cell-marker-hit-target", stroke: false, fillOpacity: 0 }}
           eventHandlers={{
             click: (event) => {
               const editModeArmed = isDrawingSelection || isPlacingCell || isSelectingPathEndpoint;
@@ -299,9 +300,10 @@ function TowerMarkersLayer({
             interactive={false}
             zIndexOffset={1000}
             icon={divIcon({
-              className: "tower-order-badge",
-              html: `<span style="--badge-offset-x:${badgeOffset[0]}px;--badge-offset-y:${badgeOffset[1]}px">${order}</span>`,
-              iconAnchor: [8, 22],
+              className: `tower-order-badge${isSelected ? " active-selected" : ""}`,
+              html: `<span>${marker.order}</span>`,
+              iconSize: [18, 18],
+              iconAnchor: [9, 9],
             })}
           />
         ) : null}
@@ -323,48 +325,6 @@ function TowerMarkersLayer({
       </Fragment>
     );
   });
-}
-
-function buildSelectionMarkerOffsets(towers, selectedNetworkTowerIds, map) {
-  const selectedTowers = [];
-  const seen = new Set();
-  for (const towerID of selectedNetworkTowerIds) {
-    const tower = towers.find((candidate) => candidate.id === towerID);
-    if (!tower || seen.has(tower.id)) {
-      continue;
-    }
-    const [lon, lat] = tower.coordinates ?? [];
-    if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
-      continue;
-    }
-    seen.add(tower.id);
-    selectedTowers.push({
-      point: map.latLngToLayerPoint([lat, lon]),
-      tower,
-    });
-  }
-
-  const groups = [];
-  selectedTowers.forEach((member) => {
-    const group = groups.find(({ members }) => members.some((candidate) => pointsAreClose(candidate.point, member.point)));
-    if (group) {
-      group.members.push(member);
-    } else {
-      groups.push({ members: [member] });
-    }
-  });
-
-  const offsets = new Map();
-  groups.forEach(({ members }) => {
-    members.forEach(({ tower }, index) => {
-      offsets.set(tower.id, fanOutSelectionOffset(index, members.length));
-    });
-  });
-  return offsets;
-}
-
-function pointsAreClose(left, right) {
-  return Math.hypot(left.x - right.x, left.y - right.y) <= 26;
 }
 
 function ViewportBuildingLayer({ onSelectMapObject, selectedMapObject }) {
@@ -737,9 +697,9 @@ function SelectionPolygonLayer({ isDrawing, onAddPoint, onCancel, onFinish, poly
         <Polygon
           positions={positions}
           pathOptions={{
-            color: "#b45309",
-            fillColor: "#f59e0b",
-            fillOpacity: 0.15,
+            color: "#c55a11",
+            fillColor: "#ed8a36",
+            fillOpacity: 0.055,
             opacity: 0.9,
             weight: 2,
           }}

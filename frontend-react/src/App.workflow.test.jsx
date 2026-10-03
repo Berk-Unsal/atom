@@ -285,7 +285,7 @@ describe("App planning workflow", () => {
     fireEvent.click(screen.getByRole("button", { name: "Advanced model details" }));
     expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled();
     expect(api.postJSON).not.toHaveBeenCalled();
-    expect(screen.queryByText("Run needed", { selector: ".run-state" })).not.toBeInTheDocument();
+    expect(screen.getByText("Run needed", { selector: ".run-state" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Plan workspace" }));
     fireEvent.click(screen.getByRole("button", { name: "Scenarios" }));
@@ -358,7 +358,7 @@ describe("App planning workflow", () => {
     fireEvent.click(research);
     expect(within(subThzPanel).getByRole("spinbutton", { name: /Frequency/i })).toHaveValue(145);
     expect(api.postJSON).not.toHaveBeenCalled();
-    expect(screen.queryByText("Run needed", { selector: ".run-state" })).not.toBeInTheDocument();
+    expect(screen.getByText("Run needed", { selector: ".run-state" })).toBeInTheDocument();
   });
 
   it("does not make a current result stale when disclosure state changes", async () => {
@@ -550,13 +550,13 @@ describe("App planning workflow", () => {
 
     expect(api.postJSON).not.toHaveBeenCalled();
     expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select cells" })).toBeEnabled();
-    expect(screen.getByText(/at least 2 cells are required to evaluate; 6 is the maximum cluster size/i)).toBeInTheDocument();
+    expect(screen.getByText("Minimum 2 · Maximum 6")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Analyze workspace" }));
     expect(screen.getByRole("button", { name: "Interference" })).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByText("Select at least two cells")).toBeInTheDocument();
   });
 
-  it("keeps Setup as the owner of map selection and removes its CTA while selection is active", async () => {
+  it("keeps Setup selection feedback and a persistent header shortcut while selection is active", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
     const setup = screen.getByRole("dialog", { name: "Setup" });
@@ -568,7 +568,7 @@ describe("App planning workflow", () => {
 
     expect(screen.getByRole("dialog", { name: "Setup" })).toBeInTheDocument();
     expect(screen.getByText("Selecting cells on map…")).toHaveAttribute("role", "status");
-    expect(within(screen.getByRole("group", { name: "Primary action" })).queryByRole("button", { name: "Select cells" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select cells" })).toBeEnabled();
     expect(within(setup).queryByRole("button", { name: "Select cells on map" })).not.toBeInTheDocument();
     expect(api.postJSON).not.toHaveBeenCalled();
 
@@ -750,7 +750,7 @@ describe("App planning workflow", () => {
     expect(within(screen.getByRole("group", { name: "Map interaction mode" })).getByRole("button", { name: "Select cells" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "Draw selection area" }));
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Select cells" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select cells" })).toBeDisabled();
 
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
@@ -770,12 +770,13 @@ describe("App planning workflow", () => {
     expect(screen.getByText(/Fast fading, diffraction, sidelobes/)).toBeInTheDocument();
   });
 
-  it("shows only the primary action relevant to the active workflow", async () => {
+  it("keeps the header action and the contextual empty-state action through stage changes", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
 
     openWorkspaceTool("Results");
-    expect(screen.queryByRole("button", { name: "Run Sector" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Run Sector" })).toBeEnabled();
+    expect(within(screen.getByRole("dialog", { name: "Results" })).getByRole("button", { name: "Run Sector" })).toBeEnabled();
 
     openWorkspaceTool("Setup");
     expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled();

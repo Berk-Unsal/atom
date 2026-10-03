@@ -402,6 +402,152 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test("captures Concept 8H visual system evidence", async ({ page }, testInfo) => {
+  const phase = env.ATOM_8H_CAPTURE;
+  test.skip(!["before", "after"].includes(phase), "Set ATOM_8H_CAPTURE=before or after to refresh visual evidence");
+  test.skip(testInfo.project.name !== "desktop-1440", "Capture the reference states once");
+  test.setTimeout(120_000);
+  const directory = resolve(cwd(), `../docs/assets/concept-8h/${phase}`);
+  const tileDirectory = "/tmp/atom-8h-osm-tiles";
+  await mkdir(directory, { recursive: true });
+  await mkdir(tileDirectory, { recursive: true });
+  const features = [
+    point("tower-1", "cell-1", 32.850, 39.920),
+    point("tower-2", "cell-2", 32.870, 39.920),
+    point("tower-3", "cell-3", 32.890, 39.920),
+    point("tower-4", "cell-4", 32.850, 39.940),
+    point("tower-5", "cell-5", 32.870, 39.940),
+    point("tower-6", "cell-6", 32.890, 39.940),
+    ...Array.from({ length: 36 }, (_, index) => point(`dense-${index}`, `sogutozu-${index}`, 32.800 + (index % 6) * 0.0015, 39.911 + Math.floor(index / 6) * 0.0015)),
+  ];
+  await page.route("**/api/towers", (route) => route.fulfill({ json: { type: "FeatureCollection", features } }));
+  // The same cached OSM tiles are used for both phases; RF fixtures remain local.
+  await page.route("**/tile.openstreetmap.org/**", async (route) => {
+    const file = resolve(tileDirectory, new URL(route.request().url()).pathname.slice(1).replaceAll("/", "-"));
+    try {
+      let body;
+      try { body = await readFile(file); } catch {
+        const response = await route.fetch({ timeout: 15_000 });
+        if (!response.ok()) throw new Error("Tile unavailable");
+        body = await response.body();
+        await writeFile(file, body);
+      }
+      await route.fulfill({ body, contentType: "image/png" });
+    } catch { await route.abort(); }
+  });
+  const screenshots = [];
+  const measurements = [];
+  const capture = async (name) => {
+    await page.waitForFunction(() => {
+      const tiles = [...document.querySelectorAll(".leaflet-tile")];
+      const map = document.querySelector(".leaflet-container")?.getBoundingClientRect();
+      if (!map || !tiles.length || !tiles.every((tile) => tile.complete && tile.naturalWidth > 0 && Number(getComputedStyle(tile).opacity) >= 0.99)) return false;
+      const bounds = tiles.map((tile) => tile.getBoundingClientRect());
+      return [[map.left + 2, map.top + 2], [map.right - 2, map.top + 2], [map.left + 2, map.bottom - 2], [map.right - 2, map.bottom - 2]]
+        .every(([x, y]) => bounds.some((rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom));
+    }, null, { timeout: 25_000 });
+    await page.screenshot({ path: resolve(directory, `${name}.jpg`), type: "jpeg", quality: 70, animations: "disabled" });
+    screenshots.push({ state: name, file: `docs/assets/concept-8h/${phase}/${name}.jpg` });
+    measurements.push(await page.evaluate((state) => {
+      const selectors = [".command-brand", ".workspace-lineage-context", ".rf-context-primary", ".run-state", ".command-run-button", ".rail-label", ".stage-tool-choice-name", ".stage-tool-choice-reason", ".tool-drawer-header h2", ".tool-drawer-header p", ".field-group label", ".selection-note", ".number-wrap input", ".number-wrap select", ".segmented-control button", ".selection-summary-row", ".result-view-tabs", ".analysis-empty-state", ".focused-map-toolbar button", ".focused-map-legend", ".contextual-inspector-header"];
+      const primitives = selectors.flatMap((selector) => {
+        const element = document.querySelector(selector);
+        if (!element || !element.getClientRects().length) return [];
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return [{ selector, fontFamily: style.fontFamily, fontSize: style.fontSize, fontWeight: style.fontWeight, lineHeight: style.lineHeight, color: style.color, borderColor: style.borderColor, background: style.backgroundColor, height: rect.height, radius: style.borderRadius, padding: style.padding, gap: style.gap, iconSize: element.querySelector("svg")?.getAttribute("width") ?? null, x: rect.x, y: rect.y, width: rect.width }];
+      });
+      return { state, viewport: { width: innerWidth, height: innerHeight }, overflowX: document.documentElement.scrollWidth - innerWidth, primitives, tileCount: document.querySelectorAll(".leaflet-tile-loaded").length, mapTransform: document.querySelector(".leaflet-map-pane")?.style.transform, selectedMarkers: document.querySelectorAll(".tower-order-badge").length };
+    }, name));
+  };
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Setup", exact: true })).toBeVisible();
+  await page.waitForFunction(() => document.querySelectorAll(".leaflet-tile-loaded").length > 0 || document.querySelector(".map-basemap-status"));
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await capture("default-map");
+  await page.getByRole("button", { name: "Plan workspace" }).click();
+  await capture("plan-menu");
+  await selectWorkspaceTool(page, "Setup");
+  await capture("setup");
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+  await capture("simulate-menu");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+  await capture("analyze-menu");
+  await page.keyboard.press("Escape");
+  await selectWorkspaceTool(page, "Results");
+  await capture("review-empty-single");
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await selectMapInteraction(page, "Select cells");
+  for (const feature of features.slice(1, 6)) await clickMapPoint(page, ...feature.geometry.coordinates);
+  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 6 cells");
+  await capture("selected-network");
+  await selectMapInteraction(page, "Inspect");
+  await selectMapFocus(page, "cell-6");
+  await inspectMapFocus(page);
+  if (await page.getByRole("button", { name: "Map view options" }).getAttribute("aria-expanded") === "true") await page.getByRole("button", { name: "Map view options" }).click();
+  await expect(page.getByRole("complementary", { name: "Cell inspector" })).toBeVisible();
+  await capture("active-selected-cell");
+  await page.getByRole("button", { name: "Close inspector" }).click();
+  const map = page.locator(".leaflet-container");
+  await map.focus();
+  for (let index = 0; index < 2; index++) {
+    await map.press("ArrowLeft");
+    await page.waitForFunction(() => !document.querySelector(".leaflet-pan-anim"));
+  }
+  for (let index = 0; index < 2; index++) {
+    await page.locator(".leaflet-control-zoom-in").click();
+    await page.waitForFunction(() => !document.querySelector(".leaflet-zoom-anim"));
+  }
+  await capture("dense-sogutozu");
+  for (let index = 0; index < 2; index++) {
+    await page.locator(".leaflet-control-zoom-out").click();
+    await page.waitForFunction(() => !document.querySelector(".leaflet-zoom-anim"));
+  }
+  for (let index = 0; index < 2; index++) {
+    await map.press("ArrowRight");
+    await page.waitForFunction(() => !document.querySelector(".leaflet-pan-anim"));
+  }
+  await selectMapInteraction(page, "Select cells");
+  await page.getByRole("button", { name: "Draw selection area" }).click();
+  const mapBox = await map.boundingBox();
+  for (const [x, y] of [[0.35, 0.3], [0.6, 0.3], [0.5, 0.65]]) await map.click({ position: { x: mapBox.width * x, y: mapBox.height * y } });
+  await capture("selection-polygon");
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await selectWorkspaceTool(page, "Inventory");
+  await capture("inventory");
+  await selectWorkspaceTool(page, "Propagation");
+  await capture("propagation");
+  await selectWorkspaceTool(page, "RF Diagnostics");
+  await capture("rf-diagnostics");
+  await selectWorkspaceTool(page, "Setup");
+  await capture("setup-network");
+  await selectWorkspaceTool(page, "Results");
+  await capture("review-empty-network");
+  for (const [width, height] of [[1366, 768], [1512, 982], [1728, 1117], [1024, 768], [768, 1024], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    await capture(`review-${width}`);
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "Single sector mode" }).click();
+  await page.locator(".command-primary-action").getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  await selectWorkspaceTool(page, "Results");
+  await capture("review-current");
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
+  await selectWorkspaceTool(page, "Results");
+  await capture("review-stale");
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "4G LTE, 2.6 GHz" }).click();
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+  await capture("analyze-disabled");
+  await writeFile(resolve(directory, "evidence.json"), `${JSON.stringify({ concept: "8H", phase, screenshots, measurements }, null, 2)}\n`);
+});
+
 test("captures Concept 8B.1 workspace chrome evidence", async ({ page }, testInfo) => {
   const phase = env.ATOM_8B1_CAPTURE;
   test.skip(!["before", "after"].includes(phase), "Set ATOM_8B1_CAPTURE=before or after to refresh visual evidence");
@@ -937,7 +1083,7 @@ test("Select cells changes cluster membership and Clear selected cluster reverse
   await page.getByRole("button", { name: "Clear selected cluster" }).click();
   await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 0 cells");
   await selectWorkspaceTool(page, "Setup");
-  await expect(page.locator(".selection-summary-row strong")).toHaveText("0 / 6 cells");
+  await expect(page.locator(".selection-summary-row strong")).toHaveText("0 of 6 cells selected");
   expect(computeRequests).toHaveLength(0);
 });
 
@@ -1607,14 +1753,14 @@ test("keeps an unsaved draft when opening a different Scenario is blocked", asyn
   await selectWorkspaceTool(page, "Setup");
   const txPower = page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" });
   await txPower.fill("31");
-  await expect(lineageSummary).toContainText("Unsaved changes");
+  await expect(lineageSummary).toContainText("Unsaved");
 
   await selectWorkspaceTool(page, "Scenarios");
   const currentScenarioRow = page.locator(".scenario-switch-row[aria-current='true']");
   await expect(currentScenarioRow).toHaveAttribute("aria-label", /working draft with unsaved changes/);
   await currentScenarioRow.click();
   await expect(page.getByText("Save the current draft as a Version before opening another Scenario")).toHaveCount(0);
-  await expect(lineageSummary).toContainText("Unsaved changes");
+  await expect(lineageSummary).toContainText("Unsaved");
   await expect(page.getByText("2 saved Scenarios", { exact: true })).toBeVisible();
   await selectWorkspaceTool(page, "Setup");
   await expect(txPower).toHaveValue("31");
@@ -1624,7 +1770,7 @@ test("keeps an unsaved draft when opening a different Scenario is blocked", asyn
   await savedScenario.click();
 
   await expect(page.getByRole("alert")).toContainText("Save the current draft as a Version before opening another Scenario");
-  await expect(lineageSummary).toContainText("Unsaved changes");
+  await expect(lineageSummary).toContainText("Unsaved");
   await expect(txPower).toHaveValue("31");
 });
 
@@ -1709,7 +1855,7 @@ test("opens the exact Run source Version while keeping the current Version activ
 
   const txPower = page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" });
   await txPower.fill("31");
-  await expect(lineageSummary).toContainText("Unsaved changes");
+  await expect(lineageSummary).toContainText("Unsaved");
   await projectMenuButton.click();
   projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
   await projectMenu.getByRole("button", { name: "Save current" }).click();
@@ -2540,7 +2686,7 @@ test("captures post-change Concept 8B chrome and responsive evidence", async ({ 
   });
   await page.reload();
   await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
-  await expect(page.locator(".command-status .run-state")).toHaveText("Ready");
+  await expect(page.locator(".command-status .run-state")).toHaveText("Run needed");
   await selectWorkspaceTool(page, "Setup");
   for (const width of [1280, 1024, 768, 390]) {
     await page.setViewportSize({ width, height: width <= 390 ? 844 : width === 768 ? 1024 : 900 });
@@ -2979,3 +3125,140 @@ function projectMapPoint(longitude, latitude, zoom) {
   const y = ((1 - Math.log(Math.tan(latitudeRadians) + 1 / Math.cos(latitudeRadians)) / Math.PI) / 2) * scale;
   return { x, y };
 }
+
+// Concept 8H regressions exercise presentation ownership against the existing RF fixtures.
+test("Concept 8H keeps the primary action through every stage and runs the empty-state sector action", async ({ page }) => {
+  const requests = [];
+  page.on("request", (request) => {
+    if (/\/api\/(analyze-sector|evaluate-network|simulate|optimize-network|interference)/.test(request.url())) requests.push(request);
+  });
+  await page.goto("/");
+  const action = page.locator(".command-primary-action").getByRole("button", { name: "Run Sector" });
+  await expect(action).toBeEnabled();
+  const initial = await action.boundingBox();
+  for (const tool of ["Inventory", "Propagation", "RF Diagnostics", "Results"]) {
+    await selectWorkspaceTool(page, tool);
+    await expect(action).toBeVisible();
+    const box = await action.boundingBox();
+    expect(Math.abs(box.x - initial.x)).toBeLessThan(1);
+    expect(Math.abs(box.y - initial.y)).toBeLessThan(1);
+  }
+  expect(requests).toHaveLength(0);
+  const tabs = page.getByRole("tablist", { name: "Result views" });
+  const positions = await tabs.getByRole("tab").evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().y));
+  expect(new Set(positions).size).toBe(1);
+  const viewportWidth = page.viewportSize().width;
+  if (viewportWidth > 640 && viewportWidth <= 900) {
+    const spatial = await page.locator(".focused-map-toolbar .spatial-tools").boundingBox();
+    const display = await page.locator(".focused-map-toolbar .map-display-tools").boundingBox();
+    const zoom = await page.locator(".leaflet-control-zoom").boundingBox();
+    expect(display.y).toBeGreaterThanOrEqual(spatial.y + spatial.height);
+    expect(zoom.y).toBeGreaterThanOrEqual(display.y + display.height);
+    expect(zoom.x).toBeGreaterThanOrEqual(spatial.x - 4);
+  }
+  await tabs.getByRole("tab", { name: "RF", exact: true }).focus();
+  await page.keyboard.press("End");
+  await expect(tabs.getByRole("tab", { name: "Candidates" })).toBeFocused();
+  await page.keyboard.press("Home");
+  await page.locator(".analysis-empty-state").getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.getByRole("dialog", { name: "Results" })).toContainText("-72.0 dBm");
+  expect(requests.filter((request) => request.url().includes("/api/analyze-sector"))).toHaveLength(1);
+});
+
+test("Concept 8H keeps Network evaluation accessible from Review and integrates selected Cell numbers", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Marker center geometry is measured once on desktop");
+  await page.route("**/api/evaluate-network", (route) => route.fulfill({ json: networkOptimization }));
+  const requests = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/api/evaluate-network")) requests.push(request);
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await selectMapInteraction(page, "Select cells");
+  await clickMapPoint(page, 32.854, 39.922);
+  await expect(page.locator(".tower-order-badge")).toHaveCount(2);
+  const markers = await page.locator(".tower-order-badge").evaluateAll((elements) => elements.map((element) => {
+    const icon = element.getBoundingClientRect();
+    const number = element.firstElementChild.getBoundingClientRect();
+    return { text: element.textContent.trim(), centerOffsetX: Math.abs(icon.x + icon.width / 2 - number.x - number.width / 2), centerOffsetY: Math.abs(icon.y + icon.height / 2 - number.y - number.height / 2), active: element.classList.contains("active-selected") };
+  }));
+  expect(markers.map(({ text }) => text)).toEqual(["1", "2"]);
+  expect(markers.every(({ centerOffsetX, centerOffsetY }) => centerOffsetX < 1 && centerOffsetY < 1)).toBe(true);
+  expect(markers.filter(({ active }) => active)).toHaveLength(1);
+  await expect(page.getByRole("button", { name: "Clear selected cluster" })).toHaveAttribute("title");
+  await expect(page.getByRole("button", { name: "Fit selected cells" })).toHaveAttribute("title");
+  await selectWorkspaceTool(page, "Results");
+  await expect(page.locator(".analysis-empty-state")).toContainText("Evaluate the current 2-cell network");
+  await expect(page.locator(".command-primary-action").getByRole("button", { name: "Evaluate Network" })).toBeEnabled();
+  await page.locator(".analysis-empty-state").getByRole("button", { name: "Evaluate Network" }).click();
+  await expect(page.getByRole("dialog", { name: "Results" })).toContainText("Single configuration evaluation");
+  expect(requests).toHaveLength(1);
+  expect(requests[0].postDataJSON().towers.map((tower) => tower.id)).toEqual(["cell-1", "cell-2"]);
+});
+
+test("Concept 8H stage menus close consistently and preserve the plan, viewport, freshness and Run", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Desktop flyout and persisted plan invariance");
+  const computeRequests = [];
+  page.on("request", (request) => {
+    if (/\/api\/(analyze-sector|evaluate-network|simulate|optimize-network|interference)/.test(request.url())) computeRequests.push(request.url());
+  });
+  const exportProject = async () => {
+    await page.getByRole("button", { name: "Open project menu" }).click();
+    const pending = page.waitForEvent("download");
+    await page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("button", { name: "Export", exact: true }).click();
+    const download = await pending;
+    const content = JSON.parse(await readFile(await download.path(), "utf8"));
+    await page.getByRole("button", { name: "Open project menu" }).click();
+    return content;
+  };
+  await page.goto("/");
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  await page.waitForFunction(() => new Promise((resolveReady) => {
+    const request = indexedDB.open("atom-planning-workspace");
+    request.onsuccess = () => {
+      const database = request.result;
+      const read = database.transaction("workspace", "readonly").objectStore("workspace").get("current");
+      read.onsuccess = () => { resolveReady(read.result?.projects?.some((project) => project.draft?.plan?.selectedTowerId && project.datasetRef)); database.close(); };
+    };
+  }));
+  const before = await exportProject();
+  const requestCount = computeRequests.length;
+  const transform = await page.locator(".leaflet-map-pane").getAttribute("style");
+  const context = await page.locator(".rf-context-primary").textContent();
+  const resultSource = await page.locator(".command-status").textContent();
+  const placements = [];
+  for (const stage of ["Plan", "Simulate", "Analyze", "Review"]) {
+    const trigger = page.getByRole("button", { name: `${stage} workspace` });
+    await trigger.click();
+    const menu = page.getByRole("dialog", { name: `${stage} tools` });
+    await expect(menu).toBeVisible();
+    await expect(menu).toHaveCSS("transform", "none");
+    await expect(page.getByRole("tooltip")).toHaveCount(0);
+    await expect(trigger).not.toHaveAttribute("title");
+    const box = await menu.boundingBox();
+    placements.push([box.x, box.y]);
+    const zoom = await page.locator(".leaflet-control-zoom").boundingBox();
+    expect(box.x + box.width <= zoom.x || box.y + box.height <= zoom.y || box.x >= zoom.x + zoom.width).toBe(true);
+    await trigger.click();
+    await expect(menu).toBeHidden();
+    await trigger.focus();
+    await trigger.press("Enter");
+    await expect(menu).toBeVisible();
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
+    await expect(trigger).toBeFocused();
+    await trigger.click();
+    await page.locator(".command-brand").click();
+    await expect(menu).toBeHidden();
+  }
+  expect(new Set(placements.map(([x, y]) => `${x},${y}`)).size).toBe(1);
+  expect(await exportProject()).toEqual(before);
+  expect(computeRequests.length).toBe(requestCount);
+  await expect(page.locator(".leaflet-map-pane")).toHaveAttribute("style", transform);
+  expect(await page.locator(".rf-context-primary").textContent()).toBe(context);
+  expect(await page.locator(".command-status").textContent()).toBe(resultSource);
+  expect(await page.locator(".rail-badge").count()).toBe(0);
+});

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { ChevronLeft, X } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+import PanelHeader from "./PanelHeader.jsx";
 
 export default function ContextualInspector({
   actions = [],
@@ -24,20 +25,13 @@ export default function ContextualInspector({
 
   return (
     <aside className="contextual-inspector" aria-label={`${entityLabel} inspector`}>
-      <header className="contextual-inspector-header">
+      <PanelHeader className="contextual-inspector-header" headingRef={headingRef} title={entityID ? `${entityLabel} ${entityID}` : entityLabel} subtitle="Inspect" onClose={onClose} closeLabel="Close inspector">
         {onBack ? (
           <button type="button" className="drawer-icon-button contextual-inspector-back" onClick={onBack} aria-label="Back to previous tool">
             <ChevronLeft size={18} />
           </button>
         ) : null}
-        <div className="contextual-inspector-title">
-          <span className="contextual-inspector-kicker">Inspect</span>
-          <h2 ref={headingRef} tabIndex={-1}>{entityID ? `${entityLabel} ${entityID}` : entityLabel}</h2>
-        </div>
-        <button type="button" className="drawer-icon-button drawer-close" onClick={onClose} aria-label="Close inspector">
-          <X size={18} />
-        </button>
-      </header>
+      </PanelHeader>
       <div className="contextual-inspector-source" aria-label="Source context">
         {freshness ? <span className={`inspector-freshness ${freshness.toLowerCase()}`}>{freshness}</span> : null}
         <span className="inspector-source-label">{sourceLabel}</span>

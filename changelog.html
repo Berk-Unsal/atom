@@ -74,6 +74,7 @@ changelog." />
     <aside class="page-toc reference-toc" aria-label="Changelog page contents">
       <strong>On this page</strong>
       <ul>
+      <li><a href="#unreleased" id="toc-unreleased">Unreleased</a></li>
       <li><a href="#0101---2026-10-03" id="toc-0101---2026-10-03">0.10.1
       - 2026-10-03</a></li>
       <li><a href="#0100---2026-10-03" id="toc-0100---2026-10-03">0.10.0
@@ -122,6 +123,18 @@ milestones generated from the canonical project changelog.</p>
 <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>
 and this file follows <a
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
+<h2 id="unreleased"><a
+href="https://github.com/Berk-Unsal/atom/compare/v0.10.1...HEAD">Unreleased</a></h2>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Give network optimization a stable, quiet busy action and delayed
+inline search scope plus elapsed time, with truthful long-running
+feedback and unchanged requests, search behavior, results, and
+deadlines.</li>
+<li>Distinguish running network optimization from unavailable actions
+using a readable teal-accented surface, and compact its stable feedback
+reserve from 126 px to approximately 104 px.</li>
+</ul>
 <h2 id="0101---2026-10-03"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.10.0...v0.10.1">0.10.1</a>
 - 2026-10-03</h2>
@@ -158,7 +171,7 @@ image CSP so Alidade Smooth loads in Go-served and container deployments
 while preserving OpenStreetMap support and all other
 directives.</p></li>
 </ul>
-<h3 id="changed">Changed</h3>
+<h3 id="changed-1">Changed</h3>
 <ul>
 <li><p>Use Alidade Smooth as the default light raster basemap after
 matched overlay/context evaluation; keep muted OpenStreetMap selectable
@@ -189,7 +202,7 @@ releases.</li>
 <h2 id="092---2026-09-27"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.9.1...v0.9.2">0.9.2</a>
 - 2026-09-27</h2>
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed-2">Changed</h3>
 <ul>
 <li>Restructure workspace tools around clearer primary, secondary, and
 provenance details; add Plan &gt; Scenarios, compact Run History
@@ -388,7 +401,7 @@ standard-derived low/high O2I scenarios, material-data auditing, one
 batched API request, RF-aware caching, and restrained Analyze/report
 surfaces.</li>
 </ul>
-<h3 id="changed-2">Changed</h3>
+<h3 id="changed-3">Changed</h3>
 <ul>
 <li>Replace network optimization's arbitrary raw weighted score with
 stable 0–1 objective utilities, normalized importance priorities, a
@@ -430,7 +443,7 @@ href="https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0">0.6.0</a>
 <li>Add a unified map key, visible local-save status, and recoverable
 deletion controls.</li>
 </ul>
-<h3 id="changed-3">Changed</h3>
+<h3 id="changed-4">Changed</h3>
 <ul>
 <li>Reorganize the frontend into four labeled workflow stages with
 contextual tool navigation and run actions, stronger text contrast, and
@@ -532,7 +545,7 @@ cannot escape the configured dataset directory.</li>
 <li>Remove duplicate root copies of propagation screenshots and keep the
 documentation asset paths canonical.</li>
 </ul>
-<h3 id="changed-4">Changed</h3>
+<h3 id="changed-5">Changed</h3>
 <ul>
 <li>Upgrade project files and dataset manifests to schema v2 with
 backward-compatible v1 import/loading migrations.</li>
@@ -651,7 +664,7 @@ saved scenarios, and recommendation application.</li>
 <li>Align the Markdown documentation entry point with the maintained
 static docs hub, current version, and model limitations.</li>
 </ul>
-<h3 id="changed-5">Changed</h3>
+<h3 id="changed-6">Changed</h3>
 <ul>
 <li>Establish a canonical <code>VERSION</code> file, automated version
 checks, release-note generation, and tag-driven GitHub Releases.</li>

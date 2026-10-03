@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.2",
+  "artifact": "decision",
+  "decision": "A_SEMANTICS_UNRESOLVED",
+  "label": "SEMANTICS UNRESOLVED",
+  "decision_date": "2026-10-03",
+  "basis": [
+    "Android documents CellInfo.isRegistered as a cell used or eligible for signaling, while CONNECTION_NONE (raw integer 0) means the cell is not serving and is neither camped nor serving. All 83 registered candidate rows contain both values.",
+    "All 37 SERVING_CELL_CHANGED before/after identities match the immediately adjacent registered candidates exactly, but Signal Collector documentation does not explain how that event is derived or which source is authoritative when Android connection status disagrees.",
+    "All 156 LTE PS NetworkRegistrationInfo contexts report PCI 0. Android defines LTE PCI 0..503 as valid; all registered candidates use PCI 202, 276, or 296. Thus there are zero exact PS-NRI candidate identity matches, including the 64 contexts with a masked Cell ID/channel/PLMN partial candidate match.",
+    "The cell-list callbacks corroborate the serving-event transitions only with masked Cell IDs. This confirms internal transition consistency but does not resolve Android's explicit status conflict or the PS-NRI PCI contradiction."
+  ],
+  "reconciliation": {
+    "serving_events": 37,
+    "stationary_events": 7,
+    "walking_events": 30,
+    "event_before_exact_agreements": 37,
+    "event_after_exact_agreements": 37,
+    "event_partial_or_masked_candidate_agreements": 0,
+    "event_identity_disagreements": 0,
+    "event_missing_or_ambiguous_contexts": 0,
+    "registered_candidate_identity_transitions": 37,
+    "cell_list_transitions_masked_compatible_before_and_after": 37,
+    "registered_true_connection_none_conflicts": 83,
+    "active_lte_ps_nri_valid_pci_contradictions": 156,
+    "active_lte_ps_nri_exact_identity_matches": 0,
+    "active_lte_ps_nri_masked_mci_channel_plmn_partial_candidates_before_pci": 64,
+    "active_lte_ps_nri_contexts_without_partial_candidate": 92
+  },
+  "source_conflict_matrix": [
+    {
+      "evidence_source": "CellInfo registered flag",
+      "observed": "83 registered=true rows; all belong to subscription 1/slot 1 and carry active_data_subscription=true",
+      "documented_meaning": "Android says the phone is registered to a network providing service on this cell and that the cell is used or would be used for network signaling.",
+      "available": true,
+      "consistent_with_serving_event_identity": true,
+      "can_establish_serving_for_this_source": false,
+      "reason": "All registered rows also report CONNECTION_NONE, whose Android definition is not serving."
+    },
+    {
+      "evidence_source": "CellInfo connection_status",
+      "observed": "NONE on 224/224 cell rows; raw Android mCellConnectionStatus=0 on 224/224",
+      "documented_meaning": "Android defines CONNECTION_NONE as measured but neither camped nor serving.",
+      "available": true,
+      "consistent_with_serving_event_identity": false,
+      "can_establish_serving_for_this_source": false,
+      "reason": "It directly conflicts with the registered flag on 83 rows and with the interpreted event transitions."
+    },
+    {
+      "evidence_source": "SERVING_CELL_CHANGED",
+      "observed": "37 complete before/after identity events; exact adjacent candidate matches on both sides for all 37",
+      "documented_meaning": "Signal Collector V6 documentation describes the event's before/after serving-cell identities as a handover.",
+      "available": true,
+      "consistent_with_serving_event_identity": true,
+      "can_establish_serving_for_this_source": false,
+      "reason": "The docs do not state whether the event derives from registered state, connection status, another callback, or collector state, nor how to resolve the conflict."
+    },
+    {
+      "evidence_source": "CELL_LIST_CHANGED",
+      "observed": "37 of 37 serving transitions have a matching registered-list before/after transition; Cell IDs are masked",
+      "documented_meaning": "Source callback before/after cell-list snapshots.",
+      "available": true,
+      "consistent_with_serving_event_identity": true,
+      "can_establish_serving_for_this_source": false,
+      "reason": "Masked identifiers corroborate transition order but do not disambiguate the conflicting connection-status semantics."
+    },
+    {
+      "evidence_source": "PS NetworkRegistrationInfo",
+      "observed": "156 in-service LTE PS contexts; exact outer channel/EARFCN match in all; PCI=0 in all; NRI Cell IDs are masked",
+      "documented_meaning": "Android reports PS-domain registration, access technology, services, registered PLMN, and cell identity.",
+      "available": true,
+      "consistent_with_serving_event_identity": false,
+      "can_establish_serving_for_this_source": false,
+      "reason": "PCI 0 is valid and matches none of the candidate PCIs; masked Cell IDs cannot repair that contradiction."
+    },
+    {
+      "evidence_source": "Active data subscription context",
+      "observed": "All candidate rows and event callbacks use subscription 1/slot 1; registered rows have active_data_subscription=true and neighbors false",
+      "documented_meaning": "The row belongs to a given SIM/subscription and reports whether it is the active data subscription.",
+      "available": true,
+      "consistent_with_serving_event_identity": true,
+      "can_establish_serving_for_this_source": false,
+      "reason": "It rules out cross-SIM ambiguity but does not resolve cell identity or connection status."
+    }
+  ],
+  "sanitized_examples": [
+    {
+      "session_role": "stationary_control",
+      "serving_event_sequence_number": 18,
+      "cell_list_event_sequence_number": 17,
+      "cell_list_sequence_delta": -1,
+      "cell_list_time_delta_ms": -1,
+      "before": {
+        "candidate_ref": "CANDIDATE-01",
+        "rat": "LTE",
+        "pci": 276,
+        "band": "B3",
+        "earfcn": 1306,
+        "frequency_mhz": 1815.6,
+        "candidate_row_age_at_event_ms": 12,
+        "serving_event_identity_match": "exact"
+      },
+      "after": {
+        "candidate_ref": "CANDIDATE-02",
+        "rat": "LTE",
+        "pci": 276,
+        "band": "B1",
+        "earfcn": 451,
+        "frequency_mhz": 2155.1,
+        "candidate_row_lag_after_event_ms": 1,
+        "serving_event_identity_match": "exact"
+      },
+      "cell_ids": "omitted; exact full identities represented by per-audit aliases"
+    },
+    {
+      "session_role": "stationary_control",
+      "service_state_event_sequence_number": 414,
+      "state_side": "after",
+      "data_state": "IN_SERVICE",
+      "access_technology": "LTE",
+      "registered_plmn": "28603",
+      "channel_and_earfcn": 451,
+      "masked_mci_channel_plmn_candidate": "CANDIDATE-03",
+      "candidate_pci": 202,
+      "ps_nri_pci": 0,
+      "ps_nri_pci_is_android_unavailable_sentinel": false,
+      "full_identity_match": false,
+      "cell_id_tokens": "omitted; the NRI token is masked in source"
+    },
+    {
+      "session_role": "stationary_control",
+      "registered_candidate_example": {
+        "candidate_ref": "CANDIDATE-01",
+        "registered": true,
+        "connection_status": "NONE",
+        "raw_android_mCellConnectionStatus": 0,
+        "interpretation": "direct Android source-semantic conflict; not promoted"
+      }
+    }
+  ],
+  "fallback": {
+    "proposed": false,
+    "rule": null,
+    "scope": null,
+    "provenance_class_added": null,
+    "contradiction_policy": "Retain the existing requirement for native PRIMARY_SERVING or SECONDARY_SERVING. A registered flag, event edge, partial identifier, or active-data-subscription flag does not override an explicit CONNECTION_NONE or contradictory ServiceState identity."
+  },
+  "effect": {
+    "production_adapter_changed": false,
+    "canonical_reimport_performed": false,
+    "canonical_observation_count_remains": 0,
+    "canonical_b7_observation_count_remains": 0,
+    "exact_plmn_cell_id_transmitter_mappings_remain": 0,
+    "concept_6a_readiness": "no_measurement_data",
+    "concept_6a1_readiness": "real_data_ingested_serving_semantics_blocked",
+    "bandwidth_readiness_changed": false,
+    "calibration_performed": false,
+    "residuals_computed": false,
+    "concept_6b_started": false
+  },
+  "vendor_clarification": {
+    "needed": true,
+    "questions_artifact": "concept-6a1-2-vendor-questions.md",
+    "sent": false
+  },
+  "documentation_reviewed_on": "2026-10-03",
+  "references": [
+    "https://developer.android.com/reference/android/telephony/CellInfo",
+    "https://developer.android.com/reference/android/telephony/NetworkRegistrationInfo",
+    "https://developer.android.com/reference/android/telephony/CellIdentityLte",
+    "https://signalcollector.app/format"
+  ]
+}

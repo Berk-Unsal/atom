@@ -89,6 +89,8 @@ build_page concept-6a1-campaign-tooling.md concept-6a1-campaign-tooling.html "Co
   "Ankara receive-side campaign tooling, Signal Collector V6 raw preservation, transmitter truth mapping, quantity-specific readiness, dry-run validation, and the Concept 6B gate."
 build_page concept-6a1-1-real-pilot-ingestion.md concept-6a1-1-real-pilot-ingestion.html "Concept 6A.1.1 Real Ankara Pilot Ingestion" "Scientific evidence" \
   "Sanitized real Signal Collector ingestion, GNSS and LTE quality, B7 evidence, transmitter reconciliation, and the conservative validation readiness decision."
+build_page concept-6a1-2-serving-state-semantics.md concept-6a1-2-serving-state-semantics.html "Concept 6A.1.2 Serving-State Semantics" "Scientific evidence" \
+  "A privacy-preserving reconciliation of Android CellInfo, Signal Collector serving transitions, LTE ServiceState identities, subscription context, and the unresolved source-semantics decision."
 build_page concept-7c-run-history.md concept-7c-run-history.html "Concept 7C Durable Local Run History" "Local persistence" \
   "Separate browser-local run history for exact draft execution snapshots, compact results, lifecycle recovery, lineage, deletion, and safe historical inspection."
 build_page concept-7d-report-artifacts.md concept-7d-report-artifacts.html "Concept 7D Local Report and Artifact Delivery" "Local evidence" \

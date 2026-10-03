@@ -207,3 +207,8 @@ Analytical surfaces can be exported as float32 EPSG:4326 GeoTIFF, contour GeoJSO
 ---
 
 **Next**: Learn the physics behind these visualizations in [Algorithms & Physics](algorithms.md).
+
+
+## Application appearance
+
+Use Layers → Appearance to select Light, Dark, or System. The preference is local to the browser. Dark uses a native Alidade Smooth Dark basemap and semantic shell colors; RF categories, thresholds, geometry, results and exported identity stay fixed. Active, selected, inspected and focused cells retain separate ring/order semantics. OpenStreetMap and Alidade Smooth remain selectable. See [appearance details](dark-mode.md) and the [matched comparison report](dark-mode-visual-comparison.md).

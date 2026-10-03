@@ -23,7 +23,7 @@ import ResultContextBadge from "./components/ResultContextBadge.jsx";
 import ContextualInspector from "./components/ContextualInspector.jsx";
 import ResearchReferenceBadge from "./components/ResearchReferenceBadge.jsx";
 import { KeyValueRows, TechnicalDetails, ToolSection } from "./components/ToolPrimitives.jsx";
-import { DEFAULT_BASEMAP_ID } from "./components/basemaps.js";
+import { DARK_BASEMAP_ID, DEFAULT_BASEMAP_ID } from "./components/basemaps.js";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
 import PathProfilePanel from "./components/PathProfilePanel.jsx";
@@ -38,6 +38,7 @@ import {
   WorkflowRail,
 } from "./components/WorkspaceChrome.jsx";
 import { WORKSPACE_STAGES, WORKSPACE_TOOLS } from "./components/workspaceTools.js";
+import useTheme from "./hooks/useTheme.js";
 import useRequestCoordinator from "./hooks/useRequestCoordinator.js";
 import useProjectWorkspace from "./hooks/useProjectWorkspace.js";
 import useRunHistory from "./hooks/useRunHistory.js";
@@ -214,7 +215,10 @@ export default function App() {
   const [selectionPolygon, setSelectionPolygon] = useState([]);
   const [selectionNotice, setSelectionNotice] = useState("");
   const [layerVisibility, setLayerVisibility] = useState(DEFAULT_LAYER_VISIBILITY);
-  const [basemapId, setBasemapId] = useState(DEFAULT_BASEMAP_ID);
+  const { themePreference, resolvedTheme, setThemePreference } = useTheme();
+  const [basemapChoices, setBasemapChoices] = useState({ light: DEFAULT_BASEMAP_ID, dark: DARK_BASEMAP_ID });
+  const basemapId = basemapChoices[resolvedTheme];
+  const setBasemapId = (id) => setBasemapChoices((choices) => ({ ...choices, [resolvedTheme]: id }));
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
   const [legendCollapsed, setLegendCollapsed] = useState(false);
   const legendCollapsedRef = useRef(legendCollapsed);
@@ -3489,6 +3493,9 @@ export default function App() {
 
         <section id="planning-map" className="map-stage" aria-label="Ankara propagation map" tabIndex={-1}>
           <MapToolbar
+            themePreference={themePreference}
+            resolvedTheme={resolvedTheme}
+            onThemeChange={setThemePreference}
             basemapId={basemapId}
             onBasemapChange={setBasemapId}
             availableLayers={{
@@ -3537,6 +3544,7 @@ export default function App() {
             selectedCount={selectedCellCount}
           />
           <MapCanvas
+            theme={resolvedTheme}
             basemapId={basemapId}
             towers={towers}
             selectedTower={selectedTower}

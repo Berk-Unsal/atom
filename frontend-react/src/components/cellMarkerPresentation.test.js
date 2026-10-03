@@ -30,3 +30,16 @@ describe("Cell marker visual states", () => {
     expect(marker.rings.find((ring) => ring.state === "inspected").pathOptions.dashArray).toBeUndefined();
   });
 });
+
+
+it("raises dark-map outline contrast while keeping cell geometry and order unchanged", () => {
+  const options = { active: true, selected: true, focused: true, inspected: true, order: 5, zoom: 15 };
+  const light = cellMarkerPresentation(options);
+  const dark = cellMarkerPresentation({ ...options, theme: "dark" });
+  expect(dark.pathOptions).toEqual(light.pathOptions);
+  expect(dark.order).toBe(light.order);
+  expect(dark.radius).toBe(light.radius);
+  expect(dark.rings.map(({ state, radius }) => [state, radius])).toEqual(light.rings.map(({ state, radius }) => [state, radius]));
+  expect(new Set(dark.rings.map(({ pathOptions }) => pathOptions.color)).size).toBe(3);
+  expect(dark.rings.map(({ pathOptions }) => pathOptions.color)).not.toEqual(light.rings.map(({ pathOptions }) => pathOptions.color));
+});

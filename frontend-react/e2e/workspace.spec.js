@@ -1,7 +1,9 @@
+import { createThemeCaptureWriter } from "./themeCaptureHelpers.js";
 import { waitForBasemap, selectBasemap, basemapSnapshot } from "./basemapHelpers.js";
 import { expect, test } from "@playwright/test";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { execFileSync } from "node:child_process";
 import { Buffer } from "node:buffer";
 import { cwd, env } from "node:process";
 
@@ -39,6 +41,13 @@ async function selectWorkspaceTool(page, label) {
   }
   await expect(option).toBeVisible();
   await option.click();
+}
+
+async function selectTheme(page, label) {
+  const trigger = page.getByRole("button", { name: "Map layers" });
+  if (await trigger.getAttribute("aria-expanded") !== "true") await trigger.click();
+  await page.getByRole("group", { name: "Appearance" }).getByRole("radio", { name: label, exact: true }).check();
+  await trigger.click();
 }
 
 async function selectMapInteraction(page, label) {
@@ -3317,6 +3326,16 @@ test("basemap switching preserves viewport, selection, inspection, result and ex
     expect(await exportProject()).toEqual(exported);
     expect(requests.length).toBe(count);
   }
+  for (const theme of ["Dark", "Light", "System"]) {
+    await selectTheme(page, theme);
+    await waitForBasemap(page);
+    const after = await basemapSnapshot(page);
+    for (const field of ["mapTransform", "tileViewport", "selectedMarkers", "scientificPalette", "signalImages", "context", "status", "primary"]) expect(after[field], `theme ${theme}: ${field}`).toEqual(before[field]);
+    expect(after.paneFilters.every((filter) => filter === "none")).toBe(true);
+    expect(after.layerCount).toBe(1);
+    expect(await exportProject()).toEqual(exported);
+    expect(requests.length).toBe(count);
+  }
   await selectWorkspaceTool(page, "Setup");
   await page.getByRole("button", { name: /^Network mode,/ }).click();
   await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 2 cells");
@@ -3324,6 +3343,18 @@ test("basemap switching preserves viewport, selection, inspection, result and ex
   await selectMapFocus(page, "cell-2");
   await inspectMapFocus(page);
   const inspected = await basemapSnapshot(page);
+  for (const theme of ["Dark", "Light"]) {
+    await selectTheme(page, theme);
+    await waitForBasemap(page);
+    const after = await basemapSnapshot(page);
+    expect(after.selectedMarkers).toEqual(inspected.selectedMarkers);
+    expect(after.mapTransform).toEqual(inspected.mapTransform);
+    expect(after.tileViewport).toEqual(inspected.tileViewport);
+    await expect(page.getByRole("complementary", { name: "Cell inspector" })).toBeVisible();
+    await openMapView(page);
+    await expect(page.getByRole("combobox", { name: "Map focus cell" })).toHaveValue("cell-2");
+    await page.getByRole("button", { name: "Map view options" }).click();
+  }
   for (const label of ["Alidade Smooth", "OpenStreetMap"]) {
     await selectBasemap(page, label);
     await waitForBasemap(page);
@@ -3525,6 +3556,266 @@ test("captures Alidade basemap comparison evidence", async ({ page }, testInfo) 
   await writeFile(resolve(directory, "evidence.json"), `${JSON.stringify({ task: "basemap-alidade", capturedAt: new Date().toISOString(), fixtures: "42 Cells including 36 dense Söğütözü positions; deterministic RF/building fixtures; real provider raster tiles", screenshots, measurements }, null, 2)}\n`);
 });
 
+test("captures matched theme comparison evidence", async ({ page }, testInfo) => {
+  const phase = env.ATOM_THEME_CAPTURE;
+  test.skip(phase !== "1", "Set ATOM_THEME_CAPTURE=1 to capture real raster comparisons");
+  test.skip(testInfo.project.name !== "desktop-1440", "Capture the reference states once");
+  test.setTimeout(300_000);
+  const directory = resolve(cwd(), "../docs/assets/dark-mode");
+  const tileDirectory = "/tmp/atom-basemap-tiles";
+  await mkdir(directory, { recursive: true });
+  await mkdir(tileDirectory, { recursive: true });
+  const features = [
+    point("tower-1", "cell-1", 32.850, 39.920),
+    point("tower-2", "cell-2", 32.870, 39.920),
+    point("tower-3", "cell-3", 32.890, 39.920),
+    point("tower-4", "cell-4", 32.850, 39.940),
+    point("tower-5", "cell-5", 32.870, 39.940),
+    point("tower-6", "cell-6", 32.890, 39.940),
+    ...Array.from({ length: 36 }, (_, index) => point(`dense-${index}`, `sogutozu-${index}`, 32.800 + (index % 6) * 0.0015, 39.911 + Math.floor(index / 6) * 0.0015)),
+  ];
+  await page.route("**/api/towers", (route) => route.fulfill({ json: { type: "FeatureCollection", features } }));
+  // Bound remote fetch concurrency; cache only successful real PNG responses.
+  const fetchSlots = Array.from({ length: 4 }, () => Promise.resolve());
+  let fetchSlot = 0;
+  // The same cached OSM tiles are used for both phases; RF fixtures remain local.
+  await page.route(/https:\/\/(tile\.openstreetmap\.org|tiles\.stadiamaps\.com)\//, async (route) => {
+    const file = resolve(tileDirectory, (new URL(route.request().url()).hostname + new URL(route.request().url()).pathname).replaceAll("/", "-"));
+    try {
+      let body;
+      try { body = await readFile(file); } catch {
+        const slot = fetchSlot++ % fetchSlots.length;
+        const pending = fetchSlots[slot].then(async () => {
+          const response = await route.fetch({ timeout: 30_000 });
+          if (!response.ok()) throw new Error(`Tile unavailable: HTTP ${response.status()}`);
+          const bytes = await response.body();
+          await writeFile(file, bytes);
+          return bytes;
+        });
+        fetchSlots[slot] = pending.catch(() => {});
+        body = await pending;
+      }
+      await route.fulfill({ body, contentType: "image/png" });
+    } catch (error) { console.warn("Raster capture fetch failed", route.request().url(), error.message); await route.abort(); }
+  });
+  const writeCapture = await createThemeCaptureWriter(resolve(cwd(), ".."), directory);
+  const incumbentCSS = execFileSync("git", ["show", "7765e62:frontend-react/src/styles.css"], { encoding: "utf8" });
+  const lightBaselineChecks = [];
+  const refreshState = env.ATOM_THEME_CAPTURE_STATE;
+  const screenshots = [];
+  const measurements = [];
+  const capture = async (name) => {
+    if (refreshState && name !== refreshState) return;
+    console.log("Capture pair", name);
+    const pair = [];
+    for (const [id, label] of [["light", "Light"], ["dark", "Dark"]]) {
+      await selectTheme(page, label);
+      const start = Date.now();
+      await waitForBasemap(page).catch(async (error) => { console.warn("Incomplete raster", name, id, await page.evaluate(() => ({ status: document.querySelector(".map-basemap-status")?.textContent, tiles: [...document.querySelectorAll(".leaflet-tile")].map((t) => ({ url: t.src, complete: t.complete, width: t.naturalWidth, opacity: getComputedStyle(t).opacity, bounds: t.getBoundingClientRect().toJSON() })), map: document.querySelector(".leaflet-container").getBoundingClientRect().toJSON(), animations: [...document.querySelectorAll(".leaflet-zoom-anim, .leaflet-pan-anim")].map((e) => e.className) }))); throw error; });
+      if (name === "map-view-popover") await openMapView(page);
+      if (name.startsWith("appearance-and-layers")) await page.getByRole("button", { name: "Map layers" }).click();
+      if (name === "plan-menu") await page.getByRole("button", { name: "Plan workspace" }).click();
+      const snapshot = await basemapSnapshot(page);
+      const layout = await page.evaluate(() => {
+        const a = document.querySelector(".leaflet-control-attribution").getBoundingClientRect();
+        const k = document.querySelector(".focused-map-legend").getBoundingClientRect();
+        return { viewport: [innerWidth, innerHeight], overflowX: document.documentElement.scrollWidth - innerWidth, keyAttributionOverlap: a.left < k.right && a.right > k.left && a.top < k.bottom && a.bottom > k.top };
+      });
+      expect(layout.keyAttributionOverlap).toBe(false);
+      expect(layout.overflowX).toBe(0);
+      expect(snapshot.paneFilters.every((filter) => filter === "none")).toBe(true);
+      if (id === "light" && !name.startsWith("appearance-and-layers")) {
+        // Compare the current light shell against the pre-theme basemap commit in place.
+        const styleSignature = () => page.evaluate(() => [...document.querySelectorAll("body *")].filter((e) => e.getClientRects().length && !e.closest(".leaflet-tile-pane")).map((e) => {
+          const css = getComputedStyle(e);
+          return [...css].map((property) => [property, css.getPropertyValue(property)]);
+        }));
+        const settleStyles = () => page.waitForFunction(() => !document.getAnimations().some((animation) => animation.playState === "running" && animation.effect?.getComputedTiming().iterations !== Infinity));
+        await settleStyles();
+        const currentStyles = await styleSignature();
+        const current = await page.screenshot({ animations: "disabled" });
+        await page.evaluate((css) => {
+          const style = document.createElement("style");
+          style.id = "incumbent-light-baseline";
+          style.textContent = css;
+          document.head.append(style);
+        }, incumbentCSS);
+        await settleStyles();
+        const incumbent = await page.screenshot({ animations: "disabled" });
+        const oldStyles = await styleSignature();
+        await page.locator("#incumbent-light-baseline").evaluate((element) => element.remove());
+        expect(JSON.stringify(currentStyles) === JSON.stringify(oldStyles), `${name}: unchanged computed light styles`).toBe(true);
+        const difference = await page.evaluate(async (sources) => {
+          const pixels = await Promise.all(sources.map(async (src) => {
+            const img = new Image(); img.src = src; await img.decode();
+            const canvas = document.createElement("canvas"); canvas.width = img.width; canvas.height = img.height;
+            const ctx = canvas.getContext("2d"); ctx.drawImage(img, 0, 0); return ctx.getImageData(0, 0, img.width, img.height).data;
+          }));
+          let changedPixels = 0; let maxChannelDelta = 0;
+          for (let i = 0; i < pixels[0].length; i += 4) {
+            const delta = Math.max(...[0, 1, 2].map((channel) => Math.abs(pixels[0][i + channel] - pixels[1][i + channel])));
+            if (delta) changedPixels++;
+            maxChannelDelta = Math.max(maxChannelDelta, delta);
+          }
+          return { changedPixels, maxChannelDelta };
+        }, [current, incumbent].map((bytes) => `data:image/png;base64,${bytes.toString("base64")}`));
+        // Chromium can round a few composited corner pixels by up to two 8-bit values.
+        expect(difference.maxChannelDelta, `${name}: unchanged light pixels`).toBeLessThanOrEqual(2);
+        const viewport = page.viewportSize();
+        expect(difference.changedPixels / (viewport.width * viewport.height), `${name}: only negligible corner rounding`).toBeLessThan(0.002);
+        lightBaselineChecks.push({ state: name, computedStylesIdentical: true, ...difference, baseline: "7765e62" });
+      }
+      const file = await writeCapture(`${name}-${id}`, await page.screenshot({ type: "jpeg", quality: 80, animations: "disabled" }));
+      screenshots.push({ state: name, theme: id, provider: id === "dark" ? "alidade-smooth-dark" : "alidade-smooth", file });
+      measurements.push({ state: name, provider: id, loadedWaitMs: Date.now() - start, tileCount: snapshot.tiles.length, ...layout, ...snapshot });
+      pair.push(snapshot);
+      if (name.startsWith("appearance-and-layers")) await page.getByRole("button", { name: "Map layers" }).click();
+    }
+    for (const field of ["mapTransform", "tileViewport", "selectedMarkers", "scientificPalette", "signalImages", "context", "status", "primary"]) expect(pair[1][field], `${name}: ${field}`).toEqual(pair[0][field]);
+    await selectTheme(page, "Light");
+    await waitForBasemap(page);
+  };
+  const polygon = (id, lon, lat, height) => ({ type: "Feature", id, properties: { height_m: height, material: "concrete" }, geometry: { type: "Polygon", coordinates: [[[lon, lat], [lon + 0.001, lat], [lon + 0.001, lat + 0.001], [lon, lat + 0.001], [lon, lat]]] } });
+  await page.route("**/api/collections/buildings/items*", (route) => route.fulfill({ json: { type: "FeatureCollection", features: [polygon("b1", 32.865, 39.932, 18), polygon("b2", 32.875, 39.932, 24), polygon("b3", 32.885, 39.932, 32)] } }));
+  await page.route("**/api/analyze-sector", (route) => route.fulfill({ json: {
+    simulation: { geojson: { type: "FeatureCollection", features: Array.from({ length: 24 }, (_, i) => ({ type: "Feature", geometry: { type: "LineString", coordinates: [[32.85, 39.92], [32.85 + Math.cos(i / 24 * Math.PI * 2) * 0.006, 39.92 + Math.sin(i / 24 * Math.PI * 2) * 0.004]] }, properties: { signal_dbm: [-72, -95, -119][i % 3] } })) }, stats: { avg_rx_dbm: -95, max_distance_m: 500, total_rays: 24 } },
+    coverage_gaps: { geojson: { type: "FeatureCollection", features: [] }, stats: { gap_pct: 0, gap_buildings: 0, candidate_buildings: 8 } },
+  } }));
+  await page.route("**/api/coverage-surface", (route) => route.fulfill({ json: {
+    grid: { width: 20, height: 20, bounds: [32.84, 39.91, 32.90, 39.945], nodata: -9999, values: Array.from({ length: 400 }, (_, i) => -80 - Math.hypot(i % 20 - 10, Math.floor(i / 20) - 10) * 3) },
+    contours: { type: "FeatureCollection", features: [] }, stats: { min_dbm: -120, max_dbm: -80, valid_cell_count: 400 }, model: { assumptions: ["Deterministic visual fixture; not a new RF validation"] },
+  } }));
+  await page.route("**/api/interference", (route) => route.fulfill({ json: {
+    geojson: { type: "FeatureCollection", features: Array.from({ length: 100 }, (_, i) => ({ type: "Feature", geometry: { type: "Point", coordinates: [32.839 + i % 10 * 0.006, 39.907 + Math.floor(i / 10) * 0.004] }, properties: { sinr_db: [-5, 7, 16, 25, null][i % 5], rsrp_dbm: [-105, -95, -85, -75, null][i % 5], rsrq_db: [-23, -18, -13, -8, null][i % 5], serviceability_status: i % 5 === 4 ? "no_signal" : "serviceable" } })) },
+    demand_geojson: { type: "FeatureCollection", features: [] }, stats: { avg_sinr_db: 10, serviceable_pct: 60, no_signal_count: 20 }, model: {},
+  } }));
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Setup", exact: true })).toBeVisible();
+  await page.waitForFunction(() => document.querySelectorAll(".leaflet-tile-loaded").length > 0 || document.querySelector(".map-basemap-status"));
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await capture("default-map");
+  await page.getByRole("button", { name: "Plan workspace" }).click();
+  await capture("plan-menu");
+  await selectWorkspaceTool(page, "Setup");
+  await capture("setup");
+  const layers = page.getByRole("button", { name: "Map layers" });
+  await capture("appearance-and-layers");
+  if (await layers.getAttribute("aria-expanded") === "true") await layers.click();
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+
+  await page.keyboard.press("Escape");
+  await selectWorkspaceTool(page, "Results");
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await selectMapInteraction(page, "Select cells");
+  for (const feature of features.slice(1, 6)) await clickMapPoint(page, ...feature.geometry.coordinates);
+  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 6 cells");
+  await capture("selected-network");
+  await selectMapInteraction(page, "Inspect");
+  await selectMapFocus(page, "cell-6");
+  await inspectMapFocus(page);
+  if (await page.getByRole("button", { name: "Map view options" }).getAttribute("aria-expanded") === "true") await page.getByRole("button", { name: "Map view options" }).click();
+  await expect(page.getByRole("complementary", { name: "Cell inspector" })).toBeVisible();
+  await capture("active-selected-cell");
+  await page.getByRole("button", { name: "Close inspector" }).click();
+  const map = page.locator(".leaflet-container");
+  await map.focus();
+  for (let index = 0; index < 2; index++) {
+    await map.press("ArrowLeft");
+    await waitForBasemap(page);
+  }
+  for (let index = 0; index < 2; index++) {
+    await page.locator(".leaflet-control-zoom-in").click();
+    await waitForBasemap(page);
+  }
+  await capture("dense-sogutozu");
+  await openMapView(page);
+  await page.getByRole("button", { name: "Fit selected cells" }).click();
+  await waitForBasemap(page);
+  if (await page.getByRole("button", { name: "Map view options" }).getAttribute("aria-expanded") === "true") await page.getByRole("button", { name: "Map view options" }).click();
+  await selectMapInteraction(page, "Select cells");
+  await page.getByRole("button", { name: "Draw selection area" }).click();
+  const mapBox = await map.boundingBox();
+  for (const [x, y] of [[0.35, 0.3], [0.6, 0.3], [0.5, 0.65]]) await map.click({ position: { x: mapBox.width * x, y: mapBox.height * y } });
+  await capture("selection-polygon");
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await selectWorkspaceTool(page, "Inventory");
+
+  await selectWorkspaceTool(page, "Propagation");
+
+  await page.getByRole("button", { name: "Map layers" }).click();
+  const buildingsLoaded = page.waitForResponse((response) => response.url().includes("/api/collections/buildings/items"));
+  await page.getByRole("checkbox", { name: "Viewport buildings" }).check();
+  await buildingsLoaded;
+  await page.getByRole("button", { name: "Map layers" }).click();
+  await expect(page.getByRole("checkbox", { name: "Viewport buildings" })).not.toBeVisible();
+  await expect(page.locator(".leaflet-overlay-pane canvas")).toBeVisible();
+  await capture("building-overlay");
+  await selectWorkspaceTool(page, "Interference");
+  await page.getByRole("button", { name: "Analyze Interference" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await capture("sinr");
+  for (const [metric, label] of [["rsrp", "RSRP"], ["rsrq", "RSRQ"]]) {
+    await openMapView(page);
+    await page.getByRole("combobox", { name: "Radio-quality metric" }).selectOption(metric);
+    await page.getByRole("button", { name: "Map view options" }).click();
+    await capture(label.toLowerCase());
+  }
+  await openMapView(page);
+  await capture("map-view-popover");
+  await page.getByRole("button", { name: "Map view options" }).click();
+  await selectWorkspaceTool(page, "RF Diagnostics");
+  await capture("rf-diagnostics");
+  await selectWorkspaceTool(page, "Setup");
+
+  await selectWorkspaceTool(page, "Results");
+
+  for (const [width, height] of [[1366, 768], [1512, 982], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    if (width === 390 && await page.getByRole("button", { name: "Close tool drawer" }).isVisible()) await page.getByRole("button", { name: "Close tool drawer" }).click();
+    const keyToggle = page.getByRole("region", { name: "Map key" }).getByRole("button");
+    if (await keyToggle.getAttribute("aria-expanded") === "false") await keyToggle.click();
+    await capture(`review-${width}`);
+    if (width === 390) {
+      await selectWorkspaceTool(page, "Setup");
+      await capture("mobile-setup");
+      await page.getByRole("button", { name: "Close tool drawer" }).click();
+      await capture("appearance-and-layers-mobile");
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "Single sector mode" }).click();
+  await page.locator(".command-primary-action").getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  await selectWorkspaceTool(page, "Results");
+  await capture("review-current");
+  await page.getByRole("button", { name: "Signal layer" }).click();
+  await expect(page.getByRole("button", { name: "Signal layer" })).toHaveAttribute("data-surface-state", "ready");
+  await page.getByRole("button", { name: "Propagation rays layer" }).click();
+  await expect(page.getByRole("button", { name: "Propagation rays layer" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await capture("signal-rays");
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
+  await selectWorkspaceTool(page, "Results");
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "4G LTE, 2.6 GHz" }).click();
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+
+  const previous = refreshState ? JSON.parse(await readFile(resolve(directory, "evidence.json"), "utf8")) : null;
+  const merged = (field, values) => previous ? [...previous[field].filter((record) => record.state !== refreshState), ...values] : values;
+  await writeFile(resolve(directory, "evidence.json"), `${JSON.stringify({ task: "dark-mode", capturedAt: new Date().toISOString(), fixtures: "42 Cells including 36 dense Söğütözü positions; deterministic RF/building fixtures; real provider raster tiles", screenshots: merged("screenshots", screenshots), measurements: merged("measurements", measurements), lightBaselineChecks: merged("lightBaselineChecks", lightBaselineChecks) }, null, 2)}\n`);
+});
+
 test("failed Alidade tiles stay observable and OSM remains selectable", async ({ page }) => {
   await page.route("**/tiles.stadiamaps.com/**", (route) => route.fulfill({ status: 401, body: "Provider authentication required" }));
   await page.goto("/");
@@ -3537,4 +3828,90 @@ test("failed Alidade tiles stay observable and OSM remains selectable", async ({
   await expect(page.locator(".atom-basemap-osm")).toHaveCount(1);
   await expect(page.locator(".atom-basemap-alidade")).toHaveCount(0);
   await expect(page.locator(".leaflet-control-attribution")).not.toContainText("Stadia Maps");
+});
+
+
+test("theme persistence and system changes select the matching provider without resetting presentation", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator(".atom-basemap-dark")).toHaveCount(1);
+  await selectTheme(page, "Light");
+  await selectBasemap(page, "OpenStreetMap");
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await selectTheme(page, "Dark");
+  await expect(page.locator(".atom-basemap-dark")).toHaveCount(1);
+  await selectBasemap(page, "OpenStreetMap");
+  await selectTheme(page, "Light");
+  await expect(page.locator(".atom-basemap-osm")).toHaveCount(1);
+  await selectTheme(page, "Dark");
+  await expect(page.locator(".atom-basemap-osm")).toHaveCount(1);
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator(".atom-basemap-dark")).toHaveCount(1);
+  await selectTheme(page, "System");
+  await page.emulateMedia({ colorScheme: "light" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.locator(".atom-basemap-alidade")).toHaveCount(1);
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator(".atom-basemap-dark")).toHaveCount(1);
+  expect(await page.evaluate(() => localStorage.getItem("atom.theme"))).toBe("system");
+});
+
+
+test("theme controls stay reachable above an open phone drawer with keyboard and pointer", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-390", "Phone drawer stacking regression");
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Setup", exact: true })).toBeVisible();
+  await selectTheme(page, "Dark");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByRole("heading", { name: "Setup", exact: true })).toBeVisible();
+  const trigger = page.getByRole("button", { name: "Map layers" });
+  await trigger.click();
+  const dark = page.getByRole("group", { name: "Appearance" }).getByRole("radio", { name: "Dark", exact: true });
+  await dark.focus();
+  await dark.press("ArrowRight");
+  await expect(page.getByRole("radio", { name: "System", exact: true })).toBeChecked();
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
+  await expect(page.locator(".layer-menu")).toHaveCount(0);
+});
+
+test("dark shell text and control contrast meet the practical WCAG targets", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+  const inspectContrast = async () => page.evaluate(() => {
+    const rgb = (color) => color.match(/[\d.]+/g).slice(0, 3).map(Number);
+    const luminance = (color) => rgb(color).map((c) => c / 255).map((c) => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4).reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+    const ratio = (a, b) => { const values = [luminance(a), luminance(b)].sort((x, y) => y - x); return (values[0] + 0.05) / (values[1] + 0.05); };
+    const backdrop = (e) => {
+      for (let node = e; node; node = node.parentElement) {
+        const bg = getComputedStyle(node).backgroundColor;
+        if (!bg.startsWith("rgba") && bg !== "transparent") return bg;
+      }
+      return getComputedStyle(document.documentElement).backgroundColor;
+    };
+    const selectors = [".command-brand strong", ".command-brand small", ".rf-context-primary", ".run-state", ".command-run-button", ".tool-drawer-header h2", ".tool-drawer-header p", ".field-group label", ".selection-note", ".number-wrap input", ".segmented-control button", ".focused-map-legend", ".layer-menu label"];
+    const text = selectors.flatMap((selector) => [...document.querySelectorAll(selector)].filter((e) => e.getClientRects().length).map((e) => ({ selector, color: getComputedStyle(e).color, background: backdrop(e), contrast: ratio(getComputedStyle(e).color, backdrop(e)) })));
+    const input = document.querySelector('.number-wrap input');
+    const css = getComputedStyle(input);
+    return { text, inputBorder: ratio(css.borderTopColor, backdrop(input)), focus: ratio(css.outlineColor, backdrop(input)) };
+  });
+  await page.getByRole("button", { name: "Map layers" }).click();
+  for (const sample of (await inspectContrast()).text) expect(sample.contrast, JSON.stringify(sample)).toBeGreaterThanOrEqual(4.5);
+  await page.getByRole("button", { name: "Map layers" }).click();
+  await page.locator(".number-wrap input").first().focus();
+  const contrast = await inspectContrast();
+  expect(contrast.inputBorder).toBeGreaterThanOrEqual(3);
+  expect(contrast.focus).toBeGreaterThanOrEqual(3);
+  await openMapView(page);
+  const scope = page.getByRole("combobox", { name: "Ray scope" });
+  await expect(scope).toBeDisabled();
+  await expect(scope).toHaveCSS("background-image", "none");
+  await page.getByRole("button", { name: "Map view options" }).click();
+  await page.getByRole("button", { name: "Run Sector" }).hover();
+  for (const sample of (await inspectContrast()).text) expect(sample.contrast, JSON.stringify(sample)).toBeGreaterThanOrEqual(4.5);
 });

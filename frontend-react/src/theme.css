@@ -1,0 +1,118 @@
+/* Presentation roles. Light fallbacks in styles.css retain every incumbent value.
+   RF hues (--teal/--blue and scientific marks) remain fixed across themes. */
+:root[data-theme="dark"] {
+  --bg: #151b1f;
+  --panel: #1b2328;
+  --panel-strong: #202a30;
+  --surface-muted: #263139;
+  --ink: #e3eae7;
+  --muted: #b3c0bb;
+  --subtle: #a3b3ac;
+  --disabled: #8d9d96;
+  --line: #3d4c54;
+  --line-strong: #63767e;
+  --ui-accent-strong: #8accc0;
+  --teal-soft: #243d3b;
+  --blue-soft: #263b52;
+  --ui-warning: #ebba75;
+  --amber-soft: #3b3224;
+  --ui-danger: #f2a8b8;
+  --rose-soft: #3d2931;
+  --slate: #dde6e3;
+  --slate-soft: #2b343f;
+  --focus: #9bd3ff;
+  --ui-accent: #58b8ac;
+  --ui-info: #95bffd;
+  --ui-focus: #9bd3ff;
+  --text-primary: var(--ink);
+  --text-muted: var(--muted);
+  --text-positive: #8accc0;
+  --text-info: #aacbfa;
+  --text-warning: #ebba75;
+  --text-danger: #f2a8b8;
+  --text-research: #c9b9ed;
+  --surface-raised: var(--panel-strong);
+  --surface-soft: var(--surface-muted);
+  --surface-positive: var(--teal-soft);
+  --surface-info: var(--blue-soft);
+  --surface-warning: var(--amber-soft);
+  --surface-danger: var(--rose-soft);
+  --surface-research: #353045;
+  --border-subtle: var(--line);
+  --border-strong: var(--line-strong);
+  --action-positive: #236b63;
+  --action-info: #285da5;
+  --action-warning: #86501d;
+  --action-danger: #9b3050;
+  --action-research: #68518c;
+  --on-action: #ffffff;
+  --elevation-tint: rgb(0 0 0 / 30%);
+  --shadow: 0 2px 8px var(--elevation-tint);
+}
+
+.theme-choices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-1);
+  margin: 0 0 var(--space-2);
+  padding: 0 0 var(--space-2);
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+.theme-choices legend { margin-bottom: var(--space-1); font-size: var(--text-label); font-weight: var(--weight-label); }
+.theme-choices label { padding-inline: var(--space-1); font-size: var(--text-meta); font-weight: var(--weight-label); }
+.theme-choices input { flex-shrink: 0; }
+.atom-basemap-dark { filter: none; }
+
+:root[data-theme="dark"] :is(input, textarea, select) { color: var(--ink); accent-color: var(--ui-accent); caret-color: var(--ink); }
+:root[data-theme="dark"] input::placeholder, :root[data-theme="dark"] textarea::placeholder { color: var(--muted); opacity: 1; }
+:root[data-theme="dark"] .focused-app-shell :focus-visible { outline-color: var(--focus); }
+:root[data-theme="dark"] ::selection { background: var(--teal-soft); color: var(--ink); }
+:root[data-theme="dark"] { scrollbar-color: var(--line-strong) var(--panel); }
+:root[data-theme="dark"] :is(.panel-primary-action, .command-run-button, .optimize-button, .simulate-button, .result-context-actions button.primary, .apply-solution-actions button.primary) {
+  color: var(--on-action);
+  background: var(--action-positive);
+  border-color: var(--ui-accent);
+}
+:root[data-theme="dark"] .focused-app-shell :is(button, input, select, textarea):disabled {
+  color: var(--disabled);
+  opacity: 1;
+}
+:root[data-theme="dark"] .leaflet-container { background: var(--bg); }
+:root[data-theme="dark"] .leaflet-control-attribution { color: var(--muted); background: var(--panel-strong); }
+:root[data-theme="dark"] .leaflet-control-attribution a { color: var(--text-info); }
+:root[data-theme="dark"] .leaflet-tooltip { color: var(--ink); background: var(--panel-strong); border-color: var(--line-strong); }
+:root[data-theme="dark"] .leaflet-tooltip-left::before { border-left-color: var(--line-strong); }
+:root[data-theme="dark"] .leaflet-tooltip-right::before { border-right-color: var(--line-strong); }
+:root[data-theme="dark"] .leaflet-tooltip-top::before { border-top-color: var(--line-strong); }
+:root[data-theme="dark"] .leaflet-tooltip-bottom::before { border-bottom-color: var(--line-strong); }
+:root[data-theme="dark"] .map-key-marker.active-cell,
+:root[data-theme="dark"] .map-key-marker.active-selected-cell { outline-color: var(--ui-accent); }
+:root[data-theme="dark"] .map-key-marker.inspected-cell { border-color: var(--ink); }
+:root[data-theme="dark"] .map-key-marker.focused-cell { border-color: var(--muted); }
+:root[data-theme="dark"] .tool-drawer select,
+:root[data-theme="dark"] .project-menu select,
+:root[data-theme="dark"] .map-control-select select {
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b3c0bb' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+@media (max-width: 600px) {
+  .map-stage:has(.atom-basemap-dark) .focused-map-legend { bottom: 42px; }
+}
+
+/* Layers can cross the mobile drawer edge while open, and remain scrollable. */
+.focused-map-toolbar:has(.layer-menu) { z-index: 1100; }
+.layer-menu { width: min(300px, calc(100vw - 64px)); max-height: calc(100dvh - 180px); overflow: auto; }
+.theme-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.theme-choices label, .basemap-choices label { min-width: 0; }
+:root[data-theme="dark"] .basemap-choices { grid-template-columns: 1fr; }
+:root[data-theme="dark"] .map-key-marker.active-cell { background: var(--on-action); }
+:root[data-theme="dark"] .leaflet-bar { border-color: var(--line-strong); box-shadow: var(--shadow); }
+:root[data-theme="dark"] .leaflet-bar a { color: var(--ink); background: var(--panel-strong); border-color: var(--line-strong); }
+:root[data-theme="dark"] .leaflet-bar a:hover { background: var(--surface-muted); }
+:root[data-theme="dark"] .leaflet-bar a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+:root[data-theme="dark"] .leaflet-bar a.leaflet-disabled { color: var(--disabled); background: var(--panel); }
+:root[data-theme="dark"] :is(input:not([type="range"]), select, textarea, .segmented-control, .view-trigger, .layers-trigger, .map-interaction-trigger) { border-color: var(--line-strong); }
+
+:root[data-theme="dark"] select:disabled { background-image: none; }

@@ -1,3 +1,4 @@
+import { BASEMAPS, DEFAULT_BASEMAP_ID } from "./basemaps.js";
 import { useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
@@ -601,6 +602,8 @@ export function UndoToast({ message, onDismiss, onUndo }) {
 }
 
 export function MapToolbar({
+  basemapId = DEFAULT_BASEMAP_ID,
+  onBasemapChange,
   availableLayers,
   hasRays = false,
   hasSignalSurface = false,
@@ -972,6 +975,15 @@ export function MapToolbar({
           </button>
           {layerMenuOpen ? (
             <div id="map-layer-menu" className="layer-menu" role="group" aria-label="Map layer visibility">
+              <fieldset className="basemap-choices">
+                <legend>Basemap</legend>
+                {BASEMAPS.map((basemap) => (
+                  <label key={basemap.id}>
+                    <input type="radio" name="basemap" value={basemap.id} checked={basemapId === basemap.id} onChange={() => onBasemapChange?.(basemap.id)} />
+                    <span>{basemap.label}</span>
+                  </label>
+                ))}
+              </fieldset>
               {layers.map((layer) => (
                 <label key={layer.id}>
                   <input

@@ -23,6 +23,7 @@ import ResultContextBadge from "./components/ResultContextBadge.jsx";
 import ContextualInspector from "./components/ContextualInspector.jsx";
 import ResearchReferenceBadge from "./components/ResearchReferenceBadge.jsx";
 import { KeyValueRows, TechnicalDetails, ToolSection } from "./components/ToolPrimitives.jsx";
+import { DEFAULT_BASEMAP_ID } from "./components/basemaps.js";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
 import PathProfilePanel from "./components/PathProfilePanel.jsx";
@@ -213,6 +214,7 @@ export default function App() {
   const [selectionPolygon, setSelectionPolygon] = useState([]);
   const [selectionNotice, setSelectionNotice] = useState("");
   const [layerVisibility, setLayerVisibility] = useState(DEFAULT_LAYER_VISIBILITY);
+  const [basemapId, setBasemapId] = useState(DEFAULT_BASEMAP_ID);
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
   const [legendCollapsed, setLegendCollapsed] = useState(false);
   const legendCollapsedRef = useRef(legendCollapsed);
@@ -3487,6 +3489,8 @@ export default function App() {
 
         <section id="planning-map" className="map-stage" aria-label="Ankara propagation map" tabIndex={-1}>
           <MapToolbar
+            basemapId={basemapId}
+            onBasemapChange={setBasemapId}
             availableLayers={{
               communicationPaths: Boolean(coreLabApplicable && coreLabEnabled && coreLab.topology),
               buildings: Boolean(buildingSummary?.total_buildings),
@@ -3533,6 +3537,7 @@ export default function App() {
             selectedCount={selectedCellCount}
           />
           <MapCanvas
+            basemapId={basemapId}
             towers={towers}
             selectedTower={selectedTower}
             selectedNetworkTowerIds={selectedNetworkSelectionIDs}

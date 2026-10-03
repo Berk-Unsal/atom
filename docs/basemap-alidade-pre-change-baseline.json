@@ -1,0 +1,33 @@
+{
+  "task": "Basemap Foundation \u2014 Alidade Smooth Evaluation",
+  "date": "2026-10-03",
+  "commit": "c565e58921b4b978109b013765a062b657812510",
+  "branch": "main",
+  "version": "0.9.3",
+  "git_status_before": "clean",
+  "diff_stat_before": "",
+  "validation": {
+    "unit": {
+      "files": 62,
+      "passed": 330,
+      "failed": 0
+    },
+    "lint": "passed",
+    "build": "passed; existing >500 kB warning",
+    "e2e": {
+      "passed": 114,
+      "failed": 1,
+      "skipped": 101,
+      "failure": "Existing Concept 8H asynchronous export settling comparison; isolated retry pending",
+      "isolated_retry": "failed with the same null draft \u2192 hydrated draft transition; fixed only the test wait for exported draft readiness"
+    },
+    "request_equivalence": "included in unit suite"
+  },
+  "bundle": {
+    "initial_js_raw_bytes": 825124,
+    "initial_js_gzip_bytes": 233032,
+    "css_raw_bytes": 243521,
+    "css_gzip_bytes": 37840,
+    "js_chunk_count": 15
+  }
+}

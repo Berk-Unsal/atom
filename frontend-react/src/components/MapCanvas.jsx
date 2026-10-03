@@ -1,11 +1,14 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { circleMarker, divIcon, latLngBounds } from "leaflet";
-import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Polyline, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Polyline, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import { rxPowerColor } from "../utils/geojson.js";
 import { getJSON } from "../utils/apiClient.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
 import { cellMarkerPresentation } from "./cellMarkerPresentation.js";
 import { filterRayFeatures, RAY_SCOPE_ALL } from "../utils/rfVisualization.js";
+
+import BasemapLayer from "./BasemapLayer.jsx";
+import { DEFAULT_BASEMAP_ID, getBasemap } from "./basemaps.js";
 
 const ANKARA_CENTER = [39.9208, 32.8541];
 
@@ -17,6 +20,7 @@ function dispatchMapObjectClick(event, onSelectMapObject, mapObject) {
 }
 
 export default function MapCanvas({
+  basemapId = DEFAULT_BASEMAP_ID,
   towers,
   selectedTower,
   selectedNetworkTowerIds = [],
@@ -64,7 +68,7 @@ export default function MapCanvas({
 }) {
   return (
     <MapContainer center={ANKARA_CENTER} zoom={12} minZoom={10} maxZoom={18} className="leaflet-map" preferCanvas>
-      <OpenStreetMapLayer />
+      <BasemapLayer basemap={getBasemap(basemapId)} />
       <SelectionPolygonLayer
         isDrawing={isDrawingSelection}
         onAddPoint={onAddSelectionPolygonPoint}
@@ -168,28 +172,6 @@ export default function MapCanvas({
         />
       )}
     </MapContainer>
-  );
-}
-
-function OpenStreetMapLayer() {
-  const [unavailable, setUnavailable] = useState(false);
-  const handleTileError = () => setUnavailable(true);
-
-  return (
-    <>
-      <TileLayer
-        className="atom-basemap"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        eventHandlers={{ tileerror: handleTileError }}
-        opacity={unavailable ? 0 : 1}
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {unavailable ? (
-        <div className="map-basemap-status" role="status">
-          Base map unavailable. RF layers remain available; see deployment notes for a compliant tile provider.
-        </div>
-      ) : null}
-    </>
   );
 }
 

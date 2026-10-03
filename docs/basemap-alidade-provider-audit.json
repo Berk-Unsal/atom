@@ -1,0 +1,27 @@
+{
+  "baseline_owner": "frontend-react/src/components/MapCanvas.jsx: OpenStreetMapLayer",
+  "baseline_url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "baseline_attribution": "\u00a9 OpenStreetMap linked to /copyright",
+  "baseline_max_zoom": "TileLayer inherited Leaflet 18; MapContainer explicitly 18 (min 10). Map limits remain unchanged. Registry states OSM source maxZoom 19 and Stadia 20.",
+  "baseline_retina": "OSM no {r}; detectRetina false; 256px tiles",
+  "baseline_filter_owner": "frontend-react/src/styles.css .atom-basemap; layer container only, not tile pane",
+  "baseline_filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+  "baseline_errors": "tileerror sets unavailable and whole raster layer opacity 0; status leaves RF usable",
+  "layers_owner": "WorkspaceChrome.jsx MapToolbar; App.jsx passes layer visibility and menu state",
+  "capture_owner": "e2e/workspace.spec.js Concept 8H capture; cached real OSM tiles and deterministic RF/API fixtures",
+  "new_registry": "src/components/basemaps.js",
+  "new_layer": "src/components/BasemapLayer.jsx; stable TileLayer; React Leaflet setUrl redraw replaces the tile grid in place and updates attribution; layout effect updates provider class/maxZoom",
+  "new_filter_ownership": {
+    "osm-standard": ".atom-basemap-osm retains exact 8H filter",
+    "alidade-smooth": ".atom-basemap-alidade filter none",
+    "all_leaflet_panes": "unfiltered"
+  },
+  "presentation_state": "App useState only; session-local, no project save effect dependencies",
+  "configuration": "Domain authentication needs no URL secret. Registry centralizes URL/provider/auth metadata; no credential configuration introduced.",
+  "official_sources": [
+    "https://docs.stadiamaps.com/map-styles/alidade-smooth/",
+    "https://docs.stadiamaps.com/attribution/",
+    "https://docs.stadiamaps.com/authentication/"
+  ],
+  "future_dark": "Add a registry entry when future dark theme is authorized; no map architecture change needed. No dark provider shipped."
+}

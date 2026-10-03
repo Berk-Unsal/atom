@@ -1,0 +1,145 @@
+{
+  "task": "basemap-alidade",
+  "date": "2026-10-03",
+  "branch": "codex/basemap-alidade-evaluation",
+  "baseline_commit": "c565e58921b4b978109b013765a062b657812510",
+  "validation": {
+    "unit": {
+      "command": "npm test -- --maxWorkers=4",
+      "passed": 335,
+      "files": 64,
+      "failed": 0
+    },
+    "lint": {
+      "command": "npm run lint",
+      "result": "passed"
+    },
+    "build": {
+      "command": "npm run build",
+      "result": "passed; existing >500 kB initial chunk warning"
+    },
+    "e2e": {
+      "command": "npx playwright test --output=/tmp/atom-basemap-e2e-results",
+      "passed": 123,
+      "skipped": 105,
+      "failed": 0,
+      "projects": [
+        "desktop-1440",
+        "desktop-1024",
+        "tablet-768",
+        "mobile-390"
+      ],
+      "skip_reason": "Existing real-backend/capture gates and desktop-only regressions; new real-tile capture is also gated"
+    },
+    "final_contract": {
+      "command": "npx playwright test --workers=2 --grep 'basemap switching|failed Alidade|Concept 8H stage menus'",
+      "passed": 9,
+      "skipped": 3,
+      "failed": 0
+    },
+    "screenshots": {
+      "command": "ATOM_BASEMAP_CAPTURE=1 npx playwright test --project=desktop-1440 --workers=1 --grep 'captures Alidade basemap'",
+      "passed": 1,
+      "pairs": 15,
+      "remote_pixels": "Real raster tiles; contract tests use a mock PNG; no remote pixel assertions",
+      "captured_states": 15
+    },
+    "request_equivalence": {
+      "command": "npm test (existing suites included)",
+      "result": "passed",
+      "contracts": [
+        "canonical 2.6 GHz / 28 GHz RF, interference and optimization requests",
+        "selected order, Cell profiles and analytical surface fingerprints",
+        "Scenario/Run/current-result/report identity and serialization"
+      ]
+    },
+    "docs": {
+      "build": "sh docs/build-reference-pages.sh passed; existing Pandoc mathml warning",
+      "validation": "/tmp/atom-8h-docs-venv/bin/python docs/validate_docs.py passed: 43 HTML pages, 41 API paths"
+    },
+    "version": {
+      "command": "python3 scripts/versioning.py check",
+      "result": "passed: 0.9.3"
+    },
+    "diff": {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    "backend": {
+      "result": "not rerun",
+      "reason": "Frontend-only; repository does not require backend tests for this scope; 261 protected source files and RF renderer implementation verified unchanged"
+    },
+    "design_detector": {
+      "result": "Only pre-existing side-tab warning at styles.css:4802; outside frozen scope"
+    }
+  },
+  "regressions": [
+    "Registry default/source/attribution/Retina handling",
+    "Provider error visibility and recovery on switching",
+    "Accessible Layers radio group with independent overlay controls",
+    "Single active tile layer; correct raster class and attribution",
+    "Viewport tile center/zoom and transform after pan/zoom",
+    "Selected network, active/inspected Cell, Map Focus and marker positions",
+    "Current result, primary CTA, exact project export and API request count unchanged",
+    "No CSS filter in any overlay pane; computed semantic palette unchanged"
+  ],
+  "canvas_capture_note": "Raw canvas hashes recorded observationally. Fixed-size captures match; resize captures can differ at anti-aliased circle edges after Leaflet canvas redraw. At 1366px the inspected difference was 63 pixels (0.0048% of canvas), maximum channel delta 6. Geometry, marker DOM, camera and CSS palette checks remain exact; no scientific renderer change.",
+  "logs": {
+    "baseline-unit": {
+      "path": "/tmp/atom-basemap-baseline-unit.log",
+      "sha256": "948cb9bd30e6972af9bbc0bc1428b950662c195b76510a496c9e2615d3900ec0"
+    },
+    "baseline-lint": {
+      "path": "/tmp/atom-basemap-baseline-lint.log",
+      "sha256": "116817ce61fdd8ca41b853905a4f02d1e7aa6e272dd6b69a5429133ea62180db"
+    },
+    "baseline-build": {
+      "path": "/tmp/atom-basemap-baseline-build.log",
+      "sha256": "75773d1944595efcbfbb3993538ccbba4a751230b4572c01cc07d9bcbce4eafc"
+    },
+    "baseline-e2e": {
+      "path": "/tmp/atom-basemap-baseline-e2e.log",
+      "sha256": "198042b99bf23d113c5b7ba43c1cb4f295c6f3eac051c81178cdf2af85f2227c"
+    },
+    "baseline-retry": {
+      "path": "/tmp/atom-basemap-baseline-retry.log",
+      "sha256": "86ed39a170651b7e421d3e84af9ecf07e9242985d06ba88d712e89260d9d0012"
+    },
+    "post-unit": {
+      "path": "/tmp/atom-basemap-post-unit.log",
+      "sha256": "98a32b5d17336984e30e455047919608aaa9eb3a44e7b65223124238fc36dd04"
+    },
+    "post-lint": {
+      "path": "/tmp/atom-basemap-post-lint.log",
+      "sha256": "116817ce61fdd8ca41b853905a4f02d1e7aa6e272dd6b69a5429133ea62180db"
+    },
+    "post-build": {
+      "path": "/tmp/atom-basemap-post-build.log",
+      "sha256": "32df5a7ed6499ab7a5755adabca20eae2a263512dd3053a3207ee2cd0baa8bc8"
+    },
+    "post-e2e": {
+      "path": "/tmp/atom-basemap-post-e2e.log",
+      "sha256": "5c01399de114f337797de8c6767d6963cad15a5793c9c913d9b3b3b55271d0eb"
+    },
+    "final-contract": {
+      "path": "/tmp/atom-basemap-final-contract.log",
+      "sha256": "3e41c250aa8e44e34a6a4d5479c8dce569eb32375945d82693b1358135a00eea"
+    },
+    "capture": {
+      "path": "/tmp/atom-basemap-capture.log",
+      "sha256": "897fa8c9588d1429fa36c4145b60683402c32a06a491caccc64c2bdce4d901dc"
+    },
+    "docs-build": {
+      "path": "/tmp/atom-basemap-docs-build.log",
+      "sha256": "3464cb53fbfab4a748b9c9d834baf469a61c767e31ca859a791a5450d72fdb6e"
+    },
+    "docs-validation": {
+      "path": "/tmp/atom-basemap-docs-validation.log",
+      "sha256": "beca530a327d77aa9d8d40d8a70bd9db6be7bc975dd5b99e8a92ef72de6399f5"
+    },
+    "version": {
+      "path": "/tmp/atom-basemap-version.log",
+      "sha256": "54fd095d7f0e3751d67f720d9065858c79dc44a77c1299fea7ddec7c75c94937"
+    }
+  }
+}

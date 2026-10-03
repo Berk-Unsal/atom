@@ -1,0 +1,4697 @@
+{
+  "task": "basemap-alidade",
+  "capturedAt": "2026-10-03T13:27:50.583Z",
+  "fixtures": "42 Cells including 36 dense Söğütözü positions; deterministic RF/building fixtures; real provider raster tiles",
+  "screenshots": [
+    {
+      "state": "default-map",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/default-map-osm-standard.jpg"
+    },
+    {
+      "state": "default-map",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/default-map-alidade-smooth.jpg"
+    },
+    {
+      "state": "plan-menu",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/plan-menu-osm-standard.jpg"
+    },
+    {
+      "state": "plan-menu",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/plan-menu-alidade-smooth.jpg"
+    },
+    {
+      "state": "setup",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/setup-osm-standard.jpg"
+    },
+    {
+      "state": "setup",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/setup-alidade-smooth.jpg"
+    },
+    {
+      "state": "selected-network",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/selected-network-osm-standard.jpg"
+    },
+    {
+      "state": "selected-network",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/selected-network-alidade-smooth.jpg"
+    },
+    {
+      "state": "active-selected-cell",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/active-selected-cell-osm-standard.jpg"
+    },
+    {
+      "state": "active-selected-cell",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/active-selected-cell-alidade-smooth.jpg"
+    },
+    {
+      "state": "dense-sogutozu",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/dense-sogutozu-osm-standard.jpg"
+    },
+    {
+      "state": "dense-sogutozu",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/dense-sogutozu-alidade-smooth.jpg"
+    },
+    {
+      "state": "selection-polygon",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/selection-polygon-osm-standard.jpg"
+    },
+    {
+      "state": "selection-polygon",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/selection-polygon-alidade-smooth.jpg"
+    },
+    {
+      "state": "building-overlay",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/building-overlay-osm-standard.jpg"
+    },
+    {
+      "state": "building-overlay",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/building-overlay-alidade-smooth.jpg"
+    },
+    {
+      "state": "sinr",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/sinr-osm-standard.jpg"
+    },
+    {
+      "state": "sinr",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/sinr-alidade-smooth.jpg"
+    },
+    {
+      "state": "rf-diagnostics",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/rf-diagnostics-osm-standard.jpg"
+    },
+    {
+      "state": "rf-diagnostics",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/rf-diagnostics-alidade-smooth.jpg"
+    },
+    {
+      "state": "review-1366",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/review-1366-osm-standard.jpg"
+    },
+    {
+      "state": "review-1366",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/review-1366-alidade-smooth.jpg"
+    },
+    {
+      "state": "review-1512",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/review-1512-osm-standard.jpg"
+    },
+    {
+      "state": "review-1512",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/review-1512-alidade-smooth.jpg"
+    },
+    {
+      "state": "review-390",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/review-390-osm-standard.jpg"
+    },
+    {
+      "state": "review-390",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/review-390-alidade-smooth.jpg"
+    },
+    {
+      "state": "review-current",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/review-current-osm-standard.jpg"
+    },
+    {
+      "state": "review-current",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/review-current-alidade-smooth.jpg"
+    },
+    {
+      "state": "signal-rays",
+      "provider": "osm-standard",
+      "file": "docs/assets/basemap-alidade/signal-rays-osm-standard.jpg"
+    },
+    {
+      "state": "signal-rays",
+      "provider": "alidade-smooth",
+      "file": "docs/assets/basemap-alidade/signal-rays-alidade-smooth.jpg"
+    }
+  ],
+  "measurements": [
+    {
+      "state": "default-map",
+      "provider": "osm-standard",
+      "loadedWaitMs": 950,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "f2aba17b1ad4a88cdab9605c5fc868de6712e62744bc696d6847ed6f37cfe412"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(664px, 423px, 0px); z-index: 423;\"><span></span></div>",
+      "context": "Single · Cell cell-15G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Run Sector",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "default-map",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 922,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "f2aba17b1ad4a88cdab9605c5fc868de6712e62744bc696d6847ed6f37cfe412"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(664px, 423px, 0px); z-index: 423;\"><span></span></div>",
+      "context": "Single · Cell cell-15G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Run Sector",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "plan-menu",
+      "provider": "osm-standard",
+      "loadedWaitMs": 817,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "f2aba17b1ad4a88cdab9605c5fc868de6712e62744bc696d6847ed6f37cfe412"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(664px, 423px, 0px); z-index: 423;\"><span></span></div>",
+      "context": "Single · Cell cell-15G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Run Sector",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "plan-menu",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 975,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "f2aba17b1ad4a88cdab9605c5fc868de6712e62744bc696d6847ed6f37cfe412"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(664px, 423px, 0px); z-index: 423;\"><span></span></div>",
+      "context": "Single · Cell cell-15G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Run Sector",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "setup",
+      "provider": "osm-standard",
+      "loadedWaitMs": 797,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "f2aba17b1ad4a88cdab9605c5fc868de6712e62744bc696d6847ed6f37cfe412"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(664px, 423px, 0px); z-index: 423;\"><span></span></div>",
+      "context": "Single · Cell cell-15G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Run Sector",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "setup",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 923,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "f2aba17b1ad4a88cdab9605c5fc868de6712e62744bc696d6847ed6f37cfe412"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(664px, 423px, 0px); z-index: 423;\"><span></span></div>",
+      "context": "Single · Cell cell-15G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Run Sector",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "selected-network",
+      "provider": "osm-standard",
+      "loadedWaitMs": 769,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "1299ee6d50c05449ced9354472027e3ec91bcd47beb587e4976eef6f14f414d9"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 347px, 0px); z-index: 1347;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 347px, 0px); z-index: 1347;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 347px, 0px); z-index: 1347;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 423px, 0px); z-index: 1423;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 423px, 0px); z-index: 1423;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 423px, 0px); z-index: 1423;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 347px, 0px); z-index: 1347;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 347px, 0px); z-index: 1347;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 347px, 0px); z-index: 1347;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(780px, 347px, 0px); z-index: 347;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "selected-network",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 925,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "1299ee6d50c05449ced9354472027e3ec91bcd47beb587e4976eef6f14f414d9"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 347px, 0px); z-index: 1347;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 347px, 0px); z-index: 1347;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 347px, 0px); z-index: 1347;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 423px, 0px); z-index: 1423;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 423px, 0px); z-index: 1423;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 423px, 0px); z-index: 1423;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 347px, 0px); z-index: 1347;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 347px, 0px); z-index: 1347;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 347px, 0px); z-index: 1347;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(780px, 347px, 0px); z-index: 347;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "active-selected-cell",
+      "provider": "osm-standard",
+      "loadedWaitMs": 802,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "5c07ef01e5c5c690b982a57e1a4c8d20076400f8574cea121d1e3961e1985a2b"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 347px, 0px); z-index: 1347;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 347px, 0px); z-index: 1347;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 347px, 0px); z-index: 1347;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 423px, 0px); z-index: 1423;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 423px, 0px); z-index: 1423;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 423px, 0px); z-index: 1423;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 347px, 0px); z-index: 1347;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 347px, 0px); z-index: 1347;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 347px, 0px); z-index: 1347;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(780px, 347px, 0px); z-index: 347;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "active-selected-cell",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 954,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "5c07ef01e5c5c690b982a57e1a4c8d20076400f8574cea121d1e3961e1985a2b"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591261864,
+          0.378866196
+        ],
+        "zoom": 12
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/12/2419/1550.png",
+        "/12/2419/1551.png",
+        "/12/2419/1552.png",
+        "/12/2419/1553.png",
+        "/12/2420/1550.png",
+        "/12/2420/1551.png",
+        "/12/2420/1552.png",
+        "/12/2420/1553.png",
+        "/12/2421/1550.png",
+        "/12/2421/1551.png",
+        "/12/2421/1552.png",
+        "/12/2421/1553.png",
+        "/12/2422/1550.png",
+        "/12/2422/1551.png",
+        "/12/2422/1552.png",
+        "/12/2422/1553.png",
+        "/12/2423/1550.png",
+        "/12/2423/1551.png",
+        "/12/2423/1552.png",
+        "/12/2423/1553.png",
+        "/12/2424/1550.png",
+        "/12/2424/1551.png",
+        "/12/2424/1552.png",
+        "/12/2424/1553.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 423px, 0px); z-index: 1423;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 347px, 0px); z-index: 1347;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 347px, 0px); z-index: 1347;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 347px, 0px); z-index: 1347;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 423px, 0px); z-index: 1423;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 423px, 0px); z-index: 1423;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 423px, 0px); z-index: 1423;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(664px, 347px, 0px); z-index: 1347;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(722px, 347px, 0px); z-index: 1347;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(780px, 347px, 0px); z-index: 1347;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(780px, 347px, 0px); z-index: 347;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "dense-sogutozu",
+      "provider": "osm-standard",
+      "loadedWaitMs": 796,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "3a848ac054ecf668fc2c4cf4b587ec4df9e5ae0ca533fd6d1038c62fb1582019"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591109276,
+          0.378866196
+        ],
+        "zoom": 14
+      },
+      "mapTransform": "translate3d(160px, 0px, 0px)",
+      "tiles": [
+        "/14/9682/6205.png",
+        "/14/9682/6206.png",
+        "/14/9682/6207.png",
+        "/14/9682/6208.png",
+        "/14/9683/6205.png",
+        "/14/9683/6206.png",
+        "/14/9683/6207.png",
+        "/14/9683/6208.png",
+        "/14/9684/6205.png",
+        "/14/9684/6206.png",
+        "/14/9684/6207.png",
+        "/14/9684/6208.png",
+        "/14/9685/6205.png",
+        "/14/9685/6206.png",
+        "/14/9685/6207.png",
+        "/14/9685/6208.png",
+        "/14/9686/6205.png",
+        "/14/9686/6206.png",
+        "/14/9686/6207.png",
+        "/14/9686/6208.png",
+        "/14/9687/6205.png",
+        "/14/9687/6206.png",
+        "/14/9687/6207.png",
+        "/14/9687/6208.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1106px, 432px, 0px); z-index: 1432;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1339px, 432px, 0px); z-index: 1432;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1572px, 432px, 0px); z-index: 1432;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1106px, 128px, 0px); z-index: 1128;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1339px, 128px, 0px); z-index: 1128;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1572px, 128px, 0px); z-index: 1128;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-295px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1106px, 432px, 0px); z-index: 1432;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1339px, 432px, 0px); z-index: 1432;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1572px, 432px, 0px); z-index: 1432;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1106px, 128px, 0px); z-index: 1128;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1339px, 128px, 0px); z-index: 1128;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1572px, 128px, 0px); z-index: 1128;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1572px, 128px, 0px); z-index: 128;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "dense-sogutozu",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 956,
+      "tileCount": 24,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "3a848ac054ecf668fc2c4cf4b587ec4df9e5ae0ca533fd6d1038c62fb1582019"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591109276,
+          0.378866196
+        ],
+        "zoom": 14
+      },
+      "mapTransform": "translate3d(160px, 0px, 0px)",
+      "tiles": [
+        "/14/9682/6205.png",
+        "/14/9682/6206.png",
+        "/14/9682/6207.png",
+        "/14/9682/6208.png",
+        "/14/9683/6205.png",
+        "/14/9683/6206.png",
+        "/14/9683/6207.png",
+        "/14/9683/6208.png",
+        "/14/9684/6205.png",
+        "/14/9684/6206.png",
+        "/14/9684/6207.png",
+        "/14/9684/6208.png",
+        "/14/9685/6205.png",
+        "/14/9685/6206.png",
+        "/14/9685/6207.png",
+        "/14/9685/6208.png",
+        "/14/9686/6205.png",
+        "/14/9686/6206.png",
+        "/14/9686/6207.png",
+        "/14/9686/6208.png",
+        "/14/9687/6205.png",
+        "/14/9687/6206.png",
+        "/14/9687/6207.png",
+        "/14/9687/6208.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1106px, 432px, 0px); z-index: 1432;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1339px, 432px, 0px); z-index: 1432;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1572px, 432px, 0px); z-index: 1432;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1106px, 128px, 0px); z-index: 1128;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1339px, 128px, 0px); z-index: 1128;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1572px, 128px, 0px); z-index: 1128;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-295px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1106px, 432px, 0px); z-index: 1432;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1339px, 432px, 0px); z-index: 1432;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1572px, 432px, 0px); z-index: 1432;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1106px, 128px, 0px); z-index: 1128;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1339px, 128px, 0px); z-index: 1128;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1572px, 128px, 0px); z-index: 1128;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1572px, 128px, 0px); z-index: 128;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "selection-polygon",
+      "provider": "osm-standard",
+      "loadedWaitMs": 1237,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "26db42b4681ff86b5f91948cbfa2d724eac92393f9d8068c47d10bc216ae2dba"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135.686px, -83.6875px, 0px) scale(1); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "selection-polygon",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 928,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "26db42b4681ff86b5f91948cbfa2d724eac92393f9d8068c47d10bc216ae2dba"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135.686px, -83.6875px, 0px) scale(1); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "building-overlay",
+      "provider": "osm-standard",
+      "loadedWaitMs": 789,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "38ac222a2e34d35f5bd40f76a35680d3ebbc392c83effba12dfde6c5160b5fd8"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135.686px, -83.6875px, 0px) scale(1); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "building-overlay",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 927,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "38ac222a2e34d35f5bd40f76a35680d3ebbc392c83effba12dfde6c5160b5fd8"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135.686px, -83.6875px, 0px) scale(1); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Run needed",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "sinr",
+      "provider": "osm-standard",
+      "loadedWaitMs": 788,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "67c0c2667703847ed5399028df30e66e74746107120afb086cc00da5752857f1"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135.686px, -83.6875px, 0px) scale(1); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "sinr",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 927,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "67c0c2667703847ed5399028df30e66e74746107120afb086cc00da5752857f1"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135.686px, -83.6875px, 0px) scale(1); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "rf-diagnostics",
+      "provider": "osm-standard",
+      "loadedWaitMs": 798,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "67c0c2667703847ed5399028df30e66e74746107120afb086cc00da5752857f1"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135.686px, -83.6875px, 0px) scale(1); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "rf-diagnostics",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 936,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "67c0c2667703847ed5399028df30e66e74746107120afb086cc00da5752857f1"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135.686px, -83.6875px, 0px) scale(1); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "review-1366",
+      "provider": "osm-standard",
+      "loadedWaitMs": 914,
+      "tileCount": 18,
+      "viewport": [
+        1366,
+        768
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "d95bddecac221aff4a10168b5b44c81841da05c2fd0c9c0e849e31a4d35ea541"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(-37px, -66px, 0px)",
+      "tiles": [
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1534\" height=\"850\" style=\"transform: translate3d(-91px, -5px, 0px); width: 1534px; height: 850px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "review-1366",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 923,
+      "tileCount": 18,
+      "viewport": [
+        1366,
+        768
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "d95bddecac221aff4a10168b5b44c81841da05c2fd0c9c0e849e31a4d35ea541"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(-37px, -66px, 0px)",
+      "tiles": [
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1534\" height=\"850\" style=\"transform: translate3d(-91px, -5px, 0px); width: 1534px; height: 850px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "review-1512",
+      "provider": "osm-standard",
+      "loadedWaitMs": 935,
+      "tileCount": 30,
+      "viewport": [
+        1512,
+        982
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "8a09491c6759058ab0ed567d56037236f79382a2e6e7967adff586fd3f918741"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(36px, 41px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1709\" height=\"1106\" style=\"transform: translate3d(-178px, -133px, 0px); width: 1709px; height: 1106px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "review-1512",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 961,
+      "tileCount": 30,
+      "viewport": [
+        1512,
+        982
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "8a09491c6759058ab0ed567d56037236f79382a2e6e7967adff586fd3f918741"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(36px, 41px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1709\" height=\"1106\" style=\"transform: translate3d(-178px, -133px, 0px); width: 1709px; height: 1106px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "review-390",
+      "provider": "osm-standard",
+      "loadedWaitMs": 756,
+      "tileCount": 6,
+      "viewport": [
+        390,
+        844
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "04c9d336159ddcfd73ae0b6ce2515c46b4d29a5d978c4be07a8e623b25b3bc29"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(-481px, -69px, 0px)",
+      "tiles": [
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"468\" height=\"842\" style=\"transform: translate3d(442px, -1px, 0px); width: 468px; height: 842px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "review-390",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 915,
+      "tileCount": 6,
+      "viewport": [
+        390,
+        844
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "04c9d336159ddcfd73ae0b6ce2515c46b4d29a5d978c4be07a8e623b25b3bc29"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker cluster-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker active-selected-cell",
+          "rgb(131, 60, 12)",
+          "rgb(255, 243, 231)",
+          "rgb(197, 90, 17)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "quality-swatch quality-0",
+          "rgb(31, 41, 55)",
+          "rgb(190, 18, 60)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-1",
+          "rgb(31, 41, 55)",
+          "rgb(217, 119, 6)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-2",
+          "rgb(31, 41, 55)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch quality-3",
+          "rgb(31, 41, 55)",
+          "rgb(15, 118, 110)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "quality-swatch no-signal",
+          "rgb(31, 41, 55)",
+          "rgb(100, 116, 139)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(-481px, -69px, 0px)",
+      "tiles": [
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"468\" height=\"842\" style=\"transform: translate3d(442px, -1px, 0px); width: 468px; height: 842px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Network · 6 cells5G mmWave28.0 GHz",
+      "status": "Ready",
+      "primary": "Evaluate Network",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "review-current",
+      "provider": "osm-standard",
+      "loadedWaitMs": 800,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "765d02342326813e413509461be4ddf874af6d660e153be2896d4eaca7cde002"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "map-key-line strong-signal",
+          "rgb(31, 41, 55)",
+          "rgb(16, 185, 129)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-line usable-signal",
+          "rgb(31, 41, 55)",
+          "rgb(245, 158, 11)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-line weak-signal",
+          "rgb(31, 41, 55)",
+          "rgb(225, 29, 72)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Single · Cell cell-65G mmWave28.0 GHz",
+      "status": "ReadyCURRENTRun 7176cb5a…a5c47e",
+      "primary": "Run Sector",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "review-current",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 924,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "765d02342326813e413509461be4ddf874af6d660e153be2896d4eaca7cde002"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "map-key-line strong-signal",
+          "rgb(31, 41, 55)",
+          "rgb(16, 185, 129)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-line usable-signal",
+          "rgb(31, 41, 55)",
+          "rgb(245, 158, 11)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-line weak-signal",
+          "rgb(31, 41, 55)",
+          "rgb(225, 29, 72)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas>",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Single · Cell cell-65G mmWave28.0 GHz",
+      "status": "ReadyCURRENTRun 7176cb5a…a5c47e",
+      "primary": "Run Sector",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    },
+    {
+      "state": "signal-rays",
+      "provider": "osm-standard",
+      "loadedWaitMs": 769,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "765d02342326813e413509461be4ddf874af6d660e153be2896d4eaca7cde002"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "map-key-line strong-signal",
+          "rgb(31, 41, 55)",
+          "rgb(16, 185, 129)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-line usable-signal",
+          "rgb(31, 41, 55)",
+          "rgb(245, 158, 11)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-line weak-signal",
+          "rgb(31, 41, 55)",
+          "rgb(225, 29, 72)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-weak",
+          "rgb(31, 41, 55)",
+          "rgb(126, 34, 206)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-low",
+          "rgb(31, 41, 55)",
+          "rgb(225, 29, 72)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-medium",
+          "rgb(31, 41, 55)",
+          "rgb(245, 158, 11)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-good",
+          "rgb(31, 41, 55)",
+          "rgb(34, 197, 94)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-strong",
+          "rgb(31, 41, 55)",
+          "rgb(5, 150, 105)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas><img class=\"leaflet-image-layer leaflet-zoom-animated\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABCklEQVR4AZSQMQ7CMBAEo7S0tBENEhXiB9Q8gP8g/sMDqPkBokKiQWlp6fE6Wuuy59gEeeO7vb2JQttM/N7d4VVTbtUBCcmF1ctlR0AEdOmf3u4loDUtZHm+NSo7Z839BOSANyHs7V2aRSDpXMIC69KtOXAisLSE2XZzbCj0JTmgvhUgC9Be8w5YWuZMofRxt/huFDX190UtEuftqr+uY1V5dLtvJTGMi5/8eF6GlDynfMQc8HPaw0/SZe0174CJZApAKGNnywjU/1Hfmt0MpubAicAwcwdhyA2CAR8KpTsJCLqbBgOLqmC7w/0ERIIm6jmyeyMgIBhCqGtCDrI5B+QQQSv4tkcNT/UDAAD//3yhrvYAAAAGSURBVAMA6PGNS36MZUAAAAAASUVORK5CYII=\" alt=\"\" style=\"z-index: 220; opacity: 0.62; transform: translate3d(-24px, -36px, 0px); width: 1399px; height: 1064px;\">",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Single · Cell cell-65G mmWave28.0 GHz",
+      "status": "ReadyCURRENTRun 7176cb5a…a5c47e",
+      "primary": "Run Sector",
+      "filter": "saturate(0.62) contrast(0.94) brightness(1.03)",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © OpenStreetMap"
+    },
+    {
+      "state": "signal-rays",
+      "provider": "alidade-smooth",
+      "loadedWaitMs": 927,
+      "tileCount": 30,
+      "viewport": [
+        1440,
+        900
+      ],
+      "overflowX": 0,
+      "keyAttributionOverlap": false,
+      "overlayCanvasHashes": [
+        "765d02342326813e413509461be4ddf874af6d660e153be2896d4eaca7cde002"
+      ],
+      "palette": [
+        [
+          "map-key-marker active-cell",
+          "rgb(31, 41, 55)",
+          "rgb(255, 255, 255)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker available-cell",
+          "rgb(31, 41, 55)",
+          "rgb(158, 194, 226)",
+          "rgb(68, 123, 176)"
+        ],
+        [
+          "map-key-marker inspected-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-marker focused-cell",
+          "rgb(31, 41, 55)",
+          "rgba(0, 0, 0, 0)",
+          "rgb(82, 97, 90)"
+        ],
+        [
+          "map-key-line strong-signal",
+          "rgb(31, 41, 55)",
+          "rgb(16, 185, 129)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-line usable-signal",
+          "rgb(31, 41, 55)",
+          "rgb(245, 158, 11)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "map-key-line weak-signal",
+          "rgb(31, 41, 55)",
+          "rgb(225, 29, 72)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-weak",
+          "rgb(31, 41, 55)",
+          "rgb(126, 34, 206)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-low",
+          "rgb(31, 41, 55)",
+          "rgb(225, 29, 72)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-medium",
+          "rgb(31, 41, 55)",
+          "rgb(245, 158, 11)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-good",
+          "rgb(31, 41, 55)",
+          "rgb(34, 197, 94)",
+          "rgb(31, 41, 55)"
+        ],
+        [
+          "surface-signal-strong",
+          "rgb(31, 41, 55)",
+          "rgb(5, 150, 105)",
+          "rgb(31, 41, 55)"
+        ]
+      ],
+      "tileViewport": {
+        "center": [
+          0.591305614,
+          0.378832817
+        ],
+        "zoom": 15
+      },
+      "mapTransform": "translate3d(0px, 0px, 0px)",
+      "tiles": [
+        "/15/19373/12411.png",
+        "/15/19373/12412.png",
+        "/15/19373/12413.png",
+        "/15/19373/12414.png",
+        "/15/19373/12415.png",
+        "/15/19374/12411.png",
+        "/15/19374/12412.png",
+        "/15/19374/12413.png",
+        "/15/19374/12414.png",
+        "/15/19374/12415.png",
+        "/15/19375/12411.png",
+        "/15/19375/12412.png",
+        "/15/19375/12413.png",
+        "/15/19375/12414.png",
+        "/15/19375/12415.png",
+        "/15/19376/12411.png",
+        "/15/19376/12412.png",
+        "/15/19376/12413.png",
+        "/15/19376/12414.png",
+        "/15/19376/12415.png",
+        "/15/19377/12411.png",
+        "/15/19377/12412.png",
+        "/15/19377/12413.png",
+        "/15/19377/12414.png",
+        "/15/19377/12415.png",
+        "/15/19378/12411.png",
+        "/15/19378/12412.png",
+        "/15/19378/12413.png",
+        "/15/19378/12414.png",
+        "/15/19378/12415.png"
+      ],
+      "selectedMarkers": [
+        [
+          "1",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "2",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "3",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;"
+        ],
+        [
+          "4",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "5",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;"
+        ],
+        [
+          "6",
+          "margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;"
+        ]
+      ],
+      "overlayHTML": "<canvas class=\"leaflet-zoom-animated\" width=\"1622\" height=\"1008\" style=\"transform: translate3d(-135px, -84px, 0px); width: 1622px; height: 1008px;\"></canvas><img class=\"leaflet-image-layer leaflet-zoom-animated\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABCklEQVR4AZSQMQ7CMBAEo7S0tBENEhXiB9Q8gP8g/sMDqPkBokKiQWlp6fE6Wuuy59gEeeO7vb2JQttM/N7d4VVTbtUBCcmF1ctlR0AEdOmf3u4loDUtZHm+NSo7Z839BOSANyHs7V2aRSDpXMIC69KtOXAisLSE2XZzbCj0JTmgvhUgC9Be8w5YWuZMofRxt/huFDX190UtEuftqr+uY1V5dLtvJTGMi5/8eF6GlDynfMQc8HPaw0/SZe0174CJZApAKGNnywjU/1Hfmt0MpubAicAwcwdhyA2CAR8KpTsJCLqbBgOLqmC7w/0ERIIm6jmyeyMgIBhCqGtCDrI5B+QQQSv4tkcNT/UDAAD//3yhrvYAAAAGSURBVAMA6PGNS36MZUAAAAAASUVORK5CYII=\" alt=\"\" style=\"z-index: 220; opacity: 0.62; transform: translate3d(-24px, -36px, 0px); width: 1399px; height: 1064px;\">",
+      "markerHTML": "<div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 724px, 0px); z-index: 1724;\"><span>1</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 724px, 0px); z-index: 1724;\"><span>2</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 724px, 0px); z-index: 1724;\"><span>3</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(209px, 116px, 0px); z-index: 1116;\"><span>4</span></div><div class=\"leaflet-marker-icon tower-order-badge leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(676px, 116px, 0px); z-index: 1116;\"><span>5</span></div><div class=\"leaflet-marker-icon tower-order-badge active-selected leaflet-zoom-animated\" tabindex=\"0\" role=\"button\" style=\"margin-left: -9px; margin-top: -9px; width: 18px; height: 18px; transform: translate3d(1142px, 116px, 0px); z-index: 1116;\"><span>6</span></div><div class=\"leaflet-marker-icon inventory-drag-marker leaflet-zoom-animated leaflet-interactive leaflet-marker-draggable\" tabindex=\"0\" role=\"button\" style=\"margin-left: -12px; margin-top: -12px; width: 12px; height: 12px; transform: translate3d(1142px, 116px, 0px); z-index: 116;\"><span></span></div>",
+      "context": "Single · Cell cell-65G mmWave28.0 GHz",
+      "status": "ReadyCURRENTRun 7176cb5a…a5c47e",
+      "primary": "Run Sector",
+      "filter": "none",
+      "paneFilters": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "layerCount": 1,
+      "tileSize": [
+        256,
+        256
+      ],
+      "attribution": " Leaflet | © Stadia Maps © OpenMapTiles © OpenStreetMap"
+    }
+  ]
+}

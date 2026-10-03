@@ -10,6 +10,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Reduce RF ray stroke density in both themes without changing colors, geometry or counts; correct shared dark Interference/diagnostic action variants and deliberate disabled styling while preserving readiness and light action appearance.
+
 - Allow the exact Stadia Maps tile origin in the application's image CSP so Alidade Smooth loads in Go-served and container deployments while preserving OpenStreetMap support and all other directives.
 
 ### Changed

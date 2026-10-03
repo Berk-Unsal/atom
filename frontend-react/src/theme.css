@@ -41,6 +41,7 @@
   --border-subtle: var(--line);
   --border-strong: var(--line-strong);
   --action-positive: #236b63;
+  --action-positive-hover: #2b7a70;
   --action-info: #285da5;
   --action-warning: #86501d;
   --action-danger: #9b3050;
@@ -69,10 +70,20 @@
 :root[data-theme="dark"] .focused-app-shell :focus-visible { outline-color: var(--focus); }
 :root[data-theme="dark"] ::selection { background: var(--teal-soft); color: var(--ink); }
 :root[data-theme="dark"] { scrollbar-color: var(--line-strong) var(--panel); }
-:root[data-theme="dark"] :is(.panel-primary-action, .command-run-button, .optimize-button, .simulate-button, .result-context-actions button.primary, .apply-solution-actions button.primary) {
+:root[data-theme="dark"] :is(.panel-primary-action, .command-run-button, .optimize-button, .simulate-button, .analyze-button, .path-analyze-button, .result-context-actions button.primary, .apply-solution-actions button.primary) {
   color: var(--on-action);
   background: var(--action-positive);
   border-color: var(--ui-accent);
+}
+:root[data-theme="dark"] :is(.panel-primary-action, .command-run-button, .optimize-button, .simulate-button, .analyze-button, .path-analyze-button, .result-context-actions button.primary, .apply-solution-actions button.primary):hover:not(:disabled) {
+  background: var(--action-positive-hover);
+}
+:root[data-theme="dark"] :is(.panel-primary-action, .command-run-button, .optimize-button, .simulate-button, .analyze-button, .path-analyze-button, .result-context-actions button.primary, .apply-solution-actions button.primary):disabled {
+  color: var(--disabled);
+  background: var(--surface-muted);
+  border-color: var(--line);
+  cursor: not-allowed;
+  opacity: 1;
 }
 :root[data-theme="dark"] .focused-app-shell :is(button, input, select, textarea):disabled {
   color: var(--disabled);

@@ -3915,3 +3915,191 @@ test("dark shell text and control contrast meet the practical WCAG targets", asy
   await page.getByRole("button", { name: "Run Sector" }).hover();
   for (const sample of (await inspectContrast()).text) expect(sample.contrast, JSON.stringify(sample)).toBeGreaterThanOrEqual(4.5);
 });
+
+test("ray and action presentation follow-up evidence", async ({ page }, testInfo) => {
+  test.skip(env.ATOM_PRESENTATION_CAPTURE !== "1" && env.ATOM_PRESENTATION_BEFORE !== "1", "Set ATOM_PRESENTATION_CAPTURE=1 for matched real-tile evidence");
+  test.skip(testInfo.project.name !== "desktop-1440", "Matched desktop presentation evidence");
+  test.setTimeout(120_000);
+  const before = env.ATOM_PRESENTATION_BEFORE === "1";
+  const phase = before ? "before" : "after";
+  const directory = resolve(cwd(), "../docs/assets/dark-mode-follow-up");
+  await mkdir(directory, { recursive: true });
+  // Capture actual Leaflet canvas stroke paths, without inspecting private map state.
+  await page.addInitScript(() => {
+    const proto = CanvasRenderingContext2D.prototype;
+    const original = {};
+    for (const method of ["beginPath", "moveTo", "lineTo", "stroke", "clearRect"]) original[method] = proto[method];
+    proto.beginPath = function (...args) { this.atomPath = []; return original.beginPath.apply(this, args); };
+    for (const method of ["moveTo", "lineTo"]) proto[method] = function (...args) { this.atomPath?.push([method, ...args]); return original[method].apply(this, args); };
+    proto.clearRect = function (...args) { this.canvas.atomStrokes = []; return original.clearRect.apply(this, args); };
+    proto.stroke = function (...args) {
+      if (["#10b981", "#f59e0b", "#e11d48"].includes(this.strokeStyle) && this.atomPath?.length === 2) {
+        (this.canvas.atomStrokes ??= []).push({ color: this.strokeStyle, width: this.lineWidth, opacity: this.globalAlpha, path: this.atomPath });
+      }
+      return original.stroke.apply(this, args);
+    };
+  });
+  await page.route(/https:\/\/(tile\.openstreetmap\.org|tiles\.stadiamaps\.com)\//, async (route) => {
+    const url = new URL(route.request().url());
+    const file = resolve("/tmp/atom-basemap-tiles", (url.hostname + url.pathname).replaceAll("/", "-"));
+    try { await route.fulfill({ body: await readFile(file), contentType: "image/png" }); }
+    catch { const response = await route.fetch(); await route.fulfill({ response }); }
+  });
+  const polygon = (lon, lat) => ({ type: "Feature", properties: { height_m: 24 }, geometry: { type: "Polygon", coordinates: [[[lon, lat], [lon + 0.001, lat], [lon + 0.001, lat + 0.001], [lon, lat + 0.001], [lon, lat]]] } });
+  await page.route("**/api/collections/buildings/items*", (route) => route.fulfill({ json: { type: "FeatureCollection", features: [polygon(32.843, 39.924), polygon(32.859, 39.916), polygon(32.851, 39.923)] } }));
+  let rayCount = 720;
+  const requests = [];
+  await page.route("**/api/analyze-sector", (route) => {
+    requests.push(route.request().postDataJSON());
+    return route.fulfill({ json: {
+      simulation: { geojson: { type: "FeatureCollection", features: Array.from({ length: rayCount }, (_, i) => ({ type: "Feature", properties: { signal_dbm: i % 10 < 8 ? -72 : i % 10 === 8 ? -95 : -119, propagation_class: "fixture" }, geometry: { type: "LineString", coordinates: [[32.85, 39.92], [32.85 + Math.cos(i / rayCount * Math.PI * 2) * 0.020, 39.92 + Math.sin(i / rayCount * Math.PI * 2) * 0.014]] } })) }, stats: { total_rays: rayCount, avg_rx_dbm: -80, max_distance_m: 1800 } },
+      coverage_gaps: { geojson: { type: "FeatureCollection", features: [] }, stats: { gap_pct: 0 } },
+    } });
+  });
+  await page.route("**/api/evaluate-network", (route) => route.fulfill({ json: networkOptimization }));
+  await page.route("**/api/simulate", (route) => {
+    const request = route.request().postDataJSON(); requests.push(request);
+    const lon = request.tower_lon; const lat = request.tower_lat;
+    return route.fulfill({ json: { geojson: { type: "FeatureCollection", features: Array.from({ length: 360 }, (_, i) => ({ type: "Feature", properties: { signal_dbm: i % 10 < 8 ? -72 : i % 10 === 8 ? -95 : -119 }, geometry: { type: "LineString", coordinates: [[lon, lat], [lon + Math.cos(i / 360 * Math.PI * 2) * 0.020, lat + Math.sin(i / 360 * Math.PI * 2) * 0.014]] } })) }, stats: { total_rays: 360, avg_rx_dbm: -80, max_distance_m: 1800 } } });
+  });
+  let finishInterference;
+  const interferenceGate = new Promise((resolveGate) => { finishInterference = resolveGate; });
+  await page.route("**/api/interference", async (route) => { await interferenceGate; return route.fulfill({ json: {
+    geojson: { type: "FeatureCollection", features: [{ type: "Feature", geometry: { type: "Point", coordinates: [32.856, 39.925] }, properties: { sinr_db: 16, rsrp_dbm: -85, rsrq_db: -13, serviceability_status: "serviceable" } }] }, stats: { avg_sinr_db: 16 }, model: {},
+  } }); });
+  await page.goto("/");
+  await selectTheme(page, "Light");
+  await waitForBasemap(page);
+  const evidence = { phase, fixtures: "720/24 deterministic rays, unchanged semantic colors; real cached Alidade tiles; viewport buildings; selected/active Cells", screenshots: [], rays: {}, actions: {}, requests };
+  const capture = async (name) => {
+    const file = `${name}-${phase}.jpg`;
+    await page.screenshot({ path: resolve(directory, file), type: "jpeg", quality: 85, animations: "disabled" });
+    evidence.screenshots.push(file);
+  };
+  const raySnapshot = () => page.evaluate(() => [...document.querySelectorAll(".leaflet-overlay-pane canvas")].flatMap((canvas) => canvas.atomStrokes ?? []));
+  const actionSnapshot = (button) => button.evaluate((element) => {
+    const css = getComputedStyle(element); const icon = getComputedStyle(element.querySelector("svg"));
+    return { disabled: element.disabled, background: css.backgroundColor, color: css.color, opacity: css.opacity, cursor: css.cursor, outline: css.outlineStyle, outlineWidth: css.outlineWidth, outlineColor: css.outlineColor, icon: icon.color };
+  });
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await page.getByRole("button", { name: "Map layers" }).click();
+  await page.getByRole("checkbox", { name: "Viewport buildings" }).check();
+  await page.getByRole("button", { name: "Map layers" }).click();
+  await page.locator(".command-primary-action").getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  if (await page.getByRole("button", { name: "Propagation rays layer" }).getAttribute("aria-pressed") !== "true") await page.getByRole("button", { name: "Propagation rays layer" }).click();
+  await expect.poll(async () => (await raySnapshot()).length).toBe(720);
+  // Network selection and RSRP overlay leave the sector rays available for inspection.
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await selectMapInteraction(page, "Select cells");
+  await clickMapPoint(page, 32.854, 39.922);
+  for (let i = 0; i < 2; i++) await page.getByRole("button", { name: "Zoom in" }).click();
+  await waitForBasemap(page);
+  await page.locator(".command-primary-action").getByRole("button", { name: "Evaluate Network" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  await selectWorkspaceTool(page, "Interference");
+  const action = page.locator(".analyze-button");
+  for (const theme of ["Light", "Dark"]) {
+    await selectTheme(page, theme); await waitForBasemap(page);
+    await expect(action).toBeEnabled();
+    await page.keyboard.press("Tab"); await action.focus();
+    expect(await action.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
+    evidence.actions[`${theme}-enabled`] = await actionSnapshot(action);
+    await capture(`interference-${theme.toLowerCase()}-enabled`);
+    await action.hover(); evidence.actions[`${theme}-hover`] = await actionSnapshot(action);
+  }
+  await action.click();
+  for (const theme of ["Light", "Dark"]) {
+    await selectTheme(page, theme); await waitForBasemap(page);
+    await expect(action).toBeDisabled();
+    evidence.actions[`${theme}-disabled`] = await actionSnapshot(action);
+    await capture(`interference-${theme.toLowerCase()}-disabled`);
+  }
+  finishInterference();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await openMapView(page);
+  await page.getByRole("combobox", { name: "Radio-quality metric" }).selectOption("rsrp");
+  await page.getByRole("button", { name: "Map view options" }).click();
+  for (const theme of ["Light", "Dark"]) {
+    await selectTheme(page, theme); await waitForBasemap(page);
+    evidence.rays[`dense-${theme}`] = await raySnapshot();
+    expect(evidence.rays[`dense-${theme}`]).toHaveLength(720);
+    await capture(`dense-rsrp-${theme.toLowerCase()}`);
+  }
+  rayCount = 24;
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "Single sector mode" }).click();
+  await page.locator(".command-primary-action").getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  for (const theme of ["Light", "Dark"]) {
+    await selectTheme(page, theme); await waitForBasemap(page);
+    evidence.rays[`sparse-${theme}`] = await raySnapshot();
+    expect(evidence.rays[`sparse-${theme}`]).toHaveLength(24);
+    await capture(`sparse-sector-${theme.toLowerCase()}`);
+  }
+  if (!before) {
+    const baseline = JSON.parse(await readFile(resolve(directory, "before.json"), "utf8"));
+    const geometry = (rays) => rays.map(({ color, path }) => ({ color, path }));
+    for (const name of Object.keys(evidence.rays)) {
+      expect(geometry(evidence.rays[name]), name).toEqual(geometry(baseline.rays[name]));
+      expect(evidence.rays[name].every((ray) => ray.width === 1.25 && ray.opacity === 0.45)).toBe(true);
+    }
+    expect(requests).toEqual(baseline.requests);
+    for (const state of ["enabled", "disabled", "hover"]) expect(evidence.actions[`Light-${state}`]).toEqual(baseline.actions[`Light-${state}`]);
+    expect(evidence.actions["Dark-enabled"]).toMatchObject({ disabled: false, background: "rgb(35, 107, 99)", color: "rgb(255, 255, 255)", outline: "solid", outlineWidth: "2px", icon: "rgb(255, 255, 255)" });
+    expect(evidence.actions["Dark-disabled"]).toMatchObject({ disabled: true, background: "rgb(38, 49, 57)", color: "rgb(141, 157, 150)", opacity: "1", cursor: "not-allowed" });
+    expect(evidence.actions["Dark-hover"].background).not.toBe(evidence.actions["Dark-enabled"].background);
+  }
+  await writeFile(resolve(directory, `${phase}.json`), `${JSON.stringify(evidence, null, 2)}\n`);
+});
+
+test("shared dark actions preserve readiness, focus and visible RF budget errors", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await selectMapInteraction(page, "Select cells");
+  await clickMapPoint(page, 32.854, 39.922);
+  await selectWorkspaceTool(page, "Interference");
+  const button = page.locator(".analyze-button");
+  const style = (locator) => locator.evaluate((el) => {
+    const css = getComputedStyle(el);
+    return { background: css.backgroundColor, color: css.color, outline: css.outlineStyle, icon: getComputedStyle(el.querySelector("svg")).color };
+  });
+  await selectTheme(page, "Dark");
+  await expect(button).toBeEnabled();
+  await page.keyboard.press("Tab"); await button.focus();
+  const enabled = await style(button);
+  expect(enabled).toMatchObject({ background: "rgb(35, 107, 99)", color: "rgb(255, 255, 255)", outline: "solid", icon: "rgb(255, 255, 255)" });
+  expect((await style(page.locator(".command-run-button"))).background).toBe(enabled.background);
+  await button.hover();
+  expect((await style(button)).background).toBe("rgb(43, 122, 112)");
+  let finish;
+  const gate = new Promise((resolveGate) => { finish = resolveGate; });
+  let requestCount = 0;
+  const message = "RF analysis request budget exceeded; retry after the current rate-limit window";
+  await page.route("**/api/interference", async (route) => {
+    requestCount++;
+    await gate;
+    await route.fulfill({ status: 429, json: { error: message } });
+  });
+  await button.click();
+  await expect(button).toBeDisabled();
+  await button.hover();
+  await button.evaluate((el) => el.focus());
+  expect(await button.evaluate((el) => el === document.activeElement)).toBe(false);
+  expect((await style(button)).background).toBe("rgb(38, 49, 57)");
+  await expect(page.locator(".command-run-button")).toBeDisabled();
+  expect((await style(page.locator(".command-run-button"))).background).toBe("rgb(38, 49, 57)");
+  finish();
+  await expect(page.getByText(message, { exact: true })).toBeVisible();
+  await expect(button).toBeEnabled();
+  for (const theme of ["Light", "Dark"]) {
+    await selectTheme(page, theme);
+    await expect(page.getByText(message, { exact: true })).toBeVisible();
+  }
+  expect(requestCount).toBe(1);
+});

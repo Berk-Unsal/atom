@@ -1,3 +1,5 @@
+import { rxPowerColor } from "./geojson.js";
+
 export const RAY_SCOPE_ALL = "all";
 export const RAY_SCOPE_SELECTED = "selected";
 export const RAY_SCOPE_HIDDEN = "hidden";
@@ -36,4 +38,15 @@ export function filterRayFeatures(
   const normalizedTarget = String(targetID);
   return safeFeatures.filter((feature) => rayFeatureCellID(feature, cellIDsByIndex) === normalizedTarget
     || (!rayFeatureCellID(feature, cellIDsByIndex) && defaultCellId !== null && String(defaultCellId) === normalizedTarget));
+}
+
+// One presentation across themes; classification and source features stay untouched.
+export function rayPresentation(feature) {
+  return {
+    color: rxPowerColor(Number(feature?.properties?.signal_dbm ?? -120)),
+    opacity: 0.45,
+    weight: 1.25,
+    lineCap: "round",
+    lineJoin: "round",
+  };
 }

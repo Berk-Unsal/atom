@@ -1,11 +1,10 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { circleMarker, divIcon, latLngBounds } from "leaflet";
 import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Polyline, Tooltip, useMap, useMapEvents } from "react-leaflet";
-import { rxPowerColor } from "../utils/geojson.js";
 import { getJSON } from "../utils/apiClient.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
 import { cellMarkerPresentation } from "./cellMarkerPresentation.js";
-import { filterRayFeatures, RAY_SCOPE_ALL } from "../utils/rfVisualization.js";
+import { filterRayFeatures, rayPresentation, RAY_SCOPE_ALL } from "../utils/rfVisualization.js";
 
 import BasemapLayer from "./BasemapLayer.jsx";
 import { DEFAULT_BASEMAP_ID, getBasemap } from "./basemaps.js";
@@ -729,13 +728,7 @@ function RayGeoJSONLayer({ cellIDsByIndex = [], defaultCellId = null, rayScope =
     <GeoJSON
       key={`${layerKey}-${rayScope}-${selectedCellId ?? "none"}`}
       data={{ ...simulation, features }}
-      style={(feature) => ({
-        color: rxPowerColor(Number(feature?.properties?.signal_dbm ?? -120)),
-        opacity: 0.8,
-        weight: 4,
-        lineCap: "round",
-        lineJoin: "round",
-      })}
+      style={rayPresentation}
     />
   );
 }

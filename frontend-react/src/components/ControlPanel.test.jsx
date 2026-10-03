@@ -50,6 +50,36 @@ describe("ControlPanel interference controls", () => {
     expect(screen.getByRole("button", { name: /Analyze Interference/i })).toBeDisabled();
   });
 
+  it.each(["light", "dark"])("preserves native action semantics in %s theme", (theme) => {
+    document.documentElement.dataset.theme = theme;
+    const onAnalyzeInterference = vi.fn();
+    const view = renderPanel({ networkSelectionCount: 2, onAnalyzeInterference });
+    const button = screen.getByRole("button", { name: "Analyze Interference" });
+    expect(button).toBeEnabled();
+    expect(button).toHaveClass("analyze-button");
+    expect(button.querySelector("svg")).toBeInTheDocument();
+    button.focus();
+    expect(button).toHaveFocus();
+    fireEvent.click(button);
+    expect(onAnalyzeInterference).toHaveBeenCalledOnce();
+    view.unmount();
+    delete document.documentElement.dataset.theme;
+  });
+
+  it.each([
+    { networkSelectionCount: 1 },
+    { isLoading: true },
+    { isOptimizing: true },
+    { isAnalyzingInterference: true },
+  ])("keeps the readiness guard for %j", (guard) => {
+    const onAnalyzeInterference = vi.fn();
+    renderPanel({ networkSelectionCount: 2, onAnalyzeInterference, ...guard });
+    const button = screen.getByRole("button", { name: /Analyze Interference|Analyzing/ });
+    expect(button).toBeDisabled();
+    fireEvent.click(button);
+    expect(onAnalyzeInterference).not.toHaveBeenCalled();
+  });
+
   it("shows the 6G not-applicable state", () => {
     renderPanel({
       settings: { ...baseSettings, frequencyGHz: 140 },

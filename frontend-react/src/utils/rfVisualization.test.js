@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cellIDForTower, filterRayFeatures, rayFeatureCellID, RAY_SCOPE_HIDDEN, RAY_SCOPE_SELECTED } from "./rfVisualization.js";
+import { cellIDForTower, filterRayFeatures, rayPresentation, rayFeatureCellID, RAY_SCOPE_HIDDEN, RAY_SCOPE_SELECTED } from "./rfVisualization.js";
 
 const features = [
   { properties: { cell_id: "cell-a", signal_dbm: -80 } },
@@ -36,5 +36,21 @@ describe("RF map visualization helpers", () => {
       scope: RAY_SCOPE_SELECTED,
       selectedCellId: "cell-b",
     })).toEqual([]);
+  });
+});
+
+describe("ray presentation", () => {
+  it.each([[-85, "#10b981"], [-85.01, "#f59e0b"], [-105, "#f59e0b"], [-105.01, "#e11d48"], [undefined, "#e11d48"]])("preserves received-power color at %s dBm", (signal_dbm, color) => {
+    expect(rayPresentation({ properties: { signal_dbm } })).toMatchObject({ color, weight: 1.25, opacity: 0.45 });
+  });
+
+  it.each([24, 720])("preserves all %s features, coordinates, ordering and classifications", (count) => {
+    const rays = Array.from({ length: count }, (_, i) => ({ type: "Feature", geometry: { type: "LineString", coordinates: [[32.85, 39.92], [32.85 + i * 0.00001, 39.93]] }, properties: { signal_dbm: [-72, -95, -119][i % 3], propagation_class: ["direct", "reflected", "blocked"][i % 3] } }));
+    const original = structuredClone(rays);
+    const visible = filterRayFeatures(rays);
+    visible.forEach(rayPresentation);
+    expect(visible).toBe(rays);
+    expect(visible).toHaveLength(count);
+    expect(visible).toEqual(original);
   });
 });

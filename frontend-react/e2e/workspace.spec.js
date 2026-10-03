@@ -1,6 +1,8 @@
+import { waitForBasemap, selectBasemap, basemapSnapshot } from "./basemapHelpers.js";
 import { expect, test } from "@playwright/test";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { Buffer } from "node:buffer";
 import { cwd, env } from "node:process";
 
 const towers = {
@@ -217,6 +219,7 @@ const cellExplanation = {
 
 test.beforeEach(async ({ page }) => {
   await page.route("**/tile.openstreetmap.org/**", (route) => route.abort());
+  await page.route("**/tiles.stadiamaps.com/**", (route) => route.abort());
   await page.route("**/api/**", async (route) => {
     const url = new URL(route.request().url());
     const payloads = {
@@ -408,7 +411,7 @@ test("captures Concept 8H visual system evidence", async ({ page }, testInfo) =>
   test.skip(testInfo.project.name !== "desktop-1440", "Capture the reference states once");
   test.setTimeout(120_000);
   const directory = resolve(cwd(), `../docs/assets/concept-8h/${phase}`);
-  const tileDirectory = "/tmp/atom-8h-osm-tiles";
+  const tileDirectory = "/tmp/atom-basemap-tiles";
   await mkdir(directory, { recursive: true });
   await mkdir(tileDirectory, { recursive: true });
   const features = [
@@ -421,9 +424,9 @@ test("captures Concept 8H visual system evidence", async ({ page }, testInfo) =>
     ...Array.from({ length: 36 }, (_, index) => point(`dense-${index}`, `sogutozu-${index}`, 32.800 + (index % 6) * 0.0015, 39.911 + Math.floor(index / 6) * 0.0015)),
   ];
   await page.route("**/api/towers", (route) => route.fulfill({ json: { type: "FeatureCollection", features } }));
-  // The same cached OSM tiles are used for both phases; RF fixtures remain local.
-  await page.route("**/tile.openstreetmap.org/**", async (route) => {
-    const file = resolve(tileDirectory, new URL(route.request().url()).pathname.slice(1).replaceAll("/", "-"));
+  // Cache successful provider tiles; RF fixtures remain local.
+  await page.route(/https:\/\/(tile\.openstreetmap\.org|tiles\.stadiamaps\.com)\//, async (route) => {
+    const file = resolve(tileDirectory, (new URL(route.request().url()).hostname + new URL(route.request().url()).pathname).replaceAll("/", "-"));
     try {
       let body;
       try { body = await readFile(file); } catch {
@@ -438,14 +441,7 @@ test("captures Concept 8H visual system evidence", async ({ page }, testInfo) =>
   const screenshots = [];
   const measurements = [];
   const capture = async (name) => {
-    await page.waitForFunction(() => {
-      const tiles = [...document.querySelectorAll(".leaflet-tile")];
-      const map = document.querySelector(".leaflet-container")?.getBoundingClientRect();
-      if (!map || !tiles.length || !tiles.every((tile) => tile.complete && tile.naturalWidth > 0 && Number(getComputedStyle(tile).opacity) >= 0.99)) return false;
-      const bounds = tiles.map((tile) => tile.getBoundingClientRect());
-      return [[map.left + 2, map.top + 2], [map.right - 2, map.top + 2], [map.left + 2, map.bottom - 2], [map.right - 2, map.bottom - 2]]
-        .every(([x, y]) => bounds.some((rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom));
-    }, null, { timeout: 25_000 });
+    await waitForBasemap(page);
     await page.screenshot({ path: resolve(directory, `${name}.jpg`), type: "jpeg", quality: 70, animations: "disabled" });
     screenshots.push({ state: name, file: `docs/assets/concept-8h/${phase}/${name}.jpg` });
     measurements.push(await page.evaluate((state) => {
@@ -3223,6 +3219,7 @@ test("Concept 8H stage menus close consistently and preserve the plan, viewport,
       read.onsuccess = () => { resolveReady(read.result?.projects?.some((project) => project.draft?.plan?.selectedTowerId && project.datasetRef)); database.close(); };
     };
   }));
+  await expect.poll(async () => Boolean((await exportProject()).project?.draft?.plan?.selectedTowerId)).toBe(true);
   const before = await exportProject();
   const requestCount = computeRequests.length;
   const transform = await page.locator(".leaflet-map-pane").getAttribute("style");
@@ -3261,4 +3258,283 @@ test("Concept 8H stage menus close consistently and preserve the plan, viewport,
   expect(await page.locator(".rf-context-primary").textContent()).toBe(context);
   expect(await page.locator(".command-status").textContent()).toBe(resultSource);
   expect(await page.locator(".rail-badge").count()).toBe(0);
+});
+
+test("basemap switching preserves viewport, selection, inspection, result and exported identity", async ({ page }) => {
+  test.setTimeout(60_000);
+  // Remote pixels are irrelevant to contracts; real raster evidence has a separate capture gate.
+  const tile = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j8VIAAAAASUVORK5CYII=", "base64");
+  await page.route(/https:\/\/(tile\.openstreetmap\.org|tiles\.stadiamaps\.com)\//, (route) => route.fulfill({ body: tile, contentType: "image/png" }));
+  const requests = [];
+  page.on("request", (request) => { if (request.url().includes("/api/")) requests.push([request.url(), request.postData()]); });
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await selectMapInteraction(page, "Select cells");
+  await clickMapPoint(page, 32.854, 39.922);
+  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 2 cells");
+  await selectMapInteraction(page, "Inspect");
+  await selectMapFocus(page, "cell-2");
+  await inspectMapFocus(page);
+  await page.getByRole("button", { name: "Close inspector" }).click();
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "Single sector mode" }).click();
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  if (await page.getByRole("button", { name: "Close tool drawer" }).isVisible()) await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await waitForBasemap(page);
+  const exportProject = async () => {
+    await page.getByRole("button", { name: "Open project menu" }).click();
+    const pending = page.waitForEvent("download");
+    await page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("button", { name: "Export", exact: true }).click();
+    const download = await pending;
+    const data = JSON.parse(await readFile(await download.path(), "utf8"));
+    await page.getByRole("button", { name: "Open project menu" }).click();
+    return data;
+  };
+  await expect.poll(async () => (await exportProject()).project?.draft?.plan?.planningMode).toBe("single");
+  await page.locator(".leaflet-control-zoom-in").click();
+  await waitForBasemap(page);
+  await page.locator(".leaflet-container").press("ArrowLeft");
+  await waitForBasemap(page);
+  const exported = await exportProject();
+  await selectBasemap(page, "OpenStreetMap");
+  await waitForBasemap(page);
+  const before = await basemapSnapshot(page);
+  const count = requests.length;
+  for (const [label, css] of [["Alidade Smooth", "atom-basemap-alidade"], ["OpenStreetMap", "atom-basemap-osm"]]) {
+    await selectBasemap(page, label);
+    await waitForBasemap(page);
+    await expect(page.locator(`.${css}`)).toHaveCount(1);
+    const after = await basemapSnapshot(page);
+    for (const field of ["mapTransform", "tileViewport", "tiles", "overlayCanvasHashes", "palette", "selectedMarkers", "overlayHTML", "markerHTML", "context", "status", "primary"]) expect(after[field], field).toEqual(before[field]);
+    expect(after.paneFilters.every((filter) => filter === "none")).toBe(true);
+    expect(after.layerCount).toBe(1);
+    expect(after.filter).toBe(label === "OpenStreetMap" ? "saturate(0.62) contrast(0.94) brightness(1.03)" : "none");
+    expect(after.attribution.includes("Stadia Maps")).toBe(label === "Alidade Smooth");
+    expect(after.attribution.includes("OpenMapTiles")).toBe(label === "Alidade Smooth");
+    expect(after.attribution).toContain("OpenStreetMap");
+    expect(await exportProject()).toEqual(exported);
+    expect(requests.length).toBe(count);
+  }
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 2 cells");
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await selectMapFocus(page, "cell-2");
+  await inspectMapFocus(page);
+  const inspected = await basemapSnapshot(page);
+  for (const label of ["Alidade Smooth", "OpenStreetMap"]) {
+    await selectBasemap(page, label);
+    await waitForBasemap(page);
+    const after = await basemapSnapshot(page);
+    expect(after.overlayHTML).toEqual(inspected.overlayHTML);
+    expect(after.markerHTML).toEqual(inspected.markerHTML);
+    await expect(page.getByRole("complementary", { name: "Cell inspector" })).toBeVisible();
+  }
+});
+
+test("captures Alidade basemap comparison evidence", async ({ page }, testInfo) => {
+  const phase = env.ATOM_BASEMAP_CAPTURE;
+  test.skip(phase !== "1", "Set ATOM_BASEMAP_CAPTURE=1 to capture real raster comparisons");
+  test.skip(testInfo.project.name !== "desktop-1440", "Capture the reference states once");
+  test.setTimeout(300_000);
+  const directory = resolve(cwd(), "../docs/assets/basemap-alidade");
+  const tileDirectory = "/tmp/atom-basemap-tiles";
+  await mkdir(directory, { recursive: true });
+  await mkdir(tileDirectory, { recursive: true });
+  const features = [
+    point("tower-1", "cell-1", 32.850, 39.920),
+    point("tower-2", "cell-2", 32.870, 39.920),
+    point("tower-3", "cell-3", 32.890, 39.920),
+    point("tower-4", "cell-4", 32.850, 39.940),
+    point("tower-5", "cell-5", 32.870, 39.940),
+    point("tower-6", "cell-6", 32.890, 39.940),
+    ...Array.from({ length: 36 }, (_, index) => point(`dense-${index}`, `sogutozu-${index}`, 32.800 + (index % 6) * 0.0015, 39.911 + Math.floor(index / 6) * 0.0015)),
+  ];
+  await page.route("**/api/towers", (route) => route.fulfill({ json: { type: "FeatureCollection", features } }));
+  // Bound remote fetch concurrency; cache only successful real PNG responses.
+  const fetchSlots = Array.from({ length: 4 }, () => Promise.resolve());
+  let fetchSlot = 0;
+  // The same cached OSM tiles are used for both phases; RF fixtures remain local.
+  await page.route(/https:\/\/(tile\.openstreetmap\.org|tiles\.stadiamaps\.com)\//, async (route) => {
+    const file = resolve(tileDirectory, (new URL(route.request().url()).hostname + new URL(route.request().url()).pathname).replaceAll("/", "-"));
+    try {
+      let body;
+      try { body = await readFile(file); } catch {
+        const slot = fetchSlot++ % fetchSlots.length;
+        const pending = fetchSlots[slot].then(async () => {
+          const response = await route.fetch({ timeout: 30_000 });
+          if (!response.ok()) throw new Error(`Tile unavailable: HTTP ${response.status()}`);
+          const bytes = await response.body();
+          await writeFile(file, bytes);
+          return bytes;
+        });
+        fetchSlots[slot] = pending.catch(() => {});
+        body = await pending;
+      }
+      await route.fulfill({ body, contentType: "image/png" });
+    } catch (error) { console.warn("Raster capture fetch failed", route.request().url(), error.message); await route.abort(); }
+  });
+  const screenshots = [];
+  const measurements = [];
+  const capture = async (name) => {
+    console.log("Capture pair", name);
+    const pair = [];
+    for (const [id, label] of [["osm-standard", "OpenStreetMap"], ["alidade-smooth", "Alidade Smooth"]]) {
+      await selectBasemap(page, label);
+      const start = Date.now();
+      await waitForBasemap(page).catch(async (error) => { console.warn("Incomplete raster", name, id, await page.evaluate(() => ({ status: document.querySelector(".map-basemap-status")?.textContent, tiles: [...document.querySelectorAll(".leaflet-tile")].map((t) => ({ url: t.src, complete: t.complete, width: t.naturalWidth, opacity: getComputedStyle(t).opacity, bounds: t.getBoundingClientRect().toJSON() })), map: document.querySelector(".leaflet-container").getBoundingClientRect().toJSON(), animations: [...document.querySelectorAll(".leaflet-zoom-anim, .leaflet-pan-anim")].map((e) => e.className) }))); throw error; });
+      if (name === "plan-menu") await page.getByRole("button", { name: "Plan workspace" }).click();
+      const snapshot = await basemapSnapshot(page);
+      const layout = await page.evaluate(() => {
+        const a = document.querySelector(".leaflet-control-attribution").getBoundingClientRect();
+        const k = document.querySelector(".focused-map-legend").getBoundingClientRect();
+        return { viewport: [innerWidth, innerHeight], overflowX: document.documentElement.scrollWidth - innerWidth, keyAttributionOverlap: a.left < k.right && a.right > k.left && a.top < k.bottom && a.bottom > k.top };
+      });
+      expect(layout.keyAttributionOverlap).toBe(false);
+      expect(layout.overflowX).toBe(0);
+      expect(snapshot.paneFilters.every((filter) => filter === "none")).toBe(true);
+      await page.screenshot({ path: resolve(directory, `${name}-${id}.jpg`), type: "jpeg", quality: 80, animations: "disabled" });
+      screenshots.push({ state: name, provider: id, file: `docs/assets/basemap-alidade/${name}-${id}.jpg` });
+      measurements.push({ state: name, provider: id, loadedWaitMs: Date.now() - start, tileCount: snapshot.tiles.length, ...layout, ...snapshot });
+      pair.push(snapshot);
+    }
+    for (const field of ["mapTransform", "tileViewport", "palette", "selectedMarkers", "overlayHTML", "markerHTML", "context", "status", "primary"]) expect(pair[1][field], `${name}: ${field}`).toEqual(pair[0][field]);
+    await selectBasemap(page, "OpenStreetMap");
+    await waitForBasemap(page);
+  };
+  const polygon = (id, lon, lat, height) => ({ type: "Feature", id, properties: { height_m: height, material: "concrete" }, geometry: { type: "Polygon", coordinates: [[[lon, lat], [lon + 0.001, lat], [lon + 0.001, lat + 0.001], [lon, lat + 0.001], [lon, lat]]] } });
+  await page.route("**/api/collections/buildings/items*", (route) => route.fulfill({ json: { type: "FeatureCollection", features: [polygon("b1", 32.865, 39.932, 18), polygon("b2", 32.875, 39.932, 24), polygon("b3", 32.885, 39.932, 32)] } }));
+  await page.route("**/api/analyze-sector", (route) => route.fulfill({ json: {
+    simulation: { geojson: { type: "FeatureCollection", features: Array.from({ length: 24 }, (_, i) => ({ type: "Feature", geometry: { type: "LineString", coordinates: [[32.85, 39.92], [32.85 + Math.cos(i / 24 * Math.PI * 2) * 0.006, 39.92 + Math.sin(i / 24 * Math.PI * 2) * 0.004]] }, properties: { signal_dbm: [-72, -95, -119][i % 3] } })) }, stats: { avg_rx_dbm: -95, max_distance_m: 500, total_rays: 24 } },
+    coverage_gaps: { geojson: { type: "FeatureCollection", features: [] }, stats: { gap_pct: 0, gap_buildings: 0, candidate_buildings: 8 } },
+  } }));
+  await page.route("**/api/coverage-surface", (route) => route.fulfill({ json: {
+    grid: { width: 20, height: 20, bounds: [32.84, 39.91, 32.90, 39.945], nodata: -9999, values: Array.from({ length: 400 }, (_, i) => -80 - Math.hypot(i % 20 - 10, Math.floor(i / 20) - 10) * 3) },
+    contours: { type: "FeatureCollection", features: [] }, stats: { min_dbm: -120, max_dbm: -80, valid_cell_count: 400 }, model: { assumptions: ["Deterministic visual fixture; not a new RF validation"] },
+  } }));
+  await page.route("**/api/interference", (route) => route.fulfill({ json: {
+    geojson: { type: "FeatureCollection", features: Array.from({ length: 100 }, (_, i) => ({ type: "Feature", geometry: { type: "Point", coordinates: [32.839 + i % 10 * 0.006, 39.907 + Math.floor(i / 10) * 0.004] }, properties: { sinr_db: [-5, 7, 16, 25, null][i % 5], rsrp_dbm: -90, serviceability_status: i % 5 === 4 ? "no_signal" : "serviceable" } })) },
+    demand_geojson: { type: "FeatureCollection", features: [] }, stats: { avg_sinr_db: 10, serviceable_pct: 60, no_signal_count: 20 }, model: {},
+  } }));
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Setup", exact: true })).toBeVisible();
+  await page.waitForFunction(() => document.querySelectorAll(".leaflet-tile-loaded").length > 0 || document.querySelector(".map-basemap-status"));
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await capture("default-map");
+  await page.getByRole("button", { name: "Plan workspace" }).click();
+  await capture("plan-menu");
+  await selectWorkspaceTool(page, "Setup");
+  await capture("setup");
+  await page.getByRole("button", { name: "Simulate workspace" }).click();
+
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+
+  await page.keyboard.press("Escape");
+  await selectWorkspaceTool(page, "Results");
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await selectMapInteraction(page, "Select cells");
+  for (const feature of features.slice(1, 6)) await clickMapPoint(page, ...feature.geometry.coordinates);
+  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 6 cells");
+  await capture("selected-network");
+  await selectMapInteraction(page, "Inspect");
+  await selectMapFocus(page, "cell-6");
+  await inspectMapFocus(page);
+  if (await page.getByRole("button", { name: "Map view options" }).getAttribute("aria-expanded") === "true") await page.getByRole("button", { name: "Map view options" }).click();
+  await expect(page.getByRole("complementary", { name: "Cell inspector" })).toBeVisible();
+  await capture("active-selected-cell");
+  await page.getByRole("button", { name: "Close inspector" }).click();
+  const map = page.locator(".leaflet-container");
+  await map.focus();
+  for (let index = 0; index < 2; index++) {
+    await map.press("ArrowLeft");
+    await waitForBasemap(page);
+  }
+  for (let index = 0; index < 2; index++) {
+    await page.locator(".leaflet-control-zoom-in").click();
+    await waitForBasemap(page);
+  }
+  await capture("dense-sogutozu");
+  await openMapView(page);
+  await page.getByRole("button", { name: "Fit selected cells" }).click();
+  await waitForBasemap(page);
+  if (await page.getByRole("button", { name: "Map view options" }).getAttribute("aria-expanded") === "true") await page.getByRole("button", { name: "Map view options" }).click();
+  await selectMapInteraction(page, "Select cells");
+  await page.getByRole("button", { name: "Draw selection area" }).click();
+  const mapBox = await map.boundingBox();
+  for (const [x, y] of [[0.35, 0.3], [0.6, 0.3], [0.5, 0.65]]) await map.click({ position: { x: mapBox.width * x, y: mapBox.height * y } });
+  await capture("selection-polygon");
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await selectWorkspaceTool(page, "Inventory");
+
+  await selectWorkspaceTool(page, "Propagation");
+
+  await page.getByRole("button", { name: "Map layers" }).click();
+  const buildingsLoaded = page.waitForResponse((response) => response.url().includes("/api/collections/buildings/items"));
+  await page.getByRole("checkbox", { name: "Viewport buildings" }).check();
+  await buildingsLoaded;
+  await page.getByRole("button", { name: "Map layers" }).click();
+  await expect(page.getByRole("checkbox", { name: "Viewport buildings" })).not.toBeVisible();
+  await expect(page.locator(".leaflet-overlay-pane canvas")).toBeVisible();
+  await capture("building-overlay");
+  await selectWorkspaceTool(page, "Interference");
+  await page.getByRole("button", { name: "Analyze Interference" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await capture("sinr");
+  await selectWorkspaceTool(page, "RF Diagnostics");
+  await capture("rf-diagnostics");
+  await selectWorkspaceTool(page, "Setup");
+
+  await selectWorkspaceTool(page, "Results");
+
+  for (const [width, height] of [[1366, 768], [1512, 982], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    if (width === 390 && await page.getByRole("button", { name: "Close tool drawer" }).isVisible()) await page.getByRole("button", { name: "Close tool drawer" }).click();
+    const keyToggle = page.getByRole("region", { name: "Map key" }).getByRole("button");
+    if (await keyToggle.getAttribute("aria-expanded") === "false") await keyToggle.click();
+    await capture(`review-${width}`);
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "Single sector mode" }).click();
+  await page.locator(".command-primary-action").getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  await selectWorkspaceTool(page, "Results");
+  await capture("review-current");
+  await page.getByRole("button", { name: "Signal layer" }).click();
+  await expect(page.getByRole("button", { name: "Signal layer" })).toHaveAttribute("data-surface-state", "ready");
+  await page.getByRole("button", { name: "Propagation rays layer" }).click();
+  await expect(page.getByRole("button", { name: "Propagation rays layer" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Close tool drawer" }).click();
+  await capture("signal-rays");
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
+  await selectWorkspaceTool(page, "Results");
+
+  await selectWorkspaceTool(page, "Setup");
+  await page.getByRole("button", { name: "4G LTE, 2.6 GHz" }).click();
+  await page.getByRole("button", { name: "Analyze workspace" }).click();
+
+  await writeFile(resolve(directory, "evidence.json"), `${JSON.stringify({ task: "basemap-alidade", capturedAt: new Date().toISOString(), fixtures: "42 Cells including 36 dense Söğütözü positions; deterministic RF/building fixtures; real provider raster tiles", screenshots, measurements }, null, 2)}\n`);
+});
+
+test("failed Alidade tiles stay observable and OSM remains selectable", async ({ page }) => {
+  await page.route("**/tiles.stadiamaps.com/**", (route) => route.fulfill({ status: 401, body: "Provider authentication required" }));
+  await page.goto("/");
+  await selectBasemap(page, "Alidade Smooth");
+  await expect(page.locator(".map-basemap-status")).toContainText("Alidade Smooth: Base map unavailable");
+  await expect(page.locator(".map-basemap-status")).toContainText("choose OpenStreetMap in Layers");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await expect(page.locator(".atom-basemap-alidade")).toHaveCount(1);
+  await selectBasemap(page, "OpenStreetMap");
+  await expect(page.locator(".atom-basemap-osm")).toHaveCount(1);
+  await expect(page.locator(".atom-basemap-alidade")).toHaveCount(0);
+  await expect(page.locator(".leaflet-control-attribution")).not.toContainText("Stadia Maps");
 });

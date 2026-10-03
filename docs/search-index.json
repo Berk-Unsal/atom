@@ -819,9 +819,15 @@
     },
     {
       "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed",
+      "text": "Allow the exact Stadia Maps tile origin in the application's image CSP so Alidade Smooth loads in Go-served and container deployments while preserving OpenStreetMap support and all other directives."
+    },
+    {
+      "page": "Changelog",
       "title": "Changed",
       "url": "./changelog.html#changed",
-      "text": "Consolidate workspace typography, spacing, controls, panel headers, and stage menus; keep the primary Run/Evaluate action visible across tools and add relevant Results empty-state actions. Quiet the OSM basemap and available Cells, center selected Cell order labels, distinguish active/selected/inspected/focused markers, and simplify header status and stage badges without changing RF, optimization, request, or persistence semantics."
+      "text": "Use Alidade Smooth as the default light raster basemap after matched overlay/context evaluation; keep muted OpenStreetMap selectable in Layers and keep basemap choice outside RF and project state. Consolidate workspace typography, spacing, controls, panel headers, and stage menus; keep the primary Run/Evaluate action visible across tools and add relevant Results empty-state actions. Quiet the OSM basemap and available Cells, center selected Cell order labels, distinguish active/selected/inspected/focused markers, and simplify header status and stage badges without changing RF, optimization, request, or persistence semantics."
     },
     {
       "page": "Changelog",
@@ -838,7 +844,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed",
+      "url": "./changelog.html#fixed-1",
       "text": "Update vulnerable frontend and Go module dependencies, move Go builds to 1.26.6, and refresh the Alpine 3.24 image digest to patched releases."
     },
     {
@@ -868,7 +874,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-1",
+      "url": "./changelog.html#fixed-2",
       "text": "Keep retained Interference samples inspectable when switching map interaction modes and show unavailable values when the response lacks evidence. Keep active Scenario lineage when draft and saved plan values differ only by object key order or map-only focus/ray scope."
     },
     {
@@ -916,7 +922,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-2",
+      "url": "./changelog.html#fixed-3",
       "text": "Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows. Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on main reach the published site."
     },
     {
@@ -940,7 +946,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-3",
+      "url": "./changelog.html#fixed-4",
       "text": "Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary. Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport. Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly. Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image."
     },
     {
@@ -976,7 +982,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-4",
+      "url": "./changelog.html#fixed-5",
       "text": "Keep focused-drawer actions in normal layout flow so the propagation optimizer cannot overlap the vertical path-profile panel."
     },
     {
@@ -994,7 +1000,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-5",
+      "url": "./changelog.html#fixed-6",
       "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts. Generate backend, Core Lab adapter, and frontend scenario/RF policy bindings from one canonical source, and share one tower input type across RF endpoints."
     },
     {
@@ -1006,7 +1012,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-6",
+      "url": "./changelog.html#fixed-7",
       "text": "Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests. Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation."
     },
     {
@@ -1030,7 +1036,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-7",
+      "url": "./changelog.html#fixed-8",
       "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
     },
     {

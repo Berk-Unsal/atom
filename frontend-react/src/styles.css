@@ -9916,7 +9916,7 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
 .stage-tool-choice.unavailable .stage-tool-choice-icon { color: var(--disabled); }
 
 /* CSS targets only base-map tile images, never RF, inventory, or building overlays. */
-.atom-basemap { filter: saturate(0.62) contrast(0.94) brightness(1.03); }
+.atom-basemap-osm { filter: saturate(0.62) contrast(0.94) brightness(1.03); }
 .focused-map-toolbar :is(button, .map-desktop-interaction button) { min-height: var(--control-compact); border-radius: var(--radius-control); font-size: var(--text-meta); font-weight: var(--weight-label); }
 .focused-map-toolbar button svg { width: 16px; height: 16px; stroke-width: 1.8; flex: 0 0 auto; }
 .focused-map-toolbar :is(.map-view-menu, .layer-menu, .map-interaction-popover) { border-radius: var(--radius-control); box-shadow: none; }
@@ -10025,3 +10025,15 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
 
 :is(.project-menu, .workspace-lineage-popover, .rf-context-popover, .stage-tool-chooser-flyout, .map-view-menu, .layer-menu, .map-interaction-popover) { box-shadow: var(--shadow); }
 .segmented-control button.active, .result-view-tabs button.active { box-shadow: inset 0 -2px var(--teal); }
+
+/* Provider presentation belongs to the raster layer, never a Leaflet pane. */
+.atom-basemap-alidade { filter: none; }
+.basemap-choices { margin: 0 0 var(--space-2); padding: 0 0 var(--space-2); border: 0; border-bottom: 1px solid var(--line); }
+.basemap-choices legend { padding: 0; margin-bottom: var(--space-1); font-size: var(--text-label); font-weight: var(--weight-label); }
+.leaflet-control-attribution { max-width: calc(100vw - 80px); }
+@media (max-width: 600px) {
+  .map-stage:has(.atom-basemap-alidade) .focused-map-legend { bottom: 42px; }
+}
+.basemap-choices { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-1); }
+.basemap-choices label { padding-inline: var(--space-1); font-size: var(--text-meta); font-weight: var(--weight-label); }
+.basemap-choices input { flex-shrink: 0; }

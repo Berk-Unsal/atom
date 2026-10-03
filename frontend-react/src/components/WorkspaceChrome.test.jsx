@@ -405,3 +405,21 @@ describe("stage-owned tool choices", () => {
     expect(screen.getByText("Planning controls")).toBeInTheDocument();
   });
 });
+
+it("exposes basemaps as a labeled radio group and leaves overlay toggles alone", () => {
+  const onBasemapChange = vi.fn();
+  const onToggleLayer = vi.fn();
+  const { rerender } = render(<MapToolbar {...toolbarProps} layerMenuOpen onBasemapChange={onBasemapChange} onToggleLayer={onToggleLayer} />);
+  const group = screen.getByRole("group", { name: "Basemap" });
+  expect(within(group).getByRole("radio", { name: "Alidade Smooth" })).toBeChecked();
+  fireEvent.click(within(group).getByRole("radio", { name: "OpenStreetMap" }));
+  expect(onBasemapChange).toHaveBeenCalledWith("osm-standard");
+  rerender(<MapToolbar {...toolbarProps} layerMenuOpen basemapId="osm-standard" onBasemapChange={onBasemapChange} onToggleLayer={onToggleLayer} />);
+  fireEvent.click(screen.getByRole("radio", { name: "Alidade Smooth" }));
+  expect(onBasemapChange).toHaveBeenCalledWith("alidade-smooth");
+  expect(onToggleLayer).not.toHaveBeenCalled();
+  rerender(<MapToolbar {...toolbarProps} layerMenuOpen basemapId="alidade-smooth" onBasemapChange={onBasemapChange} />);
+  expect(screen.getByRole("radio", { name: "Alidade Smooth" })).toBeChecked();
+  fireEvent.click(screen.getByRole("radio", { name: "OpenStreetMap" }));
+  expect(onBasemapChange).toHaveBeenLastCalledWith("osm-standard");
+});

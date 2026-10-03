@@ -40,6 +40,7 @@ type optimizationTargetDomain struct {
 // PreparedNetworkOptimizationContext contains all request-scoped information
 // that must remain invariant while candidate azimuths are evaluated.
 type PreparedNetworkOptimizationContext struct {
+	cellContributions            networkCellContributionCache
 	Domain                       optimizationTargetDomain
 	DomainMetadata               OptimizationDomainMetadata
 	RelevantBuildings            map[string]*BuildingFootprint

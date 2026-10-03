@@ -595,6 +595,13 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 	if normalizeNetworkSearchPolicy(req.SearchPolicy) == DeterministicParetoArchiveSearchV1 {
 		return OptimizeNetworkParetoArchiveContext(ctx, req, buildings)
 	}
+	return optimizeNetworkLegacyContext(ctx, req, buildings, true)
+}
+
+// memoizeCells=false is the uncached reference path used by invariance tests.
+func optimizeNetworkLegacyContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex, memoizeCells bool) (NetworkOptimizationResponse, error) {
+	setupDone := timeOptimizationPhase(ctx, "setup")
+	defer setupDone()
 	NormalizeNetworkOptimizationRequest(&req)
 	scenarioFingerprint := NetworkScenarioFingerprint(req)
 	config := req.Optimization
@@ -604,9 +611,14 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 	if buildings == nil {
 		buildings = EmptyBuildingIndex()
 	}
+	prepareDone := timeOptimizationPhase(ctx, "domain_preparation")
 	prepared, prepareErr := prepareNetworkOptimizationContext(ctx, req, buildings)
+	prepareDone()
 	if prepareErr != nil {
 		return NetworkOptimizationResponse{}, prepareErr
+	}
+	if memoizeCells {
+		prepared.cellContributions = make(networkCellContributionCache)
 	}
 	if _, weightErr := NormalizeAvailableOptimizationPriorities(config.Objectives, prepared.ObjectiveAvailability); weightErr != nil {
 		return NetworkOptimizationResponse{}, weightErr
@@ -617,14 +629,28 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 	}
 	baselineAzimuths := append([]float64(nil), azimuths...)
 
+	setupDone()
+	initializationDone := timeOptimizationPhase(ctx, "search_initialization")
 	evaluated := make([]networkOptimizationCandidate, 0, len(req.Towers)*72+1)
-	baselineBreakdown, err := networkCoverageScoreBreakdownPreparedContext(ctx, req, azimuths, buildings, prepared)
+	initializationDone()
+	baselineDone := timeOptimizationPhase(ctx, "baseline")
+	defer baselineDone()
+	baselineBreakdown, err := timedNetworkCandidate(ctx, req, azimuths, buildings, prepared)
+	baselineDone()
 	if err != nil {
 		return NetworkOptimizationResponse{}, err
 	}
 	evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), azimuths...), Stats: baselineBreakdown})
+	searchDone := timeOptimizationPhase(ctx, "search")
+	defer searchDone()
+	startDone := timeOptimizationStep(ctx, "start", 0, -1)
+	defer startDone()
 	for pass := 0; pass < 2; pass++ {
+		passDone := timeOptimizationStep(ctx, "pass", pass, -1)
+		defer passDone()
 		for towerIndex := range req.Towers {
+			coordinateDone := timeOptimizationStep(ctx, "coordinate", pass, towerIndex)
+			defer coordinateDone()
 			bestAzimuth := azimuths[towerIndex]
 			bestScore := math.Inf(-1)
 			bestFeasible := false
@@ -632,15 +658,19 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 				if err := ctx.Err(); err != nil {
 					return NetworkOptimizationResponse{}, err
 				}
+				generationDone := timeOptimizationPhase(ctx, "candidate_generation")
 				testAzimuths := append([]float64(nil), azimuths...)
 				testAzimuths[towerIndex] = float64(candidate * 10)
-				breakdown, err := networkCoverageScoreBreakdownPreparedContext(ctx, req, testAzimuths, buildings, prepared)
+				generationDone()
+				breakdown, err := timedNetworkCandidate(ctx, req, testAzimuths, buildings, prepared)
 				if err != nil {
 					return NetworkOptimizationResponse{}, err
 				}
 				evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), testAzimuths...), Stats: breakdown})
+				constraintDone := timeOptimizationPhase(ctx, "objective_constraints")
 				score := optimizationObjectiveScoreWithAvailability(breakdown, config, prepared.ObjectiveAvailability)
 				feasible := len(OptimizationConstraintViolations(breakdown, config.Constraints)) == 0
+				constraintDone()
 				if (feasible && (!bestFeasible || score > bestScore)) || (!bestFeasible && !feasible && score > bestScore) {
 					bestScore = score
 					bestAzimuth = testAzimuths[towerIndex]
@@ -648,14 +678,20 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 				}
 			}
 			azimuths[towerIndex] = bestAzimuth
+			coordinateDone()
 		}
+		passDone()
 	}
+	startDone()
+	searchDone()
 
-	breakdown, err := networkCoverageScoreBreakdownPreparedContext(ctx, req, azimuths, buildings, prepared)
+	breakdown, err := timedNetworkCandidate(ctx, req, azimuths, buildings, prepared)
 	if err != nil {
 		return NetworkOptimizationResponse{}, err
 	}
 	evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), azimuths...), Stats: breakdown})
+	rankingDone := timeOptimizationPhase(ctx, "ranking_recommendation")
+	defer rankingDone()
 	finalStats, scoreErr := scoreNetworkOptimization(breakdown, config, prepared.ObjectiveAvailability)
 	if scoreErr != nil {
 		return NetworkOptimizationResponse{}, scoreErr
@@ -664,7 +700,12 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 	if scoreErr != nil {
 		return NetworkOptimizationResponse{}, scoreErr
 	}
-	frontier := networkParetoFrontier(evaluated, req.Towers, config, prepared.ObjectiveAvailability)
+	paretoDone := timeOptimizationPhase(ctx, "pareto_archive")
+	frontier := networkParetoFrontierWithTiming(optimizationTiming(ctx), evaluated, req.Towers, config, prepared.ObjectiveAvailability)
+	paretoDone()
+	if timing := optimizationTiming(ctx); timing != nil {
+		timing.Pareto = len(frontier)
+	}
 	recommendedAzimuths := []float64(nil)
 	recommendedStats := finalStats
 	recommended := len(frontier) > 0
@@ -689,7 +730,11 @@ func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest,
 		return NetworkOptimizationResponse{}, weightErr
 	}
 	configuredPriorities := configuredOptimizationPriorities(config.Objectives)
+	rankingDone()
+	summaryDone := timeOptimizationPhase(ctx, "compatibility_tower_summaries")
+	defer summaryDone()
 	optimized, optimizedErr := optimizedTowerResults(ctx, req, recommendedAzimuths, buildings)
+	summaryDone()
 	if optimizedErr != nil {
 		return NetworkOptimizationResponse{}, optimizedErr
 	}
@@ -909,16 +954,12 @@ func networkCoverageScoreBreakdownPreparedContext(ctx context.Context, req Netwo
 			azimuth = azimuths[index]
 		}
 		simReq := networkTowerToStaticRequest(req, tower, azimuth)
-		origin := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
-		towerBreakdown, err := CoverageAreaScoreBreakdownContext(ctx, origin, simReq, buildings)
+		contribution, err := networkCellRFContribution(ctx, simReq, buildings, prepared.cellContributions)
 		if err != nil {
 			return NetworkOptimizationStats{}, err
 		}
-		stats.CoverageScore += towerBreakdown.CoverageScore
-		coverageMap, err := BuildingCoverageMapContext(ctx, origin, simReq, buildings)
-		if err != nil {
-			return NetworkOptimizationStats{}, err
-		}
+		stats.CoverageScore += contribution.Reach
+		coverageMap := contribution.BuildingCoverage
 		coverageIndex := 0
 		for buildingID, rx := range coverageMap {
 			if coverageIndex%64 == 0 {
@@ -940,6 +981,8 @@ func networkCoverageScoreBreakdownPreparedContext(ctx context.Context, req Netwo
 		}
 	}
 
+	aggregationDone := timeOptimizationPhase(ctx, "domain_aggregation")
+	defer aggregationDone()
 	coveredBuildingIDs := make([]string, 0, len(bestRxByBuilding))
 	for buildingID := range bestRxByBuilding {
 		coveredBuildingIDs = append(coveredBuildingIDs, buildingID)
@@ -988,7 +1031,9 @@ func networkCoverageScoreBreakdownPreparedContext(ctx context.Context, req Netwo
 		OverlapRatio:             overlapRatio,
 	}
 	if prepared.RadioQuality != nil && prepared.RadioQualityMetadata.Available {
+		radioDone := timeOptimizationPhase(ctx, "rf_radio_quality")
 		radioMetrics, radioErr := prepared.RadioQuality.evaluate(ctx, azimuths)
+		radioDone()
 		if radioErr != nil {
 			return NetworkOptimizationStats{}, radioErr
 		}
@@ -1895,6 +1940,7 @@ func wallIntersectionsForSegmentContext(ctx context.Context, origin Point, start
 		return []wallIntersection{}, 0, nil
 	}
 	candidates := buildings.SearchRay(start, end)
+	recordOptimizationSpatialQuery(ctx, len(candidates))
 	intersections, err := wallIntersectionsForCandidatesContext(ctx, origin, start, end, candidates)
 	return intersections, len(candidates), err
 }

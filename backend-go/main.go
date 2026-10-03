@@ -238,23 +238,7 @@ func main() {
 		payload, runErr := raytracer.OptimizeAzimuthContext(c.Request.Context(), req, currentBuildingIndex(datasets))
 		writeRFResponse(c, payload, runErr)
 	})
-	router.POST("/api/optimize-network", func(c *gin.Context) {
-		var input raytracer.NetworkOptimizationRequestInput
-		if !bindJSON(c, &input, "network optimization") {
-			return
-		}
-		if input.MissingRequiredTowerFields() {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "each tower must include id, tower_lon, and tower_lat"})
-			return
-		}
-		req := input.ToRequest()
-		if validationError := validateNetworkOptimizationRequest(req); validationError != "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
-			return
-		}
-		payload, runErr := raytracer.OptimizeNetworkContext(c.Request.Context(), req, currentBuildingIndex(datasets))
-		writeRFResponse(c, payload, runErr)
-	})
+	registerNetworkOptimizationRoute(router, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) })
 	router.POST("/api/explain-network-cell", func(c *gin.Context) {
 		var input raytracer.NetworkCellExplanationRequestInput
 		if !bindJSON(c, &input, "network cell explanation") {

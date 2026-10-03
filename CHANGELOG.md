@@ -2,6 +2,14 @@
 
 All notable changes to A.T.O.M are recorded here. The project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and this file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- Avoid retracing unchanged cells during network optimization with a bounded request-local cache of independent RF contributions; preserve the full search, scientific results, fingerprints and existing 60-second deadline.
+
+- Round RF rate-limit retry timing up to the actual window expiry, add hashed-client admission-denial diagnostics, and verify the six-cell Evaluate → Interference → Re-evaluate workflow within the unchanged 20-request budget.
+
 ## [0.10.0] - 2026-10-03
 
 ### Added

@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Measured six-cell workflow costs,
+shared admission policy, retry timing correction, abuse enforcement, and
+scientific invariance evidence." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>RF Request Budget Audit | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="RF Request Budget
+Audit page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#finding-and-resolution"
+      id="toc-finding-and-resolution">Finding and resolution</a></li>
+      <li><a href="#starting-baseline-and-budget-owner"
+      id="toc-starting-baseline-and-budget-owner">Starting baseline and
+      budget owner</a></li>
+      <li><a href="#complete-request-cost-inventory"
+      id="toc-complete-request-cost-inventory">Complete request-cost
+      inventory</a></li>
+      <li><a href="#duplicate-failure-and-cancellation-audit"
+      id="toc-duplicate-failure-and-cancellation-audit">Duplicate,
+      failure, and cancellation audit</a></li>
+      <li><a href="#measured-normal-workflow-trace"
+      id="toc-measured-normal-workflow-trace">Measured normal-workflow
+      trace</a></li>
+      <li><a href="#smallest-fix-and-abuse-boundary"
+      id="toc-smallest-fix-and-abuse-boundary">Smallest fix and abuse
+      boundary</a></li>
+      <li><a href="#regression-and-validation-evidence"
+      id="toc-regression-and-validation-evidence">Regression and
+      validation evidence</a></li>
+      <li><a href="#remaining-limits-and-next-action"
+      id="toc-remaining-limits-and-next-action">Remaining limits and
+      next action</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Request control</span>
+        <h1>RF Request Budget Audit</h1>
+        <p>Measured six-cell workflow costs, shared admission policy,
+retry timing correction, abuse enforcement, and scientific invariance
+evidence.</p>
+        <div class="hero-actions">
+          <a class="button" href="./rf-analysis-request-budget-audit.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Completed 2026-10-03. Scope: request admission, retry timing, and
+diagnostics. No RF equations, payload builders, fingerprints, result
+freshness, interference semantics, or optimizer behavior changed.</p>
+<h2 id="finding-and-resolution">Finding and resolution</h2>
+<p><strong>Classification G — rate limiting is working as
+designed</strong>, with <strong>H — premature advertised retry
+timing</strong> as a confirmed independent defect. The user confirmed
+the observed error occurred <strong>after earlier RF runs</strong>. Each
+six-cell network evaluation costs seven protected HTTP requests.
+Evaluate → Interference → Re-evaluate costs <strong>15</strong>, leaving
+five of the default 20 units. A prior six-cell evaluation/optimization
+plus that sequence requires <strong>22</strong> within one window:
+admission stops at attempted request 21. This explains exhaustion
+without duplicate dispatch or an incorrectly low fresh-workflow
+budget.</p>
+<p>Keep the limit, bucket structure, attempt accounting, and visible
+error. Fix the demonstrated timing defect by rounding relative
+reset/retry seconds <strong>up</strong>, and add structured
+admission-denial diagnostics. Raising capacity, consolidating unlike
+scientific responses into a new API, or splitting expensive workloads is
+unsupported by this evidence. Exhaustion after earlier activity remains
+an intentional 429 requiring a user-triggered retry after expiry.</p>
+<h2 id="starting-baseline-and-budget-owner">Starting baseline and budget
+owner</h2>
+<ul>
+<li>Repository <code>/Users/berkunsal/Desktop/urban-ray-tracer</code>,
+branch <code>main</code>, HEAD
+<code>9617f37dd74de1843731cbefefd3c00a83c07f13</code>, VERSION
+<code>0.10.0</code>.</li>
+<li><code>git status --short</code> and <code>git diff --stat</code>
+were empty. No pre-existing changes.</li>
+<li>Baseline:
+<code>go test ./... -run 'TestRF|TestInterference|TestCombinedSector' -count=1</code>
+passed; targeted frontend workflow/API tests passed <strong>32
+tests</strong>.</li>
+<li>Owner: <code>backend-go/rf_protection.go</code>,
+<code>rfRequestLimiter.acquire</code>, <code>middlewareFor</code>, and
+<code>protectExpensiveRFRoutes</code>; installed globally in
+<code>backend-go/main.go</code>. No frontend budget owner or
+reverse-proxy RF limiter was found.</li>
+<li>Defaults: <code>RF_REQUESTS_PER_MINUTE=20</code>, 60-second
+client-anchored fixed window; <code>MAX_CONCURRENT_RF_REQUESTS=2</code>
+globally, <code>MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT=1</code>,
+<code>RF_REQUEST_TIMEOUT_SECONDS=60</code>. Defaults are in Go,
+Dockerfile, Compose, API/deployment documentation. Missing, malformed,
+zero, or negative environment values use the default through
+<code>envInt</code>; the low-level limiter constructor clamps values
+below one to one. The live <code>atom-app</code> container inspection
+confirmed 20/2/1 and unset <code>TRUSTED_PROXIES</code>; it was not
+rebuilt by this audit.</li>
+<li>Key: Gin <code>ClientIP()</code>, shared across endpoints, browser
+tabs, projects, users, and sessions at the same peer IP, local to one
+limiter/process. Forwarding headers are trusted only for configured
+<code>TRUSTED_PROXIES</code>; the production router explicitly disables
+proxy trust by default. Vite proxies <code>/api</code> to
+<code>localhost:8080</code>, which can pool browsers behind its peer
+address. Existing container logs show the socket peer
+<code>192.168.117.1</code>; there is no session-specific bucket. IPv4
+and IPv6 loopback are separate IP identities; mapped IPv4 addresses are
+normalized by Gin's IP parsing.</li>
+<li>A client's first attempt anchors the window; the next request
+at/after 60 seconds resets the counter. Denials do not extend expiry.
+Process restart discards state. The bounded 4096-client state table
+evicts an inactive oldest entry; all-active overflow shares fallback
+state. These existing exceptional behaviors are unchanged.</li>
+</ul>
+<p>Exact existing message: <strong>RF analysis request budget exceeded;
+retry after the current rate-limit window</strong>. Production emission
+is the resource-prefixed message in
+<code>rfRequestLimiter.acquire</code>.
+<code>frontend-react/src/utils/apiClient.js</code>
+(<code>requestJSON</code>) throws the server JSON <code>error</code>,
+and App callers store its message;
+<code>frontend-react/src/components/WorkspaceChrome.jsx</code> displays
+it in the CommandBar global alert or ToolDrawer alert. The literal also
+appears in the existing mocked browser regression in
+<code>frontend-react/e2e/workspace.spec.js</code>; the new audit tests
+preserve it. It is a real backend 429, not a different error mislabeled
+by the UI.</p>
+<p>Budget denial returns <code>429</code>,
+<code>{"error":"RF analysis request budget exceeded; retry after the current rate-limit window"}</code>,
+<code>Cache-Control: no-store</code>, and <code>RateLimit-Limit</code>,
+<code>RateLimit-Remaining</code>, <code>RateLimit-Reset</code>,
+<code>Retry-After</code>. Budget denial uses relative seconds until
+expiry; concurrency and global-capacity denials use
+<code>Retry-After: 1</code> and distinct messages. Timeout is a separate
+504. No protocol or UI message changes were needed.</p>
+<h2 id="complete-request-cost-inventory">Complete request-cost
+inventory</h2>
+<p>Each protected POST attempt costs <strong>one HTTP budget
+unit</strong>, independent of how many internal cells, samples,
+candidates, or rays are computed. There are 19 protected paths. The
+table covers every path and the browser operation cost, with N selected
+cells (maximum six). All RF operations below require explicit user
+actions; the per-cell ray phase is a deliberate continuation of that
+action.</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Endpoint(s)</th>
+<th>Frontend caller</th>
+<th>HTTP requests / units</th>
+<th>Overlap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single-cell propagation + gaps</td>
+<td><code>/api/analyze-sector</code></td>
+<td>App <code>runSimulation</code> →
+<code>simulateForSettings</code></td>
+<td>1 / 1</td>
+<td>RF channel supersedes older work</td>
+</tr>
+<tr>
+<td>Legacy standalone rays / gaps</td>
+<td><code>/api/simulate</code>, <code>/api/coverage-gaps</code></td>
+<td>rays via App <code>simulateRaysForSettings</code>; standalone gaps
+API remains supported</td>
+<td>1 / 1 each</td>
+<td>HTTP guard applies</td>
+</tr>
+<tr>
+<td>Evaluate Network</td>
+<td><code>/api/evaluate-network</code>, then N
+<code>/api/simulate</code></td>
+<td>App <code>evaluateNetwork</code>,
+<code>runNetworkSimulationQueue</code></td>
+<td>N+1 / N+1; <strong>7 for six cells</strong></td>
+<td>Sequential phases/cells</td>
+</tr>
+<tr>
+<td>Network optimization</td>
+<td><code>/api/optimize-network</code>, then N
+<code>/api/simulate</code></td>
+<td>App <code>optimizeNetwork</code></td>
+<td>N+1 / N+1; <strong>7 for six cells</strong></td>
+<td>Sequential phases/cells</td>
+</tr>
+<tr>
+<td>Single-cell optimization</td>
+<td><code>/api/optimize-azimuth</code>, then
+<code>/api/analyze-sector</code></td>
+<td>App <code>optimizeAzimuth</code></td>
+<td>2 / 2</td>
+<td>Sequential</td>
+</tr>
+<tr>
+<td>Analyze Interference</td>
+<td><code>/api/interference</code></td>
+<td>App <code>analyzeInterference</code></td>
+<td><strong>1 / 1 for six cells</strong></td>
+<td>RF channel</td>
+</tr>
+<tr>
+<td>Path diagnostic</td>
+<td><code>/api/path-profile</code></td>
+<td>App <code>analyzePathProfile</code></td>
+<td>1 / 1</td>
+<td>Separate request channel</td>
+</tr>
+<tr>
+<td>Atmospheric reference</td>
+<td><code>/api/sub-thz-reference</code></td>
+<td>App <code>analyzeSubTHZReference</code></td>
+<td>1 / 1</td>
+<td>Separate request channel</td>
+</tr>
+<tr>
+<td>P.1411 reference</td>
+<td><code>/api/sub-thz-p1411-reference</code></td>
+<td>App <code>analyzeP1411Reference</code></td>
+<td>1 / 1</td>
+<td>Separate request channel</td>
+</tr>
+<tr>
+<td>Measurement reference validation</td>
+<td><code>/api/sub-thz-validation</code></td>
+<td>App <code>analyzeMeasurementValidation</code></td>
+<td>1 / 1</td>
+<td>Separate request channel</td>
+</tr>
+<tr>
+<td>Material reference</td>
+<td><code>/api/sub-thz-material-reference</code></td>
+<td>App <code>analyzeMaterialReference</code></td>
+<td>1 / 1</td>
+<td>Separate request channel</td>
+</tr>
+<tr>
+<td>Reflection reference</td>
+<td><code>/api/sub-thz-reflection-reference</code></td>
+<td>App <code>analyzeSpecularReflectionReference</code></td>
+<td>1 / 1</td>
+<td>Separate request channel</td>
+</tr>
+<tr>
+<td>Signal surface / export</td>
+<td><code>/api/coverage-surface</code> (including format query)</td>
+<td>App <code>analyzeCoverageSurface</code>,
+<code>exportCoverageSurface</code></td>
+<td>1 / 1 per generation or export</td>
+<td>Export can overlap; no reuse on export</td>
+</tr>
+<tr>
+<td>Batch experiment submission</td>
+<td><code>/api/processes/batch-experiment/execution</code></td>
+<td>ExperimentPanel <code>start</code></td>
+<td>1 / 1; internal runs cost zero HTTP units</td>
+<td>Separate bounded worker queue</td>
+</tr>
+<tr>
+<td>Building entry</td>
+<td><code>/api/building-entry-analysis</code></td>
+<td>App <code>analyzeBuildingEntry</code></td>
+<td>1 / 1, or 0 if current cached result</td>
+<td>Separate channel</td>
+</tr>
+<tr>
+<td>Cell explanation</td>
+<td><code>/api/explain-network-cell</code></td>
+<td>App <code>explainNetworkCell</code></td>
+<td>1 / 1 on cache miss, 0 on hit</td>
+<td>RF channel</td>
+</tr>
+<tr>
+<td>Site recommendation</td>
+<td><code>/api/recommend-sites</code></td>
+<td>App <code>recommendSites</code></td>
+<td>1 / 1</td>
+<td>RF channel</td>
+</tr>
+<tr>
+<td>Canonical measurement evaluation</td>
+<td><code>/api/measurements/evaluate</code></td>
+<td>App <code>evaluateMeasurements</code></td>
+<td>1 / 1</td>
+<td>RF channel</td>
+</tr>
+<tr>
+<td>Load, tool/drawer switching, result inspection, review/report
+refresh, priority/Pareto inspection</td>
+<td>GET metadata/inventory/core APIs or local state</td>
+<td>App effects, retained results, report/history hooks</td>
+<td><strong>0 protected RF requests / 0 units</strong></td>
+<td>GETs may overlap</td>
+</tr>
+<tr>
+<td>Explicit historical rerun</td>
+<td><code>/api/analyze-sector</code> or
+<code>/api/optimize-network</code> or
+<code>/api/optimize-azimuth</code></td>
+<td>App historical rerun handler</td>
+<td>1 / 1 per explicit rerun</td>
+<td>User initiated</td>
+</tr>
+</tbody>
+</table>
+<p>Network evaluation's backend response provides network score/coverage
+metadata, not the per-cell GeoJSON ray responses required by the map.
+The existing network endpoint therefore does not replace the N ray calls
+while preserving current outputs. Their ordering and profile indices are
+deliberate and tested, not duplicate evaluations of the same
+endpoint/payload.</p>
+<p>Interference sends one whole-network payload.
+<code>AnalyzeInterferenceContext</code> recomputes propagation/link
+quantities at interference grid and demand samples; it does not reuse
+ray responses, call the propagation HTTP routes, or acquire N client
+budget units. Existing network results supply configuration/azimuth
+context, not an extra dispatch. Optimizer candidate simulations and
+experimental worker runs invoke raytracer functions directly and do not
+reenter HTTP middleware. No per-internal-evaluation misclassification
+was found.</p>
+<h2 id="duplicate-failure-and-cancellation-audit">Duplicate, failure,
+and cancellation audit</h2>
+<ul>
+<li>React StrictMode, render/effect dependencies, tool changes, drawer
+open/close, and result inspection do not initiate RF POSTs. Initial load
+can repeat unprotected GETs in development StrictMode. The six-cell
+StrictMode regression records exactly 7 → 8 → 15 protected calls and
+identical repeat payloads.</li>
+<li>The primary actions disable while running; handlers invoke one
+execution path. <code>useRequestCoordinator.begin</code> aborts the
+previous channel before creating the new request; it does not retry.
+Network requests await each cell sequentially. Already-aborted later
+fetches never reaching the server cannot consume its budget.</li>
+<li><code>apiClient</code> has no retry loop or frontend rate throttle.
+Existing core refresh and experiment status polling are GETs outside the
+RF budget. Reports, local persistence, fingerprints, and stale-state
+effects do not schedule scientific refreshes.</li>
+<li>Attempts are charged <strong>before</strong> handler JSON
+validation/computation and <strong>before</strong> checking per-client
+concurrency/global slots. Consequently validation failures, 422s,
+backend 500s, 504s, in-flight duplicates rejected as busy, and
+global-capacity denials count. This is the existing anti-abuse attempt
+policy, not success-only accounting.</li>
+<li>Admitted cancellations/disconnects retain the charge and release
+active/global slots on handler return; cancelled
+<code>writeRFResponse</code> does not write a status/body. A test's
+synthetic cancelled context therefore need not present a transport-level
+499; the test labels that case separately from HTTP failure
+statuses.</li>
+<li>Exhausted-budget denials cost zero additional units. API-key
+failures and CORS/HTTPS rejections before RF admission cost zero.
+Oversized JSON bodies <strong>do count</strong>:
+<code>limitRequestBody</code> wraps the reader early, but decoding
+detects the limit inside the handler after admission and returns 413. No
+cancellation refunds were introduced; refunds would enable repeated
+expensive abort/restart abuse.</li>
+</ul>
+<h2 id="measured-normal-workflow-trace">Measured normal-workflow
+trace</h2>
+<p>Isolated real Go backend, full Ankara dataset (161784 footprints),
+six controlled NR cell selection records, real RF handlers, production
+frontend. RF responses were <strong>not mocked</strong>; only inventory
+selection and external basemap traffic were controlled. Start with a
+fresh process/bucket. The browser test records request events, response
+headers, completion, payloads, and response SHA-256; budget before/after
+is derived from the real <code>RateLimit-Remaining</code> headers.
+<code>audit-N</code> IDs are deterministic test correlation IDs, not
+server-supplied IDs. Production denial ID 21 matches the isolated
+sequence.</p>
+<p>Trace on 2026-10-03, timestamps in Europe/Istanbul (UTC+03). E =
+first Evaluate, I = Analyze Interference, R = deliberate re-evaluate, A
+= deliberate rapid third evaluation. All responses below completed;
+<strong>zero cancellations</strong>. Load, select six cells, inspect
+Results, open Analyze, review Results, close/open drawer, and return to
+Propagation each added <strong>zero</strong> requests.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Timestamp</th>
+<th>Owner</th>
+<th>Endpoint</th>
+<th>Status</th>
+<th>Counter before → after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>audit-1</td>
+<td>18:48:25.373</td>
+<td>E</td>
+<td><code>/api/evaluate-network</code></td>
+<td>200</td>
+<td>0 → 1</td>
+</tr>
+<tr>
+<td>audit-2</td>
+<td>18:48:26.149</td>
+<td>E</td>
+<td><code>/api/simulate</code> cell 1</td>
+<td>200</td>
+<td>1 → 2</td>
+</tr>
+<tr>
+<td>audit-3</td>
+<td>18:48:26.180</td>
+<td>E</td>
+<td><code>/api/simulate</code> cell 2</td>
+<td>200</td>
+<td>2 → 3</td>
+</tr>
+<tr>
+<td>audit-4</td>
+<td>18:48:26.212</td>
+<td>E</td>
+<td><code>/api/simulate</code> cell 3</td>
+<td>200</td>
+<td>3 → 4</td>
+</tr>
+<tr>
+<td>audit-5</td>
+<td>18:48:26.234</td>
+<td>E</td>
+<td><code>/api/simulate</code> cell 4</td>
+<td>200</td>
+<td>4 → 5</td>
+</tr>
+<tr>
+<td>audit-6</td>
+<td>18:48:26.251</td>
+<td>E</td>
+<td><code>/api/simulate</code> cell 5</td>
+<td>200</td>
+<td>5 → 6</td>
+</tr>
+<tr>
+<td>audit-7</td>
+<td>18:48:26.282</td>
+<td>E</td>
+<td><code>/api/simulate</code> cell 6</td>
+<td>200</td>
+<td>6 → 7</td>
+</tr>
+<tr>
+<td>audit-8</td>
+<td>18:48:27.329</td>
+<td>I</td>
+<td><code>/api/interference</code></td>
+<td>200</td>
+<td>7 → 8</td>
+</tr>
+<tr>
+<td>audit-9</td>
+<td>18:48:28.057</td>
+<td>R</td>
+<td><code>/api/evaluate-network</code></td>
+<td>200</td>
+<td>8 → 9</td>
+</tr>
+<tr>
+<td>audit-10</td>
+<td>18:48:28.895</td>
+<td>R</td>
+<td><code>/api/simulate</code> cell 1</td>
+<td>200</td>
+<td>9 → 10</td>
+</tr>
+<tr>
+<td>audit-11</td>
+<td>18:48:28.922</td>
+<td>R</td>
+<td><code>/api/simulate</code> cell 2</td>
+<td>200</td>
+<td>10 → 11</td>
+</tr>
+<tr>
+<td>audit-12</td>
+<td>18:48:28.950</td>
+<td>R</td>
+<td><code>/api/simulate</code> cell 3</td>
+<td>200</td>
+<td>11 → 12</td>
+</tr>
+<tr>
+<td>audit-13</td>
+<td>18:48:28.974</td>
+<td>R</td>
+<td><code>/api/simulate</code> cell 4</td>
+<td>200</td>
+<td>12 → 13</td>
+</tr>
+<tr>
+<td>audit-14</td>
+<td>18:48:28.991</td>
+<td>R</td>
+<td><code>/api/simulate</code> cell 5</td>
+<td>200</td>
+<td>13 → 14</td>
+</tr>
+<tr>
+<td>audit-15</td>
+<td>18:48:29.019</td>
+<td>R</td>
+<td><code>/api/simulate</code> cell 6</td>
+<td>200</td>
+<td>14 → 15</td>
+</tr>
+<tr>
+<td>audit-16</td>
+<td>18:48:29.457</td>
+<td>A</td>
+<td><code>/api/evaluate-network</code></td>
+<td>200</td>
+<td>15 → 16</td>
+</tr>
+<tr>
+<td>audit-17</td>
+<td>18:48:30.337</td>
+<td>A</td>
+<td><code>/api/simulate</code> cell 1</td>
+<td>200</td>
+<td>16 → 17</td>
+</tr>
+<tr>
+<td>audit-18</td>
+<td>18:48:30.378</td>
+<td>A</td>
+<td><code>/api/simulate</code> cell 2</td>
+<td>200</td>
+<td>17 → 18</td>
+</tr>
+<tr>
+<td>audit-19</td>
+<td>18:48:30.418</td>
+<td>A</td>
+<td><code>/api/simulate</code> cell 3</td>
+<td>200</td>
+<td>18 → 19</td>
+</tr>
+<tr>
+<td>audit-20</td>
+<td>18:48:30.440</td>
+<td>A</td>
+<td><code>/api/simulate</code> cell 4</td>
+<td>200</td>
+<td>19 → 20</td>
+</tr>
+<tr>
+<td>audit-21</td>
+<td>18:48:30.453</td>
+<td>A</td>
+<td><code>/api/simulate</code> cell 5</td>
+<td>429</td>
+<td>20 → 20</td>
+</tr>
+</tbody>
+</table>
+<p>Request 21 returned the exact existing error, remaining 0, and
+<code>Retry-After: 55</code>. Cell 6 was not dispatched after the error;
+tool switching afterwards caused no automatic retry. The normal sequence
+passed before and after the fix with the same <strong>15 HTTP requests /
+15 units</strong>. Its seven re-evaluation payloads and full response
+body hashes match the original seven.</p>
+<h2 id="smallest-fix-and-abuse-boundary">Smallest fix and abuse
+boundary</h2>
+<p>The old conversion truncated fractional reset seconds: at elapsed 1
+ns, a full bucket advertised 59 seconds despite nearly 60 seconds
+remaining; at 1.5 s it advertised 58 despite 58.5 remaining. A
+deterministic test fails on the original implementation. Integer ceiling
+division fixes both <code>RateLimit-Reset</code> and budget
+<code>Retry-After</code> without changing the actual window. The test
+follows the advertised delay exactly and verifies admission after
+expiry. Budget 20 → 20, window 60 s → 60 s, bucket structure one shared
+RF bucket → one shared RF bucket; separate building transfer/feature
+buckets remain separate.</p>
+<p>Denials now log <code>rate_limit_class</code>,
+<code>operation</code>, limiter-local atomic <code>request_id</code>,
+process-local keyed <code>client_key_hash</code>,
+<code>allowed=false</code>, <code>remaining</code>,
+<code>retry_after_seconds</code>, and <code>reason</code> through
+<code>slog</code>. No request payload or peer IP is logged by this
+addition; successful admissions do not add limiter logs. IDs/hashes are
+local to a limiter/process and are not new response headers. Existing
+Gin access logging is unchanged.</p>
+<p>History commit <code>a6234d8</code> introduced per-client attempts,
+global/per-client concurrency, API-key checks, and cancellation
+deadlines to protect expensive CPU work and preserve capacity for other
+clients. Keeping all expensive RF entry points under the same aggregate
+budget respects that purpose. Internal computational limits remain
+separate from the HTTP budget. Normal capacity is still two six-cell
+evaluations plus one interference (15 units), with five additional
+protected attempts; three six-cell evaluations alone would require 21
+units. Burst exhaustion is expected, including across tabs behind the
+same IP. Request count and admitted RF compute are unchanged. The
+middleware adds one atomic increment per request and hashing/logging
+only on denial; no separate performance benchmark was run.</p>
+<h2 id="regression-and-validation-evidence">Regression and validation
+evidence</h2>
+<ul>
+<li><code>backend-go/rf_budget_audit_test.go</code>: environment
+defaults/overrides and all 19 route classifications; fresh 15-unit
+workflow; repeated denial at unit 21; exact JSON/429/cache/retry
+headers; fixed-window reset; fractional retry rounding; failure/cancel
+accounting; actual authentication/JSON/body-size admission ordering;
+concurrency attempts and global-capacity denial accounting; idempotent
+release; trusted/untrusted proxy and IPv4/IPv6 identity; denial log
+fields and raw-IP absence.</li>
+<li>Scientific equivalence tests execute actual simulation, network
+evaluation, optimizer, and interference functions with and without
+protection. Complete response bodies (including scientific values and
+available fingerprints) are byte-identical, and each outer HTTP
+operation costs exactly one unit even with internal optimizer
+simulations.</li>
+<li><code>frontend-react/src/App.workflow.test.jsx</code>: StrictMode,
+initial render, six-cell Evaluate, Interference, inspection, tool
+switching, drawer close/reopen, and deliberate re-evaluation; exact
+15-call sequence and request payload equivalence.</li>
+<li><code>frontend-react/e2e/rf-budget.spec.js</code>: isolated
+real-backend normal/abuse acceptance and complete trace attachment.
+Repeated actual RF response body hashes and payloads are identical. No
+UI implementation changed.</li>
+<li>Frontend lint, all <strong>357 unit/workflow tests across 65
+files</strong>, and production build passed. Existing bundle-size
+warning remains.</li>
+<li>Responsive request/freshness/error E2E selection: <strong>14 passed,
+6 intentionally skipped</strong> by existing desktop-only tests across
+four viewport projects; real budget E2E <strong>1 passed</strong>.</li>
+<li>Backend
+<code>go vet ./... &amp;&amp; go test -race ./... -count=1</code> passed
+(including the full raytracer suite); the additional IPv4/IPv6 admission
+test passed under
+<code>go test -race . -run 'TestRFBudget' -count=1</code>. Core Lab
+adapter <code>go vet ./... &amp;&amp; go test -race ./...</code>
+passed.</li>
+<li><code>sh docs/build-reference-pages.sh</code>,
+<code>/tmp/atom-rf-budget-docs-venv/bin/python docs/validate_docs.py</code>,
+<code>python3 scripts/versioning.py check</code>, and
+<code>git diff --check</code> passed. The isolated Python environment
+installs the pinned, hashed <code>docs/requirements.txt</code> because
+the default Python lacks PyYAML. Existing Pandoc MathML deprecation
+warnings remain.</li>
+</ul>
+<h2 id="remaining-limits-and-next-action">Remaining limits and next
+action</h2>
+<p>The precise old error event is not reconstructable: retained
+live-container logs contain no 429 for that event. The user-confirmed
+preceding activity, code accounting, isolated measured trace, and
+deterministic exhaustion test establish the mechanism without inventing
+earlier requests. This resolves the investigation and premature retry
+defect; it intentionally does not eliminate legitimate rate-limit
+responses after earlier runs. Large batch jobs use existing worker/queue
+controls; multi-replica deployments still require a shared gateway
+budget. Native IP pooling behind proxies/NAT remains intentional unless
+operators explicitly configure trusted proxies.</p>
+<p>Changes are in the working tree; the existing local container remains
+on its previous build. Review the change and rebuild/restart the local
+container when ready. After a legitimate budget hit, wait for the
+advertised expiry and retry deliberately. No further UI, RF-model, or
+measurement research work is part of this resolution.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

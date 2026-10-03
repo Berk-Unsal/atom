@@ -522,6 +522,11 @@ func OptimizationConstraintViolations(stats NetworkOptimizationStats, constraint
 }
 
 func networkParetoFrontier(candidates []networkOptimizationCandidate, towers []NetworkTowerRequest, config OptimizationConfig, availability ...map[string]OptimizationObjectiveAvailability) []NetworkParetoSolution {
+	return networkParetoFrontierWithTiming(nil, candidates, towers, config, availability...)
+}
+
+func networkParetoFrontierWithTiming(timing *NetworkOptimizationTiming, candidates []networkOptimizationCandidate, towers []NetworkTowerRequest, config OptimizationConfig, availability ...map[string]OptimizationObjectiveAvailability) []NetworkParetoSolution {
+	dominanceDone := timing.Measure("pareto_dominance")
 	deduplicated := make([]networkOptimizationCandidate, 0, len(candidates))
 	seen := make(map[string]struct{}, len(candidates))
 	for _, candidate := range candidates {
@@ -578,12 +583,21 @@ func networkParetoFrontier(candidates []networkOptimizationCandidate, towers []N
 		}
 		frontier = append(frontier, solution)
 	}
+	dominanceDone()
+	if timing != nil {
+		timing.FeasibleArchive = len(deduplicated)
+		timing.ScoredCandidates = len(scored)
+		timing.ParetoCandidates = len(frontier)
+		timing.RankedCandidates = len(frontier)
+	}
+	rankDone := timing.Measure("pareto_ranking")
 	sort.SliceStable(frontier, func(i, j int) bool {
 		if frontier[i].Score == frontier[j].Score {
 			return paretoTowerKey(frontier[i]) < paretoTowerKey(frontier[j])
 		}
 		return frontier[i].Score > frontier[j].Score
 	})
+	rankDone()
 	if len(frontier) > 25 {
 		frontier = frontier[:25]
 	}

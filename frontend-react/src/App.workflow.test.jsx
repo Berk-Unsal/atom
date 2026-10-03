@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { StrictMode } from "react";
 
 const api = vi.hoisted(() => ({
   getJSON: vi.fn(),
@@ -622,6 +623,44 @@ describe("App planning workflow", () => {
       ],
       constraints: { max_overlap_buildings: 5 },
     });
+  });
+
+  it("dispatches the six-cell RF workflow exactly once per action under StrictMode", async () => {
+    const sixCells = { type: "FeatureCollection", features: Array.from({ length: 6 }, (_, index) =>
+      point(`tower-${index + 1}`, String(101 + index), 32.85 + index * 0.001, 39.92 + index * 0.001)) };
+    api.getJSON.mockImplementation((path) => Promise.resolve(path === "/api/towers" ? sixCells : {}));
+    api.postJSON.mockImplementation((path) => Promise.resolve(
+      path === "/api/evaluate-network" ? networkOptimizationPayload : simulationPayload,
+    ));
+    render(<StrictMode><App /></StrictMode>);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    expect(api.postJSON).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 1 selected" })).toBeInTheDocument());
+    for (let index = 1; index < 6; index += 1) {
+      fireEvent.click(screen.getByRole("button", { name: `Select map tower ${101 + index}` }));
+    }
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 6 selected" })).toBeInTheDocument());
+    expect(api.postJSON).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Evaluate Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    expect(api.postJSON.mock.calls.map(([path]) => path)).toEqual(["/api/evaluate-network", ...Array(6).fill("/api/simulate")]);
+
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("button", { name: "Close tool drawer" }));
+    openWorkspaceTool("Interference");
+    expect(api.postJSON).toHaveBeenCalledTimes(7);
+    fireEvent.click(screen.getByRole("button", { name: "Analyze Interference", exact: true }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Analyze Interference", exact: true })).toBeEnabled());
+    expect(api.postJSON.mock.calls.map(([path]) => path)).toEqual(["/api/evaluate-network", ...Array(6).fill("/api/simulate"), "/api/interference"]);
+    openWorkspaceTool("Results");
+    openWorkspaceTool("Propagation");
+    expect(api.postJSON).toHaveBeenCalledTimes(8);
+    fireEvent.click(screen.getByRole("button", { name: "Evaluate Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    expect(api.postJSON).toHaveBeenCalledTimes(15);
+    expect(api.postJSON.mock.calls.slice(8).map(([path, payload]) => [path, payload]))
+      .toEqual(api.postJSON.mock.calls.slice(0, 7).map(([path, payload]) => [path, payload]));
   });
 
   it("labels a single network evaluation without implying a failed Pareto search", async () => {

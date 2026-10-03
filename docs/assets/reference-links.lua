@@ -2,6 +2,8 @@ local first_title_removed = false
 
 local page_routes = {
   ["api.md"] = "api.html",
+  ["rf-analysis-request-budget-audit.md"] = "rf-analysis-request-budget-audit.html",
+  ["network-optimization-deadline-audit.md"] = "network-optimization-deadline-audit.html",
   ["algorithms.md"] = "algorithms.html",
   ["features.md"] = "features.html",
   ["visualization.md"] = "visualization.html",

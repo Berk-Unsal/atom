@@ -4,10 +4,13 @@ import (
 	"context"
 	"crypto/sha256"
 	"crypto/subtle"
+	"hash/maphash"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -57,6 +60,9 @@ type rfRequestLimiter struct {
 	clients              map[string]*rfClientState
 	overflow             rfClientState
 	now                  func() time.Time
+	logger               *slog.Logger
+	clientHashSeed       maphash.Seed
+	requestSequence      atomic.Uint64
 }
 
 func newRFRequestLimiter(capacity int) *rfRequestLimiter {
@@ -82,6 +88,8 @@ func newRFRequestLimiterWithBudget(capacity, perClientConcurrency, requestsPerMi
 		requestsPerMinute:    requestsPerMinute,
 		clients:              make(map[string]*rfClientState),
 		now:                  time.Now,
+		logger:               slog.Default(),
+		clientHashSeed:       maphash.MakeSeed(),
 	}
 }
 
@@ -92,11 +100,13 @@ func (limiter *rfRequestLimiter) middleware() gin.HandlerFunc {
 func (limiter *rfRequestLimiter) middlewareFor(resource string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		clientID := c.ClientIP()
+		requestID := limiter.requestSequence.Add(1)
 		release, remaining, resetSeconds, retryAfter, reason := limiter.acquire(clientID, resource)
 		c.Header("RateLimit-Limit", strconv.Itoa(limiter.requestsPerMinute))
 		c.Header("RateLimit-Remaining", strconv.Itoa(remaining))
 		c.Header("RateLimit-Reset", strconv.Itoa(resetSeconds))
 		if reason != "" {
+			limiter.logDenial(c, resource, clientID, requestID, remaining, retryAfter, reason)
 			c.Header("Cache-Control", "no-store")
 			c.Header("Retry-After", strconv.Itoa(retryAfter))
 			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": reason})
@@ -112,11 +122,21 @@ func (limiter *rfRequestLimiter) middlewareFor(resource string) gin.HandlerFunc 
 			c.Next()
 		default:
 			release()
+			limiter.logDenial(c, resource, clientID, requestID, remaining, 1, "capacity_busy")
 			c.Header("Cache-Control", "no-store")
 			c.Header("Retry-After", "1")
 			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": resource + " capacity is busy; retry shortly"})
 		}
 	}
+}
+
+func (limiter *rfRequestLimiter) logDenial(c *gin.Context, resource, clientID string, requestID uint64, remaining, retryAfter int, reason string) {
+	// A process-local keyed hash correlates a bucket without logging peer addresses.
+	// Log admission denials only; successful requests already have Gin access logs.
+	limiter.logger.Warn("request admission denied",
+		"rate_limit_class", resource, "operation", c.FullPath(),
+		"request_id", requestID, "client_key_hash", strconv.FormatUint(maphash.String(limiter.clientHashSeed, clientID), 16),
+		"allowed", false, "remaining", remaining, "retry_after_seconds", retryAfter, "reason", reason)
 }
 
 func (limiter *rfRequestLimiter) acquire(clientID string, resource string) (func(), int, int, int, string) {
@@ -130,7 +150,9 @@ func (limiter *rfRequestLimiter) acquire(clientID string, resource string) (func
 		state.requests = 0
 	}
 	state.lastSeen = now
-	resetSeconds := int(state.windowStart.Add(time.Minute).Sub(now).Seconds())
+	// Round up: integer Retry-After must never advertise an expiry before reset.
+	resetDuration := state.windowStart.Add(time.Minute).Sub(now)
+	resetSeconds := int((resetDuration + time.Second - 1) / time.Second)
 	if resetSeconds < 1 {
 		resetSeconds = 1
 	}

@@ -455,6 +455,7 @@ func buildPropagationPathGeometryContextWithOptions(ctx context.Context, origin,
 	}
 	geometry.available = true
 	candidates := buildings.SearchRay(origin, endpoint)
+	recordOptimizationSpatialQuery(ctx, len(candidates))
 	for _, candidate := range candidates {
 		if candidate == nil || geometry.isExcludedBuilding(candidate) {
 			continue

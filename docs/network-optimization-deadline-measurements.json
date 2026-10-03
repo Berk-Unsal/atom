@@ -1,0 +1,4715 @@
+{
+  "audit_date": "2026-10-03",
+  "timezone": "Europe/Istanbul",
+  "baseline": {
+    "branch": "main",
+    "head": "9617f37dd74de1843731cbefefd3c00a83c07f13",
+    "version": "0.10.0",
+    "preexisting_tracked_diff": {
+      "files": 10,
+      "insertions": 192,
+      "deletions": 21
+    }
+  },
+  "definition_notes": [
+    "rf_evaluations counts network evaluation calls/aggregations, not independent expensive cell cache misses.",
+    "phase timers are nested and must not be summed.",
+    "steps.Elapsed is nanoseconds; other fields state their units.",
+    "before cell counters are exact loop-derived counts, not newly captured collector fields.",
+    "initial host scaling and first container natural run partly overlapped; subsequent repeats were isolated."
+  ],
+  "live_reproduction": {
+    "canonical_five_cells": {
+      "status": 504,
+      "elapsed_seconds": 60.006305
+    },
+    "affected_six_cells": {
+      "status": 504,
+      "elapsed_seconds": 60.008531
+    },
+    "error": "RF analysis exceeded its request deadline"
+  },
+  "historical": {
+    "tag": "v0.9.3",
+    "commit": "9db0e9baa5c333be0fa0efcd2e694de908f98a05",
+    "elapsed_seconds": 74.821749,
+    "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+    "scientific_code_and_dataset_identical_to_head": true
+  },
+  "rows": [
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 175.473099,
+        "median": 0.228001,
+        "min": 0.116542,
+        "p90": 34.252758,
+        "p95": 38.406524
+      },
+      "candidate_proposals": 434,
+      "case": "6-2.6",
+      "cell_memo_hits": 2388,
+      "cell_memo_misses": 216,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1581,
+        "relevant_demand_entities": 99,
+        "relevant_residential_entities": 944
+      },
+      "duplicate_network_aggregations": 83,
+      "elapsed_ms": 5947.743775,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 175.481433,
+        "candidate_generation": 0.055843,
+        "cell_memo_lookup": 1.26195,
+        "compatibility_tower_summaries": 92.923945,
+        "decode_validation": 0.095001,
+        "domain_aggregation": 35.263175,
+        "domain_preparation": 1.302922,
+        "objective_constraints": 1.302967,
+        "pareto_archive": 29.657157,
+        "ranking_recommendation": 99.444928,
+        "response_serialization": 0.239876,
+        "rf_building_coverage": 2165.747308,
+        "rf_reach": 3509.000867,
+        "search": 5577.942836,
+        "search_initialization": 0.004667,
+        "setup": 1.347464
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,170.0,80.0,90.0",
+      "request_sha256": "fefe76173ebfabd3f8f6fc92551ff6649f34aa7b50217d5ecb06216cd2c3d171",
+      "response_sha256": "510766bf292efa6758a4e51bc96f73679cc8227ea507057261155b8bc9f1e9b9",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-73b8dcdddef0d4c454b54bbf28d62541",
+      "spatial_candidates": 3085359,
+      "spatial_max": 103,
+      "spatial_queries": 893520,
+      "stage": "after-container",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 650787908
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 1094301634
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1306009875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1203959144
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 645224553
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 647195477
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 5547481092
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 6137899
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4760227
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4884061
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 5088520
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4966186
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 4618101
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 30460535
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 5577942627
+        }
+      ],
+      "unique_states": 351,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 0,
+      "candidate_ms": {
+        "max": 33.114126,
+        "median": 0.002292,
+        "min": 0.002125,
+        "p90": 12.603297,
+        "p95": 13.556843
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cell_memo_hits": 2424,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 0,
+        "relevant_demand_entities": 0,
+        "relevant_residential_entities": 0
+      },
+      "duplicate_network_aggregations": 48,
+      "elapsed_ms": 2202.327186,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 33.126584,
+        "candidate_generation": 0.041163,
+        "cell_memo_lookup": 0.814918,
+        "compatibility_tower_summaries": 28.534441,
+        "decode_validation": 0.172001,
+        "domain_aggregation": 0.068097,
+        "domain_preparation": 0.008625,
+        "objective_constraints": 2.449167,
+        "pareto_archive": 155.889258,
+        "ranking_recommendation": 155.979592,
+        "response_serialization": 0.392126,
+        "rf_building_coverage": 1125.041799,
+        "rf_reach": 882.79756,
+        "search": 1983.729691,
+        "search_initialization": 0.00425,
+        "setup": 0.153793
+      },
+      "rate_remaining": "19",
+      "recommended": "0.0,0.0,0.0,0.0,0.0,0.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "44f18dc01658ed5f255bb07a7a6965efe2399a41c6a224a1ed43da9c190a311d",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "spatial_candidates": 0,
+      "spatial_max": 0,
+      "spatial_queries": 0,
+      "stage": "after-container-empty",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 415525493
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 411851395
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 388978267
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 367438019
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 398810055
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 165543
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 1982771145
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 168125
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 160042
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 156125
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 157292
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 157375
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 158417
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 958045
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 1983729524
+        }
+      ],
+      "unique_states": 386,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "cancellation_at_ms": 60006.805833,
+      "cancellation_latency_ms": 0.182918,
+      "candidate_ms": {},
+      "candidate_proposals": null,
+      "case": "pathological-6-28",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 1650,
+      "cpus": 10,
+      "deadline_at_ms": 60000.004,
+      "deadline_seconds": 60,
+      "domain": null,
+      "duplicate_network_aggregations": null,
+      "elapsed_ms": 60006.988751,
+      "feasible": null,
+      "feasible_archive": null,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": null,
+      "pareto_candidates": null,
+      "pareto_returned": null,
+      "phases_ms": {
+        "cell_memo_lookup": 1.239492,
+        "decode_validation": 0.087417,
+        "domain_aggregation": 22.448526,
+        "request_admission": 0.017916,
+        "response_serialization": 0.031042,
+        "rf_building_coverage": 21356.828772,
+        "rf_reach": 38577.075517
+      },
+      "ranked_candidates": null,
+      "rate_remaining": "19",
+      "recommended": "",
+      "request_sha256": "7d769b851bec6fce7977b98b74817d9bb393d79ebd602a916e443c0549ee6164",
+      "response_sha256": "4b65c189145c41badd5a625cd215a897e36a643bf28640529c463ab839706242",
+      "rf_evaluations": null,
+      "scenario_fingerprint": "",
+      "scored_candidates": null,
+      "spatial_candidates": 40334930,
+      "spatial_max": 125,
+      "spatial_queries": 6729573,
+      "stage": "after-container-final",
+      "status": 504,
+      "steps": null,
+      "unique_states": null,
+      "search_policy": "deterministic_multistart_coordinate_v1",
+      "accounting_note": "Canceled opt-in search has no completed state ledger; do not interpret missing totals as zero."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 194.21007,
+        "median": 0.153209,
+        "min": 0.079125,
+        "p90": 46.778178,
+        "p95": 52.112531
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cell_memo_hits": 2424,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "duplicate_network_aggregations": 13,
+      "elapsed_ms": 7440.991223,
+      "feasible": 434,
+      "feasible_archive": 421,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "pareto_candidates": 50,
+      "pareto_returned": 25,
+      "phases_ms": {
+        "baseline": 194.244196,
+        "candidate_generation": 0.079612,
+        "cell_memo_lookup": 1.664241,
+        "compatibility_tower_summaries": 143.220752,
+        "decode_validation": 0.221376,
+        "domain_aggregation": 32.122206,
+        "domain_preparation": 0.641169,
+        "objective_constraints": 1.831295,
+        "pareto_archive": 35.326926,
+        "pareto_dominance": 35.282009,
+        "pareto_ranking": 0.041334,
+        "ranking_recommendation": 113.916016,
+        "request_admission": 0.091,
+        "response_serialization": 0.483918,
+        "rf_building_coverage": 2522.087647,
+        "rf_reach": 4573.778218,
+        "search": 6987.404461,
+        "search_initialization": 0.001084,
+        "setup": 0.828961
+      },
+      "ranked_candidates": 50,
+      "rate_remaining": "19",
+      "recommended": "220.0,220.0,350.0,120.0,90.0,90.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "scored_candidates": 421,
+      "spatial_candidates": 4387073,
+      "spatial_max": 125,
+      "spatial_queries": 746640,
+      "stage": "after-container-final",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1499443020
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 760005591
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1548388040
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1541071678
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 1598241021
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 5470313
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6952628788
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 5532187
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 8439324
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 5035603
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 5204561
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 5297811
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 5261895
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 34774424
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6987404086
+        }
+      ],
+      "unique_states": 421,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 198.424255,
+        "median": 0.136167,
+        "min": 0.092125,
+        "p90": 39.548941,
+        "p95": 47.700723
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cell_memo_hits": 2424,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "duplicate_network_aggregations": 13,
+      "elapsed_ms": 6760.776364,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 198.446964,
+        "candidate_generation": 0.065619,
+        "cell_memo_lookup": 1.166458,
+        "compatibility_tower_summaries": 131.043497,
+        "decode_validation": 0.478668,
+        "domain_aggregation": 26.184893,
+        "domain_preparation": 0.607211,
+        "objective_constraints": 1.307387,
+        "pareto_archive": 33.685545,
+        "ranking_recommendation": 106.328528,
+        "response_serialization": 0.40971,
+        "rf_building_coverage": 2328.403639,
+        "rf_reach": 4118.73134,
+        "search": 6322.125115,
+        "search_initialization": 0.001,
+        "setup": 0.935462
+      },
+      "rate_remaining": "19",
+      "recommended": "220.0,220.0,350.0,120.0,90.0,90.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "spatial_candidates": 4387073,
+      "spatial_max": 125,
+      "spatial_queries": 746640,
+      "stage": "after-container-repeat2",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1405148841
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 646481161
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1422239353
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1392910449
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 1421794518
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 5072602
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6293650090
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4312850
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4892394
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4564768
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4801935
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4963811
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 4936186
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 28473567
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6322124698
+        }
+      ],
+      "unique_states": 421,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 171.595484,
+        "median": 0.137417,
+        "min": 0.081375,
+        "p90": 39.643025,
+        "p95": 47.222304
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cell_memo_hits": 2424,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "duplicate_network_aggregations": 13,
+      "elapsed_ms": 6749.160223,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 171.623942,
+        "candidate_generation": 0.072786,
+        "cell_memo_lookup": 1.232729,
+        "compatibility_tower_summaries": 129.165615,
+        "decode_validation": 0.181917,
+        "domain_aggregation": 26.642772,
+        "domain_preparation": 0.636669,
+        "objective_constraints": 1.388174,
+        "pareto_archive": 50.930444,
+        "ranking_recommendation": 120.280665,
+        "response_serialization": 0.434001,
+        "rf_building_coverage": 2289.158803,
+        "rf_reach": 4135.280104,
+        "search": 6326.313161,
+        "search_initialization": 0.001292,
+        "setup": 0.769711
+      },
+      "rate_remaining": "19",
+      "recommended": "220.0,220.0,350.0,120.0,90.0,90.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "spatial_candidates": 4387073,
+      "spatial_max": 125,
+      "spatial_queries": 746640,
+      "stage": "after-container-repeat3",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1402042318
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 661752094
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1405420622
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1417634376
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 1405759290
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 5094311
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6297709969
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4311641
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4844893
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4567725
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4889352
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 5044810
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 4942102
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 28602483
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6326312869
+        }
+      ],
+      "unique_states": 421,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 165.44881,
+        "median": 0.139917,
+        "min": 0.075042,
+        "p90": 40.553366,
+        "p95": 48.733564
+      },
+      "candidate_proposals": 362,
+      "case": "user-5-28",
+      "cell_memo_hits": 1630,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 5,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "duplicate_network_aggregations": 46,
+      "elapsed_ms": 6650.230967,
+      "feasible": 362,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 165.467477,
+        "candidate_generation": 0.054419,
+        "cell_memo_lookup": 0.954752,
+        "compatibility_tower_summaries": 104.965367,
+        "decode_validation": 0.073584,
+        "domain_aggregation": 22.196915,
+        "domain_preparation": 0.50321,
+        "objective_constraints": 1.190546,
+        "pareto_archive": 20.597789,
+        "ranking_recommendation": 92.618277,
+        "response_serialization": 0.248542,
+        "rf_building_coverage": 2236.317123,
+        "rf_reach": 4158.55328,
+        "search": 6286.06905,
+        "search_initialization": 0.002042,
+        "setup": 0.541794
+      },
+      "rate_remaining": "19",
+      "recommended": "220.0,240.0,350.0,120.0,30.0",
+      "request_sha256": "fb812278664fd959b0e3c0a58abded7a0e07e386ca652392cd0a55cfd30aa2e4",
+      "response_sha256": "b5d183fde8b00e0e62303c755190ca862dd37fe71103cd319491f0e8b17903f6",
+      "rf_evaluations": 362,
+      "scenario_fingerprint": "network-779374df72140058c432674ed271f585",
+      "spatial_candidates": 4372825,
+      "spatial_max": 125,
+      "spatial_queries": 744600,
+      "stage": "after-container",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1396956396
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 654022212
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1418978856
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1393802675
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 1399539030
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6263302378
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4180224
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4778727
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4668643
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4415267
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4720810
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 22765672
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6286068675
+        }
+      ],
+      "unique_states": 316,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 205.84601,
+        "median": 0.135292,
+        "min": 0.081167,
+        "p90": 38.873568,
+        "p95": 44.977342
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cell_memo_hits": 2424,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "duplicate_network_aggregations": 13,
+      "elapsed_ms": 6720.73945,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 205.870718,
+        "candidate_generation": 0.060956,
+        "cell_memo_lookup": 1.218055,
+        "compatibility_tower_summaries": 139.207333,
+        "decode_validation": 0.201168,
+        "domain_aggregation": 26.667547,
+        "domain_preparation": 0.594294,
+        "objective_constraints": 1.323873,
+        "pareto_archive": 33.244922,
+        "ranking_recommendation": 105.061909,
+        "response_serialization": 0.392377,
+        "rf_building_coverage": 2362.731495,
+        "rf_reach": 4041.677143,
+        "search": 6268.752233,
+        "search_initialization": 0.02075,
+        "setup": 0.752295
+      },
+      "rate_remaining": "19",
+      "recommended": "220.0,220.0,350.0,120.0,90.0,90.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "spatial_candidates": 4387073,
+      "spatial_max": 125,
+      "spatial_queries": 746640,
+      "stage": "after-container",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1413642919
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 652344247
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1406711392
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1377095527
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 1385728477
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 5028477
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6240553748
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4260933
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4771269
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4533726
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4801102
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4932936
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 4896061
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 28197610
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 6268751899
+        }
+      ],
+      "unique_states": 421,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 0,
+      "candidate_ms": {
+        "max": 115.214521,
+        "median": 61.757651,
+        "min": 40.302778,
+        "p90": 69.978891,
+        "p95": 73.521196
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 0,
+        "relevant_demand_entities": 0,
+        "relevant_residential_entities": 0
+      },
+      "elapsed_ms": 27341.450043,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 40.325278,
+        "candidate_generation": 0.056414,
+        "compatibility_tower_summaries": 26.159058,
+        "domain_aggregation": 0.384163,
+        "domain_preparation": 0.02725,
+        "objective_constraints": 6.839022,
+        "pareto_archive": 132.669713,
+        "ranking_recommendation": 132.808463,
+        "rf_building_coverage": 14625.821412,
+        "rf_reach": 12530.547401,
+        "search": 27082.40035,
+        "search_initialization": 0.015958,
+        "setup": 0.168168
+      },
+      "rate_remaining": "19",
+      "recommended": "0.0,0.0,0.0,0.0,0.0,0.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "44f18dc01658ed5f255bb07a7a6965efe2399a41c6a224a1ed43da9c190a311d",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "spatial_candidates": 0,
+      "spatial_max": 0,
+      "spatial_queries": 0,
+      "stage": "before-container-empty",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 2386497286
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 2430672246
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 2376419372
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 2345092087
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 2238324889
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 2160857053
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 13937865725
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 2181414589
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 2233862330
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 2238457223
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 2205015054
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 2103592293
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 2182191175
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 13144534207
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 27082400141
+        }
+      ],
+      "unique_states": 386,
+      "duplicate_network_aggregations": 48,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 2604,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 394.505046,
+        "median": 265.543456,
+        "min": 199.514527,
+        "p90": 277.381919,
+        "p95": 287.819539
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "elapsed_ms": 112731.061653,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 300.15805,
+        "candidate_generation": 0.08467,
+        "compatibility_tower_summaries": 151.952932,
+        "domain_aggregation": 52.376346,
+        "domain_preparation": 1.024337,
+        "objective_constraints": 3.671929,
+        "pareto_archive": 31.33948,
+        "ranking_recommendation": 103.945043,
+        "rf_building_coverage": 39872.544289,
+        "rf_reach": 72447.710564,
+        "search": 111956.709517,
+        "search_initialization": 0.004917,
+        "setup": 1.187546
+      },
+      "rate_remaining": "19",
+      "recommended": "220.0,220.0,350.0,120.0,90.0,90.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "spatial_candidates": 63202457,
+      "spatial_max": 125,
+      "spatial_queries": 10636560,
+      "stage": "before-container-natural",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 9510262448
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 9577491503
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 9524013851
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 9549888598
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 9584070584
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 9833904129
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 57579634030
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 9856306591
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 10131913731
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 9671808177
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 9200309268
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 7752640847
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 7764040829
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 54377074444
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 111956709350
+        }
+      ],
+      "unique_states": 421,
+      "duplicate_network_aggregations": 13,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 2604,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 295.084368,
+        "median": 217.615867,
+        "min": 195.456449,
+        "p90": 224.891061,
+        "p95": 227.737613
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "elapsed_ms": 94706.741568,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 239.356365,
+        "candidate_generation": 0.076665,
+        "compatibility_tower_summaries": 128.282653,
+        "domain_aggregation": 39.212391,
+        "domain_preparation": 0.760669,
+        "objective_constraints": 3.042838,
+        "pareto_archive": 31.849704,
+        "ranking_recommendation": 102.475138,
+        "rf_building_coverage": 33631.438608,
+        "rf_reach": 60719.83462,
+        "search": 94011.057183,
+        "search_initialization": 0.008042,
+        "setup": 1.075462
+      },
+      "rate_remaining": "19",
+      "recommended": "220.0,220.0,350.0,120.0,90.0,90.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "spatial_candidates": 63202457,
+      "spatial_max": 125,
+      "spatial_queries": 10636560,
+      "stage": "before-container-repeat2",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 7833507308
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 7869885404
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 7837316281
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 7867442895
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 7813328898
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 7805588368
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 47027072069
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 7825496485
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 7952431925
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 7957938321
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 7818500626
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 7699637258
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 7729977999
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 46983984031
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 94011056933
+        }
+      ],
+      "unique_states": 421,
+      "duplicate_network_aggregations": 13,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 2604,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 303.153695,
+        "median": 218.051663,
+        "min": 193.864279,
+        "p90": 225.842859,
+        "p95": 228.012701
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "elapsed_ms": 95015.244916,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 215.665275,
+        "candidate_generation": 0.112671,
+        "compatibility_tower_summaries": 147.904229,
+        "domain_aggregation": 41.366949,
+        "domain_preparation": 0.605378,
+        "objective_constraints": 3.145351,
+        "pareto_archive": 31.238494,
+        "ranking_recommendation": 103.726603,
+        "rf_building_coverage": 33832.4417,
+        "rf_reach": 60805.182297,
+        "search": 94330.650191,
+        "search_initialization": 0.004542,
+        "setup": 0.719461
+      },
+      "rate_remaining": "19",
+      "recommended": "220.0,220.0,350.0,120.0,90.0,90.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "spatial_candidates": 63202457,
+      "spatial_max": 125,
+      "spatial_queries": 10636560,
+      "stage": "before-container-repeat3",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 7844611672
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 7855216004
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 7778928756
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 7914474980
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 7917470784
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 7806596195
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 47117301225
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 7809370789
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 8027486827
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 7857443471
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 7896495745
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 7846419096
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 7776130912
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 47213348423
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 94330650024
+        }
+      ],
+      "unique_states": 421,
+      "duplicate_network_aggregations": 13,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 2604,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 50.094541,
+        "median": 0.047875,
+        "min": 0.016292,
+        "p90": 27.071166,
+        "p95": 28.731333
+      },
+      "candidate_proposals": 146,
+      "case": "2-28",
+      "cell_memo_hits": 220,
+      "cell_memo_misses": 72,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 2,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400
+        ],
+        "relevant_building_entities": 447,
+        "relevant_demand_entities": 53,
+        "relevant_residential_entities": 221
+      },
+      "duplicate_network_aggregations": 40,
+      "elapsed_ms": 1775.680542,
+      "feasible": 146,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 50.119334,
+        "candidate_generation": 0.019661,
+        "cell_memo_lookup": 0.154312,
+        "compatibility_tower_summaries": 35.780375,
+        "decode_validation": 0.143208,
+        "domain_aggregation": 3.033756,
+        "domain_preparation": 0.285209,
+        "objective_constraints": 0.486789,
+        "pareto_archive": 1.952833,
+        "ranking_recommendation": 69.027834,
+        "response_serialization": 0.336666,
+        "rf_building_coverage": 410.68791,
+        "rf_reach": 1250.871749,
+        "search": 1619.43725,
+        "search_initialization": 0.0015,
+        "setup": 0.4505
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0",
+      "request_sha256": "c3250eef8b72419ea50bb31b798498de72652f1737dea095134afebb857168ae",
+      "response_sha256": "5d8d82c2e8abdb85802c78bd418d9de2defe3e1b57d408a548394fd795a56781",
+      "rf_evaluations": 146,
+      "scenario_fingerprint": "network-8e76956c42cd58b04b7a5ab629997635",
+      "spatial_candidates": 765313,
+      "spatial_max": 101,
+      "spatial_queries": 297840,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 673348583
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 943491041
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 1616840375
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 1482333
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 1111750
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 2595000
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 1619437000
+        }
+      ],
+      "unique_states": 106,
+      "pareto_returned": 17,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 74.940917,
+        "median": 0.080375,
+        "min": 0.05225,
+        "p90": 28.677375,
+        "p95": 33.568
+      },
+      "candidate_proposals": 218,
+      "case": "3-28",
+      "cell_memo_hits": 546,
+      "cell_memo_misses": 108,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 3,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 890,
+        "relevant_demand_entities": 72,
+        "relevant_residential_entities": 545
+      },
+      "duplicate_network_aggregations": 42,
+      "elapsed_ms": 2861.086792,
+      "feasible": 218,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 74.951959,
+        "candidate_generation": 0.031833,
+        "cell_memo_lookup": 0.331249,
+        "compatibility_tower_summaries": 66.868709,
+        "decode_validation": 0.076,
+        "domain_aggregation": 8.831674,
+        "domain_preparation": 0.575916,
+        "objective_constraints": 0.696253,
+        "pareto_archive": 6.127708,
+        "ranking_recommendation": 72.571292,
+        "response_serialization": 0.207625,
+        "rf_building_coverage": 637.973207,
+        "rf_reach": 2061.988328,
+        "search": 2645.642041,
+        "search_initialization": 0.001375,
+        "setup": 0.604125
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0",
+      "request_sha256": "c450a139a1e9828ee18d4eb84d32d2eb8b1b57785dec42c7e0b68d87d5aac479",
+      "response_sha256": "c7495727bf93eadef97c52809b547762b921fb7f315aaa0f67ac493bac2452db",
+      "rf_evaluations": 218,
+      "scenario_fingerprint": "network-e30d77d21fd9048bbaac629c15d31d99",
+      "spatial_candidates": 1497746,
+      "spatial_max": 103,
+      "spatial_queries": 446760,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 657144708
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 974545041
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1006608958
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 2638300542
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 2628000
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 2311084
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 2400334
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 7340458
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 2645641375
+        }
+      ],
+      "unique_states": 176,
+      "pareto_returned": 22,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 99.046541,
+        "median": 0.121,
+        "min": 0.090625,
+        "p90": 27.917625,
+        "p95": 33.043917
+      },
+      "candidate_proposals": 290,
+      "case": "4-28",
+      "cell_memo_hits": 1016,
+      "cell_memo_misses": 144,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 4,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1338,
+        "relevant_demand_entities": 79,
+        "relevant_residential_entities": 802
+      },
+      "duplicate_network_aggregations": 44,
+      "elapsed_ms": 3813.313959,
+      "feasible": 290,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 99.056291,
+        "candidate_generation": 0.029874,
+        "cell_memo_lookup": 0.581699,
+        "compatibility_tower_summaries": 76.612375,
+        "decode_validation": 0.083708,
+        "domain_aggregation": 17.40253,
+        "domain_preparation": 0.943667,
+        "objective_constraints": 0.878817,
+        "pareto_archive": 13.451334,
+        "ranking_recommendation": 80.069792,
+        "response_serialization": 0.190083,
+        "rf_building_coverage": 853.79851,
+        "rf_reach": 2758.581402,
+        "search": 3556.092625,
+        "search_initialization": 0.001792,
+        "setup": 0.987708
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,300.0",
+      "request_sha256": "69980d21464fff9615bb0f2226d5c6d38b0ba174c6b39aad25896f74fdce667d",
+      "response_sha256": "35840d9efa960efe5c4c9d838830f867de883f56f95c04bc207378c77338e65b",
+      "rf_evaluations": 290,
+      "scenario_fingerprint": "network-0f28bec43c7abc50bfad05e4dcb54680",
+      "spatial_candidates": 2132564,
+      "spatial_max": 103,
+      "spatial_queries": 595680,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 635185875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 923267917
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1031290833
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 951100167
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 3540846333
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 3998583
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 3662542
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 3738834
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 3843542
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 15244750
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 3556092292
+        }
+      ],
+      "unique_states": 246,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 119.647542,
+        "median": 0.12525,
+        "min": 0.096666,
+        "p90": 27.656041,
+        "p95": 29.972583
+      },
+      "candidate_proposals": 362,
+      "case": "5-2.6",
+      "cell_memo_hits": 1630,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 5,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1465,
+        "relevant_demand_entities": 91,
+        "relevant_residential_entities": 896
+      },
+      "duplicate_network_aggregations": 46,
+      "elapsed_ms": 4084.731583,
+      "feasible": 362,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 119.654458,
+        "candidate_generation": 0.051415,
+        "cell_memo_lookup": 0.86611,
+        "compatibility_tower_summaries": 81.775625,
+        "decode_validation": 0.108417,
+        "domain_aggregation": 23.694199,
+        "domain_preparation": 1.044,
+        "objective_constraints": 1.058969,
+        "pareto_archive": 23.678,
+        "ranking_recommendation": 90.2225,
+        "response_serialization": 0.22975,
+        "rf_building_coverage": 961.709621,
+        "rf_reach": 2895.739874,
+        "search": 3791.414708,
+        "search_initialization": 0.004,
+        "setup": 1.078541
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,170.0,80.0",
+      "request_sha256": "1f4c7cfbc656a909d5b973561f18ce06351836f2ba12a50686df3e3cc14dba14",
+      "response_sha256": "5f370c2c743af547c4c48bf6e731fe3480a259233ea2353b8a1410dc2d69f02d",
+      "rf_evaluations": 362,
+      "scenario_fingerprint": "network-6506a7e4225bd9f56baf10a0f9912805",
+      "spatial_candidates": 2889220,
+      "spatial_max": 103,
+      "spatial_queries": 744600,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 485736792
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 872389625
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1009805375
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 918264875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 484581625
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 3770781250
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4262041
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 3940458
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4020000
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4268209
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4140000
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 20632583
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 3791414542
+        }
+      ],
+      "unique_states": 316,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 128.499042,
+        "median": 0.123667,
+        "min": 0.095625,
+        "p90": 29.542709,
+        "p95": 35.839333
+      },
+      "candidate_proposals": 362,
+      "case": "5-28",
+      "cell_memo_hits": 1630,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 5,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1465,
+        "relevant_demand_entities": 91,
+        "relevant_residential_entities": 896
+      },
+      "duplicate_network_aggregations": 46,
+      "elapsed_ms": 4731.611916,
+      "feasible": 362,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 128.506541,
+        "candidate_generation": 0.058582,
+        "cell_memo_lookup": 0.939751,
+        "compatibility_tower_summaries": 88.258583,
+        "decode_validation": 0.094083,
+        "domain_aggregation": 23.860174,
+        "domain_preparation": 1.051125,
+        "objective_constraints": 1.22738,
+        "pareto_archive": 25.133125,
+        "ranking_recommendation": 92.282417,
+        "response_serialization": 0.222708,
+        "rf_building_coverage": 1154.570459,
+        "rf_reach": 3339.199664,
+        "search": 4420.885416,
+        "search_initialization": 0.001958,
+        "setup": 1.086666
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,300.0,240.0",
+      "request_sha256": "8c66ade3129f6c5e369be3342709366ebb33538ddcb148853602da4b4b9601f6",
+      "response_sha256": "2ebe8ebd0f1862d62ecfe349f6cb2dda55f950e2adeb189ce4911bc4cbb33595",
+      "rf_evaluations": 362,
+      "scenario_fingerprint": "network-6759ccd348247c61d4bdf77709ce88e8",
+      "spatial_candidates": 2889234,
+      "spatial_max": 103,
+      "spatial_queries": 744600,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 805937500
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 1155115125
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1030912334
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 934949084
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 473879125
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 4400796166
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4196083
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 3928583
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 3920250
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 3981500
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4060000
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 20088042
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 4420885041
+        }
+      ],
+      "unique_states": 316,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 138.79975,
+        "median": 0.150417,
+        "min": 0.11375,
+        "p90": 26.481833,
+        "p95": 28.994167
+      },
+      "candidate_proposals": 434,
+      "case": "6-2.6",
+      "cell_memo_hits": 2388,
+      "cell_memo_misses": 216,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1581,
+        "relevant_demand_entities": 99,
+        "relevant_residential_entities": 944
+      },
+      "duplicate_network_aggregations": 83,
+      "elapsed_ms": 4625.226,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 138.809042,
+        "candidate_generation": 0.068193,
+        "cell_memo_lookup": 1.249874,
+        "compatibility_tower_summaries": 103.98575,
+        "decode_validation": 0.081292,
+        "domain_aggregation": 34.632178,
+        "domain_preparation": 1.160917,
+        "objective_constraints": 1.333782,
+        "pareto_archive": 28.193167,
+        "ranking_recommendation": 96.801125,
+        "response_serialization": 0.228042,
+        "rf_building_coverage": 1066.433371,
+        "rf_reach": 3281.259207,
+        "search": 4283.886083,
+        "search_initialization": 0.002125,
+        "setup": 1.19925
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,170.0,80.0,90.0",
+      "request_sha256": "fefe76173ebfabd3f8f6fc92551ff6649f34aa7b50217d5ecb06216cd2c3d171",
+      "response_sha256": "510766bf292efa6758a4e51bc96f73679cc8227ea507057261155b8bc9f1e9b9",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-73b8dcdddef0d4c454b54bbf28d62541",
+      "spatial_candidates": 3085359,
+      "spatial_max": 103,
+      "spatial_queries": 893520,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 495076916
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 866813542
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1002255542
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 908425416
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 486970417
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 495482541
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 4255032708
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 5014792
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4734584
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4755625
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4767708
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4831916
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 4746250
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 28852583
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 4283885917
+        }
+      ],
+      "unique_states": 351,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 143.16525,
+        "median": 0.516458,
+        "min": 0.109833,
+        "p90": 26.941708,
+        "p95": 29.020584
+      },
+      "candidate_proposals": 434,
+      "case": "6-28",
+      "cell_memo_hits": 2388,
+      "cell_memo_misses": 216,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1581,
+        "relevant_demand_entities": 99,
+        "relevant_residential_entities": 944
+      },
+      "duplicate_network_aggregations": 48,
+      "elapsed_ms": 5028.221959,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 143.173792,
+        "candidate_generation": 0.07587,
+        "cell_memo_lookup": 1.305967,
+        "compatibility_tower_summaries": 99.106709,
+        "decode_validation": 0.072291,
+        "domain_aggregation": 37.873275,
+        "domain_preparation": 1.161875,
+        "objective_constraints": 1.41684,
+        "pareto_archive": 35.183667,
+        "ranking_recommendation": 101.202625,
+        "response_serialization": 0.221917,
+        "rf_building_coverage": 1124.519501,
+        "rf_reach": 3620.221301,
+        "search": 4683.0115,
+        "search_initialization": 0.002334,
+        "setup": 1.200167
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,300.0,240.0,100.0",
+      "request_sha256": "e35fabc1601986eea49a47f17aa0a9c416c003b5b574eb301f07edd9f5cf59de",
+      "response_sha256": "5f6b6934826ab665ffbf8bbcd840d2f58ac0500cbc6d0b59beb33b391b3cd51d",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-e1c9a5cdbdcc1ce812aa4ec80fffd633",
+      "spatial_candidates": 3085046,
+      "spatial_max": 103,
+      "spatial_queries": 893520,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 633501834
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 942493875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 995884417
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 931558958
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 458161416
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 682012917
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 4643615917
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 6003250
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 7323208
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 12378375
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4590875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4649834
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 4447500
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 39394834
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 4683011208
+        }
+      ],
+      "unique_states": 386,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 134.979666,
+        "median": 0.133042,
+        "min": 0.088458,
+        "p90": 31.106916,
+        "p95": 39.583542
+      },
+      "candidate_proposals": 362,
+      "case": "user-5-28",
+      "cell_memo_hits": 1630,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 5,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "duplicate_network_aggregations": 46,
+      "elapsed_ms": 5340.873458,
+      "feasible": 362,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 134.9875,
+        "candidate_generation": 0.049086,
+        "cell_memo_lookup": 0.869554,
+        "compatibility_tower_summaries": 102.038166,
+        "decode_validation": 0.065625,
+        "domain_aggregation": 22.328323,
+        "domain_preparation": 0.478583,
+        "objective_constraints": 1.154178,
+        "pareto_archive": 19.577166,
+        "ranking_recommendation": 86.832459,
+        "response_serialization": 0.219709,
+        "rf_building_coverage": 1231.216501,
+        "rf_reach": 3864.78779,
+        "search": 5015.978417,
+        "search_initialization": 0.001958,
+        "setup": 0.513333
+      },
+      "rate_remaining": "19",
+      "recommended": "220.0,240.0,350.0,120.0,30.0",
+      "request_sha256": "fb812278664fd959b0e3c0a58abded7a0e07e386ca652392cd0a55cfd30aa2e4",
+      "response_sha256": "b5d183fde8b00e0e62303c755190ca862dd37fe71103cd319491f0e8b17903f6",
+      "rf_evaluations": 362,
+      "scenario_fingerprint": "network-779374df72140058c432674ed271f585",
+      "spatial_candidates": 4372825,
+      "spatial_max": 125,
+      "spatial_queries": 744600,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1122581500
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 509843875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1123694959
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1115626084
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 1122661209
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 4994410417
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 3936625
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4508416
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4496750
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4163333
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4459375
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 21566625
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 5015978125
+        }
+      ],
+      "unique_states": 316,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 147.704334,
+        "median": 0.134833,
+        "min": 0.091041,
+        "p90": 31.484792,
+        "p95": 38.636166
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-2.6",
+      "cell_memo_hits": 2424,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "duplicate_network_aggregations": 13,
+      "elapsed_ms": 5516.337958,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 147.71375,
+        "candidate_generation": 0.068818,
+        "cell_memo_lookup": 1.285021,
+        "compatibility_tower_summaries": 128.842584,
+        "decode_validation": 0.085125,
+        "domain_aggregation": 26.356039,
+        "domain_preparation": 0.532708,
+        "objective_constraints": 1.426575,
+        "pareto_archive": 47.239791,
+        "ranking_recommendation": 115.132875,
+        "response_serialization": 0.224792,
+        "rf_building_coverage": 1191.236251,
+        "rf_reach": 4009.560126,
+        "search": 5123.511083,
+        "search_initialization": 0.00225,
+        "setup": 0.581209
+      },
+      "rate_remaining": "19",
+      "recommended": "230.0,290.0,50.0,120.0,90.0,90.0",
+      "request_sha256": "453450202143e2edb6818365459e4618e7491d9de25ed5ed820a4b26eda3b57c",
+      "response_sha256": "4971a45c8f31d9ac393c84849ef884700680a2113ab2347c1dc3a7ccc000ffcb",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-439ea20e2544072da8278690db4953f4",
+      "spatial_candidates": 4385620,
+      "spatial_max": 125,
+      "spatial_queries": 746640,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1151023750
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 512596750
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1156307416
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1128951083
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 1141310208
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 4903625
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 5095095583
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4302042
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4777750
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4776667
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4752667
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4942709
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 4858917
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 28414792
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 5123510792
+        }
+      ],
+      "unique_states": 421,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 150.415959,
+        "median": 0.132708,
+        "min": 0.081542,
+        "p90": 30.75275,
+        "p95": 39.256958
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cell_memo_hits": 2424,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 60,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "duplicate_network_aggregations": 13,
+      "elapsed_ms": 5414.411459,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 150.428084,
+        "candidate_generation": 0.053495,
+        "cell_memo_lookup": 1.175028,
+        "compatibility_tower_summaries": 126.62125,
+        "decode_validation": 0.129167,
+        "domain_aggregation": 26.117874,
+        "domain_preparation": 0.5385,
+        "objective_constraints": 1.293298,
+        "pareto_archive": 31.320125,
+        "ranking_recommendation": 98.407834,
+        "response_serialization": 0.220625,
+        "rf_building_coverage": 1279.245426,
+        "rf_reach": 3840.666716,
+        "search": 5037.764542,
+        "search_initialization": 0.00225,
+        "setup": 0.583708
+      },
+      "rate_remaining": "19",
+      "recommended": "220.0,220.0,350.0,120.0,90.0,90.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "spatial_candidates": 4387073,
+      "spatial_max": 125,
+      "spatial_queries": 746640,
+      "stage": "after-host",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1120735042
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 496625625
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1137246709
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1131261709
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 1118988750
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 5010042
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 5009870584
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4252875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4804917
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4459250
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4674084
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4861584
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 4838834
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 27892917
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 5037764333
+        }
+      ],
+      "unique_states": 421,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 168.1475,
+        "median": 0.13925,
+        "min": 0.079959,
+        "p90": 35.338208,
+        "p95": 44.604125
+      },
+      "candidate_proposals": 434,
+      "case": "user-6-28",
+      "cell_memo_hits": 2424,
+      "cell_memo_misses": 180,
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 801,
+        "relevant_demand_entities": 9,
+        "relevant_residential_entities": 759
+      },
+      "duplicate_network_aggregations": 13,
+      "elapsed_ms": 5977.124,
+      "feasible": 434,
+      "feasible_archive": 421,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "pareto_candidates": 50,
+      "pareto_returned": 25,
+      "phases_ms": {
+        "baseline": 168.188708,
+        "candidate_generation": 0.057504,
+        "cell_memo_lookup": 1.295751,
+        "compatibility_tower_summaries": 136.611708,
+        "decode_validation": 0.22,
+        "domain_aggregation": 28.542009,
+        "domain_preparation": 0.627125,
+        "objective_constraints": 1.442245,
+        "pareto_archive": 48.520625,
+        "pareto_dominance": 48.478792,
+        "pareto_ranking": 0.033917,
+        "ranking_recommendation": 119.20625,
+        "request_admission": 0.000333,
+        "response_serialization": 0.461166,
+        "rf_building_coverage": 1640.265247,
+        "rf_reach": 4004.101173,
+        "search": 5551.14725,
+        "search_initialization": 0.001291,
+        "setup": 0.827583
+      },
+      "ranked_candidates": 50,
+      "rate_remaining": "",
+      "recommended": "220.0,220.0,350.0,120.0,90.0,90.0",
+      "request_sha256": "abb20b80f51f6a7dec2662f58778829769a0c21b5c5dd378f9ee0f553ddb15af",
+      "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-d7a9f6c9a1b34208e5eceb368960fc61",
+      "scored_candidates": 421,
+      "spatial_candidates": 4387073,
+      "spatial_max": 125,
+      "spatial_queries": 746640,
+      "stage": "after-unprotected",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1221134208
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 561429833
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 1255087334
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 1223104208
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 1256404542
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 5023584
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 5522186333
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4240708
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4942208
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4687000
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4814000
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 5028250
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 5242500
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 28956583
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 5551146750
+        }
+      ],
+      "unique_states": 421,
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 88.660416,
+        "median": 49.793041,
+        "min": 40.667083,
+        "p90": 62.958417,
+        "p95": 66.234959
+      },
+      "candidate_proposals": 146,
+      "case": "2-28",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 2,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400
+        ],
+        "relevant_building_entities": 447,
+        "relevant_demand_entities": 53,
+        "relevant_residential_entities": 221
+      },
+      "elapsed_ms": 7665.96025,
+      "feasible": 146,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 50.50425,
+        "candidate_generation": 0.017876,
+        "compatibility_tower_summaries": 36.26025,
+        "domain_aggregation": 3.585459,
+        "domain_preparation": 0.354875,
+        "objective_constraints": 0.795456,
+        "pareto_archive": 1.986542,
+        "ranking_recommendation": 73.369458,
+        "rf_building_coverage": 2053.13796,
+        "rf_reach": 5491.848163,
+        "search": 7455.944917,
+        "search_initialization": 0.002583,
+        "setup": 0.446083
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0",
+      "request_sha256": "c3250eef8b72419ea50bb31b798498de72652f1737dea095134afebb857168ae",
+      "response_sha256": "5d8d82c2e8abdb85802c78bd418d9de2defe3e1b57d408a548394fd795a56781",
+      "rf_evaluations": 146,
+      "scenario_fingerprint": "network-8e76956c42cd58b04b7a5ab629997635",
+      "spatial_candidates": 3526929,
+      "spatial_max": 101,
+      "spatial_queries": 1195440,
+      "stage": "before-natural",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 1983635875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 1777102000
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 3760738542
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 1937841417
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 1757361958
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 3695204625
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 7455944667
+        }
+      ],
+      "unique_states": 106,
+      "duplicate_network_aggregations": 40,
+      "pareto_returned": 17,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 292,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 279.372292,
+        "median": 87.351375,
+        "min": 71.069334,
+        "p90": 105.193042,
+        "p95": 116.244833
+      },
+      "candidate_proposals": 218,
+      "case": "3-28",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 3,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 890,
+        "relevant_demand_entities": 72,
+        "relevant_residential_entities": 545
+      },
+      "elapsed_ms": 19913.326792,
+      "feasible": 218,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 113.597791,
+        "candidate_generation": 0.02859,
+        "compatibility_tower_summaries": 62.962416,
+        "domain_aggregation": 12.296333,
+        "domain_preparation": 0.582042,
+        "objective_constraints": 2.205667,
+        "pareto_archive": 23.003917,
+        "ranking_recommendation": 136.658084,
+        "rf_building_coverage": 5425.163253,
+        "rf_reach": 14253.887061,
+        "search": 19471.179917,
+        "search_initialization": 0.001542,
+        "setup": 0.609291
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0",
+      "request_sha256": "c450a139a1e9828ee18d4eb84d32d2eb8b1b57785dec42c7e0b68d87d5aac479",
+      "response_sha256": "c7495727bf93eadef97c52809b547762b921fb7f315aaa0f67ac493bac2452db",
+      "rf_evaluations": 218,
+      "scenario_fingerprint": "network-e30d77d21fd9048bbaac629c15d31d99",
+      "spatial_candidates": 10415548,
+      "spatial_max": 103,
+      "spatial_queries": 2674440,
+      "stage": "before-natural",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 3272559541
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 2990578416
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 3395160000
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 9658300042
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 3240518833
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 3314541292
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 3257817792
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 9812879125
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 19471179458
+        }
+      ],
+      "unique_states": 176,
+      "duplicate_network_aggregations": 42,
+      "pareto_returned": 22,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 654,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 232.529,
+        "median": 123.717875,
+        "min": 96.698,
+        "p90": 145.333,
+        "p95": 151.099292
+      },
+      "candidate_proposals": 290,
+      "case": "4-28",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 4,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1338,
+        "relevant_demand_entities": 79,
+        "relevant_residential_entities": 802
+      },
+      "elapsed_ms": 36113.331792,
+      "feasible": 290,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 154.286459,
+        "candidate_generation": 0.026541,
+        "compatibility_tower_summaries": 92.2765,
+        "domain_aggregation": 26.80754,
+        "domain_preparation": 1.035458,
+        "objective_constraints": 1.864752,
+        "pareto_archive": 13.256042,
+        "ranking_recommendation": 86.131625,
+        "rf_building_coverage": 9418.545584,
+        "rf_reach": 26439.291458,
+        "search": 35676.639291,
+        "search_initialization": 0.002334,
+        "setup": 1.142084
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,300.0",
+      "request_sha256": "69980d21464fff9615bb0f2226d5c6d38b0ba174c6b39aad25896f74fdce667d",
+      "response_sha256": "35840d9efa960efe5c4c9d838830f867de883f56f95c04bc207378c77338e65b",
+      "rf_evaluations": 290,
+      "scenario_fingerprint": "network-0f28bec43c7abc50bfad05e4dcb54680",
+      "spatial_candidates": 19209300,
+      "spatial_max": 103,
+      "spatial_queries": 4740960,
+      "stage": "before-natural",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 4669572750
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 4428960875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 4552919333
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 4865726458
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 18517181125
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4723819041
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4338263791
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4110536084
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 3986835500
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 17159456417
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 35676639125
+        }
+      ],
+      "unique_states": 246,
+      "duplicate_network_aggregations": 44,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 1160,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 167.429542,
+        "median": 124.087875,
+        "min": 93.436792,
+        "p90": 147.705208,
+        "p95": 154.796625
+      },
+      "candidate_proposals": 362,
+      "case": "5-2.6",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 5,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1465,
+        "relevant_demand_entities": 91,
+        "relevant_residential_entities": 896
+      },
+      "elapsed_ms": 45838.569292,
+      "feasible": 362,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 123.6155,
+        "candidate_generation": 0.058417,
+        "compatibility_tower_summaries": 90.343417,
+        "domain_aggregation": 34.652455,
+        "domain_preparation": 1.081916,
+        "objective_constraints": 2.050503,
+        "pareto_archive": 28.666334,
+        "ranking_recommendation": 102.231375,
+        "rf_building_coverage": 11796.280783,
+        "rf_reach": 33754.891941,
+        "search": 45363.175458,
+        "search_initialization": 0.00475,
+        "setup": 1.119958
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,170.0,80.0",
+      "request_sha256": "1f4c7cfbc656a909d5b973561f18ce06351836f2ba12a50686df3e3cc14dba14",
+      "response_sha256": "5f370c2c743af547c4c48bf6e731fe3480a259233ea2353b8a1410dc2d69f02d",
+      "rf_evaluations": 362,
+      "scenario_fingerprint": "network-6506a7e4225bd9f56baf10a0f9912805",
+      "spatial_candidates": 31719842,
+      "spatial_max": 103,
+      "spatial_queries": 7395000,
+      "stage": "before-natural",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 4160197583
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 3863247875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 4016621125
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 4148055750
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 4330029541
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 20518153959
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4893672000
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4782683208
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4947586417
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 5121121709
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 5099955958
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 24845020584
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 45363175250
+        }
+      ],
+      "unique_states": 316,
+      "duplicate_network_aggregations": 46,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 1810,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 140.116209,
+        "median": 117.154083,
+        "min": 104.06275,
+        "p90": 127.836667,
+        "p95": 129.193458
+      },
+      "candidate_proposals": 362,
+      "case": "5-28",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 5,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1465,
+        "relevant_demand_entities": 91,
+        "relevant_residential_entities": 896
+      },
+      "elapsed_ms": 43043.538375,
+      "feasible": 362,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 4,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 129.14775,
+        "candidate_generation": 0.053464,
+        "compatibility_tower_summaries": 89.029958,
+        "domain_aggregation": 30.213502,
+        "domain_preparation": 1.14775,
+        "objective_constraints": 1.794038,
+        "pareto_archive": 24.421834,
+        "ranking_recommendation": 96.766,
+        "rf_building_coverage": 10292.301263,
+        "rf_reach": 32478.859361,
+        "search": 42601.297125,
+        "search_initialization": 0.001375,
+        "setup": 1.25175
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,300.0,240.0",
+      "request_sha256": "8c66ade3129f6c5e369be3342709366ebb33538ddcb148853602da4b4b9601f6",
+      "response_sha256": "2ebe8ebd0f1862d62ecfe349f6cb2dda55f950e2adeb189ce4911bc4cbb33595",
+      "rf_evaluations": 362,
+      "scenario_fingerprint": "network-6759ccd348247c61d4bdf77709ce88e8",
+      "spatial_candidates": 31786916,
+      "spatial_max": 103,
+      "spatial_queries": 7395000,
+      "stage": "before-natural",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 4268228958
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 4100822250
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 4191547083
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 4268373041
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 4297432875
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 21126406375
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 4350533042
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4217356542
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4278631750
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 4314376167
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4313991083
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 21474889625
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 42601296833
+        }
+      ],
+      "unique_states": 316,
+      "duplicate_network_aggregations": 46,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 1810,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 302.898042,
+        "median": 160.601542,
+        "min": 130.392917,
+        "p90": 178.260666,
+        "p95": 182.549625
+      },
+      "candidate_proposals": 434,
+      "case": "6-2.6",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1581,
+        "relevant_demand_entities": 99,
+        "relevant_residential_entities": 944
+      },
+      "elapsed_ms": 70383.282291,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 169.713417,
+        "candidate_generation": 0.084601,
+        "compatibility_tower_summaries": 107.15175,
+        "domain_aggregation": 60.439249,
+        "domain_preparation": 1.390167,
+        "objective_constraints": 2.572598,
+        "pareto_archive": 32.432041,
+        "ranking_recommendation": 119.276333,
+        "rf_building_coverage": 19345.463403,
+        "rf_reach": 50664.015648,
+        "search": 69817.922917,
+        "search_initialization": 0.005167,
+        "setup": 1.438708
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,170.0,80.0,90.0",
+      "request_sha256": "fefe76173ebfabd3f8f6fc92551ff6649f34aa7b50217d5ecb06216cd2c3d171",
+      "response_sha256": "510766bf292efa6758a4e51bc96f73679cc8227ea507057261155b8bc9f1e9b9",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-73b8dcdddef0d4c454b54bbf28d62541",
+      "spatial_candidates": 41043969,
+      "spatial_max": 103,
+      "spatial_queries": 10636560,
+      "stage": "before-natural",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 5787397875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 5393911125
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 5694377833
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 5839880875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 5801273417
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 6067916792
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 34584760542
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 6012380208
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 5548178125
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 6066909875
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 5905246833
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 5799319542
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 5901121750
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 35233161625
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 69817922708
+        }
+      ],
+      "unique_states": 351,
+      "duplicate_network_aggregations": 83,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 2604,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    },
+    {
+      "buildings": 161784,
+      "candidate_ms": {
+        "max": 975.477708,
+        "median": 141.201042,
+        "min": 123.079042,
+        "p90": 150.792041,
+        "p95": 170.097042
+      },
+      "candidate_proposals": 434,
+      "case": "6-28",
+      "cpus": 10,
+      "deadline_seconds": 0,
+      "domain": {
+        "source": "selected_cell_radius_union",
+        "selected_cell_count": 6,
+        "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+        "envelope_radii_meters": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ],
+        "relevant_building_entities": 1581,
+        "relevant_demand_entities": 99,
+        "relevant_residential_entities": 944
+      },
+      "elapsed_ms": 64587.313375,
+      "feasible": 434,
+      "go_version": "go1.26.6",
+      "gomaxprocs": 10,
+      "goroutines_after": 3,
+      "infeasible": 0,
+      "phases_ms": {
+        "baseline": 135.835791,
+        "candidate_generation": 0.078015,
+        "compatibility_tower_summaries": 100.527583,
+        "domain_aggregation": 44.376044,
+        "domain_preparation": 1.48825,
+        "objective_constraints": 2.314459,
+        "pareto_archive": 35.037291,
+        "ranking_recommendation": 103.844667,
+        "rf_building_coverage": 15225.786774,
+        "rf_reach": 49037.363316,
+        "search": 64101.447125,
+        "search_initialization": 0.005583,
+        "setup": 1.696625
+      },
+      "rate_remaining": "19",
+      "recommended": "70.0,100.0,110.0,300.0,240.0,100.0",
+      "request_sha256": "e35fabc1601986eea49a47f17aa0a9c416c003b5b574eb301f07edd9f5cf59de",
+      "response_sha256": "5f6b6934826ab665ffbf8bbcd840d2f58ac0500cbc6d0b59beb33b391b3cd51d",
+      "rf_evaluations": 434,
+      "scenario_fingerprint": "network-e1c9a5cdbdcc1ce812aa4ec80fffd633",
+      "spatial_candidates": 40994358,
+      "spatial_max": 103,
+      "spatial_queries": 10636560,
+      "stage": "before-natural",
+      "status": 200,
+      "steps": [
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 0,
+          "Elapsed": 5079483083
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 1,
+          "Elapsed": 5036511125
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 2,
+          "Elapsed": 4947384625
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 3,
+          "Elapsed": 5031951750
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 4,
+          "Elapsed": 5365640917
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 0,
+          "Coordinate": 5,
+          "Elapsed": 8748707000
+        },
+        {
+          "Phase": "pass",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 34209680625
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 0,
+          "Elapsed": 5071449916
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 1,
+          "Elapsed": 4846254209
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 2,
+          "Elapsed": 4951655625
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 3,
+          "Elapsed": 5046733500
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 4,
+          "Elapsed": 4961067417
+        },
+        {
+          "Phase": "coordinate",
+          "Pass": 1,
+          "Coordinate": 5,
+          "Elapsed": 5014603750
+        },
+        {
+          "Phase": "pass",
+          "Pass": 1,
+          "Coordinate": -1,
+          "Elapsed": 29891765875
+        },
+        {
+          "Phase": "start",
+          "Pass": 0,
+          "Coordinate": -1,
+          "Elapsed": 64101446958
+        }
+      ],
+      "unique_states": 386,
+      "duplicate_network_aggregations": 48,
+      "pareto_returned": 25,
+      "search_policy": "legacy_two_pass_coordinate",
+      "cell_memo_hits": 0,
+      "cell_memo_misses": 2604,
+      "cell_accounting_note": "Inferred exactly from original loop: every proposal evaluates every selected cell, no cell cache."
+    }
+  ],
+  "invariance": [
+    {
+      "case": "6-2.6",
+      "before": "before-natural",
+      "after": "after-container",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-natural",
+      "after": "after-container-final",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat2",
+      "after": "after-container-final",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat3",
+      "after": "after-container-final",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-natural",
+      "after": "after-container-repeat2",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat2",
+      "after": "after-container-repeat2",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat3",
+      "after": "after-container-repeat2",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-natural",
+      "after": "after-container-repeat3",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat2",
+      "after": "after-container-repeat3",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat3",
+      "after": "after-container-repeat3",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-natural",
+      "after": "after-container",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat2",
+      "after": "after-container",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat3",
+      "after": "after-container",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "2-28",
+      "before": "before-natural",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "3-28",
+      "before": "before-natural",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "4-28",
+      "before": "before-natural",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "5-2.6",
+      "before": "before-natural",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "5-28",
+      "before": "before-natural",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "6-2.6",
+      "before": "before-natural",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "6-28",
+      "before": "before-natural",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-natural",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat2",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat3",
+      "after": "after-host",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-natural",
+      "after": "after-unprotected",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat2",
+      "after": "after-unprotected",
+      "request_identical": true,
+      "response_identical": true
+    },
+    {
+      "case": "user-6-28",
+      "before": "before-container-repeat3",
+      "after": "after-unprotected",
+      "request_identical": true,
+      "response_identical": true
+    }
+  ],
+  "real_backend_e2e": {
+    "operation": "optimize_network",
+    "selected_cells": 6,
+    "elapsed_ms": 5380,
+    "candidate_proposals": 434,
+    "unique_states": 421,
+    "cell_memo_hits": 2424,
+    "cell_memo_misses": 180,
+    "deadline_ms": 59999,
+    "completion_reason": "complete",
+    "response_sha256": "651d3a97c8b3dec6c67d580dfeccd8f74cca9dbe6faf5d2261b9b6182290eed0",
+    "rate_remaining": 19
+  },
+  "validation": {
+    "backend_tests": "pass",
+    "backend_race": "pass",
+    "backend_vet": "pass",
+    "adapter_race_vet": "pass",
+    "frontend_test_files": 65,
+    "frontend_tests": 357,
+    "frontend_lint_build": "pass",
+    "real_backend_deadline_e2e": "pass",
+    "real_backend_budget_e2e": "pass",
+    "focused_ui_e2e_passed": 2,
+    "docs_pages": 45,
+    "api_paths": 41,
+    "version": "0.10.0",
+    "progress_ui": "NOT IMPLEMENTED",
+    "production_deadline_seconds_before_after": [
+      60,
+      60
+    ]
+  }
+}

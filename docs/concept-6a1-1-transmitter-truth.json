@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "transmitter-truth",
+  "mapped_b7_transmitters": 0,
+  "truth_class": "INSUFFICIENT",
+  "field_audit_for_actual_candidate_transmitters": [
+    {
+      "field": "location",
+      "status": "unknown",
+      "evidence": "No exact mapped identity; planning points are OpenCellID-derived and not operator verified."
+    },
+    {
+      "field": "Cell/sector identity",
+      "status": "unknown",
+      "evidence": "Source candidates remain unresolved against the active pack."
+    },
+    {
+      "field": "technology",
+      "status": "inferred",
+      "evidence": "LTE appears in handset cell snapshots, but candidate serving status conflicts."
+    },
+    {
+      "field": "frequency",
+      "status": "inferred",
+      "evidence": "Source candidate reports EARFCN 3200 / 2665 MHz; exact transmitter profile not mapped."
+    },
+    {
+      "field": "bandwidth",
+      "status": "unknown",
+      "evidence": "CellInfo bandwidth unavailable and ServiceState association ambiguous."
+    },
+    {
+      "field": "conducted TX power",
+      "status": "unknown",
+      "evidence": "No operator transmitter record."
+    },
+    {
+      "field": "TX power reference plane",
+      "status": "unknown",
+      "evidence": "No operator transmitter record."
+    },
+    {
+      "field": "antenna max/boresight gain",
+      "status": "unknown",
+      "evidence": "No source-specific antenna truth."
+    },
+    {
+      "field": "antenna pattern / beamwidth",
+      "status": "unknown",
+      "evidence": "No source-specific antenna truth."
+    },
+    {
+      "field": "azimuth",
+      "status": "unknown",
+      "evidence": "No exact mapped sector."
+    },
+    {
+      "field": "tilt",
+      "status": "unknown",
+      "evidence": "No exact mapped sector."
+    },
+    {
+      "field": "antenna height AGL",
+      "status": "unknown",
+      "evidence": "No exact mapped transmitter or measured site record."
+    },
+    {
+      "field": "system loss",
+      "status": "unknown",
+      "evidence": "No operator transmitter record."
+    },
+    {
+      "field": "polarization assumptions",
+      "status": "unknown",
+      "evidence": "No operator transmitter record."
+    },
+    {
+      "field": "receiver gain/correction",
+      "status": "unknown",
+      "evidence": "Built-in handset antenna is identified but has no independent calibration correction."
+    },
+    {
+      "field": "source/provenance",
+      "status": "known",
+      "evidence": "Active pack provenance is OpenCellID-derived planning data and explicitly not operator verified; it is insufficient for transmitter truth."
+    }
+  ],
+  "planning_configuration_boundary": {
+    "pack_coordinates_or_defaults_are_actual_transmitter_truth": false,
+    "configured_profile_values_promoted": false,
+    "note": "Any A.T.O.M planning defaults remain configured assumptions and were not relabeled measured or known."
+  }
+}

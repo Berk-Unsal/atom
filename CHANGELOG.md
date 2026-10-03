@@ -4,6 +4,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Added
+
+- Add sanitized real Ankara Concept 6A.1.1 ingestion, GNSS/radio QA, transmitter reconciliation, and blocked-readiness evidence without calibration or RF behavior changes.
+
 ### Fixed
 
 - Update vulnerable frontend and Go module dependencies, move Go builds to 1.26.6, and refresh the Alpine 3.24 image digest to patched releases.

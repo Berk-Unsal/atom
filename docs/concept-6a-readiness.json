@@ -9,17 +9,18 @@
     "no configuration bias",
     "independent review"
   ],
-  "allowed_interpretation": "validation infrastructure complete, real-data validation unavailable",
+  "allowed_interpretation": "Real Ankara raw recordings exist and parse, but source serving-status conflict prevents trustworthy canonical observations; Concept 6A validation remains unavailable.",
   "artifact": "readiness",
   "audit_version": "concept-6a-canonical-rf-validation-v1",
   "calibration_active": false,
   "concept": "6A",
   "evidence": {
-    "Ankara_campaign": "design_only",
+    "Ankara_campaign": "real_local_raw_data_exists_and_parsed; trustworthy canonical observations remain unavailable (Concept 6A.1.1)",
     "canonical_RF_invariance": "required and tested by snapshot comparison",
     "public_measurement_data": "unavailable",
     "synthetic_controls": "complete",
-    "validation_infrastructure": "complete"
+    "validation_infrastructure": "complete",
+    "real_local_measurement_data": "available; two raw sessions parsed, zero canonical observations"
   },
   "forbidden_interpretations": [
     "validated",

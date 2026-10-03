@@ -118,7 +118,7 @@ func TestGenerateConcept6A1Artifacts(t *testing.T) {
 	readiness := map[string]any{
 		"schema_version": 1,
 		"concept":        "6A.1",
-		"artifact":       "readiness",
+		"artifact":       "dry-run-readiness",
 		"audit_version":  concept6A1AuditVersion,
 		"state":          "dry_run_ready_real_data_unavailable",
 		"selected_collector": map[string]any{
@@ -217,7 +217,7 @@ func TestGenerateConcept6A1Artifacts(t *testing.T) {
 	artifacts := map[string]any{
 		"docs/concept-6a1-pre-change-baseline.json":    baseline,
 		"docs/concept-6a1-dry-run-validation.json":     dryRun,
-		"docs/concept-6a1-readiness.json":              readiness,
+		"docs/concept-6a1-dry-run-readiness.json":      readiness,
 		"docs/concept-6a1-post-change-comparison.json": post,
 	}
 	for relativePath, value := range artifacts {

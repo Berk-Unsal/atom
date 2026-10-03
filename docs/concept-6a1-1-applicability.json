@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "applicability",
+  "canonical_uma_scope": {
+    "frequency_profile_ghz": [
+      2.6,
+      28.0
+    ],
+    "minimum_2d_distance_m": 10,
+    "maximum_2d_distance_m": 5000,
+    "requires_explicit_outdoor_endpoints": true,
+    "requires_independent_los_nlos": true
+  },
+  "candidate_b7_frequency": {
+    "source_mhz": 2665.0,
+    "source_ghz": 2.665,
+    "planning_profile_ghz": 2.6,
+    "difference_ghz": 0.065,
+    "canonical_frequency_tolerance_ghz": 1e-06,
+    "exact_profile_match": false,
+    "substitution_performed": false
+  },
+  "gate_results": {
+    "trustworthy_canonical_observations": 0,
+    "transmitter_identity": false,
+    "frequency_resource_semantics": false,
+    "bandwidth_reference_semantics": false,
+    "transmitter_rf_truth": false,
+    "receiver_metadata": {
+      "nominal_height_agl_m": 1.4,
+      "provenance": "operator user-estimated; existing schema uses assumed",
+      "carry_range_m": [
+        1.3,
+        1.5
+      ],
+      "built_in_antenna": true,
+      "device_calibration": "uncalibrated"
+    },
+    "tx_height_known": false,
+    "geometry_usable": false,
+    "outdoor_state": "unknown",
+    "los_nlos_state": "unknown",
+    "uma_applicability_established": false
+  },
+  "absolute_rsrp_validation": {
+    "decision": "NO_GO",
+    "residual_metrics_generated": false,
+    "blockers": [
+      "No trustworthy canonical serving observation exists: every CellInfo snapshot has connection_status=NONE despite registered=true flags and collector change events.",
+      "No exact/deterministic B7 mapping to the Ankara pack.",
+      "Measured 2.665 GHz does not exactly match the canonical 2.600 GHz profile frequency under the frozen tolerance.",
+      "Bandwidth/source-resource reference is unavailable or ambiguously associated.",
+      "Transmitter RF-profile truth and TX power reference plane are absent.",
+      "Outdoor/LOS annotations and exact geometry are not established.",
+      "Receiver is uncalibrated."
+    ]
+  },
+  "assumption_bound_exploratory_comparison": {
+    "status": "not attempted",
+    "permitted_by_current_evidence": false,
+    "reason": "No exact transmitter identity and no canonical serving observation; a planning-point prediction would be an arbitrary comparison, not assumption-bound evidence."
+  },
+  "calibration": {
+    "active": false,
+    "study_ready": false,
+    "concept_6b_opened": false
+  }
+}

@@ -1,0 +1,17 @@
+SIGNAL_COLLECTOR_TXT_V6
+export_id=concept-6a1-sanitized-real-structure
+record_count=8
+dropped_samples=0
+timezone=UTC
+platform=Android
+fixture_note=synthetic cell identifiers and Null Island coordinates; payload shape only
+
+timestamp_iso_utc	epoch_ms	elapsed_realtime_ns	session_id	sequence_number	source	payload
+2026-10-02T10:00:00Z	1790935200000	1000000000	sanitized-route	1	session	record_type=survey_point;label=SANITIZED
+2026-10-02T10:00:00Z	1790935200000	1100000000	sanitized-route	2	location	record_type=fix;provider=gps;latitude=0;longitude=0;horizontal_accuracy_m=2;speed_mps=0
+2026-10-02T10:00:01Z	1790935201000	2000000000	sanitized-route	3	mobile_network	record_type=cell;technology=LTE;registered=true;connection_status=NONE;cell_timestamp_ms=1790935201000;plmn=28603;cell_id=1234567;pci=276;tac=1;earfcn=3200;band=B7;frequency_mhz=2665;bandwidth=;rsrp=-82;rsrq=-12;rssi=-71;rssnr=0;raw_cell_identity=CellIdentityLte:{ mCi\=1234567 mPci\=276 mEarfcn\=3200 mBandwidth\=2147483647 }
+2026-10-02T10:00:01Z	1790935201000	2100000000	sanitized-route	4	mobile_network	record_type=event;event=SERVICE_STATE_CHANGED;subscription_id=1;after={mChannelNumber\=3200,mCellBandwidths\=[10000],mPci\=2147483647}
+2026-10-02T10:00:01Z	1790935201000	2200000000	sanitized-route	5	mobile_network	record_type=signal_strength;technology=LTE;dbm=-55;subscription_id=1
+2026-10-02T10:00:02Z	1790935202000	3000000000	sanitized-route	6	mobile_network	record_type=cell;technology=LTE;registered=false;connection_status=NONE;cell_timestamp_ms=1790935202000;plmn=;cell_id=0;pci=23;earfcn=3200;band=B7;frequency_mhz=2665;bandwidth=;rsrp=-96;rsrq=-17;rssi=-80;rssnr=0
+2026-10-02T10:00:21Z	1790935221000	22000000000	sanitized-route	7	mobile_network	record_type=event;event=SERVING_CELL_CHANGED;trigger=TELEPHONY_CALLBACK;subscription_id=1;sim_slot=1;before_technology=LTE;before_cell_id=1234567;before_pci=276;after_technology=LTE;after_cell_id=7654321;after_pci=296
+2026-10-02T10:00:22Z	1790935222000	23000000000	sanitized-route	8	mobile_network	record_type=cell;technology=LTE;registered=true;connection_status=NONE;cell_timestamp_ms=1790935222000;plmn=28603;cell_id=7654321;pci=296;tac=1;earfcn=3200;band=B7;frequency_mhz=2665;bandwidth=;rsrp=-55;rsrq=-8;rssi=-51;rssnr=0;raw_cell_identity=CellIdentityLte:{ mCi\=7654321 mPci\=296 mEarfcn\=3200 mBandwidth\=2147483647 }

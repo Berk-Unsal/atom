@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "post-change-comparison",
+  "baseline_head": "a47828c67da6db0de88b08859f2e3ccc0c146b62",
+  "post_change_head": "working-tree",
+  "changes": [
+    "Add sanitized regression fixture/tests for real V6 source-status conflict and exact identity mapping.",
+    "Add sanitized real-pilot evidence, manifest, readiness and documentation."
+  ],
+  "invariance": {
+    "canonical_2_6_ghz_rf": "unchanged_by_source_diff_and_existing_backend_suite",
+    "canonical_28_ghz_rf": "unchanged_by_source_diff_and_existing_backend_suite",
+    "uma_los_nlos_link_budget_antenna_terrain_building_entry_interference": "unchanged_by_source_diff_and_existing_backend_suite",
+    "optimizer_objective_search_constraints_recommendation_pareto": "unchanged_by_source_diff_and_existing_backend_suite",
+    "planning_request_equivalence_2_6_and_28": "verified_by_existing_request_equivalence_test",
+    "optimization_request_equivalence": "verified_by_existing_request_equivalence_test",
+    "interference_request_equivalence": "verified_by_existing_request_equivalence_test",
+    "scenario_and_optimization_fingerprints": "no implementation changes; existing fingerprint tests retained",
+    "persistence_and_project_run_history": "unchanged_by_source_diff"
+  },
+  "evidence_boundary": {
+    "real_raw_files_parse": true,
+    "canonical_observations": 0,
+    "validation_residuals_generated": false,
+    "concept_6a_state": "no_measurement_data",
+    "concept_6a1_state": "real_data_ingested_validation_blocked",
+    "calibration_active": false,
+    "production_candidate": false,
+    "concept_6b_started": false,
+    "real_pilot_validation_artifact_present": false,
+    "synthetic_dry_run_artifact_preserved": true
+  },
+  "result": "The evidence phase adds no production behavior. The existing importer parses both recordings but constructs zero trustworthy canonical observations because source serving-status semantics conflict."
+}

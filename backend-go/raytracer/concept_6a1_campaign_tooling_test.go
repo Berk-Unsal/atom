@@ -134,6 +134,56 @@ func TestConcept6A1ManifestAndMapRejectMissingSemantics(t *testing.T) {
 	}
 }
 
+func TestConcept6A1MappingRequiresExactPLMNAndCellID(t *testing.T) {
+	_, _, transmitterMap := concept6A1Fixture(t)
+	entry := &transmitterMap.Entries[0]
+	if got := concept6A1MapEntryForCell(transmitterMap, entry.PLMN, entry.ObservedCellID); got != entry {
+		t.Fatalf("exact PLMN + Cell ID did not match: got=%+v want=%+v", got, entry)
+	}
+	if got := concept6A1MapEntryForCell(transmitterMap, "99999", entry.ObservedCellID); got != nil {
+		t.Fatalf("wrong PLMN matched a transmitter: %+v", got)
+	}
+	if got := concept6A1MapEntryForCell(transmitterMap, entry.PLMN, "different-cell-same-PCI"); got != nil {
+		t.Fatalf("PCI-only or geographic fallback matched an unrelated Cell ID: %+v", got)
+	}
+
+	duplicate := transmitterMap
+	duplicate.Entries = append(append([]Concept6A1TransmitterMapEntry(nil), transmitterMap.Entries...), transmitterMap.Entries[0])
+	duplicate.Entries[len(duplicate.Entries)-1].ATOMCellID = "atom-duplicate-identity"
+	if got := ValidateConcept6A1TransmitterMap(duplicate); !strings.Contains(got, "observed PLMN/cell identity is duplicated") {
+		t.Fatalf("ambiguous PLMN + Cell ID mapping was accepted: %q", got)
+	}
+}
+
+func TestConcept6A1DoesNotPromoteNearbyOrStrongestInventoryCell(t *testing.T) {
+	raw, manifest, transmitterMap := concept6A1Fixture(t)
+	// Make the synthetic planning point coincide with the receive coordinate.
+	// A changed observed Cell ID must still remain unmapped without the exact key.
+	transmitterMap.Entries[0].Lat = 39.912
+	transmitterMap.Entries[0].Lon = 32.849
+	if got := ValidateConcept6A1TransmitterMap(transmitterMap); got != "" {
+		t.Fatalf("synthetic nearby map rejected: %s", got)
+	}
+	mutated := strings.ReplaceAll(string(raw), "cell_id=1001", "cell_id=nearby-unmapped-cell")
+	imported, err := ImportConcept6A1SignalCollector([]byte(mutated), manifest, transmitterMap)
+	if err != nil {
+		t.Fatal(err)
+	}
+	seen := false
+	for _, observation := range imported.Observations {
+		if observation.RawCellID != "nearby-unmapped-cell" {
+			continue
+		}
+		seen = true
+		if observation.Observation.TransmitterID != "" || observation.MappingClass == Concept6A1MappingExact {
+			t.Fatalf("nearby/strongest planning point was promoted without an exact ID: %+v", observation)
+		}
+	}
+	if !seen {
+		t.Fatal("mutated serving rows were not retained for mapping-policy inspection")
+	}
+}
+
 func TestConcept6A1SyntheticDryRunIsEndToEndAndUncalibrated(t *testing.T) {
 	raw, manifest, transmitterMap := concept6A1Fixture(t)
 	first, err := EvaluateConcept6A1SignalCollector(context.Background(), raw, manifest, transmitterMap, nil)
@@ -284,5 +334,76 @@ func TestConcept6A1MovingRowsAndUnknownEndpointAnnotationsRemainExplicit(t *test
 	}
 	if evaluation.Validation.Counts.Applicable != 0 || evaluation.Validation.Counts.InsufficientMetadata == 0 {
 		t.Fatalf("unknown LOS/outdoor annotations were repaired: %+v", evaluation.Validation.Counts)
+	}
+}
+
+func TestConcept6A1SanitizedRealV6ServingConflictIsNotPromoted(t *testing.T) {
+	_, _, transmitterMap := concept6A1Fixture(t)
+	root := concept6A1RepoRoot(t)
+	raw, err := os.ReadFile(filepath.Join(root, "backend-go", "raytracer", "testdata", "concept-6a1-real-v6-structure-sanitized.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	manifestBytes, err := os.ReadFile(filepath.Join(root, "docs", "concept-6a1-1-campaign-manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var manifest Concept6A1CampaignManifest
+	if err := json.Unmarshal(manifestBytes, &manifest); err != nil {
+		t.Fatal(err)
+	}
+	if manifest.Receiver.HeightAGLM == nil || *manifest.Receiver.HeightAGLM != 1.4 || manifest.Receiver.HeightSource != CanonicalRFHeightAssumed {
+		t.Fatalf("operator user-estimated 1.4 m height was not represented through the supported schema: %+v", manifest.Receiver)
+	}
+	if got := ValidateConcept6A1CampaignManifest(manifest); got != "" {
+		t.Fatalf("real pilot manifest rejected: %s", got)
+	}
+
+	export, err := ParseConcept6A1SignalCollector(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if export.DataRowCount != 8 || len(export.Rows) != 8 {
+		t.Fatalf("sanitized source row counts = data:%d parsed:%d", export.DataRowCount, len(export.Rows))
+	}
+	registeredConflict, neighborZeroID, serviceState, servingChange, genericCallback := false, false, false, false, false
+	for _, row := range export.Rows {
+		payload := row.Payload
+		switch payload["record_type"] {
+		case "cell":
+			if payload["registered"] == "true" && payload["connection_status"] == "NONE" {
+				registeredConflict = true
+				if !strings.Contains(payload["raw_cell_identity"], "mBandwidth=2147483647") || payload["bandwidth"] != "" {
+					t.Fatalf("raw unavailable bandwidth semantics changed: %+v", payload)
+				}
+			}
+			if payload["registered"] == "false" && payload["cell_id"] == "0" {
+				neighborZeroID = true
+			}
+		case "event":
+			serviceState = serviceState || payload["event"] == "SERVICE_STATE_CHANGED" && strings.Contains(payload["after"], "mCellBandwidths=[10000]")
+			servingChange = servingChange || payload["event"] == "SERVING_CELL_CHANGED" && payload["before_cell_id"] == "1234567" && payload["after_cell_id"] == "7654321"
+		case "signal_strength":
+			genericCallback = genericCallback || payload["dbm"] == "-55" && payload["cell_id"] == ""
+		}
+	}
+	if !registeredConflict || !neighborZeroID || !serviceState || !servingChange || !genericCallback {
+		t.Fatalf("source structures were not preserved: conflict=%v zero_neighbor=%v service_state=%v serving_change=%v callback=%v", registeredConflict, neighborZeroID, serviceState, servingChange, genericCallback)
+	}
+
+	imported, err := ImportConcept6A1SignalCollector(raw, manifest, transmitterMap)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if imported.Quality.RegisteredCellRows != 0 || imported.Quality.NeighborCellRows != 3 || len(imported.Observations) != 0 || imported.Quality.SuitableForCalibration {
+		t.Fatalf("contradictory registered flag or neighbor became canonical evidence: quality=%+v observations=%d", imported.Quality, len(imported.Observations))
+	}
+
+	evaluation, err := EvaluateConcept6A1SignalCollector(context.Background(), raw, manifest, transmitterMap, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if evaluation.Validation.Counts.Total != 0 || evaluation.Validation.Readiness != CanonicalRFReadinessNoMeasurementData || evaluation.Validation.CalibrationActive || evaluation.Validation.ProductionCandidate {
+		t.Fatalf("source conflict or generic callback promoted readiness/calibration: %+v", evaluation.Validation)
 	}
 }

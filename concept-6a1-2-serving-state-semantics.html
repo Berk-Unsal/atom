@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="A privacy-preserving reconciliation
+of Android CellInfo, Signal Collector serving transitions, LTE
+ServiceState identities, subscription context, and the unresolved
+source-semantics decision." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Concept 6A.1.2 Serving-State
+Semantics | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Concept 6A.1.2
+Serving-State Semantics page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#inputs-and-baseline"
+      id="toc-inputs-and-baseline">Inputs and baseline</a></li>
+      <li><a href="#current-importer-contract"
+      id="toc-current-importer-contract">Current importer
+      contract</a></li>
+      <li><a href="#recomputed-source-inventory"
+      id="toc-recomputed-source-inventory">Recomputed source
+      inventory</a></li>
+      <li><a href="#serving-event-and-cell-list-reconciliation"
+      id="toc-serving-event-and-cell-list-reconciliation">Serving-event
+      and cell-list reconciliation</a></li>
+      <li><a href="#servicestate-identity-and-sim-audit"
+      id="toc-servicestate-identity-and-sim-audit">ServiceState,
+      identity, and SIM audit</a></li>
+      <li><a href="#source-semantics-and-conflict-matrix"
+      id="toc-source-semantics-and-conflict-matrix">Source semantics and
+      conflict matrix</a></li>
+      <li><a href="#decision-and-effect-on-readiness"
+      id="toc-decision-and-effect-on-readiness">Decision and effect on
+      readiness</a></li>
+      <li><a href="#invariance-and-validation-boundary"
+      id="toc-invariance-and-validation-boundary">Invariance and
+      validation boundary</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Scientific evidence</span>
+        <h1>Concept 6A.1.2 Serving-State Semantics</h1>
+        <p>A privacy-preserving reconciliation of Android CellInfo,
+Signal Collector serving transitions, LTE ServiceState identities,
+subscription context, and the unresolved source-semantics decision.</p>
+        <div class="hero-actions">
+          <a class="button" href="./concept-6a1-2-serving-state-semantics.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p><strong>Decision: A — semantics unresolved.</strong> The 37 explicit
+serving-change events are an exact and repeatable match for the
+registered LTE candidate transitions, and all 37 nearby cell-list
+transitions agree using masked identifiers. The source still contains a
+direct Android semantic conflict: all 83 <code>registered=true</code>
+candidate rows report <code>CONNECTION_NONE</code>, which Android
+defines as not serving. The LTE packet-switched registration identities
+add a second conflict: their PCI is 0, a valid LTE PCI, while every
+registered candidate has PCI 202, 276, or 296. The importer remains
+unchanged and canonical observations remain at zero.</p>
+<p>This was a source-state audit only. It did not use signal strength,
+map position, transmitter proximity, or propagation output to establish
+identity. No RF or optimizer work, residuals, calibration, or Concept 6B
+work occurred.</p>
+<h2 id="inputs-and-baseline">Inputs and baseline</h2>
+<p>The two local recordings were rehashed before analysis and matched
+Concept 6A.1.1 exactly. Neither recording nor its coordinates are
+tracked. The tracked JSON uses <code>CANDIDATE-NN</code> aliases for
+exact source identities, omits Cell IDs and partial Android Cell ID
+tokens, and reports callback times relative to the first mobile-network
+record in each file. It contains no coordinates or wall-clock
+timestamps.</p>
+<table>
+<thead>
+<tr>
+<th>Session</th>
+<th>Raw file</th>
+<th style="text-align: right;">Bytes</th>
+<th>SHA-256</th>
+<th style="text-align: right;">Full-file rows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stationary</td>
+<td><code>data-stationary-test.txt</code></td>
+<td style="text-align: right;">3,642,965</td>
+<td><code>ae4c62426eb02e6de158220fbb43a5eb978fdfa72b5550483b5cf25d12680fc7</code></td>
+<td style="text-align: right;">7,374</td>
+</tr>
+<tr>
+<td>Walking</td>
+<td><code>data-walking-test.txt</code></td>
+<td style="text-align: right;">22,175,305</td>
+<td><code>9d7aa4830391304a1a255c059c4c15dcb1b48c6f0de623dad4d934f7966c8f2f</code></td>
+<td style="text-align: right;">45,631</td>
+</tr>
+<tr>
+<td><strong>Combined</strong></td>
+<td></td>
+<td style="text-align: right;"><strong>25,818,270</strong></td>
+<td></td>
+<td style="text-align: right;"><strong>53,005</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The starting checkout was clean on <code>main</code> at
+<code>6ab445e8ff4eb091a678c7c66990d67c6cd04838</code>, version
+<code>0.9.2</code>, with an empty <code>git diff --stat</code>. Before
+editing, backend tests, race tests, vet, and targeted Concept 6A tests
+passed; see the <a
+href="concept-6a1-2-pre-change-baseline.json">pre-change
+baseline</a>.</p>
+<p>The repository parser recomputed all 53,005 rows. It reported no
+malformed or dropped rows, no timestamp epoch decreases, no sequence
+gaps, and no duplicate sequence numbers. Its 1,858 elapsed-realtime
+nonmonotonic warnings (237 stationary, 1,621 walking) are retained as
+parser warnings; they do not change the file's epoch/sequence order used
+for this audit.</p>
+<h2 id="current-importer-contract">Current importer contract</h2>
+<p>In
+<code>backend-go/raytracer/concept_6a1_campaign_tooling.go:1030</code>,
+a source cell qualifies only when its registered flag is known and true
+<strong>and</strong> its connection status is exactly
+<code>PRIMARY_SERVING</code> or <code>SECONDARY_SERVING</code>. The
+promotion loop uses that predicate. The two native statuses are accepted
+through the same predicate; the importer does not infer one from the
+other or promote a row based on <code>registered=true</code> alone.
+Consequently, <code>registered=true</code> plus <code>NONE</code> fails
+the predicate.</p>
+<p>The sanitized real-source regression test,
+<code>TestConcept6A1SanitizedRealV6ServingConflictIsNotPromoted</code>,
+continues to assert that the conflict is not promoted. No source
+predicate, parser, promotion path, fixture, or production behavior was
+changed.</p>
+<h2 id="recomputed-source-inventory">Recomputed source inventory</h2>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th style="text-align: right;">Stationary</th>
+<th style="text-align: right;">Walking</th>
+<th style="text-align: right;">Combined</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full-file parsed rows</td>
+<td style="text-align: right;">7,374</td>
+<td style="text-align: right;">45,631</td>
+<td style="text-align: right;">53,005</td>
+</tr>
+<tr>
+<td>LTE CellInfo rows</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: right;">224</td>
+</tr>
+<tr>
+<td><code>registered=true</code></td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">83</td>
+</tr>
+<tr>
+<td><code>registered=false</code></td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">141</td>
+</tr>
+<tr>
+<td><code>connection_status=NONE</code></td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: right;">224</td>
+</tr>
+<tr>
+<td>Raw Android <code>mCellConnectionStatus=0</code></td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: right;">224</td>
+</tr>
+<tr>
+<td><code>PRIMARY_SERVING</code> / <code>SECONDARY_SERVING</code> /
+<code>UNKNOWN</code> / other</td>
+<td style="text-align: right;">0 / 0 / 0 / 0</td>
+<td style="text-align: right;">0 / 0 / 0 / 0</td>
+<td style="text-align: right;">0 / 0 / 0 / 0</td>
+</tr>
+<tr>
+<td>CellInfo timestamp groups</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">81</td>
+</tr>
+<tr>
+<td>Groups with 0 registered rows</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Groups with exactly 1 registered row</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">79</td>
+</tr>
+<tr>
+<td>Groups with &gt;1 registered rows</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>Groups with &gt;1 distinct registered identity</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>SERVING_CELL_CHANGED</code></td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">37</td>
+</tr>
+<tr>
+<td><code>SERVICE_STATE_CHANGED</code></td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">79</td>
+</tr>
+<tr>
+<td><code>CELL_LIST_CHANGED</code></td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">83</td>
+</tr>
+<tr>
+<td>Signal-strength records</td>
+<td style="text-align: right;">103</td>
+<td style="text-align: right;">699</td>
+<td style="text-align: right;">802</td>
+</tr>
+</tbody>
+</table>
+<p>The two groups with more than one registered row each contain two
+duplicate rows for the <strong>same</strong> exact identity. No snapshot
+has competing distinct registered LTE identities. Eight distinct
+registered identities occur across both sessions. All 224 cell rows are
+LTE. The 83 registered rows are LTE, PLMN <code>28603</code>,
+subscription 1 / slot 1, and have
+<code>active_data_subscription=true</code>; the 141 neighbor rows have
+<code>active_data_subscription=false</code>.</p>
+<p>All 83 candidate rows are preserved chronologically in the <a
+href="concept-6a1-2-source-state-audit.json">source-state audit</a>,
+including subscription, slot, RAT, PLMN, candidate alias, PCI, EARFCN,
+band, frequency, source sequence, relative source time, and relative
+CellInfo snapshot time. The four observed channel contexts are EARFCN
+451 / B1 / 2155.1 MHz, 1306 / B3 / 1815.6 MHz, 3200 / B7 / 2665.0 MHz,
+and 6200 / B20 / 796.0 MHz. These values are copied from the source;
+they do not assign transmitter truth or bandwidth.</p>
+<h2 id="serving-event-and-cell-list-reconciliation">Serving-event and
+cell-list reconciliation</h2>
+<p>Every one of the 37 <code>SERVING_CELL_CHANGED</code> events has a
+complete before/after identity tuple in the source: subscription,
+technology, Cell ID, and PCI. Under exact source order and timestamp
+ordering, the immediately preceding registered snapshot has the exact
+event-before identity for 37/37 events, and the first following
+registered snapshot has the exact event-after identity for 37/37. This
+yields 37/37 exact transitions, zero partial or masked
+event-to-candidate comparisons, zero mismatches, and zero missing or
+ambiguous contexts. The same 37 candidate identity changes occur between
+consecutive CellInfo groups: seven stationary and 30 walking, with no
+unpaired or inconsistent identity transition.</p>
+<p>The serving event itself does not carry EARFCN, band, or frequency.
+The audit keeps that information as context from the adjacent registered
+CellInfo row rather than filling missing event fields. A sanitized
+example is stationary event sequence 18: <code>CANDIDATE-01</code> (LTE,
+PCI 276, B3 / EARFCN 1306) is the exact before identity, followed by
+<code>CANDIDATE-02</code> (LTE, PCI 276, B1 / EARFCN 451). The old
+candidate's last source row is 12 ms before the event; the new
+candidate's first source row is 1 ms after it.</p>
+<p>Across the 37 transitions, the old candidate's latest row is
+12–20,940 ms old at the event in the stationary session (median 17,005
+ms) and 11–21,008 ms old in the walking session (median 10,598.5 ms).
+The following candidate row appears 1–2 ms later for stationary and 1–4
+ms later for walking. This is consistent with CellInfo refreshes around
+every 20 seconds and a serving callback arriving just before its new
+snapshot; it does not establish that <code>NONE</code> means
+serving.</p>
+<p>Of 83 <code>CELL_LIST_CHANGED</code> callbacks, 39 change the
+registered-list state: 37 have one registered identity before and after,
+and two are initial 0-to-1 registrations. All 37 transition callbacks
+occur exactly one source sequence before their matching serving event.
+Their times range from 12 ms before to the same millisecond as the
+serving event. In every pair, the before/after masked Cell IDs are
+compatible with the exact event identities, and RAT, PCI, EARFCN,
+subscription, and slot match the adjacent candidate context. Thus the
+cell-list transition is internally consistent with the event, but its
+Cell IDs are masked and it does not reconcile the Android
+connection-status value.</p>
+<p>The complete event and paired cell-list ledger is in <a
+href="concept-6a1-2-transition-consistency.json">transition
+consistency</a>. It includes all sanitized event identities and the
+deterministic bracketing groups.</p>
+<h2 id="servicestate-identity-and-sim-audit">ServiceState, identity, and
+SIM audit</h2>
+<p>The 79 ServiceState callbacks contain 79 after-state snapshots and 77
+before-state snapshots: the first callback in each file has an empty
+before state. Those 156 states each contain one CS and one PS
+<code>NetworkRegistrationInfo</code> record, for 312 NRI contexts.</p>
+<p>All 156 states report outer data and voice registration
+<code>0 (IN_SERVICE)</code> and data RAT LTE. Every PS NRI reports HOME
+registration, LTE, DATA service, WWAN, registered PLMN
+<code>28603</code>, and an EARFCN equal to the outer ServiceState
+channel. Its <code>CellIdentityLte</code> Cell ID is partially redacted
+and omitted from tracked artifacts. Its <code>mPci</code> is 0 in all
+156 states. Android documents LTE PCI values as 0–503, so 0 is valid
+rather than the unavailable sentinel. The registered CellInfo candidates
+have only PCIs 202, 276, and 296; consequently, no PS NRI has a full
+identity match. In 64 states, the masked Cell ID token plus EARFCN,
+PLMN, RAT, and subscription is compatible with at least one registered
+candidate before considering PCI; the other 92 have no such candidate.
+The valid PCI value contradicts candidates in all 156 states, including
+those 64 partial matches.</p>
+<p>All 156 CS NRI records report HOME/LTE with VOICE, SMS, and VIDEO
+available; their PCI uses Android's <code>UNAVAILABLE</code> sentinel
+and therefore cannot independently identify a candidate. The
+<code>nrState</code> text is redacted in all 156 states. The visible PS
+data-specific fields report <code>isNrAvailable=false</code> and
+<code>isEnDcAvailable=false</code> in all 156 contexts; this does not
+supply a serving identity or change the all-LTE candidate inventory. Raw
+ServiceState bandwidth-vector counts are recorded in the service audit
+solely as source context and were not interpreted as measured cell
+bandwidth.</p>
+<p>All cell candidates, all serving events, all cell-list events, and
+all ServiceState callbacks are on subscription 1 / slot 1. Registered
+candidate rows carry the active-data-subscription boolean; all 83 are
+true. No cross-SIM ambiguity was found. The source contains no separate
+numeric active-data-subscription ID with which to make an additional
+independent comparison.</p>
+<p>The <a
+href="concept-6a1-2-service-state-consistency.json">ServiceState
+consistency audit</a> records every CS/PS context, the exposed identity
+fields, redaction flags, relative callback order, and before/after
+candidate groups. Its identity comparison keeps exact, partial, and
+contradictory fields separate.</p>
+<h2 id="source-semantics-and-conflict-matrix">Source semantics and
+conflict matrix</h2>
+<p>Android's <a
+href="https://developer.android.com/reference/android/telephony/CellInfo">CellInfo
+API</a> says <code>isRegistered()</code> is true when the phone is
+registered to a network providing service on the cell and the cell is or
+would be used for network signaling. It defines
+<code>CONNECTION_NONE</code> (integer 0) as not serving and neither
+camped nor serving; primary serving (1) is connected for signaling and
+possibly data, secondary serving (2) is connected for data, and unknown
+is the unavailable integer sentinel. The recordings retain both
+<code>registered=true</code> and raw
+<code>mCellConnectionStatus=0</code> on all 83 candidate rows. Android's
+definitions therefore directly conflict for these rows.</p>
+<p>Android's <a
+href="https://developer.android.com/reference/android/telephony/NetworkRegistrationInfo">NetworkRegistrationInfo
+API</a> defines CS/PS domains and exposes access technology, available
+services, registered PLMN, and cell identity. The <a
+href="https://developer.android.com/reference/android/telephony/CellIdentityLte">CellIdentityLte
+API</a> confirms PCI 0 is valid and defines the unavailable value
+separately. These APIs explain why the PS PCI cannot be dismissed as
+missing.</p>
+<p>Signal Collector's <a href="https://signalcollector.app/format">TXT
+data dictionary</a> lists <code>registered</code>, the four
+<code>connection_status</code> enum values, SIM subscription and slot,
+and <code>cell_timestamp_ms</code> for mobile-network records. It
+describes <code>SERVING_CELL_CHANGED</code> before/after identity fields
+as a serving-cell handover. It does not explain how that event is
+derived or how to reconcile it with <code>CONNECTION_NONE</code>. The
+page currently describes an export overview checked against app 2.0.1
+build 54, while its detailed TXT V6 dictionary is based on 1.5.2 with
+later additions. The recording header identifies TXT V6 but not the app
+build, so the exact implementation version is not established.
+Documentation was reviewed on 2026-10-03.</p>
+<table>
+<thead>
+<tr>
+<th>Evidence source</th>
+<th>Observed meaning</th>
+<th style="text-align: right;">Available</th>
+<th style="text-align: right;">Consistent with adjacent event/candidate
+transition</th>
+<th style="text-align: right;">Establishes serving despite
+<code>NONE</code>?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Android <code>registered</code></td>
+<td>Registered network cell used or eligible for signaling</td>
+<td style="text-align: right;">83 true rows</td>
+<td style="text-align: right;">Yes: exact event identities</td>
+<td style="text-align: right;">No: conflicts with connection status and
+PS PCI</td>
+</tr>
+<tr>
+<td>Android <code>connection_status</code></td>
+<td><code>NONE</code> means not serving; raw value 0</td>
+<td style="text-align: right;">224/224</td>
+<td style="text-align: right;">No for 83 registered candidates</td>
+<td style="text-align: right;">No; it is a direct negative serving
+indication</td>
+</tr>
+<tr>
+<td><code>SERVING_CELL_CHANGED</code></td>
+<td>Complete before/after identity transition</td>
+<td style="text-align: right;">37/37; exact against adjacent
+candidates</td>
+<td style="text-align: right;">Yes, exact both sides</td>
+<td style="text-align: right;">Not alone: derivation and authority
+against Android status are undocumented</td>
+</tr>
+<tr>
+<td><code>CELL_LIST_CHANGED</code></td>
+<td>One registered-list identity changes around each event</td>
+<td style="text-align: right;">37/37, masked Cell ID</td>
+<td style="text-align: right;">Yes, masked-compatible</td>
+<td style="text-align: right;">No; partial Cell ID does not settle
+Android semantics</td>
+</tr>
+<tr>
+<td>PS <code>NetworkRegistrationInfo</code></td>
+<td>LTE data service is in service; channel/PLMN available</td>
+<td style="text-align: right;">156 contexts</td>
+<td style="text-align: right;">Channel/PLMN fit in some cases; PCI
+conflicts in all</td>
+<td style="text-align: right;">No; zero exact identity matches</td>
+</tr>
+<tr>
+<td>Active data subscription</td>
+<td>Candidate rows and callbacks use subscription 1 / slot 1</td>
+<td style="text-align: right;">All checked rows/callbacks</td>
+<td style="text-align: right;">Yes</td>
+<td style="text-align: right;">No; removes SIM ambiguity but not
+identity conflict</td>
+</tr>
+</tbody>
+</table>
+<p>Signal strength was counted only. No RSRP, RSSI, RSRQ, SINR,
+geographic location, map position, inventory proximity, model output, or
+residual was used to select an identity.</p>
+<h2 id="decision-and-effect-on-readiness">Decision and effect on
+readiness</h2>
+<p>The event-to-candidate state machine is deterministic at the identity
+level: all 37 before/after edges agree, and all 37 cell-list transitions
+corroborate them with masked identifiers. The combined evidence still
+cannot establish a serving-state contract because Android explicitly
+says <code>CONNECTION_NONE</code> is not serving while
+<code>isRegistered()</code> describes a cell used or eligible for
+signaling, and PS NRI PCI 0 is a valid but conflicting identity field.
+Callback order explains why a CellInfo candidate can be older than the
+serving event; it does not remove either semantic conflict. Thus event
+names alone, <code>registered=true</code> alone, and their combination
+are insufficient to override Android's explicit status semantics
+safely.</p>
+<p><strong>Decision A — SEMANTICS UNRESOLVED.</strong> No fallback rule
+or applicability scope is proposed. No provenance class was added. The
+existing predicate remains the contradiction guard and rejects
+<code>NONE</code>. The pre-existing result of zero canonical
+observations remains zero; no production re-import was run because no
+adapter change is justified. The prior exact PLMN + Cell ID transmitter
+mapping count remains zero.</p>
+<p>Current Concept 6A.1 readiness is now
+<code>real_data_ingested_serving_semantics_blocked</code>, decision
+<code>A_SEMANTICS_UNRESOLVED</code>. Concept 6A remains
+<code>no_measurement_data</code>. B7 measurement bandwidth remains
+unavailable; no bandwidth heuristic was applied. Absolute RSRP
+validation, calibration, and production-candidate readiness remain
+false. Outdoor state, LOS/NLOS, transmitter identity/truth, and TX power
+remain unresolved independent blockers.</p>
+<p>The only next blocker is version-specific source clarification. The
+prepared vendor questions ask how <code>registered=true</code> plus
+<code>CONNECTION_NONE</code> should be interpreted, how the serving
+event is derived, and whether registered state can be used as serving
+evidence on devices that never populate a serving connection status.
+Nothing was sent.</p>
+<h2 id="invariance-and-validation-boundary">Invariance and validation
+boundary</h2>
+<p>Production adapter code and the sanitized fixture are unchanged. RF
+equations, canonical propagation, link budget, antenna behavior,
+optimizer, request builders, scenario and optimization fingerprints,
+persistence, and frontend files are unchanged. The change is
+documentation and generated reference material only. No fallback dry
+run, canonical re-import, signal-quantity promotion, residual,
+calibration, or Concept 6B work was run.</p>
+<p>The test evidence and file comparison are in <a
+href="concept-6a1-2-test-evidence.json">test evidence</a> and <a
+href="concept-6a1-2-post-change-comparison.json">post-change
+comparison</a>. The baseline, source, transition, ServiceState, and
+decision artifacts are linked above or below:</p>
+<ul>
+<li><a href="concept-6a1-2-pre-change-baseline.json">Pre-change
+baseline</a></li>
+<li><a href="concept-6a1-2-source-state-audit.json">Source-state
+audit</a></li>
+<li><a href="concept-6a1-2-transition-consistency.json">Transition
+consistency</a></li>
+<li><a href="concept-6a1-2-service-state-consistency.json">ServiceState
+consistency</a></li>
+<li><a href="concept-6a1-2-decision.json">Decision</a></li>
+<li><a href="concept-6a1-2-test-evidence.json">Test evidence</a></li>
+<li><a href="concept-6a1-2-post-change-comparison.json">Post-change
+comparison</a></li>
+<li>Vendor clarification questions</li>
+</ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

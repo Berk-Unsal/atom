@@ -2,12 +2,12 @@
   "schema_version": 1,
   "concept": "6A.1",
   "artifact": "readiness",
-  "audit_version": "concept-6a1-real-ingestion-v1",
-  "state": "real_data_ingested_validation_blocked",
-  "decision": "A_REAL_INGESTION_FAILED",
+  "audit_version": "concept-6a1-serving-state-semantics-v1",
+  "state": "real_data_ingested_serving_semantics_blocked",
+  "decision": "A_SEMANTICS_UNRESOLVED",
   "real_data_available": true,
   "raw_source_parse": "passed_all_53005_data_rows",
-  "canonical_observation_ingestion": "failed_trustworthy_source_semantics_gate",
+  "canonical_observation_ingestion": "blocked_unresolved_serving_semantics",
   "canonical_observation_count": 0,
   "source_quality": {
     "malformed_rows": 0,
@@ -18,7 +18,11 @@
     "collector_serving_cell_changed_events": 37,
     "b7_candidate_rows": 29,
     "b7_candidate_rsrp_rows": 28,
-    "b7_exact_mappings": 0
+    "b7_exact_mappings": 0,
+    "all_cell_info_rows_connection_status_none": 224,
+    "registered_true_rows_with_connection_status_none": 83,
+    "serving_events_exact_before_and_after_reconciliation": 37,
+    "service_state_ps_identity_full_matches": 0
   },
   "quantity_readiness": {
     "rsrp_dbm": {
@@ -72,8 +76,8 @@
   },
   "primary_blocker_and_next_action": {
     "priority": 1,
-    "blocker": "Signal Collector source semantics conflict: registered=true snapshots all report connection_status=NONE while separate events are named SERVING_CELL_CHANGED.",
-    "action": "Obtain authoritative collector/source documentation or vendor confirmation for how these fields and event IDs relate; only then decide whether an additive, deterministic adapter rule can preserve the 6A.1 canonical-serving contract."
+    "blocker": "Android source semantics conflict: every registered=true LTE row reports CONNECTION_NONE, which Android documents as not serving; serving-change events match the adjacent registered identities, while all LTE PS NetworkRegistrationInfo identities conflict with registered candidates on valid PCI=0.",
+    "action": "Obtain version-specific Signal Collector clarification for registered=true plus CONNECTION_NONE, the derivation/authority of SERVING_CELL_CHANGED, and whether registered=true is valid serving evidence on a device that always reports CONNECTION_NONE. Keep the importer predicate unchanged until the contradiction is resolved."
   },
   "other_validation_blocks": [
     "No exact A.T.O.M inventory identity match.",
@@ -83,5 +87,7 @@
     "Device response uncalibrated; interference neighbor context incomplete."
   ],
   "future_collection_authorized_or_scheduled": false,
-  "real_pilot_evidence_artifact": "concept-6a1-1-readiness.json"
+  "real_pilot_evidence_artifact": "concept-6a1-2-decision.json",
+  "serving_state_semantics_artifact": "concept-6a1-2-serving-state-semantics.md",
+  "decision_evidence_artifact": "concept-6a1-2-decision.json"
 }

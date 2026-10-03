@@ -1,0 +1,529 @@
+{
+  "concept": "8H",
+  "baseline_commit": "ed7268f25a9faa4d1c76d6043a3b213147eada00",
+  "branch": "codex/concept-8h-visual-system",
+  "version": "0.9.3",
+  "bundle": {
+    "before": {
+      "initial_js_raw_bytes": 822925,
+      "initial_js_gzip_bytes": 232334,
+      "js_chunk_count": 15,
+      "css_raw_bytes": 202679,
+      "css_gzip_bytes": 35939
+    },
+    "after": {
+      "initial_js_raw_bytes": 825124,
+      "initial_js_gzip_bytes": 233032,
+      "js_chunk_count": 15,
+      "css_raw_bytes": 243521,
+      "css_gzip_bytes": 37840
+    },
+    "delta": {
+      "initial_js_raw_bytes": 2199,
+      "initial_js_gzip_bytes": 698,
+      "js_chunk_count": 0,
+      "css_raw_bytes": 40842,
+      "css_gzip_bytes": 1901
+    },
+    "compression": "zlib level 9, gzip wrapper (wbits=31), same method before/after",
+    "explanation": "Initial JS grows under 0.3% raw and under 0.4% gzip. CSS raw growth mainly reflects replacing short literals with semantic variable names and consolidating shared rules; gzip delta recorded. No new dependency/chunk/font request."
+  },
+  "screenshots": {
+    "pairs": 24,
+    "fixture_cells": 42,
+    "directory": "docs/assets/concept-8h",
+    "viewports": [
+      390,
+      768,
+      1024,
+      1366,
+      1440,
+      1512,
+      1728
+    ],
+    "files": [
+      {
+        "state": "default-map",
+        "before": "docs/assets/concept-8h/before/default-map.jpg",
+        "after": "docs/assets/concept-8h/after/default-map.jpg"
+      },
+      {
+        "state": "plan-menu",
+        "before": "docs/assets/concept-8h/before/plan-menu.jpg",
+        "after": "docs/assets/concept-8h/after/plan-menu.jpg"
+      },
+      {
+        "state": "setup",
+        "before": "docs/assets/concept-8h/before/setup.jpg",
+        "after": "docs/assets/concept-8h/after/setup.jpg"
+      },
+      {
+        "state": "simulate-menu",
+        "before": "docs/assets/concept-8h/before/simulate-menu.jpg",
+        "after": "docs/assets/concept-8h/after/simulate-menu.jpg"
+      },
+      {
+        "state": "analyze-menu",
+        "before": "docs/assets/concept-8h/before/analyze-menu.jpg",
+        "after": "docs/assets/concept-8h/after/analyze-menu.jpg"
+      },
+      {
+        "state": "review-empty-single",
+        "before": "docs/assets/concept-8h/before/review-empty-single.jpg",
+        "after": "docs/assets/concept-8h/after/review-empty-single.jpg"
+      },
+      {
+        "state": "selected-network",
+        "before": "docs/assets/concept-8h/before/selected-network.jpg",
+        "after": "docs/assets/concept-8h/after/selected-network.jpg"
+      },
+      {
+        "state": "active-selected-cell",
+        "before": "docs/assets/concept-8h/before/active-selected-cell.jpg",
+        "after": "docs/assets/concept-8h/after/active-selected-cell.jpg"
+      },
+      {
+        "state": "dense-sogutozu",
+        "before": "docs/assets/concept-8h/before/dense-sogutozu.jpg",
+        "after": "docs/assets/concept-8h/after/dense-sogutozu.jpg"
+      },
+      {
+        "state": "selection-polygon",
+        "before": "docs/assets/concept-8h/before/selection-polygon.jpg",
+        "after": "docs/assets/concept-8h/after/selection-polygon.jpg"
+      },
+      {
+        "state": "inventory",
+        "before": "docs/assets/concept-8h/before/inventory.jpg",
+        "after": "docs/assets/concept-8h/after/inventory.jpg"
+      },
+      {
+        "state": "propagation",
+        "before": "docs/assets/concept-8h/before/propagation.jpg",
+        "after": "docs/assets/concept-8h/after/propagation.jpg"
+      },
+      {
+        "state": "rf-diagnostics",
+        "before": "docs/assets/concept-8h/before/rf-diagnostics.jpg",
+        "after": "docs/assets/concept-8h/after/rf-diagnostics.jpg"
+      },
+      {
+        "state": "setup-network",
+        "before": "docs/assets/concept-8h/before/setup-network.jpg",
+        "after": "docs/assets/concept-8h/after/setup-network.jpg"
+      },
+      {
+        "state": "review-empty-network",
+        "before": "docs/assets/concept-8h/before/review-empty-network.jpg",
+        "after": "docs/assets/concept-8h/after/review-empty-network.jpg"
+      },
+      {
+        "state": "review-1366",
+        "before": "docs/assets/concept-8h/before/review-1366.jpg",
+        "after": "docs/assets/concept-8h/after/review-1366.jpg"
+      },
+      {
+        "state": "review-1512",
+        "before": "docs/assets/concept-8h/before/review-1512.jpg",
+        "after": "docs/assets/concept-8h/after/review-1512.jpg"
+      },
+      {
+        "state": "review-1728",
+        "before": "docs/assets/concept-8h/before/review-1728.jpg",
+        "after": "docs/assets/concept-8h/after/review-1728.jpg"
+      },
+      {
+        "state": "review-1024",
+        "before": "docs/assets/concept-8h/before/review-1024.jpg",
+        "after": "docs/assets/concept-8h/after/review-1024.jpg"
+      },
+      {
+        "state": "review-768",
+        "before": "docs/assets/concept-8h/before/review-768.jpg",
+        "after": "docs/assets/concept-8h/after/review-768.jpg"
+      },
+      {
+        "state": "review-390",
+        "before": "docs/assets/concept-8h/before/review-390.jpg",
+        "after": "docs/assets/concept-8h/after/review-390.jpg"
+      },
+      {
+        "state": "review-current",
+        "before": "docs/assets/concept-8h/before/review-current.jpg",
+        "after": "docs/assets/concept-8h/after/review-current.jpg"
+      },
+      {
+        "state": "review-stale",
+        "before": "docs/assets/concept-8h/before/review-stale.jpg",
+        "after": "docs/assets/concept-8h/after/review-stale.jpg"
+      },
+      {
+        "state": "analyze-disabled",
+        "before": "docs/assets/concept-8h/before/analyze-disabled.jpg",
+        "after": "docs/assets/concept-8h/after/analyze-disabled.jpg"
+      }
+    ],
+    "visual_review": {
+      "result": "passed",
+      "states_reviewed": [
+        "default-map",
+        "plan-menu",
+        "setup",
+        "simulate-menu",
+        "analyze-menu",
+        "review-empty-single",
+        "selected-network",
+        "active-selected-cell",
+        "dense-sogutozu",
+        "selection-polygon",
+        "inventory",
+        "propagation",
+        "rf-diagnostics",
+        "setup-network",
+        "review-empty-network",
+        "review-1366",
+        "review-1512",
+        "review-1728",
+        "review-1024",
+        "review-768",
+        "review-390",
+        "review-current",
+        "review-stale",
+        "analyze-disabled"
+      ],
+      "findings": [
+        "Type roles and weights coherent",
+        "Consistent form controls and headers",
+        "Persistent primary action and contextual empty actions",
+        "No wrapping result categories; internal strip scroll is deliberate",
+        "All stage menus use same placement and interaction model",
+        "No stage tooltip over open chooser",
+        "Available Cells quieter with original hit footprint retained",
+        "Selection numbers centered and active/selected rings compose",
+        "Map roads/parks/district context readable; RF palette untouched",
+        "Tablet toolbar/zoom separation and header-popover layering corrected",
+        "No document horizontal overflow"
+      ],
+      "remaining_limitations": [
+        "Co-located Cells can overlap at true coordinates; no fan-out or clustering added",
+        "System font metrics naturally differ by OS",
+        "Existing large-bundle warning",
+        "No standalone type checker configured"
+      ]
+    }
+  },
+  "changes": [
+    {
+      "status": "M",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/changelog.html"
+    },
+    {
+      "status": "M",
+      "path": "docs/search-index.json"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/e2e/workspace.spec.js"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/src/App.jsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/src/App.workflow.test.jsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/src/components/ContextualInspector.jsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/src/components/ControlPanel.jsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/src/components/ControlPanel.test.jsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/src/components/MapCanvas.jsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/src/components/WorkspaceChrome.jsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/src/components/WorkspaceChrome.test.jsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend-react/src/styles.css"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/active-selected-cell.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/analyze-disabled.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/analyze-menu.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/default-map.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/dense-sogutozu.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/evidence.json"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/inventory.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/plan-menu.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/propagation.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-1024.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-1366.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-1512.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-1728.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-390.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-768.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-current.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-empty-network.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-empty-single.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/review-stale.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/rf-diagnostics.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/selected-network.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/selection-polygon.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/setup-network.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/setup.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/after/simulate-menu.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/active-selected-cell.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/analyze-disabled.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/analyze-menu.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/default-map.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/dense-sogutozu.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/evidence.json"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/inventory.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/plan-menu.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/propagation.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-1024.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-1366.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-1512.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-1728.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-390.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-768.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-current.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-empty-network.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-empty-single.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/review-stale.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/rf-diagnostics.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/selected-network.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/selection-polygon.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/setup-network.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/setup.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/assets/concept-8h/before/simulate-menu.jpg"
+    },
+    {
+      "status": "??",
+      "path": "docs/concept-8h-design-tokens.json"
+    },
+    {
+      "status": "??",
+      "path": "docs/concept-8h-post-change-comparison.json"
+    },
+    {
+      "status": "??",
+      "path": "docs/concept-8h-pre-change-baseline.json"
+    },
+    {
+      "status": "??",
+      "path": "docs/concept-8h-test-evidence.json"
+    },
+    {
+      "status": "??",
+      "path": "docs/concept-8h-visual-audit.json"
+    },
+    {
+      "status": "??",
+      "path": "docs/concept-8h-visual-comparison.md"
+    },
+    {
+      "status": "??",
+      "path": "docs/concept-8h-visual-system-consolidation.md"
+    },
+    {
+      "status": "??",
+      "path": "frontend-react/src/components/AnalysisEmptyState.jsx"
+    },
+    {
+      "status": "??",
+      "path": "frontend-react/src/components/AnalysisEmptyState.test.jsx"
+    },
+    {
+      "status": "??",
+      "path": "frontend-react/src/components/PanelHeader.jsx"
+    },
+    {
+      "status": "??",
+      "path": "frontend-react/src/components/ResultTabs.jsx"
+    },
+    {
+      "status": "??",
+      "path": "frontend-react/src/components/ResultTabs.test.jsx"
+    },
+    {
+      "status": "??",
+      "path": "frontend-react/src/components/cellMarkerPresentation.js"
+    },
+    {
+      "status": "??",
+      "path": "frontend-react/src/components/cellMarkerPresentation.test.js"
+    }
+  ],
+  "new_dependencies": [],
+  "freeze_recommendation": "Concept 8H can be frozen after the recorded passing checks and visual review",
+  "next_product_step": "User acceptance review of screenshot pairs, then normal release preparation",
+  "scientific_work": "6A/6A.1 frozen; no new RF research or feature work"
+}

@@ -1,0 +1,150 @@
+{
+  "concept": "8H",
+  "source": "frontend-react/src/styles.css :root",
+  "font_family": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+  "root_size": "100% (browser default 16px; respects user settings)",
+  "typography": {
+    "title": {
+      "token": "--text-title",
+      "size": "1.125rem",
+      "px_at_root_16": 18.0,
+      "weight": 700
+    },
+    "section": {
+      "token": "--text-section",
+      "size": "0.875rem",
+      "px_at_root_16": 14.0,
+      "weight": 600
+    },
+    "control": {
+      "token": "--text-control",
+      "size": "0.875rem",
+      "px_at_root_16": 14.0,
+      "weight": 500
+    },
+    "label": {
+      "token": "--text-label",
+      "size": "0.8125rem",
+      "px_at_root_16": 13.0,
+      "weight": 600
+    },
+    "body": {
+      "token": "--text-body",
+      "size": "0.8125rem",
+      "px_at_root_16": 13.0,
+      "weight": 400
+    },
+    "meta": {
+      "token": "--text-meta",
+      "size": "0.75rem",
+      "px_at_root_16": 12.0,
+      "weight": 500
+    }
+  },
+  "weights": {
+    "weight-body": "400",
+    "weight-value": "500",
+    "weight-label": "600",
+    "weight-title": "700"
+  },
+  "line_heights": {
+    "leading-title": "1.25",
+    "leading-control": "1.3",
+    "leading-body": "1.45"
+  },
+  "spacing": {
+    "space-1": "4px",
+    "space-2": "8px",
+    "space-3": "12px",
+    "space-4": "16px",
+    "space-5": "20px",
+    "space-6": "24px",
+    "space-8": "32px"
+  },
+  "control_heights": {
+    "control-compact": "32px",
+    "control-normal": "36px",
+    "control-primary": "40px",
+    "control-segmented": "52px",
+    "control-touch": "44px"
+  },
+  "radii": {
+    "radius-small": "4px",
+    "radius-control": "6px",
+    "radius-panel": "8px",
+    "radius-round": "999px"
+  },
+  "elevation": {
+    "floating": "0 2px 8px rgba(15, 23, 42, 0.12)",
+    "surfaces": "none",
+    "selected_underline": "inset 0 -2px var(--teal)"
+  },
+  "color_roles": [
+    {
+      "role": "primary",
+      "foreground": "#14201c",
+      "background": "#f7faf9",
+      "ratio": 15.96,
+      "normal_text_4_5_pass": true
+    },
+    {
+      "role": "secondary",
+      "foreground": "#52615a",
+      "background": "#f7faf9",
+      "ratio": 6.22,
+      "normal_text_4_5_pass": true
+    },
+    {
+      "role": "tertiary",
+      "foreground": "#5d6b64",
+      "background": "#f7faf9",
+      "ratio": 5.33,
+      "normal_text_4_5_pass": true
+    },
+    {
+      "role": "disabled",
+      "foreground": "#5d6b64",
+      "background": "#f0f5f2",
+      "ratio": 5.08,
+      "normal_text_4_5_pass": true
+    },
+    {
+      "role": "warning",
+      "foreground": "#b45309",
+      "background": "#fffbeb",
+      "ratio": 4.84,
+      "normal_text_4_5_pass": true
+    },
+    {
+      "role": "error",
+      "foreground": "#be123c",
+      "background": "#fff1f2",
+      "ratio": 5.72,
+      "normal_text_4_5_pass": true
+    },
+    {
+      "role": "action",
+      "foreground": "#ffffff",
+      "background": "#0f766e",
+      "ratio": 5.47,
+      "normal_text_4_5_pass": true
+    },
+    {
+      "role": "selected/action",
+      "foreground": "#0b4f49",
+      "background": "#e6f7ef",
+      "ratio": 8.49,
+      "normal_text_4_5_pass": true
+    },
+    {
+      "role": "selected order",
+      "foreground": "#833c0c",
+      "background": "#fff3e7",
+      "ratio": 7.35,
+      "normal_text_4_5_pass": true
+    }
+  ],
+  "basemap_filter": "saturate(0.62) contrast(0.94) brightness(1.03) on tile pane only",
+  "numeric_formatting": "tabular-nums for metrics, counts, inputs and source metadata; ordinary prose unaffected",
+  "contrast_scope": "Token role pairs, not a claim of exhaustive WCAG conformance or photographic basemap contrast."
+}

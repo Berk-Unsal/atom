@@ -1,0 +1,3045 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Frozen workload estimators, fresh
+Ankara domains, unseen settings, actual HTTP streaming and
+sustained-load decision evidence." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Locked Estimator Validation | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Locked Estimator
+Validation page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#baseline-and-frozen-contract"
+      id="toc-baseline-and-frozen-contract">Baseline and frozen
+      contract</a></li>
+      <li><a href="#domains-and-settings"
+      id="toc-domains-and-settings">Domains and settings</a></li>
+      <li><a href="#http-process-and-sustained-load-methods"
+      id="toc-http-process-and-sustained-load-methods">HTTP, process and
+      sustained-load methods</a></li>
+      <li><a href="#estimator-errors-and-classification"
+      id="toc-estimator-errors-and-classification">Estimator errors and
+      classification</a></li>
+      <li><a href="#memory-and-preflight-observation"
+      id="toc-memory-and-preflight-observation">Memory and preflight
+      observation</a></li>
+      <li><a href="#leakage-completeness-and-production-invariance"
+      id="toc-leakage-completeness-and-production-invariance">Leakage,
+      completeness and production invariance</a></li>
+      <li><a href="#checks-and-freeze-decision"
+      id="toc-checks-and-freeze-decision">Checks and freeze
+      decision</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Validation evidence</span>
+        <h1>Locked Estimator Validation</h1>
+        <p>Frozen workload estimators, fresh Ankara domains, unseen
+settings, actual HTTP streaming and sustained-load decision
+evidence.</p>
+        <div class="hero-actions">
+          <a class="button" href="./auto-resource-estimator-locked-validation.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p><strong>D — INVALID VALIDATION</strong>. Adaptive-admission DESIGN
+not allowed. Auto remains observation-only. No production behavior
+changed, no release.</p>
+<p>Completed 3166/3166 planned groups, 5997 real HTTP requests and 6057
+prediction records (including secondary recorder controls). Optimize CPU
+fails: worst raw actual/predicted 15.321×, post-margin 5.443×,
+post-margin misses 43.26%; 139 applicable HTTP504 failures. Only
+Surface, Explain and Azimuth response estimators pass the numerical
+gates; no useful compute candidate passes.</p>
+<p>Certification is invalid: only 61/72 scenarios reached30s sampled
+background activity, 20 mixed comparisons lack matching A/B isolated
+references, and the reference-completeness guard was added after launch.
+Frozen models, margins and numeric gates remain unchanged.</p>
+<h2 id="baseline-and-frozen-contract">Baseline and frozen contract</h2>
+<p>Clean <code>main</code>, HEAD
+<code>2da0f9deaf40e2145049eb4506b9b424851aed5d</code>, VERSION
+<code>0.11.0</code>; initial status/diff empty. Calibration source
+commit <code>2da0f9deaf40e2145049eb4506b9b424851aed5d</code>. Prior
+artifacts preserved.</p>
+<p>Lock SHA256
+<code>313002209d4ccd39ffe663bc5365b66a6cc7d7e0edad1613ce603b237cdbe7d2</code>.
+Domain SHA256
+<code>da869358b0163abb16c88c322fa7589ca4b928245a7a3b4c239923e5a25616fe</code>.
+Run-plan SHA256
+<code>d85c125203d67d7e64078fdac7caf2ad4980ed3ea9b4b6f198c4ca8a861986cc</code>.</p>
+<p>Prior gates retained: calibration-only margin ≤4; post-margin
+underprediction ≤5%; worst post-margin shortfall relative to actual
+≤10%. Each repeat scores separately, to prevent repeat averaging from
+hiding safety misses. These gates apply overall and within every
+geometry band, RF setting, search setting, frequency and resource
+profile. Failed/timed-out primary requests fail applicable candidates.
+Missing planned evidence is INSUFFICIENT; overall incomplete or breached
+validation is D. Negative controls cannot certify.</p>
+<p>Frozen predictor:
+<code>exp(max(-40,min(b0 + Σ bi*(transform(xi)-mean_i)/scale_i,40)))</code>,
+retaining the prior numeric clamp. Count/ray/radius/density features use
+log1p; area uses log(max(x,1e-9)); 28GHz is binary. No hardware,
+Cell-count, search-policy or contention features exist. Coefficients
+below include intercept first. Exact means/scales and all formulas are
+in the JSON and lock.</p>
+<table>
+<thead>
+<tr>
+<th>Estimator</th>
+<th>Role</th>
+<th>Family / features</th>
+<th>Coefficients (intercept first)</th>
+<th>Frozen margin</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>candidate</td>
+<td>parameters: rays, radius_m, frequency_28</td>
+<td>8.5985646932316975, 0, 0, -0.00011369916285380661</td>
+<td>1.0018470212470461</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>candidate</td>
+<td>density: radius_m, frequency_28, vertex_density, area</td>
+<td>-3.1748569518068601, 0.10279649107815242, 0.01127103201442727,
+1.2282666410994536, 0.80146369393413242</td>
+<td>3.9227794390474862</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>negative_control</td>
+<td>edges: rays, radius_m, frequency_28, edges</td>
+<td>-0.44098503483785911, 0.14737524300944865, -0.22075812222525168,
+0.14330614077645079, 0.62398190957018917</td>
+<td>2.1005736478104855</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>candidate</td>
+<td>density: rays, radius_m, frequency_28, vertex_density, area</td>
+<td>10.273064196740748, 5.4461454910815729e-05, 0.0045582346031649785,
+0.0001747873366664151, 0.0025573761154354885,
+-0.0056764824488158708</td>
+<td>1.007581827023615</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>candidate</td>
+<td>parameters: rays, radius_m, frequency_28</td>
+<td>7.9765316360135881, 0, 0, 0.00046262270375725857</td>
+<td>1.0427124933064769</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>negative_control</td>
+<td>edges: radius_m, frequency_28, edges</td>
+<td>-3.2249855755317687, -0.099324639576198748, 0.017637709381274597,
+0.92884789913748245</td>
+<td>1.9373811578869533</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>candidate</td>
+<td>parameters: radius_m, frequency_28</td>
+<td>15.54038214230718, 0.197203832017875, -0.008375573456405801</td>
+<td>1.7638193340812069</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>candidate</td>
+<td>footprints: rays, radius_m, frequency_28, footprints</td>
+<td>2.4685679954736548, 0.094024759929614163, -0.049716454634313845,
+0.03000586856720663, 0.5852698703197331</td>
+<td>2.8149320503790176</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>candidate</td>
+<td>density: rays, radius_m, frequency_28, vertex_density, area</td>
+<td>11.39938022695353, 0.0041067204261470598, -0.18428108523340114,
+0.015939959591134884, 0.27566459181174729, 0.21527611657138865</td>
+<td>2.0565050267549565</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>candidate</td>
+<td>footprints: rays, radius_m, frequency_28, footprints</td>
+<td>1.7733187807887991, 0.11625872764944836, -0.021976475133981183,
+0.036140809304940139, 0.47946694299832554</td>
+<td>2.5055987685215677</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>candidate</td>
+<td>footprints: rays, radius_m, frequency_28, footprints</td>
+<td>0.70783853163874899, 0.10580673755112369, -0.13489403365312935,
+0.093160728867184225, 0.82664217072929003</td>
+<td>3.6447638240228226</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>candidate</td>
+<td>footprints: rays, radius_m, frequency_28, footprints</td>
+<td>-0.34928702114338012, 0.06110514103569048, -0.11900913133548163,
+0.068596507974881982, 0.6315309508593282</td>
+<td>3.0686616832504297</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>negative_control</td>
+<td>footprints: rays, radius_m, frequency_28, footprints</td>
+<td>-3.1662315935441399, 0.17447090427303452, 0.16927416700333575,
+-0.1992260491422462, 0.51892087352986271</td>
+<td>3.459924563878777</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>candidate</td>
+<td>footprints: rays, radius_m, frequency_28, footprints</td>
+<td>15.479367564103711, 0.221011781400032, 0.10137090365262237,
+-0.27990577630200542, 0.18540352697231394</td>
+<td>1.5569448006757514</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>candidate</td>
+<td>footprints: radius_m, frequency_28, footprints</td>
+<td>-5.6221958019116203, 0.60479850188085782, 0.025739495419905993,
+0.94477442854098947</td>
+<td>3.0107375305213209</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>candidate</td>
+<td>footprints: radius_m, frequency_28, footprints</td>
+<td>11.03652431220495, 0.40479809291491081, 0.10852350561770767,
+0.96509637512276325</td>
+<td>2.6368398869284286</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>candidate</td>
+<td>footprints: radius_m, frequency_28, footprints</td>
+<td>-5.6304168518478095, 0.6069871368298948, 0.027266509261162721,
+0.94561600563940229</td>
+<td>3.0956912825336182</td>
+<td>FAIL</td>
+</tr>
+</tbody>
+</table>
+<h2 id="domains-and-settings">Domains and settings</h2>
+<p>Reuse frozen inventory-only anchor candidates (not previous selected
+domains); recompute geometry with frozen preflight; rank 400m vertex
+density then ID; band targets .98/.85/.50/.05 in that order, three
+rounds; nearest rank, tie rank ascending. Exclude any 902m conservative
+tower envelope touching previous 802m envelopes, any previous selected
+Cell ID, or chosen 902m envelopes. No replacements; if &lt;8 stop D;
+8-11 retained and disclosed. Persist every exclusion. No timing or RF
+cost input.</p>
+<p>11 fresh domains. Bands: {'very-dense': 3, 'dense': 3, 'medium': 3,
+'sparse': 2}. Frozen exclusions retain 2300 attempted selections
+(duplicates across band/round targets are intentional). Previous tower
+IDs and conservative 802m envelopes excluded; new 902m envelopes
+mutually disjoint. No reselection/replacement occurred. Labelled bands
+reflect selection targets, not universal density thresholds: exclusions
+shift surviving ranks. Exact geometry, tower IDs, coordinates and ranks
+are in the locked manifest.</p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Rank</th>
+<th>Parts</th>
+<th>Vertices</th>
+<th>km²</th>
+<th>Vertices/km²</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>very-dense-validation-1</td>
+<td>304</td>
+<td>421</td>
+<td>2710</td>
+<td>0.940412</td>
+<td>2881.71</td>
+</tr>
+<tr>
+<td>very-dense-validation-2</td>
+<td>284</td>
+<td>1828</td>
+<td>8140</td>
+<td>2.98616</td>
+<td>2725.91</td>
+</tr>
+<tr>
+<td>very-dense-validation-3</td>
+<td>223</td>
+<td>641</td>
+<td>3163</td>
+<td>1.47951</td>
+<td>2137.86</td>
+</tr>
+<tr>
+<td>dense-validation-1</td>
+<td>217</td>
+<td>7366</td>
+<td>34972</td>
+<td>17.2754</td>
+<td>2024.38</td>
+</tr>
+<tr>
+<td>dense-validation-2</td>
+<td>184</td>
+<td>1968</td>
+<td>8526</td>
+<td>5.31791</td>
+<td>1603.26</td>
+</tr>
+<tr>
+<td>dense-validation-3</td>
+<td>182</td>
+<td>1838</td>
+<td>14859</td>
+<td>9.55472</td>
+<td>1555.15</td>
+</tr>
+<tr>
+<td>medium-validation-1</td>
+<td>152</td>
+<td>233</td>
+<td>1922</td>
+<td>1.55446</td>
+<td>1236.44</td>
+</tr>
+<tr>
+<td>medium-validation-2</td>
+<td>68</td>
+<td>226</td>
+<td>1965</td>
+<td>2.76369</td>
+<td>711.007</td>
+</tr>
+<tr>
+<td>medium-validation-3</td>
+<td>49</td>
+<td>362</td>
+<td>3893</td>
+<td>7.88907</td>
+<td>493.468</td>
+</tr>
+<tr>
+<td>sparse-validation-1</td>
+<td>17</td>
+<td>169</td>
+<td>893</td>
+<td>5.87328</td>
+<td>152.045</td>
+</tr>
+<tr>
+<td>sparse-validation-2</td>
+<td>31</td>
+<td>332</td>
+<td>1849</td>
+<td>6.16139</td>
+<td>300.095</td>
+</tr>
+</tbody>
+</table>
+<p>Unseen RF: [{'id': 'r300-r500', 'rays': 300, 'radius_m': 500}, {'id':
+'r160-r900', 'rays': 160, 'radius_m': 900}]; both 2.6/28GHz,30dBm,120°
+beam; six Cells for network operations, one for single-cell endpoints,
+Recommendation supported five. Optimize uses frozen legacy plus
+<code>{'id': 'unseen-multistart', 'search_policy': 'deterministic_multistart_coordinate_v1', 'max_search_passes': 3, 'max_unique_evaluations': 192}</code>.
+No search semantics changed.</p>
+<p>Profiles A2CPU/4GiB, B4CPU/8GiB, Ddefault; Auto and policy checked
+before every batch. {'D': 'all selected domains x two RF settings x two
+frequencies x all candidate operations; Optimize legacy and unseen
+multistart, Explain prerequisite legacy', 'A_B': 'all selected domains x
+two frequencies x simulate/evaluate/optimize/interference/surface; RF
+setting assigned by selection index parity; Optimize both searches;
+geometry/hardware coverage balanced, not full factorial',
+'fresh_subset': 'one first selected domain per band x profiles x
+Optimize legacy at 2.6 GHz r300-r500 three repeats, each group fresh
+process', 'recorder_controls': 'first selected sparse and dense x each
+profile x simulate and interference at2.6 r300-r500 five repeats fresh
+separate group; same frozen predictions; recorder excluded primary
+verdict'}. Run-order seed 20261004; pre-generated shuffled plans hashed
+before execution.</p>
+<h2 id="http-process-and-sustained-load-methods">HTTP, process and
+sustained-load methods</h2>
+<p>{'main': 'fresh process per profile, warmed long-running service;
+first RF and startup recorded separately', 'fresh': 'new process per
+geometry/profile group', 'cold_os_cache': 'no eviction'}</p>
+<p>real net/http TCP server on container loopback, unmodified Gin
+handlers/middleware; bind distinct loopback source IPs, trusted proxies
+disabled. io.Copy into SHA256 without retention for large outputs; only
+small Optimize/experiment responses retained for prerequisite handling.
+handler interval including writing; global encoding/write counter only
+for isolated requests, compute wall=handler minus observable
+encode/write. Full client wall and receive duration independently timed.
+RSS/heap/cgroup/allocations sampled50ms. Instrumentation/client
+allocations part of process observation, not reservation</p>
+<p>Full client wall, client receive and server handler wall are separate
+observations. Handler wall includes JSON/write; isolated compute wall
+can be described by handler minus observable encoding/write. Under
+concurrency the encoding counter is process-wide and not attributed.
+Bytes are uncompressed response entity bytes drained over TCP, excluding
+framing. Loopback transfer is not production network performance.
+Prediction JSONL is exclusive-created, fsynced before request execution
+and carries request ID/hash plus lock/domain hashes. Report embeds
+prediction and result logs for chronology audit. Disposable containers
+retain the image’s port8080 health probe, while this harness uses an
+ephemeral listener; probe failures therefore do not measure the harness
+listener. Batch exits and request outcomes are reported separately.</p>
+<p>Repeats: {'ordinary': 5, 'expensive': 3, 'mixed': 3}; no
+favorable/unfavorable early stopping. Cold evidence means fresh
+process/index, not cold OS cache. Startup and first RF request separate
+from warmed later requests.</p>
+<p>{'duration_seconds': 30, 'maximum_seconds_per_scenario': 120,
+'initial_jobs': 8, 'max_total_submissions': 64, 'matrix_runs_per_job':
+64, 'workers': 1, 'queue_capacity': 16, 'refill': 'top up to eight
+queued/active uncached jobs while interactive scenarios repeat for at
+least30s, capped64; jobs vary calibration offset + unique fractional
+azimuth. Cancel/drain outstanding jobs at end; no manager/cache reset
+while active. If capped work finishes before30s insufficient sustained
+evidence, retain all observations.', 'sampling_ms': 50}</p>
+<p>72/72 sustained scenarios recorded. Four scenarios: Optimize,
+Evaluate, Optimize+Evaluate, two distinct-client Optimizers, all with
+background activity; sparse/dense, A/B/D, three repeats.
+Queue/job/active/completed/canceled time series retained as hashed gzip
+files in
+<code>scripts/auto-resource-estimator-validation/evidence/</code>; JSON
+links each archive to its original and compressed hashes. Mixed CPU is
+aggregate process demand and cannot validate individual CPU
+predictions.</p>
+<p>Observed sampling durations 30.2512–54.6028s; active sampling
+duration 10.5523–54.2375s. Full gap/overlap evidence is in JSON;
+incomplete sustained activity cannot be averaged away. Refill
+submissions share the unchanged protected-route global slots: two
+Optimizers can occupy both slots, causing429 refills and exhaustion of
+the locked64-submission bound. Accepted/cached/denied counts and
+completed/canceled runs are explicit in JSON. This is not a queue-size
+or worker-count change.</p>
+<h2 id="estimator-errors-and-classification">Estimator errors and
+classification</h2>
+<table>
+<thead>
+<tr>
+<th>Estimator</th>
+<th>n incl. mixed / primary expected</th>
+<th>Raw misses</th>
+<th>Worst raw actual/predicted</th>
+<th>Post-margin misses</th>
+<th>Worst post-margin ratio</th>
+<th>Median absolute relative error</th>
+<th>Largest raw overestimate</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>220/220</td>
+<td>130 (59.09%)</td>
+<td>1.00143</td>
+<td>0 (0.00%)</td>
+<td>0.999582</td>
+<td>0.10%</td>
+<td>0.14%</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>220/220</td>
+<td>84 (38.18%)</td>
+<td>10.286</td>
+<td>1 (0.45%)</td>
+<td>2.62212</td>
+<td>40.96%</td>
+<td>619.65%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>440/440</td>
+<td>240 (54.55%)</td>
+<td>7.90027</td>
+<td>87 (19.77%)</td>
+<td>3.76101</td>
+<td>59.55%</td>
+<td>924.42%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>631/440</td>
+<td>491 (77.81%)</td>
+<td>1.01195</td>
+<td>110 (17.43%)</td>
+<td>1.00433</td>
+<td>0.19%</td>
+<td>0.84%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>132/132</td>
+<td>102 (77.27%)</td>
+<td>1.03454</td>
+<td>0 (0.00%)</td>
+<td>0.992164</td>
+<td>2.40%</td>
+<td>3.32%</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>440/440</td>
+<td>260 (59.09%)</td>
+<td>33.5574</td>
+<td>165 (37.50%)</td>
+<td>17.321</td>
+<td>66.18%</td>
+<td>4399.70%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>440/440</td>
+<td>240 (54.55%)</td>
+<td>2.64717</td>
+<td>65 (14.77%)</td>
+<td>1.50082</td>
+<td>31.75%</td>
+<td>138.16%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>564/564</td>
+<td>441 (78.19%)</td>
+<td>15.3215</td>
+<td>244 (43.26%)</td>
+<td>5.44294</td>
+<td>69.90%</td>
+<td>432.49%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>716/564</td>
+<td>382 (53.35%)</td>
+<td>2.05582</td>
+<td>0 (0.00%)</td>
+<td>0.999665</td>
+<td>29.50%</td>
+<td>247793.54%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>716/564</td>
+<td>565 (78.91%)</td>
+<td>13.9563</td>
+<td>319 (44.55%)</td>
+<td>5.57006</td>
+<td>68.62%</td>
+<td>275.65%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>132/132</td>
+<td>69 (52.27%)</td>
+<td>5.51046</td>
+<td>2 (1.52%)</td>
+<td>1.51188</td>
+<td>56.10%</td>
+<td>439.64%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>132/132</td>
+<td>78 (59.09%)</td>
+<td>4.39864</td>
+<td>3 (2.27%)</td>
+<td>1.43341</td>
+<td>49.94%</td>
+<td>218.00%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>440/440</td>
+<td>256 (58.18%)</td>
+<td>10.3167</td>
+<td>29 (6.59%)</td>
+<td>2.98176</td>
+<td>48.73%</td>
+<td>130.18%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>440/440</td>
+<td>340 (77.27%)</td>
+<td>1.88225</td>
+<td>50 (11.36%)</td>
+<td>1.20894</td>
+<td>24.18%</td>
+<td>77.21%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>440/440</td>
+<td>222 (50.45%)</td>
+<td>24.6291</td>
+<td>57 (12.95%)</td>
+<td>8.18042</td>
+<td>36.20%</td>
+<td>126.60%</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>440/440</td>
+<td>80 (18.18%)</td>
+<td>1.49483</td>
+<td>0 (0.00%)</td>
+<td>0.566902</td>
+<td>70.31%</td>
+<td>343.81%</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>440/440</td>
+<td>142 (32.27%)</td>
+<td>4.52934</td>
+<td>6 (1.36%)</td>
+<td>1.46311</td>
+<td>38.67%</td>
+<td>251.32%</td>
+<td>FAIL</td>
+</tr>
+</tbody>
+</table>
+<p>Surface response, Simulate/Evaluate/Interference/Explain/Azimuth
+response, Optimize CPU/wall/response, Surface CPU/wall, Recommendation
+CPU/wall, Building Entry wall and negative controls are evaluated
+separately. No missing estimator invented; RSS, allocations and cgroup
+observations do not certify memory reservation.</p>
+<h3 id="geometry-bands">Geometry bands</h3>
+<table>
+<thead>
+<tr>
+<th>Estimator</th>
+<th>Stratum</th>
+<th>n</th>
+<th>Worst raw ratio</th>
+<th>Post-margin miss rate</th>
+<th>Worst post-margin shortfall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>dense</td>
+<td>60</td>
+<td>1.00143</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>medium</td>
+<td>60</td>
+<td>1.00124</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>sparse</td>
+<td>40</td>
+<td>1.00014</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>very-dense</td>
+<td>60</td>
+<td>1.00143</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>dense</td>
+<td>60</td>
+<td>2.36773</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>medium</td>
+<td>60</td>
+<td>1.2891</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>sparse</td>
+<td>40</td>
+<td>10.286</td>
+<td>2.50%</td>
+<td>61.86%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>very-dense</td>
+<td>60</td>
+<td>2.08274</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>dense</td>
+<td>120</td>
+<td>1.26525</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>medium</td>
+<td>120</td>
+<td>6.30561</td>
+<td>22.50%</td>
+<td>66.69%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>sparse</td>
+<td>80</td>
+<td>7.90027</td>
+<td>53.75%</td>
+<td>73.41%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>very-dense</td>
+<td>120</td>
+<td>6.02364</td>
+<td>14.17%</td>
+<td>65.13%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>dense</td>
+<td>205</td>
+<td>1.01195</td>
+<td>46.34%</td>
+<td>0.43%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>medium</td>
+<td>120</td>
+<td>1.00908</td>
+<td>12.50%</td>
+<td>0.15%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>sparse</td>
+<td>186</td>
+<td>1.00756</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>very-dense</td>
+<td>120</td>
+<td>1.00379</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>dense</td>
+<td>36</td>
+<td>1.03454</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>medium</td>
+<td>36</td>
+<td>1.02767</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>sparse</td>
+<td>24</td>
+<td>1.00441</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>very-dense</td>
+<td>36</td>
+<td>1.03454</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>dense</td>
+<td>120</td>
+<td>2.97237</td>
+<td>0.83%</td>
+<td>34.82%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>medium</td>
+<td>120</td>
+<td>20.0454</td>
+<td>46.67%</td>
+<td>90.34%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>sparse</td>
+<td>80</td>
+<td>33.5574</td>
+<td>92.50%</td>
+<td>94.23%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>very-dense</td>
+<td>120</td>
+<td>10.9335</td>
+<td>28.33%</td>
+<td>82.28%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>dense</td>
+<td>120</td>
+<td>2.64717</td>
+<td>8.33%</td>
+<td>33.37%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>medium</td>
+<td>120</td>
+<td>1.79169</td>
+<td>12.50%</td>
+<td>1.56%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>sparse</td>
+<td>80</td>
+<td>2.14577</td>
+<td>37.50%</td>
+<td>17.80%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>very-dense</td>
+<td>120</td>
+<td>1.92243</td>
+<td>8.33%</td>
+<td>8.25%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>dense</td>
+<td>153</td>
+<td>3.74758</td>
+<td>20.92%</td>
+<td>24.89%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>medium</td>
+<td>153</td>
+<td>14.3779</td>
+<td>53.59%</td>
+<td>80.42%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>sparse</td>
+<td>105</td>
+<td>15.3215</td>
+<td>51.43%</td>
+<td>81.63%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>very-dense</td>
+<td>153</td>
+<td>8.81584</td>
+<td>49.67%</td>
+<td>68.07%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>dense</td>
+<td>212</td>
+<td>1.54459</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>medium</td>
+<td>153</td>
+<td>1.82626</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>sparse</td>
+<td>198</td>
+<td>2.05582</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>very-dense</td>
+<td>153</td>
+<td>1.58792</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>dense</td>
+<td>212</td>
+<td>4.18266</td>
+<td>16.98%</td>
+<td>40.10%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>medium</td>
+<td>153</td>
+<td>12.901</td>
+<td>53.59%</td>
+<td>80.58%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>sparse</td>
+<td>198</td>
+<td>13.9563</td>
+<td>59.60%</td>
+<td>82.05%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>very-dense</td>
+<td>153</td>
+<td>7.69321</td>
+<td>54.25%</td>
+<td>67.43%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>dense</td>
+<td>36</td>
+<td>0.516623</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>medium</td>
+<td>36</td>
+<td>5.51046</td>
+<td>2.78%</td>
+<td>33.86%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>sparse</td>
+<td>24</td>
+<td>3.34424</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>very-dense</td>
+<td>36</td>
+<td>3.94512</td>
+<td>2.78%</td>
+<td>7.61%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>dense</td>
+<td>36</td>
+<td>0.777081</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>medium</td>
+<td>36</td>
+<td>4.39864</td>
+<td>5.56%</td>
+<td>30.24%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>sparse</td>
+<td>24</td>
+<td>2.70144</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>very-dense</td>
+<td>36</td>
+<td>4.01736</td>
+<td>2.78%</td>
+<td>23.61%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>dense</td>
+<td>120</td>
+<td>8.77761</td>
+<td>6.67%</td>
+<td>60.58%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>medium</td>
+<td>120</td>
+<td>6.0337</td>
+<td>5.00%</td>
+<td>42.66%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>sparse</td>
+<td>80</td>
+<td>8.49017</td>
+<td>10.00%</td>
+<td>59.25%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>very-dense</td>
+<td>120</td>
+<td>10.3167</td>
+<td>5.83%</td>
+<td>66.46%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>dense</td>
+<td>120</td>
+<td>1.51038</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>medium</td>
+<td>120</td>
+<td>1.71746</td>
+<td>20.83%</td>
+<td>9.35%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>sparse</td>
+<td>80</td>
+<td>1.88225</td>
+<td>31.25%</td>
+<td>17.28%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>very-dense</td>
+<td>120</td>
+<td>1.45693</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>dense</td>
+<td>120</td>
+<td>24.6291</td>
+<td>20.83%</td>
+<td>87.78%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>medium</td>
+<td>120</td>
+<td>17.0041</td>
+<td>7.50%</td>
+<td>82.29%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>sparse</td>
+<td>80</td>
+<td>18.0639</td>
+<td>3.75%</td>
+<td>83.33%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>very-dense</td>
+<td>120</td>
+<td>14.7787</td>
+<td>16.67%</td>
+<td>79.63%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>dense</td>
+<td>120</td>
+<td>1.18017</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>medium</td>
+<td>120</td>
+<td>0.845226</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>sparse</td>
+<td>80</td>
+<td>0.833005</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>very-dense</td>
+<td>120</td>
+<td>1.49483</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>dense</td>
+<td>120</td>
+<td>3.78215</td>
+<td>2.50%</td>
+<td>18.15%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>medium</td>
+<td>120</td>
+<td>3.26794</td>
+<td>0.83%</td>
+<td>5.27%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>sparse</td>
+<td>80</td>
+<td>2.87411</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>very-dense</td>
+<td>120</td>
+<td>4.52934</td>
+<td>1.67%</td>
+<td>31.65%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rf-setting-generalization">RF setting generalization</h3>
+<table>
+<thead>
+<tr>
+<th>Estimator</th>
+<th>Stratum</th>
+<th>n</th>
+<th>Worst raw ratio</th>
+<th>Post-margin miss rate</th>
+<th>Worst post-margin shortfall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>r160-r900</td>
+<td>110</td>
+<td>1.00139</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>r300-r500</td>
+<td>110</td>
+<td>1.00143</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>r160-r900</td>
+<td>110</td>
+<td>2.36773</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>r300-r500</td>
+<td>110</td>
+<td>10.286</td>
+<td>0.91%</td>
+<td>61.86%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>r160-r900</td>
+<td>210</td>
+<td>7.90027</td>
+<td>27.62%</td>
+<td>73.41%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>r300-r500</td>
+<td>230</td>
+<td>7.61545</td>
+<td>12.61%</td>
+<td>72.42%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>r160-r900</td>
+<td>210</td>
+<td>1.00276</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>r300-r500</td>
+<td>421</td>
+<td>1.01195</td>
+<td>26.13%</td>
+<td>0.43%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>r160-r900</td>
+<td>66</td>
+<td>1.03454</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>r300-r500</td>
+<td>66</td>
+<td>1.03317</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>r160-r900</td>
+<td>210</td>
+<td>33.5574</td>
+<td>31.90%</td>
+<td>94.23%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>r300-r500</td>
+<td>230</td>
+<td>31.9698</td>
+<td>42.61%</td>
+<td>93.94%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>r160-r900</td>
+<td>210</td>
+<td>1.47497</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>r300-r500</td>
+<td>230</td>
+<td>2.64717</td>
+<td>28.26%</td>
+<td>33.37%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>r160-r900</td>
+<td>252</td>
+<td>15.3215</td>
+<td>42.06%</td>
+<td>81.63%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>r300-r500</td>
+<td>312</td>
+<td>13.6434</td>
+<td>44.23%</td>
+<td>79.37%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>r160-r900</td>
+<td>252</td>
+<td>2.05582</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>r300-r500</td>
+<td>464</td>
+<td>1.59295</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>r160-r900</td>
+<td>252</td>
+<td>13.9563</td>
+<td>46.03%</td>
+<td>82.05%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>r300-r500</td>
+<td>464</td>
+<td>10.6489</td>
+<td>43.75%</td>
+<td>76.47%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>r160-r900</td>
+<td>66</td>
+<td>5.51046</td>
+<td>1.52%</td>
+<td>33.86%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>r300-r500</td>
+<td>66</td>
+<td>3.94512</td>
+<td>1.52%</td>
+<td>7.61%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>r160-r900</td>
+<td>66</td>
+<td>4.39864</td>
+<td>1.52%</td>
+<td>30.24%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>r300-r500</td>
+<td>66</td>
+<td>4.01736</td>
+<td>3.03%</td>
+<td>23.61%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>r160-r900</td>
+<td>210</td>
+<td>10.3167</td>
+<td>5.24%</td>
+<td>66.46%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>r300-r500</td>
+<td>230</td>
+<td>8.49017</td>
+<td>7.83%</td>
+<td>59.25%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>r160-r900</td>
+<td>210</td>
+<td>1.88225</td>
+<td>21.43%</td>
+<td>17.28%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>r300-r500</td>
+<td>230</td>
+<td>1.58106</td>
+<td>2.17%</td>
+<td>1.53%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>r160-r900</td>
+<td>210</td>
+<td>9.85388</td>
+<td>16.19%</td>
+<td>69.45%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>r300-r500</td>
+<td>230</td>
+<td>24.6291</td>
+<td>10.00%</td>
+<td>87.78%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>r160-r900</td>
+<td>210</td>
+<td>1.49483</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>r300-r500</td>
+<td>230</td>
+<td>1.32294</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>r160-r900</td>
+<td>210</td>
+<td>3.56505</td>
+<td>1.43%</td>
+<td>13.17%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>r300-r500</td>
+<td>230</td>
+<td>4.52934</td>
+<td>1.30%</td>
+<td>31.65%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="search-setting-generalization">Search setting
+generalization</h3>
+<table>
+<thead>
+<tr>
+<th>Estimator</th>
+<th>Stratum</th>
+<th>n</th>
+<th>Worst raw ratio</th>
+<th>Post-margin miss rate</th>
+<th>Worst post-margin shortfall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>not-applicable</td>
+<td>220</td>
+<td>1.00143</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>not-applicable</td>
+<td>220</td>
+<td>10.286</td>
+<td>0.45%</td>
+<td>61.86%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>not-applicable</td>
+<td>440</td>
+<td>7.90027</td>
+<td>19.77%</td>
+<td>73.41%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>not-applicable</td>
+<td>631</td>
+<td>1.01195</td>
+<td>17.43%</td>
+<td>0.43%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>not-applicable</td>
+<td>132</td>
+<td>1.03454</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>not-applicable</td>
+<td>440</td>
+<td>33.5574</td>
+<td>37.50%</td>
+<td>94.23%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>not-applicable</td>
+<td>440</td>
+<td>2.64717</td>
+<td>14.77%</td>
+<td>33.37%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>legacy</td>
+<td>300</td>
+<td>5.54858</td>
+<td>8.67%</td>
+<td>49.27%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>unseen-multistart</td>
+<td>264</td>
+<td>15.3215</td>
+<td>82.58%</td>
+<td>81.63%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>legacy</td>
+<td>452</td>
+<td>2.05582</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>unseen-multistart</td>
+<td>264</td>
+<td>1.89462</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>legacy</td>
+<td>452</td>
+<td>7.02616</td>
+<td>20.13%</td>
+<td>64.34%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>unseen-multistart</td>
+<td>264</td>
+<td>13.9563</td>
+<td>86.36%</td>
+<td>82.05%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>not-applicable</td>
+<td>132</td>
+<td>5.51046</td>
+<td>1.52%</td>
+<td>33.86%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>not-applicable</td>
+<td>132</td>
+<td>4.39864</td>
+<td>2.27%</td>
+<td>30.24%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>not-applicable</td>
+<td>440</td>
+<td>10.3167</td>
+<td>6.59%</td>
+<td>66.46%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>not-applicable</td>
+<td>440</td>
+<td>1.88225</td>
+<td>11.36%</td>
+<td>17.28%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>not-applicable</td>
+<td>440</td>
+<td>24.6291</td>
+<td>12.95%</td>
+<td>87.78%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>not-applicable</td>
+<td>440</td>
+<td>1.49483</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>not-applicable</td>
+<td>440</td>
+<td>4.52934</td>
+<td>1.36%</td>
+<td>31.65%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="frequency-generalization">Frequency generalization</h3>
+<table>
+<thead>
+<tr>
+<th>Estimator</th>
+<th>Stratum</th>
+<th>n</th>
+<th>Worst raw ratio</th>
+<th>Post-margin miss rate</th>
+<th>Worst post-margin shortfall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>2.6</td>
+<td>110</td>
+<td>1.00139</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>28</td>
+<td>110</td>
+<td>1.00143</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>2.6</td>
+<td>110</td>
+<td>10.286</td>
+<td>0.91%</td>
+<td>61.86%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>28</td>
+<td>110</td>
+<td>2.54309</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>2.6</td>
+<td>220</td>
+<td>7.90027</td>
+<td>26.82%</td>
+<td>73.41%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>28</td>
+<td>220</td>
+<td>7.61545</td>
+<td>12.73%</td>
+<td>72.42%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>2.6</td>
+<td>411</td>
+<td>1.01195</td>
+<td>21.90%</td>
+<td>0.43%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>28</td>
+<td>220</td>
+<td>1.01028</td>
+<td>9.09%</td>
+<td>0.27%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>2.6</td>
+<td>66</td>
+<td>1.03454</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>28</td>
+<td>66</td>
+<td>1.03256</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>2.6</td>
+<td>220</td>
+<td>31.9698</td>
+<td>39.55%</td>
+<td>93.94%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>28</td>
+<td>220</td>
+<td>33.5574</td>
+<td>35.45%</td>
+<td>94.23%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>2.6</td>
+<td>220</td>
+<td>2.59151</td>
+<td>11.36%</td>
+<td>31.94%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>28</td>
+<td>220</td>
+<td>2.64717</td>
+<td>18.18%</td>
+<td>33.37%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>2.6</td>
+<td>300</td>
+<td>15.3215</td>
+<td>42.00%</td>
+<td>81.63%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>28</td>
+<td>264</td>
+<td>14.2325</td>
+<td>44.70%</td>
+<td>80.22%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>2.6</td>
+<td>452</td>
+<td>2.05582</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>28</td>
+<td>264</td>
+<td>1.83272</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>2.6</td>
+<td>452</td>
+<td>13.9563</td>
+<td>42.92%</td>
+<td>82.05%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>28</td>
+<td>264</td>
+<td>12.9277</td>
+<td>47.35%</td>
+<td>80.62%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>2.6</td>
+<td>66</td>
+<td>5.51046</td>
+<td>3.03%</td>
+<td>33.86%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>28</td>
+<td>66</td>
+<td>2.54301</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>2.6</td>
+<td>66</td>
+<td>4.39864</td>
+<td>4.55%</td>
+<td>30.24%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>28</td>
+<td>66</td>
+<td>2.34229</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>2.6</td>
+<td>220</td>
+<td>10.3167</td>
+<td>4.09%</td>
+<td>66.46%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>28</td>
+<td>220</td>
+<td>8.49017</td>
+<td>9.09%</td>
+<td>59.25%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>2.6</td>
+<td>220</td>
+<td>1.57367</td>
+<td>2.27%</td>
+<td>1.06%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>28</td>
+<td>220</td>
+<td>1.88225</td>
+<td>20.45%</td>
+<td>17.28%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>2.6</td>
+<td>220</td>
+<td>24.6291</td>
+<td>12.73%</td>
+<td>87.78%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>28</td>
+<td>220</td>
+<td>18.0639</td>
+<td>13.18%</td>
+<td>83.33%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>2.6</td>
+<td>220</td>
+<td>1.49483</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>28</td>
+<td>220</td>
+<td>1.19301</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>2.6</td>
+<td>220</td>
+<td>4.52934</td>
+<td>1.82%</td>
+<td>31.65%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>28</td>
+<td>220</td>
+<td>3.56505</td>
+<td>0.91%</td>
+<td>13.17%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hardware-transfer">Hardware transfer</h3>
+<table>
+<thead>
+<tr>
+<th>Estimator</th>
+<th>Stratum</th>
+<th>n</th>
+<th>Worst raw ratio</th>
+<th>Post-margin miss rate</th>
+<th>Worst post-margin shortfall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth/response_bytes</td>
+<td>D</td>
+<td>220</td>
+<td>1.00143</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>building-entry/wall_seconds</td>
+<td>D</td>
+<td>220</td>
+<td>10.286</td>
+<td>0.45%</td>
+<td>61.86%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>A</td>
+<td>110</td>
+<td>3.03765</td>
+<td>11.82%</td>
+<td>30.85%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>B</td>
+<td>110</td>
+<td>7.90027</td>
+<td>27.27%</td>
+<td>73.41%</td>
+</tr>
+<tr>
+<td>evaluate/cpu_seconds</td>
+<td>D</td>
+<td>220</td>
+<td>7.61545</td>
+<td>20.00%</td>
+<td>72.42%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>A</td>
+<td>175</td>
+<td>1.01195</td>
+<td>20.00%</td>
+<td>0.43%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>B</td>
+<td>172</td>
+<td>1.01195</td>
+<td>18.60%</td>
+<td>0.43%</td>
+</tr>
+<tr>
+<td>evaluate/response_bytes</td>
+<td>D</td>
+<td>284</td>
+<td>1.01195</td>
+<td>15.14%</td>
+<td>0.43%</td>
+</tr>
+<tr>
+<td>explain/response_bytes</td>
+<td>D</td>
+<td>132</td>
+<td>1.03454</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>A</td>
+<td>110</td>
+<td>9.24512</td>
+<td>39.09%</td>
+<td>79.04%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>B</td>
+<td>110</td>
+<td>22.5783</td>
+<td>43.64%</td>
+<td>91.42%</td>
+</tr>
+<tr>
+<td>interference/cpu_seconds</td>
+<td>D</td>
+<td>220</td>
+<td>33.5574</td>
+<td>33.64%</td>
+<td>94.23%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>A</td>
+<td>110</td>
+<td>2.14577</td>
+<td>13.64%</td>
+<td>17.80%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>B</td>
+<td>110</td>
+<td>2.14577</td>
+<td>13.64%</td>
+<td>17.80%</td>
+</tr>
+<tr>
+<td>interference/response_bytes</td>
+<td>D</td>
+<td>220</td>
+<td>2.64717</td>
+<td>15.91%</td>
+<td>33.37%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>A</td>
+<td>144</td>
+<td>9.74475</td>
+<td>31.25%</td>
+<td>71.11%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>B</td>
+<td>144</td>
+<td>15.3215</td>
+<td>56.25%</td>
+<td>81.63%</td>
+</tr>
+<tr>
+<td>optimize/cpu_seconds</td>
+<td>D</td>
+<td>276</td>
+<td>13.6434</td>
+<td>42.75%</td>
+<td>79.37%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>A</td>
+<td>190</td>
+<td>2.05582</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>B</td>
+<td>190</td>
+<td>2.05582</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/response_bytes</td>
+<td>D</td>
+<td>336</td>
+<td>2.05582</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>A</td>
+<td>190</td>
+<td>10.5591</td>
+<td>43.68%</td>
+<td>76.27%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>B</td>
+<td>190</td>
+<td>13.9563</td>
+<td>49.47%</td>
+<td>82.05%</td>
+</tr>
+<tr>
+<td>optimize/wall_seconds</td>
+<td>D</td>
+<td>336</td>
+<td>10.6489</td>
+<td>42.26%</td>
+<td>76.47%</td>
+</tr>
+<tr>
+<td>recommendation/cpu_seconds</td>
+<td>D</td>
+<td>132</td>
+<td>5.51046</td>
+<td>1.52%</td>
+<td>33.86%</td>
+</tr>
+<tr>
+<td>recommendation/wall_seconds</td>
+<td>D</td>
+<td>132</td>
+<td>4.39864</td>
+<td>2.27%</td>
+<td>30.24%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>A</td>
+<td>110</td>
+<td>2.70624</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>B</td>
+<td>110</td>
+<td>8.49017</td>
+<td>7.27%</td>
+<td>59.25%</td>
+</tr>
+<tr>
+<td>simulate/cpu_seconds</td>
+<td>D</td>
+<td>220</td>
+<td>10.3167</td>
+<td>9.55%</td>
+<td>66.46%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>A</td>
+<td>110</td>
+<td>1.88225</td>
+<td>9.09%</td>
+<td>17.28%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>B</td>
+<td>110</td>
+<td>1.88225</td>
+<td>9.09%</td>
+<td>17.28%</td>
+</tr>
+<tr>
+<td>simulate/response_bytes</td>
+<td>D</td>
+<td>220</td>
+<td>1.88225</td>
+<td>13.64%</td>
+<td>17.28%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>A</td>
+<td>110</td>
+<td>4.7106</td>
+<td>11.82%</td>
+<td>36.09%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>B</td>
+<td>110</td>
+<td>14.7787</td>
+<td>20.00%</td>
+<td>79.63%</td>
+</tr>
+<tr>
+<td>surface/cpu_seconds</td>
+<td>D</td>
+<td>220</td>
+<td>24.6291</td>
+<td>10.00%</td>
+<td>87.78%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>A</td>
+<td>110</td>
+<td>1.32294</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>B</td>
+<td>110</td>
+<td>1.32294</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/response_bytes</td>
+<td>D</td>
+<td>220</td>
+<td>1.49483</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>A</td>
+<td>110</td>
+<td>2.32009</td>
+<td>0.00%</td>
+<td>0.00%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>B</td>
+<td>110</td>
+<td>4.02837</td>
+<td>3.64%</td>
+<td>23.15%</td>
+</tr>
+<tr>
+<td>surface/wall_seconds</td>
+<td>D</td>
+<td>220</td>
+<td>4.52934</td>
+<td>0.91%</td>
+<td>31.65%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="planned-mixed-scenario-latency-and-observed-overlap">Planned
+mixed-scenario latency and observed overlap</h3>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Domain</th>
+<th>Scenario / operation</th>
+<th>Isolated median s</th>
+<th>All-request median / max s</th>
+<th>All-request median / max inflation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>sparse-validation-1</td>
+<td>async-optimize / optimize</td>
+<td>unavailable</td>
+<td>11.9026 / 12.1808</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-validation-1</td>
+<td>async-optimize / optimize</td>
+<td>unavailable</td>
+<td>18.2866 / 18.9772</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-validation-1</td>
+<td>async-optimize / optimize</td>
+<td>unavailable</td>
+<td>22.8164 / 24.5942</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-validation-1</td>
+<td>async-optimize / optimize</td>
+<td>unavailable</td>
+<td>27.4563 / 39.952</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-validation-1</td>
+<td>async-optimize / optimize</td>
+<td>7.57781</td>
+<td>11.3835 / 11.7378</td>
+<td>1.50222 / 1.54897</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-validation-1</td>
+<td>async-optimize / optimize</td>
+<td>9.93284</td>
+<td>17.0053 / 18.5253</td>
+<td>1.71203 / 1.86506</td>
+</tr>
+<tr>
+<td>A</td>
+<td>sparse-validation-1</td>
+<td>async-evaluate / evaluate</td>
+<td>unavailable</td>
+<td>0.564196 / 0.643225</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-validation-1</td>
+<td>async-evaluate / evaluate</td>
+<td>unavailable</td>
+<td>1.24359 / 1.36901</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-validation-1</td>
+<td>async-evaluate / evaluate</td>
+<td>unavailable</td>
+<td>0.512652 / 0.56401</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-validation-1</td>
+<td>async-evaluate / evaluate</td>
+<td>unavailable</td>
+<td>1.2418 / 3.45994</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-validation-1</td>
+<td>async-evaluate / evaluate</td>
+<td>0.418926</td>
+<td>0.559594 / 0.609069</td>
+<td>1.33578 / 1.45388</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-validation-1</td>
+<td>async-evaluate / evaluate</td>
+<td>0.795642</td>
+<td>1.33618 / 1.43918</td>
+<td>1.67938 / 1.80883</td>
+</tr>
+<tr>
+<td>A</td>
+<td>sparse-validation-1</td>
+<td>async-optimize-evaluate / optimize</td>
+<td>unavailable</td>
+<td>11.2174 / 13.0441</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>A</td>
+<td>sparse-validation-1</td>
+<td>async-optimize-evaluate / evaluate</td>
+<td>unavailable</td>
+<td>0.875272 / 0.997587</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-validation-1</td>
+<td>async-optimize-evaluate / optimize</td>
+<td>unavailable</td>
+<td>18.934 / 19.5816</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-validation-1</td>
+<td>async-optimize-evaluate / evaluate</td>
+<td>unavailable</td>
+<td>2.12866 / 2.19329</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-validation-1</td>
+<td>async-optimize-evaluate / optimize</td>
+<td>unavailable</td>
+<td>9.14301 / 23.9466</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-validation-1</td>
+<td>async-optimize-evaluate / evaluate</td>
+<td>unavailable</td>
+<td>0.585685 / 1.57347</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-validation-1</td>
+<td>async-optimize-evaluate / optimize</td>
+<td>unavailable</td>
+<td>15.4711 / 41.4293</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-validation-1</td>
+<td>async-optimize-evaluate / evaluate</td>
+<td>unavailable</td>
+<td>1.42202 / 3.79613</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-validation-1</td>
+<td>async-optimize-evaluate / optimize</td>
+<td>7.57781</td>
+<td>11.3211 / 12.3095</td>
+<td>1.49398 / 1.62442</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-validation-1</td>
+<td>async-optimize-evaluate / evaluate</td>
+<td>0.418926</td>
+<td>0.653831 / 0.714064</td>
+<td>1.56073 / 1.70451</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-validation-1</td>
+<td>async-optimize-evaluate / optimize</td>
+<td>9.93284</td>
+<td>17.3323 / 19.2708</td>
+<td>1.74495 / 1.94011</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-validation-1</td>
+<td>async-optimize-evaluate / evaluate</td>
+<td>0.795642</td>
+<td>1.59945 / 1.77971</td>
+<td>2.01027 / 2.23682</td>
+</tr>
+<tr>
+<td>A</td>
+<td>sparse-validation-1</td>
+<td>async-two-optimizers / optimize</td>
+<td>unavailable</td>
+<td>14.7089 / 18.8272</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-validation-1</td>
+<td>async-two-optimizers / optimize</td>
+<td>unavailable</td>
+<td>29.1637 / 34.6586</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-validation-1</td>
+<td>async-two-optimizers / optimize</td>
+<td>unavailable</td>
+<td>8.26798 / 28.7766</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-validation-1</td>
+<td>async-two-optimizers / optimize</td>
+<td>unavailable</td>
+<td>33.5766 / 51.3185</td>
+<td>unavailable / unavailable</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-validation-1</td>
+<td>async-two-optimizers / optimize</td>
+<td>7.57781</td>
+<td>9.22176 / 14.1704</td>
+<td>1.21694 / 1.86999</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-validation-1</td>
+<td>async-two-optimizers / optimize</td>
+<td>9.93284</td>
+<td>18.8916 / 22.1262</td>
+<td>1.90193 / 2.22758</td>
+</tr>
+</tbody>
+</table>
+<p>Mixed statistics above retain every planned interactive request,
+including requests after background exhaustion; they are not all
+sustained-load measurements. The JSON separately reports
+observed-overlap subsets, non-overlap counts and overlap durations. No
+low-overlap or failed request was dropped from estimator scoring.</p>
+<p>Mixed baseline gaps: [{'profile': 'A', 'domain':
+'sparse-validation-1', 'scenario': 'async-optimize', 'operation':
+'optimize'}, {'profile': 'A', 'domain': 'dense-validation-1',
+'scenario': 'async-optimize', 'operation': 'optimize'}, {'profile': 'B',
+'domain': 'sparse-validation-1', 'scenario': 'async-optimize',
+'operation': 'optimize'}, {'profile': 'B', 'domain':
+'dense-validation-1', 'scenario': 'async-optimize', 'operation':
+'optimize'}, {'profile': 'A', 'domain': 'sparse-validation-1',
+'scenario': 'async-evaluate', 'operation': 'evaluate'}, {'profile': 'A',
+'domain': 'dense-validation-1', 'scenario': 'async-evaluate',
+'operation': 'evaluate'}, {'profile': 'B', 'domain':
+'sparse-validation-1', 'scenario': 'async-evaluate', 'operation':
+'evaluate'}, {'profile': 'B', 'domain': 'dense-validation-1',
+'scenario': 'async-evaluate', 'operation': 'evaluate'}, {'profile': 'A',
+'domain': 'sparse-validation-1', 'scenario': 'async-optimize-evaluate',
+'operation': 'optimize'}, {'profile': 'A', 'domain':
+'sparse-validation-1', 'scenario': 'async-optimize-evaluate',
+'operation': 'evaluate'}, {'profile': 'A', 'domain':
+'dense-validation-1', 'scenario': 'async-optimize-evaluate',
+'operation': 'optimize'}, {'profile': 'A', 'domain':
+'dense-validation-1', 'scenario': 'async-optimize-evaluate',
+'operation': 'evaluate'}, {'profile': 'B', 'domain':
+'sparse-validation-1', 'scenario': 'async-optimize-evaluate',
+'operation': 'optimize'}, {'profile': 'B', 'domain':
+'sparse-validation-1', 'scenario': 'async-optimize-evaluate',
+'operation': 'evaluate'}, {'profile': 'B', 'domain':
+'dense-validation-1', 'scenario': 'async-optimize-evaluate',
+'operation': 'optimize'}, {'profile': 'B', 'domain':
+'dense-validation-1', 'scenario': 'async-optimize-evaluate',
+'operation': 'evaluate'}, {'profile': 'A', 'domain':
+'sparse-validation-1', 'scenario': 'async-two-optimizers', 'operation':
+'optimize'}, {'profile': 'A', 'domain': 'dense-validation-1',
+'scenario': 'async-two-optimizers', 'operation': 'optimize'},
+{'profile': 'B', 'domain': 'sparse-validation-1', 'scenario':
+'async-two-optimizers', 'operation': 'optimize'}, {'profile': 'B',
+'domain': 'dense-validation-1', 'scenario': 'async-two-optimizers',
+'operation': 'optimize'}]. These are insufficient matched inflation
+evidence; no different-setting baseline substituted or extra case added
+after timing.</p>
+<h2 id="memory-and-preflight-observation">Memory and preflight
+observation</h2>
+<p>Memory remains observational.50ms sampling misses short transients;
+lifetime cgroup peak includes startup/prior work. Allocation totals are
+work, not live reservation. Test/client overhead remains included.
+Recorder controls and primary HTTP share inputs but have separate
+process/cache histories, so the following differences are descriptive,
+not causal estimates of previous recorder inflation. Historical
+recorder-heavy RSS cannot be retrospectively corrected.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Band / operation</th>
+<th>Recorder−HTTP RSS MiB</th>
+<th>Recorder−HTTP heap MiB</th>
+<th>Recorder−HTTP allocation MiB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D</td>
+<td>sparse / simulate</td>
+<td>-147.953</td>
+<td>-28.063</td>
+<td>25.624</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse / interference</td>
+<td>-77.094</td>
+<td>21.824</td>
+<td>16.836</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense / simulate</td>
+<td>-110.750</td>
+<td>57.644</td>
+<td>41.254</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense / interference</td>
+<td>-5.445</td>
+<td>214.604</td>
+<td>13.680</td>
+</tr>
+</tbody>
+</table>
+<p>Only four matched D-profile recorder comparisons are available. The
+locked fractional A/B matrix has no matching500m primary cases for those
+recorder controls. Previous recorder-induced memory inflation cannot be
+quantified causally from this design.</p>
+<p>Frozen geometry preflight is deterministic and independent of RF
+results. Domain selection/repeat preflight invoke only index queries, no
+RF. Primitive tests cover multipart and closed-ring accounting, empty
+sources and envelope nesting; malformed metadata JSON is rejected and
+unknown operations yield no estimate. The failure observation found that
+a nil metadata source returns zero counts: this is an unsafe
+unknown-to-zero ambiguity in the frozen diagnostic primitive. Primary
+runs use a successfully loaded, identified real dataset; no
+unavailable-source estimate is used. Future preflight design must reject
+unknown sources rather than treating them as empty geometry. The frozen
+prototype has no query-budget state. Admission remains unimplemented.
+Bounded query cost is sample evidence only, no hard query complexity
+guarantee.</p>
+<p>Profile A: 660 preflight samples; metadata batch-average median
+16.152µs/query, worst 1093.789µs/query, max allocation
+1235.805KiB/query; raw timing retained in JSON. Profile B: 660 preflight
+samples; metadata batch-average median 15.107µs/query, worst
+955.300µs/query, max allocation 1235.805KiB/query; raw timing retained
+in JSON. Profile D: 660 preflight samples; metadata batch-average median
+14.519µs/query, worst 858.745µs/query, max allocation 1235.806KiB/query;
+raw timing retained in JSON.</p>
+<p>Preflight failure observation: {'malformed_metadata_rejected': True,
+'query_budget_state': 'unsupported by frozen prototype', 'stats':
+{'footprints': 0, 'logical_buildings': 0, 'vertices': 0, 'edges': 0,
+'max_vertices': 0, 'median_vertices': 0, 'area_km2': 0.9506126093963062,
+'footprints_per_km2': 0, 'vertices_per_km2': 0, 'bounds': {'minLon':
+32.8, 'minLat': 39.9, 'maxLon': 32.81, 'maxLat': 39.91}},
+'unavailable_source': 'returned_counts'}</p>
+<h2 id="leakage-completeness-and-production-invariance">Leakage,
+completeness and production invariance</h2>
+<p>{'violations': [], 'hashes_unchanged': True,
+'predictions_before_results': True, 'no_fitting_or_margin_changes':
+True, 'no_validation_row_influenced_coefficients': True,
+'no_validation_row_influenced_margins': True,
+'no_validation_row_influenced_features': True,
+'no_validation_row_influenced_domains': True,
+'no_validation_row_influenced_settings': True,
+'numeric_estimator_gates_unchanged': True, 'methodology_issues': ['The
+locked A/B fractional plan omitted matching500m isolated mixed-load
+reference cases.', 'The matching-reference completeness guard was
+implemented after launch; this requirement came from the original task
+and plan inspection, but the guard was not explicit in the
+machine-readable lock. Overall D, no certification; no model or margin
+correction.']}</p>
+<p>No validation row influenced coefficients, transforms, selected
+features, margins, selection, RF/search settings or numeric estimator
+gates. The matching-reference completeness guard was added to scoring
+after launch: it implements a requirement from the original task,
+discovered through plan inspection, but was not explicit in the lock.
+This is a methodology limitation requiring D; observed numeric PASS
+values are not certification. All immutable hashes are verified before
+each batch and at scoring. Only validation harness/report code is added.
+Planned versus observed rows, exits/OOM state and failures are retained;
+no silent resume or bad-case exclusion.</p>
+<table>
+<thead>
+<tr>
+<th>Batch</th>
+<th>Planned</th>
+<th>Observed</th>
+<th>Complete</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D</td>
+<td>1874</td>
+<td>1874</td>
+<td>True</td>
+</tr>
+<tr>
+<td>D-fresh-sparse</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>D-fresh-medium</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>D-fresh-dense</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>D-fresh-very-dense</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>D-recorder-sparse</td>
+<td>10</td>
+<td>10</td>
+<td>True</td>
+</tr>
+<tr>
+<td>D-recorder-dense</td>
+<td>10</td>
+<td>10</td>
+<td>True</td>
+</tr>
+<tr>
+<td>A</td>
+<td>598</td>
+<td>598</td>
+<td>True</td>
+</tr>
+<tr>
+<td>A-fresh-sparse</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>A-fresh-medium</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>A-fresh-dense</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>A-fresh-very-dense</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>A-recorder-sparse</td>
+<td>10</td>
+<td>10</td>
+<td>True</td>
+</tr>
+<tr>
+<td>A-recorder-dense</td>
+<td>10</td>
+<td>10</td>
+<td>True</td>
+</tr>
+<tr>
+<td>B</td>
+<td>598</td>
+<td>598</td>
+<td>True</td>
+</tr>
+<tr>
+<td>B-fresh-sparse</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>B-fresh-medium</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>B-fresh-dense</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>B-fresh-very-dense</td>
+<td>3</td>
+<td>3</td>
+<td>True</td>
+</tr>
+<tr>
+<td>B-recorder-sparse</td>
+<td>10</td>
+<td>10</td>
+<td>True</td>
+</tr>
+<tr>
+<td>B-recorder-dense</td>
+<td>10</td>
+<td>10</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<p>Production invariants:20 attempts/ClientIP/anchored60s; concurrency2
+global/1 client; RF deadline60s; Cell cap6; workers1/queue16; Auto
+observation-only. RF equations, optimizer/search semantics, frontend
+request shape, scientific fingerprints and persistence untouched.
+Existing budget/deadline E2Es include frozen scientific hash
+verification. Cross-dataset generalization remains unvalidated: only
+real Ankara, synthetic sample pack excluded.</p>
+<p>Eight-Cell implication: fixed Cell count in prior fitting means no
+calibrated Cell-count coefficient; a future predictor may need Cell
+count, but this validation cannot certify eight Cells or justify a cap
+change.</p>
+<p>Full-body response hashes vary in 44 groups, all Building Entry. That
+response includes runtime <code>diagnostics.elapsed_ms</code>;
+whole-body hashes do not isolate scientific fields. Other successful
+groups are stable. Scientific invariance is checked separately by
+unchanged production source and the existing canonical RF tests/E2E
+fingerprints.</p>
+<h2 id="checks-and-freeze-decision">Checks and freeze decision</h2>
+<p>{'backend_tests': {'status': 'PASS', 'exit_code': 0, 'command':
+['go', 'test', './...'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-backend_tests.log'},
+'backend_race': {'status': 'PASS', 'exit_code': 0, 'command': ['go',
+'test', '-race', './...'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-backend_race.log'},
+'backend_vet': {'status': 'PASS', 'exit_code': 0, 'command': ['go',
+'vet', './...'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-backend_vet.log'},
+'frontend_tests': {'status': 'PASS', 'exit_code': 0, 'command': ['npm',
+'test', '--', '--maxWorkers=2'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-frontend_tests.log'},
+'frontend_lint': {'status': 'PASS', 'exit_code': 0, 'command': ['npm',
+'run', 'lint'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-frontend_lint.log'},
+'frontend_build': {'status': 'PASS', 'exit_code': 0, 'command': ['npm',
+'run', 'build'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-frontend_build.log'},
+'rf_budget_e2e': {'status': 'PASS', 'exit_code': 0, 'command': ['npx',
+'playwright', 'test', 'e2e/rf-budget.spec.js', '--project=desktop-1440',
+'--workers=1'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-rf_budget_e2e.log'},
+'rf_deadline_e2e': {'status': 'PASS', 'exit_code': 0, 'command': ['npx',
+'playwright', 'test', 'e2e/network-deadline.spec.js',
+'--project=desktop-1440', '--workers=1'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-rf_deadline_e2e.log'},
+'geometry_calibration_tests': {'status': 'PASS', 'exit_code': 0,
+'command': ['python3', '-m', 'unittest', 'discover', '-s',
+'scripts/auto-resource-geometry', '-p', 'test_<em>.py'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-geometry_calibration_tests.log'},
+'locked_validation_tests': {'status': 'PASS', 'exit_code': 0, 'command':
+['python3', '-m', 'unittest', 'discover', '-s',
+'scripts/auto-resource-estimator-validation', '-p', 'test_</em>.py'],
+'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-locked_validation_tests.log',
+'tests_passed': 12}, 'docs_build': {'status': 'PASS', 'exit_code': 0,
+'command': ['sh', 'docs/build-reference-pages.sh'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-docs_build.log'},
+'docs_validation': {'status': 'PASS', 'exit_code': 0, 'command':
+['/tmp/atom-resource-locked-validation/docs-venv/bin/python',
+'docs/validate_docs.py'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-docs_validation.log',
+'attempts': [{'status': 'FAIL', 'exit_code': 1, 'command': ['python3',
+'docs/validate_docs.py'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-docs_validation.log'}],
+'dependency': 'PyYAML 6.0.3 in isolated temporary venv'},
+'version_check': {'status': 'PASS', 'exit_code': 0, 'command':
+['python3', 'scripts/versioning.py', 'check'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-version_check.log'},
+'diff_check': {'status': 'PASS', 'exit_code': 0, 'command': ['git',
+'diff', '--check'], 'log':
+'/tmp/atom-resource-locked-validation/geometry/final-check-diff_check.log'}}</p>
+<p>No VERSION bump or release. Unreleased records the validation
+documentation; previous calibration artifacts preserved. Freeze the
+immutable contract, raw evidence and decision; no refit, tuning, changed
+margin or admission implementation.</p>
+<p>Limitations:</p>
+<ul>
+<li>One installed real Ankara dataset: cross-dataset generalization
+unvalidated.</li>
+<li>Locked fractional A/B matrix lacks same-setting isolated reference
+cases for selected mixed-load domains; matching latency inflation is
+insufficient, no post-hoc cases added.</li>
+<li>Shared Docker VM; CPU getrusage includes prediction
+preflight/logging, audit client and instrumentation. Mixed CPU is
+aggregate, no per-request compute attribution.</li>
+<li>HTTP response bytes are decoded entity bytes on uncompressed
+loopback, exclude HTTP framing; loopback is not production network
+performance.</li>
+<li>RSS/heap/cgroup peaks sampled50ms and depend on process order;
+allocations are cumulative work, not memory reservation.</li>
+<li>Recorder controls have distinct process/cache histories: observed
+deltas cannot isolate historical inflation causally.</li>
+<li>Selection band labels are target-quantile strata; exclusion shifts
+surviving ranks, no universal density thresholds.</li>
+<li>Hardware A/B matrix is predeclared fractional, D fit has no
+hardware/cell/search terms.</li>
+<li>Frozen preflight has no query-budget state; malformed/unavailable
+metadata must remain unknown, no admission implemented.</li>
+</ul>
+<p>Created/changed files: Unreleased changelog entry; validation report
+Markdown/JSON; validation-only scripts, lock/hash, manifest/hash,
+plans/hash and compressed queue evidence; generated documentation when
+built. Full raw measurements/predictions and per-request errors embedded
+in machine-readable report; disposable runtime logs retained under
+<code>/tmp/atom-resource-locked-validation/geometry</code>.</p>
+<p><strong>Single recommended next action:</strong> Keep Auto
+observation-only; use conservative fixed deployment profiles as the next
+design study, without estimator-driven admission.</p>
+<p><a href="./auto-resource-estimator-locked-validation.json">Full
+evidence</a> · Frozen protocol and tooling</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

@@ -78,6 +78,9 @@ capacity, scaling, and production-hardening guidance for A.T.O.M." />
       Deployment</a></li>
       <li><a href="#runtime-topology" id="toc-runtime-topology">Runtime
       Topology</a></li>
+      <li><a href="#auto-resource-diagnostics"
+      id="toc-auto-resource-diagnostics">Auto resource
+      diagnostics</a></li>
       <li><a href="#configuration"
       id="toc-configuration">Configuration</a></li>
       <li><a href="#dataset-mounts" id="toc-dataset-mounts">Dataset
@@ -164,6 +167,22 @@ RF computation remains local</td>
 <p>The Go server does not persist projects, jobs, reports, or
 measurements. Multiple API replicas can serve independent requests, but
 browser projects do not become collaborative storage.</p>
+<h2 id="auto-resource-diagnostics">Auto resource diagnostics</h2>
+<p>A.T.O.M automatically observes runtime CPU, Go scheduler and memory
+constraints once at startup for diagnostics and calibration. The startup
+log includes one structured Auto resource summary. Developers can
+inspect full JSON locally with
+<code>docker exec atom-app ./server --resource-profile</code>; the
+one-shot command opens no HTTP listener. No machine-capacity diagnostics
+endpoint or product resource controls are added. Local diagnostic logs
+should stay with operators.</p>
+<p>Detection does not adapt RF admission or experiment settings:
+defaults remain 20 attempts per ClientIP per anchored 60-second window,
+concurrency 2 globally and 1 per client, a 60-second RF deadline, six
+selected Cells and one experiment worker. This foundation establishes no
+automatic scaling or certified minimum or recommended hardware. See the
+<a href="./auto-resource-profile-foundation.html">foundation and
+measured calibration</a>.</p>
 <h2 id="configuration">Configuration</h2>
 <table>
 <thead>

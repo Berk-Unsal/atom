@@ -704,6 +704,84 @@
       "text": "Architecture quality includes stating what the system does not claim. These limits apply to the current implementation and reports. RF Propagation limits No diffraction, reflection-heavy multipath, fast fading, sidelobes, MIMO beamforming gain, scheduling, adjacent-channel leakage, or uplink model. DB Data limits Static OSM/OpenCellID-derived geometry and synthetic demand can be incomplete or stale. Confidence is context, not calibration. KPI Measurement limits RSRP, SINR, RSRQ, RSSI, and coverage values remain deterministic planning estimates. Uploaded field data validates residuals; its optional global bias correction is not full propagation calibration. OPS Operational limits No authentication, server-side project database, multi-user collaboration, or job queue is included. Project history is durable only in the current browser or an exported project file. Run the system Inspect the equations Review release history"
     },
     {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Auto Resource Profiling Foundation",
+      "url": "./auto-resource-profile-foundation.html",
+      "text": "Automatic CPU and memory observations, provenance, controlled-container calibration and unchanged fixed RF policy. View Markdown source System architecture Auto is the only development mode. It observes runtime resources for diagnostics and calibration. It does not control admission, GOMAXPROCS, experiment workers, queue sizes, RF computation, search or scientific identities. No product resource controls, adaptive limits or certified deployment hardware are introduced."
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Starting baseline",
+      "url": "./auto-resource-profile-foundation.html#starting-baseline",
+      "text": "2026-10-04: branch main , HEAD c48ef63c9ce064a72058e2b72c3cd095c7deb904 , VERSION 0.11.0 ; tracked diff empty. Existing untracked RF budget/admission study reports and both script directories were preserved. Backend tests, race tests and vet; frontend 423 tests, lint and build passed before implementation. Build retained its existing large-chunk warning."
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Discovery and schema",
+      "url": "./auto-resource-profile-foundation.html#discovery-and-schema",
+      "text": "backend-go/internal/resourceprofile is independent of all RF packages. The collector receives injectable file, runtime, host-memory and runtime-limit providers. The retained Profile is serialized and immutable; View() returns a deep copy. A startup integration module supplies actual normalized limiter and experiment settings plus already-loaded dataset metadata. Schema version 1 has mode , environment and its evidence, cgroup_version , constraint_visibility , cpu , memory , runtime , rf_policy , experiments , dataset , diagnostic_fingerprint , and bounded warnings . Resource signals contain state , nullable value and sources ; unknown_sources preserves incomplete evidence even when another source supplies a known upper bound. States are known , unlimited , absent or unknown . No host memory size is invented on unsupported platforms. Unavailable dataset counts are null; dataset state gates their interpretation. All measured captures have a known dataset. Signal Source / meaning Visible logical CPUs runtime.NumCPU() ; process-visible CPU inventory, not an assertion about physical host CPUs Scheduler capacity runtime.GOMAXPROCS(0) ; observation only Linux CPU quota Resolve /proc/self/cgroup through /proc/self/mountinfo ; v2 cpu.max , v1 cpu.cfs_quota_us / cpu.cfs_period_us Cpuset v2 cpuset.cpus.effective ; v1 cpuset.effective_cpus , falling back to the nearest nonempty inherited cpuset.cpus Darwin physical memory golang.org/x/sys/unix.SysctlUint64(\"hw.memsize\") Linux host/VM memory /proc/meminfo MemTotal and MemAvailable , strict kB units Darwin available memory Unknown; free/inactive pages are not treated as a trustworthy available-memory promise Linux hard memory ceiling v2 memory.max ; v1 memory.limit_in_bytes Soft memory threshold v2 memory.high ; v1 memory.soft_limit_in_bytes , whose semantics differ from v2 high Current cgroup usage v2 memory.current ; v1 memory.usage_in_bytes (legacy approximate accounting) Runtime constraints Go version, OS/arch, read-only runtime/metrics GOMEMLIMIT and GOGC values RF/experiment settings Constructed limiter, deadline, generated Cell cap, normalized experiment manager Dataset Validated manifest ID/version/file SHA256; index length, inventory cell count, cached polygon vertex count No discovery shells out. Linux cgroup mount roots, mount escapes, nonstandard mount locations, visible ancestors and hybrid v1/v2 controllers "
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Descriptive formulas and unlimited values",
+      "url": "./auto-resource-profile-foundation.html#descriptive-formulas-and-unlimited-values",
+      "text": "CPU capacity is the minimum of known positive runtime-visible logical CPUs, GOMAXPROCS, quota/period cores, and effective cpuset count. Fractions are retained, including sub-core quotas; there is no ceil/floor and no scheduler mutation. CPU quota considers minima over visible ancestors. Leaf quota and period remain separate, so the profile preserves the original units even when an ancestor binds. Memory ceiling is min(known host/VM total, known visible cgroup hard limits) . When only one is known, that source provides an observed upper bound. Available host memory, current cgroup usage, high/soft thresholds and Go's soft memory limit are separate; none is subtracted to create an allocation or admission promise. Each aggregate retains all source provenance. A valid upper bound can coexist with an unreadable ancestor: the bounded warning and unknown individual evidence are retained; it is not a guarantee that all constraints were discovered. V2 max and v1 CPU -1 mean unlimited at that visible scope. V1 memory's PAGE_COUNTER_MAX values near signed 64-bit maximum (and the legacy 32-bit page sentinel) are unlimited, never giant usable allocations. Missing files are absent; unreadable/malformed files are unknown. Unlimited cgroup memory with known host memory is host-bounded. Unknown host and cgroup memory stays unknown. The cgroup namespace may hide stricter ancestors. constraint_visibility is explicitly visible_hierarchy_only ; even a complete visible snapshot cannot promise exclusive CPUs or RAM. Ancestor memory in v1 is a conservative observed minimum, with enforcement dependent on the hierarchy's configured semantics. No automatic detection value is used for RF admission. Go itself has container-aware GOMAXPROCS defaults and may update them. This code only reads the current value. See Go's runtime change , the kernel v2 interfaces , and legacy memory semantics ."
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Collection, identity and diagnostics",
+      "url": "./auto-resource-profile-foundation.html#collection-identity-and-diagnostics",
+      "text": "Collection happens once after dataset and normalized configuration initialization, before serving HTTP. No request-time OS reads or polling loop is introduced. VertexCount() is cached during the existing index insertion loop and accessed in O(1); dataset file hashes are reused from the validated manifest. Counts describe the indexed geometry, including separate footprint parts, not just GeoJSON features. The profile describes the startup dataset. A dataset switch builds fresh cheap index metadata, but does not retroactively mutate the retained startup profile. SHA256 of canonical JSON provides a diagnostic fingerprint of static resources, runtime version, dataset identity/complexity and effective configured policy. Dynamic host availability, current usage and warning text are excluded. Provenance and visibility are included. It is not a portable machine identity and never enters RF request fingerprints, Scenario, Version, Run, optimizer results, experiment scientific hashes or project documents. One concise structured startup log reports mode, environment, visible CPUs, GOMAXPROCS, quota state/value, observed CPU/memory ceiling, RF slots, workers, footprints, diagnostic fingerprint and bounded warnings. No IP, credentials, location, project content or map payload is included. Resource metadata is not added to /healthz , /readyz , /api/meta , any other public API, or the UI. Developers can run cd backend-go && go run . --resource-profile or docker exec <container> ./server --resource-profile . This local one-shot loads the initial dataset and emits full JSON without opening a listener. It is a fresh observation under the same configuration, not remote inspection of another process's switched dataset. Use startup logs for the actual startup snapshot. The command adds no resource configuration mode. Treat local logs/reports as infrastructure diagnostics rather than publishable capacity promises. Detection failure does not block server startup: unavailable signals stay unknown and warnings are bounded to twelve fixed messages. Current fixed safety policy continues unchanged. Deliberately unsupported available-memory estimates are unknown without pretending an error or replacing them with free pages."
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Calibration",
+      "url": "./auto-resource-profile-foundation.html#calibration",
+      "text": "Measured on 2026-10-04 in a 10-CPU Linux arm64 development VM with 11.735 GiB host/VM RAM. Native development capture: 10 visible CPUs, GOMAXPROCS 10, 24 GiB, darwin/arm64, Go go1.27.1. Container image uses Go 1.26.6. Native available memory is unknown. CPU model recorded in the prior study is Apple M4; this profile independently records visible/scheduler counts rather than guessing model-specific capacity. None of these is production capacity certification. Requested and actually tested: A 2 CPU/4 GiB; B 4 CPU/8 GiB; C 8 CPU/10 GiB; default with no explicit quota/limit. C uses 10 GiB because the actual VM cannot provide 16 GiB; the configured ceiling leaves VM capacity outside it but reserves no memory. Profiles ran sequentially. The existing atom-app was preserved. Dockerfile defaults were used unchanged, without published calibration ports. Profile Visible / GOMAXPROCS Quota Hard cgroup limit Effective ceiling Detection A-2CPU-4GiB 10 / 2 2 4.0 GiB 4.000 GiB exact; startup fingerprint matches local diagnostic B-4CPU-8GiB 10 / 4 4 8.0 GiB 8.000 GiB exact; startup fingerprint matches local diagnostic C-8CPU-10GiB 10 / 8 8 10.0 GiB 10.000 GiB exact; startup fingerprint matches local diagnostic default 10 / 10 unlimited unlimited 11.735 GiB exact; startup fingerprint matches local diagnostic All profiles load ankara-open-planning version 2026.07 : 161,784 footprints, 451 inventory Cells, 936,651 polygon vertices, and the same validated file hashes. Dataset SHA256 values and full source-provenance snapshots are in the JSON report. Cgroup v2 high is unlimited in these default configurations. Normal Compose diagnostics match the default matrix fingerprint. An additional actual 1.5-core quota, one-CPU cpuset, 2 GiB container correctly reports quota 1.5, cpuset 1 and observed capacity 1, with unchanged RF/experiment policy and dataset metadata. No-quota default is host/VM-bounded, never infinite or a sentinel allocation."
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Same workload and method",
+      "url": "./auto-resource-profile-foundation.html#same-workload-and-method",
+      "text": "The six inventory Cell IDs are 9664800, 26390, 9664790, 9664795, 9664791 and 9664794. Existing frontend payload builders provide 120 rays, 400 m, 2.6 GHz and 28 GHz, unchanged default search and normal dataset. Evaluate and Optimize include six resulting maps; Optimize maps use returned azimuths. Repeat is Evaluate+maps → Interference → Evaluate+maps (15 attempts). Concurrent optimizers use two real socket client identities. Async overlap uses 16 normal azimuth runs with default workers=1; jobs were observed running, completed uncached, and actual timestamp overlap was measured. Real production HTTP is exercised by a separate standard-library Go client inside the container. A 100 ms sampler separates /proc/1/status RSS from cgroup memory.current . Process CPU uses /proc/1/stat ticks at USER_HZ=100. Cgroup CPU/throttle deltas include probe overhead. Peaks/HWM are cumulative container/process lifetime values; cgroup lifetime peak includes startup and the one-shot diagnostic subprocess. Short memory spikes can escape sampling. No test/build jobs overlapped the final matrix, but the development host/VM was shared and not isolated from external activity. One pass per profile/frequency; no percentile, minimum hardware guarantee or stable numeric threshold follows. A preliminary interrupted harness pass contributed no published timings. Workflow order and warm caches/GC can affect comparisons."
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Workflow performance curves",
+      "url": "./auto-resource-profile-foundation.html#workflow-performance-curves",
+      "text": "Seconds unless otherwise stated; RSS/current are sampled maxima in MiB. Headroom is 60 minus the slowest individual HTTP request, including transfer. Bundle wall is not a computation deadline. CPU is application / cgroup; throttle is cgroup accumulated throttled time, not a direct scalar slowdown. Profile GHz Workflow Wall CPU app / group Throttle RSS / current MiB Min request headroom Bytes A-2CPU-4GiB 2.6 evaluate_maps 1.240 1.840 / 1.890 0.019 933.7 / 1043.8 59.151 40365391 A-2CPU-4GiB 2.6 optimize_maps 18.994 30.560 / 30.754 0.101 1105.8 / 1216.7 41.688 40821192 A-2CPU-4GiB 2.6 interference 0.090 0.090 / 0.105 0.000 1015.3 / 1129.4 59.914 4698126 A-2CPU-4GiB 2.6 evaluate_interference_reevaluate 3.810 5.610 / 5.771 0.027 1050.7 / 1162.5 58.383 85428908 A-2CPU-4GiB 2.6 two_distinct_optimizers 27.049 53.780 / 53.918 0.285 1225.7 / 1376.4 32.952 196360 A-2CPU-4GiB 2.6 async_plus_evaluate-network 2.363 4.660 / 4.694 0.033 1228.1 / 1355.5 57.788 29628 A-2CPU-4GiB 2.6 async_plus_optimize-network 15.060 25.270 / 25.419 0.143 1199.8 / 1330.0 44.961 98724 A-2CPU-4GiB 2.6 cancel_optimizer_release 0.992 1.030 / 1.041 0.000 1015.0 / 1142.7 59.363 29084 A-2CPU-4GiB 28 evaluate_maps 0.765 1.130 / 1.145 0.000 1015.0 / 1026.2 59.423 13894505 A-2CPU-4GiB 28 optimize_maps 11.114 17.540 / 17.585 0.016 1038.1 / 1076.5 49.104 14475747 A-2CPU-4GiB 28 interference 0.058 0.070 / 0.079 0.000 1038.1 / 1081.2 59.944 4667640 A-2CPU-4GiB 28 evaluate_interference_reevaluate 1.797 2.660 / 2.716 0.000 1038.1 / 1081.2 59.255 32456650 A-2CPU-4GiB 28 two_distinct_optimizers 29.285 58.330 / 58.497 0.242 1237.5 / 1297.6 30.715 196324 A-2CPU-4GiB 28 async_plus_evaluate-network 1.505 2.880 / 2.888 0.010 1239.1 / 1299.7 58.505 29588 A-2CPU-4GiB 28 async_plus_optimize-network 17.742 28.940 / 29.038 0.020 1239.1 / 1299.7 42.266 98705 A-2CPU-4GiB 28 cancel_optimizer_release 1.111 1.220 / 1.237 0.000 1080.6 / 1146.7 59.246 29046 B-4CPU-8GiB 2.6 evaluate_maps 0.921 1.590 / 1.661 0.000 892.0 / 1060.4 59.333 40365391 B-4CPU-8GiB 2.6 optimize_maps 13.426 26.830 / 26.944 0.000 956.5 / 1137.1 46.902 40821192 B-4CPU-8GiB 2.6 interference 0.071 0.080 / 0.083 0.000 961.0 / 1137.1 59.932 4698126 B-4CPU-8GiB 2.6 evaluate_interference_reevaluate 2.130 3.880 / 3.992 0.000 961.2 / 1179.6 59.212 85428908 B-4CPU-8GiB 2.6 two_distinct_optimizers 17.771 59.410 / 59.507 0.021 1127.9 / 1347.5 42.229 196360 B-4CPU-8GiB"
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "CPU and concurrency headroom",
+      "url": "./auto-resource-profile-foundation.html#cpu-and-concurrency-headroom",
+      "text": "Profile GHz Operation Avg equivalent cores Throttled periods / periods Two-optimizer wall inflation A-2CPU-4GiB 2.6 optimize_maps 1.619 19 / 190 — A-2CPU-4GiB 2.6 two_distinct_optimizers 1.993 143 / 271 1.477x A-2CPU-4GiB 28 optimize_maps 1.582 6 / 111 — A-2CPU-4GiB 28 two_distinct_optimizers 1.998 170 / 293 2.688x B-4CPU-8GiB 2.6 optimize_maps 2.007 0 / 134 — B-4CPU-8GiB 2.6 two_distinct_optimizers 3.349 4 / 178 1.357x B-4CPU-8GiB 28 optimize_maps 1.935 0 / 115 — B-4CPU-8GiB 28 two_distinct_optimizers 3.316 11 / 177 1.564x C-8CPU-10GiB 2.6 optimize_maps 2.252 0 / 123 — C-8CPU-10GiB 2.6 two_distinct_optimizers 4.163 2 / 249 2.086x C-8CPU-10GiB 28 optimize_maps 2.242 0 / 153 — C-8CPU-10GiB 28 two_distinct_optimizers 4.041 0 / 183 1.210x default 2.6 optimize_maps 2.253 0 / 0 — default 2.6 two_distinct_optimizers 4.081 0 / 0 1.196x default 28 optimize_maps 2.193 0 / 0 — default 28 two_distinct_optimizers 4.005 0 / 0 1.238x Quota is a CPU-time upper bound; average equivalent cores do not measure exclusive remaining cores. Increasing quota does not produce a stable linear performance curve. Search work, existing parallelism, GC, frequency-dependent path viability and shared VM/host activity matter. Compare request headroom and throttle evidence independently."
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Memory headroom",
+      "url": "./auto-resource-profile-foundation.html#memory-headroom",
+      "text": "Profile Effective ceiling GiB Max sampled RSS MiB Max sampled cgroup MiB Lifetime cgroup peak MiB Ceiling − sampled / lifetime peak GiB A-2CPU-4GiB 4.000 1239.1 1376.4 1376.4 2.656 / 2.656 B-4CPU-8GiB 8.000 1127.9 1347.5 1347.5 6.684 / 6.684 C-8CPU-10GiB 10.000 976.1 1160.4 1160.4 8.867 / 8.867 default 11.735 924.2 1140.3 1140.3 10.621 / 10.621 These subtractions are descriptive measured margins, not safe allocatable RAM. Cgroup accounting includes file cache and kernel/container charges beyond process RSS. Host-bounded default shares memory with other processes/containers. Missing margins include browser/frontend memory, OS/VM overhead, dataset switches, retained async snapshots/caches/queue, larger or simultaneous requests, GC variability and unmeasured peak transients. Staying below OOM does not certify any profile."
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Async contention",
+      "url": "./auto-resource-profile-foundation.html#async-contention",
+      "text": "Profile GHz Interactive operation Interactive wall Experiment wall Actual overlap Interactive inflation A-2CPU-4GiB 2.6 async_plus_evaluate-network 2.212 2.336 2.212 2.606x A-2CPU-4GiB 2.6 async_plus_optimize-network 15.039 2.594 2.576 0.821x A-2CPU-4GiB 28 async_plus_evaluate-network 1.495 1.384 1.376 2.592x A-2CPU-4GiB 28 async_plus_optimize-network 17.734 1.414 1.408 1.628x B-4CPU-8GiB 2.6 async_plus_evaluate-network 1.119 0.885 0.882 1.679x B-4CPU-8GiB 2.6 async_plus_optimize-network 12.200 0.855 0.855 0.931x B-4CPU-8GiB 28 async_plus_evaluate-network 1.053 0.701 0.699 1.557x B-4CPU-8GiB 28 async_plus_optimize-network 12.520 0.704 0.703 1.105x C-8CPU-10GiB 2.6 async_plus_evaluate-network 2.666 1.996 1.989 3.776x C-8CPU-10GiB 2.6 async_plus_optimize-network 26.163 1.386 1.384 2.185x C-8CPU-10GiB 28 async_plus_evaluate-network 1.050 0.621 0.619 1.039x C-8CPU-10GiB 28 async_plus_optimize-network 14.199 0.783 0.783 0.942x default 2.6 async_plus_evaluate-network 1.065 0.814 0.809 1.039x default 2.6 async_plus_optimize-network 12.184 0.815 0.810 0.859x default 28 async_plus_evaluate-network 1.088 0.550 0.549 1.456x default 28 async_plus_optimize-network 11.559 0.635 0.631 0.893x"
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Future derivation decision",
+      "url": "./auto-resource-profile-foundation.html#future-derivation-decision",
+      "text": "Proposed derivation Finding Safe interactive concurrency Feasible after more repeated calibration across dataset/local geometry, operation/search settings and mixed-load tails; no certified value here Experiment worker count Feasible after more queue, retained-job/cache and overlap measurements; leave workers=1 Compute reservation capacity Feasible after bounded geometry-aware workload-cost calibration; CPU count alone cannot predict request cost Memory reservation capacity Feasible after transient allocation/GC, retained snapshots and mixed-load high-water calibration; no promise from limit minus sampled RSS Response-byte envelope Not predictable from CPU/RAM alone; depends on geometry, rays, grids/output form and independent network/transfer capacity CPU/RAM detection alone is insufficient. Different operations and frequencies have materially different cost under the same resources and dataset. Response hashes/bytes remain stable across hardware profiles while execution times change. Global footprint/vertex counts are useful dataset context but cannot quantify local density. Future decisions need hardware plus dataset/geometry complexity and operation parameters. This calibration held geometry and dataset fixed; it does not measure cross-dataset density scaling. This single dataset does not establish a stable dataset complexity class or descriptive Auto classes; none are created."
+    },
+    {
+      "page": "Auto Resource Profiling Foundation",
+      "title": "Validation, freeze and next action",
+      "url": "./auto-resource-profile-foundation.html#validation-freeze-and-next-action",
+      "text": "The JSON report contains a complete 28-file change manifest; prior untracked study files were preserved. Backend full tests, race tests and vet pass; new discovery/immutability/configuration tests pass. Frontend 423/423 tests (two workers), lint and production build pass. Real budget and deadline E2Es pass on separate fresh servers, including the existing optimizer golden response hash. Combined E2Es initially shared a budget; a heavy parallel test/build run caused frontend timing failures. Clean reruns passed without changing frontend tests or behavior. Documentation build and validation pass (48 HTML pages, 41 API paths); version consistency and diff whitespace checks pass. Python docs validation uses PyYAML in a disposable local venv; existing Vite/pandoc warnings persist. Security review: no new public diagnostic route, browser data, raw client identity in the profile, credentials, user location, project or map payload logging. Existing health/meta contracts remain unchanged. Scenario/Version/Run/project scientific identity paths were untouched and their existing frontend/backend tests pass. RF defaults remain 20/60 s anchored ClientIP attempts, slots 2/1, deadline 60 s, Cell cap 6; experiment workers 1, queue 16 and max runs 64 remain unchanged. Deployment docs explain observation and local diagnostics without scaling or hardware guarantees. VERSION stays 0.11.0; recommend no immediate release for this internal foundation, with its developer-facing diagnostics recorded under Unreleased. The observational foundation can freeze: all final gates passed. Adaptive admission, resource tokens, reservations, classes and product controls remain out of scope. Single next action: repeat deployment-target calibration across geometry densities, dataset complexity and mixed-load tails before designing any admission derivation. Reproduce with the calibration harness; full profile provenance, external limits, raw metrics and response hashes are in the JSON report ."
+    },
+    {
       "page": "Bug-Fix Register",
       "title": "Bug-Fix Register",
       "url": "./bug-fixes.html",
@@ -813,6 +891,18 @@
     },
     {
       "page": "Changelog",
+      "title": "Unreleased",
+      "url": "./changelog.html#unreleased",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
+      "title": "Added",
+      "url": "./changelog.html#added",
+      "text": "Observe CPU, cgroup and memory constraints with provenance at startup; add local Auto profile diagnostics and controlled-container calibration while preserving fixed RF admission, deadlines, workers and scientific identities."
+    },
+    {
+      "page": "Changelog",
       "title": "0.11.0 - 2026-10-04",
       "url": "./changelog.html#0110---2026-10-04",
       "text": ""
@@ -862,7 +952,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added",
+      "url": "./changelog.html#added-1",
       "text": "Add locally persisted Light, Dark and System appearance, semantic dark shell tokens, and a native Alidade Smooth Dark basemap; preserve light rendering, RF palettes, camera, selection, result identity and explicit provider fallbacks. Include matched visual evidence and provider deployment guidance."
     },
     {
@@ -886,7 +976,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-1",
+      "url": "./changelog.html#added-2",
       "text": "Add sanitized real Ankara Concept 6A.1.1 ingestion, GNSS/radio QA, transmitter reconciliation, and blocked-readiness evidence without calibration or RF behavior changes."
     },
     {
@@ -916,7 +1006,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-2",
+      "url": "./changelog.html#added-3",
       "text": "Add a read-only contextual inspector for map-linked Cells, Buildings, Interference samples, and existing map entities, with exact source/freshness context and direct Inventory and Path Profile actions. Separate map Inspect and Select cells modes, preserve task state across supported panel layouts, and give area drawing, cell placement, and path endpoint selection priority over inspection. Consolidate map chrome into interaction, result visualization, View context, and Layers controls; remove duplicate map popups, clarify Network selection guidance, and keep the compact interaction, View, and Layers controls reachable on phones."
     },
     {
@@ -934,7 +1024,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-3",
+      "url": "./changelog.html#added-4",
       "text": "Add local-first Concept 7D report artifacts with exact ScenarioRevision/Run lineage, SHA-256 verification, separate IndexedDB retention, historical Run generation, offline download, regeneration, corruption handling, and explicit cleanup/quota behavior. Add local-first Concept 7E Scenario UX with explicit immutable Versions, draft/Save version semantics, Scenario switching, input diffs, branch and duplicate lineage, optimization application choices, friendly Run/Report navigation, and safe input-first comparison. Add Concept 7G result freshness and source lineage across the workspace, Results, Run History, Reports, map legend, and optimization actions, with explicit stale/history safety, draft-source clarity, and accessible state labels. Add Concept 7H RF configuration progressive disclosure, keeping Planning visible while grouping specialist and reference controls under Advanced and Research / reference without changing RF behavior or saved inputs."
     },
     {
@@ -946,7 +1036,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-4",
+      "url": "./changelog.html#added-5",
       "text": "Add opt-in deterministic_pareto_archive_search_v1 for bounded priority-independent Pareto candidate discovery, exact evaluated-state archiving, post-discovery priority reranking, deterministic discovery/ranking fingerprints, and Concept 5C audit artifacts; legacy and Concept 5B search policies remain available. Add opt-in deterministic_multistart_coordinate_v1 network search with until-stable coordinate descent, deterministic starts, request-scoped memoization, evaluated-state archive/Pareto metadata, explicit budgets, and Concept 5B audit artifacts while preserving the legacy default. Add Concept 4F.3A.5 diagnostic terrain-clearance primitive with radio-minus-terrain endpoint/sign/no-data/datum/interpolation contracts, NASADEM/FABDEM 432-path regression artifacts, and no canonical RF coupling. Add Concept 4F.1 deterministic height-aware urban_short_range centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts. Add Concept 4F.2 p526-single-edge-v1 diffraction diagnostics with independent P.526-16 reference fixtures, known-height obstruction ledgers, deterministic roof-edge selection, canonical UMa comparison, Fresnel separation, restrained Path Profile UI, and no network/optimizer/surface/interference/building-entry coupling. Add Concept 4F.3A spatial-evidence foundations with explicit DTM/DSM and vertical-datum semantics, windowed GeoTIFF sampling, terrain path evidence, robust building-base/roof ledgers, source-independent external-height matching, conflict/precedence policies, deterministic fingerprints, Ankara readiness artifacts, diagnostic-only inspector routes, and no canonical RF coupling. Add Concept 4F.3A.1 bounded Ankara external-height acquisition and matching pilot with exact Microsoft GlobalMLBuildingFootprints tile selection, raw checksums, input QA, normalized sidecar output, deterministic STRtree matching, source-agreement audits, diagnostic impact, reproducibility, and an honest NO-GO for numeric promotion when the active tiles contain no positive heights. Add Concept 4F.3A.2 diagnostic-only GlobalBuildingAtlas GBA.Height Ankara acquisition with official index/tile checksums, CC BY-NC license gate, windowed raster sa"
     },
     {
@@ -958,7 +1048,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-5",
+      "url": "./changelog.html#added-6",
       "text": "Add Concept 4E building-entry analysis for deterministic 2.6/28 GHz service estimates immediately inside representative facades, with standard-derived low/high O2I scenarios, material-data auditing, one batched API request, RF-aware caching, and restrained Analyze/report surfaces."
     },
     {
@@ -982,7 +1072,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-6",
+      "url": "./changelog.html#added-7",
       "text": "Add a unified map key, visible local-save status, and recoverable deletion controls."
     },
     {
@@ -1006,7 +1096,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-7",
+      "url": "./changelog.html#added-8",
       "text": "Add an inspectable 2.5D point-to-point path profiler with optional COG/GeoTIFF terrain, building heights, LOS/Fresnel classification, single knife-edge diffraction, material-aware penetration, environmental sensitivity terms, uncertainty ranges, and an interactive vertical cross section. Add asynchronous batch experiment matrices with cancellation, deterministic dataset/model fingerprints, bounded caching, a headless CLI, progress UI, scenario tables, and Pareto evidence. Add configurable network objectives, weights, hard constraints, feasibility evidence, and non-dominated azimuth solutions while keeping unsupported tilt, power, candidate-site, cost, fiber, and permitting inputs explicit. Add spatially blocked five-fold calibration validation, spatial-diversity rejection, per-cell/per-band and distance/obstruction residual summaries, robust outlier flags, uncertainty quantiles, confidence intervals, and campaign provenance/expiration support. Add regular-grid analytical coverage surfaces, marching-square isolines, opacity and display-threshold controls, plus GeoTIFF, contour GeoJSON, and CSV exports. Add OGC API Features-style, viewport-bounded building queries with pagination and GeoJSON/CSV representations so clients need not transfer the full building dataset. Add a persistent cell Inventory workspace with manual map placement, dragging, duplication, deletion, bounded CSV/GeoJSON import, search, validation, and independent per-cell RF profiles across propagation, network, interference, recommendation, measurement, and report workflows. Add Dataset Pack Studio for arbitrary-region source inspection, geometry repair, reprojection/cropping, schema-v2 manifests, hashes, provenance/licenses/confidence, QA evidence, and optional terrain, clutter, building-height, and material layers. Add a local installed-dataset catalog and atomic manifest-ID switching that retains the active immutable pack on validation failure, with optional administration-key protection."
     },
     {
@@ -1072,7 +1162,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-8",
+      "url": "./changelog.html#added-9",
       "text": "Add keyboard-accessible full-site search to the static documentation website. Publish the canonical project changelog as a searchable documentation page."
     },
     {
@@ -1102,7 +1192,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-9",
+      "url": "./changelog.html#added-10",
       "text": "Deterministic sector, network, optimization, interference, recommendation, and measurement-validation workflows. Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths. Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing."
     },
     {
@@ -3654,6 +3744,12 @@
       "title": "Runtime Topology",
       "url": "./deployment.html#runtime-topology",
       "text": "Component Default Responsibility atom container Required Static frontend, REST API, RF engines, spatial index, active dataset pack Browser IndexedDB Required for projects Local project/scenario history; not shared across users Stadia Maps / OpenStreetMap tiles External by default Alidade Smooth light/dark and selectable OSM; visual basemap only; RF computation remains local core-lab-adapter Optional profile Deterministic 5G path state and optional Open5GS probes The Go server does not persist projects, jobs, reports, or measurements. Multiple API replicas can serve independent requests, but browser projects do not become collaborative storage."
+    },
+    {
+      "page": "Deployment",
+      "title": "Auto resource diagnostics",
+      "url": "./deployment.html#auto-resource-diagnostics",
+      "text": "A.T.O.M automatically observes runtime CPU, Go scheduler and memory constraints once at startup for diagnostics and calibration. The startup log includes one structured Auto resource summary. Developers can inspect full JSON locally with docker exec atom-app ./server --resource-profile ; the one-shot command opens no HTTP listener. No machine-capacity diagnostics endpoint or product resource controls are added. Local diagnostic logs should stay with operators. Detection does not adapt RF admission or experiment settings: defaults remain 20 attempts per ClientIP per anchored 60-second window, concurrency 2 globally and 1 per client, a 60-second RF deadline, six selected Cells and one experiment worker. This foundation establishes no automatic scaling or certified minimum or recommended hardware. See the foundation and measured calibration ."
     },
     {
       "page": "Deployment",

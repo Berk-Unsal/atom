@@ -1,0 +1,1592 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Automatic CPU and memory
+observations, provenance, controlled-container calibration and unchanged
+fixed RF policy." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Auto Resource Profiling
+Foundation | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Auto Resource
+Profiling Foundation page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#starting-baseline"
+      id="toc-starting-baseline">Starting baseline</a></li>
+      <li><a href="#discovery-and-schema"
+      id="toc-discovery-and-schema">Discovery and schema</a></li>
+      <li><a href="#descriptive-formulas-and-unlimited-values"
+      id="toc-descriptive-formulas-and-unlimited-values">Descriptive
+      formulas and unlimited values</a></li>
+      <li><a href="#collection-identity-and-diagnostics"
+      id="toc-collection-identity-and-diagnostics">Collection, identity
+      and diagnostics</a></li>
+      <li><a href="#calibration"
+      id="toc-calibration">Calibration</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Runtime observations</span>
+        <h1>Auto Resource Profiling Foundation</h1>
+        <p>Automatic CPU and memory observations, provenance,
+controlled-container calibration and unchanged fixed RF policy.</p>
+        <div class="hero-actions">
+          <a class="button" href="./auto-resource-profile-foundation.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Auto is the only development mode. It observes runtime resources for
+diagnostics and calibration. It does not control admission, GOMAXPROCS,
+experiment workers, queue sizes, RF computation, search or scientific
+identities. No product resource controls, adaptive limits or certified
+deployment hardware are introduced.</p>
+<h2 id="starting-baseline">Starting baseline</h2>
+<p>2026-10-04: branch <code>main</code>, HEAD
+<code>c48ef63c9ce064a72058e2b72c3cd095c7deb904</code>, VERSION
+<code>0.11.0</code>; tracked diff empty. Existing untracked RF
+budget/admission study reports and both script directories were
+preserved. Backend tests, race tests and vet; frontend 423 tests, lint
+and build passed before implementation. Build retained its existing
+large-chunk warning.</p>
+<h2 id="discovery-and-schema">Discovery and schema</h2>
+<p><code>backend-go/internal/resourceprofile</code> is independent of
+all RF packages. The collector receives injectable file, runtime,
+host-memory and runtime-limit providers. The retained
+<code>Profile</code> is serialized and immutable; <code>View()</code>
+returns a deep copy. A startup integration module supplies actual
+normalized limiter and experiment settings plus already-loaded dataset
+metadata.</p>
+<p>Schema version 1 has <code>mode</code>, <code>environment</code> and
+its evidence, <code>cgroup_version</code>,
+<code>constraint_visibility</code>, <code>cpu</code>,
+<code>memory</code>, <code>runtime</code>, <code>rf_policy</code>,
+<code>experiments</code>, <code>dataset</code>,
+<code>diagnostic_fingerprint</code>, and bounded <code>warnings</code>.
+Resource signals contain <code>state</code>, nullable <code>value</code>
+and <code>sources</code>; <code>unknown_sources</code> preserves
+incomplete evidence even when another source supplies a known upper
+bound. States are <code>known</code>, <code>unlimited</code>,
+<code>absent</code> or <code>unknown</code>. No host memory size is
+invented on unsupported platforms. Unavailable dataset counts are null;
+dataset state gates their interpretation. All measured captures have a
+known dataset.</p>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Source / meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visible logical CPUs</td>
+<td><code>runtime.NumCPU()</code>; process-visible CPU inventory, not an
+assertion about physical host CPUs</td>
+</tr>
+<tr>
+<td>Scheduler capacity</td>
+<td><code>runtime.GOMAXPROCS(0)</code>; observation only</td>
+</tr>
+<tr>
+<td>Linux CPU quota</td>
+<td>Resolve <code>/proc/self/cgroup</code> through
+<code>/proc/self/mountinfo</code>; v2 <code>cpu.max</code>, v1
+<code>cpu.cfs_quota_us</code> / <code>cpu.cfs_period_us</code></td>
+</tr>
+<tr>
+<td>Cpuset</td>
+<td>v2 <code>cpuset.cpus.effective</code>; v1
+<code>cpuset.effective_cpus</code>, falling back to the nearest nonempty
+inherited <code>cpuset.cpus</code></td>
+</tr>
+<tr>
+<td>Darwin physical memory</td>
+<td><code>golang.org/x/sys/unix.SysctlUint64("hw.memsize")</code></td>
+</tr>
+<tr>
+<td>Linux host/VM memory</td>
+<td><code>/proc/meminfo</code> <code>MemTotal</code> and
+<code>MemAvailable</code>, strict kB units</td>
+</tr>
+<tr>
+<td>Darwin available memory</td>
+<td>Unknown; free/inactive pages are not treated as a trustworthy
+available-memory promise</td>
+</tr>
+<tr>
+<td>Linux hard memory ceiling</td>
+<td>v2 <code>memory.max</code>; v1
+<code>memory.limit_in_bytes</code></td>
+</tr>
+<tr>
+<td>Soft memory threshold</td>
+<td>v2 <code>memory.high</code>; v1
+<code>memory.soft_limit_in_bytes</code>, whose semantics differ from v2
+high</td>
+</tr>
+<tr>
+<td>Current cgroup usage</td>
+<td>v2 <code>memory.current</code>; v1
+<code>memory.usage_in_bytes</code> (legacy approximate accounting)</td>
+</tr>
+<tr>
+<td>Runtime constraints</td>
+<td>Go version, OS/arch, read-only <code>runtime/metrics</code>
+GOMEMLIMIT and GOGC values</td>
+</tr>
+<tr>
+<td>RF/experiment settings</td>
+<td>Constructed limiter, deadline, generated Cell cap, normalized
+experiment manager</td>
+</tr>
+<tr>
+<td>Dataset</td>
+<td>Validated manifest ID/version/file SHA256; index length, inventory
+cell count, cached polygon vertex count</td>
+</tr>
+</tbody>
+</table>
+<p>No discovery shells out. Linux cgroup mount roots, mount escapes,
+nonstandard mount locations, visible ancestors and hybrid v1/v2
+controllers are handled. Controller state does not establish whether
+Linux is a container: environment remains <code>unknown</code>. Darwin
+reports <code>native</code>. No Docker marker-file heuristic is used.
+External calibration evidence separately identifies Docker containers.
+Native Linux is supported through the same sources but was not available
+as a separate physical host for this run. V1/hybrid behavior is
+fixture-tested; actual containers use v2.</p>
+<h2 id="descriptive-formulas-and-unlimited-values">Descriptive formulas
+and unlimited values</h2>
+<p>CPU capacity is the minimum of known positive runtime-visible logical
+CPUs, GOMAXPROCS, quota/period cores, and effective cpuset count.
+Fractions are retained, including sub-core quotas; there is no
+ceil/floor and no scheduler mutation. CPU quota considers minima over
+visible ancestors. Leaf quota and period remain separate, so the profile
+preserves the original units even when an ancestor binds.</p>
+<p>Memory ceiling is
+<code>min(known host/VM total, known visible cgroup hard limits)</code>.
+When only one is known, that source provides an observed upper bound.
+Available host memory, current cgroup usage, high/soft thresholds and
+Go's soft memory limit are separate; none is subtracted to create an
+allocation or admission promise. Each aggregate retains all source
+provenance. A valid upper bound can coexist with an unreadable ancestor:
+the bounded warning and unknown individual evidence are retained; it is
+not a guarantee that all constraints were discovered.</p>
+<p>V2 <code>max</code> and v1 CPU <code>-1</code> mean unlimited at that
+visible scope. V1 memory's PAGE_COUNTER_MAX values near signed 64-bit
+maximum (and the legacy 32-bit page sentinel) are unlimited, never giant
+usable allocations. Missing files are absent; unreadable/malformed files
+are unknown. Unlimited cgroup memory with known host memory is
+host-bounded. Unknown host and cgroup memory stays unknown.</p>
+<p>The cgroup namespace may hide stricter ancestors.
+<code>constraint_visibility</code> is explicitly
+<code>visible_hierarchy_only</code>; even a complete visible snapshot
+cannot promise exclusive CPUs or RAM. Ancestor memory in v1 is a
+conservative observed minimum, with enforcement dependent on the
+hierarchy's configured semantics. No automatic detection value is used
+for RF admission.</p>
+<p>Go itself has container-aware GOMAXPROCS defaults and may update
+them. This code only reads the current value. See <a
+href="https://go.dev/doc/go1.25">Go's runtime change</a>, <a
+href="https://docs.kernel.org/admin-guide/cgroup-v2.html">the kernel v2
+interfaces</a>, and <a
+href="https://docs.kernel.org/admin-guide/cgroup-v1/memory.html">legacy
+memory semantics</a>.</p>
+<h2 id="collection-identity-and-diagnostics">Collection, identity and
+diagnostics</h2>
+<p>Collection happens once after dataset and normalized configuration
+initialization, before serving HTTP. No request-time OS reads or polling
+loop is introduced. <code>VertexCount()</code> is cached during the
+existing index insertion loop and accessed in O(1); dataset file hashes
+are reused from the validated manifest. Counts describe the indexed
+geometry, including separate footprint parts, not just GeoJSON features.
+The profile describes the startup dataset. A dataset switch builds fresh
+cheap index metadata, but does not retroactively mutate the retained
+startup profile.</p>
+<p>SHA256 of canonical JSON provides a diagnostic fingerprint of static
+resources, runtime version, dataset identity/complexity and effective
+configured policy. Dynamic host availability, current usage and warning
+text are excluded. Provenance and visibility are included. It is not a
+portable machine identity and never enters RF request fingerprints,
+Scenario, Version, Run, optimizer results, experiment scientific hashes
+or project documents.</p>
+<p>One concise structured startup log reports mode, environment, visible
+CPUs, GOMAXPROCS, quota state/value, observed CPU/memory ceiling, RF
+slots, workers, footprints, diagnostic fingerprint and bounded warnings.
+No IP, credentials, location, project content or map payload is
+included. Resource metadata is not added to <code>/healthz</code>,
+<code>/readyz</code>, <code>/api/meta</code>, any other public API, or
+the UI.</p>
+<p>Developers can run
+<code>cd backend-go &amp;&amp; go run . --resource-profile</code> or
+<code>docker exec &lt;container&gt; ./server --resource-profile</code>.
+This local one-shot loads the initial dataset and emits full JSON
+without opening a listener. It is a fresh observation under the same
+configuration, not remote inspection of another process's switched
+dataset. Use startup logs for the actual startup snapshot. The command
+adds no resource configuration mode. Treat local logs/reports as
+infrastructure diagnostics rather than publishable capacity
+promises.</p>
+<p>Detection failure does not block server startup: unavailable signals
+stay unknown and warnings are bounded to twelve fixed messages. Current
+fixed safety policy continues unchanged. Deliberately unsupported
+available-memory estimates are unknown without pretending an error or
+replacing them with free pages.</p>
+<h2 id="calibration">Calibration</h2>
+<p>Measured on 2026-10-04 in a 10-CPU Linux arm64 development VM with
+11.735 GiB host/VM RAM. Native development capture: 10 visible CPUs,
+GOMAXPROCS 10, 24 GiB, darwin/arm64, Go go1.27.1. Container image uses
+Go 1.26.6. Native available memory is unknown. CPU model recorded in the
+prior study is Apple M4; this profile independently records
+visible/scheduler counts rather than guessing model-specific capacity.
+None of these is production capacity certification.</p>
+<p>Requested and actually tested: A 2 CPU/4 GiB; B 4 CPU/8 GiB; C 8
+CPU/10 GiB; default with no explicit quota/limit. C uses 10 GiB because
+the actual VM cannot provide 16 GiB; the configured ceiling leaves VM
+capacity outside it but reserves no memory. Profiles ran sequentially.
+The existing <code>atom-app</code> was preserved. Dockerfile defaults
+were used unchanged, without published calibration ports.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th style="text-align: right;">Visible / GOMAXPROCS</th>
+<th style="text-align: right;">Quota</th>
+<th style="text-align: right;">Hard cgroup limit</th>
+<th style="text-align: right;">Effective ceiling</th>
+<th>Detection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">10 / 2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4.0 GiB</td>
+<td style="text-align: right;">4.000 GiB</td>
+<td>exact; startup fingerprint matches local diagnostic</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">10 / 4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">8.0 GiB</td>
+<td style="text-align: right;">8.000 GiB</td>
+<td>exact; startup fingerprint matches local diagnostic</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">10 / 8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">10.0 GiB</td>
+<td style="text-align: right;">10.000 GiB</td>
+<td>exact; startup fingerprint matches local diagnostic</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">10 / 10</td>
+<td style="text-align: right;">unlimited</td>
+<td style="text-align: right;">unlimited</td>
+<td style="text-align: right;">11.735 GiB</td>
+<td>exact; startup fingerprint matches local diagnostic</td>
+</tr>
+</tbody>
+</table>
+<p>All profiles load <code>ankara-open-planning</code> version
+<code>2026.07</code>: 161,784 footprints, 451 inventory Cells, 936,651
+polygon vertices, and the same validated file hashes. Dataset SHA256
+values and full source-provenance snapshots are in the JSON report.
+Cgroup v2 high is unlimited in these default configurations. Normal
+Compose diagnostics match the default matrix fingerprint. An additional
+actual 1.5-core quota, one-CPU cpuset, 2 GiB container correctly reports
+quota 1.5, cpuset 1 and observed capacity 1, with unchanged
+RF/experiment policy and dataset metadata. No-quota default is
+host/VM-bounded, never infinite or a sentinel allocation.</p>
+<h3 id="same-workload-and-method">Same workload and method</h3>
+<p>The six inventory Cell IDs are 9664800, 26390, 9664790, 9664795,
+9664791 and 9664794. Existing frontend payload builders provide 120
+rays, 400 m, 2.6 GHz and 28 GHz, unchanged default search and normal
+dataset. Evaluate and Optimize include six resulting maps; Optimize maps
+use returned azimuths. Repeat is Evaluate+maps → Interference →
+Evaluate+maps (15 attempts). Concurrent optimizers use two real socket
+client identities. Async overlap uses 16 normal azimuth runs with
+default workers=1; jobs were observed running, completed uncached, and
+actual timestamp overlap was measured.</p>
+<p>Real production HTTP is exercised by a separate standard-library Go
+client inside the container. A 100 ms sampler separates
+<code>/proc/1/status</code> RSS from cgroup <code>memory.current</code>.
+Process CPU uses <code>/proc/1/stat</code> ticks at USER_HZ=100. Cgroup
+CPU/throttle deltas include probe overhead. Peaks/HWM are cumulative
+container/process lifetime values; cgroup lifetime peak includes startup
+and the one-shot diagnostic subprocess. Short memory spikes can escape
+sampling. No test/build jobs overlapped the final matrix, but the
+development host/VM was shared and not isolated from external
+activity.</p>
+<p>One pass per profile/frequency; no percentile, minimum hardware
+guarantee or stable numeric threshold follows. A preliminary interrupted
+harness pass contributed no published timings. Workflow order and warm
+caches/GC can affect comparisons.</p>
+<h3 id="workflow-performance-curves">Workflow performance curves</h3>
+<p>Seconds unless otherwise stated; RSS/current are sampled maxima in
+MiB. Headroom is 60 minus the slowest individual HTTP request, including
+transfer. Bundle wall is not a computation deadline. CPU is application
+/ cgroup; throttle is cgroup accumulated throttled time, not a direct
+scalar slowdown.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th style="text-align: right;">GHz</th>
+<th>Workflow</th>
+<th style="text-align: right;">Wall</th>
+<th style="text-align: right;">CPU app / group</th>
+<th style="text-align: right;">Throttle</th>
+<th style="text-align: right;">RSS / current MiB</th>
+<th style="text-align: right;">Min request headroom</th>
+<th style="text-align: right;">Bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate_maps</td>
+<td style="text-align: right;">1.240</td>
+<td style="text-align: right;">1.840 / 1.890</td>
+<td style="text-align: right;">0.019</td>
+<td style="text-align: right;">933.7 / 1043.8</td>
+<td style="text-align: right;">59.151</td>
+<td style="text-align: right;">40365391</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">18.994</td>
+<td style="text-align: right;">30.560 / 30.754</td>
+<td style="text-align: right;">0.101</td>
+<td style="text-align: right;">1105.8 / 1216.7</td>
+<td style="text-align: right;">41.688</td>
+<td style="text-align: right;">40821192</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.090</td>
+<td style="text-align: right;">0.090 / 0.105</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1015.3 / 1129.4</td>
+<td style="text-align: right;">59.914</td>
+<td style="text-align: right;">4698126</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate_interference_reevaluate</td>
+<td style="text-align: right;">3.810</td>
+<td style="text-align: right;">5.610 / 5.771</td>
+<td style="text-align: right;">0.027</td>
+<td style="text-align: right;">1050.7 / 1162.5</td>
+<td style="text-align: right;">58.383</td>
+<td style="text-align: right;">85428908</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">27.049</td>
+<td style="text-align: right;">53.780 / 53.918</td>
+<td style="text-align: right;">0.285</td>
+<td style="text-align: right;">1225.7 / 1376.4</td>
+<td style="text-align: right;">32.952</td>
+<td style="text-align: right;">196360</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">2.363</td>
+<td style="text-align: right;">4.660 / 4.694</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">1228.1 / 1355.5</td>
+<td style="text-align: right;">57.788</td>
+<td style="text-align: right;">29628</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">15.060</td>
+<td style="text-align: right;">25.270 / 25.419</td>
+<td style="text-align: right;">0.143</td>
+<td style="text-align: right;">1199.8 / 1330.0</td>
+<td style="text-align: right;">44.961</td>
+<td style="text-align: right;">98724</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>cancel_optimizer_release</td>
+<td style="text-align: right;">0.992</td>
+<td style="text-align: right;">1.030 / 1.041</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1015.0 / 1142.7</td>
+<td style="text-align: right;">59.363</td>
+<td style="text-align: right;">29084</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>evaluate_maps</td>
+<td style="text-align: right;">0.765</td>
+<td style="text-align: right;">1.130 / 1.145</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1015.0 / 1026.2</td>
+<td style="text-align: right;">59.423</td>
+<td style="text-align: right;">13894505</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">11.114</td>
+<td style="text-align: right;">17.540 / 17.585</td>
+<td style="text-align: right;">0.016</td>
+<td style="text-align: right;">1038.1 / 1076.5</td>
+<td style="text-align: right;">49.104</td>
+<td style="text-align: right;">14475747</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.058</td>
+<td style="text-align: right;">0.070 / 0.079</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1038.1 / 1081.2</td>
+<td style="text-align: right;">59.944</td>
+<td style="text-align: right;">4667640</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>evaluate_interference_reevaluate</td>
+<td style="text-align: right;">1.797</td>
+<td style="text-align: right;">2.660 / 2.716</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1038.1 / 1081.2</td>
+<td style="text-align: right;">59.255</td>
+<td style="text-align: right;">32456650</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">29.285</td>
+<td style="text-align: right;">58.330 / 58.497</td>
+<td style="text-align: right;">0.242</td>
+<td style="text-align: right;">1237.5 / 1297.6</td>
+<td style="text-align: right;">30.715</td>
+<td style="text-align: right;">196324</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.505</td>
+<td style="text-align: right;">2.880 / 2.888</td>
+<td style="text-align: right;">0.010</td>
+<td style="text-align: right;">1239.1 / 1299.7</td>
+<td style="text-align: right;">58.505</td>
+<td style="text-align: right;">29588</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">17.742</td>
+<td style="text-align: right;">28.940 / 29.038</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">1239.1 / 1299.7</td>
+<td style="text-align: right;">42.266</td>
+<td style="text-align: right;">98705</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>cancel_optimizer_release</td>
+<td style="text-align: right;">1.111</td>
+<td style="text-align: right;">1.220 / 1.237</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1080.6 / 1146.7</td>
+<td style="text-align: right;">59.246</td>
+<td style="text-align: right;">29046</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate_maps</td>
+<td style="text-align: right;">0.921</td>
+<td style="text-align: right;">1.590 / 1.661</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">892.0 / 1060.4</td>
+<td style="text-align: right;">59.333</td>
+<td style="text-align: right;">40365391</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">13.426</td>
+<td style="text-align: right;">26.830 / 26.944</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">956.5 / 1137.1</td>
+<td style="text-align: right;">46.902</td>
+<td style="text-align: right;">40821192</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.071</td>
+<td style="text-align: right;">0.080 / 0.083</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">961.0 / 1137.1</td>
+<td style="text-align: right;">59.932</td>
+<td style="text-align: right;">4698126</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate_interference_reevaluate</td>
+<td style="text-align: right;">2.130</td>
+<td style="text-align: right;">3.880 / 3.992</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">961.2 / 1179.6</td>
+<td style="text-align: right;">59.212</td>
+<td style="text-align: right;">85428908</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">17.771</td>
+<td style="text-align: right;">59.410 / 59.507</td>
+<td style="text-align: right;">0.021</td>
+<td style="text-align: right;">1127.9 / 1347.5</td>
+<td style="text-align: right;">42.229</td>
+<td style="text-align: right;">196360</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.124</td>
+<td style="text-align: right;">3.300 / 3.306</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1104.9 / 1326.8</td>
+<td style="text-align: right;">58.881</td>
+<td style="text-align: right;">29628</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">12.201</td>
+<td style="text-align: right;">25.490 / 25.539</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1080.3 / 1303.0</td>
+<td style="text-align: right;">47.800</td>
+<td style="text-align: right;">98724</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>cancel_optimizer_release</td>
+<td style="text-align: right;">1.031</td>
+<td style="text-align: right;">1.180 / 1.181</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">904.8 / 1017.0</td>
+<td style="text-align: right;">59.325</td>
+<td style="text-align: right;">29084</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>evaluate_maps</td>
+<td style="text-align: right;">0.833</td>
+<td style="text-align: right;">1.520 / 1.551</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">905.1 / 927.0</td>
+<td style="text-align: right;">59.324</td>
+<td style="text-align: right;">13894505</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">11.506</td>
+<td style="text-align: right;">22.180 / 22.261</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">904.2 / 927.0</td>
+<td style="text-align: right;">48.673</td>
+<td style="text-align: right;">14475747</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.074</td>
+<td style="text-align: right;">0.130 / 0.137</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">912.4 / 945.1</td>
+<td style="text-align: right;">59.929</td>
+<td style="text-align: right;">4667640</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>evaluate_interference_reevaluate</td>
+<td style="text-align: right;">1.892</td>
+<td style="text-align: right;">3.380 / 3.457</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">916.1 / 947.4</td>
+<td style="text-align: right;">59.263</td>
+<td style="text-align: right;">32456650</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">17.717</td>
+<td style="text-align: right;">58.660 / 58.745</td>
+<td style="text-align: right;">0.021</td>
+<td style="text-align: right;">1120.0 / 1171.1</td>
+<td style="text-align: right;">42.283</td>
+<td style="text-align: right;">196324</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.056</td>
+<td style="text-align: right;">2.870 / 2.872</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1060.0 / 1111.6</td>
+<td style="text-align: right;">58.947</td>
+<td style="text-align: right;">29590</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">12.522</td>
+<td style="text-align: right;">25.180 / 25.263</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">1094.7 / 1146.8</td>
+<td style="text-align: right;">47.480</td>
+<td style="text-align: right;">98706</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>cancel_optimizer_release</td>
+<td style="text-align: right;">1.115</td>
+<td style="text-align: right;">1.560 / 1.570</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">884.4 / 949.0</td>
+<td style="text-align: right;">59.244</td>
+<td style="text-align: right;">29046</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate_maps</td>
+<td style="text-align: right;">0.993</td>
+<td style="text-align: right;">1.920 / 1.988</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">824.8 / 988.4</td>
+<td style="text-align: right;">59.294</td>
+<td style="text-align: right;">40365391</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">12.274</td>
+<td style="text-align: right;">27.550 / 27.643</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">893.1 / 1066.1</td>
+<td style="text-align: right;">48.026</td>
+<td style="text-align: right;">40821192</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.098</td>
+<td style="text-align: right;">0.420 / 0.432</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">909.6 / 1065.8</td>
+<td style="text-align: right;">59.905</td>
+<td style="text-align: right;">4698126</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate_interference_reevaluate</td>
+<td style="text-align: right;">2.479</td>
+<td style="text-align: right;">4.540 / 4.684</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">909.7 / 1127.0</td>
+<td style="text-align: right;">59.069</td>
+<td style="text-align: right;">85428908</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">24.976</td>
+<td style="text-align: right;">103.560 / 103.965</td>
+<td style="text-align: right;">0.089</td>
+<td style="text-align: right;">940.2 / 1160.4</td>
+<td style="text-align: right;">35.025</td>
+<td style="text-align: right;">196360</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">2.678</td>
+<td style="text-align: right;">9.510 / 9.538</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">916.2 / 1046.9</td>
+<td style="text-align: right;">57.334</td>
+<td style="text-align: right;">29628</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">26.166</td>
+<td style="text-align: right;">70.680 / 71.047</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: right;">976.1 / 1108.6</td>
+<td style="text-align: right;">33.837</td>
+<td style="text-align: right;">98724</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>cancel_optimizer_release</td>
+<td style="text-align: right;">1.201</td>
+<td style="text-align: right;">1.880 / 1.896</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">816.5 / 962.7</td>
+<td style="text-align: right;">59.156</td>
+<td style="text-align: right;">29084</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>evaluate_maps</td>
+<td style="text-align: right;">1.236</td>
+<td style="text-align: right;">2.440 / 2.483</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">814.4 / 844.1</td>
+<td style="text-align: right;">58.989</td>
+<td style="text-align: right;">13894505</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">15.353</td>
+<td style="text-align: right;">34.300 / 34.423</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">834.3 / 879.7</td>
+<td style="text-align: right;">44.926</td>
+<td style="text-align: right;">14475747</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.131</td>
+<td style="text-align: right;">0.570 / 0.582</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">851.0 / 895.6</td>
+<td style="text-align: right;">59.874</td>
+<td style="text-align: right;">4667640</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>evaluate_interference_reevaluate</td>
+<td style="text-align: right;">3.163</td>
+<td style="text-align: right;">6.210 / 6.330</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">851.0 / 913.1</td>
+<td style="text-align: right;">58.744</td>
+<td style="text-align: right;">32456650</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">18.243</td>
+<td style="text-align: right;">73.610 / 73.718</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">874.0 / 938.9</td>
+<td style="text-align: right;">41.757</td>
+<td style="text-align: right;">196324</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.054</td>
+<td style="text-align: right;">3.600 / 3.601</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">888.3 / 953.2</td>
+<td style="text-align: right;">58.950</td>
+<td style="text-align: right;">29589</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">14.202</td>
+<td style="text-align: right;">33.680 / 33.816</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">936.6 / 1004.7</td>
+<td style="text-align: right;">45.801</td>
+<td style="text-align: right;">98706</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>cancel_optimizer_release</td>
+<td style="text-align: right;">1.266</td>
+<td style="text-align: right;">1.980 / 1.990</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">788.5 / 856.7</td>
+<td style="text-align: right;">59.089</td>
+<td style="text-align: right;">29046</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate_maps</td>
+<td style="text-align: right;">1.364</td>
+<td style="text-align: right;">2.630 / 2.691</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">853.8 / 1024.5</td>
+<td style="text-align: right;">58.975</td>
+<td style="text-align: right;">40365391</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">14.465</td>
+<td style="text-align: right;">32.440 / 32.587</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">870.3 / 1035.7</td>
+<td style="text-align: right;">45.822</td>
+<td style="text-align: right;">40821192</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.166</td>
+<td style="text-align: right;">0.170 / 0.192</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">886.8 / 1057.0</td>
+<td style="text-align: right;">59.837</td>
+<td style="text-align: right;">4698126</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate_interference_reevaluate</td>
+<td style="text-align: right;">2.938</td>
+<td style="text-align: right;">6.330 / 6.476</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">886.8 / 1096.9</td>
+<td style="text-align: right;">58.739</td>
+<td style="text-align: right;">85428908</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">16.962</td>
+<td style="text-align: right;">69.140 / 69.219</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">924.2 / 1140.3</td>
+<td style="text-align: right;">43.038</td>
+<td style="text-align: right;">196360</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.071</td>
+<td style="text-align: right;">3.740 / 3.755</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">855.9 / 990.5</td>
+<td style="text-align: right;">58.935</td>
+<td style="text-align: right;">29628</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">12.190</td>
+<td style="text-align: right;">29.060 / 29.101</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">878.4 / 1012.8</td>
+<td style="text-align: right;">47.816</td>
+<td style="text-align: right;">98724</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>cancel_optimizer_release</td>
+<td style="text-align: right;">1.076</td>
+<td style="text-align: right;">1.330 / 1.326</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">831.7 / 966.6</td>
+<td style="text-align: right;">59.280</td>
+<td style="text-align: right;">29084</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>evaluate_maps</td>
+<td style="text-align: right;">0.925</td>
+<td style="text-align: right;">1.850 / 1.884</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">840.7 / 868.7</td>
+<td style="text-align: right;">59.253</td>
+<td style="text-align: right;">13894505</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">13.214</td>
+<td style="text-align: right;">28.820 / 28.977</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">848.2 / 877.2</td>
+<td style="text-align: right;">47.063</td>
+<td style="text-align: right;">14475747</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.089</td>
+<td style="text-align: right;">0.090 / 0.105</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">859.3 / 896.1</td>
+<td style="text-align: right;">59.914</td>
+<td style="text-align: right;">4667640</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>evaluate_interference_reevaluate</td>
+<td style="text-align: right;">2.927</td>
+<td style="text-align: right;">5.370 / 5.448</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">868.2 / 919.1</td>
+<td style="text-align: right;">58.578</td>
+<td style="text-align: right;">32456650</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">16.022</td>
+<td style="text-align: right;">64.100 / 64.172</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">878.2 / 941.6</td>
+<td style="text-align: right;">43.978</td>
+<td style="text-align: right;">196324</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.092</td>
+<td style="text-align: right;">3.440 / 3.449</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">909.0 / 971.1</td>
+<td style="text-align: right;">58.912</td>
+<td style="text-align: right;">29590</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">11.564</td>
+<td style="text-align: right;">26.320 / 26.385</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">887.4 / 953.3</td>
+<td style="text-align: right;">48.441</td>
+<td style="text-align: right;">98706</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>cancel_optimizer_release</td>
+<td style="text-align: right;">0.987</td>
+<td style="text-align: right;">1.210 / 1.209</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">844.4 / 910.8</td>
+<td style="text-align: right;">59.368</td>
+<td style="text-align: right;">29046</td>
+</tr>
+</tbody>
+</table>
+<p>All ordinary RF HTTP requests succeeded (200); async starts returned
+202 and jobs finished <code>succeeded</code>, 16/16 runs, without cache
+hits. No RF deadline failure, memory OOM event or OOM kill occurred.
+Cancellation intentionally produces client status 0 (disconnected);
+every following same-client Evaluate returned 200, preserving slot
+release and attempt charging. Scientific RF response hashes match across
+all profiles, repeat workflows, concurrent optimizers, async contention
+and cancellation follow-up.</p>
+<h3 id="cpu-and-concurrency-headroom">CPU and concurrency headroom</h3>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th style="text-align: right;">GHz</th>
+<th>Operation</th>
+<th style="text-align: right;">Avg equivalent cores</th>
+<th style="text-align: right;">Throttled periods / periods</th>
+<th style="text-align: right;">Two-optimizer wall inflation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">1.619</td>
+<td style="text-align: right;">19 / 190</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">1.993</td>
+<td style="text-align: right;">143 / 271</td>
+<td style="text-align: right;">1.477x</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">1.582</td>
+<td style="text-align: right;">6 / 111</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">1.998</td>
+<td style="text-align: right;">170 / 293</td>
+<td style="text-align: right;">2.688x</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">2.007</td>
+<td style="text-align: right;">0 / 134</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">3.349</td>
+<td style="text-align: right;">4 / 178</td>
+<td style="text-align: right;">1.357x</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">1.935</td>
+<td style="text-align: right;">0 / 115</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">3.316</td>
+<td style="text-align: right;">11 / 177</td>
+<td style="text-align: right;">1.564x</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">2.252</td>
+<td style="text-align: right;">0 / 123</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">4.163</td>
+<td style="text-align: right;">2 / 249</td>
+<td style="text-align: right;">2.086x</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">2.242</td>
+<td style="text-align: right;">0 / 153</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">4.041</td>
+<td style="text-align: right;">0 / 183</td>
+<td style="text-align: right;">1.210x</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">2.253</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">4.081</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">1.196x</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>optimize_maps</td>
+<td style="text-align: right;">2.193</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>two_distinct_optimizers</td>
+<td style="text-align: right;">4.005</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">1.238x</td>
+</tr>
+</tbody>
+</table>
+<p>Quota is a CPU-time upper bound; average equivalent cores do not
+measure exclusive remaining cores. Increasing quota does not produce a
+stable linear performance curve. Search work, existing parallelism, GC,
+frequency-dependent path viability and shared VM/host activity matter.
+Compare request headroom and throttle evidence independently.</p>
+<h3 id="memory-headroom">Memory headroom</h3>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th style="text-align: right;">Effective ceiling GiB</th>
+<th style="text-align: right;">Max sampled RSS MiB</th>
+<th style="text-align: right;">Max sampled cgroup MiB</th>
+<th style="text-align: right;">Lifetime cgroup peak MiB</th>
+<th style="text-align: right;">Ceiling − sampled / lifetime peak
+GiB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">4.000</td>
+<td style="text-align: right;">1239.1</td>
+<td style="text-align: right;">1376.4</td>
+<td style="text-align: right;">1376.4</td>
+<td style="text-align: right;">2.656 / 2.656</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">8.000</td>
+<td style="text-align: right;">1127.9</td>
+<td style="text-align: right;">1347.5</td>
+<td style="text-align: right;">1347.5</td>
+<td style="text-align: right;">6.684 / 6.684</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">10.000</td>
+<td style="text-align: right;">976.1</td>
+<td style="text-align: right;">1160.4</td>
+<td style="text-align: right;">1160.4</td>
+<td style="text-align: right;">8.867 / 8.867</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">11.735</td>
+<td style="text-align: right;">924.2</td>
+<td style="text-align: right;">1140.3</td>
+<td style="text-align: right;">1140.3</td>
+<td style="text-align: right;">10.621 / 10.621</td>
+</tr>
+</tbody>
+</table>
+<p>These subtractions are descriptive measured margins, not safe
+allocatable RAM. Cgroup accounting includes file cache and
+kernel/container charges beyond process RSS. Host-bounded default shares
+memory with other processes/containers. Missing margins include
+browser/frontend memory, OS/VM overhead, dataset switches, retained
+async snapshots/caches/queue, larger or simultaneous requests, GC
+variability and unmeasured peak transients. Staying below OOM does not
+certify any profile.</p>
+<h3 id="async-contention">Async contention</h3>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th style="text-align: right;">GHz</th>
+<th>Interactive operation</th>
+<th style="text-align: right;">Interactive wall</th>
+<th style="text-align: right;">Experiment wall</th>
+<th style="text-align: right;">Actual overlap</th>
+<th style="text-align: right;">Interactive inflation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">2.212</td>
+<td style="text-align: right;">2.336</td>
+<td style="text-align: right;">2.212</td>
+<td style="text-align: right;">2.606x</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">15.039</td>
+<td style="text-align: right;">2.594</td>
+<td style="text-align: right;">2.576</td>
+<td style="text-align: right;">0.821x</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.495</td>
+<td style="text-align: right;">1.384</td>
+<td style="text-align: right;">1.376</td>
+<td style="text-align: right;">2.592x</td>
+</tr>
+<tr>
+<td>A-2CPU-4GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">17.734</td>
+<td style="text-align: right;">1.414</td>
+<td style="text-align: right;">1.408</td>
+<td style="text-align: right;">1.628x</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.119</td>
+<td style="text-align: right;">0.885</td>
+<td style="text-align: right;">0.882</td>
+<td style="text-align: right;">1.679x</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">12.200</td>
+<td style="text-align: right;">0.855</td>
+<td style="text-align: right;">0.855</td>
+<td style="text-align: right;">0.931x</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.053</td>
+<td style="text-align: right;">0.701</td>
+<td style="text-align: right;">0.699</td>
+<td style="text-align: right;">1.557x</td>
+</tr>
+<tr>
+<td>B-4CPU-8GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">12.520</td>
+<td style="text-align: right;">0.704</td>
+<td style="text-align: right;">0.703</td>
+<td style="text-align: right;">1.105x</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">2.666</td>
+<td style="text-align: right;">1.996</td>
+<td style="text-align: right;">1.989</td>
+<td style="text-align: right;">3.776x</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">26.163</td>
+<td style="text-align: right;">1.386</td>
+<td style="text-align: right;">1.384</td>
+<td style="text-align: right;">2.185x</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">0.621</td>
+<td style="text-align: right;">0.619</td>
+<td style="text-align: right;">1.039x</td>
+</tr>
+<tr>
+<td>C-8CPU-10GiB</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">14.199</td>
+<td style="text-align: right;">0.783</td>
+<td style="text-align: right;">0.783</td>
+<td style="text-align: right;">0.942x</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.065</td>
+<td style="text-align: right;">0.814</td>
+<td style="text-align: right;">0.809</td>
+<td style="text-align: right;">1.039x</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">2.6</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">12.184</td>
+<td style="text-align: right;">0.815</td>
+<td style="text-align: right;">0.810</td>
+<td style="text-align: right;">0.859x</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_evaluate-network</td>
+<td style="text-align: right;">1.088</td>
+<td style="text-align: right;">0.550</td>
+<td style="text-align: right;">0.549</td>
+<td style="text-align: right;">1.456x</td>
+</tr>
+<tr>
+<td>default</td>
+<td style="text-align: right;">28</td>
+<td>async_plus_optimize-network</td>
+<td style="text-align: right;">11.559</td>
+<td style="text-align: right;">0.635</td>
+<td style="text-align: right;">0.631</td>
+<td style="text-align: right;">0.893x</td>
+</tr>
+</tbody>
+</table>
+<h3 id="future-derivation-decision">Future derivation decision</h3>
+<table>
+<thead>
+<tr>
+<th>Proposed derivation</th>
+<th>Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Safe interactive concurrency</td>
+<td>Feasible after more repeated calibration across dataset/local
+geometry, operation/search settings and mixed-load tails; no certified
+value here</td>
+</tr>
+<tr>
+<td>Experiment worker count</td>
+<td>Feasible after more queue, retained-job/cache and overlap
+measurements; leave workers=1</td>
+</tr>
+<tr>
+<td>Compute reservation capacity</td>
+<td>Feasible after bounded geometry-aware workload-cost calibration; CPU
+count alone cannot predict request cost</td>
+</tr>
+<tr>
+<td>Memory reservation capacity</td>
+<td>Feasible after transient allocation/GC, retained snapshots and
+mixed-load high-water calibration; no promise from limit minus sampled
+RSS</td>
+</tr>
+<tr>
+<td>Response-byte envelope</td>
+<td>Not predictable from CPU/RAM alone; depends on geometry, rays,
+grids/output form and independent network/transfer capacity</td>
+</tr>
+</tbody>
+</table>
+<p>CPU/RAM detection alone is insufficient. Different operations and
+frequencies have materially different cost under the same resources and
+dataset. Response hashes/bytes remain stable across hardware profiles
+while execution times change. Global footprint/vertex counts are useful
+dataset context but cannot quantify local density. Future decisions need
+hardware plus dataset/geometry complexity and operation parameters. This
+calibration held geometry and dataset fixed; it does not measure
+cross-dataset density scaling. This single dataset does not establish a
+stable dataset complexity class or descriptive Auto classes; none are
+created.</p>
+<h3 id="validation-freeze-and-next-action">Validation, freeze and next
+action</h3>
+<p>The JSON report contains a complete 28-file change manifest; prior
+untracked study files were preserved. Backend full tests, race tests and
+vet pass; new discovery/immutability/configuration tests pass. Frontend
+423/423 tests (two workers), lint and production build pass. Real budget
+and deadline E2Es pass on separate fresh servers, including the existing
+optimizer golden response hash. Combined E2Es initially shared a budget;
+a heavy parallel test/build run caused frontend timing failures. Clean
+reruns passed without changing frontend tests or behavior. Documentation
+build and validation pass (48 HTML pages, 41 API paths); version
+consistency and diff whitespace checks pass. Python docs validation uses
+PyYAML in a disposable local venv; existing Vite/pandoc warnings
+persist.</p>
+<p>Security review: no new public diagnostic route, browser data, raw
+client identity in the profile, credentials, user location, project or
+map payload logging. Existing health/meta contracts remain unchanged.
+Scenario/Version/Run/project scientific identity paths were untouched
+and their existing frontend/backend tests pass. RF defaults remain 20/60
+s anchored ClientIP attempts, slots 2/1, deadline 60 s, Cell cap 6;
+experiment workers 1, queue 16 and max runs 64 remain unchanged.</p>
+<p>Deployment docs explain observation and local diagnostics without
+scaling or hardware guarantees. VERSION stays 0.11.0; recommend no
+immediate release for this internal foundation, with its
+developer-facing diagnostics recorded under Unreleased. The
+observational foundation can freeze: all final gates passed. Adaptive
+admission, resource tokens, reservations, classes and product controls
+remain out of scope.</p>
+<p><strong>Single next action:</strong> repeat deployment-target
+calibration across geometry densities, dataset complexity and mixed-load
+tails before designing any admission derivation.</p>
+<p>Reproduce with the calibration harness; full profile provenance,
+external limits, raw metrics and response hashes are in <a
+href="./auto-resource-profile-calibration.json">the JSON report</a>.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

@@ -26,6 +26,21 @@ Open `http://localhost:8080`. Stop the service with `docker compose down`.
 
 The Go server does not persist projects, jobs, reports, or measurements. Multiple API replicas can serve independent requests, but browser projects do not become collaborative storage.
 
+## Auto resource diagnostics
+
+A.T.O.M automatically observes runtime CPU, Go scheduler and memory constraints
+once at startup for diagnostics and calibration. The startup log includes one
+structured Auto resource summary. Developers can inspect full JSON locally with
+`docker exec atom-app ./server --resource-profile`; the one-shot command opens no
+HTTP listener. No machine-capacity diagnostics endpoint or product resource
+controls are added. Local diagnostic logs should stay with operators.
+
+Detection does not adapt RF admission or experiment settings: defaults remain
+20 attempts per ClientIP per anchored 60-second window, concurrency 2 globally
+and 1 per client, a 60-second RF deadline, six selected Cells and one experiment
+worker. This foundation establishes no automatic scaling or certified minimum
+or recommended hardware. See the [foundation and measured calibration](./auto-resource-profile-foundation.md).
+
 ## Configuration
 
 | Variable | Default | Purpose |

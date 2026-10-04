@@ -1,0 +1,185 @@
+package main
+
+import (
+ "bytes"
+ "context"
+ "encoding/json"
+ "fmt"
+ "io"
+ "log/slog"
+ "net/http"
+ "net/http/httptest"
+ "os"
+ "path/filepath"
+ "runtime"
+ "runtime/debug"
+ "strconv"
+ "sync"
+ "testing"
+ "time"
+ "ankara-5g-raytracer/raytracer"
+ "github.com/gin-gonic/gin"
+)
+
+func TestRFResourceStudy(t *testing.T) {
+ if os.Getenv("ATOM_RUN_RESOURCE_STUDY")!="1" {t.Skip("explicit isolated audit only")}
+ w:=os.Getenv("ATOM_POLICY_WORKDIR"); name:=os.Getenv("ATOM_POLICY_CASE"); mode:=os.Getenv("ATOM_POLICY_MODE")
+ var f capacityFixture; raw,e:=os.ReadFile(filepath.Join(w,"fixtures",name+".json"));if e!=nil{t.Fatal(e)};if e=json.Unmarshal(raw,&f);e!=nil{t.Fatal(e)}
+ pack,e:=raytracer.LoadDatasetPack("../data-pipeline");if e!=nil{t.Fatal(e)}
+ gin.SetMode(gin.TestMode)
+ var limiter *rfRequestLimiter;var router *gin.Engine;var timing *raytracer.NetworkOptimizationTiming
+ datasets:=newDatasetRuntime(pack,nil,""); workers:=1;if os.Getenv("ATOM_RESOURCE_WORKERS")=="4"{workers=4};experiments:=newExperimentManager(modelVersion,workers,16)
+ clock:=time.Date(2026,10,4,8,0,0,0,time.UTC)
+ setup:=func(){
+ limiter=newRFRequestLimiter(2);limiter.logger=slog.New(slog.NewTextHandler(io.Discard,nil));limiter.now=func()time.Time{return clock}
+ timing=&raytracer.NetworkOptimizationTiming{}
+ router=gin.New();_ = router.SetTrustedProxies(nil)
+ router.Use(limitRequestBody(maxRequestBodyBytes),protectExpensiveRFRoutes(limiter,defaultRFRequestTimeout,""))
+ router.Use(func(c *gin.Context){if mode!="concurrent" && mode!="resource"{c.Request=c.Request.WithContext(raytracer.WithNetworkOptimizationTiming(c.Request.Context(),timing))};c.Next()})
+ // ROUTES
+ }
+ setup()
+ extras:=map[string]json.RawMessage{}; raw,e=os.ReadFile(filepath.Join(w,"extras.json"));if e!=nil{t.Fatal(e)};_ = json.Unmarshal(raw,&extras)
+ sim:=map[string]any{};_ = json.Unmarshal(f.Simulations[0],&sim)
+ network:=map[string]any{};_ = json.Unmarshal(f.Network,&network)
+ encode:=func(v any)[]byte{b,e:=json.Marshal(v);if e!=nil{t.Fatal(e)};return b}
+ reflection:=policyReflectionFixture(); extras["/api/sub-thz-reflection-reference"]=encode(reflection)
+ surface:=map[string]any{};for k,v:=range sim{surface[k]=v};surface["cell_size_m"]=10
+ extras["/api/coverage-surface"]=encode(surface)
+ extras["/api/building-entry-analysis"]=f.Network
+ measurement:=map[string]any{};_ = json.Unmarshal(f.Interference,&measurement);measurement["samples"]=[]any{map[string]any{"id":"audit-1","lon":sim["tower_lon"],"lat":sim["tower_lat"],"technology":measurement["network_tech"],"rsrp_dbm":-90}}
+ var mi raytracer.MeasurementEvaluationRequestInput;_ = json.Unmarshal(encode(measurement),&mi);if len(mi.Towers)>6{mi.Towers=mi.Towers[:6]};extras["/api/measurements/evaluate"]=encode(mi)
+ recommendation:=map[string]any{};_ = json.Unmarshal(f.Network,&recommendation);recommendation["network_tech"]=measurement["network_tech"];recommendation["towers"]=recommendation["towers"].([]any)[:2];lon:=sim["tower_lon"].(float64);lat:=sim["tower_lat"].(float64)
+ recommendation["search_polygon"]=[][]float64{{lon-.005,lat-.005},{lon+.005,lat-.005},{lon+.005,lat+.005},{lon-.005,lat+.005}};var ri raytracer.SiteRecommendationRequestInput;_ = json.Unmarshal(encode(recommendation),&ri);extras["/api/recommend-sites"]=encode(ri)
+ experiment:=map[string]any{"name":"policy-audit","base":sim,"matrix":map[string]any{"azimuths_deg":[]float64{0,90,180,270}}};extras["/api/processes/batch-experiment/execution"]=encode(experiment)
+ var explanation []byte; var optimizedSims [][]byte
+ type responseRow struct{Endpoint string `json:"endpoint"`;Status int `json:"status"`;RequestBytes int `json:"request_bytes"`;ResponseBytes int `json:"response_bytes"`;Wall float64 `json:"wall_seconds"`; Remaining string `json:"remaining"`;Retry string `json:"retry_after"`;Body []byte `json:"-"`}
+ request:=func(endpoint string, body []byte,peer string,ctx context.Context) responseRow {
+  req:=httptest.NewRequest("POST",endpoint,bytes.NewReader(body));req.RemoteAddr=peer;req.Header.Set("Content-Type","application/json");if ctx!=nil{req=req.WithContext(ctx)}
+  rec:=httptest.NewRecorder();started:=time.Now();router.ServeHTTP(rec,req)
+  return responseRow{endpoint,rec.Code,len(body),rec.Body.Len(),time.Since(started).Seconds(),rec.Header().Get("RateLimit-Remaining"),rec.Header().Get("Retry-After"),append([]byte(nil),rec.Body.Bytes()...)}
+ }
+ rows:=[]map[string]any{}
+ measure:=func(label string,fn func()[]responseRow){
+  runtime.GC();debug.FreeOSMemory();raytracer.AuditReset();auditJSONNS.Store(0)
+  var before,after runtime.MemStats;runtime.ReadMemStats(&before)
+  rssBefore:=capacityRSS();rssMax:=rssBefore;heapMax:=before.HeapAlloc;goroutinesMax:=runtime.NumGoroutine()
+  slotsMax,queueMax,asyncMax:=0,0,0
+  done:=make(chan struct{});joined:=make(chan struct{})
+  go func(){defer close(joined);ticker:=time.NewTicker(50*time.Millisecond);defer ticker.Stop();i:=0;for{select{case <-done:return;case <-ticker.C:
+   if x:=len(limiter.slots);x>slotsMax{slotsMax=x};if x:=len(experiments.queue);x>queueMax{queueMax=x};experiments.mu.Lock();a:=0;for _,job:=range experiments.jobs{if job.snapshot.Status=="running"{a++}};experiments.mu.Unlock();if a>asyncMax{asyncMax=a}
+   var m runtime.MemStats;runtime.ReadMemStats(&m);if m.HeapAlloc>heapMax{heapMax=m.HeapAlloc};if g:=runtime.NumGoroutine();g>goroutinesMax{goroutinesMax=g};i++;if i%4==0{if rss:=capacityRSS();rss>rssMax{rssMax=rss}}}}}()
+  cpuBefore:=capacityCPU();start:=time.Now();responses:=fn();wall:=time.Since(start).Seconds();cpu:=capacityCPU()-cpuBefore
+  close(done);<-joined;runtime.ReadMemStats(&after);if rss:=capacityRSS();rss>rssMax{rssMax=rss};if after.HeapAlloc>heapMax{heapMax=after.HeapAlloc}
+  rb,qb,accepted,denied:=0,0,0,0;for _,r:=range responses{rb+=r.ResponseBytes;qb+=r.RequestBytes;if r.Status==429{denied++}else if r.Status>=200&&r.Status<300{accepted++}}
+  for i:=range responses{responses[i].Body=nil}
+  row:=map[string]any{"label":label,"n":f.N,"frequency_ghz":f.Frequency,"wall_seconds":wall,"cpu_seconds":cpu,"equivalent_cores":cpu/wall,"deadline_headroom_seconds":60-wall,"json_serialization_seconds":float64(auditJSONNS.Load())/1e9,"request_bytes":qb,"response_bytes":rb,"rss_before_bytes":rssBefore,"rss_sampled_max_bytes":rssMax,"heap_sampled_max_bytes":heapMax,"allocation_bytes":after.TotalAlloc-before.TotalAlloc,"goroutines_sampled_max":goroutinesMax,"goroutines_after":runtime.NumGoroutine(),"interactive_slots_sampled_max":slotsMax,"async_queue_sampled_max":queueMax,"async_running_sampled_max":asyncMax,"responses":responses,"accepted":accepted,"denied":denied,"work":raytracer.AuditCounts(),"optimizer_proposals":timing.Proposals,"memo_hits":timing.CellMemoHits,"memo_misses":timing.CellMemoMisses}
+  rows=append(rows,row)
+  fmt.Println(label,wall,cpu,accepted,denied)
+ }
+ peer:="192.0.2.1:1000"
+ optimize:=func()responseRow{
+  r:=request("/api/optimize-network",f.Network,peer,nil);if r.Status!=200{t.Fatalf("optimizer %s",r.Body)}
+  var v raytracer.NetworkOptimizationResponse;_ = json.Unmarshal(r.Body,&v)
+  solution:=v.ParetoFrontier[0];for _,s:=range v.ParetoFrontier{if s.ID==v.Optimization.RecommendedSolutionID{solution=s}}
+  var nr raytracer.NetworkOptimizationRequestInput;_ = json.Unmarshal(f.Network,&nr)
+  explanation=encode(map[string]any{"run_id":v.OptimizationRunID,"solution_id":solution.ID,"cell_id":nr.Towers[0].ID,"baseline":v.Baseline,"solution":solution,"optimization":network["optimization"],"optimization_domain":v.OptimizationDomain})
+  optimizedSims=nil
+  for i,s:=range f.Simulations{var m map[string]any;_ = json.Unmarshal(s,&m);for _,o:=range v.OptimizedTowers{if o.ID==nr.Towers[i].ID{m["azimuth"]=o.OptimalAzimuth}};optimizedSims=append(optimizedSims,encode(m))}
+  _ = os.WriteFile(filepath.Join(w,"raw",name+"-optimized.json"),r.Body,0644)
+  return r
+ }
+ evaluate:=func()[]responseRow{r:=[]responseRow{request("/api/evaluate-network",f.Network,peer,nil)};for _,s:=range f.Simulations{r=append(r,request("/api/simulate",s,peer,nil));if r[len(r)-1].Status!=200{break}};return r}
+ if mode=="resource"{
+  type plannedRequest struct {Endpoint string `json:"endpoint"`; Body json.RawMessage `json:"body"`; Client int `json:"client"`}
+  type plan struct {Label string `json:"label"`; Requests []plannedRequest `json:"requests"`; Async []json.RawMessage `json:"async"`; CancelMS int `json:"cancel_ms"`; Synthetic bool `json:"synthetic"`; Expected []int `json:"expected"`; Gate bool `json:"gate"`;Sequential bool `json:"sequential"`}
+  var plans []plan;raw,e=os.ReadFile(filepath.Join(w,"plans",os.Getenv("ATOM_RESOURCE_PLAN")+".json"));if e!=nil{t.Fatal(e)};if e=json.Unmarshal(raw,&plans);e!=nil{t.Fatal(e)}
+  for _,p:=range plans{
+   original:=pack.BuildingIndex
+   if p.Synthetic {pack.BuildingIndex=raytracer.NewBuildingIndex([]*raytracer.BuildingFootprint{{ID:"controlled",Bounds:raytracer.Bounds{MinLon:lon+.0005,MinLat:lat-.0001,MaxLon:lon+.0007,MaxLat:lat+.0001},Vertices:[]raytracer.Point{{Lon:lon+.0005,Lat:lat-.0001},{Lon:lon+.0007,Lat:lat-.0001},{Lon:lon+.0007,Lat:lat+.0001},{Lon:lon+.0005,Lat:lat+.0001}},HeightMeters:15}})}
+   setup();timing=&raytracer.NetworkOptimizationTiming{}
+   measure(p.Label,func()[]responseRow{
+    jobs:=[]string{};for _,body:=range p.Async {r:=request("/api/processes/batch-experiment/execution",body,peer,nil);if r.Status!=202{t.Fatalf("async %d %s",r.Status,r.Body)};var job experimentJobSnapshot;_ =json.Unmarshal(r.Body,&job);jobs=append(jobs,job.JobID)}
+    if len(jobs)>0 {until:=time.Now().Add(time.Second);for {j,_:=experiments.Snapshot(jobs[0]);if j.Status=="running"||j.Status=="succeeded"{break};if time.Now().After(until){t.Fatal("worker did not start")};time.Sleep(time.Millisecond)}}
+    rs:=make([]responseRow,len(p.Requests));var wg sync.WaitGroup;start:=make(chan struct{});wg.Add(len(rs))
+    if p.Sequential {
+ for i,pr:=range p.Requests {rs[i]=request(pr.Endpoint,pr.Body,fmt.Sprintf("192.0.2.%d:1000",pr.Client),nil);wg.Done();if rs[i].Status!=200 {for k:=i+1;k<len(rs);k++{wg.Done()};rs=rs[:i+1];break}}
+ } else {
+ for i,pr:=range p.Requests {go func(i int,pr plannedRequest){defer wg.Done();<-start;ctx:=raytracer.WithNetworkOptimizationTiming(context.Background(),&raytracer.NetworkOptimizationTiming{});if p.CancelMS>0 {c,cancel:=context.WithCancel(ctx);defer cancel();time.AfterFunc(time.Duration(p.CancelMS)*time.Millisecond,cancel);ctx=c};rs[i]=request(pr.Endpoint,pr.Body,fmt.Sprintf("192.0.2.%d:1000",pr.Client),ctx)}(i,pr)}
+    close(start) };wg.Wait()
+    queueDepth:=len(experiments.queue);jobRows:=[]experimentJobSnapshot{}
+    for _,id:=range jobs {until:=time.Now().Add(120*time.Second);for {j,_:=experiments.Snapshot(id);if j.Status=="succeeded"||j.Status=="failed"||j.Status=="dismissed"{jobRows=append(jobRows,j);break};if time.Now().After(until){experiments.Cancel(id);t.Fatal("bounded async watchdog")};time.Sleep(5*time.Millisecond)}}
+    if len(jobs)>0{b,_:=json.Marshal(jobRows);_ =os.WriteFile(filepath.Join(w,"raw",name+"-"+p.Label+"-jobs.json"),b,0644)}
+    _=queueDepth
+    accepted:=0;denied:=0
+    for i,r:=range rs {if r.Status==200{accepted++};if r.Status==429{denied++};if len(p.Expected)>i&&r.Status!=p.Expected[i]{t.Fatalf("%s request %d status=%d expected=%d %s",p.Label,i,r.Status,p.Expected[i],r.Body)};if r.Status!=200&&r.Status!=429&&r.Status!=504&&r.Status!=422&&!(p.CancelMS>0&&r.ResponseBytes==0){t.Fatalf("%s %d %s",p.Label,r.Status,r.Body)};if r.Status==200 {_ =os.WriteFile(filepath.Join(w,"raw",name+"-"+p.Label+fmt.Sprintf("-%d.response.json",i)),r.Body,0644)}}
+    if p.Gate&&!(accepted==2&&denied==1||accepted==1&&denied==1){t.Fatalf("concurrency guard accepted=%d denied=%d",accepted,denied)}
+    if len(limiter.slots)!=0{t.Fatal("interactive slots leaked")}
+    return rs
+   })
+   rows[len(rows)-1]["async_workers"]=workers;rows[len(rows)-1]["async_jobs"]=len(p.Async);rows[len(rows)-1]["synthetic"]=p.Synthetic;rows[len(rows)-1]["cancel_ms"]=p.CancelMS;rows[len(rows)-1]["plan"]=p
+   pack.BuildingIndex=original
+   data:=map[string]any{"case":name,"mode":mode,"dataset_buildings":pack.BuildingIndex.Len(),"rows":rows,"go_version":runtime.Version(),"gomaxprocs":runtime.GOMAXPROCS(0),"logical_cpus":runtime.NumCPU()};b,_:=json.MarshalIndent(data,"","  ");_ =os.WriteFile(filepath.Join(w,"raw",name+"-"+os.Getenv("ATOM_RESOURCE_PLAN")+".json"),b,0644)
+  }
+ }else
+ if mode=="endpoints"{
+  for _,endpoint:=range []string{"/api/simulate","/api/analyze-sector","/api/coverage-gaps","/api/optimize-azimuth","/api/evaluate-network","/api/interference","/api/optimize-network","/api/explain-network-cell","/api/building-entry-analysis","/api/path-profile","/api/coverage-surface","/api/sub-thz-reference","/api/sub-thz-p1411-reference","/api/sub-thz-validation","/api/sub-thz-material-reference","/api/sub-thz-reflection-reference","/api/measurements/evaluate","/api/recommend-sites","/api/processes/batch-experiment/execution"}{
+   setup();measure(endpoint,func()[]responseRow{var r responseRow
+    switch endpoint{case "/api/optimize-network":r=optimize();case "/api/explain-network-cell":r=request(endpoint,explanation,peer,nil)
+    case "/api/simulate","/api/analyze-sector","/api/coverage-gaps","/api/optimize-azimuth":r=request(endpoint,f.Simulations[0],peer,nil)
+    case "/api/evaluate-network":r=request(endpoint,f.Network,peer,nil);case "/api/interference":r=request(endpoint,f.Interference,peer,nil)
+    default:r=request(endpoint,extras[endpoint],peer,nil)}
+    if r.Status!=200&&r.Status!=202{t.Fatalf("%s %d %s",endpoint,r.Status,r.Body)}
+    if r.Status==202{var job experimentJobSnapshot;_ = json.Unmarshal(r.Body,&job);until:=time.Now().Add(time.Minute);for{job,_=experiments.Snapshot(job.JobID);if job.Status=="succeeded"{break};if job.Status=="failed"||time.Now().After(until){t.Fatalf("job %+v",job)};time.Sleep(time.Millisecond)}}
+    _ = os.WriteFile(filepath.Join(w,"raw",name+"-"+filepath.Base(endpoint)+".response.json"),r.Body,0644)
+    return []responseRow{r}
+   })
+  }
+  setup();measure("cached-experiment",func()[]responseRow{return []responseRow{request("/api/processes/batch-experiment/execution",extras["/api/processes/batch-experiment/execution"],peer,nil)}})
+ }else if mode=="explanations"{
+  var original raytracer.NetworkOptimizationRequestInput;_=json.Unmarshal(f.Network,&original);rays:=360;original.Rays=&rays;f.Network=encode(original);_=json.Unmarshal(f.Network,&network);setup();optimize();setup();measure("high-explanation",func()[]responseRow{r:=request("/api/explain-network-cell",explanation,peer,nil);if r.Status!=200{t.Fatalf("explanation %d %s",r.Status,r.Body)};return []responseRow{r}})
+ }else if mode=="workflows"{
+  for _,label:=range []string{"A-evaluate","B-evaluate-interference","C-evaluate-interference-reevaluate","D-optimize-map-review","E-evaluate-inspect","E-optimize-explanation-inspect"}{
+   setup();measure(label,func()[]responseRow{var rs []responseRow
+    if label=="D-optimize-map-review"||label=="E-optimize-explanation-inspect"{rs=[]responseRow{optimize()};for _,s:=range optimizedSims{rs=append(rs,request("/api/simulate",s,peer,nil))};if label=="E-optimize-explanation-inspect"{rs=append(rs,request("/api/explain-network-cell",explanation,peer,nil))}}else{rs=evaluate();if label=="B-evaluate-interference"||label=="C-evaluate-interference-reevaluate"{rs=append(rs,request("/api/interference",f.Interference,peer,nil))};if label=="C-evaluate-interference-reevaluate"{rs=append(rs,evaluate()...)}}
+    for _,r:=range rs{if r.Status!=200{t.Fatalf("workflow %s: %d %s",label,r.Status,r.Body)}};return rs
+   })
+  }
+ }else if mode=="map-costs"{
+  setup();for i,s:=range f.Simulations{measure(fmt.Sprintf("map-cell-%d",i+1),func()[]responseRow{return []responseRow{request("/api/simulate",s,peer,nil)}})}
+  setup();measure("no-building-minimal-simulation",func()[]responseRow{return []responseRow{request("/api/simulate",[]byte(`{"tower_lon":0,"tower_lat":0,"rays":8,"radius_m":25,"frequency_ghz":2.6}`),peer,nil)}})
+ }else if mode=="shared-workflows"{
+  for _,keyCount:=range []int{1,2}{setup();measure(fmt.Sprintf("two-C-%d-IP",keyCount),func()[]responseRow{rs:=[]responseRow{};for user:=range 2{if keyCount==2{peer=fmt.Sprintf("192.0.2.%d:1000",user+1)};part:=evaluate();rs=append(rs,part...);if part[len(part)-1].Status!=200{continue};part=[]responseRow{request("/api/interference",f.Interference,peer,nil)};rs=append(rs,part...);if part[0].Status!=200{continue};rs=append(rs,evaluate()...)};return rs});peer="192.0.2.1:1000"}
+  setup();measure("shared-IP-two-Evaluates",func()[]responseRow{rs:=evaluate();return append(rs,evaluate()...)})
+  setup();measure("shared-IP-Optimize-Evaluate-Interference",func()[]responseRow{rs:=[]responseRow{optimize()};for _,s:=range optimizedSims{rs=append(rs,request("/api/simulate",s,peer,nil))};rs=append(rs,evaluate()...);rs=append(rs,request("/api/interference",f.Interference,peer,nil));return rs})
+ }else if mode=="concurrent"{
+  // Each request has a distinct timing collector; aggregate RF counters remain atomic.
+  setup() // all routes already capture timing: remove shared collector from request contexts below via middleware construction in setup.
+  measure("two-distinct-clients-optimize",func()[]responseRow{rs:=make([]responseRow,2);var wg sync.WaitGroup;wg.Add(2);for i:=range 2{go func(i int){defer wg.Done();ctx:=raytracer.WithNetworkOptimizationTiming(context.Background(),&raytracer.NetworkOptimizationTiming{});rs[i]=request("/api/optimize-network",f.Network,fmt.Sprintf("192.0.2.%d:1000",i+1),ctx)}(i)};wg.Wait();for _,r:=range rs{if r.Status!=200{t.Fatalf("concurrent %d %s",r.Status,r.Body)}};return rs})
+ }else if mode=="abuse"{
+  for _,kind:=range []string{"cheap","expensive","alternating","two-IP-expensive"}{setup();limiter.now=time.Now;measure(kind,func()[]responseRow{rs:=[]responseRow{};count:=21;if kind=="expensive"{count=8};if kind=="alternating"{count=12};if kind=="two-IP-expensive"{count=8};for i:=range count{endpoint:="/api/sub-thz-material-reference";body:=extras[endpoint];p:=peer;if kind=="expensive"||kind=="two-IP-expensive"||(kind=="alternating"&&i%2==0){endpoint="/api/optimize-network";body=f.Network};if kind=="two-IP-expensive"&&i%2==1{p="192.0.2.2:1000"};rs=append(rs,request(endpoint,body,p,nil))};return rs})}
+ }else if mode=="semantics"{policySemantics(t,w)}
+ data:=map[string]any{"case":name,"mode":mode,"dataset_buildings":pack.BuildingIndex.Len(),"rows":rows,"go_version":runtime.Version(),"gomaxprocs":runtime.GOMAXPROCS(0),"logical_cpus":runtime.NumCPU()};raw,_=json.MarshalIndent(data,"","  ");if e=os.WriteFile(filepath.Join(w,"raw",name+"-"+mode+".json"),raw,0644);e!=nil{t.Fatal(e)}
+}
+
+func policyReflectionFixture() map[string]any {
+ // REFLECTION
+}
+
+func policySemantics(t *testing.T,w string){
+ results:=[]map[string]any{}
+ for _,n:=range []int{6,8,9}{for _,keys:=range []int{1,2}{
+  l:=newRFRequestLimiter(2);start:=time.Date(2026,10,4,8,0,0,0,time.UTC);l.now=func()time.Time{return start};accepted,denied:=0,0
+  for user:=range 2{key:="192.0.2.1";if keys==2{key=fmt.Sprintf("192.0.2.%d",user+1)};for range 2*n+3{release,_,_,_,reason:=l.acquire(key,"RF analysis");release();if reason==""{accepted++}else{denied++}}}
+  results=append(results,map[string]any{"n":n,"users":2,"keys":keys,"attempts_each":2*n+3,"accepted":accepted,"denied":denied});want:=2*(2*n+3);if keys==1{want=20}else if n==9{want=40};if accepted!=want{t.Fatalf("fairness %v",results)}
+ }}
+ l:=newRFRequestLimiter(2);now:=time.Date(2026,10,4,8,0,0,0,time.UTC);l.now=func()time.Time{return now};release,_,_,_,_:=l.acquire("client","RF");release();now=now.Add(59*time.Second+999*time.Millisecond);for range 19{release,_,_,_,reason:=l.acquire("client","RF");if reason!=""{t.Fatal(reason)};release()};now=now.Add(time.Millisecond);for range 20{release,_,_,_,reason:=l.acquire("client","RF");if reason!=""{t.Fatal(reason)};release()};results=append(results,map[string]any{"boundary_attempts_in_one_ms":39,"first_window_priming_attempt":1,"theoretical_two_window_max":40})
+ // Real RF cancellation, expired deadline, malformed body, feature-limit error writer.
+ router:=gin.New();lim:=newRFRequestLimiter(2);router.Use(protectExpensiveRFRoutes(lim,60*time.Second,""));router.POST("/api/simulate",func(c *gin.Context){var input raytracer.StaticSimulationRequestInput;if !bindJSON(c,&input,"simulation"){return};v,e:=raytracer.SimulateStaticRaysContext(c.Request.Context(),input.ToRequest(),raytracer.EmptyBuildingIndex());writeRFResponse(c,v,e)})
+ // Same-IP users/tabs reject one concurrent operation and charge it.
+ same:=newRFRequestLimiter(2);a,_,_,_,why:=same.acquire("NAT","RF");if why!=""{t.Fatal(why)};_,remaining,_,retry,why:=same.acquire("NAT","RF");a();if why==""||remaining!=18||retry!=1{t.Fatal("NAT concurrency semantics")};results=append(results,map[string]any{"same_IP_concurrent_accepted":1,"same_IP_concurrent_denied":1,"charges":2,"remaining":remaining})
+ // Full global slots reject a third identity; the rejection consumes its unit.
+ global:=newRFRequestLimiter(2);r:=gin.New();r.POST("/job",global.middleware(),func(c *gin.Context){t.Fatal("busy handler ran")});global.slots<-struct{}{};global.slots<-struct{}{};rec:=budgetRequest(r,"/job","198.51.100.3:1000");<-global.slots;<-global.slots;if rec.Code!=429||rec.Header().Get("RateLimit-Remaining")!="19"{t.Fatal("global busy semantics")};results=append(results,map[string]any{"third_global_status":rec.Code,"remaining":rec.Header().Get("RateLimit-Remaining"),"retry_after":rec.Header().Get("Retry-After")})
+ for i,kind:=range []string{"cancelled","deadline","body-error"}{ctx:=context.Background();if kind=="cancelled"{c,cancel:=context.WithCancel(ctx);cancel();ctx=c};if kind=="deadline"{c,cancel:=context.WithDeadline(ctx,time.Now().Add(-time.Second));defer cancel();ctx=c};body:=[]byte(`{"tower_lon":32.85,"tower_lat":39.92,"rays":120,"radius_m":400}`);if kind=="body-error"{body=[]byte(`{`)};req:=httptest.NewRequest("POST","/api/simulate",bytes.NewReader(body)).WithContext(ctx);req.RemoteAddr="192.0.2.1:1000";r:=httptest.NewRecorder();router.ServeHTTP(r,req);if r.Header().Get("RateLimit-Remaining")!=strconv.Itoa(19-i){t.Fatal("missing failure charge")};results=append(results,map[string]any{"failure":kind,"recorder_status":r.Code,"response_bytes":r.Body.Len(),"remaining":r.Header().Get("RateLimit-Remaining"),"active":lim.clients["192.0.2.1"].active})}
+ raw,_:=json.MarshalIndent(results,"","  ");_ = os.WriteFile(filepath.Join(w,"semantics.json"),raw,0644)
+}

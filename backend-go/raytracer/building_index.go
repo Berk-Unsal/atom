@@ -48,9 +48,10 @@ type BuildingFootprint struct {
 }
 
 type BuildingIndex struct {
-	tree       rtree.RTreeG[*BuildingFootprint]
-	footprints []*BuildingFootprint
-	byID       map[string]*BuildingFootprint
+	tree        rtree.RTreeG[*BuildingFootprint]
+	footprints  []*BuildingFootprint
+	vertexCount int
+	byID        map[string]*BuildingFootprint
 }
 
 type BuildingIndexStats struct {
@@ -364,6 +365,7 @@ func NewBuildingIndex(footprints []*BuildingFootprint) *BuildingIndex {
 			continue
 		}
 		index.footprints = append(index.footprints, footprint)
+		index.vertexCount += len(footprint.Vertices)
 		if _, exists := index.byID[footprint.ID]; !exists {
 			index.byID[footprint.ID] = footprint
 		}
@@ -382,6 +384,14 @@ func (idx *BuildingIndex) Len() int {
 		return 0
 	}
 	return idx.tree.Len()
+}
+
+// VertexCount is computed while the index is built; diagnostics never rescan geometry.
+func (idx *BuildingIndex) VertexCount() int {
+	if idx == nil {
+		return 0
+	}
+	return idx.vertexCount
 }
 
 func (idx *BuildingIndex) Footprints() []*BuildingFootprint {

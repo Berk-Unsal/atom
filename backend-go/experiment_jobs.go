@@ -110,6 +110,7 @@ type experimentCacheEntry struct {
 }
 
 type experimentManager struct {
+	workers      int
 	mu           sync.Mutex
 	jobs         map[string]*experimentJob
 	cache        map[string]experimentCacheEntry
@@ -127,7 +128,7 @@ func newExperimentManager(modelVersion string, workers, queueSize int) *experime
 	if queueSize < 1 {
 		queueSize = defaultExperimentQueueSize
 	}
-	manager := &experimentManager{jobs: make(map[string]*experimentJob), cache: make(map[string]experimentCacheEntry), queue: make(chan string, queueSize), modelVersion: modelVersion}
+	manager := &experimentManager{jobs: make(map[string]*experimentJob), cache: make(map[string]experimentCacheEntry), queue: make(chan string, queueSize), modelVersion: modelVersion, workers: workers}
 	for index := 0; index < workers; index++ {
 		go manager.worker()
 	}

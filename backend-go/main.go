@@ -61,6 +61,20 @@ func main() {
 	)
 
 	log.Printf("tower store ready: %d cells loaded from %s", len(towers), towerGeoJSONPath)
+	rfLimiter := newRFRequestLimiterWithBudget(
+		envInt("MAX_CONCURRENT_RF_REQUESTS", 2),
+		envInt("MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT", defaultRFClientLimit),
+		envInt("RF_REQUESTS_PER_MINUTE", defaultRFRequestsPerMinute),
+	)
+	rfDeadline := time.Duration(envInt("RF_REQUEST_TIMEOUT_SECONDS", int(defaultRFRequestTimeout/time.Second))) * time.Second
+	profile := collectAutoResourceProfile(datasetPack, rfLimiter, rfDeadline, experiments)
+	if len(os.Args) == 2 && os.Args[1] == "--resource-profile" {
+		if err := json.NewEncoder(os.Stdout).Encode(profile); err != nil {
+			log.Fatalf("encode resource profile: %v", err)
+		}
+		return
+	}
+	logAutoResourceProfile(profile)
 	distPath := getenv("FRONTEND_DIST_PATH", filepath.Clean("../frontend-react/dist"))
 	indexPath := filepath.Join(distPath, "index.html")
 	frontendReady := fileExists(indexPath)
@@ -103,14 +117,9 @@ func main() {
 		})
 	})
 	router.GET("/readyz", runtimeReadinessHandler(datasets, frontendReady))
-	rfLimiter := newRFRequestLimiterWithBudget(
-		envInt("MAX_CONCURRENT_RF_REQUESTS", 2),
-		envInt("MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT", defaultRFClientLimit),
-		envInt("RF_REQUESTS_PER_MINUTE", defaultRFRequestsPerMinute),
-	)
 	router.Use(protectExpensiveRFRoutes(
 		rfLimiter,
-		time.Duration(envInt("RF_REQUEST_TIMEOUT_SECONDS", int(defaultRFRequestTimeout/time.Second)))*time.Second,
+		rfDeadline,
 		strings.TrimSpace(os.Getenv("RF_API_KEY")),
 	))
 	buildingAPIKey := strings.TrimSpace(os.Getenv("BUILDINGS_API_KEY"))

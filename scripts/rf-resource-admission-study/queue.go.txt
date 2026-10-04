@@ -1,0 +1,33 @@
+package main
+
+import (
+ "bytes"
+ "encoding/json"
+ "net/http/httptest"
+ "os"
+ "path/filepath"
+ "testing"
+ "time"
+ "ankara-5g-raytracer/raytracer"
+ "github.com/gin-gonic/gin"
+)
+
+func TestResourceAsyncQueue(t *testing.T){
+ if os.Getenv("ATOM_RUN_RESOURCE_STUDY")!="1"{t.Skip("gated bounded queue study")}
+ w:=os.Getenv("ATOM_POLICY_WORKDIR");b,e:=os.ReadFile(filepath.Join(w,"fixtures","6-2.6.json"));if e!=nil{t.Fatal(e)};var f capacityFixture;_=json.Unmarshal(b,&f)
+ pack,e:=raytracer.LoadDatasetPack("../data-pipeline");if e!=nil{t.Fatal(e)}
+ var base map[string]any;_=json.Unmarshal(f.Simulations[0],&base);base["rays"]=125;base["radius_m"]=5000;base["tx_power_dbm"]=60;base["beam_width"]=360
+ profile:=base["rf_profile"].(map[string]any);profile["radius_m"]=5000;profile["tx_power_dbm"]=60;profile["beam_width"]=360
+ manager:=newExperimentManager(modelVersion,1,16);limiter:=newRFRequestLimiter(2);gin.SetMode(gin.TestMode);router:=gin.New();_=router.SetTrustedProxies(nil);router.Use(limitRequestBody(maxRequestBodyBytes),protectExpensiveRFRoutes(limiter,defaultRFRequestTimeout,""));registerExperimentRoutes(router,manager,newDatasetRuntime(pack,nil,""))
+ azimuths:=[]float64{};for k:=0;k<64;k++{azimuths=append(azimuths,float64(k)*360/64)}
+ ids:=[]string{};statuses:=[]int{};remaining:=[]string{};raytracer.AuditReset();cpu:=capacityCPU();start:=time.Now()
+ for k:=0;k<18;k++{body,_:=json.Marshal(map[string]any{"name":"bounded-queue-"+time.Now().Format("150405.000000000"),"base":base,"matrix":map[string]any{"azimuths_deg":azimuths}});req:=httptest.NewRequest("POST","/api/processes/batch-experiment/execution",bytes.NewReader(body));req.RemoteAddr="192.0.2.1:1000";req.Header.Set("Content-Type","application/json");rec:=httptest.NewRecorder();router.ServeHTTP(rec,req);statuses=append(statuses,rec.Code);remaining=append(remaining,rec.Header().Get("RateLimit-Remaining"))
+  if k<17 {if rec.Code!=202{t.Fatalf("queue submission %d: %d %s",k,rec.Code,rec.Body)};var job experimentJobSnapshot;_=json.Unmarshal(rec.Body.Bytes(),&job);ids=append(ids,job.JobID)}else if rec.Code!=429{t.Fatalf("queue overflow=%d %s",rec.Code,rec.Body)}
+  if k==0{until:=time.Now().Add(time.Second);for{j,_:=manager.Snapshot(ids[0]);if j.Status=="running"{break};if time.Now().After(until){t.Fatal("worker did not start")};time.Sleep(time.Millisecond)}}
+ }
+ depth:=len(manager.queue);if depth!=16||len(limiter.slots)!=0{t.Fatalf("queue=%d HTTP slots=%d",depth,len(limiter.slots))}
+ canceled:=time.Now();for _,id:=range ids {manager.Cancel(id)}
+ until:=time.Now().Add(time.Second);for len(manager.queue)>0||auditExperimentActive.Load()>0 {if time.Now().After(until){t.Fatal("background resource release exceeded study bound")};time.Sleep(time.Millisecond)}
+ if remaining[17]!="2"{t.Fatal("queue rejection budget charge changed")}
+ b,_=json.MarshalIndent(map[string]any{"accepted":17,"rejected":1,"running_workers":1,"queue_depth_at_overflow":depth,"http_slots_after_submission":len(limiter.slots),"statuses":statuses,"remaining":remaining,"cpu_seconds":capacityCPU()-cpu,"wall_seconds":time.Since(start).Seconds(),"cancel_release_seconds":time.Since(canceled).Seconds(),"work":raytracer.AuditCounts(),"queued_runs_canceled":16*64},"","  ");_=os.WriteFile(filepath.Join(w,"queue.json"),b,0644)
+}

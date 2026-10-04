@@ -1,0 +1,3191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Deterministic Ankara geometry
+domains, repeated workload measurements, held-out predictors and
+unchanged observational Auto policy." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Geometry Density Calibration | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Geometry Density
+Calibration page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#starting-baseline-and-boundaries"
+      id="toc-starting-baseline-and-boundaries">Starting baseline and
+      boundaries</a></li>
+      <li><a href="#resource-profiles"
+      id="toc-resource-profiles">Resource profiles</a></li>
+      <li><a href="#deterministic-public-planning-domains"
+      id="toc-deterministic-public-planning-domains">Deterministic
+      public-planning domains</a></li>
+      <li><a href="#preflight-prototype-and-cost"
+      id="toc-preflight-prototype-and-cost">Preflight prototype and
+      cost</a></li>
+      <li><a href="#matrix-and-measurement-protocol"
+      id="toc-matrix-and-measurement-protocol">Matrix and measurement
+      protocol</a></li>
+      <li><a href="#location-effect-and-hardware-effect"
+      id="toc-location-effect-and-hardware-effect">Location effect and
+      hardware effect</a></li>
+      <li><a href="#warm-runs-gc-and-throttling"
+      id="toc-warm-runs-gc-and-throttling">Warm runs, GC and
+      throttling</a></li>
+      <li><a href="#repeated-mixed-load-and-tails"
+      id="toc-repeated-mixed-load-and-tails">Repeated mixed load and
+      tails</a></li>
+      <li><a href="#operation-specific-predictors-and-held-out-gate"
+      id="toc-operation-specific-predictors-and-held-out-gate">Operation-specific
+      predictors and held-out gate</a></li>
+      <li><a href="#internal-cost-bands"
+      id="toc-internal-cost-bands">Internal cost bands</a></li>
+      <li><a href="#future-preflight-feature-set-and-auto-readiness"
+      id="toc-future-preflight-feature-set-and-auto-readiness">Future
+      preflight, feature set and Auto readiness</a></li>
+      <li><a href="#validation-and-freeze"
+      id="toc-validation-and-freeze">Validation and freeze</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Calibration evidence</span>
+        <h1>Geometry Density Calibration</h1>
+        <p>Deterministic Ankara geometry domains, repeated workload
+measurements, held-out predictors and unchanged observational Auto
+policy.</p>
+        <div class="hero-actions">
+          <a class="button" href="./auto-resource-geometry-calibration.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p><strong>Decision: no admission estimator ready. Freeze this audit and
+keep Auto observation-only.</strong> This development-VM sample tests
+geometry metadata and interpretable predictors; it does not certify
+production capacity, margins, workload classes or adaptive policy.</p>
+<h2 id="starting-baseline-and-boundaries">Starting baseline and
+boundaries</h2>
+<p>2026-10-04 (Europe/Istanbul), clean <code>main</code>, HEAD
+<code>b6acd48b00a1ac334b69cbafe6cdbb9405d6c7b3</code>, VERSION
+<code>0.11.0</code>. Initial <code>git status --short</code> and
+<code>git diff --stat</code> were empty. Previous Auto foundation,
+calibration and capacity reports are preserved. No tracked
+backend/frontend, policy, fingerprint, persistence or dataset files
+changed.</p>
+<p>Fixed policy remains <strong>20 protected attempts / ClientIP /
+anchored 60s; concurrency 2 global /1 client; RF deadline 60s; selected
+Cell cap 6; experiment workers 1, queue 16</strong>. Auto only observes.
+No admission, GOMAXPROCS, RF-science, search/Pareto, frontend shape or
+user controls were changed. VERSION remains 0.11.0; recommend <strong>no
+release</strong>, internal calibration only.</p>
+<h2 id="resource-profiles">Resource profiles</h2>
+<p>Sequential Docker cgroup-v2 profiles on a shared 10-CPU / 11.735 GiB
+Linux arm64 development VM. Existing <code>atom-app</code> was
+preserved; no calibration ports published. The unchanged image provides
+the container; the measured disposable instrumented test binary uses the
+recorded local Go toolchain, distinct from the image server's Go 1.26.6.
+Constraints were checked with existing Auto detection in the actual
+measured process before RF work.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Visible CPU</th>
+<th>GOMAXPROCS</th>
+<th>Quota cores</th>
+<th>Cgroup GiB</th>
+<th>Observed ceiling GiB</th>
+<th>Runtime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>10</td>
+<td>2</td>
+<td>2</td>
+<td>4.000</td>
+<td>4.000</td>
+<td>go1.27.1</td>
+</tr>
+<tr>
+<td>B</td>
+<td>10</td>
+<td>4</td>
+<td>4</td>
+<td>8.000</td>
+<td>8.000</td>
+<td>go1.27.1</td>
+</tr>
+<tr>
+<td>D</td>
+<td>10</td>
+<td>10</td>
+<td>unlimited</td>
+<td>unlimited</td>
+<td>11.735</td>
+<td>go1.27.1</td>
+</tr>
+</tbody>
+</table>
+<p>A =2CPU/4GiB, B=4CPU/8GiB, D=default without explicit quota/limit. No
+8CPU rerun: geometry/load is the study variable. Host-bounded default
+and quotas promise no exclusive resources. Full Auto provenance,
+diagnostic fingerprints, external Docker constraints, container exit/OOM
+state are retained in JSON.</p>
+<h2 id="deterministic-public-planning-domains">Deterministic
+public-planning domains</h2>
+<p>unique inventory-coordinate anchors; nearest six distinct Cell IDs by
+cosine-adjusted coordinate distance; rank 400m enclosing-box vertex
+density, ID tie break; target quantiles .05/.50/.85/.98; choose nearest
+rank with disjoint 800m enclosing boxes; train then holdout per band
+BEFORE timing</p>
+<p>Select the hardest high-density pair first, followed by dense, medium
+and sparse pairs; this avoids exhausting disjoint choices at the high
+end. A ranking target is a construction rule, not a universal density
+threshold. Counts include all intersecting footprint parts and complete
+outer-ring vertices, not clipped geometry. Geometric edge count excludes
+a duplicated closing vertex; actual engine edge-check counters may also
+include degenerate closing segments. Domain area is the conservative
+enclosing rectangle, including gaps between towers; densities are
+rectangle statistics. All eight 800m selection rectangles are disjoint,
+so overlaps do not dominate samples. Selection/splits precede RF
+timings. Exact public planning coordinates and selected tower IDs occur
+only in audit artifacts, never user-location logs.</p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Split</th>
+<th>Rank</th>
+<th>Footprint parts</th>
+<th>Logical buildings</th>
+<th>Vertices</th>
+<th>Edges</th>
+<th>Area km²</th>
+<th>Parts/km²</th>
+<th>Vertices/km²</th>
+<th>Max / median vertices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>very-dense-calibration</td>
+<td>calibration</td>
+<td>412</td>
+<td>778</td>
+<td>778</td>
+<td>3661</td>
+<td>3661</td>
+<td>0.728</td>
+<td>1068.762</td>
+<td>5029.228</td>
+<td>28 / 4</td>
+</tr>
+<tr>
+<td>very-dense-held-out</td>
+<td>held-out</td>
+<td>410</td>
+<td>1004</td>
+<td>1004</td>
+<td>4203</td>
+<td>4203</td>
+<td>0.866</td>
+<td>1159.365</td>
+<td>4853.397</td>
+<td>48 / 4</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>calibration</td>
+<td>356</td>
+<td>1149</td>
+<td>1149</td>
+<td>5332</td>
+<td>5332</td>
+<td>1.500</td>
+<td>765.814</td>
+<td>3553.801</td>
+<td>50 / 4</td>
+</tr>
+<tr>
+<td>dense-held-out</td>
+<td>held-out</td>
+<td>360</td>
+<td>1533</td>
+<td>1533</td>
+<td>7568</td>
+<td>7568</td>
+<td>2.087</td>
+<td>734.466</td>
+<td>3625.858</td>
+<td>40 / 4</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>calibration</td>
+<td>210</td>
+<td>176</td>
+<td>176</td>
+<td>1959</td>
+<td>1959</td>
+<td>0.999</td>
+<td>176.104</td>
+<td>1960.162</td>
+<td>52 / 8</td>
+</tr>
+<tr>
+<td>medium-held-out</td>
+<td>held-out</td>
+<td>204</td>
+<td>1004</td>
+<td>1004</td>
+<td>6283</td>
+<td>6283</td>
+<td>3.323</td>
+<td>302.107</td>
+<td>1890.578</td>
+<td>78 / 4</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>calibration</td>
+<td>21</td>
+<td>317</td>
+<td>317</td>
+<td>2665</td>
+<td>2665</td>
+<td>11.760</td>
+<td>26.956</td>
+<td>226.619</td>
+<td>41 / 6</td>
+</tr>
+<tr>
+<td>sparse-held-out</td>
+<td>held-out</td>
+<td>19</td>
+<td>76</td>
+<td>76</td>
+<td>697</td>
+<td>697</td>
+<td>4.054</td>
+<td>18.747</td>
+<td>171.926</td>
+<td>64 / 5.5</td>
+</tr>
+</tbody>
+</table>
+<p>Dataset <code>ankara-open-planning</code> version
+<code>2026.07</code>: 161,784 indexed footprint parts, 936,651 vertices,
+451 inventory Cells. Dataset SHA256 identity is retained. Only this real
+installed pack exists in the repository/default app; the sample-pack is
+synthetic test data and acquisition manifests are layer audits. No
+second production dataset or synthetic scaling experiment was invented.
+Global counts are constant and their cross-dataset predictive value is
+<strong>unidentifiable</strong>.</p>
+<h2 id="preflight-prototype-and-cost">Preflight prototype and cost</h2>
+<p>single conservative enclosing bbox of relevant tower radii +2m
+padding, full intersecting footprint outer rings; recommendation adds
+every inventory candidate in search polygon before caps; count
+overestimates circle union/gaps; building-entry still scans global
+footprint inventory, beyond local preflight descriptors</p>
+<p>Both plain bbox candidate count and footprint/vertex/edge metadata
+are measured at 100, 400 and 800m for one/six Cells, all eight domains,
+all profiles: five batches of 100 lookups each. Metadata currently sorts
+polygon complexity for the diagnostic median; this is test-only and not
+necessary in a future bounded count query. Reads allocate result slices
+and visit every bbox candidate; enumeration grows with candidate count
+and is not a constant-time guarantee. Existing production indexes are
+unchanged.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Query</th>
+<th>Median batch-average wall µs</th>
+<th>Worst batch-average wall µs</th>
+<th>Worst allocation KiB/query</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>bbox-count</td>
+<td>2.479</td>
+<td>115.784</td>
+<td>103.000</td>
+</tr>
+<tr>
+<td>A</td>
+<td>footprint-vertices-edges</td>
+<td>18.253</td>
+<td>532.099</td>
+<td>552.650</td>
+</tr>
+<tr>
+<td>B</td>
+<td>bbox-count</td>
+<td>2.524</td>
+<td>81.390</td>
+<td>103.000</td>
+</tr>
+<tr>
+<td>B</td>
+<td>footprint-vertices-edges</td>
+<td>17.068</td>
+<td>307.494</td>
+<td>554.782</td>
+</tr>
+<tr>
+<td>D</td>
+<td>bbox-count</td>
+<td>2.092</td>
+<td>82.891</td>
+<td>103.000</td>
+</tr>
+<tr>
+<td>D</td>
+<td>footprint-vertices-edges</td>
+<td>17.236</td>
+<td>440.721</td>
+<td>551.583</td>
+</tr>
+</tbody>
+</table>
+<p>Use per-row preflight/RF ratios in JSON when interpreting very cheap
+Surface or sparse Simulate operations: a cheap scan is not necessarily
+much cheaper than every endpoint. The study measures the diagnostic
+full-ring scan; it does not introduce an enforcing query.</p>
+<h2 id="matrix-and-measurement-protocol">Matrix and measurement
+protocol</h2>
+<p><strong>rf:</strong> normal 120 rays/400m/30dBm/120deg at 2.6 and
+28GHz; rays 240/400m; radius 120/800m; fully held setting 180/600m</p>
+<p><strong>matrix:</strong> D: all eight domains, both frequencies,
+eleven operations; variants at sparse/dense train+holdout 2.6GHz; A/B:
+sparse+dense train at 2.6GHz six core operations; mixed four scenarios
+sparse+dense at 2.6GHz on all profiles; no 8CPU rerun</p>
+<p><strong>supplement:</strong> 24 fresh-process D cases complete
+held180-ray/600m coverage for
+Evaluate+maps/Optimize+maps/Explain/Azimuth on sparse+dense held-out
+domains, three repeats; same binary, Auto fingerprint and data;
+calibration coefficients/margins unchanged. Stage is explicit in every
+raw row; separate process/reset can affect GC/cache state.</p>
+<p><strong>feature_audit:</strong> Interference/Surface/Building Entry
+do not consume request ray count. Ray-only cases are unchanged-compute
+controls and excluded from model fitting/scoring; held-setting still
+changes radius to an unfitted600m. Source-based feature correction
+occurred after partial held-out results were inspected; treat all
+held-out conclusions as exploratory, require a fresh locked validation
+before design. No held-out value enters automated
+selection/fitting/margins.</p>
+<p><strong>cache:</strong> preflight stage loads a pack, then RF stage
+reloads the same pack in the same process; each RF request sees its
+fully loaded index and preceding domain scan; old stage heap may await
+GC; no forced GC/FreeOSMemory/GOGC change; request-local caches remain
+unchanged; first measured case compared to subsequent repeats, not
+cold-start RF; completed experiment cache/jobs reset consistently before
+each async case to guarantee uncached16-run work; frontend absent</p>
+<p><strong>sampling:</strong> 50ms RSS/cgroup/heap/slots sampling plus
+before/after, runtime allocation/GC deltas, getrusage processCPU,
+cgroupCPU/throttle. Instrumented httptest recorder includes extra
+buffering and response copies. Lifetime peak includes dataset startup
+and all prior cases; samples can miss transients. No per-interactive CPU
+attribution under concurrency</p>
+<p><strong>omissions:</strong> A/B 28GHz and medium/very-dense; variants
+at28GHz; moderate fit variants for azimuth/explain and maps (only
+held180/600 tested in a fresh24-case D supplement); only one real
+dataset; no cold OS page-cache eviction, full queue/cache retention,
+browser/network or exclusive deployment host; no synthetic controls</p>
+<p>Canonical operations: Simulate, Evaluate, Evaluate+six maps,
+Optimize, Optimize+six returned-azimuth maps, Interference, Explain
+Cell, Optimize Azimuth, Coverage Surface, Recommendation and Building
+Entry. Six Cells where supported; one for single-cell endpoints;
+Recommendation uses its supported five-Cell maximum. Surface grid=25m
+fixed across cases. Recommendation polygon encloses the selected six
+inventory positions plus20m and includes all inventory candidates there;
+candidate count/relative Cell spacing vary with geography and are
+disclosed confounders. Explain prerequisite Optimize is excluded from
+its interval.</p>
+<p>1210 recorded case runs, 292 isolated groups, 72 mixed scenarios.
+Five repeats for ordinary canonical cases; three for Optimize,
+Optimize+maps, Explain and Recommendation, and for variants/mixed cases
+(expensive repeated optimizer prerequisites and searches make the full
+five-pass matrix costly). Min/median/max, spread and population CV are
+finite sample summaries, <strong>not percentile distributions</strong>.
+A malformed Recommendation audit payload stopped an initial pilot;
+corrected pilot timings are excluded. No supported request was reduced
+to make a profile pass.</p>
+<h3 id="canonical-repeats-across-all-geometry-bands-d">Canonical repeats
+across all geometry bands (D)</h3>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>GHz</th>
+<th>Operation</th>
+<th>n</th>
+<th>Wall min / median / max s</th>
+<th>Wall CV</th>
+<th>CPU min / median / max s</th>
+<th>Bytes median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>simulate</td>
+<td>5</td>
+<td>0.028 / 0.033 / 0.053</td>
+<td>23.6%</td>
+<td>0.041 / 0.047 / 0.236</td>
+<td>7637243</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>evaluate</td>
+<td>5</td>
+<td>0.475 / 0.498 / 0.554</td>
+<td>5.4%</td>
+<td>0.781 / 0.974 / 1.158</td>
+<td>29089</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>evaluate-maps</td>
+<td>5</td>
+<td>0.686 / 0.704 / 0.778</td>
+<td>4.8%</td>
+<td>1.457 / 1.528 / 1.649</td>
+<td>44700846</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>optimize</td>
+<td>3</td>
+<td>9.424 / 9.758 / 10.954</td>
+<td>6.5%</td>
+<td>21.337 / 22.516 / 24.911</td>
+<td>97468</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>optimize-maps</td>
+<td>3</td>
+<td>9.631 / 10.073 / 11.482</td>
+<td>7.6%</td>
+<td>21.881 / 23.488 / 26.922</td>
+<td>45187937</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>interference</td>
+<td>5</td>
+<td>0.037 / 0.040 / 0.045</td>
+<td>7.4%</td>
+<td>0.043 / 0.050 / 0.115</td>
+<td>4582675</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>explain</td>
+<td>3</td>
+<td>0.242 / 0.246 / 0.272</td>
+<td>5.2%</td>
+<td>0.515 / 0.536 / 0.611</td>
+<td>2984</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>azimuth</td>
+<td>5</td>
+<td>0.465 / 0.505 / 0.595</td>
+<td>8.4%</td>
+<td>1.939 / 2.177 / 2.606</td>
+<td>5424</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>surface</td>
+<td>5</td>
+<td>0.006 / 0.007 / 0.008</td>
+<td>11.7%</td>
+<td>0.006 / 0.007 / 0.008</td>
+<td>140478</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>building-entry</td>
+<td>5</td>
+<td>0.047 / 0.059 / 0.066</td>
+<td>10.5%</td>
+<td>0.047 / 0.061 / 0.258</td>
+<td>1945002</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>2.6</td>
+<td>recommendation</td>
+<td>3</td>
+<td>1.629 / 1.697 / 2.233</td>
+<td>14.6%</td>
+<td>5.746 / 6.062 / 8.135</td>
+<td>18556</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>simulate</td>
+<td>5</td>
+<td>0.019 / 0.024 / 0.042</td>
+<td>29.2%</td>
+<td>0.032 / 0.041 / 0.251</td>
+<td>2745025</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>evaluate</td>
+<td>5</td>
+<td>0.490 / 0.587 / 0.647</td>
+<td>11.0%</td>
+<td>0.823 / 1.192 / 1.309</td>
+<td>29050</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>evaluate-maps</td>
+<td>5</td>
+<td>0.620 / 0.668 / 0.714</td>
+<td>5.1%</td>
+<td>1.295 / 1.443 / 1.556</td>
+<td>14845743</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>optimize</td>
+<td>3</td>
+<td>9.244 / 9.565 / 11.382</td>
+<td>9.4%</td>
+<td>20.366 / 21.635 / 25.566</td>
+<td>97457</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>optimize-maps</td>
+<td>3</td>
+<td>9.541 / 9.691 / 10.592</td>
+<td>4.7%</td>
+<td>20.842 / 21.649 / 23.839</td>
+<td>14307880</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>interference</td>
+<td>5</td>
+<td>0.042 / 0.044 / 0.056</td>
+<td>10.6%</td>
+<td>0.048 / 0.063 / 0.254</td>
+<td>4433173</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>explain</td>
+<td>3</td>
+<td>0.244 / 0.256 / 0.273</td>
+<td>4.6%</td>
+<td>0.517 / 0.560 / 0.606</td>
+<td>2986</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>azimuth</td>
+<td>5</td>
+<td>0.455 / 0.554 / 0.571</td>
+<td>8.2%</td>
+<td>2.020 / 2.300 / 2.482</td>
+<td>5423</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>surface</td>
+<td>5</td>
+<td>0.006 / 0.008 / 0.009</td>
+<td>14.9%</td>
+<td>0.006 / 0.008 / 0.009</td>
+<td>138489</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>building-entry</td>
+<td>5</td>
+<td>0.047 / 0.060 / 0.062</td>
+<td>9.5%</td>
+<td>0.047 / 0.061 / 0.062</td>
+<td>1946988</td>
+</tr>
+<tr>
+<td>very-dense-calibration</td>
+<td>28</td>
+<td>recommendation</td>
+<td>3</td>
+<td>1.613 / 2.098 / 2.117</td>
+<td>12.0%</td>
+<td>5.788 / 7.331 / 7.447</td>
+<td>18538</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>simulate</td>
+<td>5</td>
+<td>0.028 / 0.038 / 0.057</td>
+<td>25.6%</td>
+<td>0.035 / 0.049 / 0.327</td>
+<td>6987575</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>evaluate</td>
+<td>5</td>
+<td>0.365 / 0.417 / 0.427</td>
+<td>6.0%</td>
+<td>0.739 / 0.773 / 0.838</td>
+<td>29107</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>evaluate-maps</td>
+<td>5</td>
+<td>0.528 / 0.538 / 0.593</td>
+<td>4.3%</td>
+<td>1.029 / 1.089 / 1.384</td>
+<td>38677844</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>optimize</td>
+<td>3</td>
+<td>6.211 / 6.390 / 7.941</td>
+<td>11.3%</td>
+<td>13.486 / 13.719 / 17.608</td>
+<td>98626</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>optimize-maps</td>
+<td>3</td>
+<td>6.386 / 6.589 / 7.461</td>
+<td>6.8%</td>
+<td>13.582 / 14.485 / 16.166</td>
+<td>36821471</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>interference</td>
+<td>5</td>
+<td>0.035 / 0.042 / 0.055</td>
+<td>18.0%</td>
+<td>0.037 / 0.044 / 0.209</td>
+<td>6518847</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>explain</td>
+<td>3</td>
+<td>0.155 / 0.162 / 0.183</td>
+<td>7.1%</td>
+<td>0.374 / 0.428 / 0.472</td>
+<td>3000</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>azimuth</td>
+<td>5</td>
+<td>0.265 / 0.300 / 0.307</td>
+<td>5.1%</td>
+<td>0.935 / 1.062 / 1.093</td>
+<td>5432</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>surface</td>
+<td>5</td>
+<td>0.003 / 0.004 / 0.004</td>
+<td>8.5%</td>
+<td>0.003 / 0.004 / 0.004</td>
+<td>73050</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>building-entry</td>
+<td>5</td>
+<td>0.040 / 0.049 / 0.077</td>
+<td>26.3%</td>
+<td>0.040 / 0.049 / 0.078</td>
+<td>3039988</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>2.6</td>
+<td>recommendation</td>
+<td>3</td>
+<td>0.688 / 0.752 / 0.901</td>
+<td>11.4%</td>
+<td>2.314 / 2.584 / 3.166</td>
+<td>16271</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>simulate</td>
+<td>5</td>
+<td>0.020 / 0.022 / 0.029</td>
+<td>13.7%</td>
+<td>0.030 / 0.053 / 0.126</td>
+<td>3515089</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>evaluate</td>
+<td>5</td>
+<td>0.362 / 0.412 / 0.447</td>
+<td>6.7%</td>
+<td>0.640 / 0.758 / 0.893</td>
+<td>29073</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>evaluate-maps</td>
+<td>5</td>
+<td>0.488 / 0.527 / 0.546</td>
+<td>4.0%</td>
+<td>0.963 / 1.070 / 1.237</td>
+<td>20438171</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>optimize</td>
+<td>3</td>
+<td>6.577 / 6.741 / 6.975</td>
+<td>2.4%</td>
+<td>13.433 / 14.005 / 14.061</td>
+<td>98477</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>optimize-maps</td>
+<td>3</td>
+<td>6.689 / 6.868 / 6.957</td>
+<td>1.6%</td>
+<td>13.784 / 13.816 / 15.017</td>
+<td>20141859</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>interference</td>
+<td>5</td>
+<td>0.034 / 0.036 / 0.057</td>
+<td>21.0%</td>
+<td>0.036 / 0.042 / 0.240</td>
+<td>6355651</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>explain</td>
+<td>3</td>
+<td>0.169 / 0.175 / 0.179</td>
+<td>2.4%</td>
+<td>0.405 / 0.408 / 0.436</td>
+<td>3006</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>azimuth</td>
+<td>5</td>
+<td>0.299 / 0.325 / 0.394</td>
+<td>9.8%</td>
+<td>1.111 / 1.217 / 1.709</td>
+<td>5430</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>surface</td>
+<td>5</td>
+<td>0.004 / 0.004 / 0.004</td>
+<td>5.0%</td>
+<td>0.004 / 0.004 / 0.004</td>
+<td>95284</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>building-entry</td>
+<td>5</td>
+<td>0.039 / 0.055 / 0.078</td>
+<td>23.3%</td>
+<td>0.039 / 0.055 / 0.250</td>
+<td>3044027</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>28</td>
+<td>recommendation</td>
+<td>3</td>
+<td>0.694 / 0.782 / 0.903</td>
+<td>10.8%</td>
+<td>2.162 / 2.512 / 2.847</td>
+<td>16255</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>simulate</td>
+<td>5</td>
+<td>0.019 / 0.031 / 0.039</td>
+<td>27.4%</td>
+<td>0.024 / 0.113 / 0.199</td>
+<td>5842131</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>evaluate</td>
+<td>5</td>
+<td>0.243 / 0.260 / 0.282</td>
+<td>5.2%</td>
+<td>0.301 / 0.325 / 0.542</td>
+<td>29090</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>evaluate-maps</td>
+<td>5</td>
+<td>0.349 / 0.362 / 0.447</td>
+<td>9.5%</td>
+<td>0.580 / 0.740 / 0.967</td>
+<td>32222473</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>optimize</td>
+<td>3</td>
+<td>3.359 / 3.518 / 3.586</td>
+<td>2.7%</td>
+<td>6.096 / 6.565 / 6.745</td>
+<td>85774</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>optimize-maps</td>
+<td>3</td>
+<td>3.470 / 3.620 / 3.721</td>
+<td>2.9%</td>
+<td>6.460 / 6.791 / 7.207</td>
+<td>30610597</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>interference</td>
+<td>5</td>
+<td>0.012 / 0.012 / 0.030</td>
+<td>44.7%</td>
+<td>0.012 / 0.013 / 0.198</td>
+<td>2962962</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>explain</td>
+<td>3</td>
+<td>0.080 / 0.080 / 0.091</td>
+<td>5.8%</td>
+<td>0.096 / 0.100 / 0.235</td>
+<td>2983</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>azimuth</td>
+<td>5</td>
+<td>0.185 / 0.206 / 0.227</td>
+<td>6.4%</td>
+<td>0.440 / 0.685 / 0.771</td>
+<td>5431</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>surface</td>
+<td>5</td>
+<td>0.002 / 0.002 / 0.003</td>
+<td>12.8%</td>
+<td>0.002 / 0.002 / 0.003</td>
+<td>33142</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>building-entry</td>
+<td>5</td>
+<td>0.021 / 0.026 / 0.027</td>
+<td>11.2%</td>
+<td>0.021 / 0.026 / 0.027</td>
+<td>273985</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>2.6</td>
+<td>recommendation</td>
+<td>3</td>
+<td>0.343 / 0.351 / 0.398</td>
+<td>6.7%</td>
+<td>0.791 / 0.813 / 0.948</td>
+<td>16238</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>simulate</td>
+<td>5</td>
+<td>0.014 / 0.016 / 0.023</td>
+<td>19.1%</td>
+<td>0.020 / 0.021 / 0.053</td>
+<td>2954558</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>evaluate</td>
+<td>5</td>
+<td>0.286 / 0.300 / 0.331</td>
+<td>5.8%</td>
+<td>0.506 / 0.547 / 0.577</td>
+<td>29065</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>evaluate-maps</td>
+<td>5</td>
+<td>0.370 / 0.382 / 0.431</td>
+<td>5.8%</td>
+<td>0.610 / 0.625 / 0.754</td>
+<td>19911311</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>optimize</td>
+<td>3</td>
+<td>4.629 / 4.729 / 5.324</td>
+<td>6.3%</td>
+<td>8.299 / 8.698 / 9.575</td>
+<td>97725</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>optimize-maps</td>
+<td>3</td>
+<td>4.709 / 4.810 / 5.103</td>
+<td>3.4%</td>
+<td>8.498 / 8.898 / 9.458</td>
+<td>22024775</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>interference</td>
+<td>5</td>
+<td>0.011 / 0.012 / 0.025</td>
+<td>36.7%</td>
+<td>0.012 / 0.015 / 0.177</td>
+<td>2955066</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>explain</td>
+<td>3</td>
+<td>0.104 / 0.106 / 0.128</td>
+<td>9.7%</td>
+<td>0.130 / 0.132 / 0.378</td>
+<td>2984</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>azimuth</td>
+<td>5</td>
+<td>0.233 / 0.252 / 0.272</td>
+<td>4.9%</td>
+<td>0.805 / 0.861 / 0.911</td>
+<td>5429</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>surface</td>
+<td>5</td>
+<td>0.002 / 0.002 / 0.003</td>
+<td>10.6%</td>
+<td>0.002 / 0.002 / 0.003</td>
+<td>64188</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>building-entry</td>
+<td>5</td>
+<td>0.021 / 0.027 / 0.029</td>
+<td>12.5%</td>
+<td>0.021 / 0.027 / 0.029</td>
+<td>274360</td>
+</tr>
+<tr>
+<td>medium-calibration</td>
+<td>28</td>
+<td>recommendation</td>
+<td>3</td>
+<td>0.426 / 0.454 / 0.508</td>
+<td>7.3%</td>
+<td>0.982 / 1.169 / 1.254</td>
+<td>16226</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>simulate</td>
+<td>5</td>
+<td>0.010 / 0.011 / 0.011</td>
+<td>3.6%</td>
+<td>0.012 / 0.013 / 0.014</td>
+<td>3262803</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>evaluate</td>
+<td>5</td>
+<td>0.176 / 0.200 / 0.233</td>
+<td>10.5%</td>
+<td>0.188 / 0.218 / 0.462</td>
+<td>28490</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>evaluate-maps</td>
+<td>5</td>
+<td>0.247 / 0.250 / 0.274</td>
+<td>4.2%</td>
+<td>0.278 / 0.460 / 0.517</td>
+<td>19957041</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>optimize</td>
+<td>3</td>
+<td>2.501 / 2.506 / 2.565</td>
+<td>1.1%</td>
+<td>4.277 / 4.359 / 4.498</td>
+<td>91264</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>optimize-maps</td>
+<td>3</td>
+<td>2.473 / 2.553 / 2.676</td>
+<td>3.2%</td>
+<td>4.108 / 4.583 / 4.715</td>
+<td>20212025</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>interference</td>
+<td>5</td>
+<td>0.020 / 0.026 / 0.042</td>
+<td>26.7%</td>
+<td>0.021 / 0.027 / 0.239</td>
+<td>7704353</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>explain</td>
+<td>3</td>
+<td>0.056 / 0.058 / 0.059</td>
+<td>2.2%</td>
+<td>0.069 / 0.069 / 0.074</td>
+<td>2687</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>azimuth</td>
+<td>5</td>
+<td>0.149 / 0.165 / 0.181</td>
+<td>7.5%</td>
+<td>0.296 / 0.522 / 0.576</td>
+<td>5411</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>surface</td>
+<td>5</td>
+<td>0.001 / 0.001 / 0.001</td>
+<td>12.7%</td>
+<td>0.001 / 0.001 / 0.001</td>
+<td>13540</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>building-entry</td>
+<td>5</td>
+<td>0.020 / 0.021 / 0.024</td>
+<td>7.1%</td>
+<td>0.020 / 0.021 / 0.024</td>
+<td>150018</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>2.6</td>
+<td>recommendation</td>
+<td>3</td>
+<td>0.244 / 0.258 / 0.286</td>
+<td>6.6%</td>
+<td>0.435 / 0.448 / 0.507</td>
+<td>15960</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>simulate</td>
+<td>5</td>
+<td>0.011 / 0.012 / 0.031</td>
+<td>47.9%</td>
+<td>0.012 / 0.014 / 0.171</td>
+<td>3271321</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>evaluate</td>
+<td>5</td>
+<td>0.175 / 0.178 / 0.239</td>
+<td>12.6%</td>
+<td>0.192 / 0.368 / 0.499</td>
+<td>28634</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>evaluate-maps</td>
+<td>5</td>
+<td>0.239 / 0.255 / 0.268</td>
+<td>4.0%</td>
+<td>0.265 / 0.311 / 0.469</td>
+<td>19980930</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>optimize</td>
+<td>3</td>
+<td>2.355 / 2.466 / 2.587</td>
+<td>3.8%</td>
+<td>4.163 / 4.346 / 4.560</td>
+<td>91376</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>optimize-maps</td>
+<td>3</td>
+<td>2.408 / 2.551 / 2.952</td>
+<td>8.7%</td>
+<td>4.286 / 4.575 / 5.104</td>
+<td>19905839</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>interference</td>
+<td>5</td>
+<td>0.019 / 0.023 / 0.026</td>
+<td>12.1%</td>
+<td>0.019 / 0.024 / 0.038</td>
+<td>7703353</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>explain</td>
+<td>3</td>
+<td>0.055 / 0.055 / 0.070</td>
+<td>11.9%</td>
+<td>0.067 / 0.069 / 0.090</td>
+<td>2689</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>azimuth</td>
+<td>5</td>
+<td>0.139 / 0.164 / 0.193</td>
+<td>11.6%</td>
+<td>0.292 / 0.510 / 0.595</td>
+<td>5411</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>surface</td>
+<td>5</td>
+<td>0.001 / 0.001 / 0.001</td>
+<td>9.6%</td>
+<td>0.001 / 0.001 / 0.001</td>
+<td>13546</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>building-entry</td>
+<td>5</td>
+<td>0.019 / 0.020 / 0.027</td>
+<td>13.3%</td>
+<td>0.019 / 0.020 / 0.027</td>
+<td>150231</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>28</td>
+<td>recommendation</td>
+<td>3</td>
+<td>0.247 / 0.279 / 0.303</td>
+<td>8.3%</td>
+<td>0.445 / 0.588 / 0.732</td>
+<td>15937</td>
+</tr>
+</tbody>
+</table>
+<h2 id="location-effect-and-hardware-effect">Location effect and
+hardware effect</h2>
+<p>All RF/search settings are identical across domains within a
+workload; inventory geometry and relative Cell spacing change. These are
+location effects, not a causal density-only experiment. Single-cell maps
+use the anchor geometry; network cases use six different real inventory
+positions. A sparse/dense label for the network envelope need not order
+the one-Cell envelope or path viability.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>GHz</th>
+<th>Operation</th>
+<th>Sparse wall s</th>
+<th>Dense wall s</th>
+<th>Wall dense/sparse</th>
+<th>Sparse CPU s</th>
+<th>Dense CPU s</th>
+<th>CPU dense/sparse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>2.6</td>
+<td>simulate</td>
+<td>0.013</td>
+<td>0.055</td>
+<td>4.294</td>
+<td>0.013</td>
+<td>0.109</td>
+<td>8.216</td>
+</tr>
+<tr>
+<td>A</td>
+<td>2.6</td>
+<td>evaluate</td>
+<td>0.194</td>
+<td>0.364</td>
+<td>1.874</td>
+<td>0.264</td>
+<td>0.517</td>
+<td>1.959</td>
+</tr>
+<tr>
+<td>A</td>
+<td>2.6</td>
+<td>optimize</td>
+<td>2.490</td>
+<td>6.851</td>
+<td>2.752</td>
+<td>3.774</td>
+<td>10.795</td>
+<td>2.861</td>
+</tr>
+<tr>
+<td>A</td>
+<td>2.6</td>
+<td>interference</td>
+<td>0.029</td>
+<td>0.038</td>
+<td>1.341</td>
+<td>0.043</td>
+<td>0.048</td>
+<td>1.118</td>
+</tr>
+<tr>
+<td>B</td>
+<td>2.6</td>
+<td>simulate</td>
+<td>0.013</td>
+<td>0.026</td>
+<td>2.019</td>
+<td>0.025</td>
+<td>0.036</td>
+<td>1.453</td>
+</tr>
+<tr>
+<td>B</td>
+<td>2.6</td>
+<td>evaluate</td>
+<td>0.199</td>
+<td>0.374</td>
+<td>1.880</td>
+<td>0.326</td>
+<td>0.566</td>
+<td>1.739</td>
+</tr>
+<tr>
+<td>B</td>
+<td>2.6</td>
+<td>optimize</td>
+<td>2.450</td>
+<td>6.688</td>
+<td>2.730</td>
+<td>3.834</td>
+<td>12.064</td>
+<td>3.146</td>
+</tr>
+<tr>
+<td>B</td>
+<td>2.6</td>
+<td>interference</td>
+<td>0.030</td>
+<td>0.037</td>
+<td>1.240</td>
+<td>0.119</td>
+<td>0.040</td>
+<td>0.340</td>
+</tr>
+<tr>
+<td>D</td>
+<td>2.6</td>
+<td>simulate</td>
+<td>0.011</td>
+<td>0.038</td>
+<td>3.589</td>
+<td>0.013</td>
+<td>0.049</td>
+<td>3.738</td>
+</tr>
+<tr>
+<td>D</td>
+<td>2.6</td>
+<td>evaluate</td>
+<td>0.200</td>
+<td>0.417</td>
+<td>2.085</td>
+<td>0.218</td>
+<td>0.773</td>
+<td>3.548</td>
+</tr>
+<tr>
+<td>D</td>
+<td>2.6</td>
+<td>optimize</td>
+<td>2.506</td>
+<td>6.390</td>
+<td>2.550</td>
+<td>4.359</td>
+<td>13.719</td>
+<td>3.147</td>
+</tr>
+<tr>
+<td>D</td>
+<td>2.6</td>
+<td>interference</td>
+<td>0.026</td>
+<td>0.042</td>
+<td>1.582</td>
+<td>0.027</td>
+<td>0.044</td>
+<td>1.618</td>
+</tr>
+<tr>
+<td>D</td>
+<td>28</td>
+<td>simulate</td>
+<td>0.012</td>
+<td>0.022</td>
+<td>1.876</td>
+<td>0.014</td>
+<td>0.053</td>
+<td>3.866</td>
+</tr>
+<tr>
+<td>D</td>
+<td>28</td>
+<td>evaluate</td>
+<td>0.178</td>
+<td>0.412</td>
+<td>2.311</td>
+<td>0.368</td>
+<td>0.758</td>
+<td>2.059</td>
+</tr>
+<tr>
+<td>D</td>
+<td>28</td>
+<td>optimize</td>
+<td>2.466</td>
+<td>6.741</td>
+<td>2.733</td>
+<td>4.346</td>
+<td>14.005</td>
+<td>3.223</td>
+</tr>
+<tr>
+<td>D</td>
+<td>28</td>
+<td>interference</td>
+<td>0.023</td>
+<td>0.036</td>
+<td>1.553</td>
+<td>0.024</td>
+<td>0.042</td>
+<td>1.748</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Operation</th>
+<th>A/B wall ratio</th>
+<th>A/D wall ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sparse-calibration</td>
+<td>simulate</td>
+<td>0.984</td>
+<td>1.196</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>evaluate</td>
+<td>0.976</td>
+<td>0.971</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>optimize</td>
+<td>1.016</td>
+<td>0.994</td>
+</tr>
+<tr>
+<td>sparse-calibration</td>
+<td>interference</td>
+<td>0.958</td>
+<td>1.083</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>simulate</td>
+<td>2.092</td>
+<td>1.431</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>evaluate</td>
+<td>0.973</td>
+<td>0.873</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>optimize</td>
+<td>1.024</td>
+<td>1.072</td>
+</tr>
+<tr>
+<td>dense-calibration</td>
+<td>interference</td>
+<td>1.036</td>
+<td>0.918</td>
+</tr>
+</tbody>
+</table>
+<p>Compare the location ratios with each operation’s A/B ratio above. No
+universal claim that density dominates CPU is supported. A density-only
+monotone estimator is unsafe: candidate geometry, polygon complexity,
+live paths, frequency and deterministic search behavior contribute
+differently. Pearson correlations of grouped D medians with
+geometry/rays/radius/area appear per operation/target in JSON; constant
+Cell count is null, not fabricated evidence. Correlated
+footprint/vertex/edge features do not prove admission safety.</p>
+<h2 id="warm-runs-gc-and-throttling">Warm runs, GC and throttling</h2>
+<p>First-measured / subsequent-median wall ratio across groups: median
+0.983x, range 0.557–1.761x. The preflight stage loads the pack; the RF
+stage reloads the same pack in that process. Its index is fully loaded
+before every measured RF request, which also follows an explicit domain
+scan. The earlier stage’s unreachable heap may await GC; startup/load
+CPU was not isolated. This is warmed-process characterization; OS page
+cache/startup, scheduler, host activity and heap state are not
+independently controlled. Request-local optimizer caches are rebuilt
+normally. There is no retained frontend or experiment-cache speedup in
+the measured async cases.</p>
+<p>6376 GC cycles occurred across measured intervals; maximum cumulative
+stop-the-world pause / wall is 17.09%. GC pause is only one part of GC
+cost; concurrent mark/assist and scheduler effects cannot be separated
+by pause totals. Per-row heap before/after, cumulative allocations, GC
+counts/pauses and sampled heap are retained. 30 rows had throttled
+periods. Cgroup CPU usage, periods, throttled periods/duration and
+memory events are retained. Throttled duration is accumulated
+accounting, not direct wall slowdown; concurrency CPU is aggregate, not
+attributable to individual operations.</p>
+<h2 id="repeated-mixed-load-and-tails">Repeated mixed load and
+tails</h2>
+<p>Each profile repeats three times: Optimize+uncached16-run experiment;
+Evaluate+uncached16-run experiment; two distinct-client Optimizers;
+Optimize+Evaluate. Each scenario is tested on sparse/dense domains
+at2.6GHz with unchanged 2/1 RF slots and one async worker. Job status
+must be running before interactive work; actual timestamps must overlap.
+Aggregate CPU/GC/memory includes both jobs. Async work is ordinary
+Simulate azimuth sweep, not background network optimization; finite
+overlap does not certify a sustained queue.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Domain</th>
+<th>Scenario</th>
+<th>Operation</th>
+<th>Isolated median s</th>
+<th>Mixed median s</th>
+<th>Mixed max s</th>
+<th>Median inflation</th>
+<th>Max inflation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>sparse-calibration</td>
+<td>async-optimize</td>
+<td>optimize</td>
+<td>2.490</td>
+<td>2.528</td>
+<td>2.620</td>
+<td>1.015</td>
+<td>1.052</td>
+</tr>
+<tr>
+<td>A</td>
+<td>sparse-calibration</td>
+<td>async-evaluate</td>
+<td>evaluate</td>
+<td>0.194</td>
+<td>0.220</td>
+<td>0.254</td>
+<td>1.134</td>
+<td>1.309</td>
+</tr>
+<tr>
+<td>A</td>
+<td>sparse-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>2.490</td>
+<td>3.876</td>
+<td>3.909</td>
+<td>1.557</td>
+<td>1.570</td>
+</tr>
+<tr>
+<td>A</td>
+<td>sparse-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>2.490</td>
+<td>3.873</td>
+<td>3.894</td>
+<td>1.556</td>
+<td>1.564</td>
+</tr>
+<tr>
+<td>A</td>
+<td>sparse-calibration</td>
+<td>optimize-evaluate</td>
+<td>optimize</td>
+<td>2.490</td>
+<td>2.547</td>
+<td>2.676</td>
+<td>1.023</td>
+<td>1.075</td>
+</tr>
+<tr>
+<td>A</td>
+<td>sparse-calibration</td>
+<td>optimize-evaluate</td>
+<td>evaluate</td>
+<td>0.194</td>
+<td>0.239</td>
+<td>0.285</td>
+<td>1.234</td>
+<td>1.468</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-calibration</td>
+<td>async-optimize</td>
+<td>optimize</td>
+<td>6.851</td>
+<td>7.132</td>
+<td>7.235</td>
+<td>1.041</td>
+<td>1.056</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-calibration</td>
+<td>async-evaluate</td>
+<td>evaluate</td>
+<td>0.364</td>
+<td>0.479</td>
+<td>0.520</td>
+<td>1.317</td>
+<td>1.429</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>6.851</td>
+<td>11.749</td>
+<td>11.862</td>
+<td>1.715</td>
+<td>1.731</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>6.851</td>
+<td>11.655</td>
+<td>11.809</td>
+<td>1.701</td>
+<td>1.724</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-calibration</td>
+<td>optimize-evaluate</td>
+<td>optimize</td>
+<td>6.851</td>
+<td>7.132</td>
+<td>7.201</td>
+<td>1.041</td>
+<td>1.051</td>
+</tr>
+<tr>
+<td>A</td>
+<td>dense-calibration</td>
+<td>optimize-evaluate</td>
+<td>evaluate</td>
+<td>0.364</td>
+<td>0.567</td>
+<td>0.636</td>
+<td>1.559</td>
+<td>1.750</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-calibration</td>
+<td>async-optimize</td>
+<td>optimize</td>
+<td>2.450</td>
+<td>2.529</td>
+<td>2.537</td>
+<td>1.032</td>
+<td>1.035</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-calibration</td>
+<td>async-evaluate</td>
+<td>evaluate</td>
+<td>0.199</td>
+<td>0.202</td>
+<td>0.204</td>
+<td>1.015</td>
+<td>1.025</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>2.450</td>
+<td>3.220</td>
+<td>3.252</td>
+<td>1.314</td>
+<td>1.327</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>2.450</td>
+<td>3.224</td>
+<td>3.232</td>
+<td>1.316</td>
+<td>1.319</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-calibration</td>
+<td>optimize-evaluate</td>
+<td>optimize</td>
+<td>2.450</td>
+<td>2.519</td>
+<td>2.562</td>
+<td>1.028</td>
+<td>1.046</td>
+</tr>
+<tr>
+<td>B</td>
+<td>sparse-calibration</td>
+<td>optimize-evaluate</td>
+<td>evaluate</td>
+<td>0.199</td>
+<td>0.246</td>
+<td>0.252</td>
+<td>1.235</td>
+<td>1.268</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-calibration</td>
+<td>async-optimize</td>
+<td>optimize</td>
+<td>6.688</td>
+<td>6.933</td>
+<td>6.979</td>
+<td>1.037</td>
+<td>1.043</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-calibration</td>
+<td>async-evaluate</td>
+<td>evaluate</td>
+<td>0.374</td>
+<td>0.467</td>
+<td>0.485</td>
+<td>1.249</td>
+<td>1.297</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>6.688</td>
+<td>9.269</td>
+<td>9.520</td>
+<td>1.386</td>
+<td>1.423</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>6.688</td>
+<td>9.206</td>
+<td>9.360</td>
+<td>1.376</td>
+<td>1.399</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-calibration</td>
+<td>optimize-evaluate</td>
+<td>optimize</td>
+<td>6.688</td>
+<td>6.740</td>
+<td>6.758</td>
+<td>1.008</td>
+<td>1.010</td>
+</tr>
+<tr>
+<td>B</td>
+<td>dense-calibration</td>
+<td>optimize-evaluate</td>
+<td>evaluate</td>
+<td>0.374</td>
+<td>0.493</td>
+<td>0.505</td>
+<td>1.318</td>
+<td>1.351</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-calibration</td>
+<td>async-optimize</td>
+<td>optimize</td>
+<td>2.506</td>
+<td>2.447</td>
+<td>2.994</td>
+<td>0.977</td>
+<td>1.195</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-calibration</td>
+<td>async-evaluate</td>
+<td>evaluate</td>
+<td>0.200</td>
+<td>0.184</td>
+<td>0.223</td>
+<td>0.921</td>
+<td>1.114</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>2.506</td>
+<td>3.242</td>
+<td>3.735</td>
+<td>1.294</td>
+<td>1.491</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>2.506</td>
+<td>3.222</td>
+<td>3.684</td>
+<td>1.286</td>
+<td>1.470</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-calibration</td>
+<td>optimize-evaluate</td>
+<td>optimize</td>
+<td>2.506</td>
+<td>2.542</td>
+<td>2.581</td>
+<td>1.014</td>
+<td>1.030</td>
+</tr>
+<tr>
+<td>D</td>
+<td>sparse-calibration</td>
+<td>optimize-evaluate</td>
+<td>evaluate</td>
+<td>0.200</td>
+<td>0.254</td>
+<td>0.268</td>
+<td>1.269</td>
+<td>1.341</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-calibration</td>
+<td>async-optimize</td>
+<td>optimize</td>
+<td>6.390</td>
+<td>6.642</td>
+<td>6.672</td>
+<td>1.040</td>
+<td>1.044</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-calibration</td>
+<td>async-evaluate</td>
+<td>evaluate</td>
+<td>0.417</td>
+<td>0.433</td>
+<td>0.449</td>
+<td>1.040</td>
+<td>1.078</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>6.390</td>
+<td>9.719</td>
+<td>9.827</td>
+<td>1.521</td>
+<td>1.538</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-calibration</td>
+<td>two-optimizers</td>
+<td>optimize</td>
+<td>6.390</td>
+<td>9.692</td>
+<td>9.721</td>
+<td>1.517</td>
+<td>1.521</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-calibration</td>
+<td>optimize-evaluate</td>
+<td>optimize</td>
+<td>6.390</td>
+<td>6.838</td>
+<td>6.907</td>
+<td>1.070</td>
+<td>1.081</td>
+</tr>
+<tr>
+<td>D</td>
+<td>dense-calibration</td>
+<td>optimize-evaluate</td>
+<td>evaluate</td>
+<td>0.417</td>
+<td>0.506</td>
+<td>0.507</td>
+<td>1.215</td>
+<td>1.218</td>
+</tr>
+</tbody>
+</table>
+<p>Worst observed inflation: 1.750x (A, dense-calibration,
+optimize-evaluate, evaluate). Minimum individual RF deadline headroom
+across all runs: 31.019s. Bundle duration is not a single-request
+deadline. Throttle/GC/overlap per scenario is in JSON; shared-host noise
+remains an unresolved causal contributor.</p>
+<h2
+id="operation-specific-predictors-and-held-out-gate">Operation-specific
+predictors and held-out gate</h2>
+<p>Predeclared study-only: calibration leave-domain-out margin &lt;=4;
+held-out underestimates &lt;=5%, worst shortfall&lt;=10%. Selected by
+training logRMSE. Retrospective held-out margins describe this sample
+only; no retuning. Four independent held-out locations insufficient for
+admission certification.</p>
+<p>Fit log-cost ridge linear predictors independently per operation and
+target, using medians of repeat groups. Features are
+rays/radius/frequency (ray count omitted for Interference, Surface and
+Building Entry) plus one of footprint count, vertices, edges,
+density+area, or footprint+vertices; a parameter-only baseline is
+compared. Ray-only unchanged-compute controls for those three operations
+are excluded from fitting/scoring. These are exploratory source-informed
+predictors, not preregistered models; partial held-out results were
+inspected before the source-based removal of unused ray count, so fresh
+locked validation is required. Select the family by
+leave-one-calibration-domain-out log RMSE; standardization and
+coefficients fit only training rows. All four held-out locations and
+the180-ray/600m setting stay untouched. Hardware A/B transfer is also
+scored against the D-fit model and recorded separately. The CPU capacity
+signal is observed but a capacity coefficient cannot be learned from
+D-only fitting; no universal wall=CPU/cores guarantee is claimed. Exact
+formulas, feature transforms, means/scales, coefficients, all candidate
+CV scores and worst-case identifiers are in JSON.</p>
+<h3 id="cpu">CPU</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Family</th>
+<th>Median absolute error</th>
+<th>Worst actual/predicted</th>
+<th>Worst overestimate</th>
+<th>Calibration CV margin</th>
+<th>Underestimates after margin</th>
+<th>Numeric gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth</td>
+<td>parameters</td>
+<td>49.0%</td>
+<td>5.857</td>
+<td>217.5%</td>
+<td>3.004</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>building-entry</td>
+<td>density</td>
+<td>65.3%</td>
+<td>4.048</td>
+<td>115.7%</td>
+<td>6.715</td>
+<td>0.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>evaluate</td>
+<td>edges</td>
+<td>60.5%</td>
+<td>4.622</td>
+<td>156.1%</td>
+<td>2.101</td>
+<td>2500.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>evaluate-maps</td>
+<td>parameters</td>
+<td>41.3%</td>
+<td>5.786</td>
+<td>73.9%</td>
+<td>2.430</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>explain</td>
+<td>footprints</td>
+<td>51.7%</td>
+<td>4.504</td>
+<td>358.4%</td>
+<td>3.863</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>interference</td>
+<td>edges</td>
+<td>83.4%</td>
+<td>10.903</td>
+<td>254.0%</td>
+<td>1.937</td>
+<td>2857.1%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>optimize</td>
+<td>footprints</td>
+<td>37.7%</td>
+<td>2.556</td>
+<td>156.2%</td>
+<td>2.815</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>optimize-maps</td>
+<td>geometry</td>
+<td>31.1%</td>
+<td>8.326</td>
+<td>194.6%</td>
+<td>3.091</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>recommendation</td>
+<td>footprints</td>
+<td>57.0%</td>
+<td>3.451</td>
+<td>252.3%</td>
+<td>3.645</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>simulate</td>
+<td>footprints</td>
+<td>59.6%</td>
+<td>3.767</td>
+<td>130.5%</td>
+<td>3.460</td>
+<td>1250.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>surface</td>
+<td>footprints</td>
+<td>17.7%</td>
+<td>1.226</td>
+<td>103.1%</td>
+<td>3.011</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wall-time-in-profile-d">Wall time in profile D</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Family</th>
+<th>Median absolute error</th>
+<th>Worst actual/predicted</th>
+<th>Worst overestimate</th>
+<th>Calibration CV margin</th>
+<th>Underestimates after margin</th>
+<th>Numeric gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth</td>
+<td>parameters</td>
+<td>41.4%</td>
+<td>4.410</td>
+<td>87.3%</td>
+<td>2.334</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>building-entry</td>
+<td>density</td>
+<td>57.6%</td>
+<td>3.227</td>
+<td>92.7%</td>
+<td>3.923</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>evaluate</td>
+<td>edges</td>
+<td>48.9%</td>
+<td>2.838</td>
+<td>92.1%</td>
+<td>1.825</td>
+<td>3125.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>evaluate-maps</td>
+<td>parameters</td>
+<td>33.7%</td>
+<td>4.514</td>
+<td>58.4%</td>
+<td>1.925</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>explain</td>
+<td>geometry</td>
+<td>33.4%</td>
+<td>6.312</td>
+<td>157.6%</td>
+<td>2.861</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>interference</td>
+<td>footprints</td>
+<td>50.8%</td>
+<td>4.281</td>
+<td>102.0%</td>
+<td>2.460</td>
+<td>2142.9%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>optimize</td>
+<td>footprints</td>
+<td>28.8%</td>
+<td>2.187</td>
+<td>119.7%</td>
+<td>2.506</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>optimize-maps</td>
+<td>parameters</td>
+<td>39.7%</td>
+<td>5.385</td>
+<td>76.1%</td>
+<td>2.558</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>recommendation</td>
+<td>footprints</td>
+<td>52.5%</td>
+<td>2.725</td>
+<td>164.1%</td>
+<td>3.069</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>simulate</td>
+<td>footprints</td>
+<td>23.2%</td>
+<td>1.483</td>
+<td>74.2%</td>
+<td>1.247</td>
+<td>4375.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>surface</td>
+<td>footprints</td>
+<td>17.7%</td>
+<td>1.232</td>
+<td>103.0%</td>
+<td>3.096</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spatial-candidate-work">Spatial candidate work</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Family</th>
+<th>Median absolute error</th>
+<th>Worst actual/predicted</th>
+<th>Worst overestimate</th>
+<th>Calibration CV margin</th>
+<th>Underestimates after margin</th>
+<th>Numeric gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth</td>
+<td>geometry</td>
+<td>100.0%</td>
+<td>5367.204</td>
+<td>2085.6%</td>
+<td>1080.585</td>
+<td>3000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>building-entry</td>
+<td>density</td>
+<td>84.4%</td>
+<td>9.333</td>
+<td>186.6%</td>
+<td>21.904</td>
+<td>0.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>evaluate</td>
+<td>density</td>
+<td>29.6%</td>
+<td>10.784</td>
+<td>13.9%</td>
+<td>1.644</td>
+<td>4375.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>evaluate-maps</td>
+<td>density</td>
+<td>46.8%</td>
+<td>28.239</td>
+<td>7.1%</td>
+<td>1.688</td>
+<td>6000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>explain</td>
+<td>density</td>
+<td>46.6%</td>
+<td>24.822</td>
+<td>59.3%</td>
+<td>1.609</td>
+<td>4000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>interference</td>
+<td>density</td>
+<td>84.0%</td>
+<td>17.816</td>
+<td>104.4%</td>
+<td>3.516</td>
+<td>2857.1%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>optimize</td>
+<td>density</td>
+<td>19.2%</td>
+<td>9.314</td>
+<td>37.7%</td>
+<td>1.426</td>
+<td>3125.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>optimize-maps</td>
+<td>density</td>
+<td>35.7%</td>
+<td>20.075</td>
+<td>36.5%</td>
+<td>1.379</td>
+<td>4000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>recommendation</td>
+<td>density</td>
+<td>50.6%</td>
+<td>3.137</td>
+<td>64.0%</td>
+<td>15.284</td>
+<td>0.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>simulate</td>
+<td>density</td>
+<td>99.2%</td>
+<td>76916860.206</td>
+<td>1430384.3%</td>
+<td>110.453</td>
+<td>3125.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>surface</td>
+<td>density</td>
+<td>98.9%</td>
+<td>2072004.750</td>
+<td>527718.6%</td>
+<td>70.325</td>
+<td>3571.4%</td>
+<td>NOT READY</td>
+</tr>
+</tbody>
+</table>
+<h3 id="response-bytes">Response bytes</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Family</th>
+<th>Median absolute error</th>
+<th>Worst actual/predicted</th>
+<th>Worst overestimate</th>
+<th>Calibration CV margin</th>
+<th>Underestimates after margin</th>
+<th>Numeric gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth</td>
+<td>parameters</td>
+<td>0.1%</td>
+<td>1.001</td>
+<td>0.2%</td>
+<td>1.002</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>building-entry</td>
+<td>density</td>
+<td>42.8%</td>
+<td>6.111</td>
+<td>86.9%</td>
+<td>3.404</td>
+<td>2857.1%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>evaluate</td>
+<td>density</td>
+<td>0.3%</td>
+<td>1.008</td>
+<td>0.4%</td>
+<td>1.008</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>evaluate-maps</td>
+<td>parameters</td>
+<td>24.5%</td>
+<td>2.336</td>
+<td>50.8%</td>
+<td>1.536</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>explain</td>
+<td>parameters</td>
+<td>2.4%</td>
+<td>1.034</td>
+<td>2.2%</td>
+<td>1.043</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>interference</td>
+<td>parameters</td>
+<td>28.6%</td>
+<td>1.557</td>
+<td>9.0%</td>
+<td>1.764</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>optimize</td>
+<td>density</td>
+<td>18.2%</td>
+<td>1.814</td>
+<td>39.5%</td>
+<td>2.057</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>optimize-maps</td>
+<td>parameters</td>
+<td>29.0%</td>
+<td>2.406</td>
+<td>44.7%</td>
+<td>1.598</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>recommendation</td>
+<td>parameters</td>
+<td>2.1%</td>
+<td>1.392</td>
+<td>3.2%</td>
+<td>1.149</td>
+<td>1250.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>simulate</td>
+<td>footprints</td>
+<td>9.2%</td>
+<td>1.259</td>
+<td>70.7%</td>
+<td>1.557</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>surface</td>
+<td>footprints</td>
+<td>26.7%</td>
+<td>1.484</td>
+<td>140.6%</td>
+<td>2.637</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+</tbody>
+</table>
+<h3 id="allocations">Allocations</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Family</th>
+<th>Median absolute error</th>
+<th>Worst actual/predicted</th>
+<th>Worst overestimate</th>
+<th>Calibration CV margin</th>
+<th>Underestimates after margin</th>
+<th>Numeric gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth</td>
+<td>footprints</td>
+<td>44.1%</td>
+<td>1.989</td>
+<td>99.8%</td>
+<td>4.564</td>
+<td>0.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>building-entry</td>
+<td>edges</td>
+<td>95.3%</td>
+<td>22.798</td>
+<td>438.3%</td>
+<td>4.018</td>
+<td>2857.1%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>evaluate</td>
+<td>edges</td>
+<td>73.7%</td>
+<td>7.166</td>
+<td>231.2%</td>
+<td>2.798</td>
+<td>3125.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>evaluate-maps</td>
+<td>parameters</td>
+<td>40.0%</td>
+<td>3.949</td>
+<td>97.6%</td>
+<td>2.532</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>explain</td>
+<td>edges</td>
+<td>60.0%</td>
+<td>3.614</td>
+<td>324.2%</td>
+<td>3.070</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>interference</td>
+<td>footprints</td>
+<td>28.1%</td>
+<td>4.277</td>
+<td>84.6%</td>
+<td>2.555</td>
+<td>2142.9%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>optimize</td>
+<td>footprints</td>
+<td>47.2%</td>
+<td>3.007</td>
+<td>215.4%</td>
+<td>3.302</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>optimize-maps</td>
+<td>geometry</td>
+<td>32.4%</td>
+<td>5.468</td>
+<td>235.5%</td>
+<td>3.630</td>
+<td>1000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>recommendation</td>
+<td>footprints</td>
+<td>53.0%</td>
+<td>3.950</td>
+<td>350.7%</td>
+<td>3.609</td>
+<td>1250.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>simulate</td>
+<td>footprints</td>
+<td>12.2%</td>
+<td>1.218</td>
+<td>42.2%</td>
+<td>1.780</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>surface</td>
+<td>footprints</td>
+<td>21.8%</td>
+<td>1.260</td>
+<td>110.3%</td>
+<td>2.816</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sampled-absolute-rss">Sampled absolute RSS</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Family</th>
+<th>Median absolute error</th>
+<th>Worst actual/predicted</th>
+<th>Worst overestimate</th>
+<th>Calibration CV margin</th>
+<th>Underestimates after margin</th>
+<th>Numeric gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth</td>
+<td>parameters</td>
+<td>3.2%</td>
+<td>1.044</td>
+<td>5.8%</td>
+<td>1.102</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>building-entry</td>
+<td>parameters</td>
+<td>1.9%</td>
+<td>1.040</td>
+<td>4.5%</td>
+<td>1.053</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>evaluate</td>
+<td>parameters</td>
+<td>1.6%</td>
+<td>1.084</td>
+<td>1.4%</td>
+<td>1.089</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>evaluate-maps</td>
+<td>parameters</td>
+<td>1.6%</td>
+<td>1.150</td>
+<td>2.2%</td>
+<td>1.080</td>
+<td>2000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>explain</td>
+<td>density</td>
+<td>1.1%</td>
+<td>1.016</td>
+<td>3.3%</td>
+<td>1.024</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>interference</td>
+<td>density</td>
+<td>2.1%</td>
+<td>1.046</td>
+<td>5.6%</td>
+<td>1.050</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>optimize</td>
+<td>footprints</td>
+<td>2.2%</td>
+<td>1.096</td>
+<td>3.2%</td>
+<td>1.065</td>
+<td>625.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>optimize-maps</td>
+<td>parameters</td>
+<td>2.5%</td>
+<td>1.115</td>
+<td>5.3%</td>
+<td>1.075</td>
+<td>2000.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>recommendation</td>
+<td>geometry</td>
+<td>1.7%</td>
+<td>1.036</td>
+<td>6.7%</td>
+<td>1.034</td>
+<td>625.0%</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>simulate</td>
+<td>parameters</td>
+<td>1.7%</td>
+<td>1.064</td>
+<td>1.4%</td>
+<td>1.085</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>surface</td>
+<td>parameters</td>
+<td>1.6%</td>
+<td>1.030</td>
+<td>3.8%</td>
+<td>1.057</td>
+<td>0.0%</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+</tbody>
+</table>
+<p>Held-out errors are measured relative to actual demand; worst
+actual/predicted reports the required retrospective multiplier. A margin
+that covers this sample is not a production bound. The JSON separates
+held-out domain errors, held-out setting errors and A/B hardware
+transfer; one combined error can hide extrapolation failure. Numeric
+gate success means a promising pilot, never admission certification.
+Geometry targets are repeated spatial-candidate/edge work, not an
+assertion that bbox count equals exact RF intersections.</p>
+<p>Worst un-margined CPU underprediction across operation estimators:
+10.903x actual/predicted; response: 6.111x. Both may be different cases
+than the worst latency. Frequency/path survival and grid/output form
+explain why response bytes require a separate model; dense geometry need
+not produce larger output.</p>
+<p>The worst spatial-candidate predictor is simulate: 76,916,860.2x
+actual/predicted. This is a catastrophic zero-to-positive extrapolation
+of the exploratory log-target model (zero training work is floored
+at1e-9), not an observed geometry-cost explosion. Reject this model and
+its margins; a zero-aware candidate-work model would need a new locked
+validation. The directly enumerated bbox metadata itself remains
+deterministic and conservatively includes complete footprint parts.</p>
+<p>Memory: allocation totals are cumulative work, not live demand.
+Absolute sampled RSS includes loaded dataset, retained heap and recorder
+response copies; it is order-dependent, can miss spikes and is not
+incremental memory reservation. Cgroup current includes file/kernel
+charges; cumulative lifetime peak includes startup/previous cases.
+Existing app/OS/VM overhead and queued job retention remain unmeasured.
+The tables quantify exploratory predictors but cannot establish a
+conservative live-memory envelope.</p>
+<p>The table’s median error is median absolute relative error. Signed
+median errors, maximum shortfall relative to actual, percentage of raw
+underestimates and setting/domain splits are retained in JSON. Required
+margins must be compared with calibration-only CV margins, not fitted
+after seeing held-out data.</p>
+<h3 id="margin-stability-across-held-out-settings-and-hardware">Margin
+stability across held-out settings and hardware</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>CPU calibration margin</th>
+<th>CPU domain actual/pred max</th>
+<th>CPU held-setting actual/pred max</th>
+<th>CPU A actual/pred max</th>
+<th>CPU B actual/pred max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azimuth</td>
+<td>3.004</td>
+<td>2.541</td>
+<td>5.857</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>building-entry</td>
+<td>6.715</td>
+<td>4.048</td>
+<td>2.303</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>evaluate</td>
+<td>2.101</td>
+<td>4.622</td>
+<td>3.431</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>evaluate-maps</td>
+<td>2.430</td>
+<td>1.839</td>
+<td>5.786</td>
+<td>1</td>
+<td>1.080</td>
+</tr>
+<tr>
+<td>explain</td>
+<td>3.863</td>
+<td>2.434</td>
+<td>4.504</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>interference</td>
+<td>1.937</td>
+<td>10.903</td>
+<td>7.943</td>
+<td>1.937</td>
+<td>5.315</td>
+</tr>
+<tr>
+<td>optimize</td>
+<td>2.815</td>
+<td>2.556</td>
+<td>2.448</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>optimize-maps</td>
+<td>3.091</td>
+<td>1.536</td>
+<td>8.326</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>recommendation</td>
+<td>3.645</td>
+<td>3.130</td>
+<td>3.451</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>simulate</td>
+<td>3.460</td>
+<td>3.767</td>
+<td>3.121</td>
+<td>1.788</td>
+<td>1.233</td>
+</tr>
+<tr>
+<td>surface</td>
+<td>3.011</td>
+<td>1.226</td>
+<td>1.042</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Some operation/margin pairs may pass this finite pilot gate, but
+stability is not established across search policies, new datasets,
+sustained load and deployment hosts. Large calibration margins or
+validation exceedances reject that predictor; no retrospective held-out
+covering multiplier is selected for production.</p>
+<h2 id="internal-cost-bands">Internal cost bands</h2>
+<p>Four CPU-prediction quartile bands are set using calibration data
+only. Held-out classification uses the unchanged predictor/cutoffs;
+actual CPU/RSS/bytes ranges and exceedances of training maxima are
+retained per band in JSON. CPU groups do not jointly bound
+memory/response, and broad overlapping ranges cannot support one
+multi-resource cost class. <strong>Reject these cost bands for admission
+or product names.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Cal CPU min–max s</th>
+<th>Held CPU min–max s</th>
+<th>Cal RSS min–max MiB</th>
+<th>Cal bytes min–max</th>
+<th>Held exceedances CPU / RSS / bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0.001–0.063</td>
+<td>0.001–0.087</td>
+<td>784.8–913.2</td>
+<td>13540–7704353</td>
+<td>2 / 0 / 5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.029–0.560</td>
+<td>0.025–1.346</td>
+<td>762.9–897.4</td>
+<td>2687–13889599</td>
+<td>4 / 0 / 1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0.311–2.300</td>
+<td>0.331–5.588</td>
+<td>778.5–904.8</td>
+<td>5411–44700846</td>
+<td>3 / 2 / 3</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1.334–38.461</td>
+<td>0.562–65.782</td>
+<td>777.8–908.4</td>
+<td>16054–45187937</td>
+<td>3 / 2 / 2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="future-preflight-feature-set-and-auto-readiness">Future
+preflight, feature set and Auto readiness</h2>
+<p>Smallest useful candidate set: operation/output mode, Cell count,
+rays, effective per-Cell radius/profile/frequency, deterministic search
+policy/budget, bounded local bbox candidate and vertex/edge counts,
+sample/grid count, observed CPU capacity, and active interactive/async
+work. Geometry/count descriptors are correlated; retain a bounded count
+plus vertices provisionally, not every correlated density feature.
+Recommendation additionally needs candidate inventory/search-domain
+extent; Building Entry needs global scan context. Cells/search/grid
+variation are operationally required features but their coefficients are
+not identified by this fixed-default subset.</p>
+<p>Recommended future preflight: <strong>C, footprint + vertex/edge
+metadata</strong>, as a bounded diagnostic prototype for the expensive
+ray/network operations; add an explicit query budget/fallback design
+before production use. Cheap bbox-only counts lose polygon complexity.
+Exact polygon intersections are unnecessary for conservative bbox
+metadata. For very cheap endpoints, preflight benefit is unknown and may
+justify skipping it. No new production query or index optimization is
+introduced here.</p>
+<table>
+<thead>
+<tr>
+<th>Derivation</th>
+<th>Readiness</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>safe_concurrency</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>compute_reservation</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>memory_reservation</td>
+<td>NOT READY</td>
+</tr>
+<tr>
+<td>response_reservation</td>
+<td>PROMISING BUT MORE CALIBRATION</td>
+</tr>
+<tr>
+<td>async_workers</td>
+<td>NOT READY</td>
+</tr>
+</tbody>
+</table>
+<p>Future admission design likely needs resource profile + operation
+parameters + bounded local geometry + mixed-load state. No estimator is
+certified: only four independent held-out locations, one dataset/shared
+VM, fixed search policy, incomplete moderate-setting coverage, sample
+peaks and short async overlap. Eight-Cell demand could plausibly enter
+such a feature set, but this study measures six. The separate capacity
+audit measured six→eight Optimize at5.886→8.374s (2.6GHz)
+and5.745→8.249s (28GHz), with only one primary eight-Cell sample. Its
+repeat workflow consumes19 of20 attempts, leaving only one. Those
+limited compute observations and tight workflow budget do not justify a
+cap increase. Do not increase validation caps or infer capacity from
+linear Cell scaling.</p>
+<p>Future bounded observability: operation, geometry count bucket,
+predicted/actual CPU and wall buckets, response-byte bucket,
+interactive/async active counts and underprediction flag. An internal
+cost-class field is useful only after a stable class exists. No raw
+coordinates, IP, project payload or credentials; this task adds no
+production telemetry.</p>
+<h2 id="validation-and-freeze">Validation and freeze</h2>
+<p>Baseline: backend full tests, race tests and vet; frontend423 tests,
+lint/build; existing real RF-budget and deadline browser E2Es passed on
+separate fresh servers. Final validation results are recorded in the
+JSON <code>validation</code> field after execution. Existing Vite
+large-chunk and Node environment warnings persist. New Python tests
+enforce held-out isolation/error arithmetic/repeat/domain/async/policy
+invariants; the disposable Go primitive test checks
+multipart/closed-ring accounting and conservative envelope nesting.</p>
+<p>All ordinary measured RF responses succeeded: True;
+cross-repeat/profile canonical hashes stable: True. Six cancellation
+cases preserve charges and successful same-client follow-up;
+sampler/slots and async measurements remain test-only. No OOM event or
+kill; no claim of guaranteed memory safety follows.</p>
+<p>Created files:
+<code>docs/auto-resource-geometry-calibration.md</code>,
+<code>.json</code> and <code>scripts/auto-resource-geometry/</code>
+tooling/tests. No VERSION/CHANGELOG bump: no externally visible
+behavior. Previous artifacts stay untouched. Freeze evidence and audit
+tooling, <strong>not</strong> a numeric estimator, margin, class or
+adaptive design.</p>
+<p><strong>Single next action:</strong> Run a predeclared estimator
+validation on additional disjoint deployment-target domains and
+RF/search settings, with actual HTTP streaming and sustained async
+overlap, using calibration-only margins unchanged.</p>
+<p><a href="./auto-resource-geometry-calibration.json">Full
+machine-readable evidence</a> · Reproduction harness</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

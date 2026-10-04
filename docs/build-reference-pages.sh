@@ -39,6 +39,8 @@ build_page network-optimization-deadline-audit.md network-optimization-deadline-
   "Measured optimizer phases, repeated per-cell RF work, bounded memoization, cancellation, and unchanged scientific results."
 build_page auto-resource-profile-foundation.md auto-resource-profile-foundation.html "Auto Resource Profiling Foundation" "Runtime observations" \
   "Automatic CPU and memory observations, provenance, controlled-container calibration and unchanged fixed RF policy."
+build_page auto-resource-geometry-calibration.md auto-resource-geometry-calibration.html "Geometry Density Calibration" "Calibration evidence" \
+  "Deterministic Ankara geometry domains, repeated workload measurements, held-out predictors and unchanged observational Auto policy."
 build_page algorithms.md algorithms.html "Algorithms and RF Physics" "Model reference" \
   "The deterministic propagation, geometry, optimization, and radio-quality methods behind A.T.O.M results."
 build_page features.md features.html "Capabilities" "Product reference" \

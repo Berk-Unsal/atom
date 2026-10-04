@@ -2,6 +2,18 @@
 
 All notable changes to A.T.O.M are recorded here. The project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and this file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- Make six-Cell result-bearing project exports importable using lossless columnar GeoJSON, retaining scientific results, Version provenance and independent imported identity mappings under bounded validation.
+- Preserve newly saved immutable Version history when a concurrently queued autosave contains the previous Scenario, retaining the latest working draft.
+- Persist Scenario Delete → Undo through captured callbacks and immediate reload by checking the latest workspace, restoring the active Scenario, and promptly committing writes on the reusable workspace database connection.
+
+### Changed
+
+- Export project file schema v3; continue importing valid v1/v2 files. Keep workspace schema v2, the 16 MiB file ceiling, and existing encoded JSON guards; add explicit 32 MiB / one-million-value decoded-content budgets.
+
 ## [0.10.2] - 2026-10-03
 
 ### Changed

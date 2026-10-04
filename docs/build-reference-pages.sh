@@ -41,6 +41,10 @@ build_page algorithms.md algorithms.html "Algorithms and RF Physics" "Model refe
   "The deterministic propagation, geometry, optimization, and radio-quality methods behind A.T.O.M results."
 build_page features.md features.html "Capabilities" "Product reference" \
   "A structured inventory of planning modes, analyses, map evidence, reports, and supported radio technologies."
+build_page project-format.md project-format.html "Portable Project Format" "Persistence contract" \
+  "Lossless retained-result files, version compatibility, identity provenance, and bounded import safety."
+build_page persistence-reliability-audit.md persistence-reliability-audit.html "Persistence Reliability Audit" "Measured repair" \
+  "Six-Cell export/import and Scenario Undo root causes, bounded fixes, invariance evidence, and validation."
 build_page visualization.md visualization.html "Reading Propagation Maps" "Visual interpretation" \
   "How to interpret sector rays, frequency-dependent attenuation, coverage evidence, and the current map layers."
 build_page deployment.md deployment.html "Deployment" "Operations guide" \

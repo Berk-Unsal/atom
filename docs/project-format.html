@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Lossless retained-result files,
+version compatibility, identity provenance, and bounded import
+safety." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Portable Project Format | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Portable Project
+Format page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#file-versions-and-compatibility"
+      id="toc-file-versions-and-compatibility">File versions and
+      compatibility</a></li>
+      <li><a href="#lossless-columns" id="toc-lossless-columns">Lossless
+      columns</a></li>
+      <li><a href="#identity-and-provenance"
+      id="toc-identity-and-provenance">Identity and provenance</a></li>
+      <li><a href="#resource-and-error-contract"
+      id="toc-resource-and-error-contract">Resource and error
+      contract</a></li>
+      <li><a href="#reproduction-and-validation"
+      id="toc-reproduction-and-validation">Reproduction and
+      validation</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Persistence contract</span>
+        <h1>Portable Project Format</h1>
+        <p>Lossless retained-result files, version compatibility,
+identity provenance, and bounded import safety.</p>
+        <div class="hero-actions">
+          <a class="button" href="./project-format.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Project files contain editable project inputs, saved Scenario
+Versions and retained Scenario result artifacts. They do not contain the
+separate local Run History database, generated report files, coverage
+surfaces, camera position, navigation stage, request state or Undo
+history. The existing workspace policy retains the five most recent
+Scenario artifact caches. Export does not remove any additional
+results.</p>
+<h2 id="file-versions-and-compatibility">File versions and
+compatibility</h2>
+<p>New exports use <code>{ "schemaVersion": 3, "project": ... }</code>.
+The workspace IndexedDB schema remains <strong>2</strong>. Valid file
+versions <strong>1 and 2</strong> remain importable with their existing
+migration/copy behavior. Older applications cannot read v3 exports; use
+a version with v3 support to exchange new files.</p>
+<p>Version 3 stores nonempty GeoJSON FeatureCollection
+<code>features</code> in retained Scenario artifacts as
+<code>{ "count": N, "columns": &lt;column&gt; }</code>. Empty feature
+arrays remain arrays. Ordinary workspace/API GeoJSON is unchanged;
+reconstruction restores the complete feature array, order, properties,
+geometry and number values.</p>
+<h2 id="lossless-columns">Lossless columns</h2>
+<p>A column represents N values. Tags have these exact JSON forms:</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Representation</th>
+<th>Reconstruction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>constant</code></td>
+<td><code>["constant", value]</code></td>
+<td>N independent copies</td>
+</tr>
+<tr>
+<td><code>values</code></td>
+<td><code>["values", values]</code></td>
+<td>Exactly N values</td>
+</tr>
+<tr>
+<td><code>numbers</code></td>
+<td><code>["numbers", "number,number,..."]</code></td>
+<td>Exactly N finite JSON number tokens; JSON decimal spelling preserves
+IEEE-754 values without quantization</td>
+</tr>
+<tr>
+<td><code>dictionary</code></td>
+<td><code>["dictionary", values, indexes]</code></td>
+<td>N validated dictionary indexes; independent object copies</td>
+</tr>
+<tr>
+<td><code>objects</code></td>
+<td><code>["objects", keys, columns]</code></td>
+<td>N objects with unique safe keys and corresponding value columns</td>
+</tr>
+<tr>
+<td><code>arrays</code></td>
+<td><code>["arrays", keys, columns]</code></td>
+<td>N arrays; keys must be sequential strings <code>"0"</code>,
+<code>"1"</code>, etc.</td>
+</tr>
+<tr>
+<td><code>groups</code></td>
+<td><code>["groups", [[rowIndexes, column], ...]]</code></td>
+<td>Complete, disjoint row partition; restores original order and
+missing-field distinctions</td>
+</tr>
+</tbody>
+</table>
+<p>The encoder chooses the representation with the fewest encoded nodes
+at each column. JSON key order and array order remain stable. No
+data-dependent tolerances, rounding, lossy geometry simplification,
+changed fingerprints or new RF calculations are involved. Equivalent
+project state produces byte-identical exports; import intentionally
+creates new local identities and timestamps.</p>
+<h2 id="identity-and-provenance">Identity and provenance</h2>
+<p>Import creates a new project and new Scenario IDs. In v3 it also
+retains domain Version and embedded Run metadata, assigning independent
+local IDs and updating their internal links.
+<code>project.importProvenance</code> records
+<code>sourceProjectId</code> and the complete source-to-imported
+<code>identityMap</code>. Scientific request inputs, canonical input
+snapshots, fingerprints, result values, compute optimization run IDs,
+solution IDs, Pareto order and source timestamps inside evidence remain
+unchanged. References to external history not present in the file remain
+source references; the importer does not invent missing Runs.</p>
+<p>The v1/v2 importer historically discarded project/Scenario domain
+metadata when making independent copies. This behavior is preserved for
+old files. v3 closes that provenance gap for new exports.</p>
+<h2 id="resource-and-error-contract">Resource and error contract</h2>
+<p>The UI rejects files over <strong>16 MiB</strong> before reading
+their contents. The store independently checks UTF-8 bytes before
+parsing. All file versions retain the encoded JSON budget:</p>
+<ul>
+<li>depth 40;</li>
+<li>250,000 nodes;</li>
+<li>2,000 object keys;</li>
+<li>25,000 elements per array;</li>
+<li>1 MiB per string;</li>
+<li>100 Scenarios;</li>
+<li>forbidden <code>__proto__</code>, <code>prototype</code> and
+<code>constructor</code> keys.</li>
+</ul>
+<p>v3 additionally preflights the complete reconstructed project before
+allocating any decoded rows: <strong>32 MiB</strong> of compact logical
+JSON and <strong>1,000,000 decoded nodes</strong>. Reconstruction then
+rechecks depth, object/array/string bounds and result shapes. The
+decoded-node limit is separate from the unchanged 250,000-node
+encoded-file limit. A numeric-vector comma count is checked before
+splitting and every number token must be finite and valid JSON
+syntax.</p>
+<p>Export checks both budgets too. A larger or more complex project
+fails explicitly with its limit reason; it does not download an artifact
+this importer would reject or silently remove scientific data. This is
+six-Cell reliability coverage, not a larger-network support guarantee or
+unbounded archival storage.</p>
+<h2 id="reproduction-and-validation">Reproduction and validation</h2>
+<p>See the persistence reliability audit.
+<code>node scripts/persistence-reliability-audit.mjs</code> reproduces
+byte composition and timings from the compressed real UI export fixture.
+The dedicated browser workflow replays captured six-Cell backend
+responses through the ordinary Evaluate / Interference / Optimize / Save
+Version / Export / Import UI. Run it with:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> frontend-react</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npx</span> playwright test e2e/persistence-reliability.spec.js <span class="at">--workers</span><span class="op">=</span>2</span></code></pre></div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

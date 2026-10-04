@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 2,
+  "persistence": {
+    "revision": 0,
+    "committedAt": null
+  },
+  "activeProjectId": "project-bf14ad48-2831-4b54-bb6f-ceeb8e54abcb",
+  "projects": [
+    {
+      "id": "project-bf14ad48-2831-4b54-bb6f-ceeb8e54abcb",
+      "name": "Persistence six-Cell baseline",
+      "datasetRef": null,
+      "createdAt": "2026-10-03T20:43:24.732Z",
+      "updatedAt": "2026-10-03T20:43:24.732Z",
+      "activeScenarioId": null,
+      "draft": {
+        "plan": {
+          "settings": {
+            "frequencyGHz": 28,
+            "propagationModelID": "urban_short_range",
+            "txPowerDbm": 30,
+            "rayCount": 120,
+            "radiusMeters": 400,
+            "azimuthDeg": 90,
+            "beamWidthDeg": 120,
+            "interferenceBandwidthMHz": 100,
+            "cellLoadPct": 70,
+            "reuseFactor": 1,
+            "noiseFigureDb": 7,
+            "sampleSpacingMeters": 40,
+            "calibrationOffsetDb": 0
+          },
+          "planningMode": "network",
+          "inventory": [
+            {
+              "id": "LTE-9664800",
+              "cellId": "9664800",
+              "coordinates": [
+                32.8274,
+                39.9255
+              ],
+              "properties": {
+                "cell_id": 9664800,
+                "radio_type": "LTE",
+                "is_simulated": true,
+                "mcc": 286,
+                "net": 1,
+                "area": 8208,
+                "range": 1000,
+                "samples": 2
+              }
+            },
+            {
+              "id": "LTE-26390",
+              "cellId": "26390",
+              "coordinates": [
+                32.8272,
+                39.9267
+              ],
+              "properties": {
+                "cell_id": 26390,
+                "radio_type": "LTE",
+                "is_simulated": true,
+                "mcc": 286,
+                "net": 1,
+                "area": 8208,
+                "range": 1000,
+                "samples": 8
+              }
+            },
+            {
+              "id": "LTE-9664790",
+              "cellId": "9664790",
+              "coordinates": [
+                32.8276,
+                39.9251
+              ],
+              "properties": {
+                "cell_id": 9664790,
+                "radio_type": "LTE",
+                "is_simulated": true,
+                "mcc": 286,
+                "net": 1,
+                "area": 8208,
+                "range": 1000,
+                "samples": 9
+              }
+            },
+            {
+              "id": "LTE-9664795",
+              "cellId": "9664795",
+              "coordinates": [
+                32.8282,
+                39.9254
+              ],
+              "properties": {
+                "cell_id": 9664795,
+                "radio_type": "LTE",
+                "is_simulated": true,
+                "mcc": 286,
+                "net": 1,
+                "area": 8208,
+                "range": 1000,
+                "samples": 3
+              }
+            },
+            {
+              "id": "LTE-9664791",
+              "cellId": "9664791",
+              "coordinates": [
+                32.8282,
+                39.9253
+              ],
+              "properties": {
+                "cell_id": 9664791,
+                "radio_type": "LTE",
+                "is_simulated": true,
+                "mcc": 286,
+                "net": 1,
+                "area": 8208,
+                "range": 1000,
+                "samples": 1
+              }
+            },
+            {
+              "id": "LTE-9664794",
+              "cellId": "9664794",
+              "coordinates": [
+                32.8282,
+                39.9253
+              ],
+              "properties": {
+                "cell_id": 9664794,
+                "radio_type": "LTE",
+                "is_simulated": true,
+                "mcc": 286,
+                "net": 1,
+                "area": 8208,
+                "range": 1000,
+                "samples": 1
+              }
+            }
+          ],
+          "selectedTowerId": "LTE-9664790",
+          "selectedMapCellId": "9664794",
+          "selectedNetworkTowerIds": [
+            "LTE-9664800",
+            "LTE-26390",
+            "LTE-9664790",
+            "LTE-9664795",
+            "LTE-9664791",
+            "LTE-9664794"
+          ],
+          "selectionPolygon": [
+            [
+              32.826,
+              39.924
+            ],
+            [
+              32.83,
+              39.924
+            ],
+            [
+              32.83,
+              39.928
+            ],
+            [
+              32.826,
+              39.928
+            ]
+          ],
+          "networkAzimuths": {
+            "LTE-9664800": 90,
+            "LTE-26390": 90,
+            "LTE-9664790": 90,
+            "LTE-9664795": 90,
+            "LTE-9664791": 90,
+            "LTE-9664794": 90
+          }
+        },
+        "requiresRerun": true
+      },
+      "scenarios": []
+    }
+  ]
+}

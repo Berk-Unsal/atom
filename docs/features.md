@@ -15,6 +15,7 @@ A.T.O.M is a local-first, deterministic RF planning workspace for comparing urba
 - Native browser IndexedDB persistence with automatic last-workspace restoration.
 - Named scenarios preserve exact inputs, selected cells, RF settings, result summaries, model metadata, and recent GeoJSON layers.
 - Rename, duplicate, delete, import, and export complete projects as versioned `.atom-project.json` files.
+- Result-bearing six-Cell projects use [lossless project file v3](project-format.md) with bounded import and preserved Version provenance; valid v1/v2 files remain readable. Scenario Undo restores the same saved identity durably across reload.
 - Input changes mark saved results stale instead of presenting them as current.
 - Compare exactly two scenarios using KPI deltas and an A/B map switch.
 - Promote either comparison side to the active plan without modifying the source snapshot.

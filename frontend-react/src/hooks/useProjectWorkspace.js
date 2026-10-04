@@ -144,12 +144,35 @@ export default function useProjectWorkspace(meta) {
     if (!projectID || !options.scenarioId) throw new Error("A saved Scenario is required before saving a Version");
     const saved = await repository.saveScenarioVersion({ ...options, projectId: projectID });
     if (mountedRef.current && saved.workspace) {
+      if (workspaceRef.current.persistence.revision > saved.workspace.persistence.revision) {
+        // An autosave can queue while the repository reads/builds this Version.
+        // Retain its latest draft, but commit the newly saved immutable history
+        // after that write so the older Scenario cannot win on disk.
+        const savedProject = saved.workspace.projects.find((project) => (
+          String(project.domain?.project_id ?? project.id) === String(projectID)
+        ));
+        const savedScenario = savedProject?.scenarios.find((scenario) => (
+          String(scenario.domain?.scenario_id ?? scenario.id) === String(options.scenarioId)
+            || String(scenario.id) === String(options.scenarioId)
+        ));
+        if (savedProject && savedScenario) {
+          const workspace = await commit((current) => ({
+            ...current,
+            projects: current.projects.map((project) => project.id === savedProject.id ? {
+              ...project,
+              domain: { ...project.domain, ...savedProject.domain },
+              scenarios: project.scenarios.map((scenario) => scenario.id === savedScenario.id ? savedScenario : scenario),
+            } : project),
+          }));
+          return { ...saved, workspace };
+        }
+      }
       workspaceRef.current = saved.workspace;
       setWorkspace(saved.workspace);
       setError("");
     }
     return saved;
-  }, [activeProject, repository]);
+  }, [activeProject, commit, repository]);
 
   const branchScenario = useCallback(async (options = {}) => {
     const projectID = options.projectId ?? activeProject?.domain?.project_id ?? activeProject?.id;
@@ -238,17 +261,21 @@ export default function useProjectWorkspace(meta) {
   }, [activeProject, updateProject]);
 
   const restoreScenario = useCallback((scenario, index, activate = false) => {
-    if (!activeProject || !scenario || activeProject.scenarios.some((candidate) => candidate.id === scenario.id)) return;
-    updateProject(activeProject.id, (project) => {
+    if (!activeProjectID || !scenario) return;
+    return updateProject(activeProjectID, (project) => {
+      // Undo callbacks outlive the render that created them. Check duplicates
+      // against the latest committed workspace, not the captured project.
+      if (project.scenarios.some((candidate) => candidate.id === scenario.id)) return project;
       const scenarios = [...project.scenarios];
       scenarios.splice(Math.max(0, Math.min(Number(index) || 0, scenarios.length)), 0, scenario);
       return {
         ...project,
         activeScenarioId: activate ? scenario.id : project.activeScenarioId,
+        draft: activate ? null : project.draft,
         scenarios,
       };
     });
-  }, [activeProject, updateProject]);
+  }, [activeProjectID, updateProject]);
 
   const importProject = useCallback((text) => {
     const project = repository.importProjectFile(text);

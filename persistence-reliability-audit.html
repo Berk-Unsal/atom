@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Six-Cell export/import and Scenario
+Undo root causes, bounded fixes, invariance evidence, and
+validation." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Persistence Reliability Audit | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Persistence
+Reliability Audit page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#starting-baseline"
+      id="toc-starting-baseline">Starting baseline</a></li>
+      <li><a href="#persistence-ownership-before-changes"
+      id="toc-persistence-ownership-before-changes">Persistence
+      ownership (before changes)</a></li>
+      <li><a href="#import-limit-history-and-contract"
+      id="toc-import-limit-history-and-contract">Import limit history
+      and contract</a></li>
+      <li><a href="#investigation-ledger"
+      id="toc-investigation-ledger">Investigation ledger</a></li>
+      <li><a href="#independent-before-fix-reproductions"
+      id="toc-independent-before-fix-reproductions">Independent
+      before-fix reproductions</a></li>
+      <li><a href="#exact-byte-composition"
+      id="toc-exact-byte-composition">Exact byte composition</a></li>
+      <li><a href="#duplication-classification"
+      id="toc-duplication-classification">Duplication
+      classification</a></li>
+      <li><a href="#candidate-fixes-and-decision"
+      id="toc-candidate-fixes-and-decision">Candidate fixes and
+      decision</a></li>
+      <li><a href="#before--after-and-browser-acceptance"
+      id="toc-before--after-and-browser-acceptance">Before / after and
+      browser acceptance</a></li>
+      <li><a href="#delete--undo-lifecycle-root-cause"
+      id="toc-delete--undo-lifecycle-root-cause">Delete / Undo lifecycle
+      root cause</a></li>
+      <li><a href="#save-version--autosave-ordering"
+      id="toc-save-version--autosave-ordering">Save Version / autosave
+      ordering</a></li>
+      <li><a href="#regression-matrix"
+      id="toc-regression-matrix">Regression matrix</a></li>
+      <li><a href="#validation-and-release-decision"
+      id="toc-validation-and-release-decision">Validation and release
+      decision</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Measured repair</span>
+        <h1>Persistence Reliability Audit</h1>
+        <p>Six-Cell export/import and Scenario Undo root causes, bounded
+fixes, invariance evidence, and validation.</p>
+        <div class="hero-actions">
+          <a class="button" href="./persistence-reliability-audit.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Audit date: 2026-10-04. Scope: two existing persistence defects at
+the supported six-Cell baseline. No selection cap, RF, optimizer,
+request budget or deadline changes.</p>
+<h2 id="starting-baseline">Starting baseline</h2>
+<ul>
+<li>Branch <code>main</code>, HEAD
+<code>d6251b26126807027cba6ef55d47d97f7bcb7002</code>, VERSION
+<code>0.10.2</code>.</li>
+<li>Tracked diff empty. Existing untracked capacity-audit backend test,
+scripts, browser tests and documentation/assets preserved.</li>
+<li>Baseline frontend: 377 tests in 67 files pass; lint and build pass
+(existing bundle-size advisory). Baseline E2E: 160 passed, 188
+gated/skipped, across four responsive projects.</li>
+</ul>
+<h2 id="persistence-ownership-before-changes">Persistence ownership
+(before changes)</h2>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Owner / durable representation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Projects / Scenario snapshots</td>
+<td><code>useProjectWorkspace</code> → <code>LocalRepository</code> →
+<code>projectStore</code>; IndexedDB
+<code>atom-planning-workspace/workspace/current</code>, revisioned
+whole-workspace writes; localStorage failure fallback</td>
+</tr>
+<tr>
+<td>Versions</td>
+<td><code>Scenario.domain.revisions</code>; immutable domain input
+snapshots; saved through repository compatibility adapter</td>
+</tr>
+<tr>
+<td>Runs</td>
+<td>Separate IndexedDB <code>atom-run-history/runs</code>; canonical
+requests and compact public scientific outputs; intentionally excluded
+from portable ProjectV2 exports (Concept 7C)</td>
+</tr>
+<tr>
+<td>Selected network, order, active Cell, mode</td>
+<td><code>App</code> live state; Scenario <code>plan</code> and
+autosaved Project <code>draft.plan</code>; normalized to existing
+six-Cell cap during hydration</td>
+</tr>
+<tr>
+<td>Map Focus / ray scope</td>
+<td>Scenario plan presentation fields; excluded from scientific Scenario
+identity; existing autosaved draft omits these fields</td>
+</tr>
+<tr>
+<td>Stage/tool, camera, selected Pareto UI item</td>
+<td>Ephemeral React/navigation state; reconstructed from defaults</td>
+</tr>
+<tr>
+<td>RF/map rays, coverage gaps, optimization/Pareto, interference,
+diagnostics, recommendations, measurement and building-entry
+results</td>
+<td>Live <code>App</code> state; retained in saved Scenario
+<code>artifacts</code> when inputs are current; latest five Scenario
+caches retained by existing workspace compaction</td>
+</tr>
+<tr>
+<td>Coverage surface, transient explanation selection,
+requests/cancellation</td>
+<td>Ephemeral; not part of saved Scenario artifact bundle</td>
+</tr>
+<tr>
+<td>Reports</td>
+<td>Live export plus separate report/artifact lifecycle; no generated
+report bytes in ProjectV2 export</td>
+</tr>
+<tr>
+<td>Undo</td>
+<td>Six-second single notice closure in <code>App</code>; restore uses
+workspace hook; no durable Undo history or Redo</td>
+</tr>
+<tr>
+<td>Autosave</td>
+<td>500 ms debounced draft inputs; cleanup cancels replaced timer;
+workspace writes serialize with increasing revisions</td>
+</tr>
+<tr>
+<td>Export</td>
+<td>Synchronous pretty JSON <code>{schemaVersion:2, project}</code>; no
+export byte limit</td>
+</tr>
+<tr>
+<td>Import</td>
+<td>UI preflight file byte check; store UTF-8 byte check, JSON parse,
+budget traversal, schema/snapshot checks; import forks project and
+Scenario IDs and removes their domain metadata by existing contract</td>
+</tr>
+</tbody>
+</table>
+<h2 id="import-limit-history-and-contract">Import limit history and
+contract</h2>
+<p><code>cbd0834cd4d301ca7edc9017228de4d4740152b3</code> (2026-07-31),
+“feat: add utility functions for app workspace and inventory import”,
+introduced the 16 MiB, depth 40, 250,000-node, 2,000-key,
+25,000-array-item and 1 MiB-string guards together. History does not
+explain the numeric byte threshold or establish a browser-memory
+measurement. Technical intent is security/resource protection; numeric
+rationale <strong>unknown</strong>. Classification: multiple (resource
+safety plus undocumented conservative threshold).</p>
+<p><code>features.md</code> promises complete versioned projects. Actual
+contract is editable project inputs plus retained Scenario result
+artifacts, not an archive of all local Run history. Concept 7C
+explicitly excludes the separate history database. Import deliberately
+creates fresh project/Scenario IDs and strips domain metadata. These
+existing identity/portability limitations must be distinguished from
+result loss. Concept 7A's statement that 16 MiB applies to export too is
+incorrect: export never enforced it.</p>
+<h2 id="investigation-ledger">Investigation ledger</h2>
+<h2 id="independent-before-fix-reproductions">Independent before-fix
+reproductions</h2>
+<p>The primary result reproduction uses the real production UI and
+captured, unmodified six-Cell backend responses, not a generated
+oversized padding file. Inventory comes from the Ankara pack. Request
+settings are 28 GHz, 120 rays per Cell, 400 m radius. Workflow: six
+Cells → Evaluate Network → Analyze Interference → Optimize Network →
+Save Version → actual UI download → select that same downloaded file for
+Import.</p>
+<p>The download was <strong>31,156,171 bytes</strong> (29.71 MiB). Both
+UI preflight and the original helper reject it at <strong>16,777,216
+bytes / 16 MiB</strong>. Removing whitespace yields 14,935,989 bytes but
+<strong>578,091 nodes</strong>; the 250,000-node guard also rejects it.
+Largest array 6,542, depth 15, largest object 48 keys. Both failures
+must be repaired; a byte-only change cannot work. The small size
+difference from the preceding capacity audit's 31,151,189 bytes is
+input/default/domain metadata, not altered ray science.</p>
+<p>The separate input-only Scenario reproduction starts with the same
+six Cells, saves a Scenario, waits for durable storage, deletes it,
+waits for deletion, presses Undo, verifies immediate
+<code>Network · 6 cells</code>, then reloads. The original
+implementation reloads to Single / zero selected Cells. The original
+pre-delete callback regression fails deterministically in the hook,
+independent of browser timing. Baseline traces and command output were
+retained in <code>/tmp/atom-persistence-reproduction.log</code>,
+<code>/tmp/atom-persistence-undo-before.log</code> and
+<code>/tmp/atom-persistence-undo-unit-before.log</code> during
+investigation.</p>
+<h2 id="exact-byte-composition">Exact byte composition</h2>
+<p>Values below are disjoint serialized value fragments including their
+actual two-space indentation at the source depth. Keys/container
+delimiters/separators outside those fragments are assigned to the final
+syntax row. They sum exactly to 31,156,171 bytes. Machine-readable
+details and regeneration are in
+<code>assets/persistence-reliability/export-measurements.json</code> and
+<code>scripts/persistence-reliability-audit.mjs</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th style="text-align: right;">Bytes</th>
+<th style="text-align: right;">File %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project metadata</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">0.00058</td>
+</tr>
+<tr>
+<td>Autosaved network/input draft</td>
+<td style="text-align: right;">4,976</td>
+<td style="text-align: right;">0.01597</td>
+</tr>
+<tr>
+<td>Scenario metadata / summary / dataset/model references</td>
+<td style="text-align: right;">695</td>
+<td style="text-align: right;">0.00223</td>
+</tr>
+<tr>
+<td>Scenario network / inventory inputs</td>
+<td style="text-align: right;">5,343</td>
+<td style="text-align: right;">0.01715</td>
+</tr>
+<tr>
+<td>RF request snapshot</td>
+<td style="text-align: right;">10,109</td>
+<td style="text-align: right;">0.03245</td>
+</tr>
+<tr>
+<td>Version / embedded domain metadata</td>
+<td style="text-align: right;">24,004</td>
+<td style="text-align: right;">0.07704</td>
+</tr>
+<tr>
+<td>Merged per-Cell ray features</td>
+<td style="text-align: right;"><strong>30,908,955</strong></td>
+<td style="text-align: right;"><strong>99.20653</strong></td>
+</tr>
+<tr>
+<td>RF statistics</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">0.00057</td>
+</tr>
+<tr>
+<td>Optimization baseline</td>
+<td style="text-align: right;">20,344</td>
+<td style="text-align: right;">0.06530</td>
+</tr>
+<tr>
+<td>Public Pareto alternatives</td>
+<td style="text-align: right;">135,446</td>
+<td style="text-align: right;">0.43473</td>
+</tr>
+<tr>
+<td>Other optimization results / evidence</td>
+<td style="text-align: right;">44,102</td>
+<td style="text-align: right;">0.14155</td>
+</tr>
+<tr>
+<td>Interference empty bundle after optimization</td>
+<td style="text-align: right;">297</td>
+<td style="text-align: right;">0.00095</td>
+</tr>
+<tr>
+<td>Other retained artifacts</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">0.00055</td>
+</tr>
+<tr>
+<td>Remaining JSON syntax / whitespace</td>
+<td style="text-align: right;">1,372</td>
+<td style="text-align: right;">0.00440</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>31,156,171</strong></td>
+<td style="text-align: right;"><strong>100</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The 6,542 merged ray features belong to Cells 9664800 / 26390 /
+9664790 / 9664795 / 9664791 / 9664794 with 1,093 / 706 / 1,004 / 1,239 /
+1,250 / 1,250 segments. There is no second persisted array of separate
+per-Cell simulation responses. Geometry value fragments alone contribute
+2,535,770 bytes; most ray bytes describe scientific properties, link
+budgets and LOS evidence. 6,542 LOS classification instances contain
+2,242 distinct values; 6,542 link budgets contain 3,339 distinct
+values.</p>
+<p>The initial workflow clears interference when optimization replaces
+the baseline. Final acceptance additionally analyzes interference again
+and saves a second Version: its complete logical project is about 19.6
+MB / 728,000 values, rather than assuming an empty interference bundle
+is representative of all retained state.</p>
+<h2 id="duplication-classification">Duplication classification</h2>
+<table>
+<thead>
+<tr>
+<th>Repetition</th>
+<th>Classification / treatment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inventory and request inputs in draft / current Scenario / immutable
+Versions</td>
+<td>Required independent snapshots and provenance; preserved</td>
+</tr>
+<tr>
+<td>Per-segment link budgets and LOS classification</td>
+<td>Required scientific provenance, even when equal; represented once in
+columns/dictionaries and reconstructed independently</td>
+</tr>
+<tr>
+<td>Repeated GeoJSON field names, constants and formatting</td>
+<td>Serialization overhead; safely removed with a versioned lossless
+representation</td>
+</tr>
+<tr>
+<td>Public baseline and Pareto alternatives in optimization/domain
+summaries</td>
+<td>Required public evidence/compatibility snapshots; preserved</td>
+</tr>
+<tr>
+<td>Standalone per-Cell simulation copies beside merged rays</td>
+<td>Not present in this actual export</td>
+</tr>
+<tr>
+<td>Report bytes / separate durable Run History / surfaces</td>
+<td>Intentionally excluded by existing contract, not deleted by the
+fix</td>
+</tr>
+</tbody>
+</table>
+<p>No unnecessary scientific results or authoritative state were found
+that could legitimately be dropped to meet a limit. Root-cause
+classification: <strong>multiple</strong> — import limits cannot accept
+the app's raw own result export, and the legacy representation repeats
+large scientific structures and pretty formatting inefficiently. This is
+not a larger-network or RF-capacity failure.</p>
+<h2 id="candidate-fixes-and-decision">Candidate fixes and decision</h2>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Compatibility, safety, portability and cost</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raise byte ceiling</td>
+<td>Existing format easy to read, but 578,091 values still fail the
+unchanged node guard; historical byte rationale is unknown</td>
+<td>Reject; insufficient and unnecessary</td>
+</tr>
+<tr>
+<td>Minify only</td>
+<td>Backward-compatible, no provenance loss, ~14.94 MB; still too many
+nodes</td>
+<td>Insufficient alone</td>
+</tr>
+<tr>
+<td>Drop display/derived artifacts</td>
+<td>Small code change but changes current retained-result contract and
+can destroy scientific evidence</td>
+<td>Reject</td>
+</tr>
+<tr>
+<td>General gzip export</td>
+<td>Full fidelity and portable compression, but changes sync/UI
+interfaces, needs decompression-bomb preflight and still faces the
+logical node guard</td>
+<td>More complex than needed</td>
+</tr>
+<tr>
+<td>Lossless versioned columns</td>
+<td>Keeps JSON and current synchronous UI; all scientific content
+restored exactly; small isolated codec; explicit preflight and old
+readers retained</td>
+<td><strong>Chosen</strong></td>
+</tr>
+<tr>
+<td>Split opaque artifacts</td>
+<td>Multiple files / bundle lifecycle, more migration and portability
+complexity</td>
+<td>Unnecessary</td>
+</tr>
+</tbody>
+</table>
+<p>The chosen v3 file format keeps workspace schema v2 and all RF/API
+DTOs unchanged. It encodes only retained GeoJSON FeatureCollection
+feature arrays, recursively using exact constant, dictionary,
+object/array/group columns and finite JSON number vectors. It restores
+missing-key distinctions, row order, nulls, nested provenance and
+independent objects. It adds no dependency or compression library.</p>
+<p>The physical import/export byte limit remains <strong>16
+MiB</strong>. Serialized depth <strong>40</strong>, nodes
+<strong>250,000</strong>, object keys <strong>2,000</strong>, arrays
+<strong>25,000</strong>, strings <strong>1 MiB</strong>, and Scenario
+count <strong>100</strong> remain unchanged. v3 adds a separate complete
+logical expansion preflight of <strong>32 MiB / 1,000,000
+values</strong>, justified by the real fully retained six-Cell snapshot.
+These are representation-specific limits, not removal of the original
+parser guards. All non-node logical guards are reapplied after
+reconstruction. Expansion is measured before allocating any decoded row,
+and export checks the same bounds.</p>
+<p>New imports keep Version and embedded Run metadata instead of
+silently dropping it. Editable local
+project/Scenario/Version/embedded-Run/inventory IDs receive coherent new
+IDs; <code>importProvenance.identityMap</code> retains source identity.
+Scientific snapshots, fingerprints, compute run IDs, solution IDs,
+recommendations and Pareto order remain unchanged. Separate Run History
+is still not part of the file. v1/v2 imports retain their previous copy
+semantics; all previously valid files remain supported. An old 31 MB v2
+file was never valid under the old ceiling and remains rejected. Use the
+new exporter from retained local state to obtain a supported v3
+artifact.</p>
+<h2 id="before--after-and-browser-acceptance">Before / after and browser
+acceptance</h2>
+<p>The original 31,156,171-byte UI artifact now exports to
+<strong>2,744,530 bytes</strong> with <strong>84,327 encoded
+nodes</strong>, depth 32 and largest encoded array 3,153. Full
+reconstructed artifact equality is tested, not just summaries. The
+stricter two-Version + retained-interference browser artifact is
+<strong>3,195,659 bytes</strong>. These sizes are fixture-specific, not
+promises about arbitrary numbers of saved caches.</p>
+<p>The benchmark ledger reports five samples of legacy pretty export, v3
+generation and full import. v3 generation costs more CPU (hundreds of
+milliseconds) than plain pretty serialization (tens of milliseconds); it
+avoids the legacy size and node rejection and retains all content.
+Browser timings and heap snapshots are in
+<code>assets/persistence-reliability/browser-timings.json</code>; parse
+is measured separately from validation/reconstruction and full import.
+UI import timing includes persistence and test-observation overhead.
+Reload/hydration timing includes page navigation and inventory loading.
+Heap snapshots are observations, not a claimed peak-memory limit or a
+constrained-device certification.</p>
+<h2 id="delete--undo-lifecycle-root-cause">Delete / Undo lifecycle root
+cause</h2>
+<p><code>App.deleteScenarioWithUndo</code> captures the entire
+pre-delete <code>projectWorkspace</code> object in its toast closure.
+<code>restoreScenario</code> used a render-time
+<code>activeProject.scenarios.some(id)</code> duplicate check. That
+pre-delete project still contains the removed Scenario, so the callback
+returns before <code>updateProject</code>, revision allocation or
+persistence. No restoration write exists. The unchanged live RF
+selection makes Undo look successful until reload reads the durably
+deleted project. Classification: <strong>stale closure + Undo does not
+durably persist restored state</strong>; not a debounce, RF
+normalization, cap, revision conflict or current-pointer-only
+failure.</p>
+<p>The repair moves the duplicate check inside the updater recipe, where
+<code>workspaceRef.current</code> supplies the latest project. It
+restores the original Scenario object at its original position,
+reactivates its ID and clears a competing draft when reactivating. All
+existing workspace revision and serialized-write behavior is preserved.
+A captured restore callback targets its originating project ID, not a
+newly selected project.</p>
+<p>Testing immediate reload after this repair exposed an additional
+write-initiation window: opening and closing a new IndexedDB connection
+for every write could leave restoration waiting for <code>open()</code>
+when navigation began. The workspace store now reuses its connection,
+releases it on <code>versionchange</code>/abnormal close, and explicitly
+commits its one-record transaction after queueing the write. The
+store/database/schema remain unchanged. Writes still serialize; storage
+failures still reach the hook and fallback. This is not a new Undo
+framework or storage migration.</p>
+<p>The test-only browser ledger records
+<code>performance.timeOrigin + performance.now()</code>, revision and
+active Scenario ID for transaction start/complete. The final captured
+run records r1 write-start at 178.6 ms, r1 write-complete at 189.4 ms,
+r2 write-start at 275.3 ms, r2 write-complete at 284.8 ms, r3
+write-start at 324.3 ms, r3 write-complete at 337.7 ms, with explicit
+delete, Undo, post-Undo-save and reload-read checkpoints. Autosave
+scheduling/cancellation/firing records include timer identity. The
+complete ledger is in
+<code>assets/persistence-reliability/undo-timeline.json</code>. Hook
+tests additionally capture queue events, pending-write barriers and
+fake-timer delay; no full payload is logged.</p>
+<h2 id="save-version--autosave-ordering">Save Version / autosave
+ordering</h2>
+<p>The strengthened two-Version workflow exposed a related write-order
+defect: autosave could queue the previous Scenario history while
+<code>saveScenarioVersion</code> was reading/building its repository
+mutation. That autosave received a newer persistence revision and could
+overwrite the new Version on disk while React still displayed Version 2.
+A deterministic repository barrier test reproduces this ordering and
+preserves a concurrently edited draft.</p>
+<p>The hook now checks the latest queued revision when the repository
+Version save returns. If a newer workspace write exists, it commits the
+newly saved immutable Scenario history onto the latest workspace after
+that write, retaining the latest working draft, active pointer and other
+projects. This is a targeted Version reconciliation, not a new autosave
+or persistence framework. The 25-case browser acceptance matrix passes
+after this fix, including the fully retained two-Version
+export/import.</p>
+<h2 id="regression-matrix">Regression matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Captured callback before deletion</td>
+<td>Restores original ID and snapshot; old code fails</td>
+</tr>
+<tr>
+<td>Undo at 0 / 100 / 750 ms</td>
+<td>Pass, fake timers plus browser workflows</td>
+</tr>
+<tr>
+<td>Undo after confirmed delete</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Autosave absent / queued / completed</td>
+<td>Pass; controlled writer barriers enforce ordering and preserve newly
+saved Version history</td>
+</tr>
+<tr>
+<td>Reload after restoration commit</td>
+<td>Pass on 1440 / 1024 / 768 / 390 viewports</td>
+</tr>
+<tr>
+<td>Immediate reload after Undo</td>
+<td>Pass with reusable connection / explicit commit; 12 repeated checks
+across four viewports</td>
+</tr>
+<tr>
+<td>Delete without Undo → reload</td>
+<td>Remains deleted</td>
+</tr>
+<tr>
+<td>Repeated sequential delete / Undo; duplicate callback</td>
+<td>Same Scenario, no duplicate; no Redo added</td>
+</tr>
+<tr>
+<td>Scenario / Version / embedded Run IDs on Undo</td>
+<td>Original identities preserved</td>
+</tr>
+<tr>
+<td>Selected IDs/order, active Cell, Map Focus, Network mode</td>
+<td>Saved Scenario plan and full domain equality preserved across
+reload</td>
+</tr>
+<tr>
+<td>v3 export/import science</td>
+<td>Full artifact, request, plan and Version input/fingerprint equality;
+mapped local links coherent</td>
+</tr>
+<tr>
+<td>Legacy fixture / v1 / v2</td>
+<td>Shipped sample, input snapshots and small retained-result fixtures
+pass</td>
+</tr>
+<tr>
+<td>Oversize / depth / nodes / array / keys / string / unsafe
+fields</td>
+<td>Existing guards reject</td>
+</tr>
+<tr>
+<td>Malformed JSON / future version / corrupted results / invalid
+columns / retained domain metadata</td>
+<td>Clear errors; no workspace replacement</td>
+</tr>
+<tr>
+<td>Byte or node expansion bomb / invalid number vector</td>
+<td>Preflight rejects before decoded-row allocation</td>
+</tr>
+<tr>
+<td>IndexedDB write failure / localStorage quota failure</td>
+<td>Existing fallback/error tests pass; Undo remains coherent in memory
+and reports failed save</td>
+</tr>
+<tr>
+<td>Aborted/malformed import</td>
+<td>Existing workspace unchanged; no durable write before
+validation</td>
+</tr>
+</tbody>
+</table>
+<p>Hard browser/process termination or disk failure while storage is
+still reporting Saving cannot guarantee completed durability. Quota
+rejection remains a visible error, not a successful-save claim. This
+repair does not implement disaster recovery, cross-tab conflict
+resolution, broader archival storage or export of external history.</p>
+<h2 id="validation-and-release-decision">Validation and release
+decision</h2>
+<p>Final frontend validation:</p>
+<ul>
+<li><code>npm test</code>: <strong>423 tests / 68 files pass</strong>
+(baseline 377 / 67).</li>
+<li><code>npm run test:e2e -- --workers=2</code>: <strong>185 pass / 191
+gated or skipped</strong>, including 25 new acceptance cases across
+responsive viewports. The separately repeated immediate-reload matrix
+passes <strong>12/12</strong> with four workers.</li>
+<li><code>npm run lint</code> and <code>npm run build</code>: pass;
+existing bundle-size advisory remains.</li>
+<li><code>sh docs/build-reference-pages.sh</code>: pass; Pandoc emits
+its existing mathml deprecation advisory.</li>
+<li>Docs validation: <strong>47 HTML pages / 41 API paths pass</strong>;
+version metadata check: <strong>0.10.2 consistent</strong>;
+<code>git diff --check</code>: pass. The system Python lacked PyYAML, so
+validation used a temporary virtual environment with the repository's
+pinned, hash-verified <code>docs/requirements.txt</code>; no repository
+dependencies were changed.</li>
+</ul>
+<p>The first full browser run under high worker contention had a
+pre-existing basemap test timestamp-only autosave race and an
+immediate-Undo reload failure. The latter led to the explicit commit
+fix; the final complete two-worker run passes, including the basemap
+contract. No unrelated browser workflow was weakened. Test-generated
+historical screenshots/evidence files were restored to the starting
+baseline.</p>
+<p>Measured two-Version, retained-interference browser results: export
+generation <strong>597.6 ms</strong>, artifact <strong>3,195,659
+bytes</strong>, JSON parse <strong>2.8 ms</strong>, validation +
+reconstruction <strong>511.0 ms</strong>, complete helper import
+<strong>675.0 ms</strong>, UI import + persistence + observation
+<strong>3,755.4 ms</strong>, reload + hydration <strong>663.4
+ms</strong>. Retained JS heap after explicit GC: <strong>87,228,428
+bytes</strong> before import and <strong>118,834,740 bytes</strong>
+after importing the independent second project. Uncollected snapshots
+also remain in the evidence ledger; these are not peak-memory
+guarantees.</p>
+<p>Files changed for this repair:</p>
+<ul>
+<li><code>frontend-react/src/utils/projectStore.js</code>, new
+<code>projectRayColumns.js</code>, existing store tests and new
+<code>projectFileReliability.test.js</code>.</li>
+<li><code>frontend-react/src/hooks/useProjectWorkspace.js</code> and its
+captured-callback / barrier / failure tests.</li>
+<li><code>frontend-react/e2e/persistence-reliability.spec.js</code> and
+compressed real-response / actual UI-export fixtures with manifest and
+README.</li>
+<li><code>scripts/persistence-reliability-audit.mjs</code> and four
+baseline/measurement/timeline JSON evidence files.</li>
+<li>This audit, <code>project-format.md</code>, generated reference
+HTML, <code>features.md</code> / HTML,
+<code>build-reference-pages.sh</code>, regenerated search index, and
+<code>CHANGELOG.md</code> / generated changelog.</li>
+</ul>
+<p>Both reproduced defects are resolved at the supported six-Cell
+baseline. Selected order, active Cell, Map Focus and mode pass exact
+saved-plan comparisons. Undo preserves Scenario and Version identities;
+portable imports intentionally remap editable local identities while
+recording source provenance and retaining exact scientific values. No
+version bump, commit, release, capacity expansion or backend change is
+performed. No backend production files are changed; backend suites are
+unnecessary for this browser-local ownership. No Cell-cap, request
+builder, RF math, optimization/search, Pareto/recommendation,
+fingerprint, budget or deadline change is included.</p>
+<p>Recommended release: <strong>minor</strong> (e.g. 0.11.0), because
+portable file schema v3 materially expands serialization/provenance
+behavior and older applications cannot read new exports, even though
+readers remain backward-compatible. VERSION is unchanged. Freeze the
+six-Cell persistence baseline after final validation; do not use these
+results to expand network size.</p>
+<p>The final metadata safety check additionally validates retained
+ScenarioRevision, Run, inventory revision and report-definition records
+before v3 hydration. The focused 25-case browser matrix passes again
+after that validation change; malformed metadata is rejected before it
+can replace a usable workspace.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

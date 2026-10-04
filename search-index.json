@@ -813,6 +813,24 @@
     },
     {
       "page": "Changelog",
+      "title": "Unreleased",
+      "url": "./changelog.html#unreleased",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed",
+      "text": "Make six-Cell result-bearing project exports importable using lossless columnar GeoJSON, retaining scientific results, Version provenance and independent imported identity mappings under bounded validation. Preserve newly saved immutable Version history when a concurrently queued autosave contains the previous Scenario, retaining the latest working draft. Persist Scenario Delete → Undo through captured callbacks and immediate reload by checking the latest workspace, restoring the active Scenario, and promptly committing writes on the reusable workspace database connection."
+    },
+    {
+      "page": "Changelog",
+      "title": "Changed",
+      "url": "./changelog.html#changed",
+      "text": "Export project file schema v3; continue importing valid v1/v2 files. Keep workspace schema v2, the 16 MiB file ceiling, and existing encoded JSON guards; add explicit 32 MiB / one-million-value decoded-content budgets."
+    },
+    {
+      "page": "Changelog",
       "title": "0.10.2 - 2026-10-03",
       "url": "./changelog.html#0102---2026-10-03",
       "text": ""
@@ -820,7 +838,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed",
+      "url": "./changelog.html#changed-1",
       "text": "Give network optimization a stable, quiet busy action and delayed inline search scope plus elapsed time, with truthful long-running feedback and unchanged requests, search behavior, results, and deadlines. Distinguish running network optimization from unavailable actions using a readable teal-accented surface, and compact its stable feedback reserve from 126 px to approximately 104 px."
     },
     {
@@ -832,7 +850,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed",
+      "url": "./changelog.html#fixed-1",
       "text": "Avoid retracing unchanged cells during network optimization with a bounded request-local cache of independent RF contributions; preserve the full search, scientific results, fingerprints and existing 60-second deadline. Round RF rate-limit retry timing up to the actual window expiry, add hashed-client admission-denial diagnostics, and verify the six-cell Evaluate → Interference → Re-evaluate workflow within the unchanged 20-request budget."
     },
     {
@@ -850,13 +868,13 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-1",
+      "url": "./changelog.html#fixed-2",
       "text": "Reduce RF ray stroke density in both themes without changing colors, geometry or counts; correct shared dark Interference/diagnostic action variants and deliberate disabled styling while preserving readiness and light action appearance. Allow the exact Stadia Maps tile origin in the application's image CSP so Alidade Smooth loads in Go-served and container deployments while preserving OpenStreetMap support and all other directives."
     },
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-1",
+      "url": "./changelog.html#changed-2",
       "text": "Use Alidade Smooth as the default light raster basemap after matched overlay/context evaluation; keep muted OpenStreetMap selectable in Layers and keep basemap choice outside RF and project state. Consolidate workspace typography, spacing, controls, panel headers, and stage menus; keep the primary Run/Evaluate action visible across tools and add relevant Results empty-state actions. Quiet the OSM basemap and available Cells, center selected Cell order labels, distinguish active/selected/inspected/focused markers, and simplify header status and stage badges without changing RF, optimization, request, or persistence semantics."
     },
     {
@@ -874,7 +892,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-2",
+      "url": "./changelog.html#fixed-3",
       "text": "Update vulnerable frontend and Go module dependencies, move Go builds to 1.26.6, and refresh the Alpine 3.24 image digest to patched releases."
     },
     {
@@ -886,7 +904,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-2",
+      "url": "./changelog.html#changed-3",
       "text": "Restructure workspace tools around clearer primary, secondary, and provenance details; add Plan > Scenarios, compact Run History list/detail, single-workflow RF Diagnostics research views, and denser optimization, Results, Data, Experiments, Building Entry, and Core Lab presentations without changing RF or persistence semantics. Replace full-list Cell browsing with explicit Network, Map area, and Search / Filter working sets; separate Cell detail editing, keep browse selection outside RF state, and add reviewed batch edits for three validated scalar fields."
     },
     {
@@ -904,7 +922,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-3",
+      "url": "./changelog.html#fixed-4",
       "text": "Keep retained Interference samples inspectable when switching map interaction modes and show unavailable values when the response lacks evidence. Keep active Scenario lineage when draft and saved plan values differ only by object key order or map-only focus/ray scope."
     },
     {
@@ -946,13 +964,13 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-3",
+      "url": "./changelog.html#changed-4",
       "text": "Replace network optimization's arbitrary raw weighted score with stable 0–1 objective utilities, normalized importance priorities, a 0–100 composite score, raw metric preservation, contribution breakdowns, and preference-ranked feasible Pareto solutions. Scope demand and residential normalization to a deterministic selected-cell radius-union domain, report unavailable objectives as N/A with effective weights, and present the legacy coverage objective as propagation reach. Add lazy per-cell Pareto explanations that compare a selected solution with a single baseline-reverted counterfactual in the same target domain, preserving raw metric deltas, direction-aware interpretation, feasibility evidence, and priority-only score re-ranking. Redesign generated Markdown/HTML planning reports around network scope, authoritative recommendations, baseline/Pareto evidence, evaluated cell explanations, conditional interference summaries, and concise report-only maps. Clarify report priorities as relative 0–100 values, distinguish unconfigured hard constraints, humanize optimization-domain labels, and omit universally unavailable PCI columns. Add map-first RF display controls for received-power surfaces, scoped/hidden propagation rays, and independent selected-cell focus without launching new RF work."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-4",
+      "url": "./changelog.html#fixed-5",
       "text": "Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows. Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on main reach the published site."
     },
     {
@@ -970,13 +988,13 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-4",
+      "url": "./changelog.html#changed-5",
       "text": "Reorganize the frontend into four labeled workflow stages with contextual tool navigation and run actions, stronger text contrast, and clearer focus states. Standardize RF unit and unavailable-value formatting, replace side-stripe status treatments, and align drawer, layer, and result transitions to one reduced-motion-safe timing system."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-5",
+      "url": "./changelog.html#fixed-6",
       "text": "Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary. Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport. Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly. Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image."
     },
     {
@@ -1006,13 +1024,13 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-5",
+      "url": "./changelog.html#changed-6",
       "text": "Upgrade project files and dataset manifests to schema v2 with backward-compatible v1 import/loading migrations. Include resolved per-cell RF profiles and dataset QA/provenance in reproducibility outputs and planning reports. Extract frontend workspace formatting/state helpers and backend RF/segment geometry math from the application and simulation monoliths into focused, tested modules. Refresh Open5GS reachability outside the adapter cache mutex, serve stale probe state during refresh, and treat HTTP client/server failures as disconnected. Remove redundant RF convenience APIs that created background contexts and silently discarded computation errors. Drain in-flight backend and Core Lab adapter requests on interrupt or termination signals with a bounded graceful-shutdown window. Consolidate report escaping, numeric/Markdown formatting, and printable table construction behind one tested utility."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-6",
+      "url": "./changelog.html#fixed-7",
       "text": "Keep focused-drawer actions in normal layout flow so the propagation optimizer cannot overlap the vertical path-profile panel."
     },
     {
@@ -1030,7 +1048,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-7",
+      "url": "./changelog.html#fixed-8",
       "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts. Generate backend, Core Lab adapter, and frontend scenario/RF policy bindings from one canonical source, and share one tower input type across RF endpoints."
     },
     {
@@ -1042,7 +1060,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-8",
+      "url": "./changelog.html#fixed-9",
       "text": "Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests. Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation."
     },
     {
@@ -1066,13 +1084,13 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-9",
+      "url": "./changelog.html#fixed-10",
       "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
     },
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-6",
+      "url": "./changelog.html#changed-7",
       "text": "Establish a canonical VERSION file, automated version checks, release-note generation, and tag-driven GitHub Releases. Publish the latest container tag only for stable releases, never prerelease tags."
     },
     {
@@ -4043,7 +4061,7 @@
       "page": "Capabilities",
       "title": "Projects And Scenarios",
       "url": "./features.html#projects-and-scenarios",
-      "text": "Native browser IndexedDB persistence with automatic last-workspace restoration. Named scenarios preserve exact inputs, selected cells, RF settings, result summaries, model metadata, and recent GeoJSON layers. Rename, duplicate, delete, import, and export complete projects as versioned .atom-project.json files. Input changes mark saved results stale instead of presenting them as current. Compare exactly two scenarios using KPI deltas and an A/B map switch. Promote either comparison side to the active plan without modifying the source snapshot. Project history is local to the browser. A.T.O.M does not provide accounts, shared editing, or server-side project storage."
+      "text": "Native browser IndexedDB persistence with automatic last-workspace restoration. Named scenarios preserve exact inputs, selected cells, RF settings, result summaries, model metadata, and recent GeoJSON layers. Rename, duplicate, delete, import, and export complete projects as versioned .atom-project.json files. Result-bearing six-Cell projects use lossless project file v3 with bounded import and preserved Version provenance; valid v1/v2 files remain readable. Scenario Undo restores the same saved identity durably across reload. Input changes mark saved results stale instead of presenting them as current. Compare exactly two scenarios using KPI deltas and an A/B map switch. Promote either comparison side to the active plan without modifying the source snapshot. Project history is local to the browser. A.T.O.M does not provide accounts, shared editing, or server-side project storage."
     },
     {
       "page": "Capabilities",
@@ -4368,6 +4386,126 @@
       "title": "Final validation results",
       "url": "./network-optimization-deadline-audit.html#final-validation-results",
       "text": "Check Result Backend go test ./... -count=1 Pass: main 0.574 s, raytracer 10.026 s Backend go test -race ./... -count=1 Pass: main 1.758 s, raytracer 16.887 s Backend go vet ./... Pass Gated detailed collector + deadline observer under -race , 20 ms cancellation Pass: 24.692 s including dataset loading; cancellation at 20.327 ms, cleanup 0.363 ms later, 3 remaining harness goroutines Core Lab adapter go vet ./... , go test -race ./... -count=1 Pass: tests 1.443 s Focused optimizer/memoization/scenario tests, -count=1 Pass: 0.689 s Frontend npm test Pass: 65 files / 357 tests, 11.41 s Focused request-builder/workflow tests Pass: 2 files / 42 tests, 4.83 s Frontend lint Pass Production build Pass: 4.93 s; existing large-chunk advisory Real backend affected-six-cell E2E Pass: 1 test, 5.4 s request/test, 10.5 s including server setup; production summary 5380 ms, original full response hash and one budget unit Real backend RF-budget workflow E2E Pass: 1 test, 5.3 s test, 9.6 s including setup; explicit abuse still denied at attempt 21 Focused UI E2E Pass: retained Pareto + visible RF-budget errors, 2 tests / 3.3 s; the real-backend-only test is skipped in this mocked-server invocation and executed separately above Docs build Pass; existing Pandoc MathML deprecation advisories Docs validation Pass: 45 HTML pages / 41 API paths Dataset validator Pass: 451 towers / 161784 footprints Version metadata check Pass: 0.10.0 git diff --check Pass The default python3 docs/validate_docs.py initially failed because that Python lacks PyYAML. Reusing the existing /tmp/atom-rf-budget-docs-venv/bin/python docs/validate_docs.py (with the repository's pinned docs dependencies, created by the prior budget audit) passed. No repository dependency or global Python environment was changed. The new live-backend E2E calls the normal HTTP route with the actual frontend request builder; existing App workflow tests and retained-Pareto browser tests cover UI dispatch/sequence and local reranking. It is not presented as a new full browser click-through of the supplied cells. Files added: backend-go/network_optimization_route.go , backend-go/network_optimization_route_test.go , backend-go/network_optimization_deadline_audit_test.go , backend-go/raytracer/optimization_cell_cache.go , backend-go/raytracer/optimization_cell_cache_test.go , backend-go/raytracer/optimization_timing.go , frontend-rea"
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Persistence Reliability Audit",
+      "url": "./persistence-reliability-audit.html",
+      "text": "Six-Cell export/import and Scenario Undo root causes, bounded fixes, invariance evidence, and validation. View Markdown source System architecture Audit date: 2026-10-04. Scope: two existing persistence defects at the supported six-Cell baseline. No selection cap, RF, optimizer, request budget or deadline changes."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Starting baseline",
+      "url": "./persistence-reliability-audit.html#starting-baseline",
+      "text": "Branch main , HEAD d6251b26126807027cba6ef55d47d97f7bcb7002 , VERSION 0.10.2 . Tracked diff empty. Existing untracked capacity-audit backend test, scripts, browser tests and documentation/assets preserved. Baseline frontend: 377 tests in 67 files pass; lint and build pass (existing bundle-size advisory). Baseline E2E: 160 passed, 188 gated/skipped, across four responsive projects."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Persistence ownership (before changes)",
+      "url": "./persistence-reliability-audit.html#persistence-ownership-before-changes",
+      "text": "State Owner / durable representation Projects / Scenario snapshots useProjectWorkspace → LocalRepository → projectStore ; IndexedDB atom-planning-workspace/workspace/current , revisioned whole-workspace writes; localStorage failure fallback Versions Scenario.domain.revisions ; immutable domain input snapshots; saved through repository compatibility adapter Runs Separate IndexedDB atom-run-history/runs ; canonical requests and compact public scientific outputs; intentionally excluded from portable ProjectV2 exports (Concept 7C) Selected network, order, active Cell, mode App live state; Scenario plan and autosaved Project draft.plan ; normalized to existing six-Cell cap during hydration Map Focus / ray scope Scenario plan presentation fields; excluded from scientific Scenario identity; existing autosaved draft omits these fields Stage/tool, camera, selected Pareto UI item Ephemeral React/navigation state; reconstructed from defaults RF/map rays, coverage gaps, optimization/Pareto, interference, diagnostics, recommendations, measurement and building-entry results Live App state; retained in saved Scenario artifacts when inputs are current; latest five Scenario caches retained by existing workspace compaction Coverage surface, transient explanation selection, requests/cancellation Ephemeral; not part of saved Scenario artifact bundle Reports Live export plus separate report/artifact lifecycle; no generated report bytes in ProjectV2 export Undo Six-second single notice closure in App ; restore uses workspace hook; no durable Undo history or Redo Autosave 500 ms debounced draft inputs; cleanup cancels replaced timer; workspace writes serialize with increasing revisions Export Synchronous pretty JSON {schemaVersion:2, project} ; no export byte limit Import UI preflight file byte check; store UTF-8 byte check, JSON parse, budget traversal, schema/snapshot checks; import forks project and Scenario IDs and removes their domain metadata by existing contract"
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Import limit history and contract",
+      "url": "./persistence-reliability-audit.html#import-limit-history-and-contract",
+      "text": "cbd0834cd4d301ca7edc9017228de4d4740152b3 (2026-07-31), “feat: add utility functions for app workspace and inventory import”, introduced the 16 MiB, depth 40, 250,000-node, 2,000-key, 25,000-array-item and 1 MiB-string guards together. History does not explain the numeric byte threshold or establish a browser-memory measurement. Technical intent is security/resource protection; numeric rationale unknown . Classification: multiple (resource safety plus undocumented conservative threshold). features.md promises complete versioned projects. Actual contract is editable project inputs plus retained Scenario result artifacts, not an archive of all local Run history. Concept 7C explicitly excludes the separate history database. Import deliberately creates fresh project/Scenario IDs and strips domain metadata. These existing identity/portability limitations must be distinguished from result loss. Concept 7A's statement that 16 MiB applies to export too is incorrect: export never enforced it."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Investigation ledger",
+      "url": "./persistence-reliability-audit.html#investigation-ledger",
+      "text": ""
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Independent before-fix reproductions",
+      "url": "./persistence-reliability-audit.html#independent-before-fix-reproductions",
+      "text": "The primary result reproduction uses the real production UI and captured, unmodified six-Cell backend responses, not a generated oversized padding file. Inventory comes from the Ankara pack. Request settings are 28 GHz, 120 rays per Cell, 400 m radius. Workflow: six Cells → Evaluate Network → Analyze Interference → Optimize Network → Save Version → actual UI download → select that same downloaded file for Import. The download was 31,156,171 bytes (29.71 MiB). Both UI preflight and the original helper reject it at 16,777,216 bytes / 16 MiB . Removing whitespace yields 14,935,989 bytes but 578,091 nodes ; the 250,000-node guard also rejects it. Largest array 6,542, depth 15, largest object 48 keys. Both failures must be repaired; a byte-only change cannot work. The small size difference from the preceding capacity audit's 31,151,189 bytes is input/default/domain metadata, not altered ray science. The separate input-only Scenario reproduction starts with the same six Cells, saves a Scenario, waits for durable storage, deletes it, waits for deletion, presses Undo, verifies immediate Network · 6 cells , then reloads. The original implementation reloads to Single / zero selected Cells. The original pre-delete callback regression fails deterministically in the hook, independent of browser timing. Baseline traces and command output were retained in /tmp/atom-persistence-reproduction.log , /tmp/atom-persistence-undo-before.log and /tmp/atom-persistence-undo-unit-before.log during investigation."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Exact byte composition",
+      "url": "./persistence-reliability-audit.html#exact-byte-composition",
+      "text": "Values below are disjoint serialized value fragments including their actual two-space indentation at the source depth. Keys/container delimiters/separators outside those fragments are assigned to the final syntax row. They sum exactly to 31,156,171 bytes. Machine-readable details and regeneration are in assets/persistence-reliability/export-measurements.json and scripts/persistence-reliability-audit.mjs . Section Bytes File % Project metadata 180 0.00058 Autosaved network/input draft 4,976 0.01597 Scenario metadata / summary / dataset/model references 695 0.00223 Scenario network / inventory inputs 5,343 0.01715 RF request snapshot 10,109 0.03245 Version / embedded domain metadata 24,004 0.07704 Merged per-Cell ray features 30,908,955 99.20653 RF statistics 177 0.00057 Optimization baseline 20,344 0.06530 Public Pareto alternatives 135,446 0.43473 Other optimization results / evidence 44,102 0.14155 Interference empty bundle after optimization 297 0.00095 Other retained artifacts 171 0.00055 Remaining JSON syntax / whitespace 1,372 0.00440 Total 31,156,171 100 The 6,542 merged ray features belong to Cells 9664800 / 26390 / 9664790 / 9664795 / 9664791 / 9664794 with 1,093 / 706 / 1,004 / 1,239 / 1,250 / 1,250 segments. There is no second persisted array of separate per-Cell simulation responses. Geometry value fragments alone contribute 2,535,770 bytes; most ray bytes describe scientific properties, link budgets and LOS evidence. 6,542 LOS classification instances contain 2,242 distinct values; 6,542 link budgets contain 3,339 distinct values. The initial workflow clears interference when optimization replaces the baseline. Final acceptance additionally analyzes interference again and saves a second Version: its complete logical project is about 19.6 MB / 728,000 values, rather than assuming an empty interference bundle is representative of all retained state."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Duplication classification",
+      "url": "./persistence-reliability-audit.html#duplication-classification",
+      "text": "Repetition Classification / treatment Inventory and request inputs in draft / current Scenario / immutable Versions Required independent snapshots and provenance; preserved Per-segment link budgets and LOS classification Required scientific provenance, even when equal; represented once in columns/dictionaries and reconstructed independently Repeated GeoJSON field names, constants and formatting Serialization overhead; safely removed with a versioned lossless representation Public baseline and Pareto alternatives in optimization/domain summaries Required public evidence/compatibility snapshots; preserved Standalone per-Cell simulation copies beside merged rays Not present in this actual export Report bytes / separate durable Run History / surfaces Intentionally excluded by existing contract, not deleted by the fix No unnecessary scientific results or authoritative state were found that could legitimately be dropped to meet a limit. Root-cause classification: multiple — import limits cannot accept the app's raw own result export, and the legacy representation repeats large scientific structures and pretty formatting inefficiently. This is not a larger-network or RF-capacity failure."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Candidate fixes and decision",
+      "url": "./persistence-reliability-audit.html#candidate-fixes-and-decision",
+      "text": "Candidate Compatibility, safety, portability and cost Decision Raise byte ceiling Existing format easy to read, but 578,091 values still fail the unchanged node guard; historical byte rationale is unknown Reject; insufficient and unnecessary Minify only Backward-compatible, no provenance loss, ~14.94 MB; still too many nodes Insufficient alone Drop display/derived artifacts Small code change but changes current retained-result contract and can destroy scientific evidence Reject General gzip export Full fidelity and portable compression, but changes sync/UI interfaces, needs decompression-bomb preflight and still faces the logical node guard More complex than needed Lossless versioned columns Keeps JSON and current synchronous UI; all scientific content restored exactly; small isolated codec; explicit preflight and old readers retained Chosen Split opaque artifacts Multiple files / bundle lifecycle, more migration and portability complexity Unnecessary The chosen v3 file format keeps workspace schema v2 and all RF/API DTOs unchanged. It encodes only retained GeoJSON FeatureCollection feature arrays, recursively using exact constant, dictionary, object/array/group columns and finite JSON number vectors. It restores missing-key distinctions, row order, nulls, nested provenance and independent objects. It adds no dependency or compression library. The physical import/export byte limit remains 16 MiB . Serialized depth 40 , nodes 250,000 , object keys 2,000 , arrays 25,000 , strings 1 MiB , and Scenario count 100 remain unchanged. v3 adds a separate complete logical expansion preflight of 32 MiB / 1,000,000 values , justified by the real fully retained six-Cell snapshot. These are representation-specific limits, not removal of the original parser guards. All non-node logical guards are reapplied after reconstruction. Expansion is measured before allocating any decoded row, and export checks the same bounds. New imports keep Version and embedded Run metadata instead of silently dropping it. Editable local project/Scenario/Version/embedded-Run/inventory IDs receive coherent new IDs; importProvenance.identityMap retains source identity. Scientific snapshots, fingerprints, compute run IDs, solution IDs, recommendations and Pareto order remain unchanged. Separate Run History is still not part of the file. v1/v2 imports retain their previous copy semantics; all previou"
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Before / after and browser acceptance",
+      "url": "./persistence-reliability-audit.html#before--after-and-browser-acceptance",
+      "text": "The original 31,156,171-byte UI artifact now exports to 2,744,530 bytes with 84,327 encoded nodes , depth 32 and largest encoded array 3,153. Full reconstructed artifact equality is tested, not just summaries. The stricter two-Version + retained-interference browser artifact is 3,195,659 bytes . These sizes are fixture-specific, not promises about arbitrary numbers of saved caches. The benchmark ledger reports five samples of legacy pretty export, v3 generation and full import. v3 generation costs more CPU (hundreds of milliseconds) than plain pretty serialization (tens of milliseconds); it avoids the legacy size and node rejection and retains all content. Browser timings and heap snapshots are in assets/persistence-reliability/browser-timings.json ; parse is measured separately from validation/reconstruction and full import. UI import timing includes persistence and test-observation overhead. Reload/hydration timing includes page navigation and inventory loading. Heap snapshots are observations, not a claimed peak-memory limit or a constrained-device certification."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Delete / Undo lifecycle root cause",
+      "url": "./persistence-reliability-audit.html#delete--undo-lifecycle-root-cause",
+      "text": "App.deleteScenarioWithUndo captures the entire pre-delete projectWorkspace object in its toast closure. restoreScenario used a render-time activeProject.scenarios.some(id) duplicate check. That pre-delete project still contains the removed Scenario, so the callback returns before updateProject , revision allocation or persistence. No restoration write exists. The unchanged live RF selection makes Undo look successful until reload reads the durably deleted project. Classification: stale closure + Undo does not durably persist restored state ; not a debounce, RF normalization, cap, revision conflict or current-pointer-only failure. The repair moves the duplicate check inside the updater recipe, where workspaceRef.current supplies the latest project. It restores the original Scenario object at its original position, reactivates its ID and clears a competing draft when reactivating. All existing workspace revision and serialized-write behavior is preserved. A captured restore callback targets its originating project ID, not a newly selected project. Testing immediate reload after this repair exposed an additional write-initiation window: opening and closing a new IndexedDB connection for every write could leave restoration waiting for open() when navigation began. The workspace store now reuses its connection, releases it on versionchange /abnormal close, and explicitly commits its one-record transaction after queueing the write. The store/database/schema remain unchanged. Writes still serialize; storage failures still reach the hook and fallback. This is not a new Undo framework or storage migration. The test-only browser ledger records performance.timeOrigin + performance.now() , revision and active Scenario ID for transaction start/complete. The final captured run records r1 write-start at 178.6 ms, r1 write-complete at 189.4 ms, r2 write-start at 275.3 ms, r2 write-complete at 284.8 ms, r3 write-start at 324.3 ms, r3 write-complete at 337.7 ms, with explicit delete, Undo, post-Undo-save and reload-read checkpoints. Autosave scheduling/cancellation/firing records include timer identity. The complete ledger is in assets/persistence-reliability/undo-timeline.json . Hook tests additionally capture queue events, pending-write barriers and fake-timer delay; no full payload is logged."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Save Version / autosave ordering",
+      "url": "./persistence-reliability-audit.html#save-version--autosave-ordering",
+      "text": "The strengthened two-Version workflow exposed a related write-order defect: autosave could queue the previous Scenario history while saveScenarioVersion was reading/building its repository mutation. That autosave received a newer persistence revision and could overwrite the new Version on disk while React still displayed Version 2. A deterministic repository barrier test reproduces this ordering and preserves a concurrently edited draft. The hook now checks the latest queued revision when the repository Version save returns. If a newer workspace write exists, it commits the newly saved immutable Scenario history onto the latest workspace after that write, retaining the latest working draft, active pointer and other projects. This is a targeted Version reconciliation, not a new autosave or persistence framework. The 25-case browser acceptance matrix passes after this fix, including the fully retained two-Version export/import."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Regression matrix",
+      "url": "./persistence-reliability-audit.html#regression-matrix",
+      "text": "Case Outcome Captured callback before deletion Restores original ID and snapshot; old code fails Undo at 0 / 100 / 750 ms Pass, fake timers plus browser workflows Undo after confirmed delete Pass Autosave absent / queued / completed Pass; controlled writer barriers enforce ordering and preserve newly saved Version history Reload after restoration commit Pass on 1440 / 1024 / 768 / 390 viewports Immediate reload after Undo Pass with reusable connection / explicit commit; 12 repeated checks across four viewports Delete without Undo → reload Remains deleted Repeated sequential delete / Undo; duplicate callback Same Scenario, no duplicate; no Redo added Scenario / Version / embedded Run IDs on Undo Original identities preserved Selected IDs/order, active Cell, Map Focus, Network mode Saved Scenario plan and full domain equality preserved across reload v3 export/import science Full artifact, request, plan and Version input/fingerprint equality; mapped local links coherent Legacy fixture / v1 / v2 Shipped sample, input snapshots and small retained-result fixtures pass Oversize / depth / nodes / array / keys / string / unsafe fields Existing guards reject Malformed JSON / future version / corrupted results / invalid columns / retained domain metadata Clear errors; no workspace replacement Byte or node expansion bomb / invalid number vector Preflight rejects before decoded-row allocation IndexedDB write failure / localStorage quota failure Existing fallback/error tests pass; Undo remains coherent in memory and reports failed save Aborted/malformed import Existing workspace unchanged; no durable write before validation Hard browser/process termination or disk failure while storage is still reporting Saving cannot guarantee completed durability. Quota rejection remains a visible error, not a successful-save claim. This repair does not implement disaster recovery, cross-tab conflict resolution, broader archival storage or export of external history."
+    },
+    {
+      "page": "Persistence Reliability Audit",
+      "title": "Validation and release decision",
+      "url": "./persistence-reliability-audit.html#validation-and-release-decision",
+      "text": "Final frontend validation: npm test : 423 tests / 68 files pass (baseline 377 / 67). npm run test:e2e -- --workers=2 : 185 pass / 191 gated or skipped , including 25 new acceptance cases across responsive viewports. The separately repeated immediate-reload matrix passes 12/12 with four workers. npm run lint and npm run build : pass; existing bundle-size advisory remains. sh docs/build-reference-pages.sh : pass; Pandoc emits its existing mathml deprecation advisory. Docs validation: 47 HTML pages / 41 API paths pass ; version metadata check: 0.10.2 consistent ; git diff --check : pass. The system Python lacked PyYAML, so validation used a temporary virtual environment with the repository's pinned, hash-verified docs/requirements.txt ; no repository dependencies were changed. The first full browser run under high worker contention had a pre-existing basemap test timestamp-only autosave race and an immediate-Undo reload failure. The latter led to the explicit commit fix; the final complete two-worker run passes, including the basemap contract. No unrelated browser workflow was weakened. Test-generated historical screenshots/evidence files were restored to the starting baseline. Measured two-Version, retained-interference browser results: export generation 597.6 ms , artifact 3,195,659 bytes , JSON parse 2.8 ms , validation + reconstruction 511.0 ms , complete helper import 675.0 ms , UI import + persistence + observation 3,755.4 ms , reload + hydration 663.4 ms . Retained JS heap after explicit GC: 87,228,428 bytes before import and 118,834,740 bytes after importing the independent second project. Uncollected snapshots also remain in the evidence ledger; these are not peak-memory guarantees. Files changed for this repair: frontend-react/src/utils/projectStore.js , new projectRayColumns.js , existing store tests and new projectFileReliability.test.js . frontend-react/src/hooks/useProjectWorkspace.js and its captured-callback / barrier / failure tests. frontend-react/e2e/persistence-reliability.spec.js and compressed real-response / actual UI-export fixtures with manifest and README. scripts/persistence-reliability-audit.mjs and four baseline/measurement/timeline JSON evidence files. This audit, project-format.md , generated reference HTML, features.md / HTML, build-reference-pages.sh , regenerated search index, and CHANGELOG.md / generated changelog. Both reprod"
+    },
+    {
+      "page": "Portable Project Format",
+      "title": "Portable Project Format",
+      "url": "./project-format.html",
+      "text": "Lossless retained-result files, version compatibility, identity provenance, and bounded import safety. View Markdown source System architecture Project files contain editable project inputs, saved Scenario Versions and retained Scenario result artifacts. They do not contain the separate local Run History database, generated report files, coverage surfaces, camera position, navigation stage, request state or Undo history. The existing workspace policy retains the five most recent Scenario artifact caches. Export does not remove any additional results."
+    },
+    {
+      "page": "Portable Project Format",
+      "title": "File versions and compatibility",
+      "url": "./project-format.html#file-versions-and-compatibility",
+      "text": "New exports use { \"schemaVersion\": 3, \"project\": ... } . The workspace IndexedDB schema remains 2 . Valid file versions 1 and 2 remain importable with their existing migration/copy behavior. Older applications cannot read v3 exports; use a version with v3 support to exchange new files. Version 3 stores nonempty GeoJSON FeatureCollection features in retained Scenario artifacts as { \"count\": N, \"columns\": <column> } . Empty feature arrays remain arrays. Ordinary workspace/API GeoJSON is unchanged; reconstruction restores the complete feature array, order, properties, geometry and number values."
+    },
+    {
+      "page": "Portable Project Format",
+      "title": "Lossless columns",
+      "url": "./project-format.html#lossless-columns",
+      "text": "A column represents N values. Tags have these exact JSON forms: Tag Representation Reconstruction constant [\"constant\", value] N independent copies values [\"values\", values] Exactly N values numbers [\"numbers\", \"number,number,...\"] Exactly N finite JSON number tokens; JSON decimal spelling preserves IEEE-754 values without quantization dictionary [\"dictionary\", values, indexes] N validated dictionary indexes; independent object copies objects [\"objects\", keys, columns] N objects with unique safe keys and corresponding value columns arrays [\"arrays\", keys, columns] N arrays; keys must be sequential strings \"0\" , \"1\" , etc. groups [\"groups\", [[rowIndexes, column], ...]] Complete, disjoint row partition; restores original order and missing-field distinctions The encoder chooses the representation with the fewest encoded nodes at each column. JSON key order and array order remain stable. No data-dependent tolerances, rounding, lossy geometry simplification, changed fingerprints or new RF calculations are involved. Equivalent project state produces byte-identical exports; import intentionally creates new local identities and timestamps."
+    },
+    {
+      "page": "Portable Project Format",
+      "title": "Identity and provenance",
+      "url": "./project-format.html#identity-and-provenance",
+      "text": "Import creates a new project and new Scenario IDs. In v3 it also retains domain Version and embedded Run metadata, assigning independent local IDs and updating their internal links. project.importProvenance records sourceProjectId and the complete source-to-imported identityMap . Scientific request inputs, canonical input snapshots, fingerprints, result values, compute optimization run IDs, solution IDs, Pareto order and source timestamps inside evidence remain unchanged. References to external history not present in the file remain source references; the importer does not invent missing Runs. The v1/v2 importer historically discarded project/Scenario domain metadata when making independent copies. This behavior is preserved for old files. v3 closes that provenance gap for new exports."
+    },
+    {
+      "page": "Portable Project Format",
+      "title": "Resource and error contract",
+      "url": "./project-format.html#resource-and-error-contract",
+      "text": "The UI rejects files over 16 MiB before reading their contents. The store independently checks UTF-8 bytes before parsing. All file versions retain the encoded JSON budget: depth 40; 250,000 nodes; 2,000 object keys; 25,000 elements per array; 1 MiB per string; 100 Scenarios; forbidden __proto__ , prototype and constructor keys. v3 additionally preflights the complete reconstructed project before allocating any decoded rows: 32 MiB of compact logical JSON and 1,000,000 decoded nodes . Reconstruction then rechecks depth, object/array/string bounds and result shapes. The decoded-node limit is separate from the unchanged 250,000-node encoded-file limit. A numeric-vector comma count is checked before splitting and every number token must be finite and valid JSON syntax. Export checks both budgets too. A larger or more complex project fails explicitly with its limit reason; it does not download an artifact this importer would reject or silently remove scientific data. This is six-Cell reliability coverage, not a larger-network support guarantee or unbounded archival storage."
+    },
+    {
+      "page": "Portable Project Format",
+      "title": "Reproduction and validation",
+      "url": "./project-format.html#reproduction-and-validation",
+      "text": "See the persistence reliability audit. node scripts/persistence-reliability-audit.mjs reproduces byte composition and timings from the compressed real UI export fixture. The dedicated browser workflow replays captured six-Cell backend responses through the ordinary Evaluate / Interference / Optimize / Save Version / Export / Import UI. Run it with: cd frontend-react npx playwright test e2e/persistence-reliability.spec.js --workers = 2"
     },
     {
       "page": "RF Request Budget Audit",

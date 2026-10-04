@@ -1,0 +1,23 @@
+{
+  "immediate_undo": {
+    "sizes": [
+      6,
+      10,
+      12
+    ],
+    "observation": "Selected network remained visible immediately after Undo, but reloading returned to Single mode with zero selected cells.",
+    "hypothesis": "The asynchronous delete/restore path can race persistence; restoreScenario also returns early while the pre-delete scenario is still present.",
+    "classification": "pre-existing at six; not demonstrated to be a network-size regression"
+  },
+  "delayed_undo_ms": 750,
+  "delayed_result": {
+    "sizes": [
+      6,
+      10,
+      12
+    ],
+    "delay_after_delete_ms": 750,
+    "delay_after_undo_ms": 750,
+    "observation": "Network context remained visible before reload, but persisted reload returned to Single mode, zero selected cells, at all three sizes."
+  }
+}

@@ -150,6 +150,10 @@ restoration.</li>
 result summaries, model metadata, and recent GeoJSON layers.</li>
 <li>Rename, duplicate, delete, import, and export complete projects as
 versioned <code>.atom-project.json</code> files.</li>
+<li>Result-bearing six-Cell projects use lossless project file v3 with
+bounded import and preserved Version provenance; valid v1/v2 files
+remain readable. Scenario Undo restores the same saved identity durably
+across reload.</li>
 <li>Input changes mark saved results stale instead of presenting them as
 current.</li>
 <li>Compare exactly two scenarios using KPI deltas and an A/B map

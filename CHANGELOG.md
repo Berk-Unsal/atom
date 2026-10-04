@@ -7,6 +7,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 ### Added
 
 - Observe CPU, cgroup and memory constraints with provenance at startup; add local Auto profile diagnostics and controlled-container calibration while preserving fixed RF admission, deadlines, workers and scientific identities.
+- Document locked estimator validation on fresh Ankara domains and unchanged models: retain the invalid-validation decision, numerical failures, HTTP evidence and sustained-load limitations; keep Auto observation-only.
 
 ## [0.11.0] - 2026-10-04
 

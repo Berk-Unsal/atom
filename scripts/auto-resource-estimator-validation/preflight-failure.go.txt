@@ -1,0 +1,32 @@
+package main
+
+import (
+	"ankara-5g-raytracer/raytracer"
+	"encoding/json"
+	"fmt"
+	"testing"
+)
+
+// Observe the frozen primitive; do not repair its failure behavior.
+func TestLockedPreflightFailureObservation(t *testing.T) {
+	var malformed geometryStats
+	err := json.Unmarshal([]byte(`{"footprints":"unavailable"}`), &malformed)
+	if err == nil {
+		t.Fatal("malformed metadata accepted")
+	}
+	b := raytracer.Bounds{MinLon: 32.8, MinLat: 39.9, MaxLon: 32.81, MaxLat: 39.91}
+	outcome := map[string]any{"malformed_metadata_rejected": true, "query_budget_state": "unsupported by frozen prototype"}
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				outcome["unavailable_source"] = "panic"
+				outcome["panic"] = fmt.Sprint(r)
+			}
+		}()
+		s := geometryDescribe(nil, b)
+		outcome["unavailable_source"] = "returned_counts"
+		outcome["stats"] = s
+	}()
+	encoded, _ := json.Marshal(outcome)
+	fmt.Println("PREFLIGHT_FAILURE_OBSERVATION", string(encoded))
+}

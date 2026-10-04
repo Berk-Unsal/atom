@@ -41,6 +41,8 @@ build_page auto-resource-profile-foundation.md auto-resource-profile-foundation.
   "Automatic CPU and memory observations, provenance, controlled-container calibration and unchanged fixed RF policy."
 build_page auto-resource-geometry-calibration.md auto-resource-geometry-calibration.html "Geometry Density Calibration" "Calibration evidence" \
   "Deterministic Ankara geometry domains, repeated workload measurements, held-out predictors and unchanged observational Auto policy."
+build_page auto-resource-estimator-locked-validation.md auto-resource-estimator-locked-validation.html "Locked Estimator Validation" "Validation evidence" \
+  "Frozen workload estimators, fresh Ankara domains, unseen settings, actual HTTP streaming and sustained-load decision evidence."
 build_page algorithms.md algorithms.html "Algorithms and RF Physics" "Model reference" \
   "The deterministic propagation, geometry, optimization, and radio-quality methods behind A.T.O.M results."
 build_page features.md features.html "Capabilities" "Product reference" \

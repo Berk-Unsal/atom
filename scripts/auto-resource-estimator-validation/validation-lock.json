@@ -1,0 +1,1027 @@
+{
+  "schema_version": 1,
+  "locked_at": "2026-10-04T14:53:25.815975+00:00",
+  "source_calibration_commit": "2da0f9deaf40e2145049eb4506b9b424851aed5d",
+  "source_artifact": "docs/auto-resource-geometry-calibration.json",
+  "source_sha256": "4c92ee205190703ab23b84699757a0ac10e682ddca26c9c3ce7c8ab2083af0f6",
+  "baseline": {
+    "branch": "main",
+    "head": "2da0f9deaf40e2145049eb4506b9b424851aed5d",
+    "version": "0.11.0",
+    "status_short": "",
+    "diff_stat": ""
+  },
+  "dataset_identity": {
+    "schema_version": 2,
+    "id": "ankara-open-planning",
+    "name": "Ankara Open Planning Dataset",
+    "version": "2026.07",
+    "crs": "EPSG:4326",
+    "bounds": [
+      32.45,
+      39.55,
+      33.25,
+      40.25
+    ],
+    "generated_at": "2026-07-17",
+    "sources": [
+      "OpenStreetMap",
+      "OpenCellID-derived planning records"
+    ],
+    "licenses": [
+      "ODbL 1.0 for OpenStreetMap-derived data",
+      "Review upstream OpenCellID terms before redistribution"
+    ],
+    "confidence": "Static planning dataset with synthetic demand enrichment; not an operator inventory.",
+    "files": {
+      "towers": "ankara_5g_nodes.geojson",
+      "buildings": "ankara_buildings.geojson"
+    },
+    "sha256": {
+      "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+      "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+    },
+    "layers": {
+      "buildings": {
+        "kind": "building_footprints",
+        "format": "geojson",
+        "crs": "EPSG:4326",
+        "optional": false,
+        "source": "OpenStreetMap",
+        "license": "ODbL 1.0",
+        "confidence": "Static footprints with heuristic demand enrichment."
+      },
+      "towers": {
+        "kind": "cell_inventory",
+        "format": "geojson",
+        "crs": "EPSG:4326",
+        "optional": false,
+        "source": "OpenCellID-derived planning records",
+        "license": "Review upstream OpenCellID terms before redistribution",
+        "confidence": "Planning inventory; not operator-verified."
+      }
+    },
+    "quality": {
+      "summary": "Geometry and hashes validated; RF inventory and demand attributes remain planning-grade.",
+      "feature_counts": {
+        "buildings": 161626,
+        "towers": 451
+      },
+      "geometry": {
+        "buildings": {
+          "invalid_input": 0,
+          "repaired": 0,
+          "dropped": 0,
+          "output": 161626
+        },
+        "towers": {
+          "invalid_input": 0,
+          "repaired": 0,
+          "dropped": 0,
+          "output": 451
+        }
+      },
+      "coverage": {
+        "requested_bounds": [
+          32.45,
+          39.55,
+          33.25,
+          40.25
+        ],
+        "data_bounds": [
+          32.45,
+          39.55,
+          33.25,
+          40.25
+        ],
+        "coverage_ratio": 1
+      }
+    },
+    "spatial_evidence": {
+      "schema_version": "atom-spatial-evidence-v1",
+      "matching_policy_version": "footprint-height-match-v1",
+      "source_precedence": [
+        "user_supplied",
+        "lidar_derived",
+        "osm_explicit_height",
+        "external_building_height",
+        "osm_levels_derived",
+        "dsm_minus_dtm",
+        "generic_fallback",
+        "unavailable"
+      ],
+      "terrain_interpolation": "bilinear",
+      "datum_transformation_policy": "explicit-compatible-datum-v1"
+    }
+  },
+  "profiles": {
+    "A": {
+      "cpus": 2,
+      "memory_gib": 4
+    },
+    "B": {
+      "cpus": 4,
+      "memory_gib": 8
+    },
+    "D": {
+      "cpus": null,
+      "memory_gib": null
+    }
+  },
+  "estimators": [
+    {
+      "name": "azimuth/response_bytes",
+      "operation": "azimuth",
+      "target": "response_bytes",
+      "role": "candidate",
+      "selected_family": "parameters",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28"
+        ],
+        "means": [
+          4.795790545596741,
+          5.993961427306569,
+          0.5
+        ],
+        "scales": [
+          1,
+          1,
+          0.5
+        ],
+        "coefficients": [
+          8.598564693231697,
+          0.0,
+          0.0,
+          -0.00011369916285380661
+        ],
+        "ridge": 0.1,
+        "target": "response_bytes",
+        "training_groups": 8,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 1.001847021247046,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "building-entry/wall_seconds",
+      "operation": "building-entry",
+      "target": "wall_seconds",
+      "role": "candidate",
+      "selected_family": "density",
+      "model": {
+        "features": [
+          "radius_m",
+          "frequency_28",
+          "vertex_density",
+          "area"
+        ],
+        "means": [
+          6.132341331258927,
+          0.4,
+          7.318230174015104,
+          0.9470071925420611
+        ],
+        "scales": [
+          0.2767598079047161,
+          0.4898979485566356,
+          1.23201203282337,
+          1.1875050307806414
+        ],
+        "coefficients": [
+          -3.17485695180686,
+          0.10279649107815242,
+          0.01127103201442727,
+          1.2282666410994536,
+          0.8014636939341324
+        ],
+        "ridge": 0.1,
+        "target": "wall_seconds",
+        "training_groups": 10,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 3.922779439047486,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "evaluate/cpu_seconds",
+      "operation": "evaluate",
+      "target": "cpu_seconds",
+      "role": "negative_control",
+      "selected_family": "edges",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28",
+          "edges"
+        ],
+        "means": [
+          4.9106249435790605,
+          6.109278013933534,
+          0.3333333333333333,
+          8.260124186048436
+        ],
+        "scales": [
+          0.2567775200437298,
+          0.25785572663113704,
+          0.4714045207910317,
+          0.5342271146228171
+        ],
+        "coefficients": [
+          -0.4409850348378591,
+          0.14737524300944865,
+          -0.22075812222525168,
+          0.1433061407764508,
+          0.6239819095701892
+        ],
+        "ridge": 0.1,
+        "target": "cpu_seconds",
+        "training_groups": 12,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 2.1005736478104855,
+      "prior_readiness": "NOT READY"
+    },
+    {
+      "name": "evaluate/response_bytes",
+      "operation": "evaluate",
+      "target": "response_bytes",
+      "role": "candidate",
+      "selected_family": "density",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28",
+          "vertex_density",
+          "area"
+        ],
+        "means": [
+          4.9106249435790605,
+          6.109278013933534,
+          0.3333333333333333,
+          7.2323216712048115,
+          1.02912326844266
+        ],
+        "scales": [
+          0.2567775200437298,
+          0.25785572663113704,
+          0.4714045207910317,
+          1.271267455406737,
+          1.1767562034672217
+        ],
+        "coefficients": [
+          10.273064196740748,
+          5.446145491081573e-05,
+          0.0045582346031649785,
+          0.0001747873366664151,
+          0.0025573761154354885,
+          -0.005676482448815871
+        ],
+        "ridge": 0.1,
+        "target": "response_bytes",
+        "training_groups": 12,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 1.007581827023615,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "explain/response_bytes",
+      "operation": "explain",
+      "target": "response_bytes",
+      "role": "candidate",
+      "selected_family": "parameters",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28"
+        ],
+        "means": [
+          4.795790545596741,
+          5.993961427306569,
+          0.5
+        ],
+        "scales": [
+          1,
+          1,
+          0.5
+        ],
+        "coefficients": [
+          7.976531636013588,
+          0.0,
+          0.0,
+          0.00046262270375725857
+        ],
+        "ridge": 0.1,
+        "target": "response_bytes",
+        "training_groups": 8,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 1.0427124933064769,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "interference/cpu_seconds",
+      "operation": "interference",
+      "target": "cpu_seconds",
+      "role": "negative_control",
+      "selected_family": "edges",
+      "model": {
+        "features": [
+          "radius_m",
+          "frequency_28",
+          "edges"
+        ],
+        "means": [
+          6.132341331258927,
+          0.4,
+          8.26406412386383
+        ],
+        "scales": [
+          0.2767598079047161,
+          0.4898979485566356,
+          0.5640640279842111
+        ],
+        "coefficients": [
+          -3.2249855755317687,
+          -0.09932463957619875,
+          0.017637709381274597,
+          0.9288478991374824
+        ],
+        "ridge": 0.1,
+        "target": "cpu_seconds",
+        "training_groups": 10,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 1.9373811578869533,
+      "prior_readiness": "NOT READY"
+    },
+    {
+      "name": "interference/response_bytes",
+      "operation": "interference",
+      "target": "response_bytes",
+      "role": "candidate",
+      "selected_family": "parameters",
+      "model": {
+        "features": [
+          "radius_m",
+          "frequency_28"
+        ],
+        "means": [
+          6.132341331258927,
+          0.4
+        ],
+        "scales": [
+          0.2767598079047161,
+          0.4898979485566356
+        ],
+        "coefficients": [
+          15.54038214230718,
+          0.197203832017875,
+          -0.008375573456405801
+        ],
+        "ridge": 0.1,
+        "target": "response_bytes",
+        "training_groups": 10,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 1.763819334081207,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "optimize/cpu_seconds",
+      "operation": "optimize",
+      "target": "cpu_seconds",
+      "role": "candidate",
+      "selected_family": "footprints",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28",
+          "footprints"
+        ],
+        "means": [
+          4.9106249435790605,
+          6.109278013933534,
+          0.3333333333333333,
+          6.388211184169991
+        ],
+        "scales": [
+          0.2567775200437298,
+          0.25785572663113704,
+          0.4714045207910317,
+          0.8313653704290591
+        ],
+        "coefficients": [
+          2.468567995473655,
+          0.09402475992961416,
+          -0.049716454634313845,
+          0.03000586856720663,
+          0.5852698703197331
+        ],
+        "ridge": 0.1,
+        "target": "cpu_seconds",
+        "training_groups": 12,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 2.8149320503790176,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "optimize/response_bytes",
+      "operation": "optimize",
+      "target": "response_bytes",
+      "role": "candidate",
+      "selected_family": "density",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28",
+          "vertex_density",
+          "area"
+        ],
+        "means": [
+          4.9106249435790605,
+          6.109278013933534,
+          0.3333333333333333,
+          7.2323216712048115,
+          1.02912326844266
+        ],
+        "scales": [
+          0.2567775200437298,
+          0.25785572663113704,
+          0.4714045207910317,
+          1.271267455406737,
+          1.1767562034672217
+        ],
+        "coefficients": [
+          11.39938022695353,
+          0.00410672042614706,
+          -0.18428108523340114,
+          0.015939959591134884,
+          0.2756645918117473,
+          0.21527611657138865
+        ],
+        "ridge": 0.1,
+        "target": "response_bytes",
+        "training_groups": 12,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 2.0565050267549565,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "optimize/wall_seconds",
+      "operation": "optimize",
+      "target": "wall_seconds",
+      "role": "candidate",
+      "selected_family": "footprints",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28",
+          "footprints"
+        ],
+        "means": [
+          4.9106249435790605,
+          6.109278013933534,
+          0.3333333333333333,
+          6.388211184169991
+        ],
+        "scales": [
+          0.2567775200437298,
+          0.25785572663113704,
+          0.4714045207910317,
+          0.8313653704290591
+        ],
+        "coefficients": [
+          1.7733187807887991,
+          0.11625872764944836,
+          -0.021976475133981183,
+          0.03614080930494014,
+          0.47946694299832554
+        ],
+        "ridge": 0.1,
+        "target": "wall_seconds",
+        "training_groups": 12,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 2.5055987685215677,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "recommendation/cpu_seconds",
+      "operation": "recommendation",
+      "target": "cpu_seconds",
+      "role": "candidate",
+      "selected_family": "footprints",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28",
+          "footprints"
+        ],
+        "means": [
+          4.9106249435790605,
+          6.109278013933534,
+          0.3333333333333333,
+          6.388211184169991
+        ],
+        "scales": [
+          0.2567775200437298,
+          0.25785572663113704,
+          0.4714045207910317,
+          0.8313653704290591
+        ],
+        "coefficients": [
+          0.707838531638749,
+          0.10580673755112369,
+          -0.13489403365312935,
+          0.09316072886718423,
+          0.82664217072929
+        ],
+        "ridge": 0.1,
+        "target": "cpu_seconds",
+        "training_groups": 12,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 3.6447638240228226,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "recommendation/wall_seconds",
+      "operation": "recommendation",
+      "target": "wall_seconds",
+      "role": "candidate",
+      "selected_family": "footprints",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28",
+          "footprints"
+        ],
+        "means": [
+          4.9106249435790605,
+          6.109278013933534,
+          0.3333333333333333,
+          6.388211184169991
+        ],
+        "scales": [
+          0.2567775200437298,
+          0.25785572663113704,
+          0.4714045207910317,
+          0.8313653704290591
+        ],
+        "coefficients": [
+          -0.3492870211433801,
+          0.06110514103569048,
+          -0.11900913133548163,
+          0.06859650797488198,
+          0.6315309508593282
+        ],
+        "ridge": 0.1,
+        "target": "wall_seconds",
+        "training_groups": 12,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 3.0686616832504297,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "simulate/cpu_seconds",
+      "operation": "simulate",
+      "target": "cpu_seconds",
+      "role": "negative_control",
+      "selected_family": "footprints",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28",
+          "footprints"
+        ],
+        "means": [
+          4.9106249435790605,
+          6.109278013933534,
+          0.3333333333333333,
+          4.362085717318517
+        ],
+        "scales": [
+          0.2567775200437298,
+          0.25785572663113704,
+          0.4714045207910317,
+          2.5915145879597383
+        ],
+        "coefficients": [
+          -3.16623159354414,
+          0.17447090427303452,
+          0.16927416700333575,
+          -0.1992260491422462,
+          0.5189208735298627
+        ],
+        "ridge": 0.1,
+        "target": "cpu_seconds",
+        "training_groups": 12,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 3.459924563878777,
+      "prior_readiness": "NOT READY"
+    },
+    {
+      "name": "simulate/response_bytes",
+      "operation": "simulate",
+      "target": "response_bytes",
+      "role": "candidate",
+      "selected_family": "footprints",
+      "model": {
+        "features": [
+          "rays",
+          "radius_m",
+          "frequency_28",
+          "footprints"
+        ],
+        "means": [
+          4.9106249435790605,
+          6.109278013933534,
+          0.3333333333333333,
+          4.362085717318517
+        ],
+        "scales": [
+          0.2567775200437298,
+          0.25785572663113704,
+          0.4714045207910317,
+          2.5915145879597383
+        ],
+        "coefficients": [
+          15.479367564103711,
+          0.221011781400032,
+          0.10137090365262237,
+          -0.2799057763020054,
+          0.18540352697231394
+        ],
+        "ridge": 0.1,
+        "target": "response_bytes",
+        "training_groups": 12,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 1.5569448006757514,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "surface/cpu_seconds",
+      "operation": "surface",
+      "target": "cpu_seconds",
+      "role": "candidate",
+      "selected_family": "footprints",
+      "model": {
+        "features": [
+          "radius_m",
+          "frequency_28",
+          "footprints"
+        ],
+        "means": [
+          6.132341331258927,
+          0.4,
+          4.539613138550889
+        ],
+        "scales": [
+          0.2767598079047161,
+          0.4898979485566356,
+          2.514540512742915
+        ],
+        "coefficients": [
+          -5.62219580191162,
+          0.6047985018808578,
+          0.025739495419905993,
+          0.9447744285409895
+        ],
+        "ridge": 0.1,
+        "target": "cpu_seconds",
+        "training_groups": 10,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 3.010737530521321,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "surface/response_bytes",
+      "operation": "surface",
+      "target": "response_bytes",
+      "role": "candidate",
+      "selected_family": "footprints",
+      "model": {
+        "features": [
+          "radius_m",
+          "frequency_28",
+          "footprints"
+        ],
+        "means": [
+          6.132341331258927,
+          0.4,
+          4.539613138550889
+        ],
+        "scales": [
+          0.2767598079047161,
+          0.4898979485566356,
+          2.514540512742915
+        ],
+        "coefficients": [
+          11.03652431220495,
+          0.4047980929149108,
+          0.10852350561770767,
+          0.9650963751227633
+        ],
+        "ridge": 0.1,
+        "target": "response_bytes",
+        "training_groups": 10,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 2.6368398869284286,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    },
+    {
+      "name": "surface/wall_seconds",
+      "operation": "surface",
+      "target": "wall_seconds",
+      "role": "candidate",
+      "selected_family": "footprints",
+      "model": {
+        "features": [
+          "radius_m",
+          "frequency_28",
+          "footprints"
+        ],
+        "means": [
+          6.132341331258927,
+          0.4,
+          4.539613138550889
+        ],
+        "scales": [
+          0.2767598079047161,
+          0.4898979485566356,
+          2.514540512742915
+        ],
+        "coefficients": [
+          -5.6304168518478095,
+          0.6069871368298948,
+          0.02726650926116272,
+          0.9456160056394023
+        ],
+        "ridge": 0.1,
+        "target": "wall_seconds",
+        "training_groups": 10,
+        "training_domains": [
+          "dense-calibration",
+          "medium-calibration",
+          "sparse-calibration",
+          "very-dense-calibration"
+        ],
+        "formula": "exp(b0 + sum(bi * (transform(feature_i)-mean_i)/scale_i)); log1p count/rays/radius, log area, binary 28GHz"
+      },
+      "calibration_only_margin": 3.0956912825336182,
+      "prior_readiness": "PROMISING BUT MORE CALIBRATION"
+    }
+  ],
+  "transforms": {
+    "frequency_28": "binary equality 28 GHz",
+    "area": "log(max(value,1e-9))",
+    "other": "log1p(value)",
+    "target": "exp(max(-40,min(linear_predictor,40))) (unchanged prior formula clamp)"
+  },
+  "numeric_gates": {
+    "maximum_calibration_margin": 4,
+    "maximum_post_margin_underprediction_rate": 0.05,
+    "maximum_post_margin_shortfall_fraction_actual": 0.1
+  },
+  "pass_fail_criteria": {
+    "scoring_unit": "each request repeat; no averaging away bad repeats",
+    "gates_apply": "overall and separately every geometry band, RF setting, search setting, frequency, resource profile; any violation FAIL",
+    "http_failure": "any failed/timed-out main candidate request FAIL; incomplete planned evidence INSUFFICIENT; methodological breach or insufficient overall evidence D INVALID",
+    "negative_controls": "cannot certify regardless of sample",
+    "adaptive_design": "operationally useful compute AND nontrivial response PASS, sustained load evidence required; RSS/allocations observational only",
+    "mixed_cpu": "process aggregate, not attributed to individual requests; individual CPU verdict requires isolated data; mixed wall/bytes scored separately"
+  },
+  "rf_settings": [
+    {
+      "id": "r300-r500",
+      "rays": 300,
+      "radius_m": 500
+    },
+    {
+      "id": "r160-r900",
+      "rays": 160,
+      "radius_m": 900
+    }
+  ],
+  "frequencies_ghz": [
+    2.6,
+    28
+  ],
+  "search_settings": [
+    {
+      "id": "legacy",
+      "search_policy": "legacy_two_pass_coordinate"
+    },
+    {
+      "id": "unseen-multistart",
+      "search_policy": "deterministic_multistart_coordinate_v1",
+      "max_search_passes": 3,
+      "max_unique_evaluations": 192
+    }
+  ],
+  "domain_selection": {
+    "target": 12,
+    "minimum": 8,
+    "algorithm": "Reuse frozen inventory-only anchor candidates (not previous selected domains); recompute geometry with frozen preflight; rank 400m vertex density then ID; band targets .98/.85/.50/.05 in that order, three rounds; nearest rank, tie rank ascending. Exclude any 902m conservative tower envelope touching previous 802m envelopes, any previous selected Cell ID, or chosen 902m envelopes. No replacements; if <8 stop D; 8-11 retained and disclosed. Persist every exclusion. No timing or RF cost input.",
+    "quantiles": {
+      "very-dense": 0.98,
+      "dense": 0.85,
+      "medium": 0.5,
+      "sparse": 0.05
+    },
+    "validation_envelope_radius_m": 902,
+    "prior_envelope_radius_m": 802
+  },
+  "repeats": {
+    "ordinary": 5,
+    "expensive": 3,
+    "mixed": 3
+  },
+  "matrix": {
+    "D": "all selected domains x two RF settings x two frequencies x all candidate operations; Optimize legacy and unseen multistart, Explain prerequisite legacy",
+    "A_B": "all selected domains x two frequencies x simulate/evaluate/optimize/interference/surface; RF setting assigned by selection index parity; Optimize both searches; geometry/hardware coverage balanced, not full factorial",
+    "fresh_subset": "one first selected domain per band x profiles x Optimize legacy at 2.6 GHz r300-r500 three repeats, each group fresh process",
+    "recorder_controls": "first selected sparse and dense x each profile x simulate and interference at2.6 r300-r500 five repeats fresh separate group; same frozen predictions; recorder excluded primary verdict"
+  },
+  "run_order": {
+    "seed": 20261004,
+    "algorithm": "Python Random(seed + profile ASCII sum), shuffle all pre-generated plans; independent stage seeds +1000/+2000"
+  },
+  "process_reset": {
+    "main": "fresh process per profile, warmed long-running service; first RF and startup recorded separately",
+    "fresh": "new process per geometry/profile group",
+    "cold_os_cache": "no eviction"
+  },
+  "mixed_load": {
+    "domains": "first selected sparse and dense",
+    "rf": "r300-r500",
+    "frequency_ghz": 2.6,
+    "search": "legacy",
+    "scenarios": [
+      "async-optimize",
+      "async-evaluate",
+      "async-optimize-evaluate",
+      "async-two-optimizers"
+    ],
+    "profiles": [
+      "A",
+      "B",
+      "D"
+    ],
+    "repeats": 3
+  },
+  "async_plan": {
+    "duration_seconds": 30,
+    "maximum_seconds_per_scenario": 120,
+    "initial_jobs": 8,
+    "max_total_submissions": 64,
+    "matrix_runs_per_job": 64,
+    "workers": 1,
+    "queue_capacity": 16,
+    "refill": "top up to eight queued/active uncached jobs while interactive scenarios repeat for at least30s, capped64; jobs vary calibration offset + unique fractional azimuth. Cancel/drain outstanding jobs at end; no manager/cache reset while active. If capped work finishes before30s insufficient sustained evidence, retain all observations.",
+    "sampling_ms": 50
+  },
+  "prediction_log": {
+    "exclusive_create": true,
+    "fsync_before_execution": true,
+    "includes": "request ID, timestamps, request SHA256, lock SHA256, domain SHA256, raw and margined predictions; requests without estimator explicit unknown"
+  },
+  "preflight": {
+    "repeats": 5,
+    "lookups_per_repeat": 100,
+    "failure": "nil/malformed source or unavailable counts -> unknown, never zero fallback; budget state unsupported by frozen prototype"
+  },
+  "streaming": {
+    "transport": "real net/http TCP server on container loopback, unmodified Gin handlers/middleware; bind distinct loopback source IPs, trusted proxies disabled",
+    "receive": "io.Copy into SHA256 without retention for large outputs; only small Optimize/experiment responses retained for prerequisite handling",
+    "measurement": "handler interval including writing; global encoding/write counter only for isolated requests, compute wall=handler minus observable encode/write. Full client wall and receive duration independently timed. RSS/heap/cgroup/allocations sampled50ms. Instrumentation/client allocations part of process observation, not reservation"
+  },
+  "production_invariants": {
+    "attempts": 20,
+    "window_seconds": 60,
+    "global_concurrency": 2,
+    "per_client_concurrency": 1,
+    "deadline_seconds": 60,
+    "cell_cap": 6,
+    "experiment_workers": 1,
+    "queue_capacity": 16,
+    "auto": "observation-only"
+  },
+  "no_modification_after_runs": true
+}

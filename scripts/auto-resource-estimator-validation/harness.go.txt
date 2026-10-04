@@ -1,0 +1,192 @@
+package main
+
+// Validation-only helpers, compiled only in the disposable backend copy.
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"math"
+	"os"
+	"path/filepath"
+	"sync"
+	"testing"
+	"time"
+)
+
+type lockedModel struct {
+	Features     []string  `json:"features"`
+	Means        []float64 `json:"means"`
+	Scales       []float64 `json:"scales"`
+	Coefficients []float64 `json:"coefficients"`
+}
+type lockedEstimator struct {
+	Name      string      `json:"name"`
+	Operation string      `json:"operation"`
+	Target    string      `json:"target"`
+	Model     lockedModel `json:"model"`
+	Margin    float64     `json:"calibration_only_margin"`
+}
+type lockedContract struct {
+	Estimators []lockedEstimator `json:"estimators"`
+}
+
+func lockedOperation(ep string) string {
+	return map[string]string{"/api/simulate": "simulate", "/api/evaluate-network": "evaluate", "/api/optimize-network": "optimize", "/api/interference": "interference", "/api/coverage-surface": "surface", "/api/explain-network-cell": "explain", "/api/optimize-azimuth": "azimuth", "/api/recommend-sites": "recommendation", "/api/building-entry-analysis": "building-entry"}[ep]
+}
+func lockedPredict(lock lockedContract, op string, f geometryFixture, g geometryStats) map[string]any {
+	values := map[string]float64{"rays": float64(f.Rays), "radius_m": f.Radius, "frequency_28": 0, "footprints": float64(g.Footprints), "vertices": float64(g.Vertices), "edges": float64(g.Edges), "vertex_density": g.VertexDensity, "area": g.Area}
+	if f.Frequency == 28 {
+		values["frequency_28"] = 1
+	}
+	output := map[string]any{}
+	for _, e := range lock.Estimators {
+		if e.Operation != op {
+			continue
+		}
+		z := e.Model.Coefficients[0]
+		for i, n := range e.Model.Features {
+			v := values[n]
+			if n == "area" {
+				v = math.Log(math.Max(v, 1e-9))
+			} else if n != "frequency_28" {
+				v = math.Log1p(v)
+			}
+			z += e.Model.Coefficients[i+1] * (v - e.Model.Means[i]) / e.Model.Scales[i]
+		}
+		p := math.Exp(math.Max(-40, math.Min(z, 40)))
+		output[e.Target] = map[string]any{"raw": p, "margin": e.Margin, "adjusted": p * e.Margin, "estimator": e.Name}
+	}
+	return output
+}
+func lockedSustained(t *testing.T, w, profile string, index int, scenario string, base map[string]any, manager *experimentManager, request func(string, []byte, string, context.Context) geometryResponse, encode func(any) []byte, network func(bool, string) geometryResponse, peer, peer2 string) []geometryResponse {
+	t.Helper()
+	file, e := os.OpenFile(filepath.Join(w, fmt.Sprintf("async-%s-%d.jsonl", profile, index)), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0644)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer file.Close()
+	ids := []string{}
+	submitted := 0
+	submit := func() {
+		b := map[string]any{}
+		for k, v := range base {
+			b[k] = v
+		}
+		b["calibration_offset_db"] = float64(index%1000)/1000 + float64(submitted)/100000
+		az := []float64{}
+		for k := 0; k < 64; k++ {
+			az = append(az, float64(k)*360/64+float64(index%1000)/10000+float64(submitted)/1000000)
+		}
+		res := request("/api/processes/batch-experiment/execution", encode(map[string]any{"name": "locked-sustained", "base": b, "matrix": map[string]any{"azimuths_deg": az}}), fmt.Sprintf("198.20.%d", submitted), nil)
+		submitted++
+		var snap experimentJobSnapshot
+		if res.Status == 202 && json.Unmarshal(res.Body, &snap) == nil && !snap.CacheHit {
+			ids = append(ids, snap.JobID)
+		} else {
+			t.Logf("async submission failed status%d", res.Status)
+		}
+	}
+	for i := 0; i < 8; i++ {
+		submit()
+	}
+	start := time.Now()
+	stop := make(chan struct{})
+	joined := make(chan struct{})
+	var mu sync.Mutex
+	go func() {
+		defer close(joined)
+		tick := time.NewTicker(50 * time.Millisecond)
+		defer tick.Stop()
+		for {
+			select {
+			case <-stop:
+				return
+			case <-tick.C:
+				mu.Lock()
+				snaps := []experimentJobSnapshot{}
+				running, queued, completed, canceled, runs := 0, 0, 0, 0, 0
+				for _, id := range ids {
+					s, _ := manager.Snapshot(id)
+					s.Result = nil
+					snaps = append(snaps, s)
+					runs += s.CompletedRuns
+					switch s.Status {
+					case "running":
+						running++
+					case "accepted", "queued":
+						queued++
+					case "succeeded":
+						completed++
+					case "canceled":
+						canceled++
+					}
+				}
+				json.NewEncoder(file).Encode(map[string]any{"at": time.Now(), "elapsed_seconds": time.Since(start).Seconds(), "submitted": submitted, "queued": queued, "active": running, "completed_jobs": completed, "canceled_jobs": canceled, "completed_runs": runs, "queue_depth": len(manager.queue), "jobs": snaps})
+				file.Sync()
+				refill := queued+running < 8 && submitted < 64 && time.Since(start) < 30*time.Second
+				mu.Unlock()
+				if refill {
+					mu.Lock()
+					submit()
+					mu.Unlock()
+				}
+			}
+		}
+	}()
+	responses := []geometryResponse{}
+	for round := 0; time.Since(start) < 30*time.Second && round < 12; round++ {
+		if scenario == "async-optimize" || scenario == "async-evaluate" {
+			responses = append(responses, network(scenario == "async-optimize", peer2))
+		} else {
+			rs := make([]geometryResponse, 2)
+			var wg sync.WaitGroup
+			wg.Add(2)
+			gate := make(chan struct{})
+			go func() { defer wg.Done(); <-gate; rs[0] = network(true, peer) }()
+			go func() { defer wg.Done(); <-gate; rs[1] = network(scenario == "async-two-optimizers", peer2) }()
+			close(gate)
+			wg.Wait()
+			responses = append(responses, rs...)
+		}
+		time.Sleep(3 * time.Second)
+	}
+	if time.Since(start) < 30*time.Second {
+		time.Sleep(30*time.Second - time.Since(start))
+	}
+	close(stop)
+	<-joined
+	for _, id := range ids {
+		manager.Cancel(id)
+	}
+	until := time.Now().Add(90 * time.Second)
+	for len(manager.queue) > 0 || auditExperimentActive.Load() > 0 {
+		if time.Now().After(until) {
+			t.Fatal("async drain watchdog")
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	final := []experimentJobSnapshot{}
+	for _, id := range ids {
+		s, _ := manager.Snapshot(id)
+		s.Result = nil
+		final = append(final, s)
+	}
+	json.NewEncoder(file).Encode(map[string]any{"finished_at": time.Now(), "duration_seconds": time.Since(start).Seconds(), "submitted": submitted, "jobs": final})
+	file.Sync()
+	return responses
+}
+func TestLockedPredictionPrimitive(t *testing.T) {
+	m := lockedContract{[]lockedEstimator{{Name: "simulate/response_bytes", Operation: "simulate", Target: "response_bytes", Model: lockedModel{Features: []string{"rays"}, Means: []float64{0}, Scales: []float64{1}, Coefficients: []float64{0, 1}}, Margin: 2}}}
+	p := lockedPredict(m, "simulate", geometryFixture{Rays: 9}, geometryStats{})["response_bytes"].(map[string]any)
+	if math.Abs(p["raw"].(float64)-10) > 1e-10 || math.Abs(p["adjusted"].(float64)-20) > 1e-10 {
+		t.Fatal(p)
+	}
+	if len(lockedPredict(m, "unknown", geometryFixture{}, geometryStats{})) != 0 {
+		t.Fatal("optimistic fallback")
+	}
+	var bad lockedContract
+	if json.NewDecoder(bytes.NewBufferString("malformed")).Decode(&bad) == nil {
+		t.Fatal("malformed accepted")
+	}
+}

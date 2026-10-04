@@ -4,6 +4,7 @@ local page_routes = {
   ["api.md"] = "api.html",
   ["rf-analysis-request-budget-audit.md"] = "rf-analysis-request-budget-audit.html",
   ["network-optimization-deadline-audit.md"] = "network-optimization-deadline-audit.html",
+  ["auto-resource-geometry-calibration.md"] = "auto-resource-geometry-calibration.html",
   ["auto-resource-profile-foundation.md"] = "auto-resource-profile-foundation.html",
   ["algorithms.md"] = "algorithms.html",
   ["features.md"] = "features.html",

@@ -3407,7 +3407,12 @@ test("captures Concept 8F hierarchy, density, and responsive evidence", async ({
       await capture(`${width}-${name}`);
       const measurement = measurements.at(-1);
       expect(measurement.documentOverflowX).toBeLessThanOrEqual(1);
-      if (measurement.drawerBody) expect(measurement.drawerBody.scrollWidth).toBeLessThanOrEqual(measurement.drawerBody.clientWidth + 1);
+      if (measurement.drawerBody) {
+        expect(
+          measurement.drawerBody.scrollWidth,
+          `${measurement.label} drawer body width (${measurement.drawerBody.scrollWidth}) exceeds its client width (${measurement.drawerBody.clientWidth})`,
+        ).toBeLessThanOrEqual(measurement.drawerBody.clientWidth + 1);
+      }
     }
   }
 

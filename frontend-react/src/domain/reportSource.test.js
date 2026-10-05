@@ -202,13 +202,14 @@ describe("Concept 7D report source boundary", () => {
       runs: [simulationRun, optimizationRun],
     });
     const markdown = renderMarkdownReport(report);
+    const normalizedMarkdown = markdown.replace(/^Generated: .*$/m, "Generated: <localized timestamp>");
     const semanticOutput = {
       sourceBinding: report.domainBinding,
       selectedSolutionId: report.selectedSolutionId,
       paretoSolutionIds: report.networkOptimization.pareto_frontier.map((solution) => solution.id),
       markdown: {
-        sha256: createHash("sha256").update(markdown).digest("hex"),
-        utf8Bytes: new TextEncoder().encode(markdown).byteLength,
+        sha256: createHash("sha256").update(normalizedMarkdown).digest("hex"),
+        utf8Bytes: new TextEncoder().encode(normalizedMarkdown).byteLength,
       },
     };
 

@@ -279,8 +279,8 @@ export default function useProjectWorkspace(meta) {
 
   const importProject = useCallback((text) => {
     const project = repository.importProjectFile(text);
-    commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }));
-    return project;
+    return commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }))
+      .then(() => project);
   }, [commit, repository]);
 
   return {

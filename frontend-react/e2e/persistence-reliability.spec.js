@@ -107,7 +107,8 @@ async function storedProject(page) {
 async function save(page) {
   await tool(page, "plan", "Plan", "scenarios");
   await page.getByRole("button", { name: "Save Version", exact: true }).click();
-  await expect.poll(async () => (await storedProject(page))?.scenarios.length).toBe(1);
+  await expect(page.getByText("Version saved", { exact: true })).toBeVisible();
+  await expect.poll(async () => (await storedProject(page))?.scenarios.length, { timeout: 15_000, intervals: [500, 1000] }).toBe(1);
 }
 
 test("six-Cell retained results Save Version, Export, Import and reload", async ({ page }, info) => {
@@ -133,7 +134,8 @@ test("six-Cell retained results Save Version, Export, Import and reload", async 
   // The project menu permits an explicit saved snapshot even without an RF
   // input edit; the Scenario panel correctly disables an unchanged draft.
   await menu.getByRole("button", { name: "Save current", exact: true }).click();
-  await expect.poll(async () => (await storedProject(page))?.scenarios[0]?.domain.revisions.length).toBe(2);
+  await expect(menu.getByRole("status")).toHaveText("Version saved");
+  await expect.poll(async () => (await storedProject(page))?.scenarios[0]?.domain.revisions.length, { timeout: 15_000, intervals: [500, 1000] }).toBe(2);
   const before = await storedProject(page);
   let download;
   page.once("download", (file) => { download = file; });
@@ -169,7 +171,7 @@ test("six-Cell retained results Save Version, Export, Import and reload", async 
   timings.exportGenerationMs = exportGenerationMs;
   const importStarted = performance.now();
   await menu.locator("input[type=file]").setInputFiles({ name: "six-cell.atom-project.json", mimeType: "application/json", buffer: Buffer.from(text) });
-  await expect.poll(async () => (await storedProject(page))?.name).toBe(`${seed.projects[0].name} (Imported)`);
+  await expect.poll(async () => (await storedProject(page))?.name, { timeout: 20_000, intervals: [1000, 2000] }).toBe(`${seed.projects[0].name} (Imported)`);
   timings.uiImportAndPersistenceMs = performance.now() - importStarted;
   const memoryAfterImport = await heap();
   await cdp.send("HeapProfiler.collectGarbage");

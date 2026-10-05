@@ -6747,6 +6747,7 @@ a:focus-visible {
 
 .tool-drawer-body {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   flex: 1 1 auto;
   align-content: start;
   gap: var(--space-3);
@@ -6755,6 +6756,11 @@ a:focus-visible {
   padding: var(--space-3);
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+.tool-drawer-body > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .drawer-error {

@@ -1,5 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { createProjectWorkspace, exportProjectFile } from "../utils/projectStore.js";
 
 const persistence = vi.hoisted(() => ({ snapshots: [], ledger: [], revision: 0,
   queue: Promise.resolve(), durable: null, hold: null, failNext: false }));
@@ -151,6 +152,28 @@ describe("useProjectWorkspace", () => {
     expect(result.current.workspace).toBe(before);
     expect(persistence.snapshots).toHaveLength(0);
   });
+
+  it("resolves a project import only after its workspace write is durable", async () => {
+    const { result } = renderHook(() => useProjectWorkspace(null));
+    await waitFor(() => expect(result.current.loaded).toBe(true));
+    const projectFile = exportProjectFile(createProjectWorkspace().projects[0]);
+    let releaseWrite;
+    persistence.hold = new Promise((resolve) => { releaseWrite = resolve; });
+
+    let importing;
+    act(() => { importing = result.current.importProject(projectFile); });
+    let resolved = false;
+    importing.then(() => { resolved = true; });
+    expect(result.current.activeProject.name).toBe("Ankara Plan (Imported)");
+    expect(resolved).toBe(false);
+
+    await act(async () => { releaseWrite(); await importing; });
+
+    expect(resolved).toBe(true);
+    expect(persistence.durable.projects.find((project) => project.id === persistence.durable.activeProjectId).name)
+      .toBe("Ankara Plan (Imported)");
+  });
+
   it("persists Undo through the callback captured before deleting the Scenario", async () => {
     const { result } = renderHook(() => useProjectWorkspace(null));
     await waitFor(() => expect(result.current.loaded).toBe(true));

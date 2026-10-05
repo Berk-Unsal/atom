@@ -4,6 +4,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Fixed
+
+- Wait for imported projects to finish saving and keep narrow tool drawers within their viewport.
+
 ### Added
 
 - Record the independent W1 shipping-runtime reference qualification, preserving previous studies and fixed production policy.

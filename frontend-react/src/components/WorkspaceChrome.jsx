@@ -218,7 +218,7 @@ export function ProjectMenu({
       if (file.size > MAX_PROJECT_FILE_BYTES) {
         throw new Error(`Project file must be no larger than ${MAX_PROJECT_FILE_BYTES / (1024 * 1024)} MiB`);
       }
-      onImportProject(await file.text());
+      await onImportProject(await file.text());
       setMessage("Project imported");
     } catch (error) {
       setMessage(error.message);

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { CommandBar, MapLegend, MapToolbar, ProjectMenu, ToolDrawer, WorkflowRail } from "./WorkspaceChrome.jsx";
 import { WORKSPACE_STAGES } from "./workspaceTools.js";
@@ -244,6 +244,43 @@ describe("persistent result and workspace context", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
     expect(screen.getByText("Save Version records the current plan. Run 21 remains tied to the input that produced it.")).toBeInTheDocument();
+  });
+
+  it("reports a project import only after its save finishes", async () => {
+    let finishImport;
+    const onImportProject = vi.fn(() => new Promise((resolve) => { finishImport = resolve; }));
+    const { container } = render(
+      <ProjectMenu
+        activeProject={{ id: "project-1", name: "Ankara", scenarios: [] }}
+        compatible
+        exportContent={() => "{}"}
+        onAddProject={vi.fn()}
+        onDeleteProject={vi.fn()}
+        onDeleteScenario={vi.fn()}
+        onDuplicateProject={vi.fn()}
+        onImportProject={onImportProject}
+        onOpenScenario={vi.fn()}
+        onRenameProject={vi.fn()}
+        onSaveScenario={vi.fn()}
+        onSelectProject={vi.fn()}
+        projects={[]}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    const fileInput = container.querySelector('input[type="file"]');
+    Object.defineProperty(fileInput, "files", {
+      configurable: true,
+      value: [{ size: 12, text: async () => "{\"project\":true}" }],
+    });
+    fireEvent.change(fileInput);
+
+    await waitFor(() => expect(onImportProject).toHaveBeenCalledWith("{\"project\":true}"));
+    expect(screen.queryByText("Project imported")).not.toBeInTheDocument();
+
+    await act(async () => {
+      finishImport();
+    });
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Project imported"));
   });
 });
 

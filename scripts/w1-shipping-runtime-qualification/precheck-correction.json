@@ -1,0 +1,8 @@
+{
+  "recorded_at": "2026-10-05T16:25:20.042102+00:00",
+  "qualification_started": false,
+  "issue": "Readiness witness job can finish between its API snapshot and client request start; third preliminary proof failed the same-job start-coverage check despite a successor job computing.",
+  "correction": "Require completed work and at least half a job remaining for readiness. Final native execution timelines independently identify the actual uncached job covering EACH request start, regardless of handoff. Repeat all five non-scoring proof cases in new directories.",
+  "preserved_preliminary_case": "producer-final-C-dense-certification-1-2.6",
+  "historical_study_unchanged": true
+}

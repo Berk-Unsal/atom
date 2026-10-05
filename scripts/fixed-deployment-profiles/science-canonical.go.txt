@@ -1,0 +1,26 @@
+// Only this explicitly volatile runtime field is excluded from scientific identity.
+func fixedScientificHash(body []byte) (string, error) {
+ var response map[string]json.RawMessage
+ if err := json.Unmarshal(body, &response); err != nil { return "", err }
+ var diagnostics map[string]json.RawMessage
+ if err := json.Unmarshal(response["diagnostics"], &diagnostics); err != nil { return "", err }
+ if _, exists := diagnostics["elapsed_ms"]; !exists { return "", fmt.Errorf("missing elapsed_ms runtime diagnostic") }
+ delete(diagnostics, "elapsed_ms")
+ encoded, err := json.Marshal(diagnostics); if err != nil { return "", err }; response["diagnostics"] = encoded
+ // UseNumber retains scientific numeric representations without float64 rounding.
+ encoded, err = json.Marshal(response); if err != nil { return "", err }
+ decoder := json.NewDecoder(bytes.NewReader(encoded)); decoder.UseNumber()
+ var canonical any; if err = decoder.Decode(&canonical); err != nil { return "", err }
+ encoded, err = json.Marshal(canonical); if err != nil { return "", err }
+ digest := sha256.Sum256(encoded); return hex.EncodeToString(digest[:]), nil
+}
+func TestFixedScientificHash(t *testing.T) {
+ a := []byte(`{"summary":{"value":9007199254740993},"results":[1,2],"diagnostics":{"elapsed_ms":1,"selection_rule":"a"}}`)
+ b := []byte(`{"diagnostics":{"selection_rule":"a","elapsed_ms":9},"results":[1,2],"summary":{"value":9007199254740993}}`)
+ ha, err := fixedScientificHash(a); if err != nil { t.Fatal(err) }; hb, err := fixedScientificHash(b); if err != nil || ha != hb { t.Fatal("runtime-only differences changed identity",err) }
+ for _, mutation := range []string{`"9007199254740993"`, `"unused"`} { _ = mutation }
+ for _, changed := range [][]byte{bytes.Replace(a,[]byte("9007199254740993"),[]byte("9007199254740992"),1),bytes.Replace(a,[]byte("[1,2]"),[]byte("[2,1]"),1),bytes.Replace(a,[]byte(`"a"`),[]byte(`"b"`),1)} {
+  h, e := fixedScientificHash(changed); if e != nil || h == ha { t.Fatal("scientific change escaped comparison",e) }
+ }
+ if _, err := fixedScientificHash([]byte(`{"diagnostics":{}}`)); err == nil { t.Fatal("missing exclusion path must fail") }
+}

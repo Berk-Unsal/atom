@@ -6,6 +6,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Record the independent W1 shipping-runtime reference qualification, preserving previous studies and fixed production policy.
+
+- Record the conservative fixed deployment profile study for the exact Ankara six-Cell workload envelope: no reference profile certified; preserve empirical HTTP evidence, operational headroom gates and unchanged fixed production policy.
+
 - Observe CPU, cgroup and memory constraints with provenance at startup; add local Auto profile diagnostics and controlled-container calibration while preserving fixed RF admission, deadlines, workers and scientific identities.
 - Document locked estimator validation on fresh Ankara domains and unchanged models: retain the invalid-validation decision, numerical failures, HTTP evidence and sustained-load limitations; keep Auto observation-only.
 

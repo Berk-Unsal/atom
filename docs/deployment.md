@@ -41,6 +41,10 @@ and 1 per client, a 60-second RF deadline, six selected Cells and one experiment
 worker. This foundation establishes no automatic scaling or certified minimum
 or recommended hardware. See the [foundation and measured calibration](./auto-resource-profile-foundation.md).
 
+## Qualified shipping-runtime W1 reference
+
+The [W1 shipping-runtime qualification](./w1-shipping-runtime-qualification.md) names **A** as the minimum and **B** as the recommended W1 reference for A.T.O.M **0.11.0**, commit `e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8`, shipping **Go 1.26.6**, qualified **2026-10-05 UTC**. A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested resource floors under the exact Ankara 2026.07 hashes, eight layouts and frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and shipping binary assumptions. CPU quota does not reserve dedicated cores. Current policy remains 20 attempts/ClientIP/anchored 60 s, global 2/per-client 1, RF deadline 60 s, six Cells, experiment worker 1/queue 16. Unknown runtime/resource evidence never establishes eligibility. This is not a universal hardware requirement, arbitrary pack/layout guarantee, heavier-workload qualification, or eight-Cell approval. Auto remains observation-only; no resource selector or admission change. See the qualification for GC-trace observability, memory/timing gates, actual HTTP evidence and limitations.
+
 ## Configuration
 
 | Variable | Default | Purpose |

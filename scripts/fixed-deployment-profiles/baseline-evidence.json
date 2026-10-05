@@ -1,0 +1,78 @@
+{
+  "baseline": {
+    "branch": "main",
+    "diff_stat": "",
+    "head": "e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8",
+    "status_short": "",
+    "version": "0.11.0"
+  },
+  "evidence": [
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-budget-isolated.log.gz",
+      "sha256": "2b9283dd2e14127f0c3ee99c04e009a436b991f1bcbb2f1cde1055d3eec07c99",
+      "uncompressed_sha256": "28a9e3674a729ca67893df975395f4b9df1f81d5bda7ac63a1cb60a38febd749",
+      "classification": "successful baseline command output"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-deadline-isolated.log.gz",
+      "sha256": "0158df7778be20ca68b60d3b6eafdfb2c694c557b24e697a2038eaba1eaa3793",
+      "uncompressed_sha256": "2fd7163fa89cd60e145aea000116cfe212372aaf9c60e2c6c87ae18ed40ef56d",
+      "classification": "successful baseline command output"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-e2e.log.gz",
+      "sha256": "92a7667991591944d1d937bbf6e9aa92714fc66bb04d46bfe9c0271178ea585a",
+      "uncompressed_sha256": "e5b235a3f7e12f2c6fb9777a0b41a61bdec149006e8aa061b55f2e4a5aaa346d",
+      "classification": "initial invocation without real-backend opt-in; skipped; not counted as E2E validation"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-frontend-build.log.gz",
+      "sha256": "d9c6441ee881159736402e337b0754ae8a305dc301d048d9c9853fa560d70275",
+      "uncompressed_sha256": "29ce566ae8ce55918d2b872291a50ac196a92ca18d16f488c89b6cb6dd45f9ec",
+      "classification": "successful baseline command output"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-frontend-lint.log.gz",
+      "sha256": "7eba943c0b8390f69f43bb87478fa0894d0f35686ec555e48f51a112e426d7e4",
+      "uncompressed_sha256": "8c0fc05ce8eb404607f62c91f788627799d973382ab2d64911d3e6878dd6235a",
+      "classification": "successful baseline command output"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-frontend-test.log.gz",
+      "sha256": "68b4a5c35fe55a3e0dce37a07b09c4cf2489bb6d72bd78f1fe5ccd56452e1a5f",
+      "uncompressed_sha256": "bbc8d6d0fed04cb941d78fbe78de65fefddb89dc253236e97fde3f4b1752d923",
+      "classification": "successful baseline command output"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-go-race.log.gz",
+      "sha256": "66fbd73f854c717de6a6b77fc0bc638278a4545a72400d724d2c79a37690f000",
+      "uncompressed_sha256": "e65e9d3790139843847574c0f63924fa215cf97e66ee4172a0a38bad14b6fbf0",
+      "classification": "successful baseline command output"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-go-test.log.gz",
+      "sha256": "66fbd73f854c717de6a6b77fc0bc638278a4545a72400d724d2c79a37690f000",
+      "uncompressed_sha256": "e65e9d3790139843847574c0f63924fa215cf97e66ee4172a0a38bad14b6fbf0",
+      "classification": "successful baseline command output"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-go-vet.log.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "successful baseline command output"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-real-e2e.log.gz",
+      "sha256": "4c530a5bcb712567e6bc6a00f0f423138bee5b3084cafbdf3c77567530eb4f62",
+      "uncompressed_sha256": "958253ccb383be91501689207a8f1ef310b6ca5d22c62007409f06a2c7330bc1",
+      "classification": "combined real E2E ClientIP collision; failed invocation preserved; superseded only by separately isolated test invocations"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/atom-fixed-baseline-resource-tests.log.gz",
+      "sha256": "1f75fc6b183fb63f779f04f8d13efc955b5e67d29f9eb2b664249dfdcc3b1bff",
+      "uncompressed_sha256": "6def7fa46b32d110ad2080a022e061132554551d1d651ba951244b379fe2d5e1",
+      "classification": "successful baseline command output"
+    }
+  ],
+  "note": "Original baseline outputs preserved. Empty vet log has no textual assertion; final check ledger separately records command exit status. Isolated RF budget/deadline runs supply real E2E baseline evidence."
+}

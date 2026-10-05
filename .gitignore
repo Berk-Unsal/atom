@@ -3,7 +3,15 @@
 # Python
 __pycache__/
 .pycache/
-data-pipeline/.venv/
+*.pyc
+*.pyo
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
 
 # Go
 backend-go/.gocache/
@@ -14,6 +22,8 @@ frontend-react/node_modules/
 frontend-react/dist/
 frontend-react/playwright-report/
 frontend-react/test-results/
+frontend-react/coverage/
+frontend-react/.eslintcache
 
 # Data artifacts
 data-pipeline/ankara_5g_nodes.csv
@@ -22,6 +32,15 @@ data-pipeline/ankara_5g_nodes.csv
 # Local environment
 .env
 .env.local
+.env.*.local
+
+# Editor temporary files
+*.swp
+*.swo
+*~
+
+# Local agent checkpoint; qualification reports, contracts and evidence stay tracked
+/scripts/w1-shipping-runtime-qualification/STATE.md
 
 # Agents
 .impeccable/

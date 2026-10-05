@@ -1,0 +1,264 @@
+{
+  "batch_order": [
+    "B-surface-valid-0",
+    "C-surface-valid-0",
+    "A-surface-valid-0",
+    "D-surface-valid-0"
+  ],
+  "binary_sha256": "38dbf20a55df89f3191cb7527de7a10b9b3d4f96da9f4999108dcf401a270802",
+  "cell_size_m": 10,
+  "gates": {
+    "W3_failure": "retain failures; outside certified interactive envelope does not invalidate W1/W2 if processes remain healthy",
+    "async": "worker1/queue16; initial actual worker active, nonzero temporal overlap per interactive request; sustained>=30s and >=95%50ms samples active during first30s, uncached jobs; no failed jobs/submissions",
+    "cancellation": "cancel expensiveOptimize at100ms, await handler completion, verify attempts charged and same/other clientEvaluate succeed, zero slots/active clients",
+    "cancellation_release_max_seconds": 2,
+    "concurrency": "two real distinctClientIP requests, both successful; no slot/client leak after every group",
+    "deadline_headroom_min_seconds": 15,
+    "http": "all planned interactive responses200, full streamed read, no60s deadline failure; cancellation first response exempt",
+    "incomplete": "missing/breached evidence ->NOT CERTIFIED, do not relax gates or replace cases",
+    "memory_max_events_allowed": 0,
+    "memory_peak_max_fraction_of_hard_limit": 0.75,
+    "memory_scope": "maximum kernel cgroup lifetime peak in W1/W2 and mixed batches, including startup and retained W2 state; W3/fresh separately disclosed",
+    "memory_signals_required": [
+      "memory.peak",
+      "memory.current",
+      "process RSS",
+      "Go heap",
+      "memory.events"
+    ],
+    "oom_events_allowed": 0,
+    "rationale_deadline": "reserve one quarter of existing60s safety deadline for environmental variability, transfer and contention;45s applies per protected request including client serialization/receive",
+    "rationale_memory": "retain at least25% hard memory headroom including dataset, Go runtime, client, async retained state and cgroup page cache; no reservation inferred from RSS",
+    "request_wall_max_seconds": 45,
+    "scientific": "all successful deterministic endpoint+request hashes identical across profiles, repetitions and scenarios; response runtime fields absent, diagnosticAuto not compared",
+    "throttle": "quota saturation is allowed; record usage/periods/throttle duration; pass requires unchanged wall/headroom gates"
+  },
+  "grid_cells": 90601,
+  "locked_at": "2026-10-05T09:40:21.260678+00:00",
+  "main_lock_sha256": "96e96a59445b9c94c39fc2bd88366a38eb25a9027ce0ac019d20985206274b0b",
+  "no_main_contract_mutation": true,
+  "plans": {
+    "A-surface-valid-0": [
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 0
+      }
+    ],
+    "B-surface-valid-0": [
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 2
+      }
+    ],
+    "C-surface-valid-0": [
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 2
+      }
+    ],
+    "D-surface-valid-0": [
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "surface",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "surface",
+        "repeat": 2
+      }
+    ]
+  },
+  "radius_m": 1500,
+  "reason": "Static API validation: original 5m/1500m fixture produces361201 gridcells and exceeds100000 cap. Preserve those42 plannedHTTP422 negativecontrols; add42 valid10m/1500m surfaces (90601 gridcells). Frozen before anyW3 RF timings; no numericalgatechange or replacement.",
+  "schema_version": 1,
+  "source_sha256": "edfdf82ac9be515f0a9f55da623c5144a298c127d16a1487d170532fd861271f"
+}

@@ -1,0 +1,60 @@
+{
+  "post_audit_tooling_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/fixed-deployment-profiles",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 2.435877292009536,
+    "completed_at": "2026-10-05T15:16:22.887384+00:00"
+  },
+  "post_audit_docs_build": {
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 6.231634958006907,
+    "completed_at": "2026-10-05T15:16:29.119253+00:00"
+  },
+  "post_audit_docs_validation": {
+    "command": [
+      "/tmp/atom-persistence-docs-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 0.3407011249801144,
+    "completed_at": "2026-10-05T15:16:29.459999+00:00"
+  },
+  "post_audit_version": {
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 0.03313370898831636,
+    "completed_at": "2026-10-05T15:16:29.493184+00:00"
+  },
+  "post_audit_diff": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 0.01741379202576354,
+    "completed_at": "2026-10-05T15:16:29.510642+00:00"
+  }
+}

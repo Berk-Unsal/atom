@@ -1,0 +1,109 @@
+{
+  "backend_tests": {
+    "command": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 0.4845760829630308,
+    "completed_at": "2026-10-05T15:39:02.103497+00:00"
+  },
+  "backend_race": {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 0.22195220802677795,
+    "completed_at": "2026-10-05T15:39:02.325991+00:00"
+  },
+  "backend_vet": {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 0.17961737501900643,
+    "completed_at": "2026-10-05T15:39:02.505920+00:00"
+  },
+  "frontend_tests": {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 24.4534534579725,
+    "completed_at": "2026-10-05T15:39:26.960072+00:00"
+  },
+  "frontend_lint": {
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 7.126619708025828,
+    "completed_at": "2026-10-05T15:39:34.087822+00:00"
+  },
+  "frontend_build": {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 2.20124870800646,
+    "completed_at": "2026-10-05T15:39:36.289673+00:00"
+  },
+  "rf_budget_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/rf-budget.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 13.3113623749814,
+    "completed_at": "2026-10-05T15:39:49.601782+00:00"
+  },
+  "rf_deadline_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/network-deadline.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 14.703314000042155,
+    "completed_at": "2026-10-05T15:40:04.305860+00:00"
+  },
+  "auto_resource_profile_tests": {
+    "command": [
+      "go",
+      "test",
+      "./...",
+      "-run",
+      "ResourceProfile|AutoResource"
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 1.4340695000137202,
+    "completed_at": "2026-10-05T15:40:05.741030+00:00"
+  }
+}

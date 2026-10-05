@@ -43,6 +43,8 @@ build_page auto-resource-geometry-calibration.md auto-resource-geometry-calibrat
   "Deterministic Ankara geometry domains, repeated workload measurements, held-out predictors and unchanged observational Auto policy."
 build_page auto-resource-estimator-locked-validation.md auto-resource-estimator-locked-validation.html "Locked Estimator Validation" "Validation evidence" \
   "Frozen workload estimators, fresh Ankara domains, unseen settings, actual HTTP streaming and sustained-load decision evidence."
+build_page fixed-deployment-profile-certification.md fixed-deployment-profile-certification.html "Fixed Deployment Profile Certification" "Operations evidence"   "Frozen Ankara workload envelopes, bounded reference resources, actual HTTP evidence, concurrency, background overlap and conservative operational headroom."
+build_page w1-shipping-runtime-qualification.md w1-shipping-runtime-qualification.html "W1 Shipping Runtime Qualification" "Operations evidence" "Exact W1 successor on the shipping Go runtime, resource floors, actual HTTP evidence and sustained background activity."
 build_page algorithms.md algorithms.html "Algorithms and RF Physics" "Model reference" \
   "The deterministic propagation, geometry, optimization, and radio-quality methods behind A.T.O.M results."
 build_page features.md features.html "Capabilities" "Product reference" \

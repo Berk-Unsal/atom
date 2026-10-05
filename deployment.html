@@ -81,6 +81,9 @@ capacity, scaling, and production-hardening guidance for A.T.O.M." />
       <li><a href="#auto-resource-diagnostics"
       id="toc-auto-resource-diagnostics">Auto resource
       diagnostics</a></li>
+      <li><a href="#qualified-shipping-runtime-w1-reference"
+      id="toc-qualified-shipping-runtime-w1-reference">Qualified
+      shipping-runtime W1 reference</a></li>
       <li><a href="#configuration"
       id="toc-configuration">Configuration</a></li>
       <li><a href="#dataset-mounts" id="toc-dataset-mounts">Dataset
@@ -183,6 +186,25 @@ selected Cells and one experiment worker. This foundation establishes no
 automatic scaling or certified minimum or recommended hardware. See the
 <a href="./auto-resource-profile-foundation.html">foundation and
 measured calibration</a>.</p>
+<h2 id="qualified-shipping-runtime-w1-reference">Qualified
+shipping-runtime W1 reference</h2>
+<p>The W1 shipping-runtime qualification names <strong>A</strong> as the
+minimum and <strong>B</strong> as the recommended W1 reference for
+A.T.O.M <strong>0.11.0</strong>, commit
+<code>e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8</code>, shipping
+<strong>Go 1.26.6</strong>, qualified <strong>2026-10-05 UTC</strong>.
+A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested
+resource floors under the exact Ankara 2026.07 hashes, eight layouts and
+frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and
+shipping binary assumptions. CPU quota does not reserve dedicated cores.
+Current policy remains 20 attempts/ClientIP/anchored 60 s, global
+2/per-client 1, RF deadline 60 s, six Cells, experiment worker 1/queue
+16. Unknown runtime/resource evidence never establishes eligibility.
+This is not a universal hardware requirement, arbitrary pack/layout
+guarantee, heavier-workload qualification, or eight-Cell approval. Auto
+remains observation-only; no resource selector or admission change. See
+the qualification for GC-trace observability, memory/timing gates,
+actual HTTP evidence and limitations.</p>
 <h2 id="configuration">Configuration</h2>
 <table>
 <thead>

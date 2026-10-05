@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Exact W1 successor on the shipping
+Go runtime, resource floors, actual HTTP evidence and sustained
+background activity." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>W1 Shipping Runtime
+Qualification | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="W1 Shipping
+Runtime Qualification page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#actual-shipping-runtime"
+      id="toc-actual-shipping-runtime">Actual shipping runtime</a></li>
+      <li><a href="#exact-w1-and-dataset-scope"
+      id="toc-exact-w1-and-dataset-scope">Exact W1 and dataset
+      scope</a></li>
+      <li><a href="#frozen-qualification-gates"
+      id="toc-frozen-qualification-gates">Frozen qualification
+      gates</a></li>
+      <li><a href="#corrected-sustained-producer"
+      id="toc-corrected-sustained-producer">Corrected sustained
+      producer</a></li>
+      <li><a href="#results" id="toc-results">Results</a></li>
+      <li><a href="#profile-a" id="toc-profile-a">Profile A</a></li>
+      <li><a href="#profile-b" id="toc-profile-b">Profile B</a></li>
+      <li><a href="#profile-c" id="toc-profile-c">Profile C</a></li>
+      <li><a href="#invariance-and-operational-observations"
+      id="toc-invariance-and-operational-observations">Invariance and
+      operational observations</a></li>
+      <li><a href="#decisions-and-exact-certification-boundary"
+      id="toc-decisions-and-exact-certification-boundary">Decisions and
+      exact certification boundary</a></li>
+      <li><a href="#validation-and-freeze"
+      id="toc-validation-and-freeze">Validation and freeze</a></li>
+      <li><a href="#limitations"
+      id="toc-limitations">Limitations</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Operations evidence</span>
+        <h1>W1 Shipping Runtime Qualification</h1>
+        <p>Exact W1 successor on the shipping Go runtime, resource
+floors, actual HTTP evidence and sustained background activity.</p>
+        <div class="hero-actions">
+          <a class="button" href="./w1-shipping-runtime-qualification.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Qualification completed
+<strong>2026-10-05T18:24:59.989067+00:00</strong>. Completed
+<strong>1677/1677</strong> locked groups. A: <strong>CERTIFIED
+W1</strong>; B: <strong>CERTIFIED W1</strong>; C: <strong>CERTIFIED
+W1</strong>. Minimum certified W1 reference: <strong>A</strong>.
+Recommended W1 reference: <strong>B</strong>.</p>
+<p>Source <code>e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8</code> on
+<code>main</code>, A.T.O.M <strong>0.11.0</strong>. The starting
+worktree contained the preceding fixed-profile study's uncommitted
+documentation/tooling; its 663 historical artifacts were hashed and
+preserved. Previous failed/interrupted observations, W2/W3 evidence,
+estimator validation and Auto calibration are not rewritten by this
+independent W1 successor.</p>
+<p>Qualification lock SHA256:
+<code>d893436d6d89e52b4415f8f08a8ef675352d0fd90dfeb4d804e0e134da4b1a28</code>.
+Run-plan SHA256:
+<code>fc38549c1655e3b63c1a36dff39438e57b33f1469e16a87f351ab3d78cc715f7</code>.
+<a href="./w1-shipping-runtime-qualification.json">Machine-readable
+findings</a>, <a
+href="../scripts/w1-shipping-runtime-qualification/qualification-lock.json">immutable
+contract</a>, <a
+href="../scripts/w1-shipping-runtime-qualification/run-plans.json">run
+plans</a>, and protocol/tooling.</p>
+<h2 id="actual-shipping-runtime">Actual shipping runtime</h2>
+<p>The unchanged production Dockerfile built primary image
+<code>sha256:06357dc91eae1bca7f32e0d5e3b790f13bd24b7fa8bb5647d093ed8ccee033b5</code>.
+Backend binary SHA256
+<code>77a1ebd09950a7721c7d39a65290912e19dba7a18161c33c98a2ae1bf136c81f</code>.
+Actual build metadata and Auto show <strong>Go 1.26.6</strong>,
+<strong>linux/arm64</strong>, <strong>CGO disabled</strong>. The primary
+shipping server is unmodified; test/client/sampler code runs in a
+separate observer container/cgroup. The observer shares network/PID
+namespaces for real HTTP and read-only process/cgroup evidence.</p>
+<p>A/B/C recreate exactly <strong>2 CPU/4 GiB</strong>, <strong>4 CPU/8
+GiB</strong>, <strong>8 CPU/10 GiB</strong>. Docker inspection, Auto's
+existing CLI inside the actual candidate container, startup Auto logs
+and primary-process executable hashes verify every batch before RF. CLI
+dataset loading exits before RF but remains included in the lifetime
+cgroup memory peak. CPU quota is a consumption ceiling, not a dedicated
+physical-core reservation. Default scheduler/GC settings remain
+unchanged.</p>
+<p>Standard <code>GODEBUG=gctrace=1</code> enables heap observability
+output on the actual shipping binary. It does not tune
+GOGC/GOMEMLIMIT/GOMAXPROCS. GC-event heap sizes have MiB resolution and
+do not establish a continuously sampled HeapAlloc maximum. Kernel
+<code>memory.peak</code> remains the frozen memory gate. Docker's Linux
+JSON logs directly witness Gin handler completion; a pre-freeze smoke
+test exposed delayed macOS bind-mount logs, and that failed harness
+observation remains preserved.</p>
+<h2 id="exact-w1-and-dataset-scope">Exact W1 and dataset scope</h2>
+<p>The exact <strong>ankara-open-planning 2026.07</strong> pack contains
+<strong>161,784 indexed footprint parts</strong>, <strong>936,651
+vertices</strong>, <strong>451 inventory Cells</strong>. Both frozen
+GeoJSON hashes are verified; no alternative pack or generic complexity
+ceiling is inferred.</p>
+<ul>
+<li><p><code>ankara_5g_nodes.geojson</code>:
+<code>c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8</code></p></li>
+<li><p><code>ankara_buildings.geojson</code>:
+<code>d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc</code></p></li>
+</ul>
+<p>Same eight domain manifest SHA256:
+<code>6ba4dbf2445acc6c0960ff44db1229fdf5c66999a67820a0f31f678b3dfd57be</code>.
+Two sparse, medium, dense and very-dense domains are reused unchanged;
+no new favorable domain selection.</p>
+<p>W1 retains <strong>120 rays, 400 m, 30 dBm, 120° beam, both 2.6/28
+GHz, six Cells where applicable, legacy two-pass search and 20/100 MHz
+interference bandwidths</strong>. Simulate; Evaluate/six maps;
+Interference; Evaluate/maps → Interference → Re-evaluate/maps;
+Optimize/six optimized maps; complete Optimize/actual explanation;
+Optimize Azimuth; 25 m Coverage Surface; Building Entry; and five-Cell
+Recommendation all use the prior frontend-equivalent fixtures. The
+Recommendation polygon is the identical per-Cell 20 m enclosing
+envelope.</p>
+<p>Five repeats per critical operation/profile/band/frequency alternate
+the same paired domains 3/2. Each profile has <strong>440 single
+groups</strong>: 400 critical workflows plus 40 exact isolated
+Evaluate/Optimize references. The complete two-call explanation replaces
+the old split main/supplement methodology without duplicating
+explanation groups. No W1 operation, RF/search configuration or required
+repeat is dropped. Three Latin profile segments and seed
+<strong>20261005</strong> balance the run order. One unmeasured valid
+Simulate warms every nonfresh service; no forced GC or cache eviction.
+Eighteen new-process sparse/dense 2.6 GHz first-Optimize cases retain
+separate startup time.</p>
+<h2 id="frozen-qualification-gates">Frozen qualification gates</h2>
+<p>Required interactive responses must return HTTP 200, complete their
+streamed reads, and finish within <strong>45 seconds</strong>,
+preserving <strong>15 seconds</strong> under the unchanged 60-second
+deadline. Kernel lifetime memory peak must be <strong>≤75%</strong> of
+the hard limit; <code>oom</code>, <code>oom_kill</code> and memory
+<code>max</code> events must remain zero. Distinct-client concurrency
+must overlap; every group has two declared concurrent Evaluate probes
+requiring success/overlap to establish both global slots and per-client
+slots remain usable. Probe intervals remain distinct from the primary
+workflow.</p>
+<p>The new invalid 5 m Surface control uses W1 radio inputs and
+prospectively expects <strong>HTTP 400</strong> with the exact
+production error-body digest. It is a validation control, not a W3
+workload. The old HTTP 422 mismatch remains unchanged. Actual shipping
+budget checks require 20 successful same-client requests followed by a
+denied 21st attempt. These exceptions never turn failed interactive
+requests into successes.</p>
+<p>Both monotonic and UTC intervals are retained; the longer interval
+scores the elapsed gate. A discrepancy <strong>&gt;1 second</strong> is
+prospectively an INVALID OBSERVATION, retained without replacement; the
+affected profile becomes INVALID/INSUFFICIENT. All locked groups
+continue. <code>caffeinate -i</code> began before protocol/qualification
+work and was asserted through terminal qualification validation and the
+independent audit; start/end timestamps and its limitations are
+recorded. It prevents automatic idle sleep, not user-forced
+suspension.</p>
+<h2 id="corrected-sustained-producer">Corrected sustained producer</h2>
+<p>Worker <strong>1</strong>, queue <strong>16</strong> remain
+unchanged. Normal background jobs have 16 uncached W1 runs. Sustained
+scenarios keep eight uncached active/queued 64-run jobs supplied,
+bounded by <strong>1,024 submissions</strong>, until <strong>every
+interactive response finishes</strong>. Each request launch must witness
+an uncached running incomplete job and begin inside an actual job's
+final recorded execution interval. Queue depth alone is
+insufficient.</p>
+<p>The original up-to-12-round/3-second-gap loop remains bounded; an
+additional final interactive request always begins at least 30 seconds
+after the first and must overlap actual work. At least
+<strong>95%</strong> of first-30-second samples must show active worker
+execution. Afterward, outstanding jobs are canceled and an uncached
+one-run sentinel must complete; FIFO worker execution makes this an
+external actual-drain barrier.</p>
+<p>Five non-scoring <strong>180-second</strong> producer checks covered
+all sparse/dense/frequency settings on C and the historically fast
+sparse/A setting before the final lock. Their raw source copies,
+progress, active/queued snapshots, submissions, denials, cache states,
+cancellations and final-tail witnesses are retained. Producer/transport
+behavior is verified against those exact source snapshots; no
+qualification performance scores resize the producer.</p>
+<p>Host idle-sleep prevention: <code>caffeinate -i</code>, started
+<strong>2026-10-05T15:39:00.668863+00:00</strong>, ended
+<strong>2026-10-05T18:26:23.295111+00:00</strong>.</p>
+<ul>
+<li><p>producer-v3-C-sparse-certification-1-2.6: PASS, 596 submissions,
+99.99% active samples, final-tail witness True.</p></li>
+<li><p>producer-v3-C-sparse-certification-1-28: PASS, 560 submissions,
+99.99% active samples, final-tail witness True.</p></li>
+<li><p>producer-v3-C-dense-certification-1-2.6: PASS, 307 submissions,
+99.97% active samples, final-tail witness True.</p></li>
+<li><p>producer-v3-C-dense-certification-1-28: PASS, 279 submissions,
+99.99% active samples, final-tail witness True.</p></li>
+<li><p>producer-v3-A-sparse-certification-1-2.6: PASS, 529 submissions,
+99.99% active samples, final-tail witness True.</p></li>
+</ul>
+<h2 id="results">Results</h2>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th style="text-align: right;">W1 single groups</th>
+<th style="text-align: right;">HTTP failures</th>
+<th style="text-align: right;">Max seconds</th>
+<th style="text-align: right;">Minimum headroom</th>
+<th style="text-align: right;">Memory headroom</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td style="text-align: right;">440</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7.189</td>
+<td style="text-align: right;">52.811 s</td>
+<td style="text-align: right;">69.04%</td>
+<td>CERTIFIED W1</td>
+</tr>
+<tr>
+<td>B</td>
+<td style="text-align: right;">440</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6.917</td>
+<td style="text-align: right;">53.083 s</td>
+<td style="text-align: right;">85.95%</td>
+<td>CERTIFIED W1</td>
+</tr>
+<tr>
+<td>C</td>
+<td style="text-align: right;">440</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7.265</td>
+<td style="text-align: right;">52.735 s</td>
+<td style="text-align: right;">88.79%</td>
+<td>CERTIFIED W1</td>
+</tr>
+</tbody>
+</table>
+<h2 id="profile-a">Profile A</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th style="text-align: right;">Groups</th>
+<th style="text-align: right;">HTTP failures</th>
+<th style="text-align: right;">Max seconds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>two-optimizers</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10.443</td>
+</tr>
+<tr>
+<td>optimize-evaluate</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7.799</td>
+</tr>
+<tr>
+<td>two-evaluates</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.513</td>
+</tr>
+<tr>
+<td>normal_async</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6.582</td>
+</tr>
+<tr>
+<td>sustained_async</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">13.661</td>
+</tr>
+<tr>
+<td>fresh</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.455</td>
+</tr>
+</tbody>
+</table>
+<p>Normal async behavioral/numerical pass <strong>24/24</strong>;
+sustained pass <strong>24/24</strong>, including final-tail checks.
+Cancellation <strong>12/12</strong>, maximum completion/release
+observation <strong>0.012306 s</strong>. Surface statuses
+<code>{'400': 16}</code>; shipping budget cases passed
+<strong>1/1</strong>.</p>
+<h2 id="profile-b">Profile B</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th style="text-align: right;">Groups</th>
+<th style="text-align: right;">HTTP failures</th>
+<th style="text-align: right;">Max seconds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>two-optimizers</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6.897</td>
+</tr>
+<tr>
+<td>optimize-evaluate</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5.454</td>
+</tr>
+<tr>
+<td>two-evaluates</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.455</td>
+</tr>
+<tr>
+<td>normal_async</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5.051</td>
+</tr>
+<tr>
+<td>sustained_async</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7.678</td>
+</tr>
+<tr>
+<td>fresh</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5.104</td>
+</tr>
+</tbody>
+</table>
+<p>Normal async behavioral/numerical pass <strong>24/24</strong>;
+sustained pass <strong>24/24</strong>, including final-tail checks.
+Cancellation <strong>12/12</strong>, maximum completion/release
+observation <strong>0.006606 s</strong>. Surface statuses
+<code>{'400': 16}</code>; shipping budget cases passed
+<strong>1/1</strong>.</p>
+<h2 id="profile-c">Profile C</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th style="text-align: right;">Groups</th>
+<th style="text-align: right;">HTTP failures</th>
+<th style="text-align: right;">Max seconds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>two-optimizers</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6.969</td>
+</tr>
+<tr>
+<td>optimize-evaluate</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5.298</td>
+</tr>
+<tr>
+<td>two-evaluates</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.482</td>
+</tr>
+<tr>
+<td>normal_async</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6.191</td>
+</tr>
+<tr>
+<td>sustained_async</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">9.763</td>
+</tr>
+<tr>
+<td>fresh</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.962</td>
+</tr>
+</tbody>
+</table>
+<p>Normal async behavioral/numerical pass <strong>24/24</strong>;
+sustained pass <strong>24/24</strong>, including final-tail checks.
+Cancellation <strong>12/12</strong>, maximum completion/release
+observation <strong>0.006538 s</strong>. Surface statuses
+<code>{'400': 16}</code>; shipping budget cases passed
+<strong>1/1</strong>.</p>
+<h2 id="invariance-and-operational-observations">Invariance and
+operational observations</h2>
+<p>Scientific equality: <strong>PASS</strong>, 306 endpoint/request
+groups; 306 compared across all A/B/C. Building Entry streams to
+observer disk and canonicalizes afterward; only
+<code>diagnostics.elapsed_ms</code> is removed. All scientific numeric
+tokens, array order, fingerprints and other diagnostics remain. There is
+no extra buffered RF supplement.</p>
+<p>Workflow charges remain Evaluate/maps <strong>7</strong>,
+Optimize/maps <strong>7</strong>, Optimize/explanation
+<strong>2</strong>, evaluation cycle <strong>15</strong>; the shipping
+21st-attempt denial is tested directly. Cancellation is a real TCP
+shutdown 100 ms into expensive Optimize; stock Gin completion and
+simultaneous same/other-client follow-ups prove release, with
+canceled-client remaining budget 18.</p>
+<p>Overall primary peak RSS <strong>1,251,074,048 bytes</strong>; cgroup
+peak <strong>1,329,836,032 bytes</strong>. Sampled RSS is not a memory
+reservation. Primary CPU and throttle counters exclude observer CPU but
+wall time includes client/observer-host contention. Per-batch GC-event
+heap evidence is recorded separately in JSON.</p>
+<p>Largest exact-reference latency inflation <strong>3.840×</strong>: A
+two-optimizers sparse-certification-1-28-W1 /api/optimize-network,
+10.443s versus isolated median 2.720s.</p>
+<p>All declared required interactive requests, including slot probes:
+<strong>8864</strong>, HTTP failures <strong>0</strong>, incomplete
+streams <strong>0</strong>, minimum deadline headroom <strong>46.339
+s</strong>. Maximum cumulative memory event counters across candidate
+processes: <code>{'oom': 0, 'oom_kill': 0, 'max': 0}</code>.</p>
+<p>The first producer proof iteration exposed a stale readiness job ID
+at a worker handoff. Its successor exposed an atomic Docker log-rotation
+race. Both failures and their exact source versions remain preserved.
+The final v3 protocol passed all five proofs before qualification began;
+no qualification observation was resized or replaced.</p>
+<p>Methodology violations: <code>[]</code>. Interrupted observations:
+<strong>0</strong>; all remain in their original groups. Missing
+evidence is reflected in each batch completeness record, never inferred
+from a plausible summary.</p>
+<h2 id="decisions-and-exact-certification-boundary">Decisions and exact
+certification boundary</h2>
+<p>Prefer smallest fully certified reference; recommend a larger
+certified tier only with no&gt;10percent observed worst-latency
+regression acrossW1/concurrency/normal/sustained, no
+worsememoryheadroom, and &gt;=20percent improvement in at leastone
+contention category. Consider all measuredthrottling/stability/headroom;
+allocation size alone doesnot recommend. Otherwise recommended equals
+minimum. Minimum <strong>A</strong>; recommended <strong>B</strong>. A
+larger C, if qualified, is a larger <strong>W1</strong> reference only;
+it makes no heavier-workload claim.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th style="text-align: right;">Throttled periods</th>
+<th style="text-align: right;">Minimum required-request headroom</th>
+<th style="text-align: right;">Worst within-fixture max/median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td style="text-align: right;">8.78%</td>
+<td style="text-align: right;">46.339 s</td>
+<td style="text-align: right;">5.895×</td>
+</tr>
+<tr>
+<td>B</td>
+<td style="text-align: right;">0.34%</td>
+<td style="text-align: right;">52.322 s</td>
+<td style="text-align: right;">2.874×</td>
+</tr>
+<tr>
+<td>C</td>
+<td style="text-align: right;">0.02%</td>
+<td style="text-align: right;">50.237 s</td>
+<td style="text-align: right;">3.577×</td>
+</tr>
+</tbody>
+</table>
+<p>Throttle counters cover measured workflows, including async
+submission/poll/drain work; zero throttling is not a qualification
+requirement. Within-fixture repeat spread is descriptive, not a tail
+guarantee. Reference selection is an operational interpretation of the
+locked results, separate from the unchanged qualification gates.</p>
+<p>Any positive reference applies only to this A.T.O.M commit/version,
+the actual shipping Go 1.26.6 binary/image, tested Linux arm64/cgroup v2
+and shared-host assumptions, exact Ankara pack, eight frozen Cell
+layouts and W1 inputs/objectives, six-Cell cap, worker 1/queue 16,
+global 2/per-client 1, 60-second deadline and
+20-attempt/anchored-60-second/ClientIP policy. It does not certify
+arbitrary datasets, hardware, layouts, intermediate RF settings or
+larger workload classes.</p>
+<p>Future Auto may describe verified/unverified W1 resource-floor
+eligibility only with known effective CPU, hard/effective memory, exact
+runtime/image/dataset identity and fixed policy evidence. Unknown never
+meets a requirement; transient free RAM does not identify a profile. No
+matcher, resource controls, preset, admission or packaging is
+implemented. Self-hosted/native deployments require the qualified
+assumptions; hosted capacity remains the operator's responsibility.</p>
+<p>Estimator-driven admission remains paused. A clean W1 reference can
+justify a separate eight-Cell operational/request-budget re-audit; that
+is not eight-Cell certification or permission to raise the cap. Product
+Cell cap remains six.</p>
+<h2 id="validation-and-freeze">Validation and freeze</h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>baseline/backend_tests</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>baseline/backend_race</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>baseline/backend_vet</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>baseline/frontend_tests</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>baseline/frontend_lint</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>baseline/frontend_build</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>baseline/rf_budget_e2e</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>baseline/rf_deadline_e2e</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>baseline/auto_resource_profile_tests</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/backend_tests</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/backend_race</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/backend_vet</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/frontend_tests</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/frontend_lint</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/frontend_build</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/rf_budget_e2e</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/rf_deadline_e2e</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/auto_resource_profile_tests</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/qualification_protocol_tests</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/prior_study_preservation_tests</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/docs_build</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/docs_validation</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/version</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/diff</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/final_docs_build</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/final_docs_validation</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>final/final_diff</td>
+<td>PASS</td>
+</tr>
+</tbody>
+</table>
+<p><a
+href="../scripts/w1-shipping-runtime-qualification/completion-audit.json">Independent
+terminal audit</a> reconciles all planned rows, actual identities,
+budget headers, failure verdicts and archived evidence against the
+40-phase objective.</p>
+<p>No release or VERSION bump; certification docs/tooling only. Keep
+immutable contract/results and existing fixedpolicy; publish only fully
+qualified exact-scope references.</p>
+<p><strong>Single next action:</strong> Preregister a separate
+eight-Cell operational and request-budget re-audit using the qualified
+minimum W1 reference; retain the six-Cell product cap until that
+separate study passes.</p>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li><p>Exact eight layouts and frozenRF/objective settings only; no
+arbitrary six-Cell layout or dataset claim.</p></li>
+<li><p>Shipping Linuxarm64/cgroupv2 on shared AppleM4 developmentVM; CPU
+quota is not dedicated physicalcore reservation.</p></li>
+<li><p>GC tracing logs heap atGCevents andMiB resolution; not
+continuousHeapAlloc peak. Observer memory/CPU are in a separatecgroup;
+its host contention and client-streaming costs remain in wall
+evidence.</p></li>
+<li><p>Cgroup lifetimepeak includes extraAutoCLI startup process and
+pagecache; conservative peak is not a reservation.</p></li>
+<li><p>Loopback uncompressed streaming is not aWAN/browser SLO.</p></li>
+<li><p>No W2/W3 qualification or eight-Cell product test.</p></li>
+<li><p>Finite repeats are not percentile/tail guarantees; no
+extrapolation toother architectures orruntimeversions.</p></li>
+</ul>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

@@ -116,23 +116,12 @@ charset-normalizer==3.4.9 \
 click==8.5.0 \
     --hash=sha256:255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360 \
     --hash=sha256:ba0d2089de75ea0310e2dde03160e6ca10009947fb95a182f9b54021bb272e34
-    # via
-    #   click-plugins
-    #   cligj
-    #   rasterio
-click-plugins==1.1.1.2 \
-    --hash=sha256:008d65743833ffc1f5417bf0e78e8d2c23aab04d9745ba817bd3e71b0feb6aa6 \
-    --hash=sha256:d7af3984a99d243c131aa1a828331e7630f4a88a9741fd05c927b204bcf92261
-    # via rasterio
-cligj==0.7.2 \
-    --hash=sha256:a4bc13d623356b373c2c27c53dbd9c68cae5d526270bfa71f6c6fa69669c6b27 \
-    --hash=sha256:c1ca117dbce1fe20a5809dc96f01e1c2840f6dcc939b3ddbb1111bf330ba82df
     # via rasterio
 geopandas==1.1.4 \
     --hash=sha256:06f2890a07e1a239047daa14b486a7c6ae5ce82dcf7405e13c46bf31f5d0dd66 \
     --hash=sha256:1a0c459cbdb1537cd154dafe6174be20d1760844b7f1c967dc8520b180f2e773
     # via
-    #   -r data-pipeline/Requirements.in
+    #   -r Requirements.in
     #   osmnx
 idna==3.18 \
     --hash=sha256:7f952cbe720b688055e3f87de14f5c3e5fdaa8bc3928985c4077ca689de849a2 \
@@ -197,7 +186,7 @@ numpy==2.5.1 \
 osmnx==2.0.7 \
     --hash=sha256:1aec19d3dc614279f36f4ead7b493adbc45f53bc99a43a76067a6f15c1fcac97 \
     --hash=sha256:a880ba6fdb288a821db73b6ca2a0c677538e0af7229b11759fbfa7fbb19be478
-    # via -r data-pipeline/Requirements.in
+    # via -r Requirements.in
 packaging==26.2 \
     --hash=sha256:5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e \
     --hash=sha256:ff452ff5a3e828ce110190feff1178bb1f2ea2281fa2075aadb987c2fb221661
@@ -261,7 +250,7 @@ pandas==2.3.3 \
     --hash=sha256:f086f6fe114e19d92014a1966f43a3e62285109afe874f067f5abbdcbb10e59c \
     --hash=sha256:f8bfc0e12dc78f777f323f55c58649591b2cd0c43534e8355c51d3fede5f4dee
     # via
-    #   -r data-pipeline/Requirements.in
+    #   -r Requirements.in
     #   geopandas
     #   osmnx
 pyogrio==0.13.0 \
@@ -346,7 +335,7 @@ pyproj==3.7.2 \
     --hash=sha256:f9428b318530625cb389b9ddc9c51251e172808a4af79b82809376daaeabe5e9 \
     --hash=sha256:fc52ba896cfc3214dc9f9ca3c0677a623e8fdd096b257c14a31e719d21ff3fdd
     # via
-    #   -r data-pipeline/Requirements.in
+    #   -r Requirements.in
     #   geopandas
 python-dateutil==2.9.0.post0 \
     --hash=sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3 \
@@ -356,29 +345,45 @@ pytz==2026.3.post1 \
     --hash=sha256:2211d3fcf9a797d3405cac96ac7f61d80e6a644f72a3309607282fe8a2010c5d \
     --hash=sha256:dd95840dd199baea12d9cc096a1d452caa6596a1c1e4b5f3dbd1541855d5e815
     # via pandas
-rasterio==1.4.3 \
-    --hash=sha256:1839960e2f3057a6daa323ccf67b330f8f2f0dbd4a50cc7031e88e649301c5c0 \
-    --hash=sha256:1a6e6ca9ec361599b48c9918ce25adb1a9203b8c8ca9b34ad78dccb3aef7945a \
-    --hash=sha256:201f05dbc7c4739dacb2c78a1cf4e09c0b7265b0a4d16ccbd1753ce4f2af350a \
-    --hash=sha256:38a126f8dbf405cd3450b5bd10c6cc493a2e1be4cf83442d26f5e4f412372d36 \
-    --hash=sha256:3f411a6a5bcb81ab6dc9128a8bccd13d3822cfa4a50c239e3a0528751a1ad5fc \
-    --hash=sha256:4009f7ce4e0883d8e5b400970daa3f1ca309caac8916d955722ee4486654d452 \
-    --hash=sha256:54eef32d20a0dfbba59a8bb9828e562c3e9e97e2355b8dfe4a5274117976059f \
-    --hash=sha256:597f8dcf494d0ca4254434496e83b1723fec206d23d64da5751a582a2b01e1d3 \
-    --hash=sha256:5b8a4311582274de2346450e5361d092b80b8b5c7b02fda6203402ba101ffabf \
-    --hash=sha256:5d4fcb635379b3d7b2f5e944c153849e3d27e93f35ad73ad4d3f0b8a580f0c8e \
-    --hash=sha256:80f994b92e5dda78f13291710bd5c43efcfd164f69a8a2c20489115df9d178c8 \
-    --hash=sha256:812c854e7177064aeb58def2d59752887ad6b3d39ff3f858ed9df3f2ddc95613 \
-    --hash=sha256:8e90c2c300294265c16becc9822337ded0f01fb8664500b4d77890d633d8cd0e \
-    --hash=sha256:98a9c89eade8c779e8ac1e525269faaa18c6b9818fc3c72cfc4627df71c66d0d \
-    --hash=sha256:9c30114d95ebba4ff49f078b3c193d29ff56d832588649400a3fa78f1dda1c96 \
-    --hash=sha256:a702e21712ba237e34515d829847f9f5f06d8e665e864a7bb0a3d4d8f6dec10d \
-    --hash=sha256:a962ad4c29feaf38b1d7a94389313127de3646a5b9b734fbf9a04e16051a27ff \
-    --hash=sha256:af04f788f6f814569184bd9da6c5d9889512212385ab58c52720dfb1f972671d \
-    --hash=sha256:d9bab1a0bb22b8bed1db34b5258db93d790ed4e61ef21ac055a7c6933c8d5e84 \
-    --hash=sha256:e703e4b2c74c678786d5d110a3f30e26f3acfd65f09ccf35f69683a532f7a772 \
-    --hash=sha256:e79847a5a0e01399457a1e02d8c92040cb56729d054fe7796f0c17b246b18bf0
-    # via -r data-pipeline/Requirements.in
+rasterio==1.5.2 \
+    --hash=sha256:0278c967ca3e95677add4cefa635baae4596fab17f42b5562da43cf1e71162dd \
+    --hash=sha256:0459e4d999ed219d8dff48b71523d3643c33d5ce2ec6a793477dc09592f9e84b \
+    --hash=sha256:078e0486cfd15af4cee62842af71d6fb9e0f2bdab624c14527d929acfde6fe47 \
+    --hash=sha256:09b880424977d9612d90639c8206ebaddfbdff7331435fa7e0435398b3583481 \
+    --hash=sha256:0c9bb43598fb58e3f01f3b2aed8be626fff44eb937c622df7801ed7dd8e728f6 \
+    --hash=sha256:0f268d0fc26963ad25fbda485fefa6a566c99974700a2646630e102a5e943421 \
+    --hash=sha256:0f2d222803d4cf8831e742389cff541ece3ed6896e331b0add617bba43ba5d5d \
+    --hash=sha256:12fe70049207cba191cdc57f5a1edd6b1d8a939163422ff710f82acb12f7e33a \
+    --hash=sha256:15da322ea5e5531073483c8966d17bc941911d669e17a02b71665c05ce9713ef \
+    --hash=sha256:19b8849ac84c6c26208314c7e516062b8aaabc1aa45f06c7edf22d5b098a7f84 \
+    --hash=sha256:240a42dc5a712e072b2744aa84ca6ee92c132c37593f0ecdfc2c03c61ee07707 \
+    --hash=sha256:3b8bec76f88ebe3437c4b8ecd85b0de7889ddab20e36d4145b7319f72add56fc \
+    --hash=sha256:3d0f767b1755f680e0442185695c2fc6e850c1bb275468aa4c56c49e007b713a \
+    --hash=sha256:508d8ca45893fea9785128b6206e0347300d015a7dc453822f9d25a376aa3754 \
+    --hash=sha256:56dbdfe40d0ab1d1e334cadf8ebd6b9aa16f1ca24102f03bf23027b38fa5b798 \
+    --hash=sha256:6fa985ecb32e9e84f1d0143a72c9d55543c55a653a605de435be7779361cbd2c \
+    --hash=sha256:78f7e9a26e294731eb59e887d5502df9d98d7d34580490ee0614fffb2669ad96 \
+    --hash=sha256:86aa888d8794210d879db1da6d47a620649ba6e017d610740099c20cd0c3414a \
+    --hash=sha256:89821de2f1d9e9f637f9bc0c466a2a6499b2a96db68909e0c21ff7ce6eb5a63e \
+    --hash=sha256:8a201b3b52b102a210e52ad8ee342f22eb2bbdd3c1c5803b2e6e76e82533f0db \
+    --hash=sha256:8d0f9c1ba8975fe2980bbef313310982eeea0558f8c8f4989aed5fc6fbeac5c0 \
+    --hash=sha256:947463239e4e5425a056de17af5d46ae65a52ae4a1da4ad46a53dc80d503aaf6 \
+    --hash=sha256:97161fd2a1d63d3ec175a9e48a12bf1ac243cb4681696d7840bcf35f54c7c10c \
+    --hash=sha256:9ac0143897e0315cc858dbd5699840d8fa218281e382acfb89b10575c96d5e17 \
+    --hash=sha256:9b27f07663103b73eba772ccf039bd58022c79a074058071fd72aaedb66f4d96 \
+    --hash=sha256:a91052160dbc446e25daf047e8144be2179602892cbaac5287130371eccf6b16 \
+    --hash=sha256:baf0182ad0e4088289ff453aa3f217f7fee04822430a3a747028d9c8b4ee7299 \
+    --hash=sha256:be2d2a825d545e6c6e8b2aa0d67c963e9ffc44ce3cecbab4ffe95dc87c0fc0de \
+    --hash=sha256:c148628357f43a54d7b26e9ef52ed0be3cc9d3e33456cff6a72ddd8347633287 \
+    --hash=sha256:d968492267b487ac217878b3275570256eae187f5e99406fdf0dfb7a855d675a \
+    --hash=sha256:de9db8f891c63e6a1d8deb7d4c8fe703795245ad3b2572d35e0ec76b39495f29 \
+    --hash=sha256:e47d5dc89b714525755374998910a8e21606cb95f45312775d2186df4e2503e0 \
+    --hash=sha256:e65a15b7bd22ce8f8ce8159856669dc9fafabf66cde6156e8f8e71d55abcd515 \
+    --hash=sha256:eba030745bd573df0dbecc19ed6a22f6b2037e7b1785170f84115a7c58bea72e \
+    --hash=sha256:edbf60e95cb26604b7b884a7edf64a778a0f5ab64aed6f0b7dc9c1664967ae0c \
+    --hash=sha256:f85cec5d23e7cd8d22a4b4edba11f63a94008c396a03433b8fb260140c00cb90 \
+    --hash=sha256:f9f3360cc66d1e2172018f9858db5c39e1f0046a5029e07645cff67a009e0801
+    # via -r Requirements.in
 requests==2.34.2 \
     --hash=sha256:2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0 \
     --hash=sha256:f288924cae4e29463698d6d60bc6a4da69c89185ad1e0bcc4104f584e960b9ed
@@ -442,7 +447,7 @@ shapely==2.1.2 \
     --hash=sha256:fe7b77dc63d707c09726b7908f575fc04ff1d1ad0f3fb92aec212396bc6cfe5e \
     --hash=sha256:fe9627c39c59e553c90f5bc3128252cb85dc3b3be8189710666d2f8bc3a5503e
     # via
-    #   -r data-pipeline/Requirements.in
+    #   -r Requirements.in
     #   geopandas
     #   osmnx
 six==1.17.0 \

@@ -8158,7 +8158,8 @@ a:focus-visible {
 .tool-subview-switcher button.active { border-color: var(--line); color: var(--ui-accent-strong, var(--teal-dark)); background: var(--surface-raised, #ffffff); }
 
 .scenario-panel { gap: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.scenario-panel > .tool-section { padding: var(--space-2) 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; }
+.scenario-panel > .tool-section { grid-template-columns: minmax(0, 1fr); padding: var(--space-2) 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; }
+.scenario-panel > .tool-section > * { min-width: 0; max-width: 100%; }
 .scenario-panel > .tool-section:first-child { padding-top: 0; border-top: 0; }
 .scenario-panel .scenario-save-card,
 .scenario-panel .scenario-switcher,

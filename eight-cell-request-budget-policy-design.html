@@ -1,0 +1,4817 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Source-derived workflows, bounded
+abuse envelopes, candidate comparisons and a verified-follow-up
+recommendation; production policy and Cell cap remain unchanged." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Eight-Cell Request-Budget Policy
+Design | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Eight-Cell
+Request-Budget Policy Design page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#phase-0--baseline-and-preserved-evidence"
+      id="toc-phase-0--baseline-and-preserved-evidence">Phase 0 —
+      Baseline and preserved evidence</a></li>
+      <li><a href="#phase-1--current-limiter-and-ordering"
+      id="toc-phase-1--current-limiter-and-ordering">Phase 1 — Current
+      limiter and ordering</a></li>
+      <li><a href="#phase-2--protected-route-inventory"
+      id="toc-phase-2--protected-route-inventory">Phase 2 —
+      Protected-route inventory</a></li>
+      <li><a href="#phase-3--actual-frontend-graph"
+      id="toc-phase-3--actual-frontend-graph">Phase 3 — Actual frontend
+      graph</a></li>
+      <li><a href="#phase-4--six-cell-journeys"
+      id="toc-phase-4--six-cell-journeys">Phase 4 — Six-Cell
+      journeys</a></li>
+      <li><a href="#phase-5--eight-cell-journeys"
+      id="toc-phase-5--eight-cell-journeys">Phase 5 — Eight-Cell
+      journeys</a></li>
+      <li><a href="#phase-6--product-problem"
+      id="toc-phase-6--product-problem">Phase 6 — Product
+      problem</a></li>
+      <li><a href="#phase-7--threat-model"
+      id="toc-phase-7--threat-model">Phase 7 — Threat model</a></li>
+      <li><a href="#phase-8--frozen-criteria"
+      id="toc-phase-8--frozen-criteria">Phase 8 — Frozen
+      criteria</a></li>
+      <li><a href="#phase-9--p0-current"
+      id="toc-phase-9--p0-current">Phase 9 — P0 current</a></li>
+      <li><a href="#phase-10--p1-higher-flat-budget"
+      id="toc-phase-10--p1-higher-flat-budget">Phase 10 — P1 higher flat
+      budget</a></li>
+      <li><a href="#phase-11--p2-fixed-route-weights"
+      id="toc-phase-11--p2-fixed-route-weights">Phase 11 — P2 fixed
+      route weights</a></li>
+      <li><a href="#phase-12--p3-verified-allowance"
+      id="toc-phase-12--p3-verified-allowance">Phase 12 — P3 verified
+      allowance</a></li>
+      <li><a href="#phase-13--authorization-security"
+      id="toc-phase-13--authorization-security">Phase 13 — Authorization
+      security</a></li>
+      <li><a href="#phase-14--p4-separate-buckets"
+      id="toc-phase-14--p4-separate-buckets">Phase 14 — P4 separate
+      buckets</a></li>
+      <li><a href="#phase-15--p5-reservations"
+      id="toc-phase-15--p5-reservations">Phase 15 — P5
+      reservations</a></li>
+      <li><a href="#phase-16--p6-aggregation-fallback"
+      id="toc-phase-16--p6-aggregation-fallback">Phase 16 — P6
+      aggregation fallback</a></li>
+      <li><a href="#phase-17--rejected-directions"
+      id="toc-phase-17--rejected-directions">Phase 17 — Rejected
+      directions</a></li>
+      <li><a href="#phase-18--nat-and-tab-effects"
+      id="toc-phase-18--nat-and-tab-effects">Phase 18 — NAT and tab
+      effects</a></li>
+      <li><a href="#phase-19--boundary-bursts"
+      id="toc-phase-19--boundary-bursts">Phase 19 — Boundary
+      bursts</a></li>
+      <li><a href="#phase-20--cancellation"
+      id="toc-phase-20--cancellation">Phase 20 — Cancellation</a></li>
+      <li><a href="#phase-21--root-failures"
+      id="toc-phase-21--root-failures">Phase 21 — Root failures</a></li>
+      <li><a href="#phase-22--concurrency"
+      id="toc-phase-22--concurrency">Phase 22 — Concurrency</a></li>
+      <li><a href="#phase-23--experiments"
+      id="toc-phase-23--experiments">Phase 23 — Experiments</a></li>
+      <li><a href="#phase-24--six-cell-compatibility"
+      id="toc-phase-24--six-cell-compatibility">Phase 24 — Six-Cell
+      compatibility</a></li>
+      <li><a href="#phase-25--eight-cell-product-fit"
+      id="toc-phase-25--eight-cell-product-fit">Phase 25 — Eight-Cell
+      product fit</a></li>
+      <li><a href="#phase-26--legitimate-envelope"
+      id="toc-phase-26--legitimate-envelope">Phase 26 — Legitimate
+      envelope</a></li>
+      <li><a href="#phase-27--abuse-envelopes"
+      id="toc-phase-27--abuse-envelopes">Phase 27 — Abuse
+      envelopes</a></li>
+      <li><a href="#phase-28--bounded-state"
+      id="toc-phase-28--bounded-state">Phase 28 — Bounded state</a></li>
+      <li><a href="#phase-29--future-replicas"
+      id="toc-phase-29--future-replicas">Phase 29 — Future
+      replicas</a></li>
+      <li><a href="#phase-30--headersapi"
+      id="toc-phase-30--headersapi">Phase 30 — Headers/API</a></li>
+      <li><a href="#phase-31--observability"
+      id="toc-phase-31--observability">Phase 31 — Observability</a></li>
+      <li><a href="#phase-32--fail-closed"
+      id="toc-phase-32--fail-closed">Phase 32 — Fail closed</a></li>
+      <li><a href="#phase-33--implementation-surfaces"
+      id="toc-phase-33--implementation-surfaces">Phase 33 —
+      Implementation surfaces</a></li>
+      <li><a href="#phase-34--tradeoff-matrix"
+      id="toc-phase-34--tradeoff-matrix">Phase 34 — Tradeoff
+      matrix</a></li>
+      <li><a href="#phase-35--minimality"
+      id="toc-phase-35--minimality">Phase 35 — Minimality</a></li>
+      <li><a href="#phase-36--flat-threshold-judgment"
+      id="toc-phase-36--flat-threshold-judgment">Phase 36 — Flat
+      threshold judgment</a></li>
+      <li><a href="#phase-37--workflow-aware-judgment"
+      id="toc-phase-37--workflow-aware-judgment">Phase 37 —
+      Workflow-aware judgment</a></li>
+      <li><a href="#phase-38--one-recommendation"
+      id="toc-phase-38--one-recommendation">Phase 38 — One
+      recommendation</a></li>
+      <li><a href="#phase-39--exact-intended-semantics"
+      id="toc-phase-39--exact-intended-semantics">Phase 39 — Exact
+      intended semantics</a></li>
+      <li><a href="#phase-40--parameter-derivation"
+      id="toc-phase-40--parameter-derivation">Phase 40 — Parameter
+      derivation</a></li>
+      <li><a href="#phase-41--recommended-accounting"
+      id="toc-phase-41--recommended-accounting">Phase 41 — Recommended
+      accounting</a></li>
+      <li><a href="#phase-42--recommended-abuse-simulation"
+      id="toc-phase-42--recommended-abuse-simulation">Phase 42 —
+      Recommended abuse simulation</a></li>
+      <li><a href="#phase-43--promotion-dependency"
+      id="toc-phase-43--promotion-dependency">Phase 43 — Promotion
+      dependency</a></li>
+      <li><a href="#phase-44--future-implementation-plan"
+      id="toc-phase-44--future-implementation-plan">Phase 44 — Future
+      implementation plan</a></li>
+      <li><a href="#phase-45--future-validation-gates"
+      id="toc-phase-45--future-validation-gates">Phase 45 — Future
+      validation gates</a></li>
+      <li><a href="#phase-46--rollback"
+      id="toc-phase-46--rollback">Phase 46 — Rollback</a></li>
+      <li><a href="#phase-47--production-invariance"
+      id="toc-phase-47--production-invariance">Phase 47 — Production
+      invariance</a></li>
+      <li><a href="#phase-48--version" id="toc-phase-48--version">Phase
+      48 — Version</a></li>
+      <li><a href="#phase-49--quality-and-freeze"
+      id="toc-phase-49--quality-and-freeze">Phase 49 — Quality and
+      freeze</a></li>
+      <li><a href="#protected-route-table"
+      id="toc-protected-route-table">Protected route table</a></li>
+      <li><a href="#source-references" id="toc-source-references">Source
+      references</a></li>
+      <li><a href="#frontend-graph-inventory"
+      id="toc-frontend-graph-inventory">Frontend graph
+      inventory</a></li>
+      <li><a href="#candidate-comparison"
+      id="toc-candidate-comparison">Candidate comparison</a></li>
+      <li><a href="#all-twenty-criteria-without-composite-scoring"
+      id="toc-all-twenty-criteria-without-composite-scoring">All twenty
+      criteria, without composite scoring</a></li>
+      <li><a href="#exact-journey-simulations"
+      id="toc-exact-journey-simulations">Exact journey
+      simulations</a></li>
+      <li><a href="#threshold-derivation"
+      id="toc-threshold-derivation">Threshold derivation</a></li>
+      <li><a href="#abuse-arithmetic" id="toc-abuse-arithmetic">Abuse
+      arithmetic</a></li>
+      <li><a href="#current-policy-quality-checks"
+      id="toc-current-policy-quality-checks">Current-policy quality
+      checks</a></li>
+      <li><a href="#required-78-item-assessment"
+      id="toc-required-78-item-assessment">Required 78-item
+      assessment</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Design study</span>
+        <h1>Eight-Cell Request-Budget Policy Design</h1>
+        <p>Source-derived workflows, bounded abuse envelopes, candidate
+comparisons and a verified-follow-up recommendation; production policy
+and Cell cap remain unchanged.</p>
+        <div class="hero-actions">
+          <a class="button" href="./eight-cell-request-budget-policy-design.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p><strong>C — WORKFLOW-AWARE ACCOUNTING IS PREFERRED.</strong>
+Recommend P3-capped:20 ordinary units plus8 shared server-verified
+deterministic-follow-up units per ClientIP/anchored60s, with child
+prebooking. <strong>Design only: current20/60 and Cell cap6 remain
+unchanged.</strong></p>
+<p>Criteria lock SHA256:
+<code>105a24d1938140101cb08d3f2e70c8712c3445ff45cc7cdda4d65f2704310a71</code>.
+Frozen before simulations; <a
+href="../scripts/request-budget-policy-design/evaluation-lock.json">lock</a>.</p>
+<h2 id="phase-0--baseline-and-preserved-evidence">Phase 0 — Baseline and
+preserved evidence</h2>
+<p>The study starts on main at
+<code>016c9c96579e2a95b14e3641f96bad00050d48d3</code>, VERSION0.11.0.
+The previous audit documentation/tooling is uncommitted.
+<code>baseline.json</code> records exact status/diff,1959 preserved file
+hashes and407 production-file hashes. W1 qualification, the invalid
+first eight-Cell audit, and the valid clean successor remain unchanged.
+All466 invalid-run and449 successor raw artifact identities, their
+archives, and supplemental successor quality logs were verified. No
+previous evidence is rewritten.</p>
+<p>The valid successor is B:837/837 groups, operational PASS, budget
+mechanics PASS, product fit PRODUCT BLOCKER. Worst request11.418134s;
+deadline headroom48.581866s; kernel peak1,384,833,024 bytes;
+headroom67.7568%; zero OOM/kill/max;435 stable scientific input
+groups;352 six-Cell W1 matches. This design reuses that evidence. It
+does not run a new eight-Cell RF qualification.</p>
+<h2 id="phase-1--current-limiter-and-ordering">Phase 1 — Current limiter
+and ordering</h2>
+<p><code>backend-go/rf_protection.go</code> owns
+<code>expensiveRFRoutes</code>, <code>protectExpensiveRFRoutes</code>,
+<code>middlewareFor</code>, <code>acquire</code>,
+<code>clientState</code>, <code>validAPIKey</code>. <code>main.go</code>
+constructs defaults and registers middleware. Exact source references
+are in source-audit.json.</p>
+<p>Order: Gin Logger/Recovery → securityHeaders/requireHTTPS →1MiB
+MaxBytesReader wrapper →CORS →POST/protected-path selector →optional RF
+API-key authentication →60s request context →Gin ClientIP →lazy
+anchored-window reset →charge one attempt if below20 →per-client active
+check1 →nonblocking global channel2 →strict JSON decoding/validation →RF
+handler →serialization →deferred global/client release and context
+cancellation. Health/readiness were registered before the RF protection
+middleware. Other later routes traverse its selector but unlisted
+paths/non-POST methods bypass RF charging.</p>
+<p>Auth failure401 charges0; HTTPS/CORS rejection before admission
+charges0. Budget exhaustion429 adds no new charge, sets no-store and
+ceil reset/Retry-After, and never calls the RF handler.
+Per-client/global busy429 charges1, Retry-After1, no RF handler.
+Handler400/413/422/500/504 and admitted cancellations retain their
+charge. Body wrapping happens early, but oversize decoding413 happens
+after charge and slots. Cancelled RF response writes no synthetic499.
+Successful and denied limiter responses expose Limit20, Remaining,
+relative integer ceil Reset; global busy preserves those headers. Window
+anchors on first charged request; next request at/after60s resets at its
+own time, not a globally aligned minute. Denials do not extend the
+anchor.</p>
+<p>State is one process-local mutex map of at most4096 entries plus
+overflow; fields active/requests/windowStart/lastSeen. There is no
+periodic idle-TTL cleanup. New-key pressure evicts the oldest inactive
+entry, even if its window is live. If all entries are active, unknown
+keys share overflow. Eviction/restart/IP rotation defeat a universal
+retained-key minute guarantee; this study does not claim to repair those
+existing limitations.</p>
+<h2 id="phase-2--protected-route-inventory">Phase 2 — Protected-route
+inventory</h2>
+<p>All19 protected routes are POST and currently cost1, including cached
+experiment submission. The complete table below comes from
+source-audit.json. A route can have multiple roles:
+<code>/simulate</code> is both mandatory network-map follow-up and
+independently callable; <code>/analyze-sector</code> is a propagation
+root and an Azimuth refresh. Classification follows callers, not the
+selected policy. Explanation uses retained root data but is an optional
+independent click, not a mandatory automatic follow-up. Coverage-surface
+export is another protected POST with recomputation, not a free
+download.</p>
+<h2 id="phase-3--actual-frontend-graph">Phase 3 — Actual frontend
+graph</h2>
+<p><code>App.evaluateNetwork</code>: one Evaluate →N sequential Simulate
+calls. Map payloads copy current request globals, each selected tower's
+lon/lat, selected azimuth and indexed RF profile.
+<code>App.optimizeNetwork</code>: one Optimize →N sequential Simulate
+calls with each winning optimal_azimuth from the root response.
+<code>runNetworkSimulationQueue</code> awaits each call and stops at the
+first exception. Results are committed after the queue; root200 alone is
+not a completed network UI action.</p>
+<p><code>optimizeAzimuth</code>: Optimize-Azimuth →one Analyze-Sector
+refresh using returned optimal_azimuth. Single propagation uses
+Analyze-Sector once and gets rays/gaps together. Interference, Building
+Entry, Recommendation, Measurements, Path and reference tools issue one
+independent POST. Building Entry can return locally when current;
+explanation can use its local cache/no eligible changed Cell, costing0.
+An uncached eligible explanation costs1 with retained
+baseline/solution/run/domain; no hidden Optimize rerun.</p>
+<p>Re-evaluate is another explicit Evaluate callback, not automatically
+triggered by Interference. Surface generate costs1; each format export
+costs another1. Experiment start costs1 POST; status polling GET starts
+after300ms then600ms and cancellation DELETE cost0 RF units. Job
+contexts are detached after queueing. History rerun has its own
+one-request callback and no map queue. Inspect, tool/tab navigation,
+reports and local persistence cause no automatic protected refresh.
+RequestCoordinator aborts superseded channels. apiClient has no
+automatic retry loop; StrictMode mount effects do not start these user
+callbacks.</p>
+<h2 id="phase-4--six-cell-journeys">Phase 4 — Six-Cell journeys</h2>
+<p>Fresh retained bucket, valid sequential calls, no concurrency
+failure: A Evaluate/maps7 leaves13; B Optimize/maps7 leaves13; C
+Evaluate/maps→Interference8 leaves12; D full cycle15 leaves5; E
+Evaluate/maps→Optimize/maps14 leaves6; F cycle→Optimize/maps22 fails at
+request21, the fifth optimized map; G Optimize/maps→one uncached
+explanation8 leaves12. For F, request22 is not dispatched after failure.
+Two tabs each Evaluate/maps14 fit; two full cycles30 do not. Parallel
+tabs still share per-client concurrency1 and can generate charged busy
+rejections.</p>
+<p>Likely next actions are inspection/explanation, another analysis,
+optimization or map refresh. Six already exhibits transport fan-out
+interruption after prior activity. It is not evidence that every
+indefinite six-Cell chain was promised to fit20.</p>
+<h2 id="phase-5--eight-cell-journeys">Phase 5 — Eight-Cell journeys</h2>
+<p>Equivalent A/B9 leave11; C10 leaves10; D19 leaves1; E18 leaves2; F28
+stops at request21, the first optimized map; G10 leaves10. Two tabs each
+Evaluate/maps18 fit; two cycles38 do not. Clean successor cycle cases
+completed in approximately0.717–1.239s, leaving client-anchor
+estimates58.760502–59.283303s. The real boundary accepts20/denies21
+before RF. Its rapid journey C used cycle→single Optimize→Interference,
+not a complete Optimize/maps action. The saved-response UI boundary test
+separately observed Optimize20 then map21 denied. F's28 calls are
+source-derived/offline, not newly measured successful RF work.</p>
+<h2 id="phase-6--product-problem">Phase 6 — Product problem</h2>
+<p>The current budget counts transport attempts, including failures/busy
+attempts, rather than logical intent. That is a simple abuse bound
+across all protected entry points. However one network click requiresN+1
+attempts, and cannot commit until maps finish. Increasing capacity alone
+fixes specified fresh chains but never guarantees an admitted root's
+children at an arbitrary residual balance. The design must separate that
+failure-atomicity problem from capacity/headroom. User intent is useful
+authorization context, not a reason to waive arbitrary RF calls.</p>
+<h2 id="phase-7--threat-model">Phase 7 — Threat model</h2>
+<p>Constrain repeated Optimize/Evaluate, independent simulations,
+scripted API requests, cheap protected calls in volume, late failing
+expensive requests, cancellations and shared-IP tabs/users. Current20/60
+charges these evenly, denies before RF on budget exhaustion, never
+refunds admitted failures, and2/1 limits simultaneous RF. It does not
+price CPU work: a720-ray/5000m Simulate can be expensive, while a
+reference calculation can be cheap. Neither route name nor a low map
+weight proves cheapness.</p>
+<p>Current weaknesses: unlimited denied HTTP packets/access logs are not
+a network flood limiter; unprotected GET polling/DELETE controls are
+outside RF accounting; IPs are not users; NAT pools users; IP rotation,
+bounded-map eviction, restart and replica multiplication bypass a
+service-wide quota. Window-edge bursts are possible. Twenty experiment
+submissions can authorize up to1280 runs subject to queue/cache/worker
+controls, not necessarily execute1280 in one minute. None of these
+issues authorizes infrastructure/adaptive redesign here.</p>
+<h2 id="phase-8--frozen-criteria">Phase 8 — Frozen criteria</h2>
+<p>Evaluation lock was frozen before simulations/selection, with20
+explicit criteria:6C/8C usability, heavy roots, follow-up abuse, NAT,
+tabs, cancellation, replay, implementation/state complexity, restart,
+future replicas, API/frontend compatibility, observability, backwards
+compatibility, tests, atomicity, denials and migration. No composite
+score hides tradeoffs.</p>
+<p>Hard requirements: ordinary independent roots and independent
+Simulate remain≤20 per retained anchored window; no RF on
+budget/authorization denial; no concurrency privilege; bounded ephemeral
+state; no science/persistence/resource pricing changes. RequiredL3
+costs28, so preserving a universal20-total ceiling is mathematically
+impossible. Accept exactly the necessary+8 only through verified
+dependencies. This is a normative security/product tolerance, not proof
+of equal deployed abuse resistance. Bounded reservation pressure can
+temporarily reduce available units; cleanup, cancellation and future
+abuse tests must address that tradeoff.</p>
+<h2 id="phase-9--p0-current">Phase 9 — P0 current</h2>
+<p>Simple, compatible, bounded4096-client state;
+ordinary/root/independent-map ceilings20. FreshL1/L2 fit, but F fails
+for both6/8 and any late root can leave a partial queue. SixD leaves5,
+eightD leaves1. Keep P0 in production during this study and until a
+future replacement is validated. It fails the selected product
+envelope.</p>
+<h2 id="phase-10--p1-higher-flat-budget">Phase 10 — P1 higher flat
+budget</h2>
+<p>Workflow-derived thresholds at8C:9 one map action;10 map action+one
+explanation;18 Evaluate→Optimize;19 cycle;20 cycle+one explanation;28
+cycle→Optimize/maps;29 that extended chain+one explanation;38 two
+cycles;56 two extended chains. The required minimum is28, not a
+convenient round30. Six F needs22.</p>
+<p>Flat28 admits F from fresh bucket but increases independent
+Optimize/Evaluate/Simulate20→28 (+40%); conventional boundary
+ceiling40→56. At any finite flatB, B−1 prior calls followed by a root
+consumes the last unit and the first map fails. Adding atomic
+reservations remedies that separately, becoming P5 rather than a pure
+threshold change. Reject pureP1 under frozen independent ceilings and
+atomic-action criteria; this is not a claim that28 overloads
+hardware.</p>
+<h2 id="phase-11--p2-fixed-route-weights">Phase 11 — P2 fixed route
+weights</h2>
+<p>Integer accounting can preserve root20 while permitting F: every
+non-Simulate POST costs3, Simulate costs2, bucket60 tokens. EightF has4
+non-map roots and24 maps:4×3+24×2=60. SixF48. The3:2 ratio is derived
+from the root ceiling and required chain, not an estimate of CPU ratios.
+With weightsR/M, B≥4R+24M and B≤20R implyR/M≥1.5; therefore independent
+Simulate capacity B/M is at least30. No positive same-route weighting
+can allow24 dependent maps while limiting indistinguishable standalone
+Simulate to20.</p>
+<p>Root ceiling20 is preserved; independent Simulate becomes30 (+50%).
+Surface/Recommendation/Interference/experiments remain3 tokens per
+submission and20 such calls, with no claim that they have equal cost.
+Headers become token units; per-action3/2 charging is less transparent
+and still needs reservation for guaranteed map completion. Reject as a
+substitute for verified context.</p>
+<h2 id="phase-12--p3-verified-allowance">Phase 12 — P3 verified
+allowance</h2>
+<p>NaiveP3 grantsN free maps for every admitted root:20 eight-Cell
+workflows can perform180 RF steps, although independent calls remain20.
+Bounded per-ticket use does not bound the sum across tickets/windows.
+Reject that variant.</p>
+<p>PreferredP3-capped: retain20 ordinary units, add a shared8-unit
+deterministic-follow-up pool per ClientIP/window, and prebook a root'sN
+child slots from available extra first then ordinary units. Only the
+existing network Evaluate/Optimize→Simulate and single
+Azimuth→Analyze-Sector automatic edges are eligible. Additional roots,
+explanations, exports, recommendations and experiments get no grant.
+Extra is shared across all roots/tabs, never8 per root. Exact total
+admitted RF attempts≤28 per retained window, and unassociated
+independent calls≤20.</p>
+<p>Choose opaque128-bit server-issued IDs. Signed/self-contained tokens
+still need a consumed-slot ledger and shared counter to resist replay;
+signing adds complexity without removing state. A public scientific
+fingerprint alone is not a capability: bind an unpredictable ID to
+owner, parent and one-time hashes. No authorization implementation
+exists in this study.</p>
+<h2 id="phase-13--authorization-security">Phase 13 — Authorization
+security</h2>
+<p>No client-supplied cost, Cell count, expiry or expected hash is
+authoritative. Server validates the root and derives ordered expected
+child inputs from its complete parsed request and result. For Evaluate
+copy common globals and each tower's coordinates/azimuth/profile;
+Optimize replaces per-Cell azimuth with returned winning
+optimal_azimuth; Azimuth copies its standalone input with returned angle
+for Analyze-Sector. Include every recognized RF input/default/profile in
+a versioned authorization digest; retain redundant recognized fields
+rather than dropping them. This digest is separate from public
+scientific fingerprints, which remain unchanged. Key order/numeric
+spelling may normalize; different RF values cannot.</p>
+<p>Bind owner to the same Gin ClientIP and configured RF authentication
+checks; bind model/dataset revision, parent operation and exact
+endpoint/index. Cell inflation, coordinates/RF changes, another
+endpoint/solution/client or recursive requests cannot get free RF. Each
+slot atomically claims once before concurrency/handler entry. Concurrent
+duplicates cannot both succeed. A known owned slot with a
+malformed/mismatched body burns that slot's funding and retires unused
+siblings, returns400, and performs no RF.
+Unknown/foreign/expired/replayed headers use normal charged denial
+rules, never paid or free RF fallback. Valid slot validation is bounded
+by existing1MiB body limit; claiming before expensive body verification
+prevents unlimited free validation of the same slot.</p>
+<p>Tokens are ephemeral bearer capabilities: use deployment TLS and
+existing authentication; never URLs, persisted project state or logs.
+Same-IP token theft can consume an exact authorized slot; ClientIP alone
+does not distinguish NAT users. Rotating IDs and authentication do not
+make a global shared API key a user identity. Security requires future
+implementation/race/forgery tests. Go's crypto/rand supplies a CSPRNG;
+OWASP REST guidance calls for TLS and access control at endpoints. <a
+href="https://pkg.go.dev/crypto/rand">Go crypto/rand</a>, <a
+href="https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html">OWASP
+REST security</a>.</p>
+<h2 id="phase-14--p4-separate-buckets">Phase 14 — P4 separate
+buckets</h2>
+<p>Root20 and map24 are enough for F (four roots/24 maps), but every
+standalone Simulate can spend24 and total44 RF calls can be admitted;
+distinct bucket boundaries can compound. Minimal root4/map24 also fits F
+but cuts ordinary root/tool capacity20→4 and harms six-Cell use. A20/20
+split denies required24 maps. A claimed client 'follow-up' flag is
+forgeable. Splitting only verified follow-ups requires P3's
+authorization anyway, without removing atomic reservation needs. Reject
+pure route split.</p>
+<h2 id="phase-15--p5-reservations">Phase 15 — P5 reservations</h2>
+<p>Reserve N+1 current transport units before root RF. At20 it prevents
+partial actions but F still fails upfront: six Optimize at attempted16,
+eight Optimize at20, instead of spending its RF then failing maps. At28
+F fits, but independent roots/maps become28 unless context constraints
+are added. Reserving one 'logical workflow unit' with20 units permits180
+RF steps at8C, like naiveP3. Unused reservations must be released, spent
+root/maps never refunded, with cross-window liabilities retained.</p>
+<p>The recommendedP3 uses this narrowly as prebooking its known child
+obligations. It does not reserve an invented multi-click full-cycle
+workflow or change all roots into cheap logical units. A standalone P5
+adds no advantage; P5 with20 ordinary plus8 verified credits is the same
+recommended mechanism, not a second policy.</p>
+<h2 id="phase-16--p6-aggregation-fallback">Phase 16 — P6 aggregation
+fallback</h2>
+<p>One request can orchestrate root/maps, but changes
+API/streaming/progress/cancellation/error atomicity and frontend
+parsing. Measured Optimize/maps totals60,251,142 bytes exceed the
+current32MiB JSON guard if simply combined; full cycle113,898,816 bytes
+is larger. A single60s context differs from per-request deadlines.
+Recursive guarded HTTP risks slot deadlock; direct internal calls need
+an explicit child execution budget. Treating each aggregate as cost1
+allows180 RF steps at20 roots. P3 solves the accounting issue without
+aggregation. Reject P6 as unnecessary architectural expansion, not a
+capacity claim.</p>
+<h2 id="phase-17--rejected-directions">Phase 17 — Rejected
+directions</h2>
+<p>Reject CPU/RAM pricing, geometry/cost estimators, resource-dependent
+tokens and user multipliers: operational qualification already exists,
+and no calibrated abuse-price model is needed. Reject unbounded trusted
+exemptions and disabling map limits: one root can mint unchecked
+work/replay. Reject per-tab primary identity: scripts can create
+tabs/IDs; NAT identity remains IP. Reject resetting the window after
+each workflow: permits cycling/rate bypass. No sliding-window
+implementation, performance preset, RF optimization, Redis or new
+infrastructure.</p>
+<h2 id="phase-18--nat-and-tab-effects">Phase 18 — NAT and tab
+effects</h2>
+<p>Local self-hosted one browser often sees one peer IP. Multiple tabs,
+office/university users, shared NAT and gateway-pooled browsers share
+ordinary20 and extra8; distinct observed IPs have independent budgets.
+P1 enlarges all pooled arbitrary capacity; P2 increases map pressure; P3
+improves deterministic fan-out while keeping pooled independent
+ceilings, but outstanding reservations reduce availability for another
+tab. P4 shifts pressure between two arbitrary buckets; P5 retains
+pooling and can hoard reservations; P6 hides fan-out but does not
+identify users. No policy guarantees each of two NAT users its
+own28-call journey. Two concurrent tabs can hit per-client1 even with
+budget available. Distinct-IP two clients can each get their envelope,
+subject to global2.</p>
+<h2 id="phase-19--boundary-bursts">Phase 19 — Boundary bursts</h2>
+<p>For a retained anchored scalar bucketB, conventional upper bound
+is2B; the tight near-boundary count is2B−1 because an earlier charged
+request anchored the old window outside the short burst. P0:40 loose/39
+tight. P1-28:56/55; P1-29:58/57; P1-38:76/75; P1-56:112/111. P2:
+standalone maps60 loose/59 tight; roots40 loose/39 tight. P4
+root20/map24:88 loose,86 tight when both bucket boundaries align and
+each anchor is charged.</p>
+<p>Recommended combined20+8:56 loose/55 tight total admissions,
+including carried liabilities. Ordinary roots/maps retain a40 loose
+ceiling. If the new window is anchored by an extra-funded carried map,20
+ordinary units remain, allowing a tight ordinary-only burst40 instead of
+P0's39; explicitly accept that one-call anchor effect, not an unchanged
+tight burst claim. Holds survive reset, so delayed old grants cannot be
+stacked above28 in a later retained window. NaiveP3/logical
+aggregation:180 fresh RF steps and potentially greater bursts from
+delayed grants without an execution/held cap. All limits are semantic
+upper bounds, not RF throughput measurements; slots further constrain
+execution. Restart/eviction/identity churn exceptions remain.</p>
+<h2 id="phase-20--cancellation">Phase 20 — Cancellation</h2>
+<p>All candidates keep spent root work charged. P0/P1/P2/P4 retain
+admitted attempts/weights; aggregation retains root charge. P3/P5
+release only unspent held children. Root cancel before successful
+computation emits no capability, releases all child holds; root1 remains
+spent. Map claim spends its held source (ordinary or extra) before
+concurrency; cancel/failure retains it and retires unused siblings. No
+valid slot progress occurs on replay, invalid metadata or cancellation,
+so these cannot extend idle expiry or mint credits. Abandoned completed
+roots hold budget only until bounded idle cleanup. Existing
+handler/global/client release behavior stays unchanged.</p>
+<h2 id="phase-21--root-failures">Phase 21 — Root failures</h2>
+<p>Auth401: no charge/holds/token. Ordinary budget429: no new
+charge/token. Per-client/global busy429: ordinary1 stays charged, no
+root authorization; slots released as today. Root400/413/422,
+deadline504, internal500 or pre-success disconnect: ordinary1 stays,
+unused holds released, no token. Reservation shortage429 after root
+attempt charge: no RF, no token, root1 retained if ordinary admission
+had room. Successful computation with a disconnect during serialization
+may have exposed a token header; immediately retire unused slots when
+that failure is observed, and otherwise idle expiry handles lost
+clients. A racing claimed child keeps its charge; no refund of
+performed/admitted work. Root success is validated typed complete
+result/current context, not status alone.</p>
+<h2 id="phase-22--concurrency">Phase 22 — Concurrency</h2>
+<p>Budget reservation is only accounting. Every root/child continues
+through the same per-client active1 and global channel2, context60s and
+serialization/release path. No workflow priority, extra slots or
+whole-workflow lock. Valid child can still receive a charged busy429;
+burn its claimed unit and retire siblings. Explicit upfront budget
+guarantees exclude unrelated validation/concurrency/deadline/transport
+failures. Source-preserving tests must show that allowance cannot skip
+either slot acquisition.</p>
+<h2 id="phase-23--experiments">Phase 23 — Experiments</h2>
+<p>POST batch execution still costs one ordinary unit; no extra grants
+and no child authorization to experiment endpoints. GET job polling and
+DELETE cancellation stay outside RF budget. Jobs may expand64 runs and
+execute under worker1/queue16 after POST returns202 (or200 cache hit).
+Current RF slots protect submission, not background execution; request
+disconnect does not cancel an accepted job. No experiment admission
+redesign or dynamic weighting here. Reservations from another accepted
+action can reduce currently available shared-IP ordinary units;
+queued/running jobs themselves keep current semantics.</p>
+<h2 id="phase-24--six-cell-compatibility">Phase 24 — Six-Cell
+compatibility</h2>
+<p>Every ≤20-call ordinary legacy tape from a fresh bucket without
+outstanding holds remains admissible, apart from existing
+concurrency/validation failures. Legacy bodies, response scientific
+JSON, fingerprints and endpoint caps remain unchanged. Opt-in six-Cell
+main map actions get bounded credits; all selected L1/L2/L3 improve or
+remain complete. Single Azimuth's known one Sector refresh is eligible,
+not arbitrary Sector calls. Header Remaining now subtracts holds for
+opted-in actions; API documentation must distinguish available units
+from spent attempts. Pending obligations after reset can temporarily
+reduce another user's apparent budget; this is an explicit
+fairness/abandonment tradeoff, bounded by idle60s and progress-linked
+absolute lifetime, requiring validation. No claim of perfect
+compatibility for unbounded overlapping or abandoned workflows.</p>
+<h2 id="phase-25--eight-cell-product-fit">Phase 25 — Eight-Cell product
+fit</h2>
+<p>Required L1/L2 fit today only from sufficient fresh balance; F does
+not. Recommend that one F should complete uninterrupted: users can
+analyze/re-evaluate and then compare an optimization in the same UI
+session, and Optimize's maps are mandatory for committing its result.
+This is a declared product judgment frozen before selection. After F,
+another explanation/analysis may wait; guaranteeing arbitrary chains
+would require unbounded allowance. F+one explanation would require29 raw
+calls, a separate larger envelope not selected. The detailed simulation
+table shows every candidate's fresh journey completion and denial
+stage.</p>
+<h2 id="phase-26--legitimate-envelope">Phase 26 — Legitimate
+envelope</h2>
+<p>L1: one main network Evaluate/maps or Optimize/maps, or single-Cell
+Azimuth+Sector refresh. L2: Evaluate/maps→Interference; full cycle;
+Evaluate/maps→Optimize/maps; Optimize/maps→one uncached explanation. L3:
+one full cycle→Optimize/maps. Guarantees start from fresh retained IP,
+sequential successful inputs, no unrelated traffic. For each opted-in
+root, once RF admission with reservation succeeds, other actions cannot
+consume its children’s budget; finite lease and non-budget failures
+remain. Two users/tabs do not each acquire separate IP budgets. Repeated
+chains and inspections beyond F may wait. The categories come from
+source callbacks, not arbitrary audit labels.</p>
+<h2 id="phase-27--abuse-envelopes">Phase 27 — Abuse envelopes</h2>
+<p>P0 roots/independent Simulate20, full map workflows
+floor(20/(N+1)):two at6/8. P1-28 roots/maps28, four complete6C workflows
+or three8C. P2 roots20/maps30, four6C/three8C. P4 roots20/maps24,
+four6C/three8C, total44. NaiveP3 and logical-unitP5/P6 can reach20
+workflows/180 eight-Cell steps unless another execution cap exists.</p>
+<p>Recommended: ordinary Optimize/Evaluate≤20 and independent
+Simulate≤20; extra eligible attempts≤8; all retained-window RF
+admissions≤28. Complete map workflows:four6C, three8C; fresh
+completed-workflow follow-up maps24. One8C root plus19 independent maps
+permits27 total map calls (versus20 current), while two6C roots are
+needed to use all8 extra and can permit26 maps plus two roots. Carried
+parent records can produce up to28 mapped calls in a later window
+without new roots in that window; every call still spends held
+ordinary/extra capacity there. These are deliberate quantified
+increases, not 'free work'. No estimate of CPU/RAM prices or actual
+executions/minute.</p>
+<h2 id="phase-28--bounded-state">Phase 28 — Bounded state</h2>
+<p>Keep current ClientIP state limit4096 plus its existing overflow
+fallback. Add ordinaryHeld, extraSpent, extraHeld to each tracked state
+and active child reservations. A record contains opaque ID, owning
+state/IP, operation/protocol version, N≤8, expected endpoint,
+used/funding bitmasks, up to8 fixed32-byte expected hashes,
+dataset/model/parent fingerprint, phase, timestamps and heap index.
+Store no full RF payloads, map bodies, results or project data.
+Temporary root DTOs already used by handlers are released after digest
+generation.</p>
+<p>Invariant ordinarySpent+ordinaryHeld≤20; extraSpent+extraHeld≤8.
+Every indexed live reservation has≥1 held unit, so at most28 held
+records/IP. Remove the indexed record/heap entry when its last slot is
+claimed, copying only the needed claim receipt into that request. Global
+logical bound114688 held records; expected-hash storage bound29,360,128
+bytes (28MiB), plus fixed metadata/indices. Transitional claimed
+receipts are bounded by4096 tracked per-client active reservations
+before the global check; only two can actually execute globally. Do not
+incorrectly bound pre-global receipts by two. Go allocator and ordinary
+HTTP-request overhead require future measurement. Actual heap must be
+measured in future saturation tests; no fake exact RSS claim.</p>
+<p>Use one indexed min-heap entry/live record; remove it on early
+retirement, avoiding unbounded tombstones. Timer at next expiry plus
+lazy due cleanup on admission/control operations. Reset spent counters
+only; carry holds. Pin client entries with active requests or live
+records; never evict a live allowance. When no eligible client
+entry/global record slot exists, issue no workflow authorization;
+unknown clients can use only current shared ordinary overflow semantics.
+Overflow has no extra pool/leases. Fail closed on state exhaustion.
+Removing an inactive unreserved entry retains the current
+bounded-map/eviction limitation.</p>
+<h2 id="phase-29--future-replicas">Phase 29 — Future replicas</h2>
+<p>Current Compose is one app container/process. All candidate limiter
+counters reset locally; none creates a service-wide multi-replica quota.
+P0/P1/P2/P4 require shared gateway/store for aggregate multi-replica
+guarantees. StatefulP3/P5 additionally need sticky ownership plus a
+shared aggregate budget, or shared consumed/reservation state; signed
+IDs alone cannot solve replay/counters. P6 keeps one aggregate within
+its handling process but still needs a service-wide root budget. No
+Redis, sticky routing or distributed state is introduced now. Eight-Cell
+single-process qualification does not certify replicas.</p>
+<h2 id="phase-30--headersapi">Phase 30 — Headers/API</h2>
+<p>Future optional request headers:
+<code>RF-Workflow: network-maps-v1</code> on Evaluate/Optimize or
+<code>azimuth-sector-v1</code> on Optimize-Azimuth;
+<code>RF-Workflow-ID</code> plus integer <code>RF-Workflow-Index</code>
+on its children. Both root intent and child ID on the same request are
+invalid. Endpoints and scientific request/response JSON remain
+unchanged; bindJSON's strict unknown-field behavior stays. Add headers
+to CORS allow/expose lists for cross-origin use. Advertise an additive
+rf_budget_policy capability in existing GET /api/meta; future frontend
+enables opt-in only when the server declares bounded-followups-v1. With
+an older server it uses the existing ordinary queue, avoiding a guessed
+capability. This is non-scientific metadata, not a new RF response
+shape.</p>
+<p>Keep RateLimit-Limit20,
+Remaining=max(0,20−ordinarySpent−ordinaryHeld), Reset=ceil(seconds until
+anchored reset). Expose <code>RF-Followup-Limit:8</code>,
+Remaining=8−extraSpent−extraHeld, Reset=same anchor;
+<code>RF-Budget-Policy: bounded-followups-v1</code>. A successful
+opted-in root additionally returns Workflow-ID, Workflow-Remaining=N and
+Workflow-Expires=ceil(seconds to its earliest idle/absolute expiry).
+These are distinct from the RateLimit reset; renewal metadata can be
+returned after valid child progress. Headers reflect locked snapshots;
+changes by another tab can make later values lower.</p>
+<p>Budget shortage429 gets no-store and Retry-After to next relevant
+capacity opportunity: ceil(min(anchor reset, earliest releasing lease
+expiry)) if a normal unit/reservation needs it; this is a retry
+opportunity, not a guarantee when holds survive reset. Capacity busy
+stays Retry-After1. Invalid/replay/expiry errors400/409/410 as
+specified, never automatic RF fallback. Existing clients ignoring new
+headers still work with ordinary semantics.</p>
+<h2 id="phase-31--observability">Phase 31 — Observability</h2>
+<p>Keep keyed client hash/request sequence and denial logging. Add
+policy version, known root/child classification, hashed workflow ID,
+funding source, ordinary/extra available and held counts, remaining
+child slots, seconds to expiry and bounded denial reason. Counter labels
+only operation/class/reason, not IP/token/high-cardinality IDs. Log
+issuance/retirement/denial, not payloads, raw IPs or bearer tokens.
+Distinguish ordinary exhaustion, reservation shortage, slot busy,
+invalid/stale/expired/replay and state capacity. No
+machine-price/cost-estimator telemetry.</p>
+<h2 id="phase-32--fail-closed">Phase 32 — Fail closed</h2>
+<p>Missing/malformed/foreign ID, expired record, consumed slot, stale
+model/dataset, unsupported route/version or mixed metadata cannot grant
+extra or reserved RF work. Unknown/replay/expired attempts consume
+ordinary1 if available and otherwise return ordinary429; then denial no
+RF, no fallback. Stale record retires unused holds. A known owned
+unspent slot is consumed before bounded decoding; malformed/mismatched
+payload consumes its funding and retires siblings with400/no RF. Server
+restart invalidates all IDs; client re-runs deliberately under new
+ordinary policy. Random-ID allocation/system failure emits no usable
+capability; process restart is handled as state loss. No speculative
+cached fingerprint can reconstruct authorization.</p>
+<p>Exact authorization-denial codes (after ordinary admission where
+applicable): malformed/mixed metadata, unsupported version or index400;
+wrong owner/operation403; consumed slot409; stale dataset/model409 with
+unused holds retired; expired/missing/restarted ID410. Ordinary or
+reservation budget shortage429; state-allocation exhaustion503 with no
+grant and Retry-After to earliest bounded cleanup opportunity. Existing
+authentication401 remains before charging. Ordinary-exhausted invalid
+attempts get429 rather than bypassing the budget. Known-owned slot
+malformed JSON/hash mismatch400, oversized body413, and validator
+rejection use the existing code, burn the claimed funding and retire
+siblings; no RF. Optional-header stripping/missing grant on an
+advertised protocol is a client protocol error, not permission to
+dispatch unrestricted children.</p>
+<h2 id="phase-33--implementation-surfaces">Phase 33 — Implementation
+surfaces</h2>
+<p>P1 LOW: default/env/docs/tests, but does not solve atomicity. P2
+MODERATE: token accounting, route table, headers/config/docs. P3
+MODERATE: limiter state/reservation lifecycle; typed root result hooks
+(main.go/network optimization handler); APIclient metadata helper;
+existing sequential queue and three action callbacks; CORS/OpenAPI
+optional headers; tests/docs. No engine, payload-builder, persistence or
+UI layout changes. P4 MODERATE: route-class state/header semantics;
+meaningful verified split converges on P3. P5 MODERATE: same
+ownership/expiry/claim machinery; logical multi-click reservation would
+be HIGH. P6 HIGH: new orchestration/streaming/errors/progress/API/client
+guards. These are surface estimates, not implemented code or measured
+LOC.</p>
+<h2 id="phase-34--tradeoff-matrix">Phase 34 — Tradeoff matrix</h2>
+<p>The matrix below scores through explicit descriptions. P3's main cost
+is state/lifecycle complexity and held-budget NAT pressure; its benefit
+is preserving arbitrary-call20 while bounding the necessary extra8 and
+protecting root completion. P1 is materially simpler, but has weaker
+arbitrary-root/map ceilings and partial queues. P2/P4 cannot recognize
+semantic follow-ups from the shared route alone. P5 without a verified
+bounded increment fails product or abuse criteria. P6 adds architectural
+change without a unique policy benefit. No average security score masks
+the differences.</p>
+<h2 id="phase-35--minimality">Phase 35 — Minimality</h2>
+<p>A simpler flat or route-only policy cannot meet both required24 map
+dependencies and standalone Simulate ceiling20: the server sees the same
+route/payload capability until a verified parent is introduced. With
+raw20 unchanged and eight verified credits,28 is the minimum total
+necessary for F. Prebooking is required to prevent a root at residual
+balance from failing its mandatory queue. A public flag/fingerprint
+fails authorization; stateless signing fails one-time replay; a full
+aggregate endpoint is unnecessary. P3-capped is the smallest candidate
+meeting the frozen criteria, although not the smallest code change. Its
+security judgment is conditional on the future validation gates; no
+implementation equivalence is claimed.</p>
+<h2 id="phase-36--flat-threshold-judgment">Phase 36 — Flat threshold
+judgment</h2>
+<p>A flat28 is sufficient for the finite fresh F accounting;29 adds one
+inspection and38 supports two cycles. It is rejected here because it
+permits28 arbitrary roots/maps and leaves residual-root partial failure
+at every finite threshold. If the product intentionally relaxes those
+frozen independent ceilings/atomicity, another study could select a
+simpler threshold. This study does not silently relax them. Live
+production stays20.</p>
+<h2 id="phase-37--workflow-aware-judgment">Phase 37 — Workflow-aware
+judgment</h2>
+<p>Transport fan-out is the principal blocker identified by source and
+successor evidence. Verification is necessary to distinguish a dependent
+map from an arbitrary standalone simulation. Bounded shared credits are
+more semantically faithful than increasing every endpoint's ceiling. Do
+not grantN credits to every root indefinitely; add only8 per shared
+window and prebook the known queue. This partially discounts fan-out,
+deliberately not converting all workflows to cost1.</p>
+<h2 id="phase-38--one-recommendation">Phase 38 — One recommendation</h2>
+<p>Recommended policy category <strong>D — VERIFIED ROOT + FOLLOW-UP
+ALLOWANCE</strong>, specifically P3-capped with20 ordinary units plus8
+shared verified follow-up units and mandatory child prebooking. Final
+design verdict <strong>C — WORKFLOW-AWARE ACCOUNTING IS
+PREFERRED</strong>. These are different enumerations, not two
+recommendations. Fallback: retain P0/cap6 if the new protocol fails
+validation. No policy or cap change occurs in this task.</p>
+<h2 id="phase-39--exact-intended-semantics">Phase 39 — Exact intended
+semantics</h2>
+<p>Identity is unchanged Gin ClientIP, with the same optional RF
+authentication; never per-tab as primary boundary. Both pools use the
+retained client's existing anchored60s lazy window. On reset, set
+spentOrdinary/spentExtra to0 and retain held counts. Never reset for
+workflow completion.</p>
+<p>For ordinary calls: charge1 from ordinary pool if available; all
+normal auth/deadline/2/1 slots/binding/RF rules apply. For opted-in
+eligible roots, charge ordinary1 and acquire existing slots as today.
+After strict binding/validation, before RF, derive N (selected unique
+towers for network;1 for Azimuth) and atomically reserve
+e=min(N,extraAvailable) extra children plus N−e ordinary children. If
+insufficient, return429 before RF; root attempt remains charged. Mark
+reservation pending; no public authorization. RF root runs unchanged. On
+valid complete success/current dataset+context, derive exact child
+hashes and issue opaque ID in response headers. Failures retire holds
+and issue no capability.</p>
+<p>Funding is deterministic: earliest e child indices use extra,
+remaining indices ordinary. Each valid owner/route/index unspent claim
+transfers one held unit to matching spent atomically; mark used before
+slot acquisition/binding/RF. A claim's wrong body, busy result,
+cancellation, deadline or500 stays charged and retires unused siblings.
+Valid completed child renews idle lifetime; no
+retry/replay/invalid/cancel renewal. Last child retires the record after
+in-flight release. No child can issue another allowance.
+Explanation/Surface/Recommendation/Interference/measurements/experiments
+and independent Simulate receive no extra except the exact whitelisted
+child edges.</p>
+<p>Pending root holds expire with its existing request context. Issued
+records have idle expiry60s after successful root or last valid child
+progress; on a valid in-flight claim, idle expiry may extend to that
+request's existing deadline. Absolute expiry is root-admission
+time+(N+1)×60s, never extended. For8 children max540s,6 children420s,
+Azimuth child120s; idle abandonment frees holds within60s unless a valid
+request is in flight. Active progress has finiteN slots and the absolute
+cap. Allowance guarantees budget only while valid; slow/unbounded
+transport and unrelated failures are not guaranteed.</p>
+<p>Explicit cancellation cleanup: future DELETE
+<code>/api/rf-workflows</code>, with ID only in the
+<code>RF-Workflow-ID</code> header, same RF authentication and owner-IP
+checks, idempotently retires unused holds, never refunds spent or resets
+windows. This control endpoint performs no RF, mints no credits, and
+charges0 RF units; fixed-length ID parsing/lookup only. Client sends it
+on action abort/queue failure when ID known, without reusing the aborted
+signal. Server-observed failure also cleans up. Browser crash relies on
+idle expiry. Unknown controls return generic404; unauthorized401;
+foreign owner403 without state mutation. No persisted project
+change.</p>
+<h2 id="phase-40--parameter-derivation">Phase 40 — Parameter
+derivation</h2>
+<p>Ordinary20/window60 retain the existing abuse boundary.
+Extra8=required eight F calls(3×8+4)−20. Six F needs only2 above20, but
+one shared target parameter8 supports both and does not create a user
+tier. N is exact server-validated cardinality≤current product cap;
+generic internal maximum8 supports only future/audit eight testing, not
+admission above current6. Single Azimuth'sN1 comes from its existing one
+refresh.</p>
+<p>Idle60 derives from the existing anchored period/request deadline,
+bounding abandonment to one period; absolute(N+1)×60 gives the root and
+each finite child one existing deadline interval. This is a lifetime
+bound, not CPU/RAM pricing or an unconditional network-completion
+estimate. Explicit future slow-queue/expiry tests are required. ID128
+bits is a capability-security parameter, independent of RF cost. Max4096
+clients retains current state bound; held records≤4096×28 and
+bounded4096 transitional receipts is derived from capacities, not a
+round state allowance.</p>
+<h2 id="phase-41--recommended-accounting">Phase 41 — Recommended
+accounting</h2>
+<p>Completed from fresh bucket (ordinary/extra):6C Evaluate or
+Optimize1/6;8C1/8. Six cycle7/8 (15 calls), eight11/8 (19). Six
+Evaluate→Optimize6/8 (14), eight10/8 (18). Six cycle→Optimize14/8 (22),
+eight20/8 (28). Six Optimize→explain2/6; eight2/8. Single Azimuth1/1
+across two requests. Two sequential same-IP Evaluate tabs:6C6/8,8C10/8;
+pool shared, not doubled. Two full cycles or two extended chains may
+deny as table shows. Distinct IPs each have20+8, while global2 remains
+shared. After eight F ordinary0/extra0: another inspection may wait,
+explicitly outside the chosen envelope.</p>
+<h2 id="phase-42--recommended-abuse-simulation">Phase 42 — Recommended
+abuse simulation</h2>
+<p>Twenty bare Optimize or Evaluate roots, or twenty standalone maps,
+still exhaust ordinary units. The21st unassociated attempt is denied
+outside RF. At most8 extra authorized attempts and28 total admitted
+attempts occur in a retained window, including failed/busy attempts;
+outstanding held credits are deducted after reset, preventing
+delayed-grant hoarding. Three full8C map workflows (27 calls) or four6C
+(28) fit; this is a deliberate increase over P0's two. A script may
+obtain legitimate bound credits by performing real valid roots, but
+cannot turn them into arbitrary endpoints/coordinates/parameters, or
+recursively grant more.</p>
+<p>One8C root+8 matched maps+19 independent maps=28 attempts (27 maps).
+Bare20 roots plus8 free arbitrary maps is impossible without
+parents/slot binding, but with eligible matched dependencies the total+8
+is intentionally allowed. Forged/replayed attempts perform no RF under
+intended semantics; implementation security is not tested by this
+arithmetic. Two NAT users share the same pool; adding tabs does not
+multiply allowance. Near-boundary total55 tight/56 loose;
+ordinary-only40 can arise when an extra-funded carried request anchors
+the period. Current tight ordinary burst39 is therefore not claimed
+invariant.</p>
+<h2 id="phase-43--promotion-dependency">Phase 43 — Promotion
+dependency</h2>
+<p>Successful implementation and validation would remove the last
+currently documented eight-Cell budget blocker for the exact certified
+Profile A/W1 scope. New full28-call RF workflow,
+mixed/concurrency/header/forgery/expiry/regression tests must pass
+first. Separate cap promotion still requires deliberate review of
+validators, frontend/OpenAPI caps and independent
+Recommendation/Measurement limits; it is not executed here. No
+additional blocker is established by this study. Network-only
+persistence observation stays separate; full eight-Cell ray-bearing
+export is not promoted into a prerequisite absent an explicit product
+requirement. No W2/W3/general-domain certification.</p>
+<h2 id="phase-44--future-implementation-plan">Phase 44 — Future
+implementation plan</h2>
+<ol type="1">
+<li>Backend: refactor budget admission from slot acquisition without
+changing ordering/charges; add bounded two-pool holds, expiry heap and
+owned records; typed hooks for three root families and two child
+endpoints; authenticated retire control.</li>
+<li>Frontend: optional metadata-aware API helper, pass ID/index through
+existing sequential queue and Azimuth refresh; clean up on abort/error;
+no layout, retries, payload-builder or persistence changes.</li>
+<li>API: optional headers/CORS exposure and one no-RF cleanup control;
+scientific JSON unchanged; product cap stays6 during policy patch.</li>
+<li>Observability: bounded fields/counters and distinct denial
+reasons.</li>
+<li>Tests: unit properties, fake-clock expiry/reset, concurrent
+duplicate/claim/state-limit tests and all failure classes; prove denial
+invokes no RF.</li>
+<li>Real E2E: current six and audit-only eight flows, shared tabs/IPs,
+fullF28; preserve exact science and resource/concurrency gates.</li>
+<li>Docs: policy units, headers, finite envelopes, NAT/restart/cleanup
+behavior and rollback. Do not promote cap until policy gates pass.</li>
+</ol>
+<h2 id="phase-45--future-validation-gates">Phase 45 — Future validation
+gates</h2>
+<p>Require all frozenL1/L2/L3 six/eight chains; arbitrary independent
+request21 denial; shared-IP sequential tabs and concurrent busy
+charging; distinct-IP independence; matched-slot one-time use;
+forged/foreign IDs, inflatedN, changed
+coords/rays/radius/profiles/azimuth, other route/operation/recursive
+use; no root authorization from401/400/413/422/429/500/504/cancel;
+root/spent child never refunded; unused holds released.</p>
+<p>Boundary/reset tests must cover extra-funded anchors, carry
+subtraction, repeated delayed claims, idle expiry, absolute deadline,
+in-flight completion races, client crash, cleanup DELETE ownership,
+restart, state-full/overflow and heap/tombstone bounds. Verify both20/8
+inequalities after every event, compare headers with locked snapshots,
+ceil Retry-After, no RF on all denials, and unchanged2/1 slot
+ownership/release. FullF28 on shipping-equivalent Profile A must
+preserve45s request/15s headroom/3GiB kernel peak/zero OOM and
+deterministic science; no higher-tier rescue. Saturate metadata state to
+measure actual Go heap separately. Tests in this study verify
+arithmetic/source preservation only, not this future implementation.</p>
+<h2 id="phase-46--rollback">Phase 46 — Rollback</h2>
+<p>Disable new issuance; invalidate outstanding IDs and retire unspent
+holds without refunding spent attempts. If reverting in-place,
+conservatively fold ordinarySpent+extraSpent into min(20,totalSpent) for
+the existing live anchor, or retain exhausted state until reset; do not
+gift a fresh window. Let in-flight handlers release their usual slots.
+Restore middleware20/60, strip optional headers/control/API helper
+behavior, and use the original queue. Existing RF JSON, scientific
+fingerprints and saved projects require no migration. A process restart
+has the same current counter-reset limitation and rejects stale IDs; it
+is not a silent credit-refund strategy.</p>
+<h2 id="phase-47--production-invariance">Phase 47 — Production
+invariance</h2>
+<p>All407 starting production files must retain their exact hashes:
+backend/frontend, policy, data, adapter, Docker/Compose, OpenAPI and
+VERSION. All1959 preserved prior artifacts also remain exact. Current
+cap6/frontend6/OpenAPI6, budget20,2/1 slots,60s deadline,
+worker1/queue16, Auto observation-only,
+RF/search/Pareto/persistence/fingerprints unchanged. Study code only
+inventories source and evaluates finite arithmetic tapes; it creates no
+token, HTTP middleware, RF endpoint or live enforcement mechanism.</p>
+<h2 id="phase-48--version">Phase 48 — Version</h2>
+<p>Retain VERSION0.11.0. No release, tag, push or publishing. Add only
+design Markdown/JSON/HTML, study tooling/tests/lock/manifests and an
+Unreleased documentation entry/reference-page registration. Prior
+studies stay untouched.</p>
+<h2 id="phase-49--quality-and-freeze">Phase 49 — Quality and freeze</h2>
+<p>Run backend test/race/vet, frontend tests/lint/build, both current
+real E2Es with ATOM_REAL_E2E=1 and JSON execution guards, study
+arithmetic/source tests, docs build/validation, version consistency and
+diff check. Revalidate preservation/source hashes and phase/final-item
+coverage. Logs stay outside Git with size/SHA index/archive. Keep the
+criteria/evidence frozen and production P0/cap6. Next action is a
+separate <strong>Bounded Verified Follow-up Policy Implementation and
+Validation</strong> task; no implementation or promotion in this
+study.</p>
+<h2 id="protected-route-table">Protected route table</h2>
+<table>
+<thead>
+<tr>
+<th>POST endpoint</th>
+<th style="text-align: right;">Cost</th>
+<th>Source-derived role</th>
+<th>Caller / computation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/path-profile</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App.analyzePathProfile; sampled path RF/terrain profile</td>
+</tr>
+<tr>
+<td><code>/api/sub-thz-reference</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App.analyzeSubTHZReference; reference scenario calculations</td>
+</tr>
+<tr>
+<td><code>/api/sub-thz-p1411-reference</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App reference callback; reference path-loss calculations</td>
+</tr>
+<tr>
+<td><code>/api/sub-thz-validation</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App reference callback; reference-case validation</td>
+</tr>
+<tr>
+<td><code>/api/sub-thz-material-reference</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App reference callback; material/interface calculations</td>
+</tr>
+<tr>
+<td><code>/api/sub-thz-reflection-reference</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App reference callback; reflection geometry and RF</td>
+</tr>
+<tr>
+<td><code>/api/coverage-surface</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App.analyzeCoverageSurface/exportCoverageSurface; RF grid
+computation; export POST recomputes</td>
+</tr>
+<tr>
+<td><code>/api/processes/batch-experiment/execution</code></td>
+<td style="text-align: right;">1</td>
+<td>BACKGROUND / EXPERIMENT</td>
+<td>ExperimentPanel.start; one submission can expand to64 queued
+background runs</td>
+</tr>
+<tr>
+<td><code>/api/analyze-sector</code></td>
+<td style="text-align: right;">1</td>
+<td>USER-INITIATED ROOT + DETERMINISTIC FOLLOW-UP</td>
+<td>App.runSimulation; optimizeAzimuth refresh; history; single-Cell
+rays plus gaps</td>
+</tr>
+<tr>
+<td><code>/api/simulate</code></td>
+<td style="text-align: right;">1</td>
+<td>DETERMINISTIC FOLLOW-UP + INDEPENDENT TOOL ACTION</td>
+<td>network map queue; standalone API caller; single-Cell rays; same
+route may be independently expensive</td>
+</tr>
+<tr>
+<td><code>/api/coverage-gaps</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>standalone API/legacy callers; normal UI sector route includes gaps;
+coverage/demand calculation</td>
+</tr>
+<tr>
+<td><code>/api/optimize-azimuth</code></td>
+<td style="text-align: right;">1</td>
+<td>USER-INITIATED ROOT</td>
+<td>App.optimizeAzimuth/history; single-Cell azimuth search</td>
+</tr>
+<tr>
+<td><code>/api/evaluate-network</code></td>
+<td style="text-align: right;">1</td>
+<td>USER-INITIATED ROOT</td>
+<td>App.evaluateNetwork; selected-network RF evaluation</td>
+</tr>
+<tr>
+<td><code>/api/optimize-network</code></td>
+<td style="text-align: right;">1</td>
+<td>USER-INITIATED ROOT</td>
+<td>App.optimizeNetwork/history; network search and Pareto output</td>
+</tr>
+<tr>
+<td><code>/api/building-entry-analysis</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App.analyzeBuildingEntry; network/single building-entry analysis;
+current-result cache can avoid request</td>
+</tr>
+<tr>
+<td><code>/api/explain-network-cell</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App.explainNetworkCell; on-demand retained-solution RF explanation;
+cached repeat costs0</td>
+</tr>
+<tr>
+<td><code>/api/interference</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App.analyzeInterference; network RF/interference sampling</td>
+</tr>
+<tr>
+<td><code>/api/recommend-sites</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App.recommendSites; candidate network evaluation/search; independent
+max5 existing Cells</td>
+</tr>
+<tr>
+<td><code>/api/measurements/evaluate</code></td>
+<td style="text-align: right;">1</td>
+<td>INDEPENDENT TOOL ACTION</td>
+<td>App.evaluateMeasurements; measurement predictions and residuals</td>
+</tr>
+</tbody>
+</table>
+<h2 id="source-references">Source references</h2>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th style="text-align: right;">Line</th>
+<th>Function / call</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend-go/rf_protection.go</code></td>
+<td style="text-align: right;">100</td>
+<td><code>func (limiter *rfRequestLimiter) middlewareFor</code></td>
+</tr>
+<tr>
+<td><code>backend-go/rf_protection.go</code></td>
+<td style="text-align: right;">142</td>
+<td><code>func (limiter *rfRequestLimiter) acquire</code></td>
+</tr>
+<tr>
+<td><code>backend-go/rf_protection.go</code></td>
+<td style="text-align: right;">183</td>
+<td><code>func (limiter *rfRequestLimiter) clientState</code></td>
+</tr>
+<tr>
+<td><code>backend-go/rf_protection.go</code></td>
+<td style="text-align: right;">212</td>
+<td><code>func protectExpensiveRFRoutes</code></td>
+</tr>
+<tr>
+<td><code>backend-go/rf_protection.go</code></td>
+<td style="text-align: right;">240</td>
+<td><code>func validAPIKey</code></td>
+</tr>
+<tr>
+<td><code>backend-go/main.go</code></td>
+<td style="text-align: right;">83</td>
+<td><code>router.SetTrustedProxies</code></td>
+</tr>
+<tr>
+<td><code>backend-go/main.go</code></td>
+<td style="text-align: right;">86</td>
+<td><code>router.Use(gin.Logger</code></td>
+</tr>
+<tr>
+<td><code>backend-go/main.go</code></td>
+<td style="text-align: right;">88</td>
+<td><code>router.Use(limitRequestBody</code></td>
+</tr>
+<tr>
+<td><code>backend-go/main.go</code></td>
+<td style="text-align: right;">120</td>
+<td><code>router.Use(protectExpensiveRFRoutes</code></td>
+</tr>
+<tr>
+<td><code>backend-go/main.go</code></td>
+<td style="text-align: right;">636</td>
+<td><code>func bindJSON</code></td>
+</tr>
+<tr>
+<td><code>backend-go/main.go</code></td>
+<td style="text-align: right;">661</td>
+<td><code>func writeRFResponse</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">1141</td>
+<td><code>const optimizeNetwork</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">1257</td>
+<td><code>const evaluateNetwork</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">1318</td>
+<td><code>const explainNetworkCell</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">1022</td>
+<td><code>const optimizeAzimuth</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">1476</td>
+<td><code>const analyzeInterference</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">1534</td>
+<td><code>const analyzeBuildingEntry</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">899</td>
+<td><code>const analyzeCoverageSurface</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">942</td>
+<td><code>const exportCoverageSurface</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">2057</td>
+<td><code>const recommendSites</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/App.jsx</code></td>
+<td style="text-align: right;">2120</td>
+<td><code>const evaluateMeasurements</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/utils/requestPayloads.js</code></td>
+<td style="text-align: right;">5</td>
+<td><code>export function buildSimulationPayload</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/utils/requestPayloads.js</code></td>
+<td style="text-align: right;">279</td>
+<td><code>export function buildNetworkOptimizationPayload</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/utils/networkSimulationQueue.js</code></td>
+<td style="text-align: right;">1</td>
+<td><code>export async function</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/utils/apiClient.js</code></td>
+<td style="text-align: right;">6</td>
+<td><code>export async function requestJSON</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/hooks/useRequestCoordinator.js</code></td>
+<td style="text-align: right;">13</td>
+<td><code>const begin</code></td>
+</tr>
+<tr>
+<td><code>frontend-react/src/components/ExperimentPanel.jsx</code></td>
+<td style="text-align: right;">40</td>
+<td><code>const start</code></td>
+</tr>
+<tr>
+<td><code>backend-go/experiment_jobs.go</code></td>
+<td style="text-align: right;">431</td>
+<td><code>func registerExperimentRoutes</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="frontend-graph-inventory">Frontend graph inventory</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Root</th>
+<th>Dependent calls</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evaluate Network</td>
+<td>/api/evaluate-network</td>
+<td>N POST /api/simulate</td>
+<td>N+1</td>
+</tr>
+<tr>
+<td>Optimize Network</td>
+<td>/api/optimize-network</td>
+<td>N POST /api/simulate</td>
+<td>N+1</td>
+</tr>
+<tr>
+<td>Re-evaluate</td>
+<td>same Evaluate callback</td>
+<td>same N maps</td>
+<td>N+1</td>
+</tr>
+<tr>
+<td>Interference</td>
+<td>/api/interference</td>
+<td>none</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Explain solution/cell</td>
+<td>/api/explain-network-cell</td>
+<td>none</td>
+<td>1 uncached;0 cached/no eligible changed Cell</td>
+</tr>
+<tr>
+<td>Building Entry</td>
+<td>/api/building-entry-analysis</td>
+<td>none</td>
+<td>1;0 if source-key result current</td>
+</tr>
+<tr>
+<td>Surface generation/export</td>
+<td>/api/coverage-surface</td>
+<td>none</td>
+<td>1 generate; each export separately1</td>
+</tr>
+<tr>
+<td>Single-Cell Propagation</td>
+<td>/api/analyze-sector</td>
+<td>none</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Single-Cell Azimuth</td>
+<td>/api/optimize-azimuth</td>
+<td>1 POST /api/analyze-sector</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Recommendation</td>
+<td>/api/recommend-sites</td>
+<td>none automatically</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Measurements</td>
+<td>/api/measurements/evaluate</td>
+<td>none</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Experiments</td>
+<td>/api/processes/batch-experiment/execution</td>
+<td>GET /api/jobs/id polling; optional DELETE cancel</td>
+<td>1 protected POST; GET/DELETE0 RF-budget units</td>
+</tr>
+<tr>
+<td>History rerun</td>
+<td>/api/analyze-sector or /api/optimize-network or
+/api/optimize-azimuth</td>
+<td>none in this callback</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Path/reference tools</td>
+<td>corresponding protected POST</td>
+<td>none</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Inspect/tab/report/local persistence</td>
+<td>none protected</td>
+<td>none protected</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="candidate-comparison">Candidate comparison</h2>
+<p>|Candidate|6C/8C product fit|Abuse
+boundary|NAT/state|Replay/API|Complexity / decision|
+|---|---|---|---|---| |P0|L1/L2 fresh fit;F fails; residual partial
+queues|roots/maps20; retains current boundary|one pooled20;
+current4096+overflow; reset/eviction limitations|ordinary repeats
+charged; no capability; unchanged|LOW; reject product/atomicity| |P1|28
+fits freshF; late roots still partial|arbitrary roots/maps28;+40%|more
+pooled arbitrary capacity; no per-user fairness; same map; no new
+ownership|ordinary repeats charged at larger ceiling; header limit28;
+same JSON|LOW; reject independent ceilings/atomicity| |P2|60 tokens
+at3/2 weights fitsF; late queue still needs reservation|roots20;
+standalone maps30;+50%|semantic route pools still shared; one weighted
+counter; no ownership|ordinary weighted repeats; no parent proof; token
+headers60, variable per-call costs|MODERATE; reject standalone-map
+ceiling| |P3|capped variant fitsL1/L2/L3 with child
+prebooking|ordinary20; verified extra8; all28; naive variant180
+rejected|shared20+8; held liabilities can temporarily pressure others;
+bounded tickets/heap/held counters; no persisted data|atomic one-time
+slot+exact server-derived body; requires implementation tests; optional
+headers/capability metadata/retire control; scientific JSON
+unchanged|MODERATE; RECOMMEND capped variant| |P4|root20/map24
+fitsF;20/20 fails|independent maps24; total44|separate pooled pressure;
+still one IP; two counters; no verified context|same-route repeats can
+spend map bucket; dual bucket headers|MODERATE; reject map ceiling;
+verified variant converges onP3| |P5|reserve20 atomic butF fails;
+reserve28 fitsF|flat28 raises arbitrary caps; logical20
+reaches180steps|held budget/abandonment pressure; reservation
+ownership/expiry similar toP3|needs exact claims or client can steal
+reservations; workflow admission metadata|MODERATE; use prebooking
+withinP3; reject as independent recommendation| |P6|can aggregate one
+action; multi-click chain still needs budget|cost1 aggregates20
+workflows/180steps unless separately bounded|still pooled; internal
+fanout hidden; orchestration/in-flight combined result state|root
+replays can repeat whole aggregate; new streaming/body/progress/error
+contract|HIGH; reject unnecessary architecture|</p>
+<h2 id="all-twenty-criteria-without-composite-scoring">All twenty
+criteria, without composite scoring</h2>
+<h3 id="legitimate-six-cell-usability">legitimate six-Cell
+usability</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>L1/L2 fresh fit;F fails; residual partial queues</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>28 fits freshF; late roots still partial</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>60 tokens at3/2 weights fitsF; late queue still needs
+reservation</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>capped variant fitsL1/L2/L3 with child prebooking</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>root20/map24 fitsF;20/20 fails</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>reserve20 atomic butF fails; reserve28 fitsF</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>can aggregate one action; multi-click chain still needs budget</td>
+</tr>
+</tbody>
+</table>
+<h3 id="legitimate-eight-cell-usability">legitimate eight-Cell
+usability</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>L1/L2 fresh fit;F fails; residual partial queues</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>28 fits freshF; late roots still partial</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>60 tokens at3/2 weights fitsF; late queue still needs
+reservation</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>capped variant fitsL1/L2/L3 with child prebooking</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>root20/map24 fitsF;20/20 fails</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>reserve20 atomic butF fails; reserve28 fitsF</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>can aggregate one action; multi-click chain still needs budget</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heavy-root-abuse-resistance">heavy-root abuse resistance</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>roots/maps20; retains current boundary</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>arbitrary roots/maps28;+40%</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>roots20; standalone maps30;+50%</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>ordinary20; verified extra8; all28; naive variant180 rejected</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>independent maps24; total44</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>flat28 raises arbitrary caps; logical20 reaches180steps</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>cost1 aggregates20 workflows/180steps unless separately bounded</td>
+</tr>
+</tbody>
+</table>
+<h3 id="follow-up-abuse-resistance">follow-up abuse resistance</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>roots/maps20; retains current boundary</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>arbitrary roots/maps28;+40%</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>roots20; standalone maps30;+50%</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>ordinary20; verified extra8; all28; naive variant180 rejected</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>independent maps24; total44</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>flat28 raises arbitrary caps; logical20 reaches180steps</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>cost1 aggregates20 workflows/180steps unless separately bounded</td>
+</tr>
+</tbody>
+</table>
+<h3 id="shared-ipnat-pressure">shared-IP/NAT pressure</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>one pooled20</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>more pooled arbitrary capacity; no per-user fairness</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>semantic route pools still shared</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>shared20+8; held liabilities can temporarily pressure others</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>separate pooled pressure; still one IP</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>held budget/abandonment pressure</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>still pooled; internal fanout hidden</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tab-behavior">tab behavior</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>one pooled20; per-client1 unchanged</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>more pooled arbitrary capacity; no per-user fairness; per-client1
+unchanged</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>semantic route pools still shared; per-client1 unchanged</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>shared20+8; held liabilities can temporarily pressure others;
+per-client1 unchanged</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>separate pooled pressure; still one IP; per-client1 unchanged</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>held budget/abandonment pressure; per-client1 unchanged</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>still pooled; internal fanout hidden; per-client1 unchanged</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cancellation-behavior">cancellation behavior</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>spent charges retained; no authorization credit refund</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>spent charges retained; no authorization credit refund</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>spent charges retained; no authorization credit refund</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>spent charges retained; unused holds retired</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>spent charges retained; no authorization credit refund</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>spent charges retained; unused holds retired</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>spent charges retained; no authorization credit refund</td>
+</tr>
+</tbody>
+</table>
+<h3 id="replay-resistance">replay resistance</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>ordinary repeats charged; no capability</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>ordinary repeats charged at larger ceiling</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>ordinary weighted repeats; no parent proof</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>atomic one-time slot+exact server-derived body; requires
+implementation tests</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>same-route repeats can spend map bucket</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>needs exact claims or client can steal reservations</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>root replays can repeat whole aggregate</td>
+</tr>
+</tbody>
+</table>
+<h3 id="implementation-complexity">implementation complexity</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>LOW</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>LOW</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>MODERATE</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>MODERATE</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>MODERATE</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>MODERATE</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>HIGH</td>
+</tr>
+</tbody>
+</table>
+<h3 id="state-complexity">state complexity</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>current4096+overflow; reset/eviction limitations</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>same map; no new ownership</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>one weighted counter; no ownership</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>bounded tickets/heap/held counters; no persisted data</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>two counters; no verified context</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>reservation ownership/expiry similar toP3</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>orchestration/in-flight combined result state</td>
+</tr>
+</tbody>
+</table>
+<h3 id="process-restart-semantics">process restart semantics</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>counters reset; no new IDs</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>counters reset; no new IDs</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>counters reset; no new IDs</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>counters reset; stale IDs rejected</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>counters reset; no new IDs</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>counters reset; stale IDs rejected</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>counters reset; no new IDs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="future-multi-instance-implications">future multi-instance
+implications</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>process-local limits need shared aggregate gateway; no ticket
+ownership layer</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>process-local limits need shared aggregate gateway; no ticket
+ownership layer</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>process-local limits need shared aggregate gateway; no ticket
+ownership layer</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>process-local limits need shared aggregate gateway; also
+sticky/shared consumed state</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>process-local limits need shared aggregate gateway; no ticket
+ownership layer</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>process-local limits need shared aggregate gateway; also
+sticky/shared consumed state</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>process-local limits need shared aggregate gateway; no ticket
+ownership layer</td>
+</tr>
+</tbody>
+</table>
+<h3 id="api-compatibility">API compatibility</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>header limit28; same JSON</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>token headers60, variable per-call costs</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>optional headers/capability metadata/retire control; scientific JSON
+unchanged</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>dual bucket headers</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>workflow admission metadata</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>new streaming/body/progress/error contract</td>
+</tr>
+</tbody>
+</table>
+<h3 id="frontend-compatibility">frontend compatibility</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>no flow rewrite; errors/headers documented</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>no flow rewrite; errors/headers documented</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>no flow rewrite; errors/headers documented</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>metadata helper/queue plumbing; no visual redesign</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>no flow rewrite; errors/headers documented</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>metadata helper/queue plumbing; no visual redesign</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>new parser/progress flow</td>
+</tr>
+</tbody>
+</table>
+<h3 id="observabilitydebuggability">observability/debuggability</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>one transport counter</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>simple but counts fanout</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>integer semantic ratio, not CPU estimate</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>ordinary vs bounded verified units and held amounts explicit</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>cannot distinguish automatic/independent Simulate</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>prebooking transport obligations is useful; logical units need
+separate bound</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>fewer HTTP calls; more execution accounting complexity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="backwards-compatibility">backwards compatibility</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>current semantics</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>changed ceilings/units or orchestration as described</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>changed ceilings/units or orchestration as described</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>ordinary fresh ≤20-call tapes retained; holds explicitly
+qualified</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>changed ceilings/units or orchestration as described</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>changed ceilings/units or orchestration as described</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>changed ceilings/units or orchestration as described</td>
+</tr>
+</tbody>
+</table>
+<h3 id="testability">testability</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>deterministic fake-clock/ledger/boundary tests; security lifecycle
+tests required for stateful variants</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>deterministic fake-clock/ledger/boundary tests; security lifecycle
+tests required for stateful variants</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>deterministic fake-clock/ledger/boundary tests; security lifecycle
+tests required for stateful variants</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>deterministic fake-clock/ledger/boundary tests; security lifecycle
+tests required for stateful variants</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>deterministic fake-clock/ledger/boundary tests; security lifecycle
+tests required for stateful variants</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>deterministic fake-clock/ledger/boundary tests; security lifecycle
+tests required for stateful variants</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>deterministic fake-clock/ledger/boundary tests; security lifecycle
+tests required for stateful variants</td>
+</tr>
+</tbody>
+</table>
+<h3 id="failure-atomicity">failure atomicity</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>not guaranteed at residual balance</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>not guaranteed at residual balance</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>not guaranteed at residual balance</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>root denied before RF when children cannot be prebooked</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>not guaranteed at residual balance</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>root denied before RF when children cannot be prebooked</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>aggregation requires new internal partial-error contract</td>
+</tr>
+</tbody>
+</table>
+<h3 id="denial-semantics">denial semantics</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>budget/auth denial outsideRF;existing charges with candidate
+accounting units</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>budget/auth denial outsideRF;existing charges with candidate
+accounting units</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>budget/auth denial outsideRF;existing charges with candidate
+accounting units</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>budget/auth denial outsideRF; owned child busy/failure spends
+claimed unit</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>budget/auth denial outsideRF;existing charges with candidate
+accounting units</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>budget/auth denial outsideRF; owned child busy/failure spends
+claimed unit</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>budget/auth denial outsideRF;existing charges with candidate
+accounting units</td>
+</tr>
+</tbody>
+</table>
+<h3 id="migration-risk">migration risk</h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>reject product/atomicity; LOW</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>reject independent ceilings/atomicity; LOW</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>reject standalone-map ceiling; MODERATE</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>RECOMMEND capped variant; MODERATE</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>reject map ceiling; verified variant converges onP3; MODERATE</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>use prebooking withinP3; reject as independent recommendation;
+MODERATE</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>reject unnecessary architecture; HIGH</td>
+</tr>
+</tbody>
+</table>
+<h2 id="exact-journey-simulations">Exact journey simulations</h2>
+<p>A Evaluate/maps; B Optimize/maps; C Evaluate/maps→Interference; D
+full cycle; E Evaluate/maps→Optimize/maps; F cycle→Optimize/maps; G
+Optimize/maps→one explanation; H1 two Evaluate tabs; H2 two cycles; H3
+two extended chains. Same-IP traces are sequential; concurrent tabs
+retain capacity rejection. Distinct IPs each use an independent copy of
+these budgets.</p>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th style="text-align: right;">Cells</th>
+<th>Journey</th>
+<th style="text-align: right;">Planned calls</th>
+<th style="text-align: right;">RF calls accepted</th>
+<th style="text-align: right;">Charged units</th>
+<th style="text-align: right;">Verified extra</th>
+<th>Remaining</th>
+<th>First denied call/stage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>A</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>13</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>B</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>13</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>C</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>12</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>D</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td>5</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>E</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>6</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>F</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>21 / optimize-map-5</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>G</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>12</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>H1</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>6</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>H2</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>21 / evaluate-map-5</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>H3</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>21 / optimize-map-5</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>21 / optimize-map-5</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>A</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>11</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>B</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>11</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>C</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>D</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+<td>1</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>E</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>2</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>F</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>21 / optimize-map-1</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>G</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>H1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>2</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>H2</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>21 / evaluate-map-1</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>H3</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>21 / optimize-map-1</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>21 / optimize-map-1</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>A</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>21</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>B</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>21</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>C</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>20</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>D</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td>13</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>E</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>14</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>F</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0</td>
+<td>6</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>G</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>20</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>H1</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>14</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>H2</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / evaluate-map-5</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>H3</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / evaluate-map-6</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">0</td>
+<td>5</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>26</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>A</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>B</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>C</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>D</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+<td>9</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>E</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>F</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>G</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>H1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>H2</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / interference</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>H3</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / evaluate</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / explain</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>26</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>A</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td>45</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>B</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td>45</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>C</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>42</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>D</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">0</td>
+<td>27</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>E</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+<td>30</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>F</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">0</td>
+<td>12</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>G</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>42</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>H1</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+<td>30</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>H2</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>28 / evaluate-map-4</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>H3</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">0</td>
+<td>1</td>
+<td>28 / evaluate-map-5</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">0</td>
+<td>9</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td>54</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>A</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+<td>41</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>B</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+<td>41</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>C</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0</td>
+<td>38</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>D</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">0</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>E</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">0</td>
+<td>22</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>F</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>G</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0</td>
+<td>38</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>H1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">0</td>
+<td>22</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>H2</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / interference</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>H3</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / evaluate</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / explain</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td>54</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>A</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>B</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>C</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>D</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td>13</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>E</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
+<td>14</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>F</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">8</td>
+<td>6</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>G</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>H1</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
+<td>14</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>H2</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">8</td>
+<td>4</td>
+<td>24 / root before RF</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>H3</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">8</td>
+<td>5</td>
+<td>23 / root before RF</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">8</td>
+<td>5</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>A</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>B</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>C</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>D</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">8</td>
+<td>9</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>E</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">8</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>F</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">8</td>
+<td>0</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>G</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>H1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">8</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>H2</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">8</td>
+<td>0</td>
+<td>29 / root before RF</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>H3</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">8</td>
+<td>0</td>
+<td>29 / root before RF</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">8</td>
+<td>0</td>
+<td>29 / root before RF</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>A</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 19, 'map': 18}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>B</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 19, 'map': 18}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>C</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 18}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>D</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 17, 'map': 12}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>E</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 12}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>F</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 16, 'map': 6}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>G</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 18}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>H1</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 12}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>H2</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 14, 'map': 0}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>H3</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 13, 'map': 0}</td>
+<td>32 / evaluate-map-1</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 15, 'map': 6}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 24}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>A</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 19, 'map': 16}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>B</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 19, 'map': 16}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>C</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 16}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>D</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 17, 'map': 8}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>E</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 8}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>F</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 16, 'map': 0}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>G</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 16}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>H1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 8}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>H2</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 14, 'map': 0}</td>
+<td>31 / evaluate-map-1</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>H3</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 15, 'map': 0}</td>
+<td>30 / evaluate-map-1</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 15, 'map': 0}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>{'root': 18, 'map': 24}</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>A</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>13</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>B</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>13</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>C</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>12</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>D</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td>5</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>E</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>6</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>F</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0</td>
+<td>4</td>
+<td>16 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>G</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>12</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>H1</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>6</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>H2</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0</td>
+<td>4</td>
+<td>16 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>H3</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0</td>
+<td>4</td>
+<td>16 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0</td>
+<td>4</td>
+<td>16 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>A</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>11</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>B</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>11</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>C</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>D</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+<td>1</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>E</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>2</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>F</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>20 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>G</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>H1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>2</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>H2</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>20 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>H3</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>20 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>20 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>A</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>21</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>B</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td>21</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>C</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>20</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>D</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td>13</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>E</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>14</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>F</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0</td>
+<td>6</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>G</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td>20</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>H1</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td>14</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>H2</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0</td>
+<td>4</td>
+<td>24 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>H3</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">0</td>
+<td>5</td>
+<td>23 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">0</td>
+<td>5</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>26</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>A</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>B</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td>19</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>C</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>D</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+<td>9</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>E</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>F</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>G</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td>18</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>H1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>10</td>
+<td>none</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>H2</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>H3</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>L3+inspection</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td>0</td>
+<td>29 / root before RF</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>azimuth</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>26</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<h2 id="threshold-derivation">Threshold derivation</h2>
+<table>
+<thead>
+<tr>
+<th>Journey</th>
+<th style="text-align: right;">Cells</th>
+<th style="text-align: right;">Minimum flat request budget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr>
+<td>A</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>B</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr>
+<td>B</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>C</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>C</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>D</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>D</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr>
+<td>E</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>E</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>F</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr>
+<td>F</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">28</td>
+</tr>
+<tr>
+<td>G</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>G</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>H1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>H1</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>H2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr>
+<td>H2</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">38</td>
+</tr>
+<tr>
+<td>H3</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">44</td>
+</tr>
+<tr>
+<td>H3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">56</td>
+</tr>
+<tr>
+<td>L3+inspection</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">23</td>
+</tr>
+<tr>
+<td>L3+inspection</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">29</td>
+</tr>
+<tr>
+<td>azimuth</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>azimuth</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="abuse-arithmetic">Abuse arithmetic</h2>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th style="text-align: right;">Cells</th>
+<th>Optimize / Evaluate</th>
+<th style="text-align: right;">Independent Simulate</th>
+<th style="text-align: right;">Complete map workflows</th>
+<th>Total RF ceiling</th>
+<th>Boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">6</td>
+<td>20 / 20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">2</td>
+<td>20</td>
+<td>39</td>
+</tr>
+<tr>
+<td>P0</td>
+<td style="text-align: right;">8</td>
+<td>20 / 20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">2</td>
+<td>20</td>
+<td>39</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">6</td>
+<td>28 / 28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">4</td>
+<td>28</td>
+<td>55</td>
+</tr>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">8</td>
+<td>28 / 28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">3</td>
+<td>28</td>
+<td>55</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">6</td>
+<td>20 / 20</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">4</td>
+<td>30</td>
+<td>59</td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">8</td>
+<td>20 / 20</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">3</td>
+<td>30</td>
+<td>59</td>
+</tr>
+<tr>
+<td>P3-naive</td>
+<td style="text-align: right;">6</td>
+<td>20 / 20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td>140</td>
+<td>carry-dependent</td>
+</tr>
+<tr>
+<td>P3-naive</td>
+<td style="text-align: right;">8</td>
+<td>20 / 20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td>180</td>
+<td>carry-dependent</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">6</td>
+<td>20 / 20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">4</td>
+<td>28</td>
+<td>55</td>
+</tr>
+<tr>
+<td>P3-capped</td>
+<td style="text-align: right;">8</td>
+<td>20 / 20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">3</td>
+<td>28</td>
+<td>55</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">6</td>
+<td>20 / 20</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">4</td>
+<td>44</td>
+<td>86</td>
+</tr>
+<tr>
+<td>P4</td>
+<td style="text-align: right;">8</td>
+<td>20 / 20</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">3</td>
+<td>44</td>
+<td>86</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">6</td>
+<td>20 / 20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">2</td>
+<td>20</td>
+<td>39</td>
+</tr>
+<tr>
+<td>P5-reserve20</td>
+<td style="text-align: right;">8</td>
+<td>20 / 20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">2</td>
+<td>20</td>
+<td>39</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">6</td>
+<td>28 / 28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">4</td>
+<td>28</td>
+<td>55</td>
+</tr>
+<tr>
+<td>P5-reserve28</td>
+<td style="text-align: right;">8</td>
+<td>28 / 28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">3</td>
+<td>28</td>
+<td>55</td>
+</tr>
+</tbody>
+</table>
+<h2 id="current-policy-quality-checks">Current-policy quality
+checks</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th style="text-align: right;">Exit</th>
+<th>Real E2E proof</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>backend_tests: <code>go test ./...</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>backend_race: <code>go test -race ./...</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>backend_vet: <code>go vet ./...</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>frontend_tests: <code>npm test</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>frontend_lint: <code>npm run lint</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>frontend_build: <code>npm run build</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>rf_budget_e2e:
+<code>npx playwright test e2e/rf-budget.spec.js --project=desktop-1440 --workers=1 --reporter=json</code></td>
+<td style="text-align: right;">0</td>
+<td>{'passed': 1, 'discovered': 1, 'executed': 1, 'failed': 0,
+'skipped': 0, 'required_tests': [{'id':
+'517ab816924a3a36e3da-c2d80f0f63cf255099be', 'file':
+'rf-budget.spec.js', 'title': 'real RF budget: six-cell Evaluate,
+Interference, inspect, re-evaluate, then abuse', 'project':
+'desktop-1440', 'result_statuses': ['passed'], 'passed': True}],
+'opt_in_active': True, 'report_path':
+'/tmp/atom-eight-cell-request-budget-policy-design/rf_budget_e2e.playwright.json',
+'report_sha256':
+'fb37b9c2fc2611d847739c36f457ebc9bedea6ab66b27845e098b76944590682'}</td>
+</tr>
+<tr>
+<td>rf_deadline_e2e:
+<code>npx playwright test e2e/network-deadline.spec.js --project=desktop-1440 --workers=1 --reporter=json</code></td>
+<td style="text-align: right;">0</td>
+<td>{'passed': 1, 'discovered': 1, 'executed': 1, 'failed': 0,
+'skipped': 0, 'required_tests': [{'id':
+'6eb2bebe5f7dbec70ae0-03ce0a2405ac15553026', 'file':
+'network-deadline.spec.js', 'title': 'real network optimization
+deadline: affected six-cell defaults preserve output and one-request
+cost', 'project': 'desktop-1440', 'result_statuses': ['passed'],
+'passed': True}], 'opt_in_active': True, 'report_path':
+'/tmp/atom-eight-cell-request-budget-policy-design/rf_deadline_e2e.playwright.json',
+'report_sha256':
+'009683a896efe70a36d886b31b5e1ebc7e310ae834a022405ba44f7d352183b2'}</td>
+</tr>
+<tr>
+<td>study_tests:
+<code>python3 -B -m unittest discover -s /Users/berkunsal/Desktop/urban-ray-tracer/scripts/request-budget-policy-design -p test_*.py</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>docs_build: <code>sh docs/build-reference-pages.sh</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>docs_validation:
+<code>/tmp/atom-persistence-docs-venv/bin/python docs/validate_docs.py</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>version_consistency:
+<code>python3 scripts/versioning.py check</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+<tr>
+<td>diff_check: <code>git diff --check</code></td>
+<td style="text-align: right;">0</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p>Tooling: <a
+href="../scripts/request-budget-policy-design/source-audit.json">source
+inventory</a>, <a
+href="../scripts/request-budget-policy-design/simulations.json">offline
+simulations</a>, <a
+href="../scripts/request-budget-policy-design/completion-audit.json">completion
+audit</a>, <a
+href="../scripts/request-budget-policy-design/evidence-manifest.json">quality
+logs/hash index</a>. No authorization or limiter implementation is
+present.</p>
+<h2 id="required-78-item-assessment">Required 78-item assessment</h2>
+<ol type="1">
+<li><strong>Starting baseline:</strong> main @
+016c9c96579e2a95b14e3641f96bad00050d48d3; VERSION0.11.0; prior studies
+uncommitted/preserved; exact status/diff in baseline.json</li>
+<li><strong>Current limiter source location:</strong>
+backend-go/rf_protection.go:protectExpensiveRFRoutes/middlewareFor/acquire/clientState;
+main.go registration</li>
+<li><strong>Middleware ordering:</strong> Logger/Recovery →
+security/HTTPS → body wrapper → CORS → protectedPOST selector → auth →
+deadline → attempt → per-client → global slots → JSON/validation
+→RF/serialization →release</li>
+<li><strong>ClientIP semantics:</strong> Gin1.10 ClientIP; RemoteAddr by
+default; forwarded headers only trusted configured proxies; NAT/tabs
+share; process-local</li>
+<li><strong>Window semantics:</strong> First charged protected request
+anchors60s; lazy reset at first later request; denials do not extend;
+eviction/restart caveats</li>
+<li><strong>Charging semantics:</strong> One per protected attempt
+before concurrency/handler; exhausted-budget denial0; auth rejection0;
+malformed/oversized/busy/late failures retain charge</li>
+<li><strong>Cancellation charging:</strong> Admitted canceled attempts
+remain charged; slots released on handler return</li>
+<li><strong>Protected-route inventory:</strong> All19 POST protected
+routes inventoried; each current cost1</li>
+<li><strong>Root request classification:</strong> Evaluate/Optimize
+network, single propagation/Azimuth; independent tools separately
+identified; history root-only reruns</li>
+<li><strong>Follow-up request classification:</strong> N sequential
+Simulate after network roots; one Analyze-Sector after Azimuth;
+explanation is optional independent/cached, not automatic</li>
+<li><strong>Six-Cell workflow graph:</strong> Network root→six maps (7);
+Azimuth→Sector(2); independent tools1; no automatic re-evaluate</li>
+<li><strong>Eight-Cell workflow graph:</strong> Audit/source-derived
+network root→eight maps(9); exact same queue; no live cap8
+introduced</li>
+<li><strong>Six-Cell journey accounting:</strong>
+A7/B7/C8/D15/E14/F22/G8; F denies21 at optimized map5; two Evaluate
+tabs14 fit</li>
+<li><strong>Eight-Cell journey accounting:</strong>
+A9/B9/C10/D19/E18/F28/G10; F denies21 at optimized map1; two Evaluate
+tabs18 fit</li>
+<li><strong>Exact product blocker:</strong> N-fold transport charges
+plus non-atomic root/map admission; cycle19 leaves1 for~59s, so a
+subsequent Optimize/maps cannot finish</li>
+<li><strong>Current abuse model:</strong> Repeated roots/maps, scripted
+traffic, cheap floods, failures/cancel, replay, tabs/NAT, boundaries; no
+HTTP-flood or universal user-identity guarantee</li>
+<li><strong>Shared-NAT finding:</strong> ClientIP is pooled identity;
+independent users share; no per-tab multiplier; reservations can
+pressure peers until bounded cleanup</li>
+<li><strong>Boundary-burst finding:</strong> P0 conventional40/tight39
+retained anchored burst; proposed total56/tight55; ordinary-only40
+possible with extra-funded anchor</li>
+<li><strong>Policy evaluation criteria:</strong> 20 frozen criteria,
+hard independent ceilings/atomicity/state bounds first; no composite
+score</li>
+<li><strong>P0 current-policy assessment:</strong> Simple/compatible;
+fails extended journey and residual root atomicity; stays live now</li>
+<li><strong>P1 flat-budget assessment:</strong> Flat28 fits fresh
+required chain; arbitrary roots/maps+40%; partial queues still
+possible</li>
+<li><strong>Minimum useful flat threshold:</strong> 28 required;29 adds
+one later inspection;38 two cycles;56 two extended chains</li>
+<li><strong>Flat-threshold abuse delta:</strong> 20→28 arbitrary
+roots/maps; conventional edge40→56, tight39→55</li>
+<li><strong>P2 route-weighting assessment:</strong>
+Integer3(non-Sim)/2(Sim),60-token example preserves root20 but allows
+standalone Simulate30; reject route-only substitute</li>
+<li><strong>P3 verified-follow-up assessment:</strong> Naive
+N-free-per-root reaches180 steps; shared capped8 with child prebooking
+meets selected envelope</li>
+<li><strong>P3 security/replay assessment:</strong> Opaque128-bit ID,
+owned exact server-derived inputs/route/index, one-time bitmap; signing
+alone cannot remove replay state</li>
+<li><strong>P4 split-bucket assessment:</strong> 20 roots/24 maps fitsF
+but allows standalone24,total44;4/24 harms root compatibility;
+reject</li>
+<li><strong>P5 reservation assessment:</strong> Reserve20 atomic but F
+still blocked; reserve28 expands arbitrary caps; narrow prebooking
+included inP3</li>
+<li><strong>P6 aggregation assessment:</strong> Unnecessary
+API/streaming/orchestration rewrite; combined workflow exceeds32MiB JSON
+guard; reject fallback architecture</li>
+<li><strong>Rejected directions:</strong> Dynamic CPU/RAM/geometry
+pricing, estimators, user tiers/presets, unbounded exemption, uncharged
+maps, per-tab identity, per-flow window reset rejected</li>
+<li><strong>Cancellation semantics comparison:</strong> Every design
+keeps spent charge; stateful candidates release only unused holds; no
+cancel-minted authorization</li>
+<li><strong>Root-failure semantics comparison:</strong> No grant after
+unadmitted/failed root;400/413/422/429-capacity/500/504/disconnect
+retain admitted root charge</li>
+<li><strong>Concurrency interaction:</strong> Budget/allowance never
+bypasses global2/per-client1,60s deadline or serialization/release</li>
+<li><strong>Experiment interaction:</strong> ExperimentPOST stays
+ordinary1; worker1/queue16/max64; no extra grants; polling/control
+outside RF unchanged</li>
+<li><strong>Six-Cell compatibility matrix:</strong> All fresh≤20
+ordinary tapes retained; six selected journeys improve;
+overlapping/abandoned holds can temporarily pressure NAT peers</li>
+<li><strong>Eight-Cell product-fit matrix:</strong> P0/reserve20
+failF;flat28/weights/split fit freshF with abuse tradeoffs; cappedP3
+fits with protected independent20</li>
+<li><strong>Legitimate journey envelope:</strong> L1 one complete
+action;L2 bounded normal follow-ups;L3 one full cycle→Optimize/maps
+REQUIRED; beyondL3 may wait</li>
+<li><strong>Abuse envelope:</strong> Recommended ordinary
+roots/independent Simulate20; extra8; total28; four6C or three8C
+complete map workflows; carry and boundary quantified</li>
+<li><strong>State-model comparison:</strong> P0/P1/P2 scalar;P4 two
+counters;P3/P5 bounded holds/IDs/hash masks/heap;P6 orchestration; no
+persisted authorization</li>
+<li><strong>Restart semantics:</strong> All counters process-local
+reset; stale IDs fail closed; no automatic RF fallback</li>
+<li><strong>Future multi-instance implication:</strong> Current single
+process; future replicas need shared aggregate admission; opaque state
+additionally sticky/shared ownership; no infrastructure now</li>
+<li><strong>Header/API implications:</strong> Keep Limit20 with
+Remaining excluding holds; extra Limit8/Remaining/Reset plus
+ID/index/expiry metadata; optional capabilities/CORS/control API</li>
+<li><strong>Observability design:</strong> Known
+operation/class/funding; hashed owner/ID; available/held counts;
+expiry/denial reasons; no bodies/raw tokens/high-cardinality metric
+labels</li>
+<li><strong>Fail-closed design:</strong>
+Invalid/expired/replay/foreign/stale metadata never executes RF or
+regenerates allowance; no unrestricted fallback</li>
+<li><strong>Implementation-surface comparison:</strong> P1
+LOW;P2/P3/P4/P5 MODERATE;P6 HIGH; P3 touches admission/hooks/API
+helper/queue/tests/docs, not engine/persistence/layout</li>
+<li><strong>Security/product tradeoff matrix:</strong> Seven candidates
+across all20 criteria; explicit ceilings,
+state/NAT/replay/compatibility; no averaged score</li>
+<li><strong>Minimality result:</strong> Route-only rules cannot permit24
+dependent maps while capping indistinguishable independent Simulate20;
+verified context needed; prebooking needed for atomicity</li>
+<li><strong>Flat-budget final judgment:</strong> Reject pure flat
+increase under frozen security/atomicity criteria; do not claim28 causes
+hardware overload</li>
+<li><strong>Workflow-aware final judgment:</strong> Prefer bounded
+verified context; reject naive N credits per every root</li>
+<li><strong>Recommended policy:</strong> D — VERIFIED ROOT + FOLLOW-UP
+ALLOWANCE, P3-capped; final design verdictC WORKFLOW-AWARE ACCOUNTING IS
+PREFERRED</li>
+<li><strong>Recommended policy exact semantics:</strong> GinClientIP
+ordinary20 + shared extra8/anchored60; server-derived one-time child
+slots; extra-first funding; prebook; spent nonrefundable; held carry;
+unchanged2/1; strict failure cleanup</li>
+<li><strong>Recommended numeric parameters:</strong> 20 ordinary,8
+extra=28−20; N≤current cap (internal ceiling8); idle60;
+absolute(N+1)×60;128-bit IDs;4096 clients;≤114688 held records and≤4096
+transitional receipts</li>
+<li><strong>Six-Cell accounting under recommendation:</strong> Completed
+ordinary/extra:
+Eval/Opt1/6;cycle7/8;Eval→Opt6/8;cycle→Opt14/8;Opt→explain2/6</li>
+<li><strong>Eight-Cell accounting under recommendation:</strong>
+Completed ordinary/extra:
+Eval/Opt1/8;cycle11/8;Eval→Opt10/8;cycle→Opt20/8;Opt→explain2/8</li>
+<li><strong>Shared-IP accounting under recommendation:</strong> Two
+sequential Evaluate tabs share:6C6/8,8C10/8; distinct IPs each20+8;
+concurrent same-IP tabs still busy-reject</li>
+<li><strong>Abuse simulation under recommendation:</strong> Bare
+roots/maps20; at most8 extra/28 total; one8C root+19 independent maps
+gives27 maps; valid dependencies can increase complete workflows but not
+arbitrary ceilings</li>
+<li><strong>Boundary-burst behavior under recommendation:</strong>
+Total56 loose/55 tight retained boundary; no hoarding acrossreset
+because holds survive; ordinary40 tight possible on extra-funded
+anchor</li>
+<li><strong>Replay/forgery behavior:</strong> Unpredictable owned ID,
+exact input/route/index/dataset binding, atomic one-time claims; no
+signed-only/stateless replay promise; future tests required</li>
+<li><strong>Cancellation behavior:</strong> Root/claimed child remains
+charged; unused holds retire; abort control is authenticated owned no-RF
+DELETE with ID header; idle cleanup handles lost clients</li>
+<li><strong>Root-failure behavior:</strong> No allowance on failed root;
+used1 retained; release pending children; busy/failure/cancel child
+burned, siblings retired</li>
+<li><strong>Whether current 20/60 is replaced or supplemented:</strong>
+Future supplements20/60 with bounded8 verified units and prebooking;
+live production remains exact20/60</li>
+<li><strong>Whether frontend changes are required:</strong> Future API
+metadata/helper and queue/abort plumbing required; no visual redesign or
+RF retries</li>
+<li><strong>Whether API shape changes:</strong> Future optional
+headers/capability metadata plus no-RF DELETE control; scientific RF
+JSON/endpoints unchanged; cap schema stays6 during policy patch</li>
+<li><strong>Whether new persistent state is required:</strong> No
+persistent state; bounded process-local ephemeral records only</li>
+<li><strong>Whether Redis/external infrastructure is required:</strong>
+No Redis/external infrastructure for current single process</li>
+<li><strong>Whether this removes the eight-Cell budget blocker:</strong>
+Conditionally yes after implementation/security/product validation;
+design arithmetic alone is not deployment qualification</li>
+<li><strong>Remaining blockers to 6→8:</strong> No additional documented
+blocker in frozen scope; separate cap review and new full28-flow
+validation required; full-ray persistence not newly imposed</li>
+<li><strong>Future implementation plan:</strong> Separate backend
+bounded admission/hooks, frontend metadata/queue, API/CORS, metrics,
+tests/E2E/abuse/six regression/eight audit workflow and docs patch</li>
+<li><strong>Future validation gates:</strong> L1–L3,20/8 boundaries,
+shared/distinctIP/tabs, forge/replay/mutations, cancel/fail, slots,
+headers, noRF denials, carry/idle/absolute/restart/state-full and
+science/resource preservation</li>
+<li><strong>Rollback plan:</strong> Disable grants; reject old IDs;
+retire holds; conservatively fold spentOrd+spentExtra into live20
+bucket; revert headers/helper; no project/science migration</li>
+<li><strong>Estimator-admission status:</strong> Paused; no
+adaptive/estimator admission reopened</li>
+<li><strong>Auto status:</strong> Observation-only</li>
+<li><strong>Production invariance:</strong> 407 production and1959 prior
+file hashes unchanged; no policy installed</li>
+<li><strong>Version recommendation:</strong> Keep0.11.0; no
+release/tag/publish</li>
+<li><strong>Files created/changed:</strong> New designMD/JSON/HTML and
+study tools/lock/inventory/simulations/tests; Unreleased and generated
+reference/changelog/search docs</li>
+<li><strong>Tests/checks:</strong> 13 current-policy repository commands
+and13 study arithmetic/source tests; real E2E JSON proof; final document
+refresh checks</li>
+<li><strong>Freeze decision:</strong> Freeze design
+criteria/recommendation/evidence; liveP0/cap6 remain until separate
+validated patch</li>
+<li><strong>Single recommended next action:</strong> Bounded Verified
+Follow-up Policy Implementation and Validation in a separate task; keep
+cap6 during that patch</li>
+</ol>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

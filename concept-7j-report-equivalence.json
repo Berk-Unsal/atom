@@ -36,7 +36,8 @@
     "generatedAt": "2026-09-23T00:00:00.000Z"
   },
   "exclusions": [
-    "generated artifact_id and content metadata are not part of report semantics; fixed generatedAt avoids timestamp drift"
+    "generated artifact_id and content metadata are not part of report semantics; fixed generatedAt avoids timestamp drift",
+    "the Markdown hash replaces the locale-formatted Generated line with a fixed marker so CI and developer time zones produce the same semantic comparison"
   ],
   "before": {
     "sourceBinding": {
@@ -127,7 +128,7 @@
       ]
     },
     "markdown": {
-      "sha256": "356eaab57acc25a03c9e3252997a5fa0ccb37798c7adfa2cf2709cf35803932d",
+      "sha256": "75a905afc44e60d80a23644e3d203efe5770db347fd363044511fe7c160a2b6c",
       "utf8Bytes": 8200
     }
   },
@@ -220,7 +221,7 @@
       ]
     },
     "markdown": {
-      "sha256": "356eaab57acc25a03c9e3252997a5fa0ccb37798c7adfa2cf2709cf35803932d",
+      "sha256": "75a905afc44e60d80a23644e3d203efe5770db347fd363044511fe7c160a2b6c",
       "utf8Bytes": 8200
     }
   },

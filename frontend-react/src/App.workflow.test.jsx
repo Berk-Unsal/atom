@@ -251,6 +251,8 @@ const cellExplanationPayload = {
 
 describe("App planning workflow", () => {
   beforeEach(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
     api.getJSON.mockReset();
     api.postJSON.mockReset();
     api.getJSON.mockImplementation((path) => {
@@ -609,9 +611,9 @@ describe("App planning workflow", () => {
       const timerIndex = intervals.mock.calls.findIndex(([, delay]) => delay === 250);
       const timer = intervals.mock.results[timerIndex].value;
       if (outcome === "success") {
-        await act(async () => resolveOptimization(networkOptimizationPayload));
+        await act(async () => { resolveOptimization(networkOptimizationPayload); });
       } else if (outcome === "error") {
-        await act(async () => rejectOptimization(new Error("RF analysis exceeded its request deadline")));
+        await act(async () => { rejectOptimization(new Error("RF analysis exceeded its request deadline")); });
         expect(screen.getByText("RF analysis exceeded its request deadline")).toBeInTheDocument();
       } else {
         const signal = api.postJSON.mock.calls.find(([path]) => path === "/api/optimize-network")[3];
@@ -623,11 +625,11 @@ describe("App planning workflow", () => {
           fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
           await waitFor(() => expect(optimizationCalls).toBe(2));
         }
-        await act(async () => rejectOptimization(Object.assign(new Error("Cancelled"), { name: "AbortError" })));
+        await act(async () => { rejectOptimization(Object.assign(new Error("Cancelled"), { name: "AbortError" })); });
         if (outcome === "supersession") {
           expect(screen.getByRole("button", { name: "Optimizing network…" })).toBeDisabled();
           await waitFor(() => expect(screen.getByLabelText("Network optimization activity")).toHaveTextContent("2 cells · 2 passes · 146 proposals"));
-          await act(async () => resolveReplacement(networkOptimizationPayload));
+          await act(async () => { resolveReplacement(networkOptimizationPayload); });
         }
       }
       expect(screen.queryByLabelText("Network optimization activity")).not.toBeInTheDocument();

@@ -1,0 +1,227 @@
+{
+  "frozen_at": "2026-10-07T21:35:00.476856+00:00",
+  "baseline_sha256": "e5d83cf9b2d69a6823afd0abfb63bddb5ab77fa765f9e49f32dd06f089cf8cf0",
+  "request_sha256": "2b8927044ec9da83bbedd83719a67968d3c9a36971c9e92b9ab54dd27326deca",
+  "before": 6,
+  "after": 8,
+  "VERSION_before": "0.11.0",
+  "VERSION_after_if_all_pass": "0.12.0",
+  "ordinary": 20,
+  "extra": 8,
+  "window_seconds": 60,
+  "concurrency": [
+    2,
+    1
+  ],
+  "deadline_seconds": 60,
+  "workers": 1,
+  "queue": 16,
+  "keep_independent": {
+    "recommendation": 5,
+    "measurements": 6,
+    "experiment_runs": 64,
+    "persistence": "all existing guards"
+  },
+  "profile": {
+    "cpu": 2,
+    "memory_bytes": 4294967296,
+    "go": "1.26.6",
+    "os": "linux",
+    "arch": "arm64",
+    "CGO_ENABLED": 0,
+    "cgroup": 2
+  },
+  "gates": {
+    "interactive_seconds": 45,
+    "minimum_headroom": 15,
+    "cgroup_peak_bytes": 3221225472,
+    "oom": 0,
+    "oom_kill": 0,
+    "max": 0
+  },
+  "scope": "exact frozen eight paired W1 layouts, 120 rays/400m/30dBm/120deg/2.6 and28GHz/legacy two-pass; no W2/W3 extrapolation",
+  "domain_manifest_sha256": "d7e2a6e4ed46e3b8bc8c8dbf7ffc32f16f4caf0468365e0d7a9c581d4349ef84",
+  "validated_policy": {
+    "status": "COMPLETE",
+    "verdict": "A \u2014 VALIDATED \u2014 READY FOR NORMAL RELEASE",
+    "implementation_lock_sha256": "f949ec5bc406e0941e9e01392d75a88920ff6da8ddf97a23eaf9e1d2143b3baf",
+    "phases": 84,
+    "required_final_items": 116,
+    "preserved_tracked_files": 1013,
+    "science_policy_dataset_files": 87,
+    "raw_artifacts": 208,
+    "archive": {
+      "path": "/tmp/atom-bounded-followup-policy-raw.tar.gz",
+      "byte_size": 32675309,
+      "sha256": "bb7a6c1dc3e427200d1b559ced7d06840cc5ae6aabb0e0e15e3144d6b4d5293f"
+    },
+    "normal_cells": 6,
+    "VERSION": "0.11.0",
+    "next_minor": "0.12.0",
+    "promotion_performed": false,
+    "publish_performed": false,
+    "next_action": "Separate Product Cell Cap Promotion6\u21928 in frozen scope"
+  },
+  "phases": [
+    {
+      "phase": 0,
+      "title": "BASELINE"
+    },
+    {
+      "phase": 1,
+      "title": "FIND EVERY PRODUCT-CAP ASSUMPTION"
+    },
+    {
+      "phase": 2,
+      "title": "PRESERVE INDEPENDENT CAPS"
+    },
+    {
+      "phase": 3,
+      "title": "BACKEND PRODUCT CAP"
+    },
+    {
+      "phase": 4,
+      "title": "VALIDATOR MESSAGES"
+    },
+    {
+      "phase": 5,
+      "title": "OPENAPI"
+    },
+    {
+      "phase": 6,
+      "title": "FRONTEND SELECTION CAP"
+    },
+    {
+      "phase": 7,
+      "title": "PRESENTATION"
+    },
+    {
+      "phase": 8,
+      "title": "REQUEST BUILDERS"
+    },
+    {
+      "phase": 9,
+      "title": "BOUNDED-FOLLOWUP POLICY"
+    },
+    {
+      "phase": 10,
+      "title": "AUTO RESOURCE PROFILE"
+    },
+    {
+      "phase": 11,
+      "title": "REMOVE AUDIT-ONLY CAP DIFFERENTIAL"
+    },
+    {
+      "phase": 12,
+      "title": "NORMAL CAP CONTRACT"
+    },
+    {
+      "phase": 13,
+      "title": "INDEPENDENT CAP CONTRACTS"
+    },
+    {
+      "phase": 14,
+      "title": "FRONTEND 8/9 CONTRACT"
+    },
+    {
+      "phase": 15,
+      "title": "NORMAL EIGHT-CELL L1"
+    },
+    {
+      "phase": 16,
+      "title": "NORMAL EIGHT-CELL L2"
+    },
+    {
+      "phase": 17,
+      "title": "NORMAL EIGHT-CELL L3"
+    },
+    {
+      "phase": 18,
+      "title": "FROZEN EIGHT LAYOUTS"
+    },
+    {
+      "phase": 19,
+      "title": "PROFILE A OPERATIONAL CHECK"
+    },
+    {
+      "phase": 20,
+      "title": "CONCURRENCY"
+    },
+    {
+      "phase": 21,
+      "title": "ASYNC PRESERVATION"
+    },
+    {
+      "phase": 22,
+      "title": "CANCELLATION"
+    },
+    {
+      "phase": 23,
+      "title": "SCIENTIFIC INVARIANCE"
+    },
+    {
+      "phase": 24,
+      "title": "SEARCH INVARIANCE"
+    },
+    {
+      "phase": 25,
+      "title": "REQUEST-BUDGET INVARIANCE"
+    },
+    {
+      "phase": 26,
+      "title": "PERSISTENCE REVIEW"
+    },
+    {
+      "phase": 27,
+      "title": "REPORTS / EXPORT"
+    },
+    {
+      "phase": 28,
+      "title": "DOCUMENTATION COPY"
+    },
+    {
+      "phase": 29,
+      "title": "CHANGELOG"
+    },
+    {
+      "phase": 30,
+      "title": "VERSION"
+    },
+    {
+      "phase": 31,
+      "title": "BACKEND TESTS"
+    },
+    {
+      "phase": 32,
+      "title": "FRONTEND TESTS"
+    },
+    {
+      "phase": 33,
+      "title": "REAL E2E"
+    },
+    {
+      "phase": 34,
+      "title": "FULL QUALITY"
+    },
+    {
+      "phase": 35,
+      "title": "RELEASE READINESS"
+    },
+    {
+      "phase": 36,
+      "title": "FINAL FREEZE"
+    }
+  ],
+  "historical_prefixes": [
+    "docs/w1-shipping-runtime-qualification.",
+    "docs/eight-cell-operational-budget-",
+    "docs/eight-cell-request-budget-policy-design.",
+    "docs/bounded-followup-policy-implementation.",
+    "scripts/w1-shipping-runtime-qualification/",
+    "scripts/eight-cell-operational-audit/",
+    "scripts/eight-cell-operational-successor/",
+    "scripts/request-budget-policy-design/",
+    "scripts/bounded-followup-policy-validation/"
+  ],
+  "publish": false
+}

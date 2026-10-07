@@ -36,7 +36,7 @@ const (
 	MinCalibrationOffsetDB             = -40
 	MaxCalibrationOffsetDB             = 40
 	MinNetworkTowers                   = 2
-	MaxNetworkTowers                   = 6
+	MaxNetworkTowers                   = 8
 	MaxRecommendationTowers            = 5
 	MinMeasurementTowers               = 1
 	MaxMeasurementTowers               = 6

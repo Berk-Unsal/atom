@@ -22,6 +22,22 @@ paths:
       summary: Reproducibility metadata
       responses:
         "200": { description: Build, model, technology, and active dataset metadata, content: { application/json: { schema: { $ref: "#/components/schemas/Meta" } } } }
+  /api/rf-workflows:
+    delete:
+      summary: Retire unused workflow obligations
+      description: Operational metadata only. Same RF authentication and owner ClientIP. Zero RF units; no RF execution, spent refund, window reset or new grant. Repeated cleanup has no additional effect; an already retired ID returns404.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      parameters:
+        - name: RF-Workflow-ID
+          in: header
+          required: true
+          schema: { type: string, pattern: '^[a-f0-9]{32}$' }
+      responses:
+        "204": { description: Unused holds retired }
+        "400": { description: Malformed or mixed control metadata }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { description: Foreign owner }
+        "404": { description: Unknown expired or retired workflow }
   /api/datasets:
     get:
       summary: List locally installed dataset packs
@@ -154,6 +170,9 @@ paths:
         "429": { $ref: "#/components/responses/Busy" }
   /api/analyze-sector:
     post:
+      parameters:
+        - { $ref: "#/components/parameters/RFWorkflowID" }
+        - { $ref: "#/components/parameters/RFWorkflowIndex" }
       summary: Simulate one directional sector and find coverage gaps from shared ray profiles
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
@@ -165,13 +184,28 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
+        "403": { description: "Workflow owner or operation mismatch; no RF" }
+        "409": { description: "Consumed slot or stale context; no RF" }
+        "410": { description: "Missing retired expired or restarted workflow; no RF" }
+        "503": { description: "Safe workflow state unavailable; no grant" }
   /api/simulate:
     post:
+      parameters:
+        - { $ref: "#/components/parameters/RFWorkflowID" }
+        - { $ref: "#/components/parameters/RFWorkflowIndex" }
       summary: Simulate one directional sector
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
         "200":
+          headers:
+            RateLimit-Limit: { $ref: "#/components/headers/RateLimit-Limit" }
+            RateLimit-Remaining: { $ref: "#/components/headers/RateLimit-Remaining" }
+            RateLimit-Reset: { $ref: "#/components/headers/RateLimit-Reset" }
+            RF-Budget-Policy: { $ref: "#/components/headers/RF-Budget-Policy" }
+            RF-Followup-Limit: { $ref: "#/components/headers/RF-Followup-Limit" }
+            RF-Followup-Remaining: { $ref: "#/components/headers/RF-Followup-Remaining" }
+            RF-Followup-Reset: { $ref: "#/components/headers/RF-Followup-Reset" }
           description: Segmented propagation GeoJSON, statistics, effective RF profile, and canonical RF contract
           content: { application/json: { schema: { $ref: "#/components/schemas/SimulationResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -180,6 +214,10 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
+        "403": { description: "Workflow owner or operation mismatch; no RF" }
+        "409": { description: "Consumed slot or stale context; no RF" }
+        "410": { description: "Missing retired expired or restarted workflow; no RF" }
+        "503": { description: "Safe workflow state unavailable; no grant" }
   /api/coverage-gaps:
     post:
       summary: Find underserved demand buildings
@@ -300,11 +338,24 @@ paths:
         "504": { $ref: "#/components/responses/TimedOut" }
   /api/optimize-azimuth:
     post:
+      parameters:
+        - { $ref: "#/components/parameters/RFAzimuthWorkflow" }
       summary: Optimize one sector azimuth
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
         "200":
+          headers:
+            RateLimit-Limit: { $ref: "#/components/headers/RateLimit-Limit" }
+            RateLimit-Remaining: { $ref: "#/components/headers/RateLimit-Remaining" }
+            RateLimit-Reset: { $ref: "#/components/headers/RateLimit-Reset" }
+            RF-Budget-Policy: { $ref: "#/components/headers/RF-Budget-Policy" }
+            RF-Followup-Limit: { $ref: "#/components/headers/RF-Followup-Limit" }
+            RF-Followup-Remaining: { $ref: "#/components/headers/RF-Followup-Remaining" }
+            RF-Followup-Reset: { $ref: "#/components/headers/RF-Followup-Reset" }
+            RF-Workflow-ID: { $ref: "#/components/headers/RF-Workflow-ID" }
+            RF-Workflow-Remaining: { $ref: "#/components/headers/RF-Workflow-Remaining" }
+            RF-Workflow-Expires: { $ref: "#/components/headers/RF-Workflow-Expires" }
           description: Optimal azimuth, propagation-reach score, score breakdown, and canonical RF contract
           content: { application/json: { schema: { $ref: "#/components/schemas/OptimizeAzimuthResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -312,13 +363,30 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
+        "403": { description: "Workflow owner or operation mismatch; no RF" }
+        "409": { description: "Consumed slot or stale context; no RF" }
+        "410": { description: "Missing retired expired or restarted workflow; no RF" }
+        "503": { description: "Safe workflow state unavailable; no grant" }
   /api/evaluate-network:
     post:
+      parameters:
+        - { $ref: "#/components/parameters/RFNetworkWorkflow" }
       summary: Score supplied selected-cell azimuths
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkRequest" } } } }
       responses:
         "200":
+          headers:
+            RateLimit-Limit: { $ref: "#/components/headers/RateLimit-Limit" }
+            RateLimit-Remaining: { $ref: "#/components/headers/RateLimit-Remaining" }
+            RateLimit-Reset: { $ref: "#/components/headers/RateLimit-Reset" }
+            RF-Budget-Policy: { $ref: "#/components/headers/RF-Budget-Policy" }
+            RF-Followup-Limit: { $ref: "#/components/headers/RF-Followup-Limit" }
+            RF-Followup-Remaining: { $ref: "#/components/headers/RF-Followup-Remaining" }
+            RF-Followup-Reset: { $ref: "#/components/headers/RF-Followup-Reset" }
+            RF-Workflow-ID: { $ref: "#/components/headers/RF-Workflow-ID" }
+            RF-Workflow-Remaining: { $ref: "#/components/headers/RF-Workflow-Remaining" }
+            RF-Workflow-Expires: { $ref: "#/components/headers/RF-Workflow-Expires" }
           description: Stable normalized network objectives and per-cell results
           content: { application/json: { schema: { $ref: "#/components/schemas/NetworkOptimizationResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -326,10 +394,14 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
+        "403": { description: "Workflow owner or operation mismatch; no RF" }
+        "409": { description: "Consumed slot or stale context; no RF" }
+        "410": { description: "Missing retired expired or restarted workflow; no RF" }
+        "503": { description: "Safe workflow state unavailable; no grant" }
   /api/building-entry-analysis:
     post:
       summary: Estimate deterministic service immediately inside representative building facades
-      description: Batches one to six selected cells and returns the Concept 4E 2.6/28 GHz O2I low-loss and high-loss scenarios. The estimate is not indoor, room, floor, interior-wall, or whole-building coverage. 140 GHz remains unsupported for this analysis.
+      description: Batches one to eight selected cells and returns the Concept 4E 2.6/28 GHz O2I low-loss and high-loss scenarios. The estimate is not indoor, room, floor, interior-wall, or whole-building coverage. 140 GHz remains unsupported for this analysis.
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/BuildingEntryAnalysisRequest" } } } }
       responses:
@@ -343,11 +415,24 @@ paths:
         "504": { $ref: "#/components/responses/TimedOut" }
   /api/optimize-network:
     post:
+      parameters:
+        - { $ref: "#/components/parameters/RFNetworkWorkflow" }
       summary: Coordinate selected-cell azimuth optimization
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkRequest" } } } }
       responses:
         "200":
+          headers:
+            RateLimit-Limit: { $ref: "#/components/headers/RateLimit-Limit" }
+            RateLimit-Remaining: { $ref: "#/components/headers/RateLimit-Remaining" }
+            RateLimit-Reset: { $ref: "#/components/headers/RateLimit-Reset" }
+            RF-Budget-Policy: { $ref: "#/components/headers/RF-Budget-Policy" }
+            RF-Followup-Limit: { $ref: "#/components/headers/RF-Followup-Limit" }
+            RF-Followup-Remaining: { $ref: "#/components/headers/RF-Followup-Remaining" }
+            RF-Followup-Reset: { $ref: "#/components/headers/RF-Followup-Reset" }
+            RF-Workflow-ID: { $ref: "#/components/headers/RF-Workflow-ID" }
+            RF-Workflow-Remaining: { $ref: "#/components/headers/RF-Workflow-Remaining" }
+            RF-Workflow-Expires: { $ref: "#/components/headers/RF-Workflow-Expires" }
           description: Optimized azimuths, stable normalized objectives, and Pareto solutions
           content: { application/json: { schema: { $ref: "#/components/schemas/NetworkOptimizationResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -355,6 +440,10 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/Busy" }
         "504": { $ref: "#/components/responses/TimedOut" }
+        "403": { description: "Workflow owner or operation mismatch; no RF" }
+        "409": { description: "Consumed slot or stale context; no RF" }
+        "410": { description: "Missing retired expired or restarted workflow; no RF" }
+        "503": { description: "Safe workflow state unavailable; no grant" }
   /api/explain-network-cell:
     post:
       summary: Explain one selected Pareto cell with a baseline counterfactual
@@ -496,6 +585,42 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "503": { description: Core Lab is enabled without a scenario-mutation key }
 components:
+  parameters:
+    RFNetworkWorkflow:
+      name: RF-Workflow
+      in: header
+      required: false
+      schema: { type: string, const: network-maps-v1 }
+      description: Opt into server-prebooked ordered Simulate children. Non-scientific operational metadata; root JSON unchanged.
+    RFAzimuthWorkflow:
+      name: RF-Workflow
+      in: header
+      required: false
+      schema: { type: string, const: azimuth-sector-v1 }
+      description: Opt into one Analyze-Sector refresh using the returned winning azimuth.
+    RFWorkflowID:
+      name: RF-Workflow-ID
+      in: header
+      required: false
+      schema: { type: string, pattern: '^[a-f0-9]{32}$' }
+      description: Child capability; must be paired with index and never mixed with root intent. Owner IP/auth and exact child input are verified.
+    RFWorkflowIndex:
+      name: RF-Workflow-Index
+      in: header
+      required: false
+      schema: { type: integer, minimum: 0, maximum: 7 }
+      description: Ordered one-time slot index less than the issued child count. Normal network grants have at most eight children; Azimuth uses zero. No retries or ordinary RF fallback.
+  headers:
+    RateLimit-Limit: { schema: { type: integer }, description: "Ordinary units per anchored window; normal default20." }
+    RateLimit-Remaining: { schema: { type: integer }, description: "Ordinary available units after spent and held obligations." }
+    RateLimit-Reset: { schema: { type: integer }, description: "Ceiling seconds to anchored lazy reset; held obligations survive." }
+    RF-Budget-Policy: { schema: { type: string }, description: "Non-scientific operational protocol bounded-followups-v1." }
+    RF-Followup-Limit: { schema: { type: integer }, description: "Shared verified extra capacity8; never per workflow." }
+    RF-Followup-Remaining: { schema: { type: integer }, description: "Verified extra available after spent and held obligations." }
+    RF-Followup-Reset: { schema: { type: integer }, description: "Same anchored reset as ordinary accounting." }
+    RF-Workflow-ID: { schema: { type: string }, description: "Opaque128-bit capability; opted-in successful roots only. Never persist or log raw." }
+    RF-Workflow-Remaining: { schema: { type: integer }, description: "Number of mandatory authorized children on issuance." }
+    RF-Workflow-Expires: { schema: { type: integer }, description: "Ceiling seconds to earliest idle or absolute lease expiry; distinct from window reset." }
   securitySchemes:
     bearerAuth:
       type: http
@@ -516,7 +641,7 @@ components:
       headers:
         Retry-After: { schema: { type: integer }, description: Suggested retry delay in seconds }
         RateLimit-Limit: { schema: { type: integer }, description: Per-client requests allowed per minute }
-        RateLimit-Remaining: { schema: { type: integer }, description: Requests left in the current window }
+        RateLimit-Remaining: { schema: { type: integer }, description: Available ordinary units after spent and held obligations }
         RateLimit-Reset: { schema: { type: integer }, description: Seconds until the current window resets }
       content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
     TimedOut: { description: RF analysis exceeded its configured computation deadline, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
@@ -536,6 +661,7 @@ components:
       type: object
       required: [application_version, build_commit, model_version, model_id, model_description, supported_technologies, propagation_models, rf_contract]
       properties:
+        rf_budget_policy: { type: string, const: bounded-followups-v1, description: Optional operational capability; absent on legacy or disabled-policy servers. }
         application_version: { type: string }
         build_commit: { type: string }
         model_version: { type: string }
@@ -1053,7 +1179,7 @@ components:
         - type: object
           required: [towers]
           properties:
-            towers: { type: array, minItems: 2, maxItems: 6, items: { $ref: "#/components/schemas/Tower" } }
+            towers: { type: array, minItems: 2, maxItems: 8, items: { $ref: "#/components/schemas/Tower" } }
             optimization: { $ref: "#/components/schemas/OptimizationConfig" }
             search_policy: { type: string, enum: [legacy_two_pass_coordinate, deterministic_multistart_coordinate_v1, deterministic_pareto_archive_search_v1], default: legacy_two_pass_coordinate, description: Opt-in optimizer discovery policy. Omit this field to preserve the legacy two-pass coordinate search. }
             max_search_passes: { type: integer, minimum: 0, maximum: 64, default: 8, description: Deterministic multi-start pass budget; zero uses the policy default. }
@@ -1069,7 +1195,7 @@ components:
             towers:
               type: array
               minItems: 1
-              maxItems: 6
+              maxItems: 8
               items: { $ref: "#/components/schemas/Tower" }
             building_ids:
               type: array

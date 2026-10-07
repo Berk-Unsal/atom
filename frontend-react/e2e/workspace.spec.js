@@ -1389,7 +1389,7 @@ test("Select cells changes cluster membership and Clear selected cluster reverse
   await page.getByRole("button", { name: "Clear selected cluster" }).click();
   await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 0 cells");
   await selectWorkspaceTool(page, "Setup");
-  await expect(page.locator(".selection-summary-row strong")).toHaveText("0 of 6 cells selected");
+  await expect(page.locator(".selection-summary-row strong")).toHaveText("0 of 8 cells selected");
   expect(computeRequests).toHaveLength(0);
 });
 

@@ -23,7 +23,7 @@ func TestAutoResourceProfilePolicyInvariance(t *testing.T) {
 	if !reflect.DeepEqual(before, after) || !reflect.DeepEqual(be, ae) {
 		t.Fatal("RF output changed")
 	}
-	if profile.RF.GlobalConcurrency != 2 || profile.RF.PerClientConcurrency != 1 || profile.RF.AttemptLimit != 20 || profile.RF.WindowSeconds != 60 || profile.RF.DeadlineSeconds != 60 || profile.RF.MaxCells != 6 {
+	if profile.RF.GlobalConcurrency != 2 || profile.RF.PerClientConcurrency != 1 || profile.RF.AttemptLimit != 20 || profile.RF.WindowSeconds != 60 || profile.RF.DeadlineSeconds != 60 || profile.RF.MaxCells != 8 {
 		t.Fatal(profile.RF)
 	}
 	if profile.Experiments.Workers != 1 || profile.Experiments.QueueCapacity != 16 || profile.Experiments.MaxRuns != 64 || manager.workers != 1 {

@@ -1059,7 +1059,7 @@ four workers.</li>
 <p><strong>Endpoint</strong>:
 <code>POST /api/building-entry-analysis</code></p>
 <p>Estimate service immediately inside one representative facade point
-for one to six selected cells. This is a separate Concept 4E analysis,
+for one to eight selected cells. This is a separate Concept 4E analysis,
 not a replacement for <code>/api/coverage-gaps</code> or
 <code>/api/interference</code>. It is supported at 2.6 GHz and 28 GHz
 only; 140 GHz returns a structured <code>unsupported_frequency</code>
@@ -1224,7 +1224,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb20-1"><a href=
 <span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;noise_figure_db&quot;</span><span class="fu">:</span> <span class="dv">7</span><span class="fu">,</span></span>
 <span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sample_spacing_m&quot;</span><span class="fu">:</span> <span class="dv">40</span></span>
 <span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p>The request accepts 2–6 unique cells. LTE bandwidths are
+<p>The request accepts 2–8 unique cells. LTE bandwidths are
 <code>1.4</code>, <code>3</code>, <code>5</code>, <code>10</code>,
 <code>15</code>, or <code>20</code> MHz; 5G NR bandwidths are
 <code>50</code>, <code>100</code>, <code>200</code>, or <code>400</code>
@@ -1410,7 +1410,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb22-1"><a href=
 Network</h3>
 <p><strong>Endpoints</strong>: <code>POST /api/evaluate-network</code>
 and <code>POST /api/optimize-network</code></p>
-<p>Network requests contain two to six <code>towers</code> and may add
+<p>Network requests contain two to eight <code>towers</code> and may add
 an <code>optimization</code> object:</p>
 <div class="sourceCode" id="cb23"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
@@ -1979,18 +1979,18 @@ the next request at or after expiry. <code>RateLimit-Reset</code> and
 budget-exhaustion <code>Retry-After</code> are relative seconds rounded
 up to expiry. Concurrency/capacity rejections use
 <code>Retry-After: 1</code>.</p>
-<p>All protected RF routes share this bucket, including interference,
-diagnostics, signal-surface exports, and optimizer API calls. Internal
-optimizer evaluations do not consume HTTP request units. A six-cell
-Evaluate Network action sends one <code>/api/evaluate-network</code>
-plus six sequential <code>/api/simulate</code> requests; Interference
-sends one <code>/api/interference</code>. Evaluate → Interference →
-Re-evaluate costs 15 of 20 requests in a fresh window. Earlier runs and
-other tabs on the same IP also count. Denied admissions log operation,
-limiter-local request ID, process-local hashed client key, remaining
-budget, retry timing, and reason without request payloads. See the <a
-href="./rf-analysis-request-budget-audit.html">request-budget audit</a>
-for the measured trace and regression evidence.</p>
+<p>All protected RF routes share the ordinary bucket, including
+independent tools, exports and experiments. Internal optimizer
+evaluations do not consume HTTP units. With advertised
+<code>bounded-followups-v1</code>, network Evaluate/Optimize roots
+prebook their exact sequential map children using up to eight shared
+verified units, then ordinary units. Normal eight-Cell Evaluate/maps
+uses ordinary1/extra8; a full cycle uses11/8; cycle→Optimize/maps
+uses20/8 across28 successful calls. Standalone Simulate remains ordinary
+and attempt21 is denied. Capabilities are one-time, input-bound,
+owner-bound, finite, and carried holds survive reset. Legacy clients
+remain ordinary-only. See the validated policy implementation and
+product promotion.</p>
 <p>Set <code>RF_REQUEST_TIMEOUT_SECONDS</code> to bound compute time;
 the default is 60 seconds and expiration returns <code>504</code>. Keep
 RF concurrency aligned with CPU allocation and set

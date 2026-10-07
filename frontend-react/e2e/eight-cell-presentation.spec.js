@@ -1,0 +1,36 @@
+import { mkdir } from "node:fs/promises";
+import { expect, test } from "@playwright/test";
+import { createProjectWorkspace, updateProjectDraft } from "../src/utils/projectStore.js";
+import { DEFAULT_SIMULATION } from "../src/generated/policy.js";
+const cells = Array.from({ length: 8 }, (_, i) => ({ type: "Feature", id: `view-${i+1}`, properties: { cell_id: `view-cell-${i+1}`, radio_type: "NR" }, geometry: { type: "Point", coordinates: [32.85+i*.001,39.92+i*.001] } }));
+for (const theme of ["light", "dark"]) test(`normal eight-Cell presentation ${theme}`, async ({ page }, info) => {
+  const workspace = createProjectWorkspace();
+  workspace.projects[0] = updateProjectDraft(workspace.projects[0], { plan: { planningMode: "network", selectedTowerId: cells[0].id, selectedNetworkTowerIds: cells.map((c) => c.id), settings: DEFAULT_SIMULATION, towers: [] }, requiresRerun: true });
+  await page.addInitScript(({ value, theme }) => { localStorage.setItem("atom.planning.workspace.v1",JSON.stringify(value)); localStorage.setItem("atom.theme.preference",theme); }, { value: workspace, theme });
+  await page.emulateMedia({ colorScheme: theme });
+  await page.route("**/api/**", (route) => {
+    const endpoint = new URL(route.request().url()).pathname;
+    const data = endpoint === "/api/towers" ? { type: "FeatureCollection", features: cells } : endpoint === "/api/meta" ? { application_version: "0.12.0" } : {};
+    return route.fulfill({ json: data });
+  });
+  await page.route(/https:\/\/(tiles\.stadiamaps\.com|tile\.openstreetmap\.org)\//, (route) => route.abort());
+  await mkdir("/tmp/atom-eight-cell-product-cap-promotion/presentation", { recursive: true });
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Network mode, 8 selected" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Evaluate Network", exact: true })).toBeEnabled();
+  await expect(page.locator(".tower-order-badge")).toHaveCount(8);
+  await page.getByRole("button", { name: "Plan workspace" }).click();
+  await page.locator("#stage-tool-plan-setup").click();
+  await expect(page.getByText("Minimum 2 · Maximum 8")).toBeVisible();
+  await page.screenshot({ path: `/tmp/atom-eight-cell-product-cap-promotion/presentation/${info.project.name}-${theme}-eight-setup.png`, fullPage: true });
+  await page.getByRole("button", { name: "Close tool drawer", exact: true }).click();
+  await page.getByRole("button", { name: "Plan workspace" }).click();
+  await page.locator("#stage-tool-plan-inventory").click();
+  await page.getByRole("group", { name: "Inventory scope" }).getByRole("button", { name: /^Network/ }).click();
+  await expect(page.getByRole("list", { name: "Network Cells" }).locator("li")).toHaveCount(8);
+  await page.getByRole("list", { name: "Network Cells" }).locator("li").last().scrollIntoViewIfNeeded();
+  await expect(page.getByRole("list", { name: "Network Cells" }).locator("li").last()).toBeVisible();
+  await page.screenshot({ path: `/tmp/atom-eight-cell-product-cap-promotion/presentation/${info.project.name}-${theme}-eight-inventory.png`, fullPage: true });
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  expect(overflow).toBe(false);
+});

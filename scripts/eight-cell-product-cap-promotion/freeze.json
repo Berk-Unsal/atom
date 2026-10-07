@@ -1,0 +1,38 @@
+{
+  "status": "FROZEN",
+  "verdict": "A \u2014 PROMOTED \u2014 READY FOR 0.12.0 RELEASE",
+  "normal_product_cells": 8,
+  "VERSION": "0.12.0",
+  "ordinary_attempts": 20,
+  "verified_extra": 8,
+  "anchored_window_seconds": 60,
+  "concurrency": {
+    "global": 2,
+    "per_client": 1
+  },
+  "deadline_seconds": 60,
+  "worker": 1,
+  "queue": 16,
+  "independent_caps": {
+    "recommendation": 5,
+    "measurements": 6
+  },
+  "qualification_scope": "Matrix completed before supplemental probe failed due to input omission; exact completed raw HTTP rows retained and independently reverified, not rerun or discarded.; exact frozen eight paired W1 layouts, 120 rays/400m/30dBm/120deg/2.6 and28GHz/legacy two-pass; no W2/W3 extrapolation",
+  "ProfileA": {
+    "cpu": 2,
+    "memory_gib": 4,
+    "go": "1.26.6",
+    "os": "linux",
+    "arch": "arm64",
+    "CGO": 0,
+    "cgroup_version": 2
+  },
+  "promotion_lock_sha256": "2b493404f0ccfc5396416b9c41a4c8c66015a84b77937ee1d84cc524c24f2346",
+  "shipping_image": "sha256:4d2d113e354bb1292e80f20308cf7f55c832623a1e711c6ed2052f08d3078833",
+  "shipping_binary_sha256": "b142c46437334df1d988f2f81c0d734ccf1c99fb3d947c4c87c9b47dae20c0ea",
+  "raw_archive_sha256": "53563b34883243a4f41ea113342a8758dba4ecdd1eca50084abbec03de289089",
+  "historical_files_unchanged": 1037,
+  "tag_created": false,
+  "release_published": false,
+  "pushed": false
+}

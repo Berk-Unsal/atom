@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fanOutSelectionOffset, MAX_NETWORK_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from "./networkSelection.js";
+import { fanOutSelectionOffset, MAX_NETWORK_CELLS, MAX_RECOMMENDATION_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from "./networkSelection.js";
 
 const towers = [
   { id: "cell-1" },
@@ -9,9 +9,12 @@ const towers = [
   { id: "cell-5" },
   { id: "cell-6" },
   { id: "cell-7" },
+  { id: "cell-8" },
+  { id: "cell-9" },
 ];
 
 describe("network selection", () => {
+  it("partitions product and independent limits", () => { expect(MAX_NETWORK_CELLS).toBe(8); expect(MAX_RECOMMENDATION_CELLS).toBe(5); });
   it("keeps selection state unique, available, ordered, and capped", () => {
     expect(normalizeNetworkSelection([
       "cell-2",
@@ -23,13 +26,15 @@ describe("network selection", () => {
       "cell-5",
       "cell-6",
       "cell-7",
-    ], towers)).toEqual(["cell-2", "cell-1", "cell-3", "cell-4", "cell-5", "cell-6"]);
+      "cell-8",
+      "cell-9",
+    ], towers)).toEqual(["cell-2", "cell-1", "cell-3", "cell-4", "cell-5", "cell-6", "cell-7", "cell-8"]);
   });
 
-  it("removes a selected cell and refuses a seventh cell", () => {
+  it("removes a selected cell and refuses a ninth cell", () => {
     const selected = towers.slice(0, MAX_NETWORK_CELLS).map((tower) => tower.id);
-    expect(toggleNetworkSelection(selected, "cell-3")).toEqual(["cell-1", "cell-2", "cell-4", "cell-5", "cell-6"]);
-    expect(toggleNetworkSelection(selected, "cell-7")).toEqual(selected);
+    expect(toggleNetworkSelection(selected, "cell-3")).toEqual(["cell-1", "cell-2", "cell-4", "cell-5", "cell-6", "cell-7", "cell-8"]);
+    expect(toggleNetworkSelection(selected, "cell-9")).toEqual(selected);
   });
 
   it("gives every overlapping selected cell a distinct badge position", () => {

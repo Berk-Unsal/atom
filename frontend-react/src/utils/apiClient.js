@@ -8,14 +8,19 @@ export async function requestJSON(path, {
   method = "GET",
   payload,
   signal,
+  headers,
+  onResponse,
 } = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     cache: "no-store",
     method,
-    headers: payload === undefined ? undefined : { "Content-Type": "application/json" },
+    headers: headers || payload !== undefined ? { ...(payload === undefined ? {} : { "Content-Type": "application/json" }), ...headers } : undefined,
     body: payload === undefined ? undefined : JSON.stringify(payload),
     signal,
   });
+  if (response.ok && onResponse) {
+    try { onResponse(response.headers); } catch (error) { await response.body?.cancel?.(); throw error; }
+  }
   const responsePayload = await readResponsePayload(response);
   if (!response.ok) {
     const message = typeof responsePayload === "object" && responsePayload?.error
@@ -31,8 +36,8 @@ export async function requestJSON(path, {
   return responsePayload;
 }
 
-export function postJSON(path, payload, fallbackMessage, signal) {
-  return requestJSON(path, { fallbackMessage, method: "POST", payload, signal });
+export function postJSON(path, payload, fallbackMessage, signal, options = {}) {
+  return requestJSON(path, { ...options, fallbackMessage, method: "POST", payload, signal });
 }
 
 export function getJSON(path, fallbackMessage, signal) {

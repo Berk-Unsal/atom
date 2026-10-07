@@ -76,7 +76,7 @@ func TestRFBudgetAdmissionPreservesScientificResponses(t *testing.T) {
 				if !bytes.Equal(expected, response.Body.Bytes()) {
 					t.Fatal("admission changed scientific output or fingerprints")
 				}
-				if limiter.clients["192.0.2.1"].requests != 1 {
+				if limiter.clients["192.0.2.1"].ordinarySpent != 1 {
 					t.Fatal("internal model evaluations consumed HTTP budget")
 				}
 			}
@@ -289,7 +289,7 @@ func TestRFBudgetCountsFailuresAndCancellation(t *testing.T) {
 			response := httptest.NewRecorder()
 			router.ServeHTTP(response, request)
 			state := limiter.clients["192.0.2.1"]
-			if state.requests != 1 || state.active != 0 || response.Header().Get("RateLimit-Remaining") != "1" {
+			if state.ordinarySpent != 1 || state.active != 0 || response.Header().Get("RateLimit-Remaining") != "1" {
 				t.Fatalf("failure/cancel must retain charge and release concurrency: state=%+v headers=%v", state, response.Header())
 			}
 		})
@@ -326,7 +326,7 @@ func TestRFBudgetConcurrentAttemptsAndCapacityDenials(t *testing.T) {
 	response := budgetRequest(router, "/job", "198.51.100.2:1000")
 	<-limiter.slots
 	state := limiter.clients["198.51.100.2"]
-	if response.Code != 429 || !strings.Contains(response.Body.String(), "capacity is busy") || state.requests != 1 || state.active != 0 {
+	if response.Code != 429 || !strings.Contains(response.Body.String(), "capacity is busy") || state.ordinarySpent != 1 || state.active != 0 {
 		t.Fatalf("global rejection accounting: state=%+v status=%d body=%s", state, response.Code, response.Body)
 	}
 }

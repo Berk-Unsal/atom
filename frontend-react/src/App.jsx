@@ -55,9 +55,10 @@ import { buildResultContext, buildWorkspaceLineage, RESULT_FRESHNESS, resultStat
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { getJSON, isAbortError, postBlob, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
+import { createRFWorkflow } from "./utils/rfWorkflow.js";
 import { runNetworkSimulationQueue } from "./utils/networkSimulationQueue.js";
 import { pointInPolygon, selectNearestTowers } from "./utils/polygonSelection.js";
-import { MAX_NETWORK_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from "./utils/networkSelection.js";
+import { MAX_NETWORK_CELLS, MAX_RECOMMENDATION_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from "./utils/networkSelection.js";
 import { readMeasurementCsvFile } from "./utils/measurementCsv.js";
 import { duplicateInventoryCell } from "./utils/inventoryImport.js";
 import { applyInventoryBatchPatch, createInventorySession, viewportBoundsEqual } from "./utils/inventoryWorkingSet.js";
@@ -713,18 +714,16 @@ export default function App() {
     workspaceLoaded,
   ]);
 
-  const simulateForSettings = useCallback(async (tower, nextSettings, signal) => {
+  const simulateForSettings = useCallback(async (tower, nextSettings, signal, workflow) => {
     const requestPayload = buildSimulationPayload(tower, nextSettings);
-    const payload = await postJSON(
-      "/api/analyze-sector",
-      requestPayload,
-      "Sector analysis failed",
-      signal,
-    );
+    const payload = workflow
+      ? await workflow.child("/api/analyze-sector", requestPayload, "Sector analysis failed", 0)
+      : await postJSON("/api/analyze-sector", requestPayload, "Sector analysis failed", signal);
     return { coverageGaps: payload.coverage_gaps, simulation: payload.simulation };
   }, []);
 
-  const simulateRaysForSettings = useCallback(async (tower, nextSettings, signal, profileIndex = 0) => {
+  const simulateRaysForSettings = useCallback(async (tower, nextSettings, signal, profileIndex = 0, workflow) => {
+    if (workflow) return workflow.child("/api/simulate", buildSimulationPayload(tower, nextSettings, profileIndex), "Simulation request failed", profileIndex);
     return postJSON(
       "/api/simulate",
       buildSimulationPayload(tower, nextSettings, profileIndex),
@@ -1026,6 +1025,7 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    const workflow = createRFWorkflow(appMeta, request.signal);
     clearCoverageSurface();
     setActiveRFTask("optimization");
     setError("");
@@ -1045,18 +1045,18 @@ export default function App() {
         simulation,
         tower: selectedTower,
       });
-      const payload = await postJSON(
+      const payload = await workflow.root(
         "/api/optimize-azimuth",
         optimizationRequest,
         "Optimization request failed",
-        request.signal,
+        1,
       );
       const optimizedSettings = {
         ...settings,
         azimuthDeg: Number(payload.optimal_azimuth),
       };
       const { simulation: optimizedSimulation, coverageGaps: optimizedGaps } =
-        await simulateForSettings(selectedTower, optimizedSettings, request.signal);
+        await simulateForSettings(selectedTower, optimizedSettings, request.signal, workflow);
       if (!request.isCurrent()) {
         await finishDurableRun({
           error: { code: "run_cancelled", message: "Optimization was superseded or cancelled before completion." },
@@ -1119,12 +1119,14 @@ export default function App() {
         setError(requestError.message);
       }
     } finally {
+      await workflow.close();
       if (request.isCurrent()) {
         setActiveRFTask(null);
         request.finish();
       }
     }
   }, [
+    appMeta,
     beginDurableRun,
     clearCoverageSurface,
     coverageGaps,
@@ -1153,6 +1155,7 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    const workflow = createRFWorkflow(appMeta, request.signal);
     clearCoverageSurface();
     setActiveRFTask("optimization");
     setError("");
@@ -1170,11 +1173,11 @@ export default function App() {
         request: networkRequest,
         runType: "optimization",
       })).running;
-      const payload = await postJSON(
+      const payload = await workflow.root(
         "/api/optimize-network",
         networkRequest,
         "Network optimization request failed",
-        request.signal,
+        selectedNetworkTowers.length,
       );
       clearOperation();
       const optimizedByID = new Map(
@@ -1192,6 +1195,7 @@ export default function App() {
             },
             request.signal,
             index,
+            workflow,
           );
         },
       );
@@ -1245,6 +1249,7 @@ export default function App() {
         setError(requestError.message);
       }
     } finally {
+      await workflow.close();
       request.signal.removeEventListener("abort", clearOperation);
       clearOperation();
       if (request.isCurrent()) {
@@ -1252,7 +1257,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [beginDurableRun, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, finishDurableRun, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [appMeta, beginDurableRun, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, finishDurableRun, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const evaluateNetwork = useCallback(async () => {
     const priorityError = optimizationConfigValidationMessage(optimizationConfig);
@@ -1269,6 +1274,7 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    const workflow = createRFWorkflow(appMeta, request.signal);
     clearCoverageSurface();
     setActiveRFTask("network_evaluation");
     setError("");
@@ -1276,17 +1282,17 @@ export default function App() {
     clearInterferenceAnalysis();
     try {
       const networkRequest = buildNetworkOptimizationPayload(selected, settings, networkAzimuths, optimizationConfig);
-      const payload = await postJSON(
+      const payload = await workflow.root(
         "/api/evaluate-network",
         networkRequest,
         "Network evaluation request failed",
-        request.signal,
+        selected.length,
       );
       const simulations = await runNetworkSimulationQueue(selected, (tower, index) =>
         simulateRaysForSettings(tower, {
           ...settings,
           azimuthDeg: networkAzimuthFor(tower, networkAzimuths, settings.azimuthDeg),
-        }, request.signal, index));
+        }, request.signal, index, workflow));
       if (!request.isCurrent()) {
         return;
       }
@@ -1308,12 +1314,13 @@ export default function App() {
         setError(requestError.message);
       }
     } finally {
+      await workflow.close();
       if (request.isCurrent()) {
         setActiveRFTask(null);
         request.finish();
       }
     }
-  }, [clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [appMeta, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const explainNetworkCell = useCallback(async (solutionID, cellID) => {
     const response = displayedNetworkOptimization;
@@ -2059,8 +2066,8 @@ export default function App() {
       setError("Candidate recommendations are available for 4G and 5G plans");
       return;
     }
-    if (selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS) {
-      setError(`Select between 2 and ${MAX_NETWORK_CELLS - 1} cells before adding one candidate`);
+    if (selectedNetworkTowers.length < 2 || selectedNetworkTowers.length > MAX_RECOMMENDATION_CELLS) {
+      setError(`Select between 2 and ${MAX_RECOMMENDATION_CELLS} cells before adding one candidate`);
       return;
     }
     if (selectionPolygon.length < 3) {
@@ -3921,7 +3928,7 @@ export default function App() {
               recommendations={siteRecommendations}
               recommending={isRecommendingSites}
               savedScenarios={projectWorkspace.activeProject?.scenarios ?? []}
-              recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}
+              recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length > MAX_RECOMMENDATION_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}
               stats={stats}
             />
           ) : null}

@@ -10,7 +10,7 @@
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.11.0-0f766e?style=for-the-badge)](VERSION)
+[![Version](https://img.shields.io/badge/version-0.12.0-0f766e?style=for-the-badge)](VERSION)
 
 </div>
 
@@ -42,7 +42,7 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 - **Interference Analysis**: Produces planning-grade RSRP, SINR, RSRQ, RSSI, serving-cell, and strongest-interferer surfaces for selected 4G and 5G cells.
 
-- **Deterministic Network Optimization**: Sweeps candidate azimuths and scores sectors or two-to-six-cell clusters using POI demand, residential-density demand, coverage, and overlap penalties.
+- **Deterministic Network Optimization**: Sweeps candidate azimuths and scores sectors or two-to-eight-cell clusters using POI demand, residential-density demand, coverage, and overlap penalties.
 
 - **Coverage Gap Finder**: Flags demand-weighted buildings inside the active beam whose raw received power does not exceed the separate `-100 dBm` building-service threshold, helping planners see underserved residential and POI targets instead of only raw ray distance.
 

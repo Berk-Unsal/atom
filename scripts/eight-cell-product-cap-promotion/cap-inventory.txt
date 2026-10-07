@@ -1,0 +1,49 @@
+docs/openapi.yaml:578:                  maxItems: 64
+docs/openapi.yaml:1182:            towers: { type: array, minItems: 2, maxItems: 8, items: { $ref: "#/components/schemas/Tower" } }
+docs/openapi.yaml:1198:              maxItems: 8
+docs/openapi.yaml:1202:              maxItems: 5000
+docs/openapi.yaml:1213:          maxItems: 5
+docs/openapi.yaml:1604:            towers: { type: array, minItems: 2, maxItems: 5, items: { $ref: "#/components/schemas/Tower" } }
+docs/openapi.yaml:1660:            towers: { type: array, minItems: 1, maxItems: 6, items: { $ref: "#/components/schemas/Tower" } }
+docs/openapi.yaml:1671:              maxItems: 5000
+docs/openapi.yaml:1909:        model_ids: { type: array, maxItems: 8, uniqueItems: true, items: { type: string, enum: [p525_fspl, sub_thz_atmospheric_reference_v1, p1411_below_rooftop_los_v1, p1411_urban_highrise_nlos_v1, p1411_urban_lowrise_nlos_v1, research_sub_thz, p526-single-edge-v1] } }
+docs/openapi.yaml:1910:        campaigns: { type: array, minItems: 1, maxItems: 8, items: { $ref: "#/components/schemas/MeasurementCampaign" } }
+docs/openapi.yaml:1937:        measurements: { type: array, maxItems: 5000, items: { $ref: "#/components/schemas/MeasurementRecord" } }
+policy/rf-policy.json:89:    "network_towers_max": 8,
+frontend-react/src/App.jsx:61:import { MAX_NETWORK_CELLS, MAX_RECOMMENDATION_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from "./utils/networkSelection.js";
+frontend-react/src/App.jsx:1817:      if (!isSelected && currentSelection.length >= MAX_NETWORK_CELLS) {
+frontend-react/src/App.jsx:1818:        setError(`Network planning supports up to ${MAX_NETWORK_CELLS} selected cells`);
+frontend-react/src/App.jsx:1821:      const nextSelection = toggleNetworkSelection(currentSelection, tower.id, MAX_NETWORK_CELLS);
+frontend-react/src/App.jsx:1968:				if (wasInNetwork) setSelectedNetworkTowerIds((current) => toggleNetworkSelection(current, towerID, MAX_NETWORK_CELLS));
+frontend-react/src/App.jsx:2041:    const selected = selectNearestTowers(inside, finalPolygon, MAX_NETWORK_CELLS);
+frontend-react/src/App.jsx:2054:      inside.length > MAX_NETWORK_CELLS
+frontend-react/src/App.jsx:2055:        ? `${inside.length} towers found, nearest ${MAX_NETWORK_CELLS} selected.`
+frontend-react/src/App.jsx:3211:    if (!selectedNetworkSelectionIDs.includes(candidate.id) && selectedNetworkSelectionIDs.length >= MAX_NETWORK_CELLS) {
+frontend-react/src/App.jsx:3212:      setError(`Network planning supports up to ${MAX_NETWORK_CELLS} selected cells`);
+backend-go/main.go:516:	if len(req.Towers) < raytracer.MinNetworkTowers || len(req.Towers) > raytracer.MaxNetworkTowers {
+backend-go/product_cap_promotion_test.go:12:	if raytracer.MaxNetworkTowers != 8 || raytracer.MaxRecommendationTowers != 5 || raytracer.MaxMeasurementTowers != 6 {
+backend-go/resource_profile.go:25:		GlobalConcurrency: cap(limiter.slots), PerClientConcurrency: limiter.perClientConcurrency, AttemptLimit: limiter.requestsPerMinute, WindowSeconds: 60, DeadlineSeconds: deadline.Seconds(), MaxCells: raytracer.MaxNetworkTowers, Source: "configured RF limiter + request deadline + generated Cell cap; ClientIP anchored window"}, resourceprofile.Experiments{Workers: experiments.workers, QueueCapacity: cap(experiments.queue), MaxRuns: maxExperimentRuns, Source: "normalized experiment manager configuration"}, dataset)
+frontend-react/src/utils/networkSelection.js:3:export const MAX_NETWORK_CELLS = POLICY_LIMITS.network_towers_max;
+frontend-react/src/utils/networkSelection.js:6:export function normalizeNetworkSelection(ids, towers, limit = MAX_NETWORK_CELLS) {
+frontend-react/src/utils/networkSelection.js:26:export function toggleNetworkSelection(ids, cellID, limit = MAX_NETWORK_CELLS) {
+frontend-react/src/utils/networkSelection.test.js:2:import { fanOutSelectionOffset, MAX_NETWORK_CELLS, MAX_RECOMMENDATION_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from "./networkSelection.js";
+frontend-react/src/utils/networkSelection.test.js:17:  it("partitions product and independent limits", () => { expect(MAX_NETWORK_CELLS).toBe(8); expect(MAX_RECOMMENDATION_CELLS).toBe(5); });
+frontend-react/src/utils/networkSelection.test.js:35:    const selected = towers.slice(0, MAX_NETWORK_CELLS).map((tower) => tower.id);
+frontend-react/src/utils/networkSelection.test.js:41:    const offsets = Array.from({ length: MAX_NETWORK_CELLS }, (_, index) => fanOutSelectionOffset(index, MAX_NETWORK_CELLS).join(","));
+frontend-react/src/utils/networkSelection.test.js:42:    expect(new Set(offsets).size).toBe(MAX_NETWORK_CELLS);
+backend-go/raytracer/testdata/diffraction-reference-fixtures.json:20:    {"id":"asymmetric-2-6ghz","frequency_ghz":2.6,"height_above_los_m":1.0,"d1_m":50.0,"d2_m":100.0,"expected_v":0.721359819,"expected_loss_db":11.999088810,"tolerance":0.000001,"provenance":"independent equation (26) calculation with asymmetric d1/d2"},
+backend-go/raytracer/testdata/diffraction-reference-fixtures.json:21:    {"id":"2-6ghz","frequency_ghz":2.6,"height_above_los_m":1.0,"d1_m":50.0,"d2_m":50.0,"expected_v":0.832954571,"expected_loss_db":12.801671335,"tolerance":0.000001,"provenance":"independent equation (26) and equation (31) calculation"},
+backend-go/raytracer/interference.go:334:	if len(req.Towers) < MinNetworkTowers || len(req.Towers) > MaxNetworkTowers {
+backend-go/network_capacity_audit_test.go:4:// with only MaxNetworkTowers overridden; historical larger-cardinality overrides stay isolated; production now supports eight.
+backend-go/network_capacity_audit_test.go:63:	if f.N > raytracer.MaxNetworkTowers {
+backend-go/network_capacity_audit_test.go:266:	ledger := map[string]any{"n": f.N, "frequency_ghz": f.Frequency, "mode": mode, "rows": rows, "go_version": runtime.Version(), "gomaxprocs": runtime.GOMAXPROCS(0), "cpus": runtime.NumCPU(), "buildings": pack.BuildingIndex.Len(), "deadline_seconds": defaultRFRequestTimeout.Seconds(), "budget_limit": defaultRFRequestsPerMinute, "audit_max_cells": raytracer.MaxNetworkTowers}
+backend-go/network_capacity_audit_test.go:328:	if raytracer.MaxNetworkTowers != 8 {
+backend-go/raytracer/policy_generated.go:39:	MaxNetworkTowers                   = 8
+backend-go/raytracer/optimization_explanation.go:197:	if len(req.Baseline.CellConfigurations) < MinNetworkTowers || len(req.Baseline.CellConfigurations) > MaxNetworkTowers {
+backend-go/raytracer/optimization_explanation.go:198:		return fmt.Sprintf("baseline must contain between %d and %d cell configurations", MinNetworkTowers, MaxNetworkTowers)
+backend-go/raytracer/building_entry.go:230:	if len(req.Network.Towers) < 1 || len(req.Network.Towers) > MaxNetworkTowers {
+backend-go/raytracer/building_entry.go:231:		return fmt.Sprintf("towers must contain between 1 and %d selected towers", MaxNetworkTowers)
+frontend-react/src/components/ControlPanel.jsx:3:import { MAX_NETWORK_CELLS } from "../utils/networkSelection.js";
+frontend-react/src/components/ControlPanel.jsx:125:              <strong>{networkSelectionCount} of {MAX_NETWORK_CELLS} cells selected</strong>
+frontend-react/src/components/ControlPanel.jsx:127:            <p className="selection-minimum-note">Minimum 2 · Maximum {MAX_NETWORK_CELLS}</p>
+frontend-react/src/generated/policy.js:216:  "network_towers_max": 8,

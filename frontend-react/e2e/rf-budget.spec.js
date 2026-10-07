@@ -43,6 +43,12 @@ test("real RF budget: six-cell Evaluate, Interference, inspect, re-evaluate, the
       row.response_sha256 = createHash("sha256").update(body).digest("hex");
     }));
   });
+  await page.route("**/api/meta", async (route) => {
+    const response = await route.fetch();
+    const meta = await response.json();
+    delete meta.rf_budget_policy;
+    await route.fulfill({ response, json: meta });
+  });
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
   await page.getByRole("button", { name: "Network mode, 0 selected" }).click();

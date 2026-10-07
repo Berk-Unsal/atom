@@ -1,0 +1,254 @@
+{
+  "rf_budget_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/rf-budget.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "started_at": "2026-10-07T20:33:57.920330+00:00",
+    "completed_at": "2026-10-07T20:34:09.201862+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/rf_budget_e2e.playwright.json",
+    "stdout_sha256": "3d24946986d685f26ab4edcae0c3581665fcbb58dfad0cb6f4fc65d0a5a1084d",
+    "execution_guard": {
+      "discovered": 1,
+      "executed": 1,
+      "passed": 1,
+      "skipped": 0,
+      "tests": [
+        {
+          "id": "517ab816924a3a36e3da-c2d80f0f63cf255099be",
+          "title": "real RF budget: six-cell Evaluate, Interference, inspect, re-evaluate, then abuse",
+          "file": "rf-budget.spec.js",
+          "project": "desktop-1440",
+          "statuses": [
+            "passed"
+          ]
+        }
+      ],
+      "opt_in_active": true
+    }
+  },
+  "rf_deadline_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/network-deadline.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "started_at": "2026-10-07T20:34:09.202832+00:00",
+    "completed_at": "2026-10-07T20:34:20.142442+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/rf_deadline_e2e.playwright.json",
+    "stdout_sha256": "01f72d9c61c7da0b91d53b8ef693eb0ab4833264a70cd033f8ad1df464a2ec2a",
+    "execution_guard": {
+      "discovered": 1,
+      "executed": 1,
+      "passed": 1,
+      "skipped": 0,
+      "tests": [
+        {
+          "id": "6eb2bebe5f7dbec70ae0-03ce0a2405ac15553026",
+          "title": "real network optimization deadline: affected six-cell defaults preserve output and one-request cost",
+          "file": "network-deadline.spec.js",
+          "project": "desktop-1440",
+          "statuses": [
+            "passed"
+          ]
+        }
+      ],
+      "opt_in_active": true
+    }
+  },
+  "bounded_six_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/bounded-followup.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "started_at": "2026-10-07T20:34:20.143130+00:00",
+    "completed_at": "2026-10-07T20:34:36.011029+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/bounded_six_e2e.playwright.json",
+    "stdout_sha256": "6f44aa1c610e59e141ca708b6884d80444b2950892039f1e1def929baa49656d",
+    "execution_guard": {
+      "discovered": 1,
+      "executed": 1,
+      "passed": 1,
+      "skipped": 0,
+      "tests": [
+        {
+          "id": "6691c121a9643fc34a51-c4f673f79a0f3ee36e63",
+          "title": "bounded follow-ups: real six-cell cycle then Optimize maps and shared-tab prebooking",
+          "file": "bounded-followup.spec.js",
+          "project": "desktop-1440",
+          "statuses": [
+            "passed"
+          ]
+        }
+      ],
+      "opt_in_active": true
+    }
+  },
+  "backend_tests": {
+    "command": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "environment": {},
+    "started_at": "2026-10-07T20:48:07.153531+00:00",
+    "completed_at": "2026-10-07T20:48:07.575068+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/backend_tests.log",
+    "stdout_sha256": "e65e9d3790139843847574c0f63924fa215cf97e66ee4172a0a38bad14b6fbf0"
+  },
+  "backend_race": {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "environment": {},
+    "started_at": "2026-10-07T20:48:07.575689+00:00",
+    "completed_at": "2026-10-07T20:48:07.758416+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/backend_race.log",
+    "stdout_sha256": "e65e9d3790139843847574c0f63924fa215cf97e66ee4172a0a38bad14b6fbf0"
+  },
+  "backend_vet": {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "environment": {},
+    "started_at": "2026-10-07T20:48:07.758756+00:00",
+    "completed_at": "2026-10-07T20:48:07.935570+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/backend_vet.log",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "frontend_tests": {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "frontend-react",
+    "environment": {},
+    "started_at": "2026-10-07T20:48:07.935938+00:00",
+    "completed_at": "2026-10-07T20:48:18.317040+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/frontend_tests.log",
+    "stdout_sha256": "e7bfd56a5886307160c7cd43d7bcc9e881e88ccc72ff6d844cf535e99c58d3d6"
+  },
+  "frontend_lint": {
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "cwd": "frontend-react",
+    "environment": {},
+    "started_at": "2026-10-07T20:48:18.317521+00:00",
+    "completed_at": "2026-10-07T20:48:22.002400+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/frontend_lint.log",
+    "stdout_sha256": "8c0fc05ce8eb404607f62c91f788627799d973382ab2d64911d3e6878dd6235a"
+  },
+  "frontend_build": {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "frontend-react",
+    "environment": {},
+    "started_at": "2026-10-07T20:48:22.002828+00:00",
+    "completed_at": "2026-10-07T20:48:23.264231+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/frontend_build.log",
+    "stdout_sha256": "15ec740a01336e7c4aa878dabb5cd76bec22a5a578a1e93e60b34635fb344f8b"
+  },
+  "docs_build": {
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "cwd": ".",
+    "environment": {},
+    "started_at": "2026-10-07T20:50:56.354504+00:00",
+    "completed_at": "2026-10-07T20:51:02.909564+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/docs_build.log",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "docs_validation": {
+    "command": [
+      "/tmp/atom-persistence-docs-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": ".",
+    "environment": {},
+    "started_at": "2026-10-07T20:51:02.909937+00:00",
+    "completed_at": "2026-10-07T20:51:03.296508+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/docs_validation.log",
+    "stdout_sha256": "58709e201b47b525040632c578ab6f01267094777c15e4a83af2ebd8dc9ad0fd"
+  },
+  "version_consistency": {
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "cwd": ".",
+    "environment": {},
+    "started_at": "2026-10-07T20:51:03.296862+00:00",
+    "completed_at": "2026-10-07T20:51:03.328253+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/version_consistency.log",
+    "stdout_sha256": "2e4cc0cc1198c5cdae81bcbdc187b87f89ed588c807cd7f9fbfe445509946af2"
+  },
+  "diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": ".",
+    "environment": {},
+    "started_at": "2026-10-07T20:51:03.328582+00:00",
+    "completed_at": "2026-10-07T20:51:03.352633+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-bounded-followup-policy/diff_check.log",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

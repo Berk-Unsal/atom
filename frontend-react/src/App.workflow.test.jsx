@@ -551,7 +551,7 @@ describe("App planning workflow", () => {
 
     expect(api.postJSON).not.toHaveBeenCalled();
     expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select cells" })).toBeEnabled();
-    expect(screen.getByText("Minimum 2 · Maximum 6")).toBeInTheDocument();
+    expect(screen.getByText("Minimum 2 · Maximum 8")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Analyze workspace" }));
     expect(screen.getByRole("button", { name: "Interference" })).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByText("Select at least two cells")).toBeInTheDocument();
@@ -684,6 +684,20 @@ describe("App planning workflow", () => {
       ],
       constraints: { max_overlap_buildings: 5 },
     });
+  });
+
+  it("accepts eight Cells and refuses a ninth without RF dispatch", async () => {
+    const nine = { type: "FeatureCollection", features: Array.from({ length: 9 }, (_, i) => point(`tower-${i+1}`, String(101+i),32.85+i*.001,39.92+i*.001)) };
+    api.getJSON.mockImplementation((path) => Promise.resolve(path === "/api/towers" ? nine : {}));
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    for (let i=1;i<8;i+=1) fireEvent.click(screen.getByRole("button", { name: `Select map tower ${101+i}` }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Network mode, 8 selected" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Select map tower 109" }));
+    expect(screen.getByRole("button", { name: "Network mode, 8 selected" })).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("Network planning supports up to 8 selected cells");
+    expect(api.postJSON).not.toHaveBeenCalled();
   });
 
   it("dispatches the six-cell RF workflow exactly once per action under StrictMode", async () => {

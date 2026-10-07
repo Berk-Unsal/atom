@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Verified child prebooking, one-time
+capabilities, bounded state, six-Cell production invariance and
+eight-Cell audit validation." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Bounded Verified Follow-up Policy
+Implementation | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Bounded Verified
+Follow-up Policy Implementation page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#authority-and-freeze"
+      id="toc-authority-and-freeze">Authority and freeze</a></li>
+      <li><a href="#architecture-and-security"
+      id="toc-architecture-and-security">Architecture and
+      security</a></li>
+      <li><a href="#accounting-and-lifecycle"
+      id="toc-accounting-and-lifecycle">Accounting and
+      lifecycle</a></li>
+      <li><a href="#operational-metadata-and-compatibility"
+      id="toc-operational-metadata-and-compatibility">Operational
+      metadata and compatibility</a></li>
+      <li><a href="#validation-and-resource-evidence"
+      id="toc-validation-and-resource-evidence">Validation and resource
+      evidence</a></li>
+      <li><a href="#rollback-and-release"
+      id="toc-rollback-and-release">Rollback and release</a></li>
+      <li><a href="#required-final-report"
+      id="toc-required-final-report">Required final report</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Operational policy</span>
+        <h1>Bounded Verified Follow-up Policy Implementation</h1>
+        <p>Verified child prebooking, one-time capabilities, bounded
+state, six-Cell production invariance and eight-Cell audit
+validation.</p>
+        <div class="hero-actions">
+          <a class="button" href="./bounded-followup-policy-implementation.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p><strong>A — VALIDATED — READY FOR NORMAL RELEASE</strong></p>
+<p>Normal product cap remains <strong>six</strong>. The policy retains20
+ordinary units and adds8 shared, server-verified deterministic child
+units per ClientIP/anchored60s window. No scientific JSON, equations,
+fingerprints, search, Pareto, persistence, estimator admission or Auto
+behavior changed.</p>
+<h2 id="authority-and-freeze">Authority and freeze</h2>
+<p>Implementation lock SHA256:
+<code>f949ec5bc406e0941e9e01392d75a88920ff6da8ddf97a23eaf9e1d2143b3baf</code>.
+Frozen before implementation tests. Authoritative design: policy study.
+Starting branch/main HEAD
+<code>a10284a708661795b1e31bd1f40c614acf55e8f4</code>, VERSION0.11.0.
+Historical tracked evidence and scientific sources remain
+hash-identical; see invariance.json.</p>
+<h2 id="architecture-and-security">Architecture and security</h2>
+<p>Authentication and request context precede budget admission. Ordinary
+calls spend one before unchanged concurrency2/1. Eligible opted-in roots
+bind/validate first, then atomically reserve their exact child
+obligations before RF. Server-derived typed children are bound by
+separate versioned SHA256 digests;128-bit random opaque IDs select owned
+one-time slots. No public fingerprint grants access. Header metadata
+never enters scientific responses or project data.</p>
+<p>Root/protocol strings are shared whitelisted literals and client keys
+own bounded copies, avoiding retention of oversized URI/header backing
+buffers. Records store eight fixed digests, masks, identity hashes and
+timestamps; no RF payloads/results. The indexed heap removes records at
+last claim/retirement; request-local active receipts bridge
+completion.</p>
+<p>Valid children claim funding before concurrency/body validation. Any
+admitted failure stays spent and retires unused siblings. Invalid claims
+are ordinary-charged denials without RF. Live replay409; after
+retirement/missing410, since no tombstone ledger is retained.
+Authentication401 and exhausted-budget429 add no new units. Failed roots
+grant nothing usable.</p>
+<h2 id="accounting-and-lifecycle">Accounting and lifecycle</h2>
+<table>
+<thead>
+<tr>
+<th>Journey</th>
+<th style="text-align: right;">Six ordinary/extra</th>
+<th style="text-align: right;">Audit-eight ordinary/extra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evaluate/maps</td>
+<td style="text-align: right;">1/6</td>
+<td style="text-align: right;">1/8</td>
+</tr>
+<tr>
+<td>Optimize/maps</td>
+<td style="text-align: right;">1/6</td>
+<td style="text-align: right;">1/8</td>
+</tr>
+<tr>
+<td>Full cycle</td>
+<td style="text-align: right;">7/8</td>
+<td style="text-align: right;">11/8</td>
+</tr>
+<tr>
+<td>Evaluate→Optimize/maps</td>
+<td style="text-align: right;">6/8</td>
+<td style="text-align: right;">10/8</td>
+</tr>
+<tr>
+<td>Cycle→Optimize/maps</td>
+<td style="text-align: right;">14/8</td>
+<td style="text-align: right;">20/8</td>
+</tr>
+</tbody>
+</table>
+<p>At every transition: ordinarySpent+ordinaryHeld≤20;
+extraSpent+extraHeld≤8. Reset clears spent only. Held liabilities carry.
+Earliest indices use extra first. Ordinary capacity cannot be stolen
+from an already reserved child queue. Reservations do not grant
+concurrency priority and finite/non-budget failures remain possible.</p>
+<p>Idle expiry60s renews only on valid progress; absolute
+root-admission+(N+1)×60s never renews. Pending holds are tied to request
+cancellation/deadline. Authenticated owner DELETE /api/rf-workflows
+retires unused units without refund/reset; unknown or repeated
+retirement404 is idempotent in effect. Browser cleanup uses a separate
+bounded signal; server timers provide correctness.</p>
+<p>Same-IP tabs/NAT users share counters, holds and active1; distinct
+socket IPs share only global2. Restart loses counters as before and
+invalidates old capabilities. Future multi-instance aggregate
+enforcement would need additional infrastructure; none is
+introduced.</p>
+<h2 id="operational-metadata-and-compatibility">Operational metadata and
+compatibility</h2>
+<p>Only Evaluate/Optimize Network and Optimize Azimuth opt in. Network
+maps and Azimuth Sector refresh receive exact ID/index headers. Other
+tools, exports, explanation, measurements, recommendations and
+experiments remain ordinary. Experiments retain worker1/queue16/max64
+and detached accepted jobs.</p>
+<p>GET /api/meta advertises bounded-followups-v1. The frontend preserves
+legacy calls when absent and fails closed if an advertised root
+omits/mangles its grant. Existing queue order, returned-angle mapping
+and result commit semantics remain. No automatic RF retries, visual
+redesign or performance controls. CORS permits/exposes only necessary
+new operational headers.</p>
+<p>RateLimit-Remaining subtracts spent and held units. Follow-up headers
+expose shared8 availability; Reset is the anchored window, distinct from
+workflow expiry. Budget Retry-After is a rounded next opportunity, not a
+promise. Headers are locked snapshots and peer activity/later terminal
+cleanup can change availability. New policy logs hash peer/workflow
+identity and omit raw token/IP/payload; existing framework access
+logging is unchanged.</p>
+<h2 id="validation-and-resource-evidence">Validation and resource
+evidence</h2>
+<p>Six shipping:16/16 cases,640 scientific matches. Audit-eight:16/16
+cases,800 scientific matches,448 successful required F28 calls. F28
+worst <code>9.178460884s</code>; minimum deadline headroom
+<code>50.821539116s</code>; process-lifetime kernel peak
+<code>1203433472</code> bytes covers all F28/ordinary
+comparison/critical cases. All below frozen45s/15s/3GiB gates;
+OOM/kill/max0.</p>
+<p>The exact frozen Go1.26.6 Linux/arm64 CGO-disabled images run on2
+CPU/4GiB/cgroupv2 with Ankara2026.07. The audit source copy changes only
+MaxNetworkTowers6→8; normal frontend/OpenAPI stay6. Process executable
+hashes were verified. Golden responses were regenerated from the
+immutable preserved shipping binaries in separate containers and
+additionally matched2153 preserved historical response hashes;
+historical traces were never rewritten.</p>
+<p>Metadata-only synthetic worst logical state:114688 records/heap
+entries across4096 clients. Live heap <code>81954248</code> bytes;
+sampled peak heap <code>96358064</code>; peak incremental heap
+<code>95190896</code>. RSS <code>112177152</code>, delta
+<code>99217408</code>; cgroup peak <code>104890368</code>. Frozen
+gates256MiB incremental live heap,384MiB RSS delta,768MiB kernel peak
+passed. This fixture stores all eight digest slots without unsafe RF
+volume; it is separate from operational RF qualification.</p>
+<p>Real browser L3 completed22 calls at cap6 and verified shared-tab
+residual prebooking rejection. Existing budget/deadline and new
+bounded-follow-up suites each discovered/executed/passed one named test
+with skipped0. Additional real API tests covered standalone20/21,
+distinct/shared IP, replay/forgery/mutation, cancellation, root/child
+concurrency and normal6-accept/7-8-reject caps. White-box RF counters
+prove denied requests never enter RF.</p>
+<p>Backend fake-clock/property/race suites verify carry, expiry, heap
+reconciliation, failures, allocation exhaustion, pinning/overflow and
+rollback.434 frontend tests pass. Development failures were preserved
+and corrected; incomplete/no-test attempts were never qualification
+evidence.</p>
+<h2 id="rollback-and-release">Rollback and release</h2>
+<p>The in-process disable method stops issuance, retires holds and
+invalidates IDs, conservatively folds ordinary+extra spent into the
+existing ordinary20 window and removes advertised capability. It does
+not create a fresh refund window or require project/science migration.
+Process restart retains the pre-existing scalar-reset limitation. Legacy
+client behavior is restored through capability refresh/reverted frontend
+plumbing.</p>
+<p>Repository policy records implemented changes under Unreleased and
+updates canonical VERSION when releasing. VERSION/package references
+remain0.11.0; next minor release recommendation0.12.0. No tag, release,
+push or publishing. A separate6→8 product promotion is the single next
+action after final completion verification, confined to the frozen
+W1/ProfileA scope.</p>
+<h2 id="required-final-report">Required final report</h2>
+<ol type="1">
+<li><strong>Starting baseline:</strong> main @
+a10284a708661795b1e31bd1f40c614acf55e8f4; initial checkout clean;
+VERSION0.11.0. Freeze capture includes the newly created study directory
+only.</li>
+<li><strong>Implementation-lock SHA256:</strong>
+f949ec5bc406e0941e9e01392d75a88920ff6da8ddf97a23eaf9e1d2143b3baf</li>
+<li><strong>Production files changed:</strong> Backend main.go,
+rf_protection.go, network_optimization_route.go plus new
+rf_workflows.go; frontend App.jsx/apiClient.js plus new
+rfWorkflow.js.</li>
+<li><strong>Limiter architecture before/after:</strong> Scalar ordinary
+attempts become ordinarySpent/Held and extraSpent/Held, with bounded
+opaque grants; accounting precedes unchanged slot acquisition.</li>
+<li><strong>Middleware ordering after implementation:</strong>
+Security/body/CORS → protected selector → auth → deadline →
+ClientIP/context snapshot → admission/claim → per-client/global slots →
+strict binding/validation → prebooking or digest verification → RF →
+issuance/serialization → cleanup/release.</li>
+<li><strong>Ordinary accounting implementation:</strong> Every ordinary
+admitted attempt spends1 before concurrency; exhausted-budget/auth
+denial does not spend; errors/cancellation retain charges.</li>
+<li><strong>Extra accounting implementation:</strong> Shared extra8 per
+tracked ClientIP/window, usable only through one-time exact verified
+child slots.</li>
+<li><strong>Window/reset semantics:</strong> First admitted request
+anchors60s; lazy reset clears spent counters only.</li>
+<li><strong>Held-unit carry semantics:</strong> Both held counters carry
+through reset and subtract new-window availability; no
+workflow-triggered reset.</li>
+<li><strong>Workflow record structure:</strong> Fixed eight SHA256
+slots, masks/count, owner/auth/context/parent hashes, fixed
+root/protocol/endpoint, timestamps, pending flag and heap index; no RF
+bodies/results.</li>
+<li><strong>Workflow ID generation:</strong> crypto/rand16bytes →
+lowercase32-character hex,128 random bits; entropy/collision failure
+fails closed.</li>
+<li><strong>State bounds:</strong> 4096 clients plus ordinary overflow;
+at most28 indexed held records/IP,114688 global; pre-global active
+receipts bounded4096; busy-client receipts dropped.</li>
+<li><strong>Expiry data structure:</strong> Indexed min-heap, one
+entry/live record, immediate removal, generation-safe next-expiry timer
+and lazy cleanup; no tombstones.</li>
+<li><strong>Eligible roots:</strong> Evaluate Network, Optimize Network,
+Optimize Azimuth only.</li>
+<li><strong>Eligible children:</strong> N ordered Simulates after
+network roots; one Analyze-Sector after Azimuth.</li>
+<li><strong>Ineligible route preservation:</strong> Standalone
+Simulate/Sector and all other tools/experiments remain ordinary-only; no
+recursive child grant.</li>
+<li><strong>Root opt-in protocol:</strong> Optional RF-Workflow
+network-maps-v1 or azimuth-sector-v1 on compatible root;
+malformed/mixed/unsupported intent400.</li>
+<li><strong>Root prebooking semantics:</strong> After strict validated
+root input and normal slots, reserve exact server-derived N before RF;
+earliest indices extra first, then ordinary.</li>
+<li><strong>Root insufficient-budget behavior:</strong> 429 before root
+RF; root ordinary1 remains; no ID or residual holds; no-store/ceil
+opportunity Retry-After.</li>
+<li><strong>Pending-root failure cleanup:</strong> Pending context
+cancellation/deadline, errors, panic/serialization failure retire
+unspent holds; no usable failed-root grant.</li>
+<li><strong>Evaluate child derivation:</strong> Validated globals and
+ordered selected towers/profile; selected azimuth; every
+recognized/default and redundant legacy field bound.</li>
+<li><strong>Optimize child derivation:</strong> Same input structure,
+replacing each corresponding azimuth with the winning returned
+optimal_azimuth.</li>
+<li><strong>Azimuth child derivation:</strong> Exact parsed standalone
+input with returned winning angle; index0 Sector.</li>
+<li><strong>Authorization canonicalization/digest:</strong> Versioned
+SHA256 of decoded effective/legacy requests plus raw recognized profile
+fields, endpoint and index; key order/numeric float spelling normalized;
+meaningful root order retained; public fingerprints untouched.</li>
+<li><strong>Capability issuance:</strong> Only complete successful
+current-context roots activate records and return header metadata; no
+scientific JSON additions.</li>
+<li><strong>Child claim ordering:</strong> Known owned unspent slot
+atomically claims before per-client/global concurrency and
+binding/RF.</li>
+<li><strong>Atomic claim result:</strong> At most one claim wins. Known
+live consumed slot409; after record retirement/missing410. No RF for
+either denial.</li>
+<li><strong>Funding conversion:</strong> Held--/spent++ in the same
+funding pool under mutex; availability unchanged; no refund.</li>
+<li><strong>Child body verification:</strong> Strict bounded
+decoding/validation, then exact digest equality before RF; wrong body
+burns funding and retires siblings.</li>
+<li><strong>Replay behavior:</strong> Live replay409,
+retired/missing410; ordinary-charged invalid denial unless ordinary
+exhaustion429; no RF fallback.</li>
+<li><strong>Forgery behavior:</strong> Random/altered IDs, unsupported
+versions/indexes and mixed metadata perform no RF.</li>
+<li><strong>Wrong-owner behavior:</strong> Wrong ClientIP/auth
+context/operation403 after ordinary invalid-attempt charge;
+authentication401 before charging.</li>
+<li><strong>Stale-context behavior:</strong> Changed dataset/model409,
+unused holds retired, no RF; each request uses captured immutable
+building index.</li>
+<li><strong>Expired behavior:</strong> Idle/absolute expiry removes
+record/holds; subsequent claim410, or429 if ordinary denied.</li>
+<li><strong>Error/status mapping:</strong> 400
+malformed/version/index/body;401 auth;403 owner/operation;409 live
+replay/stale;410 missing/retired/expired;429 budget/busy;503 safe-state
+allocation; existing RF errors retained.</li>
+<li><strong>Cancellation behavior:</strong> Canceled admitted
+roots/children stay charged; pending context callback, server failure
+cleanup and independent client DELETE assist; finite timer
+fallback.</li>
+<li><strong>Root failure behavior:</strong> Failed root retains
+ordinary1, releases unused holds, exposes no usable authorization.</li>
+<li><strong>Child failure behavior:</strong> Claimed child
+failure/busy/body error/cancel/deadline/500 retains funding and retires
+siblings.</li>
+<li><strong>Idle expiry:</strong> 60s from successful issuance or valid
+completed progress; valid in-flight claim may bridge existing request
+deadline; invalid/replay/cancel never renew.</li>
+<li><strong>Absolute expiry:</strong> Root admission+(N+1)×60s,
+immutable:120s Azimuth,420s six,540s audit-eight.</li>
+<li><strong>Window carry/reset result:</strong> Fake-clock extra and
+ordinary carry tests pass; spent clears, held remains, no capacity
+stacking.</li>
+<li><strong>Cleanup endpoint:</strong> DELETE /api/rf-workflows, ID
+header only, same auth/IP;204 retirement, repeated/unknown404,
+foreign403, auth401; zero RF units/refunds/resets.</li>
+<li><strong>Restart behavior:</strong> Process-local state loss
+invalidates old IDs;410/no RF; counters retain existing restart-reset
+limitation.</li>
+<li><strong>Client-state eviction behavior:</strong> Active/live-held
+clients pinned; inactive unreserved eviction preserved; client keys
+copied without retaining forwarded-header buffers.</li>
+<li><strong>Overflow behavior:</strong> Ordinary shared overflow
+preserved; no grant/extra hold; state shortage503 and extra
+remaining0.</li>
+<li><strong>API meta capability:</strong> Optional
+rf_budget_policy=bounded-followups-v1 in /api/meta; disappears when
+in-process policy disabled.</li>
+<li><strong>Request headers:</strong> RF-Workflow root intent; paired
+RF-Workflow-ID/Index children; ID-only cleanup; no token
+URL/body/persistence.</li>
+<li><strong>Response headers:</strong> Ordinary Limit/Remaining/Reset;
+RF-Budget-Policy; follow-up Limit/Remaining/Reset; successful root
+ID/Remaining/Expires.</li>
+<li><strong>CORS changes:</strong> Allow three request headers and
+expose operational/limiter headers; original origins/methods/credentials
+preserved; real preflight passes.</li>
+<li><strong>Retry-After behavior:</strong> Ceil min(anchor reset, owner
+lease release) for budget; earliest safe expiry for state allocation;
+busy1. Opportunity, not guaranteed admission.</li>
+<li><strong>Observability:</strong> Bounded known-operation/class/event
+logs, keyed client hash and hashed workflow ID,
+funding/available/held/expiry/reasons; new policy logs contain no raw
+token/IP/body.</li>
+<li><strong>Frontend capability detection:</strong> Opt-in only for
+exact advertised capability; absent/legacy server uses ordinary
+flow.</li>
+<li><strong>Evaluate frontend integration:</strong> Existing
+selected-order sequential queue carries corresponding ID/index and
+current chosen azimuth.</li>
+<li><strong>Optimize frontend integration:</strong> Existing queue
+preserves returned winning ID→azimuth mapping and result commit after
+all maps.</li>
+<li><strong>Azimuth frontend integration:</strong> Azimuth intent
+followed by Sector index0; no RF JSON change.</li>
+<li><strong>Abort/error cleanup:</strong> Action-local closure handles
+abort/error cleanup once, independent bounded signal; no cross-action ID
+sharing or RF retries.</li>
+<li><strong>Legacy-server compatibility:</strong> Old server capability
+absent: same four-argument postJSON call and ordinary queue; regression
+tests pass.</li>
+<li><strong>Legacy-client compatibility:</strong> No intent/child
+headers retains ordinary20/60, same
+science/status/deadline/concurrency.</li>
+<li><strong>Standalone Simulate 20/21 result:</strong> Real shipping6/8
+API probes:20 standalone Simulates200,21st429; unit RF counter proves20
+executions.</li>
+<li><strong>Six-Cell Evaluate/maps accounting:</strong>
+Ordinary1/extra6; no holds after completion.</li>
+<li><strong>Six-Cell Optimize/maps accounting:</strong>
+Ordinary1/extra6; no holds after completion.</li>
+<li><strong>Six-Cell full-cycle accounting:</strong>
+Ordinary7/extra8.</li>
+<li><strong>Six-Cell L3 accounting:</strong> Ordinary14/extra8;22
+successful RF calls; real browser and all16 shipping cases pass.</li>
+<li><strong>Eight-Cell Evaluate/maps accounting:</strong>
+Ordinary1/extra8 in isolated audit build.</li>
+<li><strong>Eight-Cell Optimize/maps accounting:</strong>
+Ordinary1/extra8 in isolated audit build.</li>
+<li><strong>Eight-Cell full-cycle accounting:</strong>
+Ordinary11/extra8.</li>
+<li><strong>Eight-Cell F28 accounting:</strong> Ordinary20/extra8/held0;
+all28 calls complete for16 frozen eight-Cell layout/band cases.</li>
+<li><strong>Post-F28 denial result:</strong> Unrelated29th ordinary
+Interference429 for every F28 case; denial precedes handler work.</li>
+<li><strong>Residual-balance prebooking result:</strong> Residual
+shortage charged root1,429/no root RF/no ID/no holds; two-tab browser
+proof and RF-counter unit regression.</li>
+<li><strong>Shared-IP result:</strong> Shared20+8/holds; two sequential
+Eval tabs six6/8, eight10/8; no multiplier; NAT peer pressure
+documented.</li>
+<li><strong>Distinct-IP result:</strong> Distinct real Linux socket
+peers get separate20+8 while sharing global2; tested.</li>
+<li><strong>Concurrent claim result:</strong> Concurrent duplicate live
+slot has one winner;409 loser; retired receipt410. Race and real
+slow-body/replay tests pass.</li>
+<li><strong>Concurrency2/1 result:</strong> Real two-valid-child and
+same-IP busy tests, additional root/root global2/body-disconnect release
+and existing unit tests pass; no allowance exemption.</li>
+<li><strong>Forgery test matrix:</strong> Random/altered/foreign/wrong
+endpoint/negative/out-of-N/mixed/missing/unsupported cases deny before
+RF; actual shipping probes plus white-box counters.</li>
+<li><strong>Payload mutation matrix:</strong>
+Coordinates/frequency/rays/radius/power/beam/azimuth/calibration/model/profile;
+every recognized profile field and redundant gain aliases changes
+private digest; formatting equivalence passes.</li>
+<li><strong>Root failure matrix:</strong>
+Auth,malformed,oversized,validation,budget,busy,500,deadline,cancel
+tested; no usable grant/hold leak.</li>
+<li><strong>Child failure matrix:</strong>
+Malformed/oversized/validation/mismatch/busy/cancel/deadline/500 tested;
+spent retained/siblings retired.</li>
+<li><strong>Expiry test matrix:</strong> Idle,valid progress,no
+invalid/replay renewal,absolute/in-flight cleanup and terminal races
+pass.</li>
+<li><strong>Reset/carry test matrix:</strong> Spent reset, held carry,
+ordinary and extra delayed claims, old/new pressure and reconciliation
+pass.</li>
+<li><strong>Boundary-burst result:</strong> Combined loose56/tight55;
+current ordinary39 tight and accepted extra-anchor ordinary40 case
+explicitly tested.</li>
+<li><strong>Cleanup test matrix:</strong>
+Owner204,repeated/unknown404,foreign403,auth401,active/final/expired/restart
+lifecycle/races verified; no refund or RF.</li>
+<li><strong>State-capacity result:</strong> 4096
+pinning/eviction/overflow fail-closed and maximum114688 held-record
+synthetic saturation pass.</li>
+<li><strong>Expiry-heap result:</strong> Indexed heap
+membership/positions/holds reconcile through1500 randomized operations,
+concurrent lifecycle tests and full saturation expiry; no
+tombstones/leaks.</li>
+<li><strong>Saturation Go heap:</strong> Live HeapAlloc 81954248bytes;
+peak sampled 96358064bytes; incremental peak 95190896bytes, below
+frozen256MiB.</li>
+<li><strong>Saturation RSS:</strong> RSS 112177152bytes; delta
+99217408bytes, below frozen384MiB.</li>
+<li><strong>Saturation cgroup memory:</strong> Kernel peak
+104890368bytes, below frozen768MiB; isolated metadata-only Profile A;
+events allzero.</li>
+<li><strong>Full F28 worst request latency:</strong> 9.178460884s
+across448 required F28 calls.</li>
+<li><strong>Full F28 minimum deadline headroom:</strong> 50.821539116s
+under60s; gate at least15s.</li>
+<li><strong>Full F28 peak cgroup memory:</strong> 1203433472bytes
+process-lifetime kernel peak covering F28, ordinary science comparisons
+and critical cases; below3GiB.</li>
+<li><strong>F28 OOM events:</strong> oom0/oom_kill0/max0; no Profile B/C
+rescue.</li>
+<li><strong>Scientific invariance:</strong> 640 six and800 eight
+successful JSON hashes match frozen shipping-binary baselines for
+Evaluate/Optimize/Simulate/Azimuth/Sector and Interference;2153
+historical trace hashes match; no scientific-source change.</li>
+<li><strong>Six-Cell regression:</strong> All16 frozen six-Cell
+layout/band cases plus browser L3/legacy/science regressions pass.</li>
+<li><strong>Existing RF budget E2E:</strong> ATOM_REAL_E2E=1; named
+budget test discovered1/executed1/pass1/skipped0, legacy capability
+hidden solely to exercise ordinary behavior.</li>
+<li><strong>Existing RF deadline E2E:</strong> ATOM_REAL_E2E=1; named
+deadline test discovered1/executed1/pass1/skipped0; exact frozen
+scientific hash retained.</li>
+<li><strong>New six-Cell real E2E:</strong> ATOM_REAL_E2E=1; bounded six
+browser test discovered1/executed1/pass1/skipped0; full L3 and
+shared-tab prebooking.</li>
+<li><strong>New eight-Cell audit E2E:</strong> 16
+discovered/executed/passed, skipped0 on shipping
+Go1.26.6/Linux-arm64/CGO0/ProfileA; actual API workflows from frozen
+frontend payload builders, frontend cap remains6.</li>
+<li><strong>Standard 7/8 rejection proof:</strong> Normal
+Evaluate/Optimize/Interference/BuildingEntry plus
+Explanation/Measurements:6 accepted;7/8 rejected. Independent
+Recommendation cap5 and frontend/OpenAPI cap6 preserved.</li>
+<li><strong>Audit binary differential:</strong> Disposable audit source
+differs only MaxNetworkTowers6→8; exact executable hashes verified from
+/proc/1/exe; no environment cap override.</li>
+<li><strong>Race-detector result:</strong> Full go test -race ./... and
+focused claims/cleanup/expiry/reset/eviction/root-finalization/cancel
+stress pass.</li>
+<li><strong>Property/invariant test result:</strong>
+Deterministic1500-step state-machine and concurrent lifecycle invariants
+pass; no negative/over-cap holds, duplicate claims or orphan
+indexes.</li>
+<li><strong>Rollback result:</strong> In-process disable retires grants,
+invalidates old IDs and folds spentOrd+spentExtra conservatively into
+existing20 bucket without fresh reset; no project/science
+migration.</li>
+<li><strong>Product Cell cap status:</strong> Normal product cap
+remains6 throughout. Eight only in disposable audit copy.</li>
+<li><strong>Estimator-admission status:</strong> Paused; no
+estimator/adaptive admission reopened.</li>
+<li><strong>Auto status:</strong> Observation-only; unchanged.</li>
+<li><strong>VERSION result:</strong> VERSION/package-visible references
+remain0.11.0 under repository policy to update canonical version when
+releasing; implementation recorded under Unreleased.</li>
+<li><strong>Release recommendation:</strong> Recommend next MINOR0.12.0
+after validated A; no release/tag/push/publishing performed.</li>
+<li><strong>Files created/changed:</strong> Focused backend/frontend
+policy and tests; OpenAPI/Unreleased/generated docs; implementation
+report/JSON/HTML and validation locks/manifests/tools.</li>
+<li><strong>Raw evidence storage:</strong> 208 hashed raw artifacts
+outside Git; archive /tmp/atom-bounded-followup-policy-raw.tar.gz,
+32675309bytes, SHA256
+bb7a6c1dc3e427200d1b559ced7d06840cc5ae6aabb0e0e15e3144d6b4d5293f.
+Reproducible build contexts excluded.</li>
+<li><strong>Full tests/checks:</strong> Backend test/race/vet;434
+frontend tests/lint/build; three real named E2Es; fake
+clock/security/property/state saturation;16 six/16 eight shipping
+workflows; science/cap/differential; docs/version/diff checks.</li>
+<li><strong>Methodology violations:</strong> No final qualification
+methodology violations. Development attempts with wrong cwd, UI selector
+assumptions, broad fixture glob and missing observer permission were
+rejected, preserved and corrected; never counted as passing
+evidence.</li>
+<li><strong>Missing evidence:</strong> No required evidence missing
+after final checks. Metadata saturation is synthetic worst logical
+state, not RF throughput qualification; eight audit is API-equivalent
+because normal frontend stays6.</li>
+<li><strong>Final A/B/C/D/E implementation verdict:</strong> A —
+VALIDATED — READY FOR NORMAL RELEASE.</li>
+<li><strong>Whether the eight-Cell budget blocker is removed:</strong>
+Yes in exact frozen W1/ProfileA scope after this validated
+implementation; no cap promotion here.</li>
+<li><strong>Remaining blockers to 6→8:</strong> Separate cap-promotion
+review required; no additional known blocker in frozen scope. W2/W3 and
+broader deployment are not qualified; no full-ray persistence blocker
+introduced.</li>
+<li><strong>Freeze decision:</strong> Freeze implementation lock, final
+source/binary/evidence identities and measurements; preserve historical
+studies and cap6.</li>
+<li><strong>Single recommended next action:</strong> A separate Product
+Cell Cap Promotion6→8 task, constrained to the already-qualified
+scope.</li>
+</ol>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

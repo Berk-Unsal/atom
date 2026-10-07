@@ -121,7 +121,7 @@ Legacy Setup/Propagation values supply defaults when a cell has no explicit over
 
 ### Network Evaluation and Optimization
 
-1. Select **Network** mode and choose two to six cells.
+1. Select **Network** mode and choose two to eight cells.
 2. Use **Evaluate Network** in the command bar to score the current plan.
 3. Use **Optimize Network** in Propagation to test deterministic azimuth candidates.
 4. Review score, demand reach, overlap, and before/after deltas in Results.
@@ -215,3 +215,6 @@ The RF engines and datasets run locally, but the default Leaflet layer requests 
 - [RF algorithms](./algorithms.md)
 - [Model limitations](./modeling-limits.md)
 - [Deployment](./deployment.md)
+
+
+Eight selected network Cells are qualified only for the frozen Ankara2026.07 W1 envelope (120 rays,400m,30dBm,120° beam,2.6/28GHz,legacy two-pass) on Profile A2CPU/4GiB and the shipping Go1.26.6 Linux/arm64 runtime. This does not certify heavier W2/W3 settings or arbitrary hardware/datasets. Large ray-bearing project exports can still hit existing persistence guards at both six and eight Cells; network-result-only eight-Cell projects round-trip without changing those guards.

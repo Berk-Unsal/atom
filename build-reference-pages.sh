@@ -131,4 +131,11 @@ build_page bug-fixes.md bug-fixes.html "Bug-Fix Register" "Quality history" \
 build_page ../CHANGELOG.md changelog.html "Changelog" "Release history" \
   "User-visible additions, changes, fixes, and release milestones generated from the canonical project changelog." false true
 
+
+build_page bounded-followup-policy-implementation.md bounded-followup-policy-implementation.html "Bounded Verified Follow-up Policy Implementation" "Operational policy" \
+  "Verified child prebooking, one-time capabilities, bounded state, six-Cell production invariance and eight-Cell audit validation."
+
+build_page eight-cell-product-cap-promotion.md eight-cell-product-cap-promotion.html "Eight-Cell Product Cap Promotion" "Product promotion" \
+  "Normal selected-network cap8, independent limits, frozen W1/Profile A scope and0.12.0 readiness."
+
 python3 build_search_index.py

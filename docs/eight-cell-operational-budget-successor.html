@@ -1,0 +1,4033 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Verified pre-measurement real E2Es,
+unchanged paired W1 qualification and request-budget product-fit
+decision; production cap remains six." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Eight-Cell Clean Successor
+Qualification | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Eight-Cell Clean
+Successor Qualification page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#baseline-and-frozen-contract"
+      id="toc-baseline-and-frozen-contract">Baseline and frozen
+      contract</a></li>
+      <li><a href="#shipping-versus-audit-binary"
+      id="toc-shipping-versus-audit-binary">Shipping versus audit
+      binary</a></li>
+      <li><a href="#dataset-and-paired-layouts"
+      id="toc-dataset-and-paired-layouts">Dataset and paired
+      layouts</a></li>
+      <li><a href="#8c-w1-and-methodology"
+      id="toc-8c-w1-and-methodology">8C-W1 and methodology</a></li>
+      <li><a href="#paired-six-to-eight-measurements"
+      id="toc-paired-six-to-eight-measurements">Paired six-to-eight
+      measurements</a></li>
+      <li><a href="#request-budget-and-product-fit"
+      id="toc-request-budget-and-product-fit">Request budget and product
+      fit</a></li>
+      <li><a href="#frontend-persistence-and-future-migration"
+      id="toc-frontend-persistence-and-future-migration">Frontend,
+      persistence and future migration</a></li>
+      <li><a href="#decision-validation-and-freeze"
+      id="toc-decision-validation-and-freeze">Decision, validation and
+      freeze</a></li>
+      <li><a href="#required-83-item-assessment"
+      id="toc-required-83-item-assessment">Required 83-item
+      assessment</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Audit-only operations evidence</span>
+        <h1>Eight-Cell Clean Successor Qualification</h1>
+        <p>Verified pre-measurement real E2Es, unchanged paired W1
+qualification and request-budget product-fit decision; production cap
+remains six.</p>
+        <div class="hero-actions">
+          <a class="button" href="./eight-cell-operational-budget-successor.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p><strong>CONDITIONAL GO — REQUEST-BUDGET POLICY BLOCKER (B).</strong>
+Status: complete. Production Cell cap remains <strong>six</strong>. No
+product promotion or request-policy change is applied.</p>
+<p>Exact eight paired W1 domains, frequencies 2.6/28 GHz, shipping
+Go1.26.6 Linux/arm64 CGO0 cgroupv2 Profile A 2CPU/4GiB; audit-only eight
+Cells.</p>
+<p>This preregistered audit compares paired 6C/8C W1 requests on the
+minimum certified reference. A positive result applies only to the exact
+tested layouts/settings/runtime; neither larger tiers nor historical
+timing can rescue Profile A.</p>
+<h2 id="baseline-and-frozen-contract">Baseline and frozen contract</h2>
+<p>Starting baseline:
+<code>016c9c96579e2a95b14e3641f96bad00050d48d3</code>, branch
+<code>main</code>, VERSION <code>0.11.0</code>, prior audit
+documentation and scripts already uncommitted. The recorded status and
+diff are in baseline.json. Prior invalid audit reports, locks,
+manifests, scripts and raw archives remain byte-for-byte preserved.</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>SHA256 / reference</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<p>Both required baseline E2Es actually executed with ATOM_REAL_E2E=1
+before this lock and any successor measurement. The guard validates
+named Playwright JSON records, passed results and counts; it rejects
+skipped, zero-test, missing-opt-in and mismatched-test data. The <a
+href="eight-cell-operational-budget-audit.html">prior invalid audit</a>
+remains D unchanged.</p>
+<table>
+<thead>
+<tr>
+<th>Baseline test</th>
+<th style="text-align: right;">Discovered</th>
+<th style="text-align: right;">Executed</th>
+<th style="text-align: right;">Passed</th>
+<th style="text-align: right;">Failed</th>
+<th style="text-align: right;">Skipped</th>
+<th>Completed UTC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rf_budget_e2e</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>2026-10-07T14:42:20.584635+00:00</td>
+</tr>
+<tr>
+<td>rf_deadline_e2e</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>2026-10-07T14:42:30.321538+00:00</td>
+</tr>
+</tbody>
+</table>
+<p>Lock frozen at 2026-10-07T14:43:30.905586+00:00; chronology
+machine-verified: True.</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>SHA256 / reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Audit lock</td>
+<td><code>8d2423c56b57121f94fc658d670b0d52bbecd87c4c1fff2e0c13a39cd686efb0</code></td>
+</tr>
+<tr>
+<td>Domain manifest</td>
+<td><code>d7e2a6e4ed46e3b8bc8c8dbf7ffc32f16f4caf0468365e0d7a9c581d4349ef84</code></td>
+</tr>
+<tr>
+<td>Run plan</td>
+<td><code>f6a01b841061f50ec93c7dedff1f3f5de9b945dcf855bda7b8b9287d3967db2c</code></td>
+</tr>
+<tr>
+<td>Evidence manifest</td>
+<td><a
+href="../scripts/eight-cell-operational-successor/evidence-manifest.json">Manifest</a>,
+with final digest in <a
+href="../scripts/eight-cell-operational-successor/evidence-manifest.sha256">SHA256
+file</a></td>
+</tr>
+</tbody>
+</table>
+<p>Raw streamed bodies, ledgers, sampler/async traces and logs stay
+outside Git in <code>/tmp/atom-eight-cell-operational-successor</code>.
+The tracked index identifies every retained raw artifact by path/logical
+ID, SHA256, byte size, category and group; a local compressed archive
+retains the indexed evidence. No historical evidence is removed.</p>
+<h2 id="shipping-versus-audit-binary">Shipping versus audit binary</h2>
+<p>The audit uses a disposable source copy and the unchanged production
+Dockerfile. The only production-source difference is
+<code>MaxNetworkTowers = 6</code> → <code>8</code> in that copy. The
+existing Auto metadata consequently reports eight for the audit binary.
+Normal source and shipping builds remain six. Recommendation remains
+five and Measurement Validation remains six. No production
+override/environment switch is added.</p>
+<table>
+<thead>
+<tr>
+<th>Build</th>
+<th>Image identity</th>
+<th>Binary SHA256</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>audit</td>
+<td><code>sha256:1f08ca39cff21cbc6ab3f51a165354d4d070b1b6e774cfbb615fa152ac0a8bb2</code></td>
+<td><code>538361a73ed83674b5b5b3f66095892d58394477cd32b522ed3906010d032a9b</code></td>
+</tr>
+<tr>
+<td>standard</td>
+<td><code>sha256:30cb97ef650fb47b1372465789258d2e916ed654e71ba103d2c31a148adc1f81</code></td>
+<td><code>200ea4e7a329e9a4ed32c8e3267232054a940e6434417e7c060ff2fe8e3f30c2</code></td>
+</tr>
+</tbody>
+</table>
+<p>Both binaries use Go1.26.6, Linux/arm64, CGO disabled, identical
+release flags and pinned compiler/runtime bases. <a
+href="../scripts/eight-cell-operational-successor/binary-differential.json">Machine-readable
+differential</a> records source/build metadata. The <a
+href="../scripts/eight-cell-operational-successor/source-differential-verification.json">complete
+copied-source comparison</a> checks 373 copied files across
+backend/frontend, Dockerfile and VERSION; only the cap constant differs.
+Host Go quality checks are separate from qualification timing.</p>
+<p>Before every batch, existing Auto diagnostics and Docker/cgroup
+inspection verify effective CPU2, GOMAXPROCS2, hard memory4GiB,
+workers1, queue16, global/per-client RF slots2/1, deadline60s,
+budget20/60s and exact dataset hashes/counts. No GOMAXPROCS, GC, memory,
+worker, admission or limiter tuning is applied.</p>
+<h3 id="normal-shipping-cap-proof">Normal shipping cap proof</h3>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th style="text-align: right;">Six</th>
+<th style="text-align: right;">Seven</th>
+<th style="text-align: right;">Eight</th>
+<th>Exact rejection body</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/building-entry-analysis</code></td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">400</td>
+<td><code>{"error":"towers must contain between 1 and 6 selected towers"}</code></td>
+</tr>
+<tr>
+<td><code>/api/evaluate-network</code></td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">400</td>
+<td><code>{"error":"towers must contain between 2 and 6 selected towers"}</code></td>
+</tr>
+<tr>
+<td><code>/api/interference</code></td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">400</td>
+<td><code>{"error":"towers must contain between 2 and 6 selected cells"}</code></td>
+</tr>
+<tr>
+<td><code>/api/optimize-network</code></td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">400</td>
+<td><code>{"error":"towers must contain between 2 and 6 selected towers"}</code></td>
+</tr>
+<tr>
+<td><code>/api/explain-network-cell</code></td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">400</td>
+<td><code>{"error":"baseline must contain between 2 and 6 cell configurations"}</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="dataset-and-paired-layouts">Dataset and paired layouts</h2>
+<p>Exact <code>ankara-open-planning</code> version <code>2026.07</code>:
+161,784 indexed footprint parts, 936,651 vertices, 451 inventory Cells.
+Frozen GeoJSON identities:</p>
+<ul>
+<li><code>ankara_5g_nodes.geojson</code>:
+<code>c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8</code></li>
+<li><code>ankara_buildings.geojson</code>:
+<code>d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc</code></li>
+</ul>
+<p>All eight paired layouts are copied byte-for-byte from the prior
+manifest. Every original six ID/order and the same appended two IDs are
+preserved; no Cell reselection occurs. The <a
+href="../scripts/eight-cell-operational-successor/domain-manifest.json">domain
+manifest</a> freezes coordinates, profiles, relative geometry, enclosing
+bounds, footprint/vertex counts and inherited geometry bands before RF
+timing.</p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Original six IDs, ordered</th>
+<th>Appended two IDs</th>
+<th style="text-align: right;">Enclosing footprints6→8</th>
+<th style="text-align: right;">Vertices6→8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>very-dense-certification-1</td>
+<td>2526751, 2526744, 2526742, 2526752, 2526743, 2526741</td>
+<td>5888534, 5888535</td>
+<td style="text-align: right;">327→453</td>
+<td style="text-align: right;">2427→3126</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td>12123730, 13216083, 12058449, 13216081, 12058451, 12013905</td>
+<td>12013907, 25292115</td>
+<td style="text-align: right;">1828→2478</td>
+<td style="text-align: right;">8140→11158</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td>14197782, 14197792, 3000096, 3000086, 4472598, 4473356</td>
+<td>21622808, 561696</td>
+<td style="text-align: right;">641→843</td>
+<td style="text-align: right;">3163→4442</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td>16442647, 24228888, 5900566, 10339345, 10339596, 10339597</td>
+<td>313100, 31767</td>
+<td style="text-align: right;">7366→19691</td>
+<td style="text-align: right;">34972→104581</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td>13143051, 11976460, 12234056, 11976530, 12234065, 11976531</td>
+<td>13143113, 12234055</td>
+<td style="text-align: right;">1968→2161</td>
+<td style="text-align: right;">8526→9893</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td>3175507, 1700385, 24330529, 24330528, 6867729, 6867749</td>
+<td>720677, 23890981</td>
+<td style="text-align: right;">1838→2032</td>
+<td style="text-align: right;">14859→16075</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td>4861472, 4861477, 10710289, 4861457, 10710284, 790540</td>
+<td>790541, 6867729</td>
+<td style="text-align: right;">337→674</td>
+<td style="text-align: right;">2246→4131</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td>5046063, 793627, 5046053, 22319151, 22319128, 22319131</td>
+<td>22319126, 5046038</td>
+<td style="text-align: right;">332→597</td>
+<td style="text-align: right;">1849→3603</td>
+</tr>
+</tbody>
+</table>
+<p>Band labels retain the original certification strata; enlarged
+eight-Cell envelopes are explicitly measured and are not relabelled or
+reselected after timing. Real co-location remains in
+dense-certification-2 (the manifest lists each pair). No fabricated
+coordinates or duplicate IDs are used.</p>
+<p>Historical continuity control: 9664800, 26390, 9664790, 9664795,
+9664791, 9664794, 12261147, 9664785. Its exact prior fixture bytes are
+reused and measured separately with W1 RF settings; it matches none of
+the eight reused primary paired layouts. Historical RF settings and any
+W1-normalization differences are recorded in <a
+href="../scripts/eight-cell-operational-successor/historical-comparison.json">comparison</a>.</p>
+<h2 id="8c-w1-and-methodology">8C-W1 and methodology</h2>
+<p>120 rays,400m,30dBm,120° beam,2.6/28GHz, normal20/100MHz interference
+bandwidths, unchanged legacy two-pass search. Selected-network
+cardinality is eight for Evaluate, Optimize, Interference, retained
+network explanation and network Building Entry; maps number eight
+independent single-Cell Simulate calls. Independent Recommendation,
+Measurement Validation and experiment contracts are retained.</p>
+<p>Real Linux TCP, shipping-equivalent Gin routes, actual
+middleware/limiter/deadline and uncompressed streamed reads supply
+primary evidence. The longer monotonic/UTC interval scores requests and
+groups. A difference over1s invalidates the original observation; no
+replacement or early stop is allowed. Host <code>caffeinate -i</code>
+prevents automatic idle sleep. HTTP success, complete reads, every
+request≤45s,≥15s deadline headroom, lifetime cgroup peak≤3GiB, zero
+oom/oom_kill/max events and all
+slot/concurrency/background/cancellation/science checks are
+required.</p>
+<p>Plan: 837 groups; observed 837. Evaluate/Interference each have five
+repeats per domain/frequency/cardinality; Optimize/Explain/Building
+Entry each have three. Explanation group timing includes its required
+Optimize prerequisite, and individual HTTP times remain available in the
+ledgers. No averaging removes failures.</p>
+<h2 id="paired-six-to-eight-measurements">Paired six-to-eight
+measurements</h2>
+<p>Wall and CPU ratios below use medians within exact
+domain/frequency/operation pairs; maximum individual latency and all
+failures are scored independently. Memory deltas compare observed
+sampled group maxima, not incremental reservations. Lifetime kernel peak
+remains the memory gate. No linear N scaling is assumed.</p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th style="text-align: right;">GHz</th>
+<th>Operation</th>
+<th style="text-align: right;">6C wall s</th>
+<th style="text-align: right;">8C wall s</th>
+<th style="text-align: right;">Wall ratio</th>
+<th style="text-align: right;">6C CPU s</th>
+<th style="text-align: right;">8C CPU s</th>
+<th style="text-align: right;">CPU ratio</th>
+<th style="text-align: right;">Bytes ratio</th>
+<th style="text-align: right;">Sampled cgroup delta MiB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.106</td>
+<td style="text-align: right;">0.139</td>
+<td style="text-align: right;">1.314</td>
+<td style="text-align: right;">0.037</td>
+<td style="text-align: right;">0.171</td>
+<td style="text-align: right;">4.642</td>
+<td style="text-align: right;">1.145</td>
+<td style="text-align: right;">31.516</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.372</td>
+<td style="text-align: right;">0.419</td>
+<td style="text-align: right;">1.127</td>
+<td style="text-align: right;">0.511</td>
+<td style="text-align: right;">0.575</td>
+<td style="text-align: right;">1.124</td>
+<td style="text-align: right;">1.184</td>
+<td style="text-align: right;">0.844</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.519</td>
+<td style="text-align: right;">0.640</td>
+<td style="text-align: right;">1.233</td>
+<td style="text-align: right;">0.670</td>
+<td style="text-align: right;">0.848</td>
+<td style="text-align: right;">1.265</td>
+<td style="text-align: right;">1.242</td>
+<td style="text-align: right;">-70.383</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>explain</td>
+<td style="text-align: right;">4.570</td>
+<td style="text-align: right;">5.955</td>
+<td style="text-align: right;">1.303</td>
+<td style="text-align: right;">7.054</td>
+<td style="text-align: right;">9.108</td>
+<td style="text-align: right;">1.291</td>
+<td style="text-align: right;">1.100</td>
+<td style="text-align: right;">48.266</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.024</td>
+<td style="text-align: right;">0.034</td>
+<td style="text-align: right;">1.445</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">0.029</td>
+<td style="text-align: right;">1.439</td>
+<td style="text-align: right;">1.728</td>
+<td style="text-align: right;">-3.984</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize</td>
+<td style="text-align: right;">4.457</td>
+<td style="text-align: right;">5.588</td>
+<td style="text-align: right;">1.254</td>
+<td style="text-align: right;">6.855</td>
+<td style="text-align: right;">8.546</td>
+<td style="text-align: right;">1.247</td>
+<td style="text-align: right;">1.102</td>
+<td style="text-align: right;">89.195</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">4.459</td>
+<td style="text-align: right;">5.713</td>
+<td style="text-align: right;">1.281</td>
+<td style="text-align: right;">6.789</td>
+<td style="text-align: right;">8.655</td>
+<td style="text-align: right;">1.275</td>
+<td style="text-align: right;">1.312</td>
+<td style="text-align: right;">-16.430</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.101</td>
+<td style="text-align: right;">0.111</td>
+<td style="text-align: right;">1.093</td>
+<td style="text-align: right;">0.036</td>
+<td style="text-align: right;">0.041</td>
+<td style="text-align: right;">1.151</td>
+<td style="text-align: right;">1.145</td>
+<td style="text-align: right;">17.816</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.386</td>
+<td style="text-align: right;">0.459</td>
+<td style="text-align: right;">1.190</td>
+<td style="text-align: right;">0.528</td>
+<td style="text-align: right;">0.648</td>
+<td style="text-align: right;">1.228</td>
+<td style="text-align: right;">1.184</td>
+<td style="text-align: right;">174.891</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.483</td>
+<td style="text-align: right;">0.580</td>
+<td style="text-align: right;">1.200</td>
+<td style="text-align: right;">0.670</td>
+<td style="text-align: right;">0.769</td>
+<td style="text-align: right;">1.148</td>
+<td style="text-align: right;">1.467</td>
+<td style="text-align: right;">95.180</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>explain</td>
+<td style="text-align: right;">5.110</td>
+<td style="text-align: right;">6.792</td>
+<td style="text-align: right;">1.329</td>
+<td style="text-align: right;">7.695</td>
+<td style="text-align: right;">10.273</td>
+<td style="text-align: right;">1.335</td>
+<td style="text-align: right;">1.099</td>
+<td style="text-align: right;">60.922</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.022</td>
+<td style="text-align: right;">0.031</td>
+<td style="text-align: right;">1.382</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">0.027</td>
+<td style="text-align: right;">1.330</td>
+<td style="text-align: right;">1.729</td>
+<td style="text-align: right;">93.727</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>optimize</td>
+<td style="text-align: right;">4.954</td>
+<td style="text-align: right;">6.711</td>
+<td style="text-align: right;">1.355</td>
+<td style="text-align: right;">7.496</td>
+<td style="text-align: right;">10.196</td>
+<td style="text-align: right;">1.360</td>
+<td style="text-align: right;">1.102</td>
+<td style="text-align: right;">33.254</td>
+</tr>
+<tr>
+<td>dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">4.961</td>
+<td style="text-align: right;">6.565</td>
+<td style="text-align: right;">1.324</td>
+<td style="text-align: right;">7.445</td>
+<td style="text-align: right;">9.825</td>
+<td style="text-align: right;">1.320</td>
+<td style="text-align: right;">1.428</td>
+<td style="text-align: right;">85.512</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.088</td>
+<td style="text-align: right;">0.161</td>
+<td style="text-align: right;">1.825</td>
+<td style="text-align: right;">0.043</td>
+<td style="text-align: right;">0.045</td>
+<td style="text-align: right;">1.044</td>
+<td style="text-align: right;">2.198</td>
+<td style="text-align: right;">-78.270</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.338</td>
+<td style="text-align: right;">0.453</td>
+<td style="text-align: right;">1.341</td>
+<td style="text-align: right;">0.467</td>
+<td style="text-align: right;">0.615</td>
+<td style="text-align: right;">1.317</td>
+<td style="text-align: right;">1.184</td>
+<td style="text-align: right;">109.801</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.480</td>
+<td style="text-align: right;">0.615</td>
+<td style="text-align: right;">1.282</td>
+<td style="text-align: right;">0.613</td>
+<td style="text-align: right;">0.776</td>
+<td style="text-align: right;">1.266</td>
+<td style="text-align: right;">1.323</td>
+<td style="text-align: right;">54.258</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>explain</td>
+<td style="text-align: right;">3.690</td>
+<td style="text-align: right;">6.612</td>
+<td style="text-align: right;">1.792</td>
+<td style="text-align: right;">5.724</td>
+<td style="text-align: right;">10.349</td>
+<td style="text-align: right;">1.808</td>
+<td style="text-align: right;">1.105</td>
+<td style="text-align: right;">89.000</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">0.039</td>
+<td style="text-align: right;">1.884</td>
+<td style="text-align: right;">0.018</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">1.874</td>
+<td style="text-align: right;">2.480</td>
+<td style="text-align: right;">226.141</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize</td>
+<td style="text-align: right;">3.711</td>
+<td style="text-align: right;">6.019</td>
+<td style="text-align: right;">1.622</td>
+<td style="text-align: right;">5.834</td>
+<td style="text-align: right;">9.441</td>
+<td style="text-align: right;">1.618</td>
+<td style="text-align: right;">1.107</td>
+<td style="text-align: right;">93.879</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">3.663</td>
+<td style="text-align: right;">6.170</td>
+<td style="text-align: right;">1.684</td>
+<td style="text-align: right;">5.609</td>
+<td style="text-align: right;">9.580</td>
+<td style="text-align: right;">1.708</td>
+<td style="text-align: right;">1.330</td>
+<td style="text-align: right;">15.328</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.099</td>
+<td style="text-align: right;">0.168</td>
+<td style="text-align: right;">1.691</td>
+<td style="text-align: right;">0.135</td>
+<td style="text-align: right;">0.051</td>
+<td style="text-align: right;">0.377</td>
+<td style="text-align: right;">2.198</td>
+<td style="text-align: right;">-22.238</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.373</td>
+<td style="text-align: right;">0.499</td>
+<td style="text-align: right;">1.337</td>
+<td style="text-align: right;">0.524</td>
+<td style="text-align: right;">0.676</td>
+<td style="text-align: right;">1.289</td>
+<td style="text-align: right;">1.184</td>
+<td style="text-align: right;">179.262</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.511</td>
+<td style="text-align: right;">0.613</td>
+<td style="text-align: right;">1.200</td>
+<td style="text-align: right;">0.721</td>
+<td style="text-align: right;">0.859</td>
+<td style="text-align: right;">1.192</td>
+<td style="text-align: right;">1.494</td>
+<td style="text-align: right;">-77.082</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>explain</td>
+<td style="text-align: right;">4.251</td>
+<td style="text-align: right;">6.753</td>
+<td style="text-align: right;">1.589</td>
+<td style="text-align: right;">6.530</td>
+<td style="text-align: right;">10.419</td>
+<td style="text-align: right;">1.596</td>
+<td style="text-align: right;">1.104</td>
+<td style="text-align: right;">46.293</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.018</td>
+<td style="text-align: right;">0.053</td>
+<td style="text-align: right;">2.883</td>
+<td style="text-align: right;">0.016</td>
+<td style="text-align: right;">0.077</td>
+<td style="text-align: right;">4.822</td>
+<td style="text-align: right;">2.478</td>
+<td style="text-align: right;">103.035</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>optimize</td>
+<td style="text-align: right;">3.975</td>
+<td style="text-align: right;">6.486</td>
+<td style="text-align: right;">1.632</td>
+<td style="text-align: right;">6.119</td>
+<td style="text-align: right;">10.024</td>
+<td style="text-align: right;">1.638</td>
+<td style="text-align: right;">1.107</td>
+<td style="text-align: right;">30.523</td>
+</tr>
+<tr>
+<td>dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">3.908</td>
+<td style="text-align: right;">6.566</td>
+<td style="text-align: right;">1.680</td>
+<td style="text-align: right;">5.962</td>
+<td style="text-align: right;">10.095</td>
+<td style="text-align: right;">1.693</td>
+<td style="text-align: right;">1.434</td>
+<td style="text-align: right;">-45.469</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.045</td>
+<td style="text-align: right;">0.062</td>
+<td style="text-align: right;">1.376</td>
+<td style="text-align: right;">0.027</td>
+<td style="text-align: right;">0.083</td>
+<td style="text-align: right;">3.092</td>
+<td style="text-align: right;">1.025</td>
+<td style="text-align: right;">119.598</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.184</td>
+<td style="text-align: right;">0.222</td>
+<td style="text-align: right;">1.205</td>
+<td style="text-align: right;">0.217</td>
+<td style="text-align: right;">0.284</td>
+<td style="text-align: right;">1.311</td>
+<td style="text-align: right;">1.190</td>
+<td style="text-align: right;">-9.902</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.270</td>
+<td style="text-align: right;">0.290</td>
+<td style="text-align: right;">1.075</td>
+<td style="text-align: right;">0.344</td>
+<td style="text-align: right;">0.307</td>
+<td style="text-align: right;">0.894</td>
+<td style="text-align: right;">1.307</td>
+<td style="text-align: right;">-75.902</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>explain</td>
+<td style="text-align: right;">2.612</td>
+<td style="text-align: right;">3.351</td>
+<td style="text-align: right;">1.283</td>
+<td style="text-align: right;">3.914</td>
+<td style="text-align: right;">4.987</td>
+<td style="text-align: right;">1.274</td>
+<td style="text-align: right;">1.107</td>
+<td style="text-align: right;">55.426</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.022</td>
+<td style="text-align: right;">0.044</td>
+<td style="text-align: right;">2.006</td>
+<td style="text-align: right;">0.018</td>
+<td style="text-align: right;">0.062</td>
+<td style="text-align: right;">3.527</td>
+<td style="text-align: right;">1.607</td>
+<td style="text-align: right;">94.391</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize</td>
+<td style="text-align: right;">2.516</td>
+<td style="text-align: right;">4.155</td>
+<td style="text-align: right;">1.652</td>
+<td style="text-align: right;">3.748</td>
+<td style="text-align: right;">6.267</td>
+<td style="text-align: right;">1.672</td>
+<td style="text-align: right;">1.110</td>
+<td style="text-align: right;">62.992</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">2.542</td>
+<td style="text-align: right;">3.261</td>
+<td style="text-align: right;">1.283</td>
+<td style="text-align: right;">3.805</td>
+<td style="text-align: right;">4.802</td>
+<td style="text-align: right;">1.262</td>
+<td style="text-align: right;">1.334</td>
+<td style="text-align: right;">-19.488</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.049</td>
+<td style="text-align: right;">0.049</td>
+<td style="text-align: right;">1.003</td>
+<td style="text-align: right;">0.031</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: right;">1.028</td>
+<td style="text-align: right;">1.025</td>
+<td style="text-align: right;">29.504</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.220</td>
+<td style="text-align: right;">0.213</td>
+<td style="text-align: right;">0.972</td>
+<td style="text-align: right;">0.248</td>
+<td style="text-align: right;">0.246</td>
+<td style="text-align: right;">0.992</td>
+<td style="text-align: right;">1.190</td>
+<td style="text-align: right;">-155.906</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.244</td>
+<td style="text-align: right;">0.297</td>
+<td style="text-align: right;">1.217</td>
+<td style="text-align: right;">0.261</td>
+<td style="text-align: right;">0.324</td>
+<td style="text-align: right;">1.239</td>
+<td style="text-align: right;">1.320</td>
+<td style="text-align: right;">111.352</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>explain</td>
+<td style="text-align: right;">2.671</td>
+<td style="text-align: right;">3.429</td>
+<td style="text-align: right;">1.284</td>
+<td style="text-align: right;">4.005</td>
+<td style="text-align: right;">5.153</td>
+<td style="text-align: right;">1.287</td>
+<td style="text-align: right;">1.104</td>
+<td style="text-align: right;">41.586</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.021</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">1.584</td>
+<td style="text-align: right;">0.016</td>
+<td style="text-align: right;">0.028</td>
+<td style="text-align: right;">1.723</td>
+<td style="text-align: right;">1.611</td>
+<td style="text-align: right;">300.082</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>optimize</td>
+<td style="text-align: right;">2.604</td>
+<td style="text-align: right;">3.398</td>
+<td style="text-align: right;">1.305</td>
+<td style="text-align: right;">3.845</td>
+<td style="text-align: right;">5.013</td>
+<td style="text-align: right;">1.304</td>
+<td style="text-align: right;">1.107</td>
+<td style="text-align: right;">-96.539</td>
+</tr>
+<tr>
+<td>medium-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">2.578</td>
+<td style="text-align: right;">3.373</td>
+<td style="text-align: right;">1.308</td>
+<td style="text-align: right;">3.780</td>
+<td style="text-align: right;">5.009</td>
+<td style="text-align: right;">1.325</td>
+<td style="text-align: right;">1.340</td>
+<td style="text-align: right;">44.602</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.126</td>
+<td style="text-align: right;">0.141</td>
+<td style="text-align: right;">1.124</td>
+<td style="text-align: right;">0.036</td>
+<td style="text-align: right;">0.042</td>
+<td style="text-align: right;">1.159</td>
+<td style="text-align: right;">1.070</td>
+<td style="text-align: right;">67.332</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.264</td>
+<td style="text-align: right;">0.318</td>
+<td style="text-align: right;">1.205</td>
+<td style="text-align: right;">0.348</td>
+<td style="text-align: right;">0.424</td>
+<td style="text-align: right;">1.218</td>
+<td style="text-align: right;">1.184</td>
+<td style="text-align: right;">53.332</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.342</td>
+<td style="text-align: right;">0.418</td>
+<td style="text-align: right;">1.221</td>
+<td style="text-align: right;">0.442</td>
+<td style="text-align: right;">0.543</td>
+<td style="text-align: right;">1.227</td>
+<td style="text-align: right;">1.256</td>
+<td style="text-align: right;">48.762</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>explain</td>
+<td style="text-align: right;">3.523</td>
+<td style="text-align: right;">4.316</td>
+<td style="text-align: right;">1.225</td>
+<td style="text-align: right;">5.384</td>
+<td style="text-align: right;">6.469</td>
+<td style="text-align: right;">1.201</td>
+<td style="text-align: right;">1.098</td>
+<td style="text-align: right;">78.789</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.038</td>
+<td style="text-align: right;">0.058</td>
+<td style="text-align: right;">1.550</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">0.093</td>
+<td style="text-align: right;">2.801</td>
+<td style="text-align: right;">1.604</td>
+<td style="text-align: right;">171.715</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize</td>
+<td style="text-align: right;">3.397</td>
+<td style="text-align: right;">4.387</td>
+<td style="text-align: right;">1.291</td>
+<td style="text-align: right;">5.121</td>
+<td style="text-align: right;">6.684</td>
+<td style="text-align: right;">1.305</td>
+<td style="text-align: right;">1.101</td>
+<td style="text-align: right;">153.035</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">3.289</td>
+<td style="text-align: right;">4.199</td>
+<td style="text-align: right;">1.277</td>
+<td style="text-align: right;">4.898</td>
+<td style="text-align: right;">6.265</td>
+<td style="text-align: right;">1.279</td>
+<td style="text-align: right;">1.247</td>
+<td style="text-align: right;">-35.645</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.128</td>
+<td style="text-align: right;">0.132</td>
+<td style="text-align: right;">1.031</td>
+<td style="text-align: right;">0.038</td>
+<td style="text-align: right;">0.039</td>
+<td style="text-align: right;">1.043</td>
+<td style="text-align: right;">1.070</td>
+<td style="text-align: right;">13.184</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.246</td>
+<td style="text-align: right;">0.332</td>
+<td style="text-align: right;">1.350</td>
+<td style="text-align: right;">0.288</td>
+<td style="text-align: right;">0.473</td>
+<td style="text-align: right;">1.639</td>
+<td style="text-align: right;">1.185</td>
+<td style="text-align: right;">-100.230</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.312</td>
+<td style="text-align: right;">0.425</td>
+<td style="text-align: right;">1.364</td>
+<td style="text-align: right;">0.350</td>
+<td style="text-align: right;">0.549</td>
+<td style="text-align: right;">1.568</td>
+<td style="text-align: right;">1.316</td>
+<td style="text-align: right;">41.191</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>explain</td>
+<td style="text-align: right;">4.256</td>
+<td style="text-align: right;">4.818</td>
+<td style="text-align: right;">1.132</td>
+<td style="text-align: right;">6.450</td>
+<td style="text-align: right;">7.278</td>
+<td style="text-align: right;">1.128</td>
+<td style="text-align: right;">1.098</td>
+<td style="text-align: right;">26.578</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.062</td>
+<td style="text-align: right;">0.057</td>
+<td style="text-align: right;">0.920</td>
+<td style="text-align: right;">0.114</td>
+<td style="text-align: right;">0.049</td>
+<td style="text-align: right;">0.425</td>
+<td style="text-align: right;">1.611</td>
+<td style="text-align: right;">-37.574</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>optimize</td>
+<td style="text-align: right;">3.527</td>
+<td style="text-align: right;">4.624</td>
+<td style="text-align: right;">1.311</td>
+<td style="text-align: right;">5.302</td>
+<td style="text-align: right;">6.936</td>
+<td style="text-align: right;">1.308</td>
+<td style="text-align: right;">1.101</td>
+<td style="text-align: right;">-25.977</td>
+</tr>
+<tr>
+<td>medium-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">3.587</td>
+<td style="text-align: right;">4.466</td>
+<td style="text-align: right;">1.245</td>
+<td style="text-align: right;">5.357</td>
+<td style="text-align: right;">6.624</td>
+<td style="text-align: right;">1.236</td>
+<td style="text-align: right;">1.316</td>
+<td style="text-align: right;">-62.195</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.046</td>
+<td style="text-align: right;">0.070</td>
+<td style="text-align: right;">1.516</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">1.015</td>
+<td style="text-align: right;">2.880</td>
+<td style="text-align: right;">88.215</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.194</td>
+<td style="text-align: right;">0.248</td>
+<td style="text-align: right;">1.280</td>
+<td style="text-align: right;">0.212</td>
+<td style="text-align: right;">0.293</td>
+<td style="text-align: right;">1.381</td>
+<td style="text-align: right;">1.190</td>
+<td style="text-align: right;">14.801</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.244</td>
+<td style="text-align: right;">0.375</td>
+<td style="text-align: right;">1.535</td>
+<td style="text-align: right;">0.260</td>
+<td style="text-align: right;">0.478</td>
+<td style="text-align: right;">1.837</td>
+<td style="text-align: right;">1.437</td>
+<td style="text-align: right;">-91.605</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>explain</td>
+<td style="text-align: right;">2.714</td>
+<td style="text-align: right;">3.821</td>
+<td style="text-align: right;">1.408</td>
+<td style="text-align: right;">4.020</td>
+<td style="text-align: right;">5.701</td>
+<td style="text-align: right;">1.418</td>
+<td style="text-align: right;">1.118</td>
+<td style="text-align: right;">45.301</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">0.035</td>
+<td style="text-align: right;">1.740</td>
+<td style="text-align: right;">0.016</td>
+<td style="text-align: right;">0.030</td>
+<td style="text-align: right;">1.908</td>
+<td style="text-align: right;">1.595</td>
+<td style="text-align: right;">260.949</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize</td>
+<td style="text-align: right;">2.585</td>
+<td style="text-align: right;">3.583</td>
+<td style="text-align: right;">1.386</td>
+<td style="text-align: right;">3.833</td>
+<td style="text-align: right;">5.382</td>
+<td style="text-align: right;">1.404</td>
+<td style="text-align: right;">1.121</td>
+<td style="text-align: right;">118.543</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">2.665</td>
+<td style="text-align: right;">3.646</td>
+<td style="text-align: right;">1.368</td>
+<td style="text-align: right;">3.973</td>
+<td style="text-align: right;">5.329</td>
+<td style="text-align: right;">1.341</td>
+<td style="text-align: right;">1.515</td>
+<td style="text-align: right;">4.828</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.058</td>
+<td style="text-align: right;">0.069</td>
+<td style="text-align: right;">1.194</td>
+<td style="text-align: right;">0.109</td>
+<td style="text-align: right;">0.040</td>
+<td style="text-align: right;">0.369</td>
+<td style="text-align: right;">2.881</td>
+<td style="text-align: right;">42.668</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.185</td>
+<td style="text-align: right;">0.239</td>
+<td style="text-align: right;">1.292</td>
+<td style="text-align: right;">0.215</td>
+<td style="text-align: right;">0.271</td>
+<td style="text-align: right;">1.261</td>
+<td style="text-align: right;">1.190</td>
+<td style="text-align: right;">217.367</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.285</td>
+<td style="text-align: right;">0.348</td>
+<td style="text-align: right;">1.219</td>
+<td style="text-align: right;">0.376</td>
+<td style="text-align: right;">0.439</td>
+<td style="text-align: right;">1.167</td>
+<td style="text-align: right;">1.350</td>
+<td style="text-align: right;">-27.578</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>explain</td>
+<td style="text-align: right;">2.787</td>
+<td style="text-align: right;">3.861</td>
+<td style="text-align: right;">1.386</td>
+<td style="text-align: right;">4.140</td>
+<td style="text-align: right;">5.746</td>
+<td style="text-align: right;">1.388</td>
+<td style="text-align: right;">1.105</td>
+<td style="text-align: right;">205.578</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.022</td>
+<td style="text-align: right;">0.044</td>
+<td style="text-align: right;">1.993</td>
+<td style="text-align: right;">0.017</td>
+<td style="text-align: right;">0.078</td>
+<td style="text-align: right;">4.531</td>
+<td style="text-align: right;">1.612</td>
+<td style="text-align: right;">77.715</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>optimize</td>
+<td style="text-align: right;">2.730</td>
+<td style="text-align: right;">3.769</td>
+<td style="text-align: right;">1.381</td>
+<td style="text-align: right;">4.049</td>
+<td style="text-align: right;">5.601</td>
+<td style="text-align: right;">1.383</td>
+<td style="text-align: right;">1.108</td>
+<td style="text-align: right;">2.016</td>
+</tr>
+<tr>
+<td>sparse-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">2.761</td>
+<td style="text-align: right;">3.740</td>
+<td style="text-align: right;">1.355</td>
+<td style="text-align: right;">4.108</td>
+<td style="text-align: right;">5.518</td>
+<td style="text-align: right;">1.343</td>
+<td style="text-align: right;">1.353</td>
+<td style="text-align: right;">56.121</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.042</td>
+<td style="text-align: right;">0.055</td>
+<td style="text-align: right;">1.322</td>
+<td style="text-align: right;">0.029</td>
+<td style="text-align: right;">0.038</td>
+<td style="text-align: right;">1.290</td>
+<td style="text-align: right;">1.658</td>
+<td style="text-align: right;">-0.840</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.176</td>
+<td style="text-align: right;">0.217</td>
+<td style="text-align: right;">1.235</td>
+<td style="text-align: right;">0.205</td>
+<td style="text-align: right;">0.275</td>
+<td style="text-align: right;">1.343</td>
+<td style="text-align: right;">1.188</td>
+<td style="text-align: right;">-1.297</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.249</td>
+<td style="text-align: right;">0.292</td>
+<td style="text-align: right;">1.173</td>
+<td style="text-align: right;">0.295</td>
+<td style="text-align: right;">0.326</td>
+<td style="text-align: right;">1.105</td>
+<td style="text-align: right;">1.368</td>
+<td style="text-align: right;">162.035</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>explain</td>
+<td style="text-align: right;">2.531</td>
+<td style="text-align: right;">3.281</td>
+<td style="text-align: right;">1.296</td>
+<td style="text-align: right;">3.753</td>
+<td style="text-align: right;">4.859</td>
+<td style="text-align: right;">1.295</td>
+<td style="text-align: right;">1.101</td>
+<td style="text-align: right;">-114.078</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.021</td>
+<td style="text-align: right;">0.041</td>
+<td style="text-align: right;">1.956</td>
+<td style="text-align: right;">0.017</td>
+<td style="text-align: right;">0.035</td>
+<td style="text-align: right;">2.098</td>
+<td style="text-align: right;">1.707</td>
+<td style="text-align: right;">138.023</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize</td>
+<td style="text-align: right;">2.426</td>
+<td style="text-align: right;">3.194</td>
+<td style="text-align: right;">1.317</td>
+<td style="text-align: right;">3.617</td>
+<td style="text-align: right;">4.703</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: right;">1.104</td>
+<td style="text-align: right;">19.430</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">2.462</td>
+<td style="text-align: right;">3.262</td>
+<td style="text-align: right;">1.325</td>
+<td style="text-align: right;">3.649</td>
+<td style="text-align: right;">4.751</td>
+<td style="text-align: right;">1.302</td>
+<td style="text-align: right;">1.344</td>
+<td style="text-align: right;">69.102</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.048</td>
+<td style="text-align: right;">0.049</td>
+<td style="text-align: right;">1.024</td>
+<td style="text-align: right;">0.035</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: right;">0.912</td>
+<td style="text-align: right;">1.658</td>
+<td style="text-align: right;">164.234</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.183</td>
+<td style="text-align: right;">0.226</td>
+<td style="text-align: right;">1.239</td>
+<td style="text-align: right;">0.203</td>
+<td style="text-align: right;">0.252</td>
+<td style="text-align: right;">1.237</td>
+<td style="text-align: right;">1.184</td>
+<td style="text-align: right;">220.539</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.231</td>
+<td style="text-align: right;">0.321</td>
+<td style="text-align: right;">1.386</td>
+<td style="text-align: right;">0.252</td>
+<td style="text-align: right;">0.384</td>
+<td style="text-align: right;">1.525</td>
+<td style="text-align: right;">1.350</td>
+<td style="text-align: right;">133.367</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>explain</td>
+<td style="text-align: right;">2.559</td>
+<td style="text-align: right;">3.402</td>
+<td style="text-align: right;">1.329</td>
+<td style="text-align: right;">3.774</td>
+<td style="text-align: right;">5.018</td>
+<td style="text-align: right;">1.330</td>
+<td style="text-align: right;">1.099</td>
+<td style="text-align: right;">139.094</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.027</td>
+<td style="text-align: right;">0.044</td>
+<td style="text-align: right;">1.646</td>
+<td style="text-align: right;">0.022</td>
+<td style="text-align: right;">0.053</td>
+<td style="text-align: right;">2.412</td>
+<td style="text-align: right;">1.696</td>
+<td style="text-align: right;">92.504</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>optimize</td>
+<td style="text-align: right;">2.499</td>
+<td style="text-align: right;">3.328</td>
+<td style="text-align: right;">1.332</td>
+<td style="text-align: right;">3.780</td>
+<td style="text-align: right;">4.992</td>
+<td style="text-align: right;">1.321</td>
+<td style="text-align: right;">1.102</td>
+<td style="text-align: right;">43.285</td>
+</tr>
+<tr>
+<td>sparse-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">2.468</td>
+<td style="text-align: right;">3.367</td>
+<td style="text-align: right;">1.364</td>
+<td style="text-align: right;">3.638</td>
+<td style="text-align: right;">4.970</td>
+<td style="text-align: right;">1.366</td>
+<td style="text-align: right;">1.325</td>
+<td style="text-align: right;">9.109</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.072</td>
+<td style="text-align: right;">0.090</td>
+<td style="text-align: right;">1.244</td>
+<td style="text-align: right;">0.038</td>
+<td style="text-align: right;">0.043</td>
+<td style="text-align: right;">1.126</td>
+<td style="text-align: right;">1.347</td>
+<td style="text-align: right;">45.426</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.373</td>
+<td style="text-align: right;">0.473</td>
+<td style="text-align: right;">1.271</td>
+<td style="text-align: right;">0.523</td>
+<td style="text-align: right;">0.649</td>
+<td style="text-align: right;">1.241</td>
+<td style="text-align: right;">1.184</td>
+<td style="text-align: right;">192.969</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.511</td>
+<td style="text-align: right;">0.694</td>
+<td style="text-align: right;">1.357</td>
+<td style="text-align: right;">0.678</td>
+<td style="text-align: right;">0.978</td>
+<td style="text-align: right;">1.442</td>
+<td style="text-align: right;">1.376</td>
+<td style="text-align: right;">120.551</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>explain</td>
+<td style="text-align: right;">5.337</td>
+<td style="text-align: right;">7.005</td>
+<td style="text-align: right;">1.313</td>
+<td style="text-align: right;">8.253</td>
+<td style="text-align: right;">10.802</td>
+<td style="text-align: right;">1.309</td>
+<td style="text-align: right;">1.494</td>
+<td style="text-align: right;">-7.766</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.016</td>
+<td style="text-align: right;">0.022</td>
+<td style="text-align: right;">1.324</td>
+<td style="text-align: right;">0.017</td>
+<td style="text-align: right;">0.024</td>
+<td style="text-align: right;">1.354</td>
+<td style="text-align: right;">1.679</td>
+<td style="text-align: right;">155.023</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize</td>
+<td style="text-align: right;">5.034</td>
+<td style="text-align: right;">6.826</td>
+<td style="text-align: right;">1.356</td>
+<td style="text-align: right;">7.763</td>
+<td style="text-align: right;">10.477</td>
+<td style="text-align: right;">1.350</td>
+<td style="text-align: right;">1.515</td>
+<td style="text-align: right;">47.664</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">5.101</td>
+<td style="text-align: right;">6.848</td>
+<td style="text-align: right;">1.342</td>
+<td style="text-align: right;">7.862</td>
+<td style="text-align: right;">10.445</td>
+<td style="text-align: right;">1.329</td>
+<td style="text-align: right;">1.315</td>
+<td style="text-align: right;">48.195</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.092</td>
+<td style="text-align: right;">0.112</td>
+<td style="text-align: right;">1.229</td>
+<td style="text-align: right;">0.052</td>
+<td style="text-align: right;">0.056</td>
+<td style="text-align: right;">1.062</td>
+<td style="text-align: right;">1.348</td>
+<td style="text-align: right;">75.312</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.414</td>
+<td style="text-align: right;">0.494</td>
+<td style="text-align: right;">1.194</td>
+<td style="text-align: right;">0.568</td>
+<td style="text-align: right;">0.687</td>
+<td style="text-align: right;">1.209</td>
+<td style="text-align: right;">1.185</td>
+<td style="text-align: right;">-8.938</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.470</td>
+<td style="text-align: right;">0.669</td>
+<td style="text-align: right;">1.424</td>
+<td style="text-align: right;">0.657</td>
+<td style="text-align: right;">0.985</td>
+<td style="text-align: right;">1.498</td>
+<td style="text-align: right;">1.504</td>
+<td style="text-align: right;">42.480</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>explain</td>
+<td style="text-align: right;">5.958</td>
+<td style="text-align: right;">8.236</td>
+<td style="text-align: right;">1.382</td>
+<td style="text-align: right;">9.062</td>
+<td style="text-align: right;">12.603</td>
+<td style="text-align: right;">1.391</td>
+<td style="text-align: right;">1.105</td>
+<td style="text-align: right;">25.805</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.018</td>
+<td style="text-align: right;">0.027</td>
+<td style="text-align: right;">1.557</td>
+<td style="text-align: right;">0.016</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: right;">1.980</td>
+<td style="text-align: right;">1.673</td>
+<td style="text-align: right;">236.992</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>optimize</td>
+<td style="text-align: right;">5.502</td>
+<td style="text-align: right;">7.564</td>
+<td style="text-align: right;">1.375</td>
+<td style="text-align: right;">8.273</td>
+<td style="text-align: right;">11.538</td>
+<td style="text-align: right;">1.395</td>
+<td style="text-align: right;">1.108</td>
+<td style="text-align: right;">17.453</td>
+</tr>
+<tr>
+<td>very-dense-certification-1</td>
+<td style="text-align: right;">28</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">5.396</td>
+<td style="text-align: right;">7.612</td>
+<td style="text-align: right;">1.411</td>
+<td style="text-align: right;">8.123</td>
+<td style="text-align: right;">11.559</td>
+<td style="text-align: right;">1.423</td>
+<td style="text-align: right;">1.431</td>
+<td style="text-align: right;">151.801</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.158</td>
+<td style="text-align: right;">0.183</td>
+<td style="text-align: right;">1.156</td>
+<td style="text-align: right;">0.039</td>
+<td style="text-align: right;">0.045</td>
+<td style="text-align: right;">1.150</td>
+<td style="text-align: right;">1.152</td>
+<td style="text-align: right;">29.254</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.295</td>
+<td style="text-align: right;">0.351</td>
+<td style="text-align: right;">1.189</td>
+<td style="text-align: right;">0.403</td>
+<td style="text-align: right;">0.502</td>
+<td style="text-align: right;">1.246</td>
+<td style="text-align: right;">1.185</td>
+<td style="text-align: right;">102.875</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.430</td>
+<td style="text-align: right;">0.508</td>
+<td style="text-align: right;">1.184</td>
+<td style="text-align: right;">0.579</td>
+<td style="text-align: right;">0.695</td>
+<td style="text-align: right;">1.200</td>
+<td style="text-align: right;">1.264</td>
+<td style="text-align: right;">63.480</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>explain</td>
+<td style="text-align: right;">6.188</td>
+<td style="text-align: right;">8.435</td>
+<td style="text-align: right;">1.363</td>
+<td style="text-align: right;">9.545</td>
+<td style="text-align: right;">13.119</td>
+<td style="text-align: right;">1.374</td>
+<td style="text-align: right;">1.098</td>
+<td style="text-align: right;">59.094</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>interference</td>
+<td style="text-align: right;">0.036</td>
+<td style="text-align: right;">0.059</td>
+<td style="text-align: right;">1.669</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">0.092</td>
+<td style="text-align: right;">2.774</td>
+<td style="text-align: right;">1.511</td>
+<td style="text-align: right;">-132.910</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize</td>
+<td style="text-align: right;">6.042</td>
+<td style="text-align: right;">7.562</td>
+<td style="text-align: right;">1.251</td>
+<td style="text-align: right;">9.382</td>
+<td style="text-align: right;">11.684</td>
+<td style="text-align: right;">1.245</td>
+<td style="text-align: right;">1.101</td>
+<td style="text-align: right;">55.457</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">2.6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">6.158</td>
+<td style="text-align: right;">7.689</td>
+<td style="text-align: right;">1.249</td>
+<td style="text-align: right;">9.473</td>
+<td style="text-align: right;">11.840</td>
+<td style="text-align: right;">1.250</td>
+<td style="text-align: right;">1.316</td>
+<td style="text-align: right;">-54.254</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>building-entry</td>
+<td style="text-align: right;">0.165</td>
+<td style="text-align: right;">0.212</td>
+<td style="text-align: right;">1.281</td>
+<td style="text-align: right;">0.041</td>
+<td style="text-align: right;">0.188</td>
+<td style="text-align: right;">4.576</td>
+<td style="text-align: right;">1.152</td>
+<td style="text-align: right;">145.664</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>evaluate</td>
+<td style="text-align: right;">0.359</td>
+<td style="text-align: right;">0.406</td>
+<td style="text-align: right;">1.128</td>
+<td style="text-align: right;">0.504</td>
+<td style="text-align: right;">0.551</td>
+<td style="text-align: right;">1.092</td>
+<td style="text-align: right;">1.185</td>
+<td style="text-align: right;">53.578</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">0.444</td>
+<td style="text-align: right;">0.545</td>
+<td style="text-align: right;">1.227</td>
+<td style="text-align: right;">0.611</td>
+<td style="text-align: right;">0.788</td>
+<td style="text-align: right;">1.290</td>
+<td style="text-align: right;">1.335</td>
+<td style="text-align: right;">31.457</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>explain</td>
+<td style="text-align: right;">6.677</td>
+<td style="text-align: right;">8.741</td>
+<td style="text-align: right;">1.309</td>
+<td style="text-align: right;">10.210</td>
+<td style="text-align: right;">13.344</td>
+<td style="text-align: right;">1.307</td>
+<td style="text-align: right;">1.096</td>
+<td style="text-align: right;">112.500</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>interference</td>
+<td style="text-align: right;">0.051</td>
+<td style="text-align: right;">0.066</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: right;">0.071</td>
+<td style="text-align: right;">0.063</td>
+<td style="text-align: right;">0.877</td>
+<td style="text-align: right;">1.521</td>
+<td style="text-align: right;">40.922</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>optimize</td>
+<td style="text-align: right;">6.496</td>
+<td style="text-align: right;">8.427</td>
+<td style="text-align: right;">1.297</td>
+<td style="text-align: right;">9.932</td>
+<td style="text-align: right;">12.943</td>
+<td style="text-align: right;">1.303</td>
+<td style="text-align: right;">1.099</td>
+<td style="text-align: right;">149.453</td>
+</tr>
+<tr>
+<td>very-dense-certification-2</td>
+<td style="text-align: right;">28</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">6.534</td>
+<td style="text-align: right;">8.271</td>
+<td style="text-align: right;">1.266</td>
+<td style="text-align: right;">9.993</td>
+<td style="text-align: right;">12.576</td>
+<td style="text-align: right;">1.259</td>
+<td style="text-align: right;">1.395</td>
+<td style="text-align: right;">-8.715</td>
+</tr>
+</tbody>
+</table>
+<h3 id="operational-results">Operational results</h3>
+<table>
+<thead>
+<tr>
+<th>Operation/scenario</th>
+<th style="text-align: right;">Groups</th>
+<th style="text-align: right;">Worst individual s</th>
+<th style="text-align: right;">Largest single bytes</th>
+<th style="text-align: right;">Largest workflow bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>evaluate</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">0.689</td>
+<td style="text-align: right;">34457</td>
+<td style="text-align: right;">34457</td>
+</tr>
+<tr>
+<td>optimize</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">11.231</td>
+<td style="text-align: right;">108308</td>
+<td style="text-align: right;">108308</td>
+</tr>
+<tr>
+<td>interference</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">0.100</td>
+<td style="text-align: right;">17051014</td>
+<td style="text-align: right;">17051014</td>
+</tr>
+<tr>
+<td>explain</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">10.149</td>
+<td style="text-align: right;">108308</td>
+<td style="text-align: right;">111332</td>
+</tr>
+<tr>
+<td>building-entry</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">0.083</td>
+<td style="text-align: right;">3691321</td>
+<td style="text-align: right;">3691321</td>
+</tr>
+<tr>
+<td>evaluate-maps</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0.483</td>
+<td style="text-align: right;">7992018</td>
+<td style="text-align: right;">58902269</td>
+</tr>
+<tr>
+<td>optimize-maps</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">8.096</td>
+<td style="text-align: right;">8264877</td>
+<td style="text-align: right;">60251142</td>
+</tr>
+<tr>
+<td>cycle-boundary</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.447</td>
+<td style="text-align: right;">12226823</td>
+<td style="text-align: right;">121173745</td>
+</tr>
+<tr>
+<td>two-optimizers</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10.973</td>
+<td style="text-align: right;">108267</td>
+<td style="text-align: right;">216534</td>
+</tr>
+<tr>
+<td>optimize-evaluate</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">6.827</td>
+<td style="text-align: right;">108267</td>
+<td style="text-align: right;">142698</td>
+</tr>
+<tr>
+<td>two-evaluates</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.694</td>
+<td style="text-align: right;">34431</td>
+<td style="text-align: right;">68862</td>
+</tr>
+<tr>
+<td>async-optimize</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">6.717</td>
+<td style="text-align: right;">108267</td>
+<td style="text-align: right;">108267</td>
+</tr>
+<tr>
+<td>async-evaluate</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.586</td>
+<td style="text-align: right;">34431</td>
+<td style="text-align: right;">34431</td>
+</tr>
+<tr>
+<td>sustained-optimize</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">11.418</td>
+<td style="text-align: right;">108267</td>
+<td style="text-align: right;">529520</td>
+</tr>
+<tr>
+<td>sustained-evaluate</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">1.014</td>
+<td style="text-align: right;">34431</td>
+<td style="text-align: right;">378741</td>
+</tr>
+<tr>
+<td>cancel</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.105</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Worst required eight-Cell request: 11.418s; minimum deadline headroom
+48.582s. Peak sampled RSS 1236.199MiB; kernel cgroup peak 1.290GiB;
+hard-limit headroom 67.76%. OOM events:
+<code>{'oom': 0, 'oom_kill': 0, 'max': 0}</code>. The conservative peak
+includes startup, page cache and the extra pre-RF Auto CLI. Stock GC
+event heap evidence is retained in JSON; no continuous HeapAlloc maximum
+is inferred.</p>
+<p>True client/native concurrency overlap: True. Normal/sustained
+background evidence includes uncached native intervals containing every
+interactive launch, first30s active-worker samples, final-tail overlap
+and drain barriers. Cancellation cases: 12/12; maximum handler-release
+observation 0.007s. Same-client follow-up remaining18 proves
+cancellation attempt charging and slot reuse; other-client probes also
+succeed.</p>
+<p>Scientific determinism: True, 435 exact endpoint/request groups; only
+Building Entry diagnostics.elapsed_ms excluded. Six-Cell preservation:
+True; 352 measured responses match frozen W1 evidence.</p>
+<p>Largest contention inflation:
+<code>{"batch":"A-8C-mixed-2","index":5,"fixture":"dense-certification-1-2.6-8C-W1","operation":"sustained-evaluate","endpoint":"/api/evaluate-network","seconds":1.0140559673309326,"isolated_median_seconds":0.4183371067047119,"inflation_ratio":2.4240163042641965}</code>.</p>
+<p>Search counts use the existing opt-in request-local collector in a
+separate, non-qualification test executable. No collector is
+linked/enabled in primary shipping HTTP measurements. Its complete
+serialized scientific responses must match corresponding real-HTTP
+results. <a
+href="../scripts/eight-cell-operational-successor/search-accounting.json">Search
+accounting</a> reports proposals, cache hits/misses, RF contribution
+calculations and spatial counters. Legacy proposals are434 for six
+and578 for eight; observed cache/geometry counts are recorded per exact
+fixture.</p>
+<h3 id="required-failures--invalid-observations">Required failures /
+invalid observations</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;capacity_failures&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;methodology_violations&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;interruptions&quot;</span><span class="fu">:</span> <span class="ot">[]</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h2 id="request-budget-and-product-fit">Request budget and product
+fit</h2>
+<p>The policy remains20 protected attempts per ClientIP in an
+anchored60s fixed window. Every case starts with a fresh real source-IP
+key. Slot probes are separate declared evidence and are excluded from
+logical workflow request counts. Header sequences and real admission
+denials are retained; successful initial workflows contain no duplicates
+or retries.</p>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th style="text-align: right;">6C attempts</th>
+<th style="text-align: right;">8C attempts</th>
+<th style="text-align: right;">6C remaining</th>
+<th style="text-align: right;">8C remaining</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evaluate+maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr>
+<td>Optimize+maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr>
+<td>Full evaluation cycle</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>Evaluate/maps then Optimize/maps</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Domain/fixture</th>
+<th style="text-align: right;">Cells</th>
+<th>Scenario</th>
+<th style="text-align: right;">Attempts</th>
+<th style="text-align: right;">First429</th>
+<th style="text-align: right;">Remaining after workflow</th>
+<th style="text-align: right;">Actual first→final s</th>
+<th style="text-align: right;">Window remaining estimate s</th>
+<th>Mechanical exact pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>cycle-boundary</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.019</td>
+<td style="text-align: right;">58.981</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-A</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.507</td>
+<td style="text-align: right;">59.493</td>
+<td>None</td>
+</tr>
+<tr>
+<td>medium-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.270</td>
+<td style="text-align: right;">59.730</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.285</td>
+<td style="text-align: right;">59.715</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-2-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">6.534</td>
+<td style="text-align: right;">53.466</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-2-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.510</td>
+<td style="text-align: right;">59.490</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-A</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.274</td>
+<td style="text-align: right;">59.726</td>
+<td>None</td>
+</tr>
+<tr>
+<td>medium-certification-2-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">3.586</td>
+<td style="text-align: right;">56.414</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-B</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5.499</td>
+<td style="text-align: right;">54.501</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>shared-ip</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6.659</td>
+<td style="text-align: right;">53.341</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-2-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">2.462</td>
+<td style="text-align: right;">57.538</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-B</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2.887</td>
+<td style="text-align: right;">57.113</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-D</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">2.803</td>
+<td style="text-align: right;">57.197</td>
+<td>None</td>
+</tr>
+<tr>
+<td>very-dense-certification-2-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.429</td>
+<td style="text-align: right;">59.571</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-2-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">6.157</td>
+<td style="text-align: right;">53.843</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">5.101</td>
+<td style="text-align: right;">54.899</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.511</td>
+<td style="text-align: right;">59.489</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>shared-ip</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6.091</td>
+<td style="text-align: right;">53.909</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-2-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.479</td>
+<td style="text-align: right;">59.521</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-A</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.309</td>
+<td style="text-align: right;">59.691</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-D</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">2.785</td>
+<td style="text-align: right;">57.215</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-D</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">4.674</td>
+<td style="text-align: right;">55.326</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-C</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3.449</td>
+<td style="text-align: right;">56.551</td>
+<td>None</td>
+</tr>
+<tr>
+<td>very-dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.470</td>
+<td style="text-align: right;">59.530</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-2-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.444</td>
+<td style="text-align: right;">59.556</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.244</td>
+<td style="text-align: right;">59.756</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-2-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">3.663</td>
+<td style="text-align: right;">56.337</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.244</td>
+<td style="text-align: right;">59.756</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.519</td>
+<td style="text-align: right;">59.481</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-2-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">2.468</td>
+<td style="text-align: right;">57.532</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.483</td>
+<td style="text-align: right;">59.517</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">2.665</td>
+<td style="text-align: right;">57.335</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-B</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5.298</td>
+<td style="text-align: right;">54.702</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-D</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">5.154</td>
+<td style="text-align: right;">54.846</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>cycle-boundary</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.572</td>
+<td style="text-align: right;">59.428</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">5.396</td>
+<td style="text-align: right;">54.604</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-2-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">3.908</td>
+<td style="text-align: right;">56.092</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">2.542</td>
+<td style="text-align: right;">57.458</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>shared-ip</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3.597</td>
+<td style="text-align: right;">56.403</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-2-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.242</td>
+<td style="text-align: right;">59.758</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">2.578</td>
+<td style="text-align: right;">57.422</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">2.760</td>
+<td style="text-align: right;">57.240</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-C</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6.307</td>
+<td style="text-align: right;">53.693</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>two-workflows</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5.398</td>
+<td style="text-align: right;">54.602</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>two-workflows</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5.035</td>
+<td style="text-align: right;">54.965</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>two-workflows</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2.847</td>
+<td style="text-align: right;">57.153</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-2-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.342</td>
+<td style="text-align: right;">59.658</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-2-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.311</td>
+<td style="text-align: right;">59.689</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>two-workflows</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2.957</td>
+<td style="text-align: right;">57.043</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-2-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">3.289</td>
+<td style="text-align: right;">56.711</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>cycle-boundary</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.546</td>
+<td style="text-align: right;">59.454</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-C</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3.294</td>
+<td style="text-align: right;">56.706</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-2-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0.231</td>
+<td style="text-align: right;">59.769</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-C</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5.856</td>
+<td style="text-align: right;">54.144</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">4.459</td>
+<td style="text-align: right;">55.541</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-A</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.556</td>
+<td style="text-align: right;">59.444</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>journey-B</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2.990</td>
+<td style="text-align: right;">57.010</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">4.960</td>
+<td style="text-align: right;">55.040</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>shared-ip</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3.496</td>
+<td style="text-align: right;">56.504</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-6C-W1</td>
+<td style="text-align: right;">6</td>
+<td>cycle-boundary</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.055</td>
+<td style="text-align: right;">58.945</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-C</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6.740</td>
+<td style="text-align: right;">53.260</td>
+<td>None</td>
+</tr>
+<tr>
+<td>medium-certification-2-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.418</td>
+<td style="text-align: right;">59.582</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-2-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">6.560</td>
+<td style="text-align: right;">53.440</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-2-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.545</td>
+<td style="text-align: right;">59.455</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.580</td>
+<td style="text-align: right;">59.420</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-D</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">3.698</td>
+<td style="text-align: right;">56.302</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">5.712</td>
+<td style="text-align: right;">54.288</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.297</td>
+<td style="text-align: right;">59.703</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>cycle-boundary</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.239</td>
+<td style="text-align: right;">58.761</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>two-workflows</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6.242</td>
+<td style="text-align: right;">53.758</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-A</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.381</td>
+<td style="text-align: right;">59.619</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>shared-ip</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8.034</td>
+<td style="text-align: right;">51.966</td>
+<td>None</td>
+</tr>
+<tr>
+<td>medium-certification-2-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.425</td>
+<td style="text-align: right;">59.575</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.290</td>
+<td style="text-align: right;">59.710</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-A</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.591</td>
+<td style="text-align: right;">59.409</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.348</td>
+<td style="text-align: right;">59.652</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-2-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">3.262</td>
+<td style="text-align: right;">56.738</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.369</td>
+<td style="text-align: right;">59.631</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-D</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">6.735</td>
+<td style="text-align: right;">53.265</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-C</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.367</td>
+<td style="text-align: right;">55.633</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>cycle-boundary</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.717</td>
+<td style="text-align: right;">59.283</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-2-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">4.466</td>
+<td style="text-align: right;">55.534</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-B</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6.228</td>
+<td style="text-align: right;">53.772</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>two-workflows</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7.169</td>
+<td style="text-align: right;">52.831</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-2-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">7.688</td>
+<td style="text-align: right;">52.312</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>shared-ip</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7.066</td>
+<td style="text-align: right;">52.934</td>
+<td>None</td>
+</tr>
+<tr>
+<td>medium-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">3.373</td>
+<td style="text-align: right;">56.627</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.640</td>
+<td style="text-align: right;">59.360</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-2-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">8.270</td>
+<td style="text-align: right;">51.730</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-2-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">4.199</td>
+<td style="text-align: right;">55.801</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>shared-ip</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.451</td>
+<td style="text-align: right;">55.549</td>
+<td>None</td>
+</tr>
+<tr>
+<td>very-dense-certification-2-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.508</td>
+<td style="text-align: right;">59.492</td>
+<td>True</td>
+</tr>
+<tr>
+<td>medium-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">3.261</td>
+<td style="text-align: right;">56.739</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-C</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.221</td>
+<td style="text-align: right;">55.779</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">6.565</td>
+<td style="text-align: right;">53.435</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-A</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.357</td>
+<td style="text-align: right;">59.643</td>
+<td>None</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-A</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.605</td>
+<td style="text-align: right;">59.395</td>
+<td>None</td>
+</tr>
+<tr>
+<td>very-dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">7.612</td>
+<td style="text-align: right;">52.388</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-2-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">3.367</td>
+<td style="text-align: right;">56.633</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-2-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.612</td>
+<td style="text-align: right;">59.388</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-D</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">3.891</td>
+<td style="text-align: right;">56.109</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-B</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4.178</td>
+<td style="text-align: right;">55.822</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>two-workflows</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4.091</td>
+<td style="text-align: right;">55.909</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>shared-ip</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.625</td>
+<td style="text-align: right;">55.375</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-B</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3.968</td>
+<td style="text-align: right;">56.032</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">3.646</td>
+<td style="text-align: right;">56.354</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">3.739</td>
+<td style="text-align: right;">56.261</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>two-workflows</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3.956</td>
+<td style="text-align: right;">56.044</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-B</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7.069</td>
+<td style="text-align: right;">52.931</td>
+<td>None</td>
+</tr>
+<tr>
+<td>sparse-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>cycle-boundary</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.745</td>
+<td style="text-align: right;">59.255</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">6.848</td>
+<td style="text-align: right;">53.152</td>
+<td>True</td>
+</tr>
+<tr>
+<td>very-dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.669</td>
+<td style="text-align: right;">59.331</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>cycle-boundary</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.227</td>
+<td style="text-align: right;">58.773</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-D</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">5.870</td>
+<td style="text-align: right;">54.130</td>
+<td>None</td>
+</tr>
+<tr>
+<td>very-dense-certification-1-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.693</td>
+<td style="text-align: right;">59.307</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-2-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.320</td>
+<td style="text-align: right;">59.680</td>
+<td>True</td>
+</tr>
+<tr>
+<td>sparse-certification-2-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.292</td>
+<td style="text-align: right;">59.708</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-2-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>evaluate-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.614</td>
+<td style="text-align: right;">59.386</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-2-2.6-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>optimize-maps</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">none</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">6.170</td>
+<td style="text-align: right;">53.830</td>
+<td>True</td>
+</tr>
+<tr>
+<td>dense-certification-1-28-8C-W1</td>
+<td style="text-align: right;">8</td>
+<td>journey-C</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7.611</td>
+<td style="text-align: right;">52.389</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p>For cycle-boundary scenarios, workflow attempts are15/19; the total
+includes the two immediate boundary probes. At eight, attempt20 must
+succeed and21 must return429 with Retry-After and remaining0. Denied
+requests cannot enter RF handlers: the unchanged middleware aborts
+before c.Next/global-slot acquisition; process CPU counters and native
+completion/denial logs corroborate the short rejection path.
+Deterministic succeeding probes confirm no scientific-state
+corruption.</p>
+<p>Shared-IP/tab behavior uses separate real TCP connections carrying
+the same ClientIP, with a distinct-IP probe. The limiter has no tab
+identity: two nine-call workflows consume18 from the shared bucket,
+subsequent19/20 succeed and21 denies; the distinct IP retains its
+independent19 remaining after one request.</p>
+<p>Rapid journeys A/B/D are Evaluate/maps→Interference,
+Evaluate/maps→Optimize/maps, and Optimize/maps→retained explanation. D
+reuses the existing Optimize result and adds only one explanation
+request. C measures the full cycle→Optimize and prospectively declared
+additional Interference/Evaluate follow-ups to locate denial. The full
+cycle→Optimize costs20 at eight versus16 at six: the next Interference
+is attempt21 at eight and17 at six. The absolute deny boundary stays21;
+eight reaches it earlier in the logical journey.</p>
+<p>First-request and final-response UTC intervals are measured. The
+unchanged API exposes integer relative RateLimit-Reset/Retry-After, not
+an exact internal server-admission epoch. Bucket-expiry and
+remaining-window estimates use the client first-request start and are
+explicitly labelled; integer header metadata is preserved independently.
+No server timestamp precision is invented.</p>
+<p>Budget mechanical verdict: <strong>PASS</strong>. Product fit:
+<strong>PRODUCT BLOCKER</strong>. One residual attempt after the19-call
+cycle and empirically denied immediate follow-ups are evaluated
+separately from the arithmetic fact that19 is below20.</p>
+<h2 id="frontend-persistence-and-future-migration">Frontend, persistence
+and future migration</h2>
+<p>Production App callbacks issue one network request followed by the
+sequential runNetworkSimulationQueue, with one single-Cell map per
+selected Cell. Optimize maps use returned per-Cell azimuths.
+User-triggered callbacks, rather than mount effects, start RF work;
+apiClient adds no automatic RF retry loop. <a
+href="../scripts/eight-cell-operational-successor/frontend-smoke.json">Disposable
+UI smoke</a> replays actual saved HTTP bodies and checks exact frontend
+payloads and9/9 request counts, marker numbering1–8, selected list,
+Setup, Results, Solutions, Review, scrolling and reports. Its temporary
+selection clamp is isolated from production. Literal “two to six”
+Interference copy is a future review item.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;records&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cardinality&quot;</span><span class="fu">:</span> <span class="dv">6</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;domain&quot;</span><span class="fu">:</span> <span class="st">&quot;dense-certification-1&quot;</span><span class="fu">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="fl">2.6</span><span class="fu">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;export_bytes&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;schema_version&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;estimated_encoded_file_bytes&quot;</span><span class="fu">:</span> <span class="dv">6402381</span><span class="fu">,</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;encoded_nodes&quot;</span><span class="fu">:</span> <span class="dv">198267</span><span class="fu">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;expanded_project_nodes&quot;</span><span class="fu">:</span> <span class="dv">1429136</span><span class="fu">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;expanded_project_bytes&quot;</span><span class="fu">:</span> <span class="dv">37950825</span><span class="fu">,</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;packed_feature_collections&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;expansion_error&quot;</span><span class="fu">:</span> <span class="st">&quot;Project file ray expansion exceeds the resource budget&quot;</span><span class="fu">,</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;export_variants&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;composition&quot;</span><span class="fu">:</span> <span class="st">&quot;full-network-maps-interference&quot;</span><span class="fu">,</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;estimated_encoded_file_bytes&quot;</span><span class="fu">:</span> <span class="dv">6402381</span><span class="fu">,</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;encoded_nodes&quot;</span><span class="fu">:</span> <span class="dv">198267</span><span class="fu">,</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_nodes&quot;</span><span class="fu">:</span> <span class="dv">1429136</span><span class="fu">,</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_bytes&quot;</span><span class="fu">:</span> <span class="dv">37950825</span><span class="fu">,</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;exported_bytes&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;export_import_pass&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="st">&quot;Project file ray expansion exceeds the resource budget&quot;</span><span class="fu">,</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;scientific_network_result_preserved&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;composition&quot;</span><span class="fu">:</span> <span class="st">&quot;network-maps&quot;</span><span class="fu">,</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;estimated_encoded_file_bytes&quot;</span><span class="fu">:</span> <span class="dv">5893042</span><span class="fu">,</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;encoded_nodes&quot;</span><span class="fu">:</span> <span class="dv">172328</span><span class="fu">,</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_nodes&quot;</span><span class="fu">:</span> <span class="dv">1285253</span><span class="fu">,</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_bytes&quot;</span><span class="fu">:</span> <span class="dv">33412508</span><span class="fu">,</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;exported_bytes&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;export_import_pass&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="st">&quot;Project file ray expansion exceeds the resource budget&quot;</span><span class="fu">,</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;scientific_network_result_preserved&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;composition&quot;</span><span class="fu">:</span> <span class="st">&quot;network-result-only&quot;</span><span class="fu">,</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;estimated_encoded_file_bytes&quot;</span><span class="fu">:</span> <span class="dv">108008</span><span class="fu">,</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;encoded_nodes&quot;</span><span class="fu">:</span> <span class="dv">4647</span><span class="fu">,</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_nodes&quot;</span><span class="fu">:</span> <span class="dv">4645</span><span class="fu">,</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_bytes&quot;</span><span class="fu">:</span> <span class="dv">107978</span><span class="fu">,</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;exported_bytes&quot;</span><span class="fu">:</span> <span class="dv">108008</span><span class="fu">,</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;export_import_pass&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;scientific_network_result_preserved&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;result_import_error&quot;</span><span class="fu">:</span> <span class="st">&quot;Project file ray expansion exceeds the resource budget&quot;</span><span class="fu">,</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;measured_full_result_import_pass&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;all_ids_in_report&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;scenario_version_order_preserved&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;report_html_bytes&quot;</span><span class="fu">:</span> <span class="dv">140825</span><span class="fu">,</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;report_markdown_bytes&quot;</span><span class="fu">:</span> <span class="dv">131792</span><span class="fu">,</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;combined_simulation_bytes&quot;</span><span class="fu">:</span> <span class="dv">43943325</span><span class="fu">,</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;optimization_bytes&quot;</span><span class="fu">:</span> <span class="dv">98176</span><span class="fu">,</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;production_restore_normalization_count&quot;</span><span class="fu">:</span> <span class="dv">6</span><span class="fu">,</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;interpretation&quot;</span><span class="fu">:</span> <span class="st">&quot;Measured full, maps-only and network-result-only variants; independent v3 guards can reject large W1 ray artifacts even at six. Scientific network-result-only round trips do not certify full eight-Cell ray persistence. Shipping UI selection still clamps to six.&quot;</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cardinality&quot;</span><span class="fu">:</span> <span class="dv">8</span><span class="fu">,</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;domain&quot;</span><span class="fu">:</span> <span class="st">&quot;dense-certification-1&quot;</span><span class="fu">,</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;frequency_ghz&quot;</span><span class="fu">:</span> <span class="fl">2.6</span><span class="fu">,</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;export_bytes&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;schema_version&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;estimated_encoded_file_bytes&quot;</span><span class="fu">:</span> <span class="dv">8298988</span><span class="fu">,</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;encoded_nodes&quot;</span><span class="fu">:</span> <span class="dv">255501</span><span class="fu">,</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;expanded_project_nodes&quot;</span><span class="fu">:</span> <span class="dv">1930014</span><span class="fu">,</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;expanded_project_bytes&quot;</span><span class="fu">:</span> <span class="dv">51689353</span><span class="fu">,</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;packed_feature_collections&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;expansion_error&quot;</span><span class="fu">:</span> <span class="st">&quot;Project file ray expansion exceeds the resource budget&quot;</span><span class="fu">,</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;export_variants&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;composition&quot;</span><span class="fu">:</span> <span class="st">&quot;full-network-maps-interference&quot;</span><span class="fu">,</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;estimated_encoded_file_bytes&quot;</span><span class="fu">:</span> <span class="dv">8298988</span><span class="fu">,</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;encoded_nodes&quot;</span><span class="fu">:</span> <span class="dv">255501</span><span class="fu">,</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_nodes&quot;</span><span class="fu">:</span> <span class="dv">1930014</span><span class="fu">,</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_bytes&quot;</span><span class="fu">:</span> <span class="dv">51689353</span><span class="fu">,</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;exported_bytes&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;export_import_pass&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="st">&quot;Project file contains too many nested values&quot;</span><span class="fu">,</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;scientific_network_result_preserved&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;composition&quot;</span><span class="fu">:</span> <span class="st">&quot;network-maps&quot;</span><span class="fu">,</span></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;estimated_encoded_file_bytes&quot;</span><span class="fu">:</span> <span class="dv">7667100</span><span class="fu">,</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;encoded_nodes&quot;</span><span class="fu">:</span> <span class="dv">221050</span><span class="fu">,</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_nodes&quot;</span><span class="fu">:</span> <span class="dv">1684083</span><span class="fu">,</span></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_bytes&quot;</span><span class="fu">:</span> <span class="dv">43849197</span><span class="fu">,</span></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;exported_bytes&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;export_import_pass&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="st">&quot;Project file ray expansion exceeds the resource budget&quot;</span><span class="fu">,</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;scientific_network_result_preserved&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;composition&quot;</span><span class="fu">:</span> <span class="st">&quot;network-result-only&quot;</span><span class="fu">,</span></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;estimated_encoded_file_bytes&quot;</span><span class="fu">:</span> <span class="dv">120690</span><span class="fu">,</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;encoded_nodes&quot;</span><span class="fu">:</span> <span class="dv">5219</span><span class="fu">,</span></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_nodes&quot;</span><span class="fu">:</span> <span class="dv">5217</span><span class="fu">,</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;expanded_project_bytes&quot;</span><span class="fu">:</span> <span class="dv">120660</span><span class="fu">,</span></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;exported_bytes&quot;</span><span class="fu">:</span> <span class="dv">120690</span><span class="fu">,</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;export_import_pass&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;scientific_network_result_preserved&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;result_import_error&quot;</span><span class="fu">:</span> <span class="st">&quot;Project file contains too many nested values&quot;</span><span class="fu">,</span></span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;measured_full_result_import_pass&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;all_ids_in_report&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;scenario_version_order_preserved&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;report_html_bytes&quot;</span><span class="fu">:</span> <span class="dv">142645</span><span class="fu">,</span></span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;report_markdown_bytes&quot;</span><span class="fu">:</span> <span class="dv">133394</span><span class="fu">,</span></span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;combined_simulation_bytes&quot;</span><span class="fu">:</span> <span class="dv">54609413</span><span class="fu">,</span></span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;optimization_bytes&quot;</span><span class="fu">:</span> <span class="dv">108232</span><span class="fu">,</span></span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;production_restore_normalization_count&quot;</span><span class="fu">:</span> <span class="dv">6</span><span class="fu">,</span></span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;interpretation&quot;</span><span class="fu">:</span> <span class="st">&quot;Measured full, maps-only and network-result-only variants; independent v3 guards can reject large W1 ray artifacts even at six. Scientific network-result-only round trips do not certify full eight-Cell ray persistence. Shipping UI selection still clamps to six.&quot;</span></span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;production_changes&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>V3 network-result-only export/import preserves all eight Cells and
+scientific optimizer output in the sampled state. Full W1 ray-bearing
+six/eight samples hit existing expansion/resource guards; full eight
+with interference also exceeds the encoded-node guard. Rejected variants
+and sizes/node counts remain reported; no limits are raised. Shipping
+restore still normalizes eight selected IDs to six. This is not full-ray
+or general persistence certification.</p>
+<p>The <a
+href="../scripts/eight-cell-operational-successor/cardinality-contracts.json">frozen
+cardinality inventory</a> and <a
+href="../scripts/eight-cell-operational-successor/future-cap-migration-manifest.json">future
+cap-migration manifest</a> classify each location as MUST CHANGE6→8,
+SHOULD REMAIN INDEPENDENT, DOCUMENTATION ONLY, TEST ONLY or NO CHANGE.
+Future Recommendation eligibility must remain independent from a larger
+network clamp; its existing five-Cell contract is not automatically
+widened. No migration changes are applied.</p>
+<h2 id="decision-validation-and-freeze">Decision, validation and
+freeze</h2>
+<p>Measured operational gates: <strong>PASS</strong>. Formal
+qualification: <strong>VALID</strong>; baseline execution and freeze
+chronology are independently verified. Final direction:
+<strong>CONDITIONAL GO — REQUEST-BUDGET POLICY BLOCKER</strong>.
+Recommended next action: <strong>Eight-Cell Request-Budget / Workflow
+Policy Design in a separate task</strong>.</p>
+<p>Keep the product cap at six for now. Auto remains observation-only
+and estimator-driven adaptive admission stays paused. Do not add request
+weights/reservations, change20/60s, promoteW2/W3, raise deployment tiers
+to rescue A, modify RF/search/Pareto/persistence semantics, or release a
+new version. VERSION remains0.11.0.</p>
+<p>Baseline and final quality checks:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Check</th>
+<th style="text-align: right;">Exit</th>
+<th>Required E2E executed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>baseline_checks</td>
+<td>backend_tests</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>baseline_checks</td>
+<td>backend_race</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>baseline_checks</td>
+<td>backend_vet</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>baseline_checks</td>
+<td>frontend_tests</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>baseline_checks</td>
+<td>frontend_lint</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>baseline_checks</td>
+<td>frontend_build</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>baseline_checks</td>
+<td>rf_budget_e2e</td>
+<td style="text-align: right;">0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>baseline_checks</td>
+<td>rf_deadline_e2e</td>
+<td style="text-align: right;">0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>baseline_checks</td>
+<td>auto_resource_profile_tests</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>baseline_checks</td>
+<td>w1_preservation_tests</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>backend_tests</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>backend_race</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>backend_vet</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>frontend_tests</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>frontend_lint</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>frontend_build</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>rf_budget_e2e</td>
+<td style="text-align: right;">0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>rf_deadline_e2e</td>
+<td style="text-align: right;">0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>auto_resource_profile_tests</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>w1_preservation_tests</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>audit_protocol_tests</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>docs_build</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>docs_validation</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>version_consistency</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+<tr>
+<td>final_checks</td>
+<td>diff_check</td>
+<td style="text-align: right;">0</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<p>Additional protocol coverage includes audit-only cardinality,
+standard max-six, exact paired layouts, real request
+construction/counts, missing-reference rejection, native/sustained
+overlap and final tail, cancellation/slot release, deterministic science
+and evidence-manifest hashes. <a
+href="../scripts/eight-cell-operational-successor/completion-audit.json">Completion
+audit</a> verifies phases, counts, hashes, preservation and quality.
+Reproduction tooling and instructions live in audit directory
+README.</p>
+<p>Limits: exact frozen scope and finite repeats; shared development VM
+CPU quotas are not dedicated physical cores; loopback streaming is not a
+WAN/browser SLO; GC logs sample heap at events; raw local evidence needs
+separate release-asset/object-storage/LFS archival for permanent
+publication.</p>
+<h2 id="required-83-item-assessment">Required 83-item assessment</h2>
+<ol type="1">
+<li><strong>Starting baseline:</strong> main @
+016c9c96579e2a95b14e3641f96bad00050d48d3; VERSION 0.11.0; prior
+uncommitted audit retained; exact status/diff in baseline.json</li>
+<li><strong>Prior invalid-audit preservation result:</strong> PASS;
+prior report/script/lock hashes and all 466 raw artifact hashes
+verified; prior D unchanged</li>
+<li><strong>Baseline RF budget E2E command:</strong> ATOM_REAL_E2E=1 npx
+playwright test e2e/rf-budget.spec.js --project=desktop-1440 --workers=1
+--reporter=json</li>
+<li><strong>Baseline RF budget E2E executed/pass/skip counts:</strong> 1
+discovered / 1 executed / 1 passed / 0 failed / 0 skipped;
+opt-in=True</li>
+<li><strong>Baseline RF deadline E2E command:</strong> ATOM_REAL_E2E=1
+npx playwright test e2e/network-deadline.spec.js --project=desktop-1440
+--workers=1 --reporter=json</li>
+<li><strong>Baseline RF deadline E2E executed/pass/skip counts:</strong>
+1 discovered / 1 executed / 1 passed / 0 failed / 0 skipped;
+opt-in=True</li>
+<li><strong>Execution-guard result:</strong> PASS; named JSON test
+records and opt-in verified; skipped/zero-test/missing-opt-in
+regressions rejected; pre-freeze chronology verified</li>
+<li><strong>Successor audit-lock SHA256:</strong>
+8d2423c56b57121f94fc658d670b0d52bbecd87c4c1fff2e0c13a39cd686efb0</li>
+<li><strong>Domain-manifest SHA256:</strong>
+d7e2a6e4ed46e3b8bc8c8dbf7ffc32f16f4caf0468365e0d7a9c581d4349ef84</li>
+<li><strong>Run-plan SHA256:</strong>
+f6a01b841061f50ec93c7dedff1f3f5de9b945dcf855bda7b8b9287d3967db2c</li>
+<li><strong>Evidence-manifest SHA256:</strong>
+f788b7a5bd60362daba43559c3ccc767de1367992f3b54858078ed9be2bdcce1</li>
+<li><strong>Standard binary/image identity:</strong> binary
+200ea4e7a329e9a4ed32c8e3267232054a940e6434417e7c060ff2fe8e3f30c2; image
+sha256:30cb97ef650fb47b1372465789258d2e916ed654e71ba103d2c31a148adc1f81</li>
+<li><strong>Audit binary/image identity:</strong> binary
+538361a73ed83674b5b5b3f66095892d58394477cd32b522ed3906010d032a9b; image
+sha256:1f08ca39cff21cbc6ab3f51a165354d4d070b1b6e774cfbb615fa152ac0a8bb2</li>
+<li><strong>Standard-vs-audit differential:</strong> Only
+MaxNetworkTowers 6→8 in disposable source; unchanged Dockerfile and
+shipping build flags</li>
+<li><strong>Confirmation production cap remains 6:</strong> Confirmed
+six</li>
+<li><strong>7/8 normal rejection result:</strong> HTTP 400 for
+seven/eight on all five network endpoints; six succeeds</li>
+<li><strong>Runtime identity:</strong> Go1.26.6 / Linux arm64 / CGO0 /
+cgroup v2</li>
+<li><strong>Profile A verification:</strong> All 15 primary batches
+verify CPU2, GOMAXPROCS2, RAM4GiB, worker1, queue16, slots2/1,
+deadline60s, budget20/60s</li>
+<li><strong>Dataset verification:</strong> ankara-open-planning 2026.07;
+161,784 footprint parts / 936,651 vertices / 451 inventory Cells; exact
+GeoJSON hashes verified</li>
+<li><strong>Eight-layout identity comparison with prior audit:</strong>
+Exact prior domain/run-plan bytes and all 36 fixture hashes; same six
+IDs/order and appended two IDs</li>
+<li><strong>8C-W1 confirmation:</strong> 120 rays / 400m / 30dBm / 120°
+/ 2.6 and28GHz / 20 and100MHz; legacy two-pass search; eight sequential
+single-Cell maps</li>
+<li><strong>Planned/observed group count:</strong> 837 planned / 837
+observed</li>
+<li><strong>Evaluate result:</strong> PASS; 82 groups; worst individual
+0.689s</li>
+<li><strong>Optimize result:</strong> PASS; 50 groups; worst individual
+11.231s</li>
+<li><strong>Interference result:</strong> PASS; 82 groups; worst
+individual 0.100s</li>
+<li><strong>Explanation result:</strong> PASS; 48 groups; worst
+individual 10.149s</li>
+<li><strong>Building Entry result:</strong> PASS; 48 groups; worst
+individual 0.083s</li>
+<li><strong>Evaluate+maps result:</strong> PASS; 16 groups; worst
+individual 0.483s</li>
+<li><strong>Optimize+maps result:</strong> PASS; 16 groups; worst
+individual 8.096s</li>
+<li><strong>Evaluation-cycle result:</strong> PASS; 4 groups; worst
+individual 0.447s</li>
+<li><strong>Worst required latency:</strong> 11.418134s</li>
+<li><strong>Minimum deadline headroom:</strong> 48.581866s</li>
+<li><strong>Peak RSS:</strong> 1296248832 bytes</li>
+<li><strong>Peak cgroup memory:</strong> 1384833024 bytes
+(1.289726GiB)</li>
+<li><strong>Memory headroom:</strong> 67.7568% of hard limit
+remains</li>
+<li><strong>OOM events:</strong> {"oom": 0, "oom_kill": 0, "max":
+0}</li>
+<li><strong>Two-optimizer result:</strong> PASS; 12 groups; worst
+individual 10.973s</li>
+<li><strong>Optimize+Evaluate result:</strong> PASS; 12 groups; worst
+individual 6.827s</li>
+<li><strong>Evaluate+Evaluate result:</strong> PASS; 12 groups; worst
+individual 0.694s</li>
+<li><strong>Normal async result:</strong> 24/24 PASS; actual uncached
+native overlap</li>
+<li><strong>Sustained async result:</strong> 24/24 PASS; first30s
+activity and drain verified</li>
+<li><strong>Final-tail result:</strong> 24/24 sustained tails overlap
+native background execution</li>
+<li><strong>Largest contention inflation:</strong>
+{"batch":"A-8C-mixed-2","index":5,"fixture":"dense-certification-1-2.6-8C-W1","operation":"sustained-evaluate","endpoint":"/api/evaluate-network","seconds":1.0140559673309326,"isolated_median_seconds":0.4183371067047119,"inflation_ratio":2.4240163042641965}</li>
+<li><strong>Cancellation result:</strong> 12/12 PASS; cancel100ms; max
+release observation 0.007077s</li>
+<li><strong>Slot-release result:</strong> PASS</li>
+<li><strong>Scientific determinism:</strong> PASS; 435 exact input
+groups; only Building Entry diagnostics.elapsed_ms excluded</li>
+<li><strong>Six-Cell preservation:</strong> PASS; 352 exact frozen W1
+response matches</li>
+<li><strong>Evaluate/maps budget count:</strong> 9 accepted;
+remaining11</li>
+<li><strong>Optimize/maps budget count:</strong> 9 accepted;
+remaining11</li>
+<li><strong>Full-cycle budget count:</strong> 19 accepted;
+remaining1</li>
+<li><strong>Attempt-20 result:</strong> HTTP200, remaining0 in all four
+cycle boundary cases</li>
+<li><strong>Attempt-21 result:</strong> HTTP429, remaining0,
+Retry-After/reset; before RF handler</li>
+<li><strong>Two-workflow result:</strong> 18 accepted; remaining2</li>
+<li><strong>Shared-IP result:</strong> PASS; separate connections share
+same ClientIP bucket</li>
+<li><strong>Distinct-IP result:</strong> PASS; fresh independent bucket,
+remaining19 after one request</li>
+<li><strong>Rapid-follow-up journey result:</strong> A/B/D succeed in
+both cardinalities; C first429 is absolute attempt21 in both, reached at
+the immediate Interference after 8C cycle+single Optimize (19+1+1),
+versus later follow-ups at6C (15+1+1 succeeds).
+{"6":{"A":["none"],"B":["none"],"C":[21],"D":["none"]},"8":{"A":["none"],"B":["none"],"C":[21],"D":["none"]}}</li>
+<li><strong>Remaining time after 19-attempt cycle:</strong>
+58.760502–59.283303s client-anchor estimate; integer shipping reset
+headers retained</li>
+<li><strong>Budget mechanical verdict:</strong> PASS</li>
+<li><strong>Budget product-fit classification:</strong> PRODUCT
+BLOCKER</li>
+<li><strong>Largest response:</strong> 17051014 bytes</li>
+<li><strong>Largest workflow response:</strong> Evaluate/maps 58902269;
+Optimize/maps 60251142; logical cycle 113898816 bytes</li>
+<li><strong>Frontend request-shape result:</strong> PASS; one network +
+eight sequential map calls, no duplicate/retry/StrictMode
+amplification</li>
+<li><strong>Presentation smoke result:</strong> PASS; numbering1–8,
+selection, Setup, Results, Solutions, Review, scroll, report</li>
+<li><strong>Persistence observation:</strong> Network-result-only8
+round-trip=True; 120690 bytes; full ray variants hit existing guards; no
+new gate</li>
+<li><strong>Operational verdict:</strong> PASS</li>
+<li><strong>Methodology violations:</strong> []</li>
+<li><strong>Missing evidence:</strong> None</li>
+<li><strong>Final A/B/C/D classification:</strong> B — CONDITIONAL GO —
+REQUEST-BUDGET POLICY BLOCKER</li>
+<li><strong>Whether eight Cells are operationally qualified on Profile
+A:</strong> Yes, exact frozen Profile A scope</li>
+<li><strong>Whether request budget blocks promotion:</strong> Yes</li>
+<li><strong>Whether cap remains six:</strong> Yes</li>
+<li><strong>Whether a promotion task is justified:</strong> Promotion
+blocked; policy design first</li>
+<li><strong>Whether budget-policy design is required:</strong> Yes;
+separate task</li>
+<li><strong>Estimator-admission status:</strong> Paused;
+estimator/adaptive admission not reopened</li>
+<li><strong>Auto status:</strong> Observation-only</li>
+<li><strong>Production invariance:</strong> PASS; production
+source/build/policy/persistence/fingerprints unchanged</li>
+<li><strong>Final real-E2E execution/pass confirmation:</strong> Budget:
+1 discovered / 1 executed / 1 passed / 0 failed / 0 skipped;
+opt-in=True; Deadline: 1 discovered / 1 executed / 1 passed / 0 failed /
+0 skipped; opt-in=True</li>
+<li><strong>Version recommendation:</strong> Keep VERSION0.11.0; no
+release/tag/publish</li>
+<li><strong>Files created/changed:</strong> New successor report
+MD/JSON/HTML and scripts; CHANGELOG.md, docs build reference, generated
+changelog/search index updated; prior audit unchanged</li>
+<li><strong>Raw evidence storage:</strong>
+/tmp/atom-eight-cell-operational-successor; SHA256/size/category/group
+index and separate hashed archive outside Git</li>
+<li><strong>Tests/checks:</strong> Ten baseline and fifteen final
+quality commands; protocol/guard tests; real cardinality, overlap,
+cancellation, science, evidence controls</li>
+<li><strong>Freeze decision:</strong> Keep immutable audit inputs and
+evidence; production cap six, fixed policy unchanged, adaptive admission
+paused, Auto observation-only</li>
+<li><strong>Single recommended next action:</strong> Eight-Cell
+Request-Budget / Workflow Policy Design in a separate task</li>
+</ol>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

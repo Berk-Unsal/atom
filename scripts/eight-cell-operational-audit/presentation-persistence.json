@@ -1,0 +1,121 @@
+{
+  "records": [
+    {
+      "cardinality": 6,
+      "domain": "dense-certification-1",
+      "frequency_ghz": 2.6,
+      "export_bytes": null,
+      "schema_version": null,
+      "estimated_encoded_file_bytes": 6402381,
+      "encoded_nodes": 198267,
+      "expanded_project_nodes": 1429136,
+      "expanded_project_bytes": 37950825,
+      "packed_feature_collections": 0,
+      "expansion_error": "Project file ray expansion exceeds the resource budget",
+      "export_variants": [
+        {
+          "composition": "full-network-maps-interference",
+          "estimated_encoded_file_bytes": 6402381,
+          "encoded_nodes": 198267,
+          "expanded_project_nodes": 1429136,
+          "expanded_project_bytes": 37950825,
+          "exported_bytes": null,
+          "export_import_pass": false,
+          "error": "Project file ray expansion exceeds the resource budget",
+          "scientific_network_result_preserved": false
+        },
+        {
+          "composition": "network-maps",
+          "estimated_encoded_file_bytes": 5893042,
+          "encoded_nodes": 172328,
+          "expanded_project_nodes": 1285253,
+          "expanded_project_bytes": 33412508,
+          "exported_bytes": null,
+          "export_import_pass": false,
+          "error": "Project file ray expansion exceeds the resource budget",
+          "scientific_network_result_preserved": false
+        },
+        {
+          "composition": "network-result-only",
+          "estimated_encoded_file_bytes": 108008,
+          "encoded_nodes": 4647,
+          "expanded_project_nodes": 4645,
+          "expanded_project_bytes": 107978,
+          "exported_bytes": 108008,
+          "export_import_pass": true,
+          "error": null,
+          "scientific_network_result_preserved": true
+        }
+      ],
+      "result_import_error": "Project file ray expansion exceeds the resource budget",
+      "measured_full_result_import_pass": false,
+      "all_ids_in_report": true,
+      "scenario_version_order_preserved": true,
+      "report_html_bytes": 140825,
+      "report_markdown_bytes": 131792,
+      "combined_simulation_bytes": 43943325,
+      "optimization_bytes": 98176,
+      "production_restore_normalization_count": 6,
+      "interpretation": "Measured full, maps-only and network-result-only variants; independent v3 guards can reject large W1 ray artifacts even at six. Scientific network-result-only round trips do not certify full eight-Cell ray persistence. Shipping UI selection still clamps to six."
+    },
+    {
+      "cardinality": 8,
+      "domain": "dense-certification-1",
+      "frequency_ghz": 2.6,
+      "export_bytes": null,
+      "schema_version": null,
+      "estimated_encoded_file_bytes": 8298988,
+      "encoded_nodes": 255501,
+      "expanded_project_nodes": 1930014,
+      "expanded_project_bytes": 51689353,
+      "packed_feature_collections": 0,
+      "expansion_error": "Project file ray expansion exceeds the resource budget",
+      "export_variants": [
+        {
+          "composition": "full-network-maps-interference",
+          "estimated_encoded_file_bytes": 8298988,
+          "encoded_nodes": 255501,
+          "expanded_project_nodes": 1930014,
+          "expanded_project_bytes": 51689353,
+          "exported_bytes": null,
+          "export_import_pass": false,
+          "error": "Project file contains too many nested values",
+          "scientific_network_result_preserved": false
+        },
+        {
+          "composition": "network-maps",
+          "estimated_encoded_file_bytes": 7667100,
+          "encoded_nodes": 221050,
+          "expanded_project_nodes": 1684083,
+          "expanded_project_bytes": 43849197,
+          "exported_bytes": null,
+          "export_import_pass": false,
+          "error": "Project file ray expansion exceeds the resource budget",
+          "scientific_network_result_preserved": false
+        },
+        {
+          "composition": "network-result-only",
+          "estimated_encoded_file_bytes": 120690,
+          "encoded_nodes": 5219,
+          "expanded_project_nodes": 5217,
+          "expanded_project_bytes": 120660,
+          "exported_bytes": 120690,
+          "export_import_pass": true,
+          "error": null,
+          "scientific_network_result_preserved": true
+        }
+      ],
+      "result_import_error": "Project file contains too many nested values",
+      "measured_full_result_import_pass": false,
+      "all_ids_in_report": true,
+      "scenario_version_order_preserved": true,
+      "report_html_bytes": 142645,
+      "report_markdown_bytes": 133394,
+      "combined_simulation_bytes": 54609413,
+      "optimization_bytes": 108232,
+      "production_restore_normalization_count": 6,
+      "interpretation": "Measured full, maps-only and network-result-only variants; independent v3 guards can reject large W1 ray artifacts even at six. Scientific network-result-only round trips do not certify full eight-Cell ray persistence. Shipping UI selection still clamps to six."
+    }
+  ],
+  "production_changes": false
+}

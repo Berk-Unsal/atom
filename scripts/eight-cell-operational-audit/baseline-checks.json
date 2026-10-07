@@ -1,0 +1,125 @@
+{
+  "backend_tests": {
+    "command": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 1.9046284170472063,
+    "completed_at": "2026-10-07T10:10:19.425845+00:00"
+  },
+  "backend_race": {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 0.477507458999753,
+    "completed_at": "2026-10-07T10:10:19.905070+00:00"
+  },
+  "backend_vet": {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 0.36773941601859406,
+    "completed_at": "2026-10-07T10:10:20.273484+00:00"
+  },
+  "frontend_tests": {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 29.368465708976146,
+    "completed_at": "2026-10-07T10:10:49.642560+00:00"
+  },
+  "frontend_lint": {
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 17.18864595796913,
+    "completed_at": "2026-10-07T10:11:06.832118+00:00"
+  },
+  "frontend_build": {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 4.950888582970947,
+    "completed_at": "2026-10-07T10:11:11.786554+00:00"
+  },
+  "rf_budget_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/rf-budget.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 7.121099375013728,
+    "completed_at": "2026-10-07T10:11:18.914890+00:00"
+  },
+  "rf_deadline_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/network-deadline.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 4.973314083006699,
+    "completed_at": "2026-10-07T10:11:23.890830+00:00"
+  },
+  "auto_resource_profile_tests": {
+    "command": [
+      "go",
+      "test",
+      "./...",
+      "-run",
+      "ResourceProfile|AutoResource"
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 0.8031833750428632,
+    "completed_at": "2026-10-07T10:11:24.694867+00:00"
+  },
+  "w1_preservation_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/w1-shipping-runtime-qualification",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 1.1470358339720406,
+    "completed_at": "2026-10-07T10:11:25.842944+00:00"
+  }
+}

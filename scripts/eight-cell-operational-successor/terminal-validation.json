@@ -1,0 +1,62 @@
+{
+  "purpose": "post-archive/final-report refreshed documentation quality; RF timings remain immutable",
+  "passed": true,
+  "records": {
+    "docs_build": {
+      "command": [
+        "sh",
+        "docs/build-reference-pages.sh"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-07T15:43:38.729781+00:00",
+      "completed_at": "2026-10-07T15:43:45.235458+00:00",
+      "path": "/tmp/atom-eight-cell-successor-terminal-validation/docs_build.log",
+      "sha256": "5339cae4316265323e018c3c23f79940d38578bd79bd8b2f1817fca54180bf30",
+      "byte_size": 3366
+    },
+    "docs_validation": {
+      "command": [
+        "/tmp/atom-persistence-docs-venv/bin/python",
+        "docs/validate_docs.py"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-07T15:43:45.235605+00:00",
+      "completed_at": "2026-10-07T15:43:45.603998+00:00",
+      "path": "/tmp/atom-eight-cell-successor-terminal-validation/docs_validation.log",
+      "sha256": "f5b36afb5416799028f00516a0b44b49fd0c4cae05ffbdeb9db7c4aa5a8d8072",
+      "byte_size": 52
+    },
+    "version_consistency": {
+      "command": [
+        "python3",
+        "scripts/versioning.py",
+        "check"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-07T15:43:45.604128+00:00",
+      "completed_at": "2026-10-07T15:43:45.635998+00:00",
+      "path": "/tmp/atom-eight-cell-successor-terminal-validation/version_consistency.log",
+      "sha256": "2e4cc0cc1198c5cdae81bcbdc187b87f89ed588c807cd7f9fbfe445509946af2",
+      "byte_size": 47
+    },
+    "diff_check": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-07T15:43:45.636113+00:00",
+      "completed_at": "2026-10-07T15:43:45.655600+00:00",
+      "path": "/tmp/atom-eight-cell-successor-terminal-validation/diff_check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_size": 0
+    }
+  },
+  "archive": {
+    "path": "/tmp/atom-eight-cell-successor-terminal-quality.tar.gz",
+    "sha256": "530e07dac9fd91459464135fefe112059de924e340ad8bbd555464133d47d95c",
+    "byte_size": 532,
+    "members": 4
+  }
+}

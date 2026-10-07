@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-07T11:10:27.256244+00:00",
+  "id": "baseline-real-e2e-skipped",
+  "description": "Baseline RF budget/deadline Playwright commands exited zero but both gated tests skipped because ATOM_REAL_E2E=1 was absent. The lock incorrectly treated exit zero as executed validation.",
+  "records": [
+    {
+      "check": "rf_budget_e2e",
+      "command_exit_code": 0,
+      "tests_executed": 0,
+      "tests_skipped": 1,
+      "log_path": "/tmp/atom-eight-cell-operational-audit/baseline-rf_budget_e2e.log",
+      "log_sha256": "9c888268e2ef681b52ba0a6e3faf52412438e3bcb19535bf68867679e4790df7"
+    },
+    {
+      "check": "rf_deadline_e2e",
+      "command_exit_code": 0,
+      "tests_executed": 0,
+      "tests_skipped": 1,
+      "log_path": "/tmp/atom-eight-cell-operational-audit/baseline-rf_deadline_e2e.log",
+      "log_sha256": "cf859e1aad83864785c1c2cb7024c1f552247b82775d86dfe3de8c441fea0b86"
+    }
+  ],
+  "qualification_effect": "D \u2014 INVALID / INSUFFICIENT; final real-E2E success cannot retroactively satisfy required pre-measurement validation",
+  "handling": "Preserve original lock, plans, logs and all observations. Complete the unchanged locked matrix. No timing failures, replacements or new qualification series. Run real E2Es at final validation; a valid qualification requires a separately preregistered audit after executed baseline checks."
+}

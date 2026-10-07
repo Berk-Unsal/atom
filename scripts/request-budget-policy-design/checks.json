@@ -1,0 +1,242 @@
+{
+  "backend_tests": {
+    "command": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "started_at": "2026-10-07T18:18:37.020628+00:00",
+    "completed_at": "2026-10-07T18:18:37.414052+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "backend_race": {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "started_at": "2026-10-07T18:18:37.414346+00:00",
+    "completed_at": "2026-10-07T18:18:37.603463+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "backend_vet": {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "started_at": "2026-10-07T18:18:37.603726+00:00",
+    "completed_at": "2026-10-07T18:18:37.776627+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "frontend_tests": {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "frontend-react",
+    "started_at": "2026-10-07T18:18:37.776907+00:00",
+    "completed_at": "2026-10-07T18:18:48.179781+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "frontend_lint": {
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "cwd": "frontend-react",
+    "started_at": "2026-10-07T18:18:48.180344+00:00",
+    "completed_at": "2026-10-07T18:18:51.855884+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "frontend_build": {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "frontend-react",
+    "started_at": "2026-10-07T18:18:51.856272+00:00",
+    "completed_at": "2026-10-07T18:18:53.120777+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "rf_budget_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/rf-budget.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "started_at": "2026-10-07T18:18:53.121103+00:00",
+    "completed_at": "2026-10-07T18:19:03.044988+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": {
+      "passed": 1,
+      "discovered": 1,
+      "executed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "required_tests": [
+        {
+          "id": "517ab816924a3a36e3da-c2d80f0f63cf255099be",
+          "file": "rf-budget.spec.js",
+          "title": "real RF budget: six-cell Evaluate, Interference, inspect, re-evaluate, then abuse",
+          "project": "desktop-1440",
+          "result_statuses": [
+            "passed"
+          ],
+          "passed": true
+        }
+      ],
+      "opt_in_active": true,
+      "report_path": "/tmp/atom-eight-cell-request-budget-policy-design/rf_budget_e2e.playwright.json",
+      "report_sha256": "fb37b9c2fc2611d847739c36f457ebc9bedea6ab66b27845e098b76944590682"
+    },
+    "environment": {
+      "ATOM_REAL_E2E": "1"
+    }
+  },
+  "rf_deadline_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/network-deadline.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "started_at": "2026-10-07T18:19:03.045255+00:00",
+    "completed_at": "2026-10-07T18:19:12.699043+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": {
+      "passed": 1,
+      "discovered": 1,
+      "executed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "required_tests": [
+        {
+          "id": "6eb2bebe5f7dbec70ae0-03ce0a2405ac15553026",
+          "file": "network-deadline.spec.js",
+          "title": "real network optimization deadline: affected six-cell defaults preserve output and one-request cost",
+          "project": "desktop-1440",
+          "result_statuses": [
+            "passed"
+          ],
+          "passed": true
+        }
+      ],
+      "opt_in_active": true,
+      "report_path": "/tmp/atom-eight-cell-request-budget-policy-design/rf_deadline_e2e.playwright.json",
+      "report_sha256": "009683a896efe70a36d886b31b5e1ebc7e310ae834a022405ba44f7d352183b2"
+    },
+    "environment": {
+      "ATOM_REAL_E2E": "1"
+    }
+  },
+  "study_tests": {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/Users/berkunsal/Desktop/urban-ray-tracer/scripts/request-budget-policy-design",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": ".",
+    "started_at": "2026-10-07T18:19:12.699338+00:00",
+    "completed_at": "2026-10-07T18:19:12.749792+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "docs_build": {
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "cwd": ".",
+    "started_at": "2026-10-07T18:19:12.750147+00:00",
+    "completed_at": "2026-10-07T18:19:19.765802+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "docs_validation": {
+    "command": [
+      "/tmp/atom-persistence-docs-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": ".",
+    "started_at": "2026-10-07T18:19:19.766120+00:00",
+    "completed_at": "2026-10-07T18:19:20.270984+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "version_consistency": {
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "cwd": ".",
+    "started_at": "2026-10-07T18:19:20.271343+00:00",
+    "completed_at": "2026-10-07T18:19:20.314539+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  },
+  "diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": ".",
+    "started_at": "2026-10-07T18:19:20.314868+00:00",
+    "completed_at": "2026-10-07T18:19:20.341105+00:00",
+    "exit_code": 0,
+    "execution_proven": true,
+    "execution_guard": null,
+    "environment": {}
+  }
+}

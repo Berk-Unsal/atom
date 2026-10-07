@@ -1,0 +1,154 @@
+/* global process */
+import { expect, test } from '@playwright/test';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
+const work = process.env.ATOM_EIGHT_CELL_WORK;
+const attempt = process.env.ATOM_EIGHT_CELL_UI_ATTEMPT || '1';
+const json = async path => JSON.parse(await readFile(path, 'utf8'));
+async function tool(page, stage, label, id) {
+  const target = page.locator(`#stage-tool-${stage}-${id}`);
+  if (!await target.isVisible()) await page.getByRole('button', { name: `${label} workspace` }).click();
+  await target.click();
+}
+
+test('audit-only eight-Cell presentation and request shape', async ({ page }, info) => {
+  test.setTimeout(120000);
+  const replay = await json(resolve(work, 'presentation/8C-replay.json'));
+  const workspace = await json(resolve(work, 'presentation/8C-workspace.json'));
+  const project = workspace.projects[0];
+  project.activeScenarioId = null;
+  project.draft = { plan: project.draft.plan, requiresRerun: true };
+  project.scenarios = [];
+  await page.addInitScript(value => localStorage.setItem('atom.planning.workspace.v1', JSON.stringify(value)), workspace);
+  const requests = []; let simIndex = 0; let optimized = false;
+  await page.route('**/api/**', async route => {
+    const endpoint = new URL(route.request().url()).pathname;
+    if (route.request().method() === 'POST') requests.push({ endpoint, body: route.request().postDataJSON() });
+    let body;
+    switch (endpoint) {
+    case '/api/towers': body = { type: 'FeatureCollection', features: replay.towers.map(t => ({ type: 'Feature', id: t.id, geometry: { type: 'Point', coordinates: t.coordinates }, properties: t.properties })) }; break;
+    case '/api/meta': body = { application_version: '0.11.0', supported_technologies: ['4g', '5g', '6g'] }; break;
+    case '/api/datasets': body = { active_id: 'ankara-open-planning', datasets: [], warnings: [] }; break;
+    case '/api/buildings/summary': body = { total_buildings: 161784 }; break;
+    case '/api/collections/buildings/items': body = { type: 'FeatureCollection', features: [] }; break;
+    case '/api/evaluate-network': simIndex = 0; optimized = false; body = replay.evaluation; break;
+    case '/api/optimize-network': simIndex = 0; optimized = true; body = replay.optimization; break;
+    case '/api/simulate': body = (optimized ? replay.optimizedSims : replay.sims)[simIndex++]; break;
+    case '/api/interference': body = replay.interference; break;
+    case '/api/explain-network-cell': body = replay.explanation; break;
+    default: body = {};
+    }
+    await route.fulfill({ json: body });
+  });
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Network mode, 8 selected' })).toBeVisible();
+  const screenshots = [];
+  const screenshot = async name => {
+    const path = resolve(work, `presentation/attempt-${attempt}-8C-${info.project.name}-${name}.png`);
+    await page.screenshot({ path, fullPage: true, animations: 'disabled' });
+    screenshots.push(path);
+  };
+  await screenshot('setup');
+  const close = page.getByRole('button', { name: 'Close tool drawer' });
+  if (await close.isVisible()) await close.click();
+  await page.getByRole('button', { name: 'Fit selected cells', exact: true }).click();
+  await expect(page.locator('.tower-order-badge')).toHaveCount(8);
+  const numbering = await page.locator('.tower-order-badge span').allTextContents();
+  expect([...numbering].sort()).toEqual(['1', '2', '3', '4', '5', '6', '7', '8']);
+  await screenshot('markers');
+  await page.getByRole('button', { name: 'Evaluate Network', exact: true }).click();
+  await expect(page.locator('.run-state')).toHaveText('Ready');
+  expect(requests.map(r => r.endpoint)).toEqual(['/api/evaluate-network', ...Array(8).fill('/api/simulate')]);
+  expect(requests[0].body).toEqual(replay.fixture.network);
+  expect(requests.slice(1).map(r => r.body)).toEqual(replay.fixture.simulations);
+  await tool(page, 'review', 'Review', 'results');
+  await screenshot('results');
+  await tool(page, 'analyze', 'Analyze', 'interference');
+  await page.getByRole('button', { name: 'Analyze Interference', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Analyze Interference', exact: true })).toBeEnabled();
+  await tool(page, 'simulate', 'Simulate', 'propagation');
+  const optimize = page.getByRole('button', { name: /^Optimize Network$/ });
+  await optimize.click(); await expect(optimize).toBeEnabled();
+  expect(requests.map(r => r.endpoint)).toEqual(['/api/evaluate-network', ...Array(8).fill('/api/simulate'), '/api/interference', '/api/optimize-network', ...Array(8).fill('/api/simulate')]);
+  const maps = requests.slice(11);
+  expect(maps).toHaveLength(8);
+  const azimuths = Object.fromEntries(replay.optimization.optimized_towers.map(t => [t.id, t.optimal_azimuth]));
+  maps.forEach((r, i) => expect(r.body).toEqual({ ...replay.fixture.simulations[i], azimuth: azimuths[replay.fixture.network.towers[i].id] }));
+  await tool(page, 'review', 'Review', 'results');
+  await expect(page.locator('.network-card')).toBeVisible();
+  const solutions = page.getByRole('tab', { name: /Candidates|Solutions/ });
+  await solutions.click();
+  await expect(page.locator('.pareto-explorer')).toBeVisible();
+  await expect(page.locator('.pareto-cell-row')).toHaveCount(8);
+  await page.locator('.pareto-cell-list').scrollIntoViewIfNeeded();
+  await screenshot('solutions');
+  await tool(page, 'plan', 'Plan', 'inventory');
+  await page.getByRole('group', { name: 'Inventory scope' }).getByRole('button', { name: /^Network/ }).click();
+  const selected = page.getByRole('list', { name: 'Network Cells' });
+  await expect(selected.locator('li')).toHaveCount(8);
+  await selected.locator('li').last().scrollIntoViewIfNeeded();
+  await screenshot('selected-list-scroll');
+  const dimensions = await page.evaluate(() => ({ width: innerWidth, documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth }));
+  expect(dimensions.documentWidth).toBeLessThanOrEqual(dimensions.width + 1);
+  await page.goto('file://' + resolve(work, 'presentation/8C-report.html'));
+  for (const tower of replay.towers) await expect(page.getByText(tower.cellId, { exact: false }).first()).toBeVisible();
+  await screenshot('report');
+  await mkdir(resolve(work, 'presentation'), { recursive: true });
+  await writeFile(resolve(work, `presentation/frontend-smoke-result-${attempt}.json`), JSON.stringify({ passed: true, mode: 'disposable audit UI; shipping selection clamp unchanged; saved HTTP response replay', numbering, selected_count: 8, evaluate_protected_attempts: 9, optimize_protected_attempts: 9, no_duplicate_retry_or_StrictMode_amplification: true, exact_frontend_payload_match: true, dimensions, screenshots, requests }, null, 2));
+});
+
+test('eight-Cell full cycle then Optimize stops at first denied map', async ({ page }) => {
+  test.setTimeout(90000);
+  const replay = await json(resolve(work, 'presentation/8C-replay.json'));
+  const workspace = await json(resolve(work, 'presentation/8C-workspace.json'));
+  workspace.projects[0].activeScenarioId = null;
+  workspace.projects[0].draft = { plan: workspace.projects[0].draft.plan, requiresRerun: true };
+  workspace.projects[0].scenarios = [];
+  await page.addInitScript(value => localStorage.setItem('atom.planning.workspace.v1', JSON.stringify(value)), workspace);
+  const calls = []; let simIndex = 0; let optimized = false;
+  await page.route('**/api/**', async route => {
+    const endpoint = new URL(route.request().url()).pathname;
+    const protectedCall = route.request().method() === 'POST' && ['/api/evaluate-network', '/api/optimize-network', '/api/simulate', '/api/interference'].includes(endpoint);
+    if (protectedCall) {
+      calls.push(endpoint);
+      if (calls.length > 20) {
+        await route.fulfill({ status: 429, headers: { 'RateLimit-Limit': '20', 'RateLimit-Remaining': '0', 'RateLimit-Reset': '58', 'Retry-After': '58' }, json: { error: 'RF analysis request budget exceeded' } });
+        return;
+      }
+    }
+    let body;
+    switch (endpoint) {
+    case '/api/towers': body = { type: 'FeatureCollection', features: replay.towers.map(t => ({ type: 'Feature', id: t.id, geometry: { type: 'Point', coordinates: t.coordinates }, properties: t.properties })) }; break;
+    case '/api/meta': body = { application_version: '0.11.0', supported_technologies: ['4g', '5g', '6g'] }; break;
+    case '/api/datasets': body = { active_id: 'ankara-open-planning', datasets: [], warnings: [] }; break;
+    case '/api/buildings/summary': body = { total_buildings: 161784 }; break;
+    case '/api/collections/buildings/items': body = { type: 'FeatureCollection', features: [] }; break;
+    case '/api/evaluate-network': optimized = false; simIndex = 0; body = replay.evaluation; break;
+    case '/api/interference': body = replay.interference; break;
+    case '/api/optimize-network': optimized = true; simIndex = 0; body = replay.optimization; break;
+    case '/api/simulate': body = (optimized ? replay.optimizedSims : replay.sims)[simIndex++]; break;
+    default: body = {};
+    }
+    await route.fulfill({ json: body });
+  });
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Network mode, 8 selected' })).toBeVisible();
+  await page.getByRole('button', { name: 'Evaluate Network', exact: true }).click();
+  await expect(page.locator('.run-state')).toHaveText('Ready');
+  await tool(page, 'analyze', 'Analyze', 'interference');
+  await page.getByRole('button', { name: 'Analyze Interference', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Analyze Interference', exact: true })).toBeEnabled();
+  await page.getByRole('button', { name: 'Evaluate Network', exact: true }).click();
+  await expect(page.locator('.run-state')).toHaveText('Ready');
+  expect(calls).toHaveLength(19);
+  await tool(page, 'simulate', 'Simulate', 'propagation');
+  const optimize = page.getByRole('button', { name: /^Optimize Network$/ });
+  await optimize.click();
+  await expect(page.getByText('RF analysis request budget exceeded', { exact: false }).first()).toBeVisible();
+  await expect(optimize).toBeEnabled();
+  await page.waitForTimeout(500);
+  expect(calls).toHaveLength(21);
+  expect(calls.slice(19)).toEqual(['/api/optimize-network', '/api/simulate']);
+  await writeFile(resolve(work, `presentation/frontend-budget-stop-${attempt}.json`), JSON.stringify({ passed: true, evidence_scope: 'frontend failure/queue behavior with saved RF response replay and mocked boundary; actual middleware enforcement is separately measured in real TCP ledgers', calls, optimize_attempt: 20, first_denied_map_attempt: 21, later_maps_sent: 0, retries_sent: 0 }, null, 2));
+});

@@ -10,6 +10,12 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Document the eight-Cell request-budget/workflow policy design, comparing alternatives and specifying a bounded verified-follow-up recommendation without implementing a limiter or changing the six-Cell product cap.
+
+- Record the clean successor eight-Cell qualification with verified pre-measurement real E2Es and a request-budget policy blocker; preserve the prior invalid audit, six-Cell product cap and fixed production policy.
+
+- Record the audit-only eight-Cell W1 operational and request-budget re-audit while preserving the six-Cell product cap and fixed production policy.
+
 - Record the independent W1 shipping-runtime reference qualification, preserving previous studies and fixed production policy.
 
 - Record the conservative fixed deployment profile study for the exact Ankara six-Cell workload envelope: no reference profile certified; preserve empirical HTTP evidence, operational headroom gates and unchanged fixed production policy.

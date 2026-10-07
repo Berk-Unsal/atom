@@ -1,0 +1,45 @@
+package main
+
+// Supplementary search accounting only. Uses the existing opt-in request-local
+// collector; this executable never supplies shipping-runtime timing evidence.
+import (
+    "ankara-5g-raytracer/raytracer"
+    "bytes"
+    "crypto/sha256"
+    "encoding/hex"
+    "encoding/json"
+    "net/http/httptest"
+    "os"
+    "path/filepath"
+    "strings"
+    "testing"
+    "github.com/gin-gonic/gin"
+)
+
+func TestEightCellSearchAccounting(t *testing.T) {
+    if os.Getenv("ATOM_8C_SEARCH_ACCOUNTING") != "1" { t.Skip("audit-only supplement") }
+    pack, err := raytracer.LoadDatasetPack(os.Getenv("ATOM_8C_DATASET")); if err != nil {t.Fatal(err)}
+    files, err := filepath.Glob(filepath.Join(os.Getenv("ATOM_8C_FIXTURES"), "*-W1.json"));if err != nil {t.Fatal(err)}
+    gin.SetMode(gin.TestMode)
+    rows := []map[string]any{}
+    for _, file := range files {
+        if strings.Contains(file,"historical-continuity") {continue}
+        raw,err:=os.ReadFile(file);if err!=nil {t.Fatal(err)}
+        var fixture struct {N int `json:"n"`;Network json.RawMessage `json:"network"`}
+        if err=json.Unmarshal(raw,&fixture);err!=nil {t.Fatal(err)}
+        timing:=&raytracer.NetworkOptimizationTiming{DetailedSpatial:true}
+        router:=gin.New()
+        router.Use(limitRequestBody(maxRequestBodyBytes),protectExpensiveRFRoutes(newRFRequestLimiter(2),defaultRFRequestTimeout,""))
+        router.Use(func(c *gin.Context) {c.Request=c.Request.WithContext(raytracer.WithNetworkOptimizationTiming(c.Request.Context(),timing));c.Next()})
+        registerNetworkOptimizationRoute(router,func()*raytracer.BuildingIndex{return pack.BuildingIndex})
+        request:=httptest.NewRequest("POST","/api/optimize-network",bytes.NewReader(fixture.Network));request.Header.Set("Content-Type","application/json")
+        response:=httptest.NewRecorder();router.ServeHTTP(response,request)
+        if response.Code!=200 {t.Fatalf("%s HTTP%d %s",file,response.Code,response.Body.String())}
+        if timing.Proposals!=72*fixture.N+2 {t.Fatalf("%s proposals%d",file,timing.Proposals)}
+        bodyhash:=sha256.Sum256(response.Body.Bytes());inputhash:=sha256.Sum256(fixture.Network)
+        rows=append(rows,map[string]any{"fixture":filepath.Base(file),"cardinality":fixture.N,"proposals":timing.Proposals,"unique_states":len(timing.States),"cell_cache_hits":timing.CellMemoHits,"cell_cache_misses":timing.CellMemoMisses,"RF_contribution_calculations":timing.CellMemoMisses,"spatial_queries":timing.SpatialQueries,"spatial_candidates":timing.SpatialCandidates,"spatial_max":timing.SpatialMax,"pareto_candidates":timing.ParetoCandidates,"feasible_archive":timing.FeasibleArchive,"request_sha256":hex.EncodeToString(inputhash[:]),"response_sha256":hex.EncodeToString(bodyhash[:]),"collector":"existing NetworkOptimizationTiming; DetailedSpatial records geometry only"})
+    }
+    if len(rows)!=32 {t.Fatalf("expected32 paired domain/frequency/cardinality records,got%d",len(rows))}
+    output,err:=json.MarshalIndent(rows,"","  ");if err!=nil {t.Fatal(err)}
+    if err=os.WriteFile(os.Getenv("ATOM_8C_ACCOUNTING_OUTPUT"),append(output,'\n'),0644);err!=nil {t.Fatal(err)}
+}

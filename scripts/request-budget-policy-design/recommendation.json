@@ -1,0 +1,33 @@
+{
+  "selected_at": "2026-10-07T18:04:18.870006+00:00",
+  "criteria_lock_sha256": "105a24d1938140101cb08d3f2e70c8712c3445ff45cc7cdda4d65f2704310a71",
+  "recommendation": {
+    "policy_category": "D \u2014 VERIFIED ROOT + FOLLOW-UP ALLOWANCE",
+    "variant": "P3-capped",
+    "final_design_verdict": "C \u2014 WORKFLOW-AWARE ACCOUNTING IS PREFERRED",
+    "ordinary_units": 20,
+    "verified_extra_units": 8,
+    "anchored_window_seconds": 60,
+    "max_total_retained_window_admissions": 28,
+    "max_followups_per_root": 8,
+    "current_product_cap": 6,
+    "identity": "unchanged Gin ClientIP",
+    "eligible_parents": {
+      "/api/evaluate-network": "N /api/simulate at selected azimuths",
+      "/api/optimize-network": "N /api/simulate at winning returned azimuths",
+      "/api/optimize-azimuth": "1 /api/analyze-sector at returned azimuth"
+    },
+    "opaque_id_bits": 128,
+    "idle_expiry_seconds": 60,
+    "absolute_expiry_formula": "root admission+(N+1)*60s",
+    "max_absolute_8C_seconds": 540,
+    "max_clients": 4096,
+    "max_indexed_held_records": 114688,
+    "max_transitional_per_client_receipts": 4096,
+    "persistent_state": false,
+    "external_infrastructure": false,
+    "implemented": false,
+    "fallback": "retainP0/cap6 until implementation validates"
+  },
+  "verdict": "C \u2014 WORKFLOW-AWARE ACCOUNTING IS PREFERRED"
+}

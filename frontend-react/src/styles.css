@@ -8075,6 +8075,12 @@ a:focus-visible {
   min-width: 0;
 }
 
+.tool-section-heading > div {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .tool-section-heading h3 {
   margin: 0;
   color: var(--slate);
@@ -8084,6 +8090,7 @@ a:focus-visible {
 
 .tool-section-heading p {
   max-width: 62ch;
+  overflow-wrap: anywhere;
   margin: var(--space-1) 0 0;
   color: var(--subtle);
   font-size: var(--text-meta);

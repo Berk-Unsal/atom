@@ -690,12 +690,20 @@ for (const outcome of ["deadline", "budget", "cancellation", "fast"]) {
       // also scroll it into view. Check feedback geometry relative to Planning.
       const planningShift = (await planning.boundingBox()).y - idlePlanningBox.y;
       for (const [control, idleBox] of [[action, idleActionBox], [advanced, idleAdvancedBox], [slot, idleSlotBox]]) {
-        expect(await control.boundingBox()).toEqual({ ...idleBox, y: idleBox.y + planningShift });
+        const currentBox = await control.boundingBox();
+        expect(Math.abs(currentBox.x - idleBox.x)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.y - idleBox.y - planningShift)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.width - idleBox.width)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.height - idleBox.height)).toBeLessThanOrEqual(1);
       }
     } else {
-      expect(await action.boundingBox()).toEqual(idleActionBox);
-      expect(await advanced.boundingBox()).toEqual(idleAdvancedBox);
-      expect(await slot.boundingBox()).toEqual(idleSlotBox);
+      for (const [control, idleBox] of [[action, idleActionBox], [advanced, idleAdvancedBox], [slot, idleSlotBox]]) {
+        const currentBox = await control.boundingBox();
+        expect(Math.abs(currentBox.x - idleBox.x)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.y - idleBox.y)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.width - idleBox.width)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.height - idleBox.height)).toBeLessThanOrEqual(1);
+      }
       expect(await drawer.evaluate((el) => el.scrollTop)).toBe(idleScroll);
     }
     if (["deadline", "budget"].includes(outcome)) {

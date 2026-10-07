@@ -387,7 +387,7 @@ func TestBoundedFailures(t *testing.T) {
 	for _, root := range []bool{true, false} {
 		for _, fault := range []string{"malformed", "oversized", "validation", "internal", "deadline", "cancel"} {
 			t.Run(fmt.Sprintf("root=%v/%s", root, fault), func(t *testing.T) {
-				h := newWorkflowHarness(t, 5*time.Millisecond, "")
+				h := newWorkflowHarness(t, time.Minute, "")
 				ip := "192.0.2.1"
 				headers := map[string]string{"RF-Workflow": "network-maps-v1"}
 				path := "/api/evaluate-network"

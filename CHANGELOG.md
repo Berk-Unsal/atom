@@ -3,6 +3,10 @@
 All notable changes to A.T.O.M are recorded here. The project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and this file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+### Changed
+
+- Refresh the README for 0.12.0 capabilities, qualified eight-cell planning and independent workflow limits, with four current Ankara workspace screenshots.
+
 ### Fixed
 
 - Wait for imported projects to finish saving and keep narrow tool drawers within their viewport.

@@ -7,7 +7,7 @@ The recommended way to run A.T.O.M is Docker Compose. For the visual, task-based
 - Docker Desktop or Docker Engine with Compose
 - Git and [Git LFS](https://git-lfs.com/)
 - Internet access during the first build and for the default OpenStreetMap basemap
-- For source development: Go 1.26.6 and Node.js 24 or newer
+- For source development: Go 1.26.9 and Node.js 24 or newer
 
 ## Get the Complete Repository
 

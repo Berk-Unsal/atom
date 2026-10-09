@@ -13,6 +13,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 ### Fixed
 
 - Wait for imported projects to finish saving and keep narrow tool drawers within their viewport.
+- Upgrade to Go 1.26.9 and golang.org/x/net 0.60.0 to include fixes for newly reported Go HTTP and HTTP/2 vulnerabilities.
 
 ### Added
 

@@ -13,6 +13,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add documentation appearance using the application palette and shared browser preference, with a sun/moon toggle, System appearance by default, and matching light and dark landing-page previews.
+
 - Promote normal network selection from six to eight Cells within the qualified Ankara W1/Profile A scope; bounded verified follow-ups allow the complete28-call analysis/optimization journey. Independent Recommendation5 and Measurement Validation6 limits remain.
 
 

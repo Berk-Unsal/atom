@@ -4,6 +4,8 @@ set -eu
 DOCS_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 cd "$DOCS_DIR"
 
+python3 build_theme_assets.py
+
 build_page() {
   source_file=$1
   output_file=$2

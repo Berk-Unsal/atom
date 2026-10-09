@@ -146,8 +146,9 @@ jobs:
         with:
           version: "3.10"
       - run: sh docs/build-reference-pages.sh
-      - run: git diff --exit-code -- docs/*.html docs/search-index.json
+      - run: git diff --exit-code -- docs/*.html docs/search-index.json docs/assets/app-theme.css
       - run: node --check docs/assets/docs.js
+      - run: node --check docs/assets/docs-theme.js
       - run: python docs/validate_docs.py
 
   container-security:

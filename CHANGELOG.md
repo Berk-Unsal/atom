@@ -3,9 +3,12 @@
 All notable changes to A.T.O.M are recorded here. The project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and this file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+
+## [0.12.1] - 2026-10-09
+
 ### Changed
 
-- Refresh the README for 0.12.0 capabilities, qualified eight-cell planning and independent workflow limits, with four current Ankara workspace screenshots.
+- Refresh the README for 0.12.1 capabilities, qualified eight-cell planning and independent workflow limits, with four current Ankara workspace screenshots.
 
 ### Fixed
 
@@ -302,7 +305,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.1...HEAD
+[0.12.1]: https://github.com/Berk-Unsal/atom/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/Berk-Unsal/atom/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/Berk-Unsal/atom/compare/v0.10.2...v0.11.0
 [0.10.2]: https://github.com/Berk-Unsal/atom/compare/v0.10.1...v0.10.2

@@ -10,7 +10,7 @@
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.12.0-0f766e?style=for-the-badge)](VERSION)
+[![Version](https://img.shields.io/badge/version-0.12.1-0f766e?style=for-the-badge)](VERSION)
 
 </div>
 
@@ -24,9 +24,9 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 ---
 
-## Current Version: 0.12.0
+## Current Version: 0.12.1
 
-Version **0.12.0** expands selected-network planning to **eight cells** and adds bounded, verified RF follow-ups so the qualified eight-cell evaluation, interference, and optimization workflow can complete within the request budget. It retains the deterministic RF models, explicit run actions, and local project history from earlier releases.
+Version **0.12.1** adds a light/dark appearance toggle to the documentation site, follows the shared browser preference by default, and refreshes the release screenshots. It includes the qualified eight-cell planning and bounded, verified RF follow-ups introduced in 0.12.0.
 
 | Workflow | Current scope |
 |----------|---------------|
@@ -122,7 +122,7 @@ Runtime policy bindings are generated from `policy/rf-policy.json`. After changi
 
 ## Workspace Gallery
 
-The screenshots below show the **0.12.0** dark workspace on the Ankara dataset with the 5G mmWave preset at 28 GHz.
+The screenshots below show the **0.12.0** workspace on the Ankara dataset with the 5G mmWave preset at 28 GHz.
 
 ### Eight-Cell Network Workspace
 

@@ -1169,7 +1169,7 @@
       "page": "Changelog",
       "title": "Fixed",
       "url": "./changelog.html#fixed",
-      "text": "Wait for imported projects to finish saving and keep narrow tool drawers within their viewport."
+      "text": "Wait for imported projects to finish saving and keep narrow tool drawers within their viewport. Upgrade to Go 1.26.9 and golang.org/x/net 0.60.0 to include fixes for newly reported Go HTTP and HTTP/2 vulnerabilities."
     },
     {
       "page": "Changelog",
@@ -3815,7 +3815,7 @@
       "page": "Contributing",
       "title": "Setup Development Environment",
       "url": "./contributing.html#setup-development-environment",
-      "text": "Backend : # Install Go 1.26.6+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Python tooling : Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution: python -m pip install --require-hashes --only-binary = :all: -r data-pipeline/Requirements.txt python -m pip install --require-hashes --only-binary = :all: -r docs/requirements.txt After deliberately changing either .in file, install uv==0.12.0 and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles. Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
+      "text": "Backend : # Install Go 1.26.9+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Python tooling : Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution: python -m pip install --require-hashes --only-binary = :all: -r data-pipeline/Requirements.txt python -m pip install --require-hashes --only-binary = :all: -r docs/requirements.txt After deliberately changing either .in file, install uv==0.12.0 and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles. Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
     },
     {
       "page": "Contributing",
@@ -4103,7 +4103,7 @@
       "page": "Download and Use",
       "title": "Start locally, then follow the workflow you need",
       "url": "./download.html",
-      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.26.6 Frontend Node 24+"
+      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.26.9 Frontend Node 24+"
     },
     {
       "page": "Download and Use",
@@ -4163,7 +4163,7 @@
       "page": "Download and Use",
       "title": "Terminal 1: Go API",
       "url": "./download.html#development-heading",
-      "text": "Requires Go 1.26.6 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
+      "text": "Requires Go 1.26.9 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
     },
     {
       "page": "Download and Use",

@@ -1,0 +1,20 @@
+{
+  "concept": "8G",
+  "states": ["Browse working set", "Edit one Cell", "Select Cells for batch edit", "Review batch changes"],
+  "browseToEdit": "A semantic result button opens a single Cell editor and replaces the browse surface.",
+  "back": "Returns to the same scope, query/filter, captured map snapshot, and scroll position; restores focus to the originating result when it remains available.",
+  "inspectorHandoff": "Contextual Inspector Edit in Inventory sets the exact Cell ID and opens EDIT ONE directly.",
+  "editorHierarchy": {
+    "identityHeader": ["Cell identity", "resolved technology/frequency", "inventory source"],
+    "planning": ["position", "technology", "frequency", "bandwidth", "conducted TX power", "radius", "beam width", "antenna height", "orientation", "receiver height", "receiver threshold"],
+    "advanced": ["band/channel/duplex", "TX/RX gain and losses", "tilt/load/reuse/PCI", "antenna patterns", "derived receiver inputs"]
+  },
+  "existingActions": {
+    "reset": "Removes the Cell rfProfile override and retains identity/location.",
+    "duplicate": "Uses the existing deep-copy, unique suffix, coordinate offset, and add/select/invalidate behavior.",
+    "delete": "Uses existing delete and Undo behavior, including Network membership/azimuth restoration.",
+    "position": "Uses existing coordinate validation and RF-result invalidation."
+  },
+  "focus": "Cell heading receives focus on entry; Back restores the originating result button.",
+  "evidence": ["Inventory browsing opens a separate editor without changing RF or Map Focus", "Inventory editor returns keyboard focus to the exact browse row"]
+}

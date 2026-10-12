@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "test-evidence",
+  "baseline": {
+    "branch": "main",
+    "head": "a47828c67da6db0de88b08859f2e3ccc0c146b62",
+    "version": "0.9.2",
+    "working_tree_clean_before_artifact": true,
+    "results": "All baseline backend-go and core-lab-adapter test, race, and vet commands passed; targeted TestConcept6A1 suite passed."
+  },
+  "new_regression": {
+    "test": "TestConcept6A1SanitizedRealV6ServingConflictIsNotPromoted",
+    "fixture": "backend-go/raytracer/testdata/concept-6a1-real-v6-structure-sanitized.txt",
+    "purpose": "Preserves contradictory registered/connection-status source structure, ServiceState bandwidth context, unavailable bandwidth sentinel, ID-zero neighbor, GPS fix, generic dbm callback, and collector SERVING_CELL_CHANGED event without promoting a canonical observation.",
+    "result": "passed (targeted and full backend test suites)",
+    "tests": [
+      "TestConcept6A1SanitizedRealV6ServingConflictIsNotPromoted",
+      "TestConcept6A1MappingRequiresExactPLMNAndCellID",
+      "TestConcept6A1DoesNotPromoteNearbyOrStrongestInventoryCell"
+    ],
+    "coverage": [
+      "real manifest user-estimated 1.4 m represented through existing assumed schema enum",
+      "unknown outdoor/LOS remains explicit (existing regression)",
+      "missing LTE B7 bandwidth and Android unavailable sentinel",
+      "incomplete neighbor/resource context blocks radio-quality validation (existing regression)",
+      "exact PLMN + Cell ID mapping",
+      "wrong PLMN rejection",
+      "same-PCI unrelated identity does not map",
+      "ambiguous duplicate identity rejected",
+      "nearby/strongest inventory cell is not promoted without exact identity",
+      "cell_id=0 remains neighbor-only",
+      "collector serving-change event does not override connection_status=NONE",
+      "poor GNSS and route-motion behavior retained (existing regression)",
+      "zero-row measurement readiness with no calibration"
+    ]
+  },
+  "post_change_commands": [
+    {
+      "command": "cd backend-go && go test ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go test -race ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go vet ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go test ./raytracer -run \"^TestConcept6A1\" -count=1",
+      "result": "passed"
+    },
+    {
+      "command": "cd core-lab-adapter && go test ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd core-lab-adapter && go test -race ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd core-lab-adapter && go vet ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd frontend-react && npx vitest run src/domain/requestEquivalence.test.js",
+      "result": "passed"
+    },
+    {
+      "command": "sh docs/build-reference-pages.sh",
+      "result": "passed"
+    },
+    {
+      "command": "data-pipeline/.venv/bin/python docs/validate_docs.py",
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/versioning.py check",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "All new JSON artifacts parse",
+      "result": "passed"
+    },
+    {
+      "command": "Tracked-diff privacy review and raw-file tracking check",
+      "result": "passed"
+    }
+  ],
+  "no_production_code_changes": {
+    "parser_adapter_changed": false,
+    "canonical_rf_changed": false,
+    "optimizer_changed": false,
+    "request_payload_changed": false,
+    "fingerprint_changed": false,
+    "persistence_changed": false,
+    "ui_changed": false,
+    "calibration_performed": false
+  },
+  "documentation_validator_environment_note": "System python3 lacks PyYAML; the repository data-pipeline virtualenv ran the validator successfully (42 HTML pages, 41 API paths)."
+}

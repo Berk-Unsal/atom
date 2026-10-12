@@ -1,0 +1,19 @@
+{
+  "concept": "4F.2",
+  "artifact": "controlled-roof-diffraction-fixtures",
+  "source_test": "backend-go/raytracer/diffraction_controlled_fixtures_test.go",
+  "geometry": "100 m flat-ground link, 28 GHz, 10 m TX/RX heights unless stated",
+  "results": [
+    {"name": "roof-clearly-below-los", "center_m": 50, "half_width_m": 5, "roof_height_m": 5, "height_source": "height", "candidate_count": 2, "selected_v": null, "selected_loss_db": null, "available": true},
+    {"name": "roof-touches-los", "center_m": 50, "half_width_m": 5, "roof_height_m": 10, "height_source": "height", "candidate_count": 2, "selected_v": 0, "selected_loss_db": 6.03, "available": true},
+    {"name": "roof-one-metre-above-los", "center_m": 50, "half_width_m": 5, "roof_height_m": 11, "height_source": "height", "candidate_count": 2, "selected_v": 2.7457, "selected_loss_db": 21.67, "available": true},
+    {"name": "roof-five-metres-above-los", "center_m": 50, "half_width_m": 5, "roof_height_m": 15, "height_source": "height", "candidate_count": 2, "selected_v": 13.7283, "selected_loss_db": 35.62, "available": true},
+    {"name": "near-tx-obstruction", "center_m": 15, "half_width_m": 4, "roof_height_m": 15, "height_source": "height", "candidate_count": 2, "selected_v": 21.8243, "selected_loss_db": 39.66, "available": true},
+    {"name": "near-rx-obstruction", "center_m": 85, "half_width_m": 4, "roof_height_m": 15, "height_source": "height", "candidate_count": 2, "selected_v": 21.8243, "selected_loss_db": 39.66, "available": true},
+    {"name": "midpoint-obstruction", "center_m": 50, "half_width_m": 3, "roof_height_m": 15, "height_source": "height", "candidate_count": 2, "selected_v": 13.6842, "selected_loss_db": 35.59, "available": true},
+    {"name": "wide-flat-roof", "center_m": 50, "half_width_m": 20, "roof_height_m": 11, "height_source": "height", "candidate_count": 2, "selected_v": 2.9801, "selected_loss_db": 22.36, "available": true},
+    {"name": "two-roof-edges", "center_m": 50, "half_width_m": 10, "roof_height_m": 12, "height_source": "height", "candidate_count": 2, "selected_v": 5.5763, "selected_loss_db": 27.76, "available": true},
+    {"name": "unknown-roof-height", "center_m": 50, "half_width_m": 5, "roof_height_m": 9, "height_source": "default-3-storey", "candidate_count": 2, "selected_v": null, "selected_loss_db": null, "available": false, "reason": "obstruction_height_unavailable"}
+  ],
+  "assertion": "known-height fixtures serialize deterministic geometry and reconstruct v/loss; fallback-only geometry remains unavailable and produces no v or diffraction loss"
+}

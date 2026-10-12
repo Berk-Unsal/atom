@@ -1,0 +1,57 @@
+{
+  "artifact": "concept-4i3-synthetic-validation",
+  "schema_version": 1,
+  "purpose": "Small deterministic contract tests for the isolated measurement-evidence workflow. These are controlled fixtures, not field evidence.",
+  "residual_definition": "measured_path_loss_db - predicted_path_loss_db",
+  "cases": [
+    {
+      "id": "p525_exact_zero_residual",
+      "campaign": {
+        "schema_version": 1,
+        "campaign_id": "synthetic-p525-exact",
+        "campaign_version": "1",
+        "provenance": {"source_type": "synthetic_controlled"},
+        "frequency_range_ghz": {"min_ghz": 140, "max_ghz": 140},
+        "antenna_setup": {"directionality": "synthesized_omnidirectional", "comparison_basis": "synthesized_omnidirectional_path_loss"},
+        "measurements": [
+          {"measurement_id": "d20", "frequency_ghz": 140, "measurement_quantity": "path_loss", "measured_path_loss_db": 101.39094384872776, "antenna_gain_embedded": true, "cable_loss_embedded": true, "calibration_applied": true, "directionality": "synthesized_omnidirectional", "antenna_comparison_basis": "synthesized_omnidirectional_path_loss", "geometry": {"direct_3d_distance_m": 20}},
+          {"measurement_id": "d40", "frequency_ghz": 140, "measurement_quantity": "path_loss", "measured_path_loss_db": 107.41154376200738, "antenna_gain_embedded": true, "cable_loss_embedded": true, "calibration_applied": true, "directionality": "synthesized_omnidirectional", "antenna_comparison_basis": "synthesized_omnidirectional_path_loss", "geometry": {"direct_3d_distance_m": 40}},
+          {"measurement_id": "d60", "frequency_ghz": 140, "measurement_quantity": "path_loss", "measured_path_loss_db": 110.93336894312101, "antenna_gain_embedded": true, "cable_loss_embedded": true, "calibration_applied": true, "directionality": "synthesized_omnidirectional", "antenna_comparison_basis": "synthesized_omnidirectional_path_loss", "geometry": {"direct_3d_distance_m": 60}}
+        ]
+      },
+      "expected": {"model_id": "p525_fspl", "applicable_count": 3, "mean_bias_db": 0, "rmse_db": 0}
+    },
+    {
+      "id": "p525_constant_plus_five_db",
+      "derivation": "Take the exact P.525 samples above and add +5 dB to each measured path loss.",
+      "expected": {"model_id": "p525_fspl", "mean_bias_db": 5, "median_bias_db": 5, "calibration_method": "constant_bias_only", "production_candidate": false}
+    },
+    {
+      "id": "p1411_below_rooftop_los_exact",
+      "derivation": "Lb = 10*2.07*log10(d_m) + 31.23 + 10*2.06*log10(f_GHz).",
+      "scenario": {"frequency_ghz": 140, "los_nlos": "los", "morphology": "urban_low_rise", "rooftop_relation": "both_below_rooftop"},
+      "expected": {"model_id": "p1411_below_rooftop_los_v1", "source_sigma_db": 4.91, "median_only": true, "random_fading_sampled": false}
+    },
+    {
+      "id": "gaussian_residual_diagnostic",
+      "derivation": "Attach a fixed, seeded residual vector to an exact P.525 fixture; calculate mean, median, MAE, RMSE, standard deviation, p10 and p90 without fitting an exponent.",
+      "residual_vector_db": [-4, -2, 0, 2, 4],
+      "expected": {"count": 5, "mean_bias_db": 0, "mae_db": 2.4, "rmse_db": 2.8284271247461903, "std_db": 2.8284271247461903}
+    },
+    {
+      "id": "spatial_region_offset",
+      "derivation": "Use two deterministic coordinate regions: the held-out region carries a +8 dB offset while the calibration region is unbiased.",
+      "expected": {"strategy": "spatial_grid", "no_leakage": true, "calibration_status": "unstable_or_insufficient_validation_data", "promotion": false}
+    },
+    {
+      "id": "censored_and_directional",
+      "derivation": "A below-detection record is counted but excluded; best-directional samples remain ambiguous unless a synthesized-omni basis is explicit.",
+      "expected": {"censored_count": 1, "ordinary_metric_count_excludes_censored": true, "directional_status": "ambiguous"}
+    }
+  ],
+  "non_claims": [
+    "Synthetic fixtures do not validate Ankara propagation accuracy.",
+    "A constant bias is not a new propagation equation and is never automatically applied to canonical RF.",
+    "The research_sub_thz 80 dB per-wall comparison is not calibrated by these fixtures."
+  ]
+}

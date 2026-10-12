@@ -1,0 +1,170 @@
+{
+  "artifact": "concept-7a-pre-change-baseline",
+  "artifact_version": "1.0.0",
+  "audit": {
+    "concept": "7A",
+    "title": "Project, Scenario & Persistence Architecture Audit",
+    "mode": "architecture_only",
+    "captured_on": "2026-09-21",
+    "timezone": "Europe/Istanbul",
+    "scope": [
+      "Project and scenario ownership",
+      "Frontend state and persistence",
+      "IndexedDB and localStorage behavior",
+      "Backend dataset and run boundaries",
+      "Future database and object-storage boundaries",
+      "Reproducibility, provenance, deletion, and conflict semantics"
+    ],
+    "explicitly_out_of_scope": [
+      "PostgreSQL or PostGIS implementation",
+      "IndexedDB removal or migration",
+      "RF algorithm changes",
+      "Optimizer policy or search behavior changes",
+      "Inventory model implementation",
+      "Concept 6 validation or terrain work",
+      "API contract changes",
+      "Authentication or multi-user implementation"
+    ]
+  },
+  "repository": {
+    "root": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "branch": "main",
+    "head": "92711dbcccae5a4de6e4d63c9f274082e890a50f",
+    "head_short": "92711db",
+    "head_subject": "Refactor code structure for improved readability and maintainability",
+    "tracked_file_count": 480,
+    "version_file": "VERSION",
+    "version": "0.8.0"
+  },
+  "worktree": {
+    "status_command": "git status --short --branch",
+    "status_at_capture": "main...origin/main",
+    "tracked_modified_count": 3,
+    "untracked_entry_count": 56,
+    "dirty_entry_count": 59,
+    "tracked_modified_paths": [
+      "docs/build-reference-pages.sh",
+      "docs/index.md",
+      "docs/search-index.json"
+    ],
+    "pre_existing_untracked_groups": [
+      {
+        "area": "backend-go",
+        "description": "Concept 6A/6A1 import, campaign, canonical RF, and validation work",
+        "paths": [
+          "backend-go/cmd/import-concept-6a1/",
+          "backend-go/raytracer/canonical_rf_validation.go",
+          "backend-go/raytracer/canonical_rf_validation_holdout.go",
+          "backend-go/raytracer/canonical_rf_validation_test.go",
+          "backend-go/raytracer/concept_5d_optimizer_audit_test.go",
+          "backend-go/raytracer/concept_6a1_campaign_artifact_test.go",
+          "backend-go/raytracer/concept_6a1_campaign_tooling.go",
+          "backend-go/raytracer/concept_6a1_campaign_tooling_test.go",
+          "backend-go/raytracer/concept_6a_validation_audit_test.go"
+        ]
+      },
+      {
+        "area": "docs",
+        "description": "Pre-existing Concept 5D, 6A, 6A1, and 6A2 audit artifacts",
+        "paths": [
+          "docs/concept-5d-*",
+          "docs/concept-6a-*",
+          "docs/concept-6a1-*",
+          "docs/concept-6a2-*"
+        ]
+      },
+      {
+        "area": "examples",
+        "description": "Pre-existing Concept 6A1 dry-run examples",
+        "paths": [
+          "examples/concept-6a1-dry-run-campaign.json",
+          "examples/concept-6a1-dry-run-transmitter-map.json",
+          "examples/concept-6a1-signal-collector-dry-run.txt"
+        ]
+      }
+    ],
+    "attribution_rule": "The pre-existing entries above are not Concept 7A changes. Concept 7A adds only the files named in its artifact manifest."
+  },
+  "source_fingerprints": [
+    {
+      "path": "frontend-react/src/utils/projectStore.js",
+      "sha256": "889cf25d3502155dd7510b4d167247fa75e58643bbfc2dcb2875b3abe3f1cc20",
+      "role": "IndexedDB/localStorage workspace persistence and schema normalization"
+    },
+    {
+      "path": "frontend-react/src/hooks/useProjectWorkspace.js",
+      "sha256": "ee0f3047a4d066390b246b5fcd8a01a5a316a84970f25e1d3875e52010d96b03",
+      "role": "React workspace/project/scenario persistence hook"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "sha256": "b98f9cc935e9cbdfdf75a3246e3aceb993771a6bf349ba8cec6f19ad2cd09976",
+      "role": "Current broad React state owner and autosave/restoration coordinator"
+    },
+    {
+      "path": "backend-go/raytracer/scenario_fingerprint.go",
+      "sha256": "44ebdfc0e2a981bddae435b3382c4403e55db3d3f7e195c5ba2a2bbbff93c9f6",
+      "role": "Current deterministic network/interference scenario fingerprints"
+    },
+    {
+      "path": "backend-go/raytracer/static_simulation.go",
+      "sha256": "1806be4c5747dd800b62486df896c62f8ecf7e522b330181ac1e4ce7596ee693",
+      "role": "Current simulation, network optimization, and result DTOs"
+    },
+    {
+      "path": "backend-go/raytracer/dataset_pack.go",
+      "sha256": "865666cfe6c778bdd4eb1a4238d309addc6360703d7c0612715f7e7b80634008",
+      "role": "Dataset manifest, pack loader, and in-memory runtime boundary"
+    },
+    {
+      "path": "backend-go/experiment_jobs.go",
+      "sha256": "fb6478003af938bca2fca64bc8042f248ed15c8e82123e63b7aee081fd4c75d5",
+      "role": "Current in-memory batch experiment job/cache manager"
+    }
+  ],
+  "dataset_evidence": [
+    {
+      "path": "data-pipeline/manifest.json",
+      "bytes": 2400,
+      "sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+      "dataset_id": "ankara-open-planning",
+      "dataset_version": "2026.07",
+      "crs": "EPSG:4326",
+      "role": "Validated dataset-pack manifest"
+    },
+    {
+      "path": "data-pipeline/ankara_5g_nodes.geojson",
+      "bytes": 102831,
+      "sha256": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+      "feature_count": 451,
+      "role": "Small source tower/cell dataset"
+    },
+    {
+      "path": "data-pipeline/ankara_buildings.geojson",
+      "bytes": 116805843,
+      "sha256": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc",
+      "feature_count": 161626,
+      "role": "Large building source dataset loaded through a Go spatial index"
+    }
+  ],
+  "current_persistence_facts": {
+    "frontend_database": "atom-planning-workspace",
+    "frontend_database_version": 1,
+    "frontend_object_store": "workspace",
+    "frontend_object_key": "current",
+    "frontend_schema_version": 2,
+    "fallback": "localStorage key atom.planning.workspace.v1",
+    "backend_persistence": "none_for_projects_scenarios_runs_reports",
+    "backend_dataset_mode": "validated_file_pack_loaded_into_in_memory_runtime",
+    "server_health_backend_label": "static-in-memory",
+    "server_api_project_scenario_run_routes": false
+  },
+  "production_changes_at_baseline": [],
+  "baseline_invariants": [
+    "RF request and response behavior remains the source of truth for the audit.",
+    "Existing atom-scenario-v1 fingerprint generation is observed, not modified.",
+    "Current local-first IndexedDB behavior is documented, not removed.",
+    "Current dataset-pack files and in-memory spatial indexes remain unchanged.",
+    "Existing dirty worktree changes remain user-owned and are not attributed to Concept 7A."
+  ]
+}

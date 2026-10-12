@@ -1,0 +1,90 @@
+{
+  "concept": "8F",
+  "phase": "pre-change baseline",
+  "capturedAt": "2026-09-24T11:18:23Z",
+  "workingTree": {
+    "head": "0e4f624a1e08826e4381bc3ff11747eae140bd66",
+    "branch": "main",
+    "version": "0.9.1",
+    "dirty": false,
+    "status": "clean",
+    "diffStat": ""
+  },
+  "checks": {
+    "frontendUnitWorkflow": {
+      "command": "cd frontend-react && npm test",
+      "status": "passed",
+      "files": 56,
+      "tests": 301
+    },
+    "frontendLint": {
+      "command": "cd frontend-react && npm run lint",
+      "status": "passed"
+    },
+    "frontendProductionBuild": {
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "javascriptChunkCount": 12,
+      "initialJavaScript": {
+        "file": "index-CPWkdou9.js",
+        "rawBytes": 801829,
+        "gzipBytes": 226624
+      },
+      "allJavaScript": {
+        "rawBytes": 998170,
+        "gzipBytes": 280609
+      },
+      "css": {
+        "rawBytes": 184311,
+        "gzipBytes": 33582
+      },
+      "warning": "Vite reports the initial JavaScript chunk exceeds 500 kB after minification."
+    },
+    "requestEquivalence": {
+      "command": "cd frontend-react && npm test -- src/domain/requestEquivalence.test.js",
+      "status": "passed",
+      "files": 1,
+      "tests": 3
+    },
+    "e2e": {
+      "command": "cd frontend-react && npm run test:e2e",
+      "status": "passed",
+      "total": 172,
+      "passed": 102,
+      "skipped": 70,
+      "failed": 0,
+      "projects": [
+        "desktop-1440",
+        "desktop-1024",
+        "tablet-768",
+        "mobile-390"
+      ],
+      "notes": "Default Playwright configuration skips project-gated cases and real-backend tests. Existing Concept 8B screenshot/evidence files rewritten by the capture workflow were restored byte-for-byte to the clean starting worktree."
+    },
+    "backendGo": {
+      "module": "backend-go",
+      "vet": {
+        "command": "cd backend-go && go vet ./...",
+        "status": "passed"
+      },
+      "race": {
+        "command": "cd backend-go && go test -race ./...",
+        "status": "passed",
+        "testedPackages": 2
+      }
+    },
+    "coreLabAdapter": {
+      "module": "core-lab-adapter",
+      "vet": {
+        "command": "cd core-lab-adapter && go vet ./...",
+        "status": "passed"
+      },
+      "race": {
+        "command": "cd core-lab-adapter && go test -race ./...",
+        "status": "passed",
+        "testedPackages": 1
+      }
+    }
+  },
+  "baselineConclusion": "All requested baseline checks passed; no unexplained baseline failures block Concept 8F."
+}

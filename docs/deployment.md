@@ -1,13 +1,13 @@
 # Deployment
 
-A.T.O.M is local-first and stateless on the server. The production image serves the compiled React workspace, Go API, and one validated dataset pack from a single non-root container.
+A.T.O.M is local-first and stateless on the server. The production image serves the compiled React workspace, Go API, and an immutable active dataset-pack snapshot from a single non-root container.
 
 ## Recommended Local Deployment
 
 ```bash
 git lfs install
-git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
-cd urban-ray-tracer
+git clone https://github.com/Berk-Unsal/atom.git
+cd atom
 git lfs pull
 docker compose up --build -d atom
 curl --fail http://localhost:8080/readyz
@@ -21,10 +21,29 @@ Open `http://localhost:8080`. Stop the service with `docker compose down`.
 |---|---|---|
 | `atom` container | Required | Static frontend, REST API, RF engines, spatial index, active dataset pack |
 | Browser IndexedDB | Required for projects | Local project/scenario history; not shared across users |
-| OpenStreetMap tiles | External by default | Visual basemap only; RF computation remains local |
+| Stadia Maps / OpenStreetMap tiles | External by default | Alidade Smooth light/dark and selectable OSM; visual basemap only; RF computation remains local |
 | `core-lab-adapter` | Optional profile | Deterministic 5G path state and optional Open5GS probes |
 
 The Go server does not persist projects, jobs, reports, or measurements. Multiple API replicas can serve independent requests, but browser projects do not become collaborative storage.
+
+## Auto resource diagnostics
+
+A.T.O.M automatically observes runtime CPU, Go scheduler and memory constraints
+once at startup for diagnostics and calibration. The startup log includes one
+structured Auto resource summary. Developers can inspect full JSON locally with
+`docker exec atom-app ./server --resource-profile`; the one-shot command opens no
+HTTP listener. No machine-capacity diagnostics endpoint or product resource
+controls are added. Local diagnostic logs should stay with operators.
+
+Detection does not adapt RF admission or experiment settings: defaults remain
+20 attempts per ClientIP per anchored 60-second window, concurrency 2 globally
+and 1 per client, a 60-second RF deadline, six selected Cells and one experiment
+worker. This foundation establishes no automatic scaling or certified minimum
+or recommended hardware. See the [foundation and measured calibration](./auto-resource-profile-foundation.md).
+
+## Qualified shipping-runtime W1 reference
+
+The [W1 shipping-runtime qualification](./w1-shipping-runtime-qualification.md) names **A** as the minimum and **B** as the recommended W1 reference for A.T.O.M **0.11.0**, commit `e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8`, shipping **Go 1.26.6**, qualified **2026-10-05 UTC**. A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested resource floors under the exact Ankara 2026.07 hashes, eight layouts and frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and shipping binary assumptions. CPU quota does not reserve dedicated cores. Current policy remains 20 attempts/ClientIP/anchored 60 s, global 2/per-client 1, RF deadline 60 s, six Cells, experiment worker 1/queue 16. Unknown runtime/resource evidence never establishes eligibility. This is not a universal hardware requirement, arbitrary pack/layout guarantee, heavier-workload qualification, or eight-Cell approval. Auto remains observation-only; no resource selector or admission change. See the qualification for GC-trace observability, memory/timing gates, actual HTTP evidence and limitations.
 
 ## Configuration
 
@@ -34,6 +53,8 @@ The Go server does not persist projects, jobs, reports, or measurements. Multipl
 | `PORT` | `8080` | Public HTTP listener inside the container |
 | `FRONTEND_DIST_PATH` | `/app/dist` | Compiled frontend bundle |
 | `ATOM_DATASET_DIR` | `/app/data-pipeline` | Directory containing `manifest.json` and referenced data files |
+| `ATOM_DATASETS_ROOT` | unset | Local directory whose own pack and immediate child pack directories are listed for safe runtime switching |
+| `DATASET_ADMIN_API_KEY` | unset | Require this key to activate an installed dataset pack by ID |
 | `MAX_CONCURRENT_RF_REQUESTS` | `2` | Process-wide expensive RF admission limit |
 | `MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT` | `1` | Maximum simultaneous expensive jobs from one client identity |
 | `RF_REQUESTS_PER_MINUTE` | `20` | Per-client expensive-route request budget per process |
@@ -42,12 +63,19 @@ The Go server does not persist projects, jobs, reports, or measurements. Multipl
 | `MAX_CONCURRENT_BUILDING_DOWNLOADS` | `2` | Process-wide admission limit for fresh full-dataset transfers |
 | `MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT` | `1` | Maximum simultaneous full-dataset transfers from one client identity |
 | `BUILDING_DOWNLOADS_PER_MINUTE` | `2` | Per-client fresh building-dataset transfer budget per process |
-| `BUILDINGS_API_KEY` | unset | Require this key on the full building-dataset route when configured |
+| `MAX_CONCURRENT_BUILDING_FEATURE_QUERIES` | `4` | Process-wide admission limit for bounded building viewport queries |
+| `MAX_CONCURRENT_BUILDING_FEATURE_QUERIES_PER_CLIENT` | `2` | Maximum simultaneous bounded building queries from one client identity |
+| `BUILDING_FEATURE_QUERIES_PER_MINUTE` | `120` | Per-client bounded building-query budget per process |
+| `BUILDINGS_API_KEY` | unset | Require this key on full and bounded building-data routes when configured |
+| `EXPERIMENT_WORKERS` | `1` | Concurrent batch-experiment workers |
+| `EXPERIMENT_QUEUE_SIZE` | `16` | Accepted asynchronous experiment jobs waiting for a worker |
 | `TRUSTED_PROXIES` | unset | Comma-separated proxy CIDRs whose forwarded client-IP headers are trusted |
+| `REQUIRE_HTTPS` | `false` | Reject non-HTTPS requests with `426`; enable behind a TLS proxy that supplies `X-Forwarded-Proto` |
 | `CORE_LAB_ENABLED` | `false` | Enables backend proxy routes for the optional adapter |
-| `CORE_LAB_BASE_URL` | unset | Internal adapter URL when Core Lab is enabled |
+| `CORE_LAB_ADAPTER_URL` | `http://localhost:8090` | Internal adapter URL when Core Lab is enabled |
+| `CORE_LAB_API_KEY` | unset | Required shared key for Core Lab scenario mutation when Core Lab is enabled |
 
-The manifest-driven dataset directory is the authoritative data boundary; individual building and tower paths are not configured independently.
+The manifest-driven dataset directory is the authoritative data boundary; individual building and tower paths are not configured independently. `ATOM_DATASETS_ROOT` expands that boundary only to installed child packs and never permits client-supplied paths.
 
 ## Dataset Mounts
 
@@ -58,7 +86,7 @@ cd backend-go
 go run ./cmd/validate-dataset /absolute/path/to/dataset
 ```
 
-Mount it read-only and set `ATOM_DATASET_DIR`:
+Mount one pack read-only and set `ATOM_DATASET_DIR`:
 
 ```yaml
 services:
@@ -72,7 +100,22 @@ services:
       - /absolute/path/to/dataset:/datasets/region:ro
 ```
 
-A dataset change requires restart. Missing files, hash mismatches, invalid EPSG:4326 bounds, duplicate tower IDs, or unusable geometry keep readiness at `503` with an explanatory dataset error.
+For a local catalog, make the initial pack a child of the mounted root and set both variables:
+
+```yaml
+services:
+  atom:
+    environment:
+      ATOM_DATASET_DIR: /datasets/ankara
+      ATOM_DATASETS_ROOT: /datasets
+      DATASET_ADMIN_API_KEY: ${DATASET_ADMIN_API_KEY}
+    volumes:
+      - /absolute/path/to/installed-packs:/datasets:ro
+```
+
+The Data tool and `GET /api/datasets` list unique valid manifests. Activation submits only a manifest ID. The backend resolves entries beneath the configured root, validates every referenced hash plus tower/building usability, and atomically replaces the pack after success; ongoing requests retain their captured old snapshot. Failed candidates, duplicate IDs, and symlink escapes do not change the active pack. When `DATASET_ADMIN_API_KEY` is configured, a same-origin gateway must inject it because the browser does not store administration credentials.
+
+Missing files, hash mismatches, invalid EPSG:4326 bounds, duplicate tower IDs, or unusable geometry keep initial readiness at `503`. See [Dataset Pack Studio](dataset-pack-studio.html) to build and validate arbitrary-region schema-v2 packs.
 
 ## Health And Capacity
 
@@ -89,7 +132,7 @@ Raise `MAX_CONCURRENT_RF_REQUESTS` or its per-client counterpart only after meas
 
 ## Reverse Proxy Boundary
 
-Compose binds the application to `127.0.0.1` by default. Set `ATOM_BIND_ADDRESS` only when another interface must accept traffic. For an internet-facing deployment, set strong `RF_API_KEY` and `BUILDINGS_API_KEY` values and place a trusted proxy or gateway in front of port 8080 for:
+Compose binds the application to `127.0.0.1` by default. Set `ATOM_BIND_ADDRESS` only when another interface must accept traffic. For an internet-facing deployment, set strong `RF_API_KEY`, `BUILDINGS_API_KEY`, and `DATASET_ADMIN_API_KEY` values as applicable and place a trusted proxy or gateway in front of port 8080 for:
 
 - TLS termination and authentication.
 - Request-rate and source policy.
@@ -98,16 +141,19 @@ Compose binds the application to `127.0.0.1` by default. Set `ATOM_BIND_ADDRESS`
 
 Authenticated clients send either `Authorization: Bearer <key>` or `X-API-Key: <key>`. The bundled browser UI does not store API keys, so deployments that enable either backend key should terminate user authentication at a same-origin gateway and inject the appropriate key there. Keep `TRUSTED_PROXIES` unset unless the server is actually behind those proxies; otherwise forwarded IP headers are ignored for per-client budgets.
 
-Keep the Core Lab adapter private to the service network unless direct access is explicitly required.
+The backend emits CSP, frame-ancestor, MIME-sniffing, referrer, permissions, and opener-policy headers on every response. HSTS is emitted for TLS requests. The container intentionally serves HTTP on its internal port; terminate TLS at the gateway and set `REQUIRE_HTTPS=true` after the gateway is configured to supply `X-Forwarded-Proto: https`.
+
+The Core Lab overlay keeps the adapter private to the service network, runs it as a non-root user with a read-only filesystem, drops all Linux capabilities, and prevents privilege escalation. Use an explicit, separately reviewed override if direct host access is required for diagnostics.
 
 ## Optional 5G Core Lab
 
 ```bash
+export CORE_LAB_API_KEY="$(openssl rand -hex 32)"
 docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
   --profile core-lab up --build
 ```
 
-The adapter does not deploy a complete Open5GS core. Without configured Open5GS endpoints it returns a deterministic `simulated_overlay`; with endpoints it briefly probes external health/metrics while preserving the same `/api/core/*` contracts.
+The adapter does not deploy a complete Open5GS core. Without configured Open5GS endpoints it returns a deterministic `simulated_overlay`; with endpoints it briefly probes external health/metrics while preserving the same `/api/core/*` contracts. Both the backend mutation route and the adapter require `CORE_LAB_API_KEY`; the backend forwards its configured credential on the private adapter hop. Browser deployments should inject the key at a same-origin gateway rather than store it in frontend code.
 
 ## Tagged Multi-Architecture Images
 
@@ -116,9 +162,9 @@ Pushing a `v*` Git tag triggers `.github/workflows/release.yml`. The workflow:
 1. Pulls Git LFS data.
 2. Builds Linux AMD64 and ARM64 images.
 3. Embeds the tag and commit into `/api/meta` using Go linker values.
-4. Publishes semantic-version tags to `ghcr.io/<repository-owner>/atom`.
+4. Publishes semantic-version tags to `ghcr.io/<repository-owner>/atom` with SPDX SBOM and provenance attestations.
 
-Every external action used by the quality and release workflows is pinned to a full commit SHA, with its release version retained in a comment for review. CI rejects mutable action references, checkout does not persist its Git credential, and weekly Dependabot updates keep the reviewed pins current.
+Every external action used by the quality and release workflows is pinned to a full commit SHA, with its release version retained in a comment for review. Container build stages retain readable version tags but are also pinned to immutable multi-architecture image digests. CI rejects mutable build inputs, reviews dependency changes on pull requests, builds the production and Core Lab adapter images, stores SPDX JSON SBOMs, and fails on fixable high or critical vulnerabilities. Checkout does not persist its Git credential, and weekly Dependabot updates keep reviewed action, module, Python, and container pins current.
 
 Use immutable version tags in deployments. The running application exposes its version, commit, model version, and dataset identity in Data and `/api/meta`.
 
@@ -145,3 +191,8 @@ Imported projects include a schema version and dataset reference. A mismatch is 
 - Public deployments enforce TLS and user authentication at the gateway and set `RF_API_KEY` plus `BUILDINGS_API_KEY` on the backend hop.
 
 See [Download and Use](download.html), [System Architecture](architecture.html), and the [OpenAPI contract](openapi.yaml).
+
+
+## Basemap access and appearance
+
+Alidade Smooth and Alidade Smooth Dark use Stadia Maps. Production browser deployments require domain registration with Stadia and an appropriate subscription (commercial use requires a paid plan). Localhost development has a rate-limited keyless exemption; private LAN addresses do not. Keep linked attribution visible and preserve Origin/Referer headers. OpenStreetMap remains an explicit alternative in Layers, subject to its own tile usage policy. See [theme/provider guidance](dark-mode.md) for authentication, licensing, and failure recovery.

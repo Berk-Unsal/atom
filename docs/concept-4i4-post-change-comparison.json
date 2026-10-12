@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "concept": "4I.4",
+  "post_change_commit": "working-tree",
+  "boundary": {
+    "model_id": "p2040_material_slab_reference_v1",
+    "route": "POST /api/sub-thz-material-reference",
+    "canonical_propagation_modified": false,
+    "research_sub_thz_80db_rule_modified": false,
+    "production_candidate_allowed": false,
+    "readiness": "reference_only"
+  },
+  "invariance_targets": [
+    "canonical_2p6ghz",
+    "canonical_28ghz",
+    "research_sub_thz",
+    "concept_4i2a_atmospheric_reference",
+    "concept_4i2b_p1411_reference",
+    "p526_diagnostic",
+    "building_entry",
+    "interference_radio_quality",
+    "optimization"
+  ],
+  "evidence": {
+    "new_route_isolated": true,
+    "new_model_is_not_in_propagation_dispatch": true,
+    "new_model_is_not_in_validation_model_list": true,
+    "automatic_osm_material_physics": false,
+    "multilayer_implemented": false,
+    "metal_preset_at_140ghz": false,
+    "historical_80db_comparison_combined": false,
+    "material_characterization_is_separate_from_campaign_rmse": true,
+    "backend_targeted_tests": "passed",
+    "backend_go_test": "passed",
+    "backend_go_vet": "passed",
+    "backend_go_race": "passed",
+    "frontend_material_panel_tests": "passed",
+    "frontend_unit_tests": "32 files / 182 tests passed",
+    "frontend_lint": "passed",
+    "frontend_build": "passed",
+    "mocked_e2e": "29 passed / 11 skipped; material reference workflow covered at desktop, tablet, and mobile viewports",
+    "docs_validation": "26 HTML pages / 37 API paths valid",
+    "performance": "100 evaluations benchmarked at 2922 ns/op on Apple M4",
+    "docs_artifacts": [
+      "docs/concept-4i4-pre-change-baseline.json",
+      "docs/concept-4i4-material-applicability.json",
+      "docs/concept-4i4-controlled-fixtures.json",
+      "docs/concept-4i4-reference-comparison.json",
+      "docs/concept-4i4-material-facade-reference.md"
+    ]
+  },
+  "required_invariance_proof": {
+    "method": "re-run the pre-change canonical/reference fixture suites and compare exact serialized ledgers or recorded tolerances",
+    "targets": [
+      "docs/concept-4i4-pre-change-baseline.json",
+      "backend-go/raytracer/concept_4i1_capture_test.go",
+      "docs/concept-4i2a-post-change-comparison.json",
+      "docs/concept-4i2b-reference-comparison.json",
+      "docs/concept-4i3-post-change-comparison.json"
+    ],
+    "status": "quality_gates_passed; canonical/reference invariance suites passed"
+  },
+  "readiness": {
+    "classification": "reference_only",
+    "production_candidate": false,
+    "promoted": false,
+    "required_gates": [
+      "independent P.2040 equation review",
+      "measured slab/coupon provenance",
+      "thickness, angle, polarization, and exterior-media calibration",
+      "facade geometry and normal evidence",
+      "multilayer/roughness/scattering model evidence",
+      "independent Ankara transferability review"
+    ]
+  }
+}

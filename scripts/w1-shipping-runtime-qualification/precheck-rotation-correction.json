@@ -1,0 +1,8 @@
+{
+  "recorded_at": "2026-10-05T16:33:44.975480+00:00",
+  "qualification_started": false,
+  "issue": "Docker logger rename caused exists/stat TOCTOU in an unnecessary producer API log read. Observer exited before completing the first v2 proof case.",
+  "correction": "API requests do not read completion logs. RF completion reader follows inode/current/rotated files and retries atomic rename. Preserve every failed preliminary directory; restart full five-case non-scoring proof series v3.",
+  "parameter_changes": "none:1024cap,eightpending,64runs,worker1,queue16,50ms sampler unchanged",
+  "recording": "Progress-change snapshots and all timed active samples retained; duplicate unchanged snapshots need not consume memory"
+}

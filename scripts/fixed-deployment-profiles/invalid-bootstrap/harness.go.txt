@@ -1,0 +1,89 @@
+package main
+
+// Certification successor helpers: only compiled in the disposable test copy.
+import (
+ "ankara-5g-raytracer/raytracer"
+ "ankara-5g-raytracer/internal/resourceprofile"
+ "os"
+ "reflect"
+ "context"
+ "encoding/json"
+ "fmt"
+ "path/filepath"
+ "strings"
+ "sync"
+ "sync/atomic"
+ "testing"
+ "time"
+)
+var auditExperimentActive atomic.Int64
+
+type fixedGeometry struct { State string `json:"state"`; Counts *geometryStats `json:"counts"` }
+func fixedGeometryObservation(idx *raytracer.BuildingIndex,b raytracer.Bounds) fixedGeometry {
+ if idx==nil {return fixedGeometry{State:"unknown"}}
+ s:=geometryDescribe(idx,b);return fixedGeometry{State:"known",Counts:&s}
+}
+func TestFixedUnknownGeometry(t *testing.T) {
+ b:=raytracer.Bounds{MinLon:32.8,MinLat:39.9,MaxLon:32.81,MaxLat:39.91}
+ unavailable:=fixedGeometryObservation(nil,b)
+ if unavailable.State!="unknown" || unavailable.Counts!=nil {t.Fatal("unavailable became zero")}
+ empty:=fixedGeometryObservation(raytracer.EmptyBuildingIndex(),b)
+ if empty.State!="known" || empty.Counts==nil || empty.Counts.Footprints!=0 {t.Fatal("empty geometry lost known zero")}
+ raw,_:=json.Marshal(unavailable);if !strings.Contains(string(raw),`"counts":null`) {t.Fatal("unknown serialized as count")}
+ var bad fixedGeometry;if json.Unmarshal([]byte(`{"state":"known","counts":{"footprints":"unavailable"}}`),&bad)==nil {t.Fatal("malformed count accepted")}
+}
+
+func fixedOverlap(t *testing.T,w,profile string,index int,scenario string,base map[string]any,manager *experimentManager,request func(string,[]byte,string,context.Context) geometryResponse,encode func(any) []byte,network func(bool,string) geometryResponse,peer string) []geometryResponse {
+ t.Helper()
+ sustained:=strings.HasPrefix(scenario,"sustained-")
+ ids:=[]string{};submitted:=0;submissionFailures:=0
+ submit:=func() {
+  b:=map[string]any{};for k,v:=range base {b[k]=v}
+  b["calibration_offset_db"]=float64(index%1000)/1000+float64(submitted)/100000
+  runs:=16;if sustained {runs=64}
+  az:=[]float64{};for k:=0;k<runs;k++ {az=append(az,float64(k)*360/float64(runs)+float64(index%1000)/10000+float64(submitted)/1000000)}
+  res:=request("/api/processes/batch-experiment/execution",encode(map[string]any{"name":"fixed-profile-certification","base":b,"matrix":map[string]any{"azimuths_deg":az}}),fmt.Sprintf("198.20.%d.%d:1000",index/250,(index+submitted)%250+1),nil)
+  submitted++;var snap experimentJobSnapshot
+  if res.Status==202 && json.Unmarshal(res.Body,&snap)==nil && !snap.CacheHit {ids=append(ids,snap.JobID)} else {submissionFailures++}
+ }
+ submit()
+ until:=time.Now().Add(5*time.Second)
+ for auditExperimentActive.Load()==0 && time.Now().Before(until) {time.Sleep(time.Millisecond)}
+ initialActive:=auditExperimentActive.Load()>0
+ if sustained {for i:=0;i<3;i++ {submit()}}
+ start:=time.Now();stop:=make(chan struct{});joined:=make(chan struct{});var mu sync.Mutex
+ samples:=[]map[string]any{}
+ go func(){defer close(joined);ticker:=time.NewTicker(50*time.Millisecond);defer ticker.Stop()
+ for {select {case <-stop:return;case <-ticker.C:
+  mu.Lock();active:=auditExperimentActive.Load();queued:=len(manager.queue)
+  samples=append(samples,map[string]any{"at":time.Now(),"elapsed_seconds":time.Since(start).Seconds(),"active":active,"queued":queued,"submitted":submitted})
+  if sustained && active+int64(queued)<4 && submitted<64 && time.Since(start)<30*time.Second {submit()};mu.Unlock()
+ }}
+ }()
+ responses:=[]geometryResponse{}
+ for round:=0;round<12;round++ {
+  responses=append(responses,network(strings.HasSuffix(scenario,"optimize"),peer))
+  if !sustained || time.Since(start)>=30*time.Second {break};time.Sleep(3*time.Second)
+ }
+ if sustained && time.Since(start)<30*time.Second {time.Sleep(30*time.Second-time.Since(start))}
+ close(stop);<-joined
+ snapshots:=[]experimentJobSnapshot{}
+ for _,id:=range ids {s,_:=manager.Snapshot(id);s.Result=nil;snapshots=append(snapshots,s);manager.Cancel(id)}
+ drainStart:=time.Now();until=time.Now().Add(90*time.Second)
+ for len(manager.queue)>0 || auditExperimentActive.Load()>0 {if time.Now().After(until) {t.Fatal("async drain watchdog")};time.Sleep(5*time.Millisecond)}
+ geometryWrite(t,filepath.Join(w,fmt.Sprintf("async-%s-%d.json",profile,index)),map[string]any{"initial_active":initialActive,"started_at":start,"finished_at":time.Now(),"duration_seconds":time.Since(start).Seconds(),"drain_seconds":time.Since(drainStart).Seconds(),"submitted":submitted,"submission_failures":submissionFailures,"sustained":sustained,"samples":samples,"jobs":snapshots})
+ return responses
+}
+
+func fixedCheckAuto(t *testing.T,v resourceprofile.Snapshot) {
+ t.Helper()
+ var lock struct {Dataset struct {ID string `json:"id"`; Version string `json:"version"`; SHA256 map[string]string `json:"sha256"`; Footprints int `json:"footprints"`; Vertices int `json:"vertices"`; Cells int `json:"cells"`} `json:"dataset"`}
+ geometryRead(t,filepath.Join(os.Getenv("ATOM_GEOMETRY_DIR"),"certification-lock.json"),&lock)
+ d:=lock.Dataset
+ if v.Dataset.State!="known" || v.Dataset.ID!=d.ID || v.Dataset.Version!=d.Version || !reflect.DeepEqual(v.Dataset.SHA256,d.SHA256) || v.Dataset.Footprints==nil || *v.Dataset.Footprints!=d.Footprints || v.Dataset.Vertices==nil || *v.Dataset.Vertices!=d.Vertices || v.Dataset.Cells==nil || *v.Dataset.Cells!=d.Cells {t.Fatal("Auto dataset mismatch before RF")}
+ if v.Runtime.OS!="linux" || v.Runtime.Arch!="arm64" || v.Environment!="container" || v.CgroupVersion!="v2" {t.Fatal("Auto runtime mismatch before RF")}
+ if len(v.CPU.Effective.UnknownSources)>0 || len(v.Memory.Effective.UnknownSources)>0 {t.Fatal("incomplete resource visibility")}
+ if strings.Split(os.Getenv("ATOM_GEOMETRY_PROFILE"),"-")[0]!="D" {
+  if v.CPU.Quota.State!="known" || v.CPU.GOMAXPROCS.Value==nil || float64(*v.CPU.GOMAXPROCS.Value)!=*v.CPU.Quota.Value || v.Memory.Effective.Value==nil || *v.Memory.Effective.Value!=*v.Memory.Limit.Value {t.Fatal("Auto effective resource mismatch")}
+ }
+}

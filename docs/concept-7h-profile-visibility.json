@@ -1,0 +1,59 @@
+{
+  "concept": "7H",
+  "artifact": "profile-visibility",
+  "capturedOn": "2026-09-23",
+  "policy": {
+    "disclosureState": "ephemeral React UI state",
+    "profileSwitchClearsHiddenValues": false,
+    "hiddenControlUnmountsOnCollapse": false,
+    "unsupportedRadioQualityValueRetained": true
+  },
+  "profiles": [
+    {
+      "id": "canonical_lte_2_6",
+      "label": "4G LTE · 2.6 GHz",
+      "status": "canonical planning profile",
+      "planning": "Setup and Inventory Planning groups remain primary; global Run action remains available.",
+      "advanced": "Detailed per-cell antenna/link-budget fields, optimizer constraints, and diagnostics remain under Advanced.",
+      "researchReference": "Research/reference tools remain findable under their existing tools and collapsed until opened.",
+      "controlsHiddenForProfile": []
+    },
+    {
+      "id": "canonical_5g_28",
+      "label": "5G mmWave · 28 GHz",
+      "status": "canonical planning profile",
+      "planning": "Setup and Inventory Planning groups remain primary; global Run action remains available.",
+      "advanced": "Detailed per-cell antenna/link-budget fields, optimizer constraints, and diagnostics remain under Advanced.",
+      "researchReference": "Research/reference tools remain findable under their existing tools and collapsed until opened.",
+      "controlsHiddenForProfile": []
+    },
+    {
+      "id": "legacy_fspl_walls",
+      "label": "Legacy FSPL + walls",
+      "status": "existing selectable propagation mode",
+      "planning": "Model choice remains in Setup Planning; the existing mode and value are preserved.",
+      "advanced": "Expanded assumptions remain available from Setup and Data Advanced details.",
+      "researchReference": "Reference tools remain separate and do not become additive to this mode.",
+      "controlsHiddenForProfile": []
+    },
+    {
+      "id": "research_sub_thz_140",
+      "label": "6G research profile · 140 GHz",
+      "status": "Research / reference; not canonical validation; not production-calibrated",
+      "planning": "Setup and Propagation show a Research / reference boundary when the research profile is active.",
+      "advanced": "Radio-quality objective remains visible as UNSUPPORTED and its configured priority is retained but disabled.",
+      "researchReference": "Sub-THz atmosphere and P.1411 remain isolated under the collapsed Research / reference disclosure.",
+      "unsupported": ["Radio-quality model/output"],
+      "controlsHiddenForProfile": []
+    }
+  ],
+  "receiverDistinctionsPreserved": [
+    "manual sensitivity",
+    "derived sensitivity",
+    "building-service threshold",
+    "RSRP threshold",
+    "SINR threshold",
+    "RSRQ threshold"
+  ],
+  "noNewProfileDefaults": true
+}

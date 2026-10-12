@@ -1,0 +1,106 @@
+{
+  "active_aoi": {
+    "bounds_west_south_east_north": [
+      32.45,
+      39.55,
+      33.25,
+      40.25
+    ],
+    "crs": "EPSG:4326"
+  },
+  "artifact": "fabdem-manifest",
+  "captured_at": "2026-09-19",
+  "concept": "4F.3A.3",
+  "production_decision": "research-only comparator; not a production dependency",
+  "reproducibility": {
+    "adapter": "terrain_source_pilot.py RasterSource v1 plus Go HGT/GeoTIFF diagnostic adapters",
+    "raw_cache_layout": "<raw_dir>/<relative_raw_path>",
+    "sampling_interpolation": "bilinear",
+    "sha256_algorithm": "SHA-256"
+  },
+  "schema_version": 1,
+  "source": {
+    "acquisition_route": "Public mirror used for tile-level analysis; official Bristol release remains authoritative.",
+    "candidate_kind": "dtm_candidate",
+    "classification": "model-derived bare-earth candidate with building/tree height bias removed from Copernicus GLO-30; research comparator only",
+    "doi": "https://doi.org/10.5523/bris.s5hqmjcdj8yo2ibzi9b4ew3sn",
+    "format": "COG GeoTIFF float32, 3600 x 3600, nodata -9999",
+    "geoid_model": "EGM2008",
+    "horizontal_crs": "EPSG:4326",
+    "license": "CC BY-NC-SA 4.0; non-commercial and ShareAlike terms apply",
+    "license_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/license.txt",
+    "limitations": [
+      "FABDEM is not a production dependency in this phase because its CC BY-NC-SA license requires a separate commercial/use review.",
+      "Its EGM2008 vertical datum is not directly comparable with NASADEM EGM96 without an explicit sourced transformation.",
+      "Bare-earth correction is model-derived and requires local control before authoritative ground use."
+    ],
+    "nominal_resolution": "1 arc-second (~30 m at Ankara latitude)",
+    "official_url": "https://research-information.bris.ac.uk/en/datasets/fabdem-v1-2/",
+    "product": "FABDEM V1-2",
+    "product_id": "FABDEM V1-2",
+    "provider": "University of Bristol",
+    "readme_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/readme.txt",
+    "release": "V1-2",
+    "vertical_datum": "EGM2008",
+    "vertical_datum_kind": "orthometric"
+  },
+  "tile_selection_policy": "all one-degree tiles intersecting AOI; retain one-degree source tiles without cropping; tile edges are sampled with source-native posting semantics",
+  "tiles": [
+    {
+      "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+      "bytes": 35980358,
+      "filename": "N39E032_FABDEM_V1-2.tif",
+      "mirror_url": "https://huggingface.co/buckets/links-ads/fabdem/resolve/tiles/N30E030-N40E040_FABDEM_V1-2/N39E032_FABDEM_V1-2.tif",
+      "official_granule": "N39E032_FABDEM_V1-2",
+      "official_product": "FABDEM V1-2",
+      "official_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/",
+      "raw_subdir": "fabdem",
+      "relative_raw_path": "fabdem/N39E032_FABDEM_V1-2.tif",
+      "sha256": "46d4c5f44ec954892fe1c2ce06e21c004474a67b6f1f3a13557ca96994cca374",
+      "source": "fabdem",
+      "tile_id": "N39E032_FABDEM_V1-2"
+    },
+    {
+      "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+      "bytes": 35660852,
+      "filename": "N39E033_FABDEM_V1-2.tif",
+      "mirror_url": "https://huggingface.co/buckets/links-ads/fabdem/resolve/tiles/N30E030-N40E040_FABDEM_V1-2/N39E033_FABDEM_V1-2.tif",
+      "official_granule": "N39E033_FABDEM_V1-2",
+      "official_product": "FABDEM V1-2",
+      "official_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/",
+      "raw_subdir": "fabdem",
+      "relative_raw_path": "fabdem/N39E033_FABDEM_V1-2.tif",
+      "sha256": "5e6ae05c28d1d0875deeb4f74eb4407bfbd5299e8309dee64f8a5017fb5c6e37",
+      "source": "fabdem",
+      "tile_id": "N39E033_FABDEM_V1-2"
+    },
+    {
+      "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+      "bytes": 38537772,
+      "filename": "N40E032_FABDEM_V1-2.tif",
+      "mirror_url": "https://huggingface.co/buckets/links-ads/fabdem/resolve/tiles/N40E030-N50E040_FABDEM_V1-2/N40E032_FABDEM_V1-2.tif",
+      "official_granule": "N40E032_FABDEM_V1-2",
+      "official_product": "FABDEM V1-2",
+      "official_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/",
+      "raw_subdir": "fabdem",
+      "relative_raw_path": "fabdem/N40E032_FABDEM_V1-2.tif",
+      "sha256": "fcc6387249c3770565aaf84eed7f65c9f426aa7d4c949c05afa1496dd2b45147",
+      "source": "fabdem",
+      "tile_id": "N40E032_FABDEM_V1-2"
+    },
+    {
+      "acquisition_route": "public diagnostic mirror; official upstream identity retained",
+      "bytes": 38674623,
+      "filename": "N40E033_FABDEM_V1-2.tif",
+      "mirror_url": "https://huggingface.co/buckets/links-ads/fabdem/resolve/tiles/N40E030-N50E040_FABDEM_V1-2/N40E033_FABDEM_V1-2.tif",
+      "official_granule": "N40E033_FABDEM_V1-2",
+      "official_product": "FABDEM V1-2",
+      "official_url": "https://data.bris.ac.uk/datasets/s5hqmjcdj8yo2ibzi9b4ew3sn/",
+      "raw_subdir": "fabdem",
+      "relative_raw_path": "fabdem/N40E033_FABDEM_V1-2.tif",
+      "sha256": "6bb57f3b645d813de139ca96b3d6b5f6b28b68ca8654412e95bc4fa486c90a4f",
+      "source": "fabdem",
+      "tile_id": "N40E033_FABDEM_V1-2"
+    }
+  ]
+}

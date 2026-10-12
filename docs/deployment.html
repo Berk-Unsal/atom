@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="description" content="Container, reverse-proxy, readiness,
 capacity, scaling, and production-hardening guidance for A.T.O.M." />
   <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
   <link rel="stylesheet" href="./assets/docs.css" />
   <title>Deployment | A.T.O.M Documentation</title>
 </head>
@@ -55,6 +56,16 @@ capacity, scaling, and production-hardening guidance for A.T.O.M." />
           </div>
         </div>
       </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
       <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
         <span class="nav-toggle-lines" aria-hidden="true"></span>
       </button>
@@ -63,7 +74,7 @@ capacity, scaling, and production-hardening guidance for A.T.O.M." />
         <a href="./architecture.html">Architecture</a>
         <a href="./api.html">API</a>
         <a href="./changelog.html">Changelog</a>
-        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
         <a class="nav-cta" href="./download.html">Download &amp; Use</a>
       </nav>
     </div>
@@ -78,6 +89,12 @@ capacity, scaling, and production-hardening guidance for A.T.O.M." />
       Deployment</a></li>
       <li><a href="#runtime-topology" id="toc-runtime-topology">Runtime
       Topology</a></li>
+      <li><a href="#auto-resource-diagnostics"
+      id="toc-auto-resource-diagnostics">Auto resource
+      diagnostics</a></li>
+      <li><a href="#qualified-shipping-runtime-w1-reference"
+      id="toc-qualified-shipping-runtime-w1-reference">Qualified
+      shipping-runtime W1 reference</a></li>
       <li><a href="#configuration"
       id="toc-configuration">Configuration</a></li>
       <li><a href="#dataset-mounts" id="toc-dataset-mounts">Dataset
@@ -95,6 +112,9 @@ capacity, scaling, and production-hardening guidance for A.T.O.M." />
       id="toc-upgrade-and-rollback">Upgrade And Rollback</a></li>
       <li><a href="#verification-checklist"
       id="toc-verification-checklist">Verification Checklist</a></li>
+      <li><a href="#basemap-access-and-appearance"
+      id="toc-basemap-access-and-appearance">Basemap access and
+      appearance</a></li>
       </ul>
     </aside>
 
@@ -112,13 +132,13 @@ production-hardening guidance for A.T.O.M.</p>
 
       <div class="prose">
 <p>A.T.O.M is local-first and stateless on the server. The production
-image serves the compiled React workspace, Go API, and one validated
-dataset pack from a single non-root container.</p>
+image serves the compiled React workspace, Go API, and an immutable
+active dataset-pack snapshot from a single non-root container.</p>
 <h2 id="recommended-local-deployment">Recommended Local Deployment</h2>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs install</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Berk-Unsal/urban-ray-tracer.git</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> urban-ray-tracer</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Berk-Unsal/atom.git</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> atom</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://localhost:8080/readyz</span></code></pre></div>
@@ -146,9 +166,10 @@ pack</td>
 <td>Local project/scenario history; not shared across users</td>
 </tr>
 <tr>
-<td>OpenStreetMap tiles</td>
+<td>Stadia Maps / OpenStreetMap tiles</td>
 <td>External by default</td>
-<td>Visual basemap only; RF computation remains local</td>
+<td>Alidade Smooth light/dark and selectable OSM; visual basemap only;
+RF computation remains local</td>
 </tr>
 <tr>
 <td><code>core-lab-adapter</code></td>
@@ -160,6 +181,41 @@ pack</td>
 <p>The Go server does not persist projects, jobs, reports, or
 measurements. Multiple API replicas can serve independent requests, but
 browser projects do not become collaborative storage.</p>
+<h2 id="auto-resource-diagnostics">Auto resource diagnostics</h2>
+<p>A.T.O.M automatically observes runtime CPU, Go scheduler and memory
+constraints once at startup for diagnostics and calibration. The startup
+log includes one structured Auto resource summary. Developers can
+inspect full JSON locally with
+<code>docker exec atom-app ./server --resource-profile</code>; the
+one-shot command opens no HTTP listener. No machine-capacity diagnostics
+endpoint or product resource controls are added. Local diagnostic logs
+should stay with operators.</p>
+<p>Detection does not adapt RF admission or experiment settings:
+defaults remain 20 attempts per ClientIP per anchored 60-second window,
+concurrency 2 globally and 1 per client, a 60-second RF deadline, six
+selected Cells and one experiment worker. This foundation establishes no
+automatic scaling or certified minimum or recommended hardware. See the
+<a href="./auto-resource-profile-foundation.html">foundation and
+measured calibration</a>.</p>
+<h2 id="qualified-shipping-runtime-w1-reference">Qualified
+shipping-runtime W1 reference</h2>
+<p>The W1 shipping-runtime qualification names <strong>A</strong> as the
+minimum and <strong>B</strong> as the recommended W1 reference for
+A.T.O.M <strong>0.11.0</strong>, commit
+<code>e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8</code>, shipping
+<strong>Go 1.26.6</strong>, qualified <strong>2026-10-05 UTC</strong>.
+A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested
+resource floors under the exact Ankara 2026.07 hashes, eight layouts and
+frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and
+shipping binary assumptions. CPU quota does not reserve dedicated cores.
+Current policy remains 20 attempts/ClientIP/anchored 60 s, global
+2/per-client 1, RF deadline 60 s, six Cells, experiment worker 1/queue
+16. Unknown runtime/resource evidence never establishes eligibility.
+This is not a universal hardware requirement, arbitrary pack/layout
+guarantee, heavier-workload qualification, or eight-Cell approval. Auto
+remains observation-only; no resource selector or admission change. See
+the qualification for GC-trace observability, memory/timing gates,
+actual HTTP evidence and limitations.</p>
 <h2 id="configuration">Configuration</h2>
 <table>
 <thead>
@@ -191,6 +247,17 @@ default</td>
 <td><code>/app/data-pipeline</code></td>
 <td>Directory containing <code>manifest.json</code> and referenced data
 files</td>
+</tr>
+<tr>
+<td><code>ATOM_DATASETS_ROOT</code></td>
+<td>unset</td>
+<td>Local directory whose own pack and immediate child pack directories
+are listed for safe runtime switching</td>
+</tr>
+<tr>
+<td><code>DATASET_ADMIN_API_KEY</code></td>
+<td>unset</td>
+<td>Require this key to activate an installed dataset pack by ID</td>
 </tr>
 <tr>
 <td><code>MAX_CONCURRENT_RF_REQUESTS</code></td>
@@ -235,10 +302,37 @@ identity</td>
 <td>Per-client fresh building-dataset transfer budget per process</td>
 </tr>
 <tr>
+<td><code>MAX_CONCURRENT_BUILDING_FEATURE_QUERIES</code></td>
+<td><code>4</code></td>
+<td>Process-wide admission limit for bounded building viewport
+queries</td>
+</tr>
+<tr>
+<td><code>MAX_CONCURRENT_BUILDING_FEATURE_QUERIES_PER_CLIENT</code></td>
+<td><code>2</code></td>
+<td>Maximum simultaneous bounded building queries from one client
+identity</td>
+</tr>
+<tr>
+<td><code>BUILDING_FEATURE_QUERIES_PER_MINUTE</code></td>
+<td><code>120</code></td>
+<td>Per-client bounded building-query budget per process</td>
+</tr>
+<tr>
 <td><code>BUILDINGS_API_KEY</code></td>
 <td>unset</td>
-<td>Require this key on the full building-dataset route when
+<td>Require this key on full and bounded building-data routes when
 configured</td>
+</tr>
+<tr>
+<td><code>EXPERIMENT_WORKERS</code></td>
+<td><code>1</code></td>
+<td>Concurrent batch-experiment workers</td>
+</tr>
+<tr>
+<td><code>EXPERIMENT_QUEUE_SIZE</code></td>
+<td><code>16</code></td>
+<td>Accepted asynchronous experiment jobs waiting for a worker</td>
 </tr>
 <tr>
 <td><code>TRUSTED_PROXIES</code></td>
@@ -247,26 +341,40 @@ configured</td>
 trusted</td>
 </tr>
 <tr>
+<td><code>REQUIRE_HTTPS</code></td>
+<td><code>false</code></td>
+<td>Reject non-HTTPS requests with <code>426</code>; enable behind a TLS
+proxy that supplies <code>X-Forwarded-Proto</code></td>
+</tr>
+<tr>
 <td><code>CORE_LAB_ENABLED</code></td>
 <td><code>false</code></td>
 <td>Enables backend proxy routes for the optional adapter</td>
 </tr>
 <tr>
-<td><code>CORE_LAB_BASE_URL</code></td>
-<td>unset</td>
+<td><code>CORE_LAB_ADAPTER_URL</code></td>
+<td><code>http://localhost:8090</code></td>
 <td>Internal adapter URL when Core Lab is enabled</td>
+</tr>
+<tr>
+<td><code>CORE_LAB_API_KEY</code></td>
+<td>unset</td>
+<td>Required shared key for Core Lab scenario mutation when Core Lab is
+enabled</td>
 </tr>
 </tbody>
 </table>
 <p>The manifest-driven dataset directory is the authoritative data
 boundary; individual building and tower paths are not configured
-independently.</p>
+independently. <code>ATOM_DATASETS_ROOT</code> expands that boundary
+only to installed child packs and never permits client-supplied
+paths.</p>
 <h2 id="dataset-mounts">Dataset Mounts</h2>
 <p>Validate a pack before deployment:</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run ./cmd/validate-dataset /absolute/path/to/dataset</span></code></pre></div>
-<p>Mount it read-only and set <code>ATOM_DATASET_DIR</code>:</p>
+<p>Mount one pack read-only and set <code>ATOM_DATASET_DIR</code>:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">atom</span><span class="kw">:</span></span>
@@ -277,9 +385,30 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ATOM_DATASET_DIR</span><span class="kw">:</span><span class="at"> /datasets/region</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> /absolute/path/to/dataset:/datasets/region:ro</span></span></code></pre></div>
-<p>A dataset change requires restart. Missing files, hash mismatches,
-invalid EPSG:4326 bounds, duplicate tower IDs, or unusable geometry keep
-readiness at <code>503</code> with an explanatory dataset error.</p>
+<p>For a local catalog, make the initial pack a child of the mounted
+root and set both variables:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">atom</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ATOM_DATASET_DIR</span><span class="kw">:</span><span class="at"> /datasets/ankara</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ATOM_DATASETS_ROOT</span><span class="kw">:</span><span class="at"> /datasets</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">DATASET_ADMIN_API_KEY</span><span class="kw">:</span><span class="at"> ${DATASET_ADMIN_API_KEY}</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> /absolute/path/to/installed-packs:/datasets:ro</span></span></code></pre></div>
+<p>The Data tool and <code>GET /api/datasets</code> list unique valid
+manifests. Activation submits only a manifest ID. The backend resolves
+entries beneath the configured root, validates every referenced hash
+plus tower/building usability, and atomically replaces the pack after
+success; ongoing requests retain their captured old snapshot. Failed
+candidates, duplicate IDs, and symlink escapes do not change the active
+pack. When <code>DATASET_ADMIN_API_KEY</code> is configured, a
+same-origin gateway must inject it because the browser does not store
+administration credentials.</p>
+<p>Missing files, hash mismatches, invalid EPSG:4326 bounds, duplicate
+tower IDs, or unusable geometry keep initial readiness at
+<code>503</code>. See <a href="dataset-pack-studio.html">Dataset Pack
+Studio</a> to build and validate arbitrary-region schema-v2 packs.</p>
 <h2 id="health-and-capacity">Health And Capacity</h2>
 <ul>
 <li><code>GET /healthz</code> is process liveness and can succeed before
@@ -315,8 +444,9 @@ are process-local; use a gateway for a shared multi-replica budget.</p>
 <p>Compose binds the application to <code>127.0.0.1</code> by default.
 Set <code>ATOM_BIND_ADDRESS</code> only when another interface must
 accept traffic. For an internet-facing deployment, set strong
-<code>RF_API_KEY</code> and <code>BUILDINGS_API_KEY</code> values and
-place a trusted proxy or gateway in front of port 8080 for:</p>
+<code>RF_API_KEY</code>, <code>BUILDINGS_API_KEY</code>, and
+<code>DATASET_ADMIN_API_KEY</code> values as applicable and place a
+trusted proxy or gateway in front of port 8080 for:</p>
 <ul>
 <li>TLS termination and authentication.</li>
 <li>Request-rate and source policy.</li>
@@ -332,17 +462,31 @@ terminate user authentication at a same-origin gateway and inject the
 appropriate key there. Keep <code>TRUSTED_PROXIES</code> unset unless
 the server is actually behind those proxies; otherwise forwarded IP
 headers are ignored for per-client budgets.</p>
-<p>Keep the Core Lab adapter private to the service network unless
-direct access is explicitly required.</p>
+<p>The backend emits CSP, frame-ancestor, MIME-sniffing, referrer,
+permissions, and opener-policy headers on every response. HSTS is
+emitted for TLS requests. The container intentionally serves HTTP on its
+internal port; terminate TLS at the gateway and set
+<code>REQUIRE_HTTPS=true</code> after the gateway is configured to
+supply <code>X-Forwarded-Proto: https</code>.</p>
+<p>The Core Lab overlay keeps the adapter private to the service
+network, runs it as a non-root user with a read-only filesystem, drops
+all Linux capabilities, and prevents privilege escalation. Use an
+explicit, separately reviewed override if direct host access is required
+for diagnostics.</p>
 <h2 id="optional-5g-core-lab">Optional 5G Core Lab</h2>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.yml <span class="at">-f</span> docker-compose.core-lab.yml <span class="dt">\</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--profile</span> core-lab up <span class="at">--build</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CORE_LAB_API_KEY</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">openssl</span> rand <span class="at">-hex</span> 32<span class="va">)</span><span class="st">&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.yml <span class="at">-f</span> docker-compose.core-lab.yml <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--profile</span> core-lab up <span class="at">--build</span></span></code></pre></div>
 <p>The adapter does not deploy a complete Open5GS core. Without
 configured Open5GS endpoints it returns a deterministic
 <code>simulated_overlay</code>; with endpoints it briefly probes
 external health/metrics while preserving the same
-<code>/api/core/*</code> contracts.</p>
+<code>/api/core/*</code> contracts. Both the backend mutation route and
+the adapter require <code>CORE_LAB_API_KEY</code>; the backend forwards
+its configured credential on the private adapter hop. Browser
+deployments should inject the key at a same-origin gateway rather than
+store it in frontend code.</p>
 <h2 id="tagged-multi-architecture-images">Tagged Multi-Architecture
 Images</h2>
 <p>Pushing a <code>v*</code> Git tag triggers
@@ -353,24 +497,30 @@ Images</h2>
 <li>Embeds the tag and commit into <code>/api/meta</code> using Go
 linker values.</li>
 <li>Publishes semantic-version tags to
-<code>ghcr.io/&lt;repository-owner&gt;/atom</code>.</li>
+<code>ghcr.io/&lt;repository-owner&gt;/atom</code> with SPDX SBOM and
+provenance attestations.</li>
 </ol>
 <p>Every external action used by the quality and release workflows is
 pinned to a full commit SHA, with its release version retained in a
-comment for review. CI rejects mutable action references, checkout does
-not persist its Git credential, and weekly Dependabot updates keep the
-reviewed pins current.</p>
+comment for review. Container build stages retain readable version tags
+but are also pinned to immutable multi-architecture image digests. CI
+rejects mutable build inputs, reviews dependency changes on pull
+requests, builds the production and Core Lab adapter images, stores SPDX
+JSON SBOMs, and fails on fixable high or critical vulnerabilities.
+Checkout does not persist its Git credential, and weekly Dependabot
+updates keep reviewed action, module, Python, and container pins
+current.</p>
 <p>Use immutable version tags in deployments. The running application
 exposes its version, commit, model version, and dataset identity in Data
 and <code>/api/meta</code>.</p>
 <h2 id="upgrade-and-rollback">Upgrade And Rollback</h2>
 <p>Before an upgrade, export important <code>.atom-project.json</code>
 files. Then:</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://localhost:8080/readyz</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://localhost:8080/readyz</span></code></pre></div>
 <p>Imported projects include a schema version and dataset reference. A
 mismatch is surfaced rather than silently treating previous results as
 current. Roll back by deploying the previous immutable image/source tag
@@ -393,6 +543,16 @@ gateway and set <code>RF_API_KEY</code> plus
 <p>See <a href="download.html">Download and Use</a>, <a
 href="architecture.html">System Architecture</a>, and the <a
 href="openapi.yaml">OpenAPI contract</a>.</p>
+<h2 id="basemap-access-and-appearance">Basemap access and
+appearance</h2>
+<p>Alidade Smooth and Alidade Smooth Dark use Stadia Maps. Production
+browser deployments require domain registration with Stadia and an
+appropriate subscription (commercial use requires a paid plan).
+Localhost development has a rate-limited keyless exemption; private LAN
+addresses do not. Keep linked attribution visible and preserve
+Origin/Referer headers. OpenStreetMap remains an explicit alternative in
+Layers, subject to its own tile usage policy. See theme/provider
+guidance for authentication, licensing, and failure recovery.</p>
       </div>
     </article>
   </main>
@@ -400,7 +560,7 @@ href="openapi.yaml">OpenAPI contract</a>.</p>
   <footer class="site-footer">
     <div class="footer-inner">
       <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
-      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
     </div>
   </footer>
 

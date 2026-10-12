@@ -1,0 +1,251 @@
+{
+  "backend_tests": {
+    "command": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 0.35417154198512435,
+    "completed_at": "2026-10-05T15:00:06.611185+00:00"
+  },
+  "backend_race": {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 0.20779383298940957,
+    "completed_at": "2026-10-05T15:00:06.819428+00:00"
+  },
+  "backend_vet": {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 0.1686041250359267,
+    "completed_at": "2026-10-05T15:00:06.988299+00:00"
+  },
+  "frontend_tests": {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 11.206082082993817,
+    "completed_at": "2026-10-05T15:00:18.194750+00:00"
+  },
+  "frontend_lint": {
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 3.72858549997909,
+    "completed_at": "2026-10-05T15:00:21.923696+00:00"
+  },
+  "frontend_build": {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 1.2943782919901423,
+    "completed_at": "2026-10-05T15:00:23.218389+00:00"
+  },
+  "rf_budget_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/rf-budget.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 10.216798625013325,
+    "completed_at": "2026-10-05T15:00:33.435880+00:00"
+  },
+  "rf_deadline_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/network-deadline.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 9.78620641696034,
+    "completed_at": "2026-10-05T15:00:43.222845+00:00"
+  },
+  "auto_resource_profile_tests": {
+    "command": [
+      "go",
+      "test",
+      "./...",
+      "-run",
+      "ResourceProfile|AutoResource|RF.*Budget|Cancellation|Cancel|Experiment"
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 1.3604906660038978,
+    "completed_at": "2026-10-05T15:00:44.583692+00:00"
+  },
+  "scientific_canonicalizer_tests": {
+    "command": [
+      "go",
+      "test",
+      "-run",
+      "^TestFixedScientificHash$"
+    ],
+    "cwd": "/tmp/atom-resource-fixed-science/backend-go",
+    "exit_code": 0,
+    "seconds": 1.3960640000295825,
+    "completed_at": "2026-10-05T15:00:45.980098+00:00"
+  },
+  "fixed_profile_protocol_and_gate_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/fixed-deployment-profiles",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 1.8535409580217674,
+    "completed_at": "2026-10-05T15:00:47.834057+00:00"
+  },
+  "geometry_calibration_preservation_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/auto-resource-geometry",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 0.08291904197540134,
+    "completed_at": "2026-10-05T15:00:47.917288+00:00"
+  },
+  "locked_validation_preservation_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/auto-resource-estimator-validation",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 2.387599209032487,
+    "completed_at": "2026-10-05T15:00:50.305268+00:00"
+  },
+  "dataset_validation": {
+    "command": [
+      "go",
+      "run",
+      "./cmd/validate-dataset",
+      "../data-pipeline"
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 1.9868606249801815,
+    "completed_at": "2026-10-05T15:00:52.292489+00:00"
+  },
+  "docs_build": {
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 6.647625292011071,
+    "completed_at": "2026-10-05T15:00:58.940558+00:00"
+  },
+  "docs_validation": {
+    "command": [
+      "/tmp/atom-persistence-docs-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 0.46607174997916445,
+    "completed_at": "2026-10-05T15:00:59.406905+00:00"
+  },
+  "version_consistency": {
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 0.03337608301080763,
+    "completed_at": "2026-10-05T15:00:59.440638+00:00"
+  },
+  "diff_whitespace": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 0.026517624966800213,
+    "completed_at": "2026-10-05T15:00:59.467446+00:00"
+  },
+  "docs_final_build": {
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 6.403043332975358
+  },
+  "docs_final_validation": {
+    "command": [
+      "/tmp/atom-persistence-docs-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 0.3436740839970298
+  },
+  "final_diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "",
+    "exit_code": 0,
+    "seconds": 0.017584791989065707
+  }
+}

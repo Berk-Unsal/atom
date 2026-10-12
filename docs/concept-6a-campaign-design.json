@@ -1,0 +1,60 @@
+{
+  "acquisition_performed": false,
+  "artifact": "campaign-design",
+  "concept": "6A",
+  "design": {
+    "calibration": "frequency-specific constant-bias diagnostic only, fit on calibration blocks and applied to held-out blocks; no LOS/NLOS scalar in 6A",
+    "distance_bins_m": [
+      "10-50",
+      "50-100",
+      "100-200",
+      "200-400",
+      "400+"
+    ],
+    "frequencies_ghz": [
+      2.6,
+      28
+    ],
+    "holdouts": [
+      "spatial blocks",
+      "leave-one-site-out",
+      "leave-one-campaign-out"
+    ],
+    "los_strata": [
+      "LOS",
+      "NLOS",
+      "unknown_excluded"
+    ],
+    "minimum_recommendation": {
+      "campaigns": 2,
+      "independent_routes_per_site": 2,
+      "repeated_sessions": 2,
+      "sites": 3,
+      "uncensored_observations_per_frequency_los_stratum": 30
+    },
+    "spatial_design": "blocked routes and independent sites; no random row split as primary"
+  },
+  "required_capture": [
+    "observation_id/campaign/site/session IDs",
+    "UTC timestamp and synchronized logging",
+    "georeferenced Tx/Rx coordinates and CRS",
+    "explicit measured/configured Rx height provenance",
+    "technology/frequency/bandwidth/channel/resource semantics",
+    "serving cell ID and PCI with deterministic mapping to the planning inventory",
+    "raw received power, RSRP, SINR, and RSRQ as separate quantities",
+    "device/antenna/calibration identifiers and calibration state",
+    "motion/sampling/window/aggregation metadata",
+    "LOS/NLOS and outdoor labels with source",
+    "neighbor cells and co-channel/resource context for SINR/RSRQ",
+    "detection limit and left/right censoring flags"
+  ],
+  "safety": [
+    "do not collect or redistribute identifiers without consent/legal review",
+    "do not infer strongest modeled cell as serving identity",
+    "do not convert detection floors into exact values",
+    "do not compensate device/antenna effects silently",
+    "do not feed results into canonical planning until the 6B gate is independently approved"
+  ],
+  "schema_version": 1,
+  "scope": "future Ankara/Türkiye 2.6 GHz and 28 GHz outdoor validation campaign"
+}

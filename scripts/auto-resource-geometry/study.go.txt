@@ -1,0 +1,685 @@
+package main
+
+// Generated only into a disposable copy. Never linked into the production server.
+import (
+	"ankara-5g-raytracer/raytracer"
+	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"io"
+	"log/slog"
+	"math"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"runtime"
+	"sort"
+	"strconv"
+	"strings"
+	"sync"
+	"testing"
+	"time"
+)
+
+type geometryTower struct {
+	ID          string         `json:"id"`
+	CellID      string         `json:"cellId"`
+	Coordinates []float64      `json:"coordinates"`
+	Properties  map[string]any `json:"properties"`
+}
+type geometryDomain struct {
+	ID              string           `json:"id"`
+	Center          []float64        `json:"center"`
+	Towers          []geometryTower  `json:"towers"`
+	Band            string           `json:"band"`
+	Split           string           `json:"split"`
+	Stats           geometryStats    `json:"stats"`
+	Rank            int              `json:"rank"`
+	SelectionBounds raytracer.Bounds `json:"selection_bounds"`
+}
+type geometryStats struct {
+	Footprints    int              `json:"footprints"`
+	Logical       int              `json:"logical_buildings"`
+	Vertices      int              `json:"vertices"`
+	Edges         int              `json:"edges"`
+	Max           int              `json:"max_vertices"`
+	Median        float64          `json:"median_vertices"`
+	Area          float64          `json:"area_km2"`
+	Density       float64          `json:"footprints_per_km2"`
+	VertexDensity float64          `json:"vertices_per_km2"`
+	Bounds        raytracer.Bounds `json:"bounds"`
+}
+
+func geometryRead(t *testing.T, p string, v any) {
+	t.Helper()
+	b, e := os.ReadFile(p)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if e = json.Unmarshal(b, v); e != nil {
+		t.Fatal(e)
+	}
+}
+func geometryWrite(t *testing.T, p string, v any) {
+	t.Helper()
+	b, e := json.MarshalIndent(v, "", "  ")
+	if e != nil {
+		t.Fatal(e)
+	}
+	if e = os.WriteFile(p, append(b, '\n'), 0644); e != nil {
+		t.Fatal(e)
+	}
+}
+func geometryEnvelope(points []raytracer.Point, radius float64) raytracer.Bounds {
+	b := raytracer.Bounds{MinLon: 180, MinLat: 90, MaxLon: -180, MaxLat: -90}
+	for _, p := range points {
+		x := raytracer.BoundsAroundPoint(p, radius)
+		b.MinLon = math.Min(b.MinLon, x.MinLon)
+		b.MinLat = math.Min(b.MinLat, x.MinLat)
+		b.MaxLon = math.Max(b.MaxLon, x.MaxLon)
+		b.MaxLat = math.Max(b.MaxLat, x.MaxLat)
+	}
+	return b
+}
+func geometryDescribe(idx *raytracer.BuildingIndex, b raytracer.Bounds) geometryStats {
+	found := idx.SearchBounds(b)
+	v := make([]int, 0, len(found))
+	logical := map[string]bool{}
+	s := geometryStats{Footprints: len(found), Bounds: b}
+	for _, f := range found {
+		n := len(f.Vertices)
+		s.Vertices += n
+		e := n
+		if n > 1 && f.Vertices[0] == f.Vertices[n-1] {
+			e--
+		}
+		s.Edges += e
+		if n > s.Max {
+			s.Max = n
+		}
+		v = append(v, n)
+		id := f.LogicalID
+		if id == "" {
+			id = f.ID
+		}
+		logical[id] = true
+	}
+	s.Logical = len(logical)
+	sort.Ints(v)
+	if len(v) > 0 {
+		s.Median = float64(v[len(v)/2])
+		if len(v)%2 == 0 {
+			s.Median = (float64(v[len(v)/2-1]) + s.Median) / 2
+		}
+	}
+	s.Area = (b.MaxLon - b.MinLon) * 111320 * math.Cos((b.MinLat+b.MaxLat)*math.Pi/360) * (b.MaxLat - b.MinLat) * 111320 / 1e6
+	if s.Area > 0 {
+		s.Density = float64(s.Footprints) / s.Area
+		s.VertexDensity = float64(s.Vertices) / s.Area
+	}
+	return s
+}
+func geometryPoints(towers []geometryTower) []raytracer.Point {
+	p := []raytracer.Point{}
+	for _, x := range towers {
+		p = append(p, raytracer.Point{Lon: x.Coordinates[0], Lat: x.Coordinates[1]})
+	}
+	return p
+}
+func geometryOverlap(a, b raytracer.Bounds) bool {
+	return a.MinLon <= b.MaxLon && a.MaxLon >= b.MinLon && a.MinLat <= b.MaxLat && a.MaxLat >= b.MinLat
+}
+func TestGeometryDomainSelection(t *testing.T) {
+	if os.Getenv("ATOM_GEOMETRY_STUDY") != "1" {
+		t.Skip("opt-in disposable calibration")
+	}
+	w := os.Getenv("ATOM_GEOMETRY_DIR")
+	pack, e := raytracer.LoadDatasetPack("../data-pipeline")
+	if e != nil {
+		t.Fatal(e)
+	}
+	var candidates []geometryDomain
+	geometryRead(t, filepath.Join(w, "candidates.json"), &candidates)
+	for i := range candidates {
+		p := geometryPoints(candidates[i].Towers)
+		candidates[i].Stats = geometryDescribe(pack.BuildingIndex, geometryEnvelope(p, 400))
+		candidates[i].SelectionBounds = geometryEnvelope(p, 800)
+	}
+	sort.Slice(candidates, func(i, j int) bool {
+		a, b := candidates[i], candidates[j]
+		if a.Stats.VertexDensity != b.Stats.VertexDensity {
+			return a.Stats.VertexDensity < b.Stats.VertexDensity
+		}
+		return a.ID < b.ID
+	})
+	for i := range candidates {
+		candidates[i].Rank = i
+	}
+	chosen := []geometryDomain{}
+	for _, x := range []struct {
+		band string
+		q    float64
+	}{{"very-dense", .98}, {"dense", .85}, {"medium", .50}, {"sparse", .05}} {
+		for _, split := range []string{"calibration", "held-out"} {
+			target := int(x.q * float64(len(candidates)-1))
+			order := append([]geometryDomain(nil), candidates...)
+			sort.SliceStable(order, func(i, j int) bool { return absGeometry(order[i].Rank-target) < absGeometry(order[j].Rank-target) })
+			ok := false
+			for _, c := range order {
+				overlap := false
+				for _, d := range chosen {
+					if geometryOverlap(c.SelectionBounds, d.SelectionBounds) {
+						overlap = true
+						break
+					}
+				}
+				if !overlap {
+					c.Band = x.band
+					c.Split = split
+					c.ID = x.band + "-" + split
+					candidates[c.Rank].Band = x.band
+					candidates[c.Rank].Split = split
+					chosen = append(chosen, c)
+					ok = true
+					break
+				}
+			}
+			if !ok {
+				t.Fatal("insufficient disjoint domains")
+			}
+		}
+	}
+	geometryWrite(t, filepath.Join(w, "domains.json"), map[string]any{"method": "unique inventory-coordinate anchors; nearest six distinct Cell IDs by cosine-adjusted coordinate distance; rank 400m enclosing-box vertex density, ID tie break; target quantiles .05/.50/.85/.98; choose nearest rank with disjoint 800m enclosing boxes; train then holdout per band BEFORE timing", "candidates": candidates, "selected": chosen, "dataset": pack.Manifest, "global_footprints": pack.BuildingIndex.Len(), "global_vertices": pack.BuildingIndex.VertexCount(), "inventory_cells": len(pack.Towers)})
+}
+func absGeometry(n int) int {
+	if n < 0 {
+		return -n
+	}
+	return n
+}
+func geometryFields(p string) map[string]uint64 {
+	b, _ := os.ReadFile(p)
+	m := map[string]uint64{}
+	for _, line := range strings.Split(string(b), "\n") {
+		f := strings.Fields(line)
+		if len(f) > 1 {
+			m[strings.TrimSuffix(f[0], ":")], _ = strconv.ParseUint(f[1], 10, 64)
+		}
+	}
+	return m
+}
+func geometryNumber(p string) uint64 {
+	b, _ := os.ReadFile(p)
+	n, _ := strconv.ParseUint(strings.TrimSpace(string(b)), 10, 64)
+	return n
+}
+
+type geometryCounters struct {
+	CPU     map[string]uint64 `json:"cpu"`
+	Current uint64            `json:"current"`
+	Peak    uint64            `json:"lifetime_peak"`
+	RSS     uint64            `json:"rss"`
+	Events  map[string]uint64 `json:"memory_events"`
+}
+
+func geometryCountersNow() geometryCounters {
+	return geometryCounters{geometryFields("/sys/fs/cgroup/cpu.stat"), geometryNumber("/sys/fs/cgroup/memory.current"), geometryNumber("/sys/fs/cgroup/memory.peak"), geometryFields("/proc/self/status")["VmRSS"] * 1024, geometryFields("/sys/fs/cgroup/memory.events")}
+}
+func TestGeometryPreflight(t *testing.T) {
+	if os.Getenv("ATOM_GEOMETRY_STUDY") != "1" {
+		t.Skip("opt-in disposable calibration")
+	}
+	w := os.Getenv("ATOM_GEOMETRY_DIR")
+	pack, e := raytracer.LoadDatasetPack("../data-pipeline")
+	if e != nil {
+		t.Fatal(e)
+	}
+	var domains struct {
+		Selected []geometryDomain `json:"selected"`
+	}
+	geometryRead(t, filepath.Join(w, "domains.json"), &domains)
+	rows := []map[string]any{}
+	for _, d := range domains.Selected {
+		for _, r := range []float64{100, 400, 800} {
+			for _, n := range []int{1, 6} {
+				b := geometryEnvelope(geometryPoints(d.Towers[:n]), r)
+				for _, kind := range []string{"bbox-count", "footprint-vertices-edges"} {
+					for repeat := 0; repeat < 5; repeat++ {
+						var before, after runtime.MemStats
+						runtime.ReadMemStats(&before)
+						cpu := capacityCPU()
+						start := time.Now()
+						var s geometryStats
+						count := 0
+						for k := 0; k < 100; k++ {
+							if kind == "bbox-count" {
+								count = len(pack.BuildingIndex.SearchBounds(b))
+							} else {
+								s = geometryDescribe(pack.BuildingIndex, b)
+								count = s.Footprints
+							}
+						}
+						wall := time.Since(start).Seconds() / 100
+						cpu = (capacityCPU() - cpu) / 100
+						runtime.ReadMemStats(&after)
+						rows = append(rows, map[string]any{"domain": d.ID, "radius": r, "cells": n, "kind": kind, "repeat": repeat, "wall_seconds": wall, "cpu_seconds": cpu, "allocation_bytes": float64(after.TotalAlloc-before.TotalAlloc) / 100, "footprints": count, "stats": s})
+					}
+				}
+			}
+		}
+	}
+	geometryWrite(t, filepath.Join(w, "preflight-"+os.Getenv("ATOM_GEOMETRY_PROFILE")+".json"), rows)
+}
+
+type geometryFixture struct {
+	Domain       string            `json:"domain"`
+	Band         string            `json:"band"`
+	Split        string            `json:"split"`
+	Level        string            `json:"level"`
+	Frequency    float64           `json:"frequencyGHz"`
+	Rays         int               `json:"rays"`
+	Radius       float64           `json:"radius"`
+	Network      json.RawMessage   `json:"network"`
+	Interference json.RawMessage   `json:"interference"`
+	Simulations  []json.RawMessage `json:"simulations"`
+}
+type geometryPlan struct {
+	Fixture   string `json:"fixture"`
+	Operation string `json:"operation"`
+	Repeat    int    `json:"repeat"`
+}
+type geometryResponse struct {
+	Endpoint  string    `json:"endpoint"`
+	Status    int       `json:"status"`
+	Bytes     int       `json:"response_bytes"`
+	Wall      float64   `json:"wall_seconds"`
+	Start     time.Time `json:"start"`
+	End       time.Time `json:"end"`
+	Hash      string    `json:"sha256"`
+	Remaining string    `json:"remaining"`
+	Body      []byte    `json:"-"`
+}
+
+func TestGeometryStudy(t *testing.T) {
+	if os.Getenv("ATOM_GEOMETRY_STUDY") != "1" {
+		t.Skip("opt-in disposable calibration")
+	}
+	w := os.Getenv("ATOM_GEOMETRY_DIR")
+	profileName := os.Getenv("ATOM_GEOMETRY_PROFILE")
+	pack, e := raytracer.LoadDatasetPack("../data-pipeline")
+	if e != nil {
+		t.Fatal(e)
+	}
+	gin.SetMode(gin.TestMode)
+	datasets := newDatasetRuntime(pack, nil, "")
+	experiments := newExperimentManager(modelVersion, 1, 16)
+	limiter := newRFRequestLimiter(2)
+	limiter.logger = slog.New(slog.NewTextHandler(io.Discard, nil))
+	router := gin.New()
+	_ = router.SetTrustedProxies(nil)
+	router.Use(limitRequestBody(maxRequestBodyBytes), protectExpensiveRFRoutes(limiter, defaultRFRequestTimeout, ""))
+	// ROUTES
+	auto := collectAutoResourceProfile(pack, limiter, defaultRFRequestTimeout, experiments)
+	geometryWrite(t, filepath.Join(w, "profile-"+profileName+".json"), auto)
+	v := auto.View()
+	if v.RF.GlobalConcurrency != 2 || v.RF.PerClientConcurrency != 1 || v.RF.AttemptLimit != 20 || v.RF.WindowSeconds != 60 || v.RF.DeadlineSeconds != 60 || v.RF.MaxCells != 6 || v.Experiments.Workers != 1 || v.Experiments.QueueCapacity != 16 {
+		t.Fatal("fixed policy mismatch")
+	}
+	if profileName == "A" || profileName == "B" {
+		wantCPU := 2.
+		wantMem := int64(4 << 30)
+		if profileName == "B" {
+			wantCPU = 4
+			wantMem = 8 << 30
+		}
+		if v.CPU.Quota.Value == nil || *v.CPU.Quota.Value != wantCPU || v.Memory.Limit.Value == nil || int64(*v.Memory.Limit.Value) != wantMem {
+			t.Fatalf("profile constraints mismatch: %s", profileName)
+		}
+	} else if v.CPU.Quota.State != "unlimited" || v.Memory.Limit.State != "unlimited" {
+		t.Fatal("default should have no explicit limits")
+	}
+	var plans []geometryPlan
+	geometryRead(t, filepath.Join(w, "plans-"+profileName+".json"), &plans)
+	out, e := os.OpenFile(filepath.Join(w, "runs-"+profileName+".jsonl"), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0644)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer out.Close()
+	encoder := json.NewEncoder(out)
+	for index, p := range plans {
+		var f geometryFixture
+		geometryRead(t, filepath.Join(w, p.Fixture+".json"), &f)
+		var netBody map[string]any
+		_ = json.Unmarshal(f.Network, &netBody)
+		var simBody map[string]any
+		_ = json.Unmarshal(f.Simulations[0], &simBody)
+		// Every plan uses new actual peer identities while keeping the real anchored budget.
+		peer := fmt.Sprintf("198.18.%d.%d:1000", index/250, index%250+1)
+		peer2 := fmt.Sprintf("198.19.%d.%d:1000", index/250, index%250+1)
+		request := func(endpoint string, body []byte, client string, ctx context.Context) geometryResponse {
+			req := httptest.NewRequest("POST", endpoint, bytes.NewReader(body))
+			req.RemoteAddr = client
+			req.Header.Set("Content-Type", "application/json")
+			if ctx != nil {
+				req = req.WithContext(ctx)
+			}
+			rec := httptest.NewRecorder()
+			start := time.Now()
+			router.ServeHTTP(rec, req)
+			end := time.Now()
+			hash := sha256.Sum256(rec.Body.Bytes())
+			return geometryResponse{endpoint, rec.Code, rec.Body.Len(), end.Sub(start).Seconds(), start, end, hex.EncodeToString(hash[:]), rec.Header().Get("RateLimit-Remaining"), append([]byte(nil), rec.Body.Bytes()...)}
+		}
+		encode := func(v any) []byte {
+			b, e := json.Marshal(v)
+			if e != nil {
+				t.Fatal(e)
+			}
+			return b
+		}
+		network := func(opt bool, client string) geometryResponse {
+			ep := "/api/evaluate-network"
+			if opt {
+				ep = "/api/optimize-network"
+			}
+			return request(ep, f.Network, client, nil)
+		}
+		maps := func(rs []geometryResponse, opt bool) []geometryResponse {
+			azimuths := map[string]float64{}
+			if opt && rs[0].Status == 200 {
+				var response raytracer.NetworkOptimizationResponse
+				_ = json.Unmarshal(rs[0].Body, &response)
+				for _, tw := range response.OptimizedTowers {
+					azimuths[tw.ID] = tw.OptimalAzimuth
+				}
+			}
+			for i, s := range f.Simulations {
+				body := s
+				if opt {
+					var m map[string]any
+					_ = json.Unmarshal(s, &m)
+					tw := netBody["towers"].([]any)[i].(map[string]any)
+					if az, ok := azimuths[tw["id"].(string)]; ok {
+						m["azimuth"] = az
+					}
+					body = encode(m)
+				}
+				rs = append(rs, request("/api/simulate", body, peer, nil))
+			}
+			return rs
+		}
+		// Explain uses an actual returned solution. Its prerequisite is excluded from measured work.
+		var explanation []byte
+		if p.Operation == "explain" {
+			res := network(true, peer)
+			if res.Status != 200 {
+				t.Fatalf("explain prerequisite %d %s", res.Status, res.Body)
+			}
+			var response raytracer.NetworkOptimizationResponse
+			_ = json.Unmarshal(res.Body, &response)
+			solution := response.ParetoFrontier[0]
+			for _, s := range response.ParetoFrontier {
+				if s.ID == response.Optimization.RecommendedSolutionID {
+					solution = s
+				}
+			}
+			explanation = encode(map[string]any{"run_id": response.OptimizationRunID, "solution_id": solution.ID, "cell_id": netBody["towers"].([]any)[0].(map[string]any)["id"], "baseline": response.Baseline, "solution": solution, "optimization": netBody["optimization"], "optimization_domain": response.OptimizationDomain})
+		}
+		points := []raytracer.Point{}
+		for _, tw := range netBody["towers"].([]any) {
+			m := tw.(map[string]any)
+			points = append(points, raytracer.Point{Lon: m["tower_lon"].(float64), Lat: m["tower_lat"].(float64)})
+		}
+		n := 6
+		if p.Operation == "simulate" || p.Operation == "azimuth" || p.Operation == "surface" {
+			points = points[:1]
+			n = 1
+		}
+		var recBody []byte
+		if p.Operation == "recommendation" {
+			rec := map[string]any{}
+			for _, k := range []string{"towers", "rays", "radius_m", "frequency_ghz", "tx_power_dbm", "beam_width", "calibration_offset_db"} {
+				if val, ok := netBody[k]; ok {
+					rec[k] = val
+				}
+			}
+			rec["towers"] = netBody["towers"].([]any)[:5]
+			rec["network_tech"] = "4g"
+			if f.Frequency == 28 {
+				rec["network_tech"] = "5g"
+			}
+			b := geometryEnvelope(points, 20)
+			rec["search_polygon"] = [][]float64{{b.MinLon, b.MinLat}, {b.MaxLon, b.MinLat}, {b.MaxLon, b.MaxLat}, {b.MinLon, b.MaxLat}}
+			recBody = encode(rec)
+			n = 5
+			// Include every inventory candidate in the polygon and its RF envelope, before selection/capping.
+			for _, tw := range pack.Towers {
+				if tw.Lon >= b.MinLon && tw.Lon <= b.MaxLon && tw.Lat >= b.MinLat && tw.Lat <= b.MaxLat {
+					points = append(points, raytracer.Point{Lon: tw.Lon, Lat: tw.Lat})
+				}
+			}
+		}
+		preStart := time.Now()
+		preCPU := capacityCPU()
+		var preBefore, preAfter runtime.MemStats
+		runtime.ReadMemStats(&preBefore)
+		geo := geometryDescribe(pack.BuildingIndex, geometryEnvelope(points, f.Radius+2))
+		runtime.ReadMemStats(&preAfter)
+		preWall := time.Since(preStart).Seconds()
+		preCPUDelta := capacityCPU() - preCPU
+		// Reset completed experiment state consistently to prevent cache-hit repetitions.
+		if strings.HasPrefix(p.Operation, "async-") {
+			experiments.mu.Lock()
+			experiments.cache = make(map[string]experimentCacheEntry)
+			experiments.jobs = make(map[string]*experimentJob)
+			experiments.mu.Unlock()
+		}
+		raytracer.AuditReset()
+		var before, after runtime.MemStats
+		runtime.ReadMemStats(&before)
+		cBefore := geometryCountersNow()
+		rssMax := cBefore.RSS
+		currentMax := cBefore.Current
+		heapMax := before.HeapAlloc
+		slotsMax, asyncMax := 0, 0
+		done := make(chan struct{})
+		joined := make(chan struct{})
+		go func() {
+			defer close(joined)
+			ticker := time.NewTicker(50 * time.Millisecond)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-done:
+					return
+				case <-ticker.C:
+					c := geometryCountersNow()
+					if c.RSS > rssMax {
+						rssMax = c.RSS
+					}
+					if c.Current > currentMax {
+						currentMax = c.Current
+					}
+					var m runtime.MemStats
+					runtime.ReadMemStats(&m)
+					if m.HeapAlloc > heapMax {
+						heapMax = m.HeapAlloc
+					}
+					if x := len(limiter.slots); x > slotsMax {
+						slotsMax = x
+					}
+					if x := int(auditExperimentActive.Load()); x > asyncMax {
+						asyncMax = x
+					}
+				}
+			}
+		}()
+		cpu := capacityCPU()
+		started := time.Now()
+		var rs []geometryResponse
+		var job *experimentJobSnapshot
+		switch p.Operation {
+		case "simulate":
+			rs = []geometryResponse{request("/api/simulate", f.Simulations[0], peer, nil)}
+		case "evaluate":
+			rs = []geometryResponse{network(false, peer)}
+		case "evaluate-maps":
+			rs = maps([]geometryResponse{network(false, peer)}, false)
+		case "optimize":
+			rs = []geometryResponse{network(true, peer)}
+		case "optimize-maps":
+			rs = maps([]geometryResponse{network(true, peer)}, true)
+		case "interference":
+			rs = []geometryResponse{request("/api/interference", f.Interference, peer, nil)}
+		case "explain":
+			rs = []geometryResponse{request("/api/explain-network-cell", explanation, peer, nil)}
+		case "azimuth":
+			rs = []geometryResponse{request("/api/optimize-azimuth", f.Simulations[0], peer, nil)}
+		case "surface":
+			simBody["cell_size_m"] = 25
+			rs = []geometryResponse{request("/api/coverage-surface", encode(simBody), peer, nil)}
+		case "building-entry":
+			rs = []geometryResponse{request("/api/building-entry-analysis", f.Network, peer, nil)}
+		case "recommendation":
+			rs = []geometryResponse{request("/api/recommend-sites", recBody, peer, nil)}
+		case "two-optimizers", "optimize-evaluate":
+			rs = make([]geometryResponse, 2)
+			var wg sync.WaitGroup
+			gate := make(chan struct{})
+			wg.Add(2)
+			go func() { defer wg.Done(); <-gate; rs[0] = network(true, peer) }()
+			go func() { defer wg.Done(); <-gate; rs[1] = network(p.Operation == "two-optimizers", peer2) }()
+			close(gate)
+			wg.Wait()
+		case "async-optimize", "async-evaluate":
+			az := []float64{}
+			for k := 0; k < 16; k++ {
+				az = append(az, float64(k)*360/16)
+			}
+			body := encode(map[string]any{"name": "geometry-calibration", "base": simBody, "matrix": map[string]any{"azimuths_deg": az}})
+			res := request("/api/processes/batch-experiment/execution", body, peer, nil)
+			if res.Status != 202 {
+				t.Fatalf("async start %d %s", res.Status, res.Body)
+			}
+			var snapshot experimentJobSnapshot
+			_ = json.Unmarshal(res.Body, &snapshot)
+			until := time.Now().Add(2 * time.Second)
+			for {
+				snapshot, _ = experiments.Snapshot(snapshot.JobID)
+				if snapshot.Status == "running" {
+					break
+				}
+				if snapshot.Status == "succeeded" || snapshot.Status == "failed" || time.Now().After(until) {
+					t.Fatalf("no active background overlap: %+v", snapshot)
+				}
+				time.Sleep(time.Millisecond)
+			}
+			rs = []geometryResponse{network(p.Operation == "async-optimize", peer2)}
+			until = time.Now().Add(120 * time.Second)
+			for {
+				snapshot, _ = experiments.Snapshot(snapshot.JobID)
+				if snapshot.Status == "succeeded" {
+					break
+				}
+				if snapshot.Status == "failed" || time.Now().After(until) {
+					t.Fatalf("async failed/watchdog: %+v", snapshot)
+				}
+				time.Sleep(5 * time.Millisecond)
+			}
+			if snapshot.CacheHit || snapshot.CompletedRuns != 16 {
+				t.Fatal("expected uncached 16-run job")
+			}
+			job = &snapshot
+		case "cancel":
+			ctx, cancel := context.WithCancel(context.Background())
+			timer := time.AfterFunc(100*time.Millisecond, cancel)
+			rs = []geometryResponse{request("/api/optimize-network", f.Network, peer, ctx)}
+			timer.Stop()
+			cancel()
+			rs = append(rs, network(false, peer))
+		default:
+			t.Fatal("unknown operation", p.Operation)
+		}
+		wall := time.Since(started).Seconds()
+		cpu = capacityCPU() - cpu
+		close(done)
+		<-joined
+		runtime.ReadMemStats(&after)
+		cAfter := geometryCountersNow()
+		if cAfter.RSS > rssMax {
+			rssMax = cAfter.RSS
+		}
+		if cAfter.Current > currentMax {
+			currentMax = cAfter.Current
+		}
+		if after.HeapAlloc > heapMax {
+			heapMax = after.HeapAlloc
+		}
+		if len(limiter.slots) != 0 {
+			t.Fatal("slots leaked")
+		}
+		totalBytes := 0
+		slowest := 0.
+		statuses := []int{}
+		for i := range rs {
+			if rs[i].Status != 200 && !(p.Operation == "cancel" && i == 0) {
+				t.Fatalf("%s %s: %d %s", f.Domain, p.Operation, rs[i].Status, rs[i].Body)
+			}
+			totalBytes += rs[i].Bytes
+			slowest = math.Max(slowest, rs[i].Wall)
+			statuses = append(statuses, rs[i].Status)
+			rs[i].Body = nil
+		}
+		jobSummary := map[string]any{}
+		if job != nil {
+			overlap := math.Max(0, math.Min(float64(rs[0].End.UnixNano()), float64(job.FinishedAt.UnixNano()))-math.Max(float64(rs[0].Start.UnixNano()), float64(job.StartedAt.UnixNano()))) / 1e9
+			jobSummary = map[string]any{"status": job.Status, "cache_hit": job.CacheHit, "runs": job.CompletedRuns, "started_at": job.StartedAt, "finished_at": job.FinishedAt, "wall_seconds": job.FinishedAt.Sub(*job.StartedAt).Seconds(), "overlap_seconds": overlap}
+			if overlap <= 0 {
+				t.Fatal("no measured async overlap")
+			}
+		}
+		row := map[string]any{"profile": profileName, "domain": f.Domain, "band": f.Band, "split": f.Split, "level": f.Level, "frequency_ghz": f.Frequency, "rays": f.Rays, "radius_m": f.Radius, "cells": n, "operation": p.Operation, "repeat": p.Repeat, "geometry": geo, "preflight_wall_seconds": preWall, "preflight_cpu_seconds": preCPUDelta, "preflight_allocation_bytes": preAfter.TotalAlloc - preBefore.TotalAlloc, "wall_seconds": wall, "cpu_seconds": cpu, "response_bytes": totalBytes, "deadline_headroom_seconds": 60 - slowest, "gc_count": after.NumGC - before.NumGC, "gc_pause_seconds": float64(after.PauseTotalNs-before.PauseTotalNs) / 1e9, "heap_before_bytes": before.HeapAlloc, "heap_after_bytes": after.HeapAlloc, "heap_sampled_max_bytes": heapMax, "allocation_bytes": after.TotalAlloc - before.TotalAlloc, "rss_before_bytes": cBefore.RSS, "rss_sampled_max_bytes": rssMax, "cgroup_before_bytes": cBefore.Current, "cgroup_sampled_max_bytes": currentMax, "cgroup_lifetime_peak_bytes": cAfter.Peak, "cgroup_cpu_seconds": float64(cAfter.CPU["usage_usec"]-cBefore.CPU["usage_usec"]) / 1e6, "throttled_seconds": float64(cAfter.CPU["throttled_usec"]-cBefore.CPU["throttled_usec"]) / 1e6, "throttled_periods": cAfter.CPU["nr_throttled"] - cBefore.CPU["nr_throttled"], "periods": cAfter.CPU["nr_periods"] - cBefore.CPU["nr_periods"], "memory_events": cAfter.Events, "work": raytracer.AuditCounts(), "interactive_slots_sampled_max": slotsMax, "async_active_sampled_max": asyncMax, "responses": rs, "async": jobSummary, "started_at": started}
+		if e = encoder.Encode(row); e != nil {
+			t.Fatal(e)
+		}
+		out.Sync()
+		fmt.Printf("%s %d/%d %s %g %s %s r%d wall=%.3f cpu=%.3f\n", profileName, index+1, len(plans), f.Domain, f.Frequency, f.Level, p.Operation, p.Repeat, wall, cpu)
+	}
+}
+
+func TestGeometryPreflightPrimitive(t *testing.T) {
+	ring := []raytracer.Point{{Lon: 0, Lat: 0}, {Lon: .001, Lat: 0}, {Lon: .001, Lat: .001}, {Lon: 0, Lat: .001}, {Lon: 0, Lat: 0}}
+	makePart := func(id, logical string, offset float64) *raytracer.BuildingFootprint {
+		v := append([]raytracer.Point(nil), ring...)
+		for i := range v {
+			v[i].Lon += offset
+		}
+		b, _ := raytracer.BoundsFromPoints(v)
+		return &raytracer.BuildingFootprint{ID: id, LogicalID: logical, Vertices: v, Bounds: b}
+	}
+	idx := raytracer.NewBuildingIndex([]*raytracer.BuildingFootprint{makePart("part1", "one", 0), makePart("part2", "one", .002), makePart("outside", "two", 1)})
+	s := geometryDescribe(idx, raytracer.Bounds{MinLon: -.001, MinLat: -.001, MaxLon: .004, MaxLat: .004})
+	if s.Footprints != 2 || s.Logical != 1 || s.Vertices != 10 || s.Edges != 8 || s.Max != 5 || s.Median != 5 {
+		t.Fatalf("incorrect part/ring counts: %+v", s)
+	}
+	if s.Area <= 0 || s.VertexDensity <= 0 {
+		t.Fatal("invalid domain area/density")
+	}
+	p := []raytracer.Point{{Lon: 32.8, Lat: 39.9}, {Lon: 32.9, Lat: 40}}
+	small, large := geometryEnvelope(p, 100), geometryEnvelope(p, 800)
+	if small.MinLon < large.MinLon || small.MaxLon > large.MaxLon || small.MinLat < large.MinLat || small.MaxLat > large.MaxLat {
+		t.Fatal("larger envelope lost geometry")
+	}
+	if !geometryOverlap(small, large) {
+		t.Fatal("nested envelopes should overlap")
+	}
+	empty := geometryDescribe(raytracer.EmptyBuildingIndex(), small)
+	if empty.Footprints != 0 || empty.Vertices != 0 || empty.Edges != 0 {
+		t.Fatal("empty index invented geometry")
+	}
+}

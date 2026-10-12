@@ -1,0 +1,102 @@
+{
+  "artifact": "data-quality-impact",
+  "before_artifact": "docs/concept-4f3a1-pre-change-baseline.json",
+  "captured_at": "2026-09-19",
+  "concept": "4F.3A.1",
+  "impact": {
+    "activation": "diagnostic_only_not_active",
+    "coverage_before_after": {
+      "explicit_height_count": {
+        "after": 1108,
+        "before": 1108,
+        "delta": 0
+      },
+      "external_selected_count": {
+        "after": 0,
+        "before": 0,
+        "delta": 0
+      },
+      "fallback_only_count": {
+        "after": 155710,
+        "before": 155710,
+        "delta": 0
+      },
+      "fallback_reduction_pct": 0.0,
+      "levels_derived_count": {
+        "after": 4966,
+        "before": 4966,
+        "delta": 0
+      },
+      "loader_visible_footprints": 161784,
+      "qualified_or_trusted_count": {
+        "after": 6074,
+        "before": 6074,
+        "delta": 0
+      }
+    },
+    "diagnostic_coverage": {
+      "inspector_comparison": "source, confidence, match quality, and alternatives are part of the sidecar contract for a future non-empty accepted set",
+      "map_provenance_layer": "no new visible records when accepted set is empty; existing optional spatial-evidence inspector remains unchanged",
+      "new_external_height_evidence_active": false,
+      "new_external_provenance_records": 0
+    },
+    "fallback_reduction_explanation": "No fallback reduction: the selected Ankara tiles contain no positive external height estimates.",
+    "match_coverage": {
+      "accepted_matches": 0,
+      "external_positive_records": 0,
+      "external_selected_over_fallback": 0,
+      "external_selected_over_levels": 0,
+      "osm_explicit_precedence_cases": 0,
+      "unique_osm_buildings_gaining_external_evidence": 0
+    },
+    "numeric_pilot_status": "not_run_no_positive_heights",
+    "provenance_policy": {
+      "accepted_external_can_replace_fallback": true,
+      "accepted_external_can_replace_levels_derived": true,
+      "ambiguous_or_low_iou_never_selected": true,
+      "osm_explicit_beats_external": true
+    },
+    "source_agreement": {
+      "explicit": {
+        "absolute_error_m": {
+          "count": 0
+        },
+        "mae_m": null,
+        "matched_count": 0,
+        "p90_absolute_error_m": null,
+        "relative_error_pct": {
+          "count": 0
+        },
+        "rmse_m": null,
+        "signed_difference_external_minus_osm_m": {
+          "count": 0
+        }
+      },
+      "large_disagreement_count": 0,
+      "levels_derived": {
+        "absolute_error_m": {
+          "count": 0
+        },
+        "mae_m": null,
+        "matched_count": 0,
+        "p90_absolute_error_m": null,
+        "relative_error_pct": {
+          "count": 0
+        },
+        "rmse_m": null,
+        "signed_difference_external_minus_osm_m": {
+          "count": 0
+        }
+      }
+    }
+  },
+  "numeric_pilot_status": "not_run_no_positive_heights",
+  "schema_version": 1,
+  "source_input": {
+    "accepted_external_matches": 0,
+    "all_selected_tile_records": 624354,
+    "positive_external_heights": 0,
+    "records_in_active_aoi": 440173
+  },
+  "title": "Ankara external-height data-quality impact"
+}

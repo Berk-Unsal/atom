@@ -1,0 +1,82 @@
+{
+  "concept": "7H",
+  "artifact": "test-evidence",
+  "capturedOn": "2026-09-23",
+  "frontendUnitAndWorkflow": {
+    "command": "cd frontend-react && npm test -- --reporter=dot",
+    "status": "passed",
+    "testFilesPassed": 51,
+    "testsPassed": 272,
+    "coverage": [
+      "default open/closed disclosures and aria-expanded",
+      "collapse/reopen value preservation without API work",
+      "no stale-result invalidation for disclosure-only state changes",
+      "hidden per-cell RF edits still mark the plan dirty",
+      "2.6 GHz request after collapse/reopen",
+      "190-control classification exact coverage and UX-only exclusions",
+      "existing ScenarioRevision, Run snapshot, Report-source, request-equivalence, fingerprint, and RF component contracts"
+    ]
+  },
+  "browserE2E": {
+    "command": "cd frontend-react && npm run test:e2e",
+    "status": "passed",
+    "total": 68,
+    "passed": 57,
+    "skipped": 11,
+    "skipReason": "Existing real-backend tests require ATOM_REAL_E2E=1; the mobile-rail-only workflow is skipped in non-mobile projects.",
+    "coverage": [
+      "keyboard Enter/Space disclosure operation without RF calls",
+      "research input retained through collapse/reopen",
+      "path-profile action opens its collapsed Advanced destination without starting analysis",
+      "exact source-Version navigation opens the Scenario workspace disclosure",
+      "per-cell Advanced RF value retained through Version save and page reload",
+      "Sub-THz/material/reflection tools remain findable and usable",
+      "1440, 1280, 1024, 640, and 390 px disclosure/header/overflow smoke"
+    ]
+  },
+  "lint": {
+    "command": "cd frontend-react && npm run lint",
+    "status": "passed"
+  },
+  "productionBuild": {
+    "command": "cd frontend-react && npm run build",
+    "status": "passed",
+    "warning": "Vite's existing minified JavaScript chunk >500 kB warning remains."
+  },
+  "go": {
+    "command": "cd backend-go && go vet ./... && go test -race ./...",
+    "status": "passed",
+    "summary": "Go vet passed; Go package and raytracer race tests passed. No backend code changed for Concept 7H."
+  },
+  "accessibility": {
+    "status": "passed",
+    "evidence": [
+      "native buttons expose accessible section names and aria-expanded",
+      "Enter and Space operate disclosures",
+      "validation attention automatically opens its parent and focuses the invalid control",
+      "automated browser check confirms exact-source navigation opens the hidden destination"
+    ]
+  },
+  "researchInputPersistenceBoundary": {
+    "status": "preserved",
+    "details": "Research-panel inputs are inventoried as persisted=false. Tests verify their existing component-local values survive collapse/reopen. They remain outside saved ScenarioVersions and return to established defaults after full page reload; Concept 7H adds no persistence schema."
+  },
+  "documentationValidation": {
+    "status": "passed",
+    "commands": ["sh docs/build-reference-pages.sh", "/tmp/atom-doc-venv-7h/bin/python docs/validate_docs.py"],
+    "summary": "Generated the reference pages and search index; validation passed for 41 HTML pages and 41 API paths.",
+    "validatorDependency": "PyYAML 6.0.3 installed in a temporary venv from the pinned docs/requirements.txt lock; no project dependency files changed."
+  },
+  "jsonValidation": {
+    "status": "passed",
+    "command": "python3 -m json.tool for every docs/concept-7h-*.json",
+    "artifactCount": 9
+  },
+  "versionAndDiffValidation": {
+    "status": "passed",
+    "versionCommand": "python3 scripts/versioning.py check",
+    "versionOutput": "A.T.O.M version metadata is consistent: 0.8.0",
+    "diffCommand": "git diff --check",
+    "diffOutput": "passed"
+  }
+}

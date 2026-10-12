@@ -1,0 +1,103 @@
+{
+  "concept": "4F.2",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-17",
+  "git_ref": "main",
+  "working_tree": "clean",
+  "validation": {
+    "backend_go_test": "pass",
+    "backend_path_reference_tests": "pass",
+    "canonical_height_audit": "pass",
+    "canonical_height_audit_command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_HEIGHT_AUDIT=1 go test ./raytracer -run TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled -count=1 -v"
+  },
+  "existing_knife_edge": {
+    "formula": "v = h * sqrt(2 * (d1 + d2) / (lambda * d1 * d2)); loss = 0 for v <= -0.78, otherwise 6.9 + 20 log10(sqrt((v - 0.1)^2 + 1) + v - 0.1)",
+    "fixtures_db": {
+      "height_0m_2_6GHz_50m_50m": 0,
+      "height_-1m_2_6GHz_50m_50m": 0,
+      "height_1m_2_6GHz_50m_50m": 12.801671,
+      "height_10m_28GHz_100m_100m": 38.605385,
+      "height_10m_140GHz_100m_100m": 45.615321
+    }
+  },
+  "path_profile_request": {
+    "transmitter": [32.85, 39.92],
+    "receiver": [32.851, 39.92],
+    "sample_spacing_m": 10,
+    "building_loss_mode": "screen-diffraction",
+    "diffraction_model": "single-knife-edge",
+    "antenna_height_m": 30,
+    "receiver_height_m": 1.5,
+    "building_id": "feature-6946"
+  },
+  "path_profile_outputs": {
+    "2_6GHz": {
+      "distance_m": 85.4,
+      "classification": "building-obstructed",
+      "minimum_clearance_m": -2.4,
+      "minimum_fresnel_ratio": -1.96,
+      "dominant_distance_m": 70,
+      "dominant_height_above_los_m": 2.4,
+      "diffraction_loss_db": 21.88,
+      "total_median_loss_db": 101.71,
+      "rx_dbm_p50": -46.71
+    },
+    "28GHz": {
+      "distance_m": 85.4,
+      "classification": "building-obstructed",
+      "minimum_clearance_m": -2.4,
+      "minimum_fresnel_ratio": -6.44,
+      "dominant_distance_m": 70,
+      "dominant_height_above_los_m": 2.4,
+      "diffraction_loss_db": 32.16,
+      "total_median_loss_db": 132.64,
+      "rx_dbm_p50": -77.64
+    }
+  },
+  "canonical_ankara_height_audit": {
+    "total_footprints": 161784,
+    "explicit_height_count": 1108,
+    "explicit_height_pct": 0.68,
+    "levels_derived_height_count": 4966,
+    "levels_derived_height_pct": 3.07,
+    "fallback_only_count": 155710,
+    "fallback_only_pct": 96.25,
+    "paths": 432,
+    "transitions": {
+      "los_to_los": 29,
+      "nlos_to_nlos": 248,
+      "unknown_to_unknown": 155
+    },
+    "optimizer_baseline": {
+      "network_score": 13509330.8,
+      "composite_score": 0.391373,
+      "unique_demand_buildings": 12,
+      "unique_residential_buildings": 82,
+      "propagation_reach_score": 18330.7658,
+      "overlap_buildings": 10,
+      "overlap_ratio": 0.060976,
+      "score": 39.1373,
+      "served_demand_weight": 430
+    },
+    "optimizer_result": {
+      "network_score": 32568641.1,
+      "composite_score": 0.489145,
+      "unique_demand_buildings": 29,
+      "unique_residential_buildings": 137,
+      "propagation_reach_score": 22141.1276,
+      "overlap_buildings": 0,
+      "overlap_ratio": 0,
+      "score": 48.9145,
+      "served_demand_weight": 1115,
+      "optimized_azimuths": {
+        "LTE-35084": 150,
+        "LTE-35104": 300,
+        "LTE-35877": 110,
+        "LTE-313100": 300,
+        "LTE-313110": 290,
+        "LTE-322828": 100
+      }
+    }
+  },
+  "interpretation": "This artifact records the pre-4F.2 path-profile diagnostic and canonical planning outputs. It is not a measurement validation set."
+}

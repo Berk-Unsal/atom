@@ -1,0 +1,2918 @@
+{
+  "artifact": "source-state-audit",
+  "combined": {
+    "active_data_subscription_counts_all_cell_rows": {
+      "false": 141,
+      "true": 83
+    },
+    "candidate_identity_transitions": 37,
+    "cell_info_snapshot_groups": 81,
+    "cell_rows": 224,
+    "cell_technology_counts": {
+      "LTE": 224
+    },
+    "connection_status_counts": {
+      "NONE": 224
+    },
+    "connection_status_none_universal": true,
+    "distinct_registered_candidate_identities": 8,
+    "elapsed_realtime_nonmonotonic_warnings": 1858,
+    "event_counts": {
+      "CELL_LIST_CHANGED": 83,
+      "DATA_CONNECTION_CHANGED": 2,
+      "DISPLAY_INFO_CHANGED": 2,
+      "SERVICE_STATE_CHANGED": 79,
+      "SERVING_CELL_CHANGED": 37,
+      "SIGNAL_STRENGTH_CHANGED": 802
+    },
+    "full_file_parsed_rows": 53005,
+    "groups_with_exactly_one_registered_row": 79,
+    "groups_with_more_than_one_registered_row": 2,
+    "groups_with_multiple_distinct_registered_candidates": 0,
+    "groups_with_zero_registered_rows": 0,
+    "mobile_records_in_audit": 2031,
+    "parser_duplicate_sequences": 0,
+    "parser_epoch_timestamp_decreases": 0,
+    "parser_sequence_gaps": 0,
+    "raw_android_mCellConnectionStatus_counts": {
+      "0": 224
+    },
+    "registered_false_rows": 141,
+    "registered_true_rows": 83,
+    "serving_cell_changed_events": 37,
+    "serving_events_both_sides_exact": 37,
+    "serving_events_exact_after": 37,
+    "serving_events_exact_before": 37,
+    "signal_strength_rows": 802
+  },
+  "concept": "6A.1.2",
+  "privacy": {
+    "cell_ids_redacted_as_nonreversible_aliases": true,
+    "precise_coordinates_in_artifact": false,
+    "raw_recordings_tracked": false,
+    "timestamp_policy": "Source callback time is relative to the first mobile source record in each file; cell snapshot time is relative to that session\u2019s first CellInfo sample. Full-file parser counts come from the repository parser.",
+    "wall_clock_timestamps_in_artifact": false
+  },
+  "raw_files": [
+    {
+      "bytes": 3642965,
+      "name": "data-stationary-test.txt",
+      "sha256": "ae4c62426eb02e6de158220fbb43a5eb978fdfa72b5550483b5cf25d12680fc7"
+    },
+    {
+      "bytes": 22175305,
+      "name": "data-walking-test.txt",
+      "sha256": "9d7aa4830391304a1a255c059c4c15dcb1b48c6f0de623dad4d934f7966c8f2f"
+    }
+  ],
+  "schema_version": 1,
+  "sessions": [
+    {
+      "active_data_subscription_counts_all_cell_rows": {
+        "false": 25,
+        "true": 11
+      },
+      "active_data_subscription_false_neighbor_count": 25,
+      "active_data_subscription_true_registered_count": 11,
+      "candidate_identity_transition_count": 7,
+      "candidate_identity_transitions": [
+        {
+          "after_first_sequence_number": 19,
+          "before_last_sequence_number": 15,
+          "from_candidate_ref": "CANDIDATE-01",
+          "time_from_first_mobile_record_ms": 31,
+          "to_candidate_ref": "CANDIDATE-02"
+        },
+        {
+          "after_first_sequence_number": 1420,
+          "before_last_sequence_number": 413,
+          "from_candidate_ref": "CANDIDATE-02",
+          "time_from_first_mobile_record_ms": 20939,
+          "to_candidate_ref": "CANDIDATE-03"
+        },
+        {
+          "after_first_sequence_number": 3852,
+          "before_last_sequence_number": 2610,
+          "from_candidate_ref": "CANDIDATE-03",
+          "time_from_first_mobile_record_ms": 62735,
+          "to_candidate_ref": "CANDIDATE-02"
+        },
+        {
+          "after_first_sequence_number": 5098,
+          "before_last_sequence_number": 3853,
+          "from_candidate_ref": "CANDIDATE-02",
+          "time_from_first_mobile_record_ms": 83677,
+          "to_candidate_ref": "CANDIDATE-03"
+        },
+        {
+          "after_first_sequence_number": 6345,
+          "before_last_sequence_number": 5099,
+          "from_candidate_ref": "CANDIDATE-03",
+          "time_from_first_mobile_record_ms": 104598,
+          "to_candidate_ref": "CANDIDATE-02"
+        },
+        {
+          "after_first_sequence_number": 6649,
+          "before_last_sequence_number": 6345,
+          "from_candidate_ref": "CANDIDATE-02",
+          "time_from_first_mobile_record_ms": 109195,
+          "to_candidate_ref": "CANDIDATE-04"
+        },
+        {
+          "after_first_sequence_number": 7188,
+          "before_last_sequence_number": 6656,
+          "from_candidate_ref": "CANDIDATE-04",
+          "time_from_first_mobile_record_ms": 118149,
+          "to_candidate_ref": "CANDIDATE-05"
+        }
+      ],
+      "cell_info_snapshot_group_index": [
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 13,
+          "last_sequence_number": 15,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 1,
+          "row_count": 3,
+          "time_from_first_mobile_record_ms": 18
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": true,
+          "first_sequence_number": 19,
+          "last_sequence_number": 23,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 2,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 31
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 412,
+          "last_sequence_number": 413,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 3932
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 1420,
+          "last_sequence_number": 1421,
+          "registered_candidate_refs": [
+            "CANDIDATE-03"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 20939
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 2603,
+          "last_sequence_number": 2610,
+          "registered_candidate_refs": [
+            "CANDIDATE-03"
+          ],
+          "registered_row_count": 1,
+          "row_count": 8,
+          "time_from_first_mobile_record_ms": 41818
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 3852,
+          "last_sequence_number": 3853,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 62735
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 5098,
+          "last_sequence_number": 5099,
+          "registered_candidate_refs": [
+            "CANDIDATE-03"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 83677
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 6345,
+          "last_sequence_number": 6345,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 104598
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 6649,
+          "last_sequence_number": 6656,
+          "registered_candidate_refs": [
+            "CANDIDATE-04"
+          ],
+          "registered_row_count": 1,
+          "row_count": 8,
+          "time_from_first_mobile_record_ms": 109195
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 7188,
+          "last_sequence_number": 7191,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 118149
+        }
+      ],
+      "cell_info_snapshot_groups": 10,
+      "cell_rows": 36,
+      "cell_technology_counts": {
+        "LTE": 36
+      },
+      "cell_timestamps_equal_elapsed_realtime_ms_after_unit_conversion": true,
+      "connection_status_counts": {
+        "NONE": 36
+      },
+      "distinct_registered_candidates": 5,
+      "elapsed_realtime_nonmonotonic_warnings": 237,
+      "event_counts": {
+        "CELL_LIST_CHANGED": 11,
+        "DATA_CONNECTION_CHANGED": 1,
+        "DISPLAY_INFO_CHANGED": 1,
+        "SERVICE_STATE_CHANGED": 14,
+        "SERVING_CELL_CHANGED": 7,
+        "SIGNAL_STRENGTH_CHANGED": 103
+      },
+      "full_file_parsed_rows": 7374,
+      "groups_with_exactly_one_registered_row": 9,
+      "groups_with_more_than_one_registered_row": 1,
+      "groups_with_multiple_distinct_registered_candidates": 0,
+      "groups_with_zero_registered_rows": 0,
+      "mobile_records_in_audit": 276,
+      "multirow_groups_all_same_candidate": 1,
+      "parser_duplicate_sequences": 0,
+      "parser_epoch_timestamp_decreases": 0,
+      "parser_sequence_gaps": 0,
+      "raw_android_mCellConnectionStatus_counts": {
+        "0": 36
+      },
+      "raw_file": "data-stationary-test.txt",
+      "raw_file_bytes": 3642965,
+      "raw_file_sha256": "ae4c62426eb02e6de158220fbb43a5eb978fdfa72b5550483b5cf25d12680fc7",
+      "registered_candidate_rows": [
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 0,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 13,
+          "source_time_from_first_mobile_record_ms": 18,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 28405,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 19,
+          "source_time_from_first_mobile_record_ms": 31,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 28405,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 22,
+          "source_time_from_first_mobile_record_ms": 35,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 32330,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 412,
+          "source_time_from_first_mobile_record_ms": 3932,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-03",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 49311,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 202,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 1420,
+          "source_time_from_first_mobile_record_ms": 20939,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-03",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 70209,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 202,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 2603,
+          "source_time_from_first_mobile_record_ms": 41818,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 91132,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 3852,
+          "source_time_from_first_mobile_record_ms": 62735,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-03",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 112070,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 202,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 5098,
+          "source_time_from_first_mobile_record_ms": 83677,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 132985,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 6345,
+          "source_time_from_first_mobile_record_ms": 104598,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B20",
+          "candidate_ref": "CANDIDATE-04",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 137585,
+          "connection_status": "NONE",
+          "earfcn": 6200,
+          "frequency_mhz": 796.0,
+          "pci": 202,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 6649,
+          "source_time_from_first_mobile_record_ms": 109195,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 146542,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "stationary_control",
+          "sim_slot": "1",
+          "source_sequence_number": 7188,
+          "source_time_from_first_mobile_record_ms": 118149,
+          "subscription_id": "1",
+          "technology": "LTE"
+        }
+      ],
+      "registered_false_rows": 25,
+      "registered_rows_in_multirow_groups": 2,
+      "registered_true_rows": 11,
+      "session_role": "stationary_control",
+      "signal_strength_rows": 103,
+      "sim_slot_values": [
+        "1"
+      ],
+      "subscription_id_values": [
+        "1"
+      ]
+    },
+    {
+      "active_data_subscription_counts_all_cell_rows": {
+        "false": 116,
+        "true": 72
+      },
+      "active_data_subscription_false_neighbor_count": 116,
+      "active_data_subscription_true_registered_count": 72,
+      "candidate_identity_transition_count": 30,
+      "candidate_identity_transitions": [
+        {
+          "after_first_sequence_number": 19,
+          "before_last_sequence_number": 15,
+          "from_candidate_ref": "CANDIDATE-05",
+          "time_from_first_mobile_record_ms": 19,
+          "to_candidate_ref": "CANDIDATE-01"
+        },
+        {
+          "after_first_sequence_number": 3278,
+          "before_last_sequence_number": 2404,
+          "from_candidate_ref": "CANDIDATE-01",
+          "time_from_first_mobile_record_ms": 57434,
+          "to_candidate_ref": "CANDIDATE-06"
+        },
+        {
+          "after_first_sequence_number": 3992,
+          "before_last_sequence_number": 3549,
+          "from_candidate_ref": "CANDIDATE-06",
+          "time_from_first_mobile_record_ms": 70712,
+          "to_candidate_ref": "CANDIDATE-01"
+        },
+        {
+          "after_first_sequence_number": 5824,
+          "before_last_sequence_number": 4667,
+          "from_candidate_ref": "CANDIDATE-01",
+          "time_from_first_mobile_record_ms": 104186,
+          "to_candidate_ref": "CANDIDATE-06"
+        },
+        {
+          "after_first_sequence_number": 6598,
+          "before_last_sequence_number": 6431,
+          "from_candidate_ref": "CANDIDATE-06",
+          "time_from_first_mobile_record_ms": 117558,
+          "to_candidate_ref": "CANDIDATE-05"
+        },
+        {
+          "after_first_sequence_number": 8130,
+          "before_last_sequence_number": 6981,
+          "from_candidate_ref": "CANDIDATE-05",
+          "time_from_first_mobile_record_ms": 145981,
+          "to_candidate_ref": "CANDIDATE-07"
+        },
+        {
+          "after_first_sequence_number": 9303,
+          "before_last_sequence_number": 8131,
+          "from_candidate_ref": "CANDIDATE-07",
+          "time_from_first_mobile_record_ms": 166899,
+          "to_candidate_ref": "CANDIDATE-02"
+        },
+        {
+          "after_first_sequence_number": 10359,
+          "before_last_sequence_number": 9757,
+          "from_candidate_ref": "CANDIDATE-02",
+          "time_from_first_mobile_record_ms": 185561,
+          "to_candidate_ref": "CANDIDATE-08"
+        },
+        {
+          "after_first_sequence_number": 10475,
+          "before_last_sequence_number": 10361,
+          "from_candidate_ref": "CANDIDATE-08",
+          "time_from_first_mobile_record_ms": 187794,
+          "to_candidate_ref": "CANDIDATE-07"
+        },
+        {
+          "after_first_sequence_number": 11629,
+          "before_last_sequence_number": 11243,
+          "from_candidate_ref": "CANDIDATE-07",
+          "time_from_first_mobile_record_ms": 208746,
+          "to_candidate_ref": "CANDIDATE-08"
+        },
+        {
+          "after_first_sequence_number": 12764,
+          "before_last_sequence_number": 11957,
+          "from_candidate_ref": "CANDIDATE-08",
+          "time_from_first_mobile_record_ms": 229688,
+          "to_candidate_ref": "CANDIDATE-07"
+        },
+        {
+          "after_first_sequence_number": 15013,
+          "before_last_sequence_number": 14479,
+          "from_candidate_ref": "CANDIDATE-07",
+          "time_from_first_mobile_record_ms": 271599,
+          "to_candidate_ref": "CANDIDATE-06"
+        },
+        {
+          "after_first_sequence_number": 18438,
+          "before_last_sequence_number": 17838,
+          "from_candidate_ref": "CANDIDATE-06",
+          "time_from_first_mobile_record_ms": 334460,
+          "to_candidate_ref": "CANDIDATE-08"
+        },
+        {
+          "after_first_sequence_number": 21889,
+          "before_last_sequence_number": 21100,
+          "from_candidate_ref": "CANDIDATE-08",
+          "time_from_first_mobile_record_ms": 397246,
+          "to_candidate_ref": "CANDIDATE-07"
+        },
+        {
+          "after_first_sequence_number": 24217,
+          "before_last_sequence_number": 23040,
+          "from_candidate_ref": "CANDIDATE-07",
+          "time_from_first_mobile_record_ms": 439214,
+          "to_candidate_ref": "CANDIDATE-06"
+        },
+        {
+          "after_first_sequence_number": 25304,
+          "before_last_sequence_number": 25184,
+          "from_candidate_ref": "CANDIDATE-06",
+          "time_from_first_mobile_record_ms": 458281,
+          "to_candidate_ref": "CANDIDATE-07"
+        },
+        {
+          "after_first_sequence_number": 28868,
+          "before_last_sequence_number": 27875,
+          "from_candidate_ref": "CANDIDATE-07",
+          "time_from_first_mobile_record_ms": 521709,
+          "to_candidate_ref": "CANDIDATE-08"
+        },
+        {
+          "after_first_sequence_number": 30043,
+          "before_last_sequence_number": 29373,
+          "from_candidate_ref": "CANDIDATE-08",
+          "time_from_first_mobile_record_ms": 542624,
+          "to_candidate_ref": "CANDIDATE-06"
+        },
+        {
+          "after_first_sequence_number": 32391,
+          "before_last_sequence_number": 31217,
+          "from_candidate_ref": "CANDIDATE-06",
+          "time_from_first_mobile_record_ms": 584481,
+          "to_candidate_ref": "CANDIDATE-07"
+        },
+        {
+          "after_first_sequence_number": 33577,
+          "before_last_sequence_number": 32904,
+          "from_candidate_ref": "CANDIDATE-07",
+          "time_from_first_mobile_record_ms": 605502,
+          "to_candidate_ref": "CANDIDATE-05"
+        },
+        {
+          "after_first_sequence_number": 34770,
+          "before_last_sequence_number": 34602,
+          "from_candidate_ref": "CANDIDATE-05",
+          "time_from_first_mobile_record_ms": 626457,
+          "to_candidate_ref": "CANDIDATE-01"
+        },
+        {
+          "after_first_sequence_number": 37304,
+          "before_last_sequence_number": 37241,
+          "from_candidate_ref": "CANDIDATE-01",
+          "time_from_first_mobile_record_ms": 673242,
+          "to_candidate_ref": "CANDIDATE-05"
+        },
+        {
+          "after_first_sequence_number": 37587,
+          "before_last_sequence_number": 37310,
+          "from_candidate_ref": "CANDIDATE-05",
+          "time_from_first_mobile_record_ms": 678205,
+          "to_candidate_ref": "CANDIDATE-08"
+        },
+        {
+          "after_first_sequence_number": 38192,
+          "before_last_sequence_number": 37588,
+          "from_candidate_ref": "CANDIDATE-08",
+          "time_from_first_mobile_record_ms": 689058,
+          "to_candidate_ref": "CANDIDATE-02"
+        },
+        {
+          "after_first_sequence_number": 38915,
+          "before_last_sequence_number": 38467,
+          "from_candidate_ref": "CANDIDATE-02",
+          "time_from_first_mobile_record_ms": 701884,
+          "to_candidate_ref": "CANDIDATE-06"
+        },
+        {
+          "after_first_sequence_number": 40436,
+          "before_last_sequence_number": 39366,
+          "from_candidate_ref": "CANDIDATE-06",
+          "time_from_first_mobile_record_ms": 728415,
+          "to_candidate_ref": "CANDIDATE-07"
+        },
+        {
+          "after_first_sequence_number": 40608,
+          "before_last_sequence_number": 40551,
+          "from_candidate_ref": "CANDIDATE-07",
+          "time_from_first_mobile_record_ms": 731517,
+          "to_candidate_ref": "CANDIDATE-05"
+        },
+        {
+          "after_first_sequence_number": 40891,
+          "before_last_sequence_number": 40608,
+          "from_candidate_ref": "CANDIDATE-05",
+          "time_from_first_mobile_record_ms": 737017,
+          "to_candidate_ref": "CANDIDATE-07"
+        },
+        {
+          "after_first_sequence_number": 41712,
+          "before_last_sequence_number": 40891,
+          "from_candidate_ref": "CANDIDATE-07",
+          "time_from_first_mobile_record_ms": 751698,
+          "to_candidate_ref": "CANDIDATE-05"
+        },
+        {
+          "after_first_sequence_number": 44025,
+          "before_last_sequence_number": 43697,
+          "from_candidate_ref": "CANDIDATE-05",
+          "time_from_first_mobile_record_ms": 793466,
+          "to_candidate_ref": "CANDIDATE-02"
+        }
+      ],
+      "cell_info_snapshot_group_index": [
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 13,
+          "last_sequence_number": 15,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 3,
+          "time_from_first_mobile_record_ms": 7
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": true,
+          "first_sequence_number": 19,
+          "last_sequence_number": 21,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 2,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 19
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 1263,
+          "last_sequence_number": 1263,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 20860
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 2404,
+          "last_sequence_number": 2404,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 41622
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 3278,
+          "last_sequence_number": 3278,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 57434
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 3548,
+          "last_sequence_number": 3549,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 62464
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 3992,
+          "last_sequence_number": 3993,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 70712
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 4661,
+          "last_sequence_number": 4667,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 1,
+          "row_count": 7,
+          "time_from_first_mobile_record_ms": 83287
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 5824,
+          "last_sequence_number": 5829,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 6,
+          "time_from_first_mobile_record_ms": 104186
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 6428,
+          "last_sequence_number": 6431,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 114680
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 6598,
+          "last_sequence_number": 6598,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 117558
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 6980,
+          "last_sequence_number": 6981,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 125067
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 8130,
+          "last_sequence_number": 8131,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 145981
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 9303,
+          "last_sequence_number": 9304,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 166899
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 9750,
+          "last_sequence_number": 9757,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 8,
+          "time_from_first_mobile_record_ms": 175007
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 10359,
+          "last_sequence_number": 10361,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 3,
+          "time_from_first_mobile_record_ms": 185561
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 10475,
+          "last_sequence_number": 10478,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 187794
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 11242,
+          "last_sequence_number": 11243,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 202206
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 11629,
+          "last_sequence_number": 11629,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 208746
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 11954,
+          "last_sequence_number": 11957,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 215008
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 12764,
+          "last_sequence_number": 12768,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 5,
+          "time_from_first_mobile_record_ms": 229688
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 13891,
+          "last_sequence_number": 13891,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 250664
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 14478,
+          "last_sequence_number": 14479,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 262365
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 15013,
+          "last_sequence_number": 15016,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 271599
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 16139,
+          "last_sequence_number": 16142,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 292529
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 17283,
+          "last_sequence_number": 17286,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 313463
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 17837,
+          "last_sequence_number": 17838,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 323814
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 18438,
+          "last_sequence_number": 18441,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 334460
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 19574,
+          "last_sequence_number": 19577,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 355477
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 20690,
+          "last_sequence_number": 20690,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 376375
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 21099,
+          "last_sequence_number": 21100,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 383337
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 21889,
+          "last_sequence_number": 21890,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 397246
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 22280,
+          "last_sequence_number": 22281,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 405823
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 23040,
+          "last_sequence_number": 23040,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 418204
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 24217,
+          "last_sequence_number": 24217,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 439214
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 24556,
+          "last_sequence_number": 24556,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 445148
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 24955,
+          "last_sequence_number": 24955,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 451692
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 25183,
+          "last_sequence_number": 25184,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 455646
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 25304,
+          "last_sequence_number": 25307,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 458281
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 26536,
+          "last_sequence_number": 26536,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 479889
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 27707,
+          "last_sequence_number": 27707,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 500812
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 27874,
+          "last_sequence_number": 27875,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 503639
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 28868,
+          "last_sequence_number": 28871,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 521709
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 29372,
+          "last_sequence_number": 29373,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 530555
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 30043,
+          "last_sequence_number": 30046,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 542624
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 31209,
+          "last_sequence_number": 31209,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 563550
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 31211,
+          "last_sequence_number": 31217,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 7,
+          "time_from_first_mobile_record_ms": 564201
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 32391,
+          "last_sequence_number": 32392,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 584481
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 32898,
+          "last_sequence_number": 32904,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 7,
+          "time_from_first_mobile_record_ms": 594289
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 33577,
+          "last_sequence_number": 33581,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 5,
+          "time_from_first_mobile_record_ms": 605502
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 34601,
+          "last_sequence_number": 34602,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 624147
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 34770,
+          "last_sequence_number": 34773,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 626457
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 35878,
+          "last_sequence_number": 35879,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 647320
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 37021,
+          "last_sequence_number": 37022,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 668255
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 37240,
+          "last_sequence_number": 37241,
+          "registered_candidate_refs": [
+            "CANDIDATE-01"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 671791
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 37304,
+          "last_sequence_number": 37310,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 7,
+          "time_from_first_mobile_record_ms": 673242
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 37587,
+          "last_sequence_number": 37588,
+          "registered_candidate_refs": [
+            "CANDIDATE-08"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 678205
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 38192,
+          "last_sequence_number": 38193,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 689058
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 38464,
+          "last_sequence_number": 38467,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 693466
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 38915,
+          "last_sequence_number": 38915,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 701884
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 39363,
+          "last_sequence_number": 39366,
+          "registered_candidate_refs": [
+            "CANDIDATE-06"
+          ],
+          "registered_row_count": 1,
+          "row_count": 4,
+          "time_from_first_mobile_record_ms": 709993
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 40436,
+          "last_sequence_number": 40436,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 728415
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 40550,
+          "last_sequence_number": 40551,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 730859
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 40608,
+          "last_sequence_number": 40608,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 731517
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 40891,
+          "last_sequence_number": 40891,
+          "registered_candidate_refs": [
+            "CANDIDATE-07"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 737017
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 41712,
+          "last_sequence_number": 41713,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 751698
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 42877,
+          "last_sequence_number": 42877,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 772593
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 43696,
+          "last_sequence_number": 43697,
+          "registered_candidate_refs": [
+            "CANDIDATE-05"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 787825
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 44025,
+          "last_sequence_number": 44025,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 1,
+          "time_from_first_mobile_record_ms": 793466
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 45171,
+          "last_sequence_number": 45172,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 814419
+        },
+        {
+          "distinct_registered_candidate_count": 1,
+          "duplicate_registered_rows_same_identity": false,
+          "first_sequence_number": 45292,
+          "last_sequence_number": 45293,
+          "registered_candidate_refs": [
+            "CANDIDATE-02"
+          ],
+          "registered_row_count": 1,
+          "row_count": 2,
+          "time_from_first_mobile_record_ms": 816639
+        }
+      ],
+      "cell_info_snapshot_groups": 71,
+      "cell_rows": 188,
+      "cell_technology_counts": {
+        "LTE": 188
+      },
+      "cell_timestamps_equal_elapsed_realtime_ms_after_unit_conversion": true,
+      "connection_status_counts": {
+        "NONE": 188
+      },
+      "distinct_registered_candidates": 6,
+      "elapsed_realtime_nonmonotonic_warnings": 1621,
+      "event_counts": {
+        "CELL_LIST_CHANGED": 72,
+        "DATA_CONNECTION_CHANGED": 1,
+        "DISPLAY_INFO_CHANGED": 1,
+        "SERVICE_STATE_CHANGED": 65,
+        "SERVING_CELL_CHANGED": 30,
+        "SIGNAL_STRENGTH_CHANGED": 699
+      },
+      "full_file_parsed_rows": 45631,
+      "groups_with_exactly_one_registered_row": 70,
+      "groups_with_more_than_one_registered_row": 1,
+      "groups_with_multiple_distinct_registered_candidates": 0,
+      "groups_with_zero_registered_rows": 0,
+      "mobile_records_in_audit": 1755,
+      "multirow_groups_all_same_candidate": 1,
+      "parser_duplicate_sequences": 0,
+      "parser_epoch_timestamp_decreases": 0,
+      "parser_sequence_gaps": 0,
+      "raw_android_mCellConnectionStatus_counts": {
+        "0": 188
+      },
+      "raw_file": "data-walking-test.txt",
+      "raw_file_bytes": 22175305,
+      "raw_file_sha256": "9d7aa4830391304a1a255c059c4c15dcb1b48c6f0de623dad4d934f7966c8f2f",
+      "registered_candidate_rows": [
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 0,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 13,
+          "source_time_from_first_mobile_record_ms": 7,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 38444,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 19,
+          "source_time_from_first_mobile_record_ms": 19,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 38444,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 21,
+          "source_time_from_first_mobile_record_ms": 23,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 59289,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 1263,
+          "source_time_from_first_mobile_record_ms": 20860,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 80055,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 2404,
+          "source_time_from_first_mobile_record_ms": 41622,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 95860,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 3278,
+          "source_time_from_first_mobile_record_ms": 57434,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 100893,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 3548,
+          "source_time_from_first_mobile_record_ms": 62464,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 109144,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 3992,
+          "source_time_from_first_mobile_record_ms": 70712,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 121720,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 4661,
+          "source_time_from_first_mobile_record_ms": 83287,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 142619,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 5824,
+          "source_time_from_first_mobile_record_ms": 104186,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 153112,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 6428,
+          "source_time_from_first_mobile_record_ms": 114680,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 155984,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 6598,
+          "source_time_from_first_mobile_record_ms": 117558,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 163497,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 6980,
+          "source_time_from_first_mobile_record_ms": 125067,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 184414,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 8130,
+          "source_time_from_first_mobile_record_ms": 145981,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 205325,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 9303,
+          "source_time_from_first_mobile_record_ms": 166899,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 213434,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 9750,
+          "source_time_from_first_mobile_record_ms": 175007,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 223993,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 10359,
+          "source_time_from_first_mobile_record_ms": 185561,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 226226,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 10475,
+          "source_time_from_first_mobile_record_ms": 187794,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 240631,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 11242,
+          "source_time_from_first_mobile_record_ms": 202206,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 247175,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 11629,
+          "source_time_from_first_mobile_record_ms": 208746,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 253440,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 11954,
+          "source_time_from_first_mobile_record_ms": 215008,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 268115,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 12764,
+          "source_time_from_first_mobile_record_ms": 229688,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 289095,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 13891,
+          "source_time_from_first_mobile_record_ms": 250664,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 300796,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 14478,
+          "source_time_from_first_mobile_record_ms": 262365,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 310029,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 15013,
+          "source_time_from_first_mobile_record_ms": 271599,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 330962,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 16139,
+          "source_time_from_first_mobile_record_ms": 292529,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 351897,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 17283,
+          "source_time_from_first_mobile_record_ms": 313463,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 362243,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 17837,
+          "source_time_from_first_mobile_record_ms": 323814,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 372858,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 18438,
+          "source_time_from_first_mobile_record_ms": 334460,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 393902,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 19574,
+          "source_time_from_first_mobile_record_ms": 355477,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 414809,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 20690,
+          "source_time_from_first_mobile_record_ms": 376375,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 421767,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 21099,
+          "source_time_from_first_mobile_record_ms": 383337,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 435677,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 21889,
+          "source_time_from_first_mobile_record_ms": 397246,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 444253,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 22280,
+          "source_time_from_first_mobile_record_ms": 405823,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 456634,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 23040,
+          "source_time_from_first_mobile_record_ms": 418204,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 477637,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 24217,
+          "source_time_from_first_mobile_record_ms": 439214,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 483579,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 24556,
+          "source_time_from_first_mobile_record_ms": 445148,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 490122,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 24955,
+          "source_time_from_first_mobile_record_ms": 451692,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 494074,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 25183,
+          "source_time_from_first_mobile_record_ms": 455646,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 496709,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 25304,
+          "source_time_from_first_mobile_record_ms": 458281,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 518319,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 26536,
+          "source_time_from_first_mobile_record_ms": 479889,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 539245,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 27707,
+          "source_time_from_first_mobile_record_ms": 500812,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 542070,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 27874,
+          "source_time_from_first_mobile_record_ms": 503639,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 560141,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 28868,
+          "source_time_from_first_mobile_record_ms": 521709,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 568965,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 29372,
+          "source_time_from_first_mobile_record_ms": 530555,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 581056,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 30043,
+          "source_time_from_first_mobile_record_ms": 542624,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 601982,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 31209,
+          "source_time_from_first_mobile_record_ms": 563550,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 602630,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 31211,
+          "source_time_from_first_mobile_record_ms": 564201,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 622912,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 32391,
+          "source_time_from_first_mobile_record_ms": 584481,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 632703,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 32898,
+          "source_time_from_first_mobile_record_ms": 594289,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 643933,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 33577,
+          "source_time_from_first_mobile_record_ms": 605502,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 662563,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 34601,
+          "source_time_from_first_mobile_record_ms": 624147,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 664862,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 34770,
+          "source_time_from_first_mobile_record_ms": 626457,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 685751,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 35878,
+          "source_time_from_first_mobile_record_ms": 647320,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 706625,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 37021,
+          "source_time_from_first_mobile_record_ms": 668255,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-01",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 710223,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 37240,
+          "source_time_from_first_mobile_record_ms": 671791,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 711672,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 37304,
+          "source_time_from_first_mobile_record_ms": 673242,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-08",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 716621,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 37587,
+          "source_time_from_first_mobile_record_ms": 678205,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 727478,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 38192,
+          "source_time_from_first_mobile_record_ms": 689058,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 731898,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 38464,
+          "source_time_from_first_mobile_record_ms": 693466,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 740312,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 38915,
+          "source_time_from_first_mobile_record_ms": 701884,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B3",
+          "candidate_ref": "CANDIDATE-06",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 748422,
+          "connection_status": "NONE",
+          "earfcn": 1306,
+          "frequency_mhz": 1815.6,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 39363,
+          "source_time_from_first_mobile_record_ms": 709993,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 766850,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 40436,
+          "source_time_from_first_mobile_record_ms": 728415,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 769289,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 40550,
+          "source_time_from_first_mobile_record_ms": 730859,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 769912,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 40608,
+          "source_time_from_first_mobile_record_ms": 731517,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-07",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 775447,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 296,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 40891,
+          "source_time_from_first_mobile_record_ms": 737017,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 790126,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 41712,
+          "source_time_from_first_mobile_record_ms": 751698,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 811028,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 42877,
+          "source_time_from_first_mobile_record_ms": 772593,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B7",
+          "candidate_ref": "CANDIDATE-05",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 826254,
+          "connection_status": "NONE",
+          "earfcn": 3200,
+          "frequency_mhz": 2665.0,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 43696,
+          "source_time_from_first_mobile_record_ms": 787825,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 831897,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 44025,
+          "source_time_from_first_mobile_record_ms": 793466,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 852809,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 45171,
+          "source_time_from_first_mobile_record_ms": 814419,
+          "subscription_id": "1",
+          "technology": "LTE"
+        },
+        {
+          "active_data_subscription": true,
+          "band": "B1",
+          "candidate_ref": "CANDIDATE-02",
+          "cell_id_redacted": true,
+          "cell_snapshot_time_from_session_first_cell_ms": 855069,
+          "connection_status": "NONE",
+          "earfcn": 451,
+          "frequency_mhz": 2155.1,
+          "pci": 276,
+          "plmn": "28603",
+          "session_role": "walking_pilot",
+          "sim_slot": "1",
+          "source_sequence_number": 45292,
+          "source_time_from_first_mobile_record_ms": 816639,
+          "subscription_id": "1",
+          "technology": "LTE"
+        }
+      ],
+      "registered_false_rows": 116,
+      "registered_rows_in_multirow_groups": 2,
+      "registered_true_rows": 72,
+      "session_role": "walking_pilot",
+      "signal_strength_rows": 699,
+      "sim_slot_values": [
+        "1"
+      ],
+      "subscription_id_values": [
+        "1"
+      ]
+    }
+  ]
+}

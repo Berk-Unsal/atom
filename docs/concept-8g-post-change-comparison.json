@@ -1,0 +1,20 @@
+{
+  "concept": "8G",
+  "capturedOn": "2026-09-24",
+  "fixture": { "path": "data-pipeline/ankara_5g_nodes.geojson", "cells": 451 },
+  "comparison": [
+    { "measure": "Initial Browse rows", "before": 250, "after": 50, "evidence": "Actual Ankara 451-Cell fixture; responsive E2E measurement." },
+    { "measure": "1440px common-state drawer scroll height", "before": { "clientHeightPx": 766, "scrollHeightPx": 1364 }, "after": { "searchResultsClientHeightPx": 766, "searchResultsScrollHeightPx": 766, "capturedMapAreaClientHeightPx": 766, "capturedMapAreaScrollHeightPx": 767 }, "evidence": "Actual 451-Cell fixture; responsive E2E measurements." },
+    { "measure": "390px Search drawer scroll height", "before": { "clientHeightPx": 516, "scrollHeightPx": 1344 }, "after": { "clientHeightPx": 516, "scrollHeightPx": 771 }, "evidence": "Actual 451-Cell fixture; bounded 50-row list in a vertically scrollable phone drawer." },
+    { "measure": "Empty query behavior", "before": "All loaded Cells matched", "after": "No rows until an identity query or technology filter is provided" },
+    { "measure": "Cell detail layout", "before": "List above editor in one drawer scroll", "after": "Single-Cell detail replaces Browse; Back restores working set" },
+    { "measure": "Network context on browse", "before": "Row click changed selectedTower and could stale Single results", "after": "Row click changes inventoryTargetCellId only" },
+    { "measure": "Map area", "before": "No inventory extent scope", "after": "Stable captured IDs; 389 of 451 fixture Cells inside the 1440 view at capture time; explicit refresh" },
+    { "measure": "Safe batch editing", "before": "Unavailable", "after": "GO: reviewed atomic edits for conducted TX power, radius, beam width" },
+    { "measure": "Map Cell rendering", "before": "451 CircleMarkers via canvas", "after": "Same; audit-only" },
+    { "measure": "Ray/result density", "before": "Returned exact features, no decimation", "after": "Same; audit-only" }
+  ],
+  "responsiveEvidence": "concept-8g-responsive-evidence.json",
+  "bundleComparison": "concept-8g-test-evidence.json",
+  "limits": "The E2E normal fixture verifies the current 451-Cell dataset. The 10,000-Cell synthetic test is a DOM bound check, not a production performance or backend scale claim."
+}

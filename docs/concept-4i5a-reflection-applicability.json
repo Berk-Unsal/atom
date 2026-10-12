@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "concept": "4I.5A",
+  "title": "140 GHz single-bounce specular reflection applicability contract",
+  "artifact": "reflection-applicability",
+  "captured_at": "2026-09-18",
+  "model_id": "single_bounce_specular_reflection_reference_v1",
+  "status": "reference_only_candidate",
+  "production": false,
+  "recommendation": "A single reflected-path diagnostic is defensible only with explicitly supplied facade/material geometry.",
+  "source_audit": [
+    {
+      "source": "ITU-R P.2040-4",
+      "revision": "2025-09",
+      "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf",
+      "sections": ["§2.2.1", "§2.2.2", "equations (34)–(44)"],
+      "role": "complex TE/TM interface and finite-slab field coefficients",
+      "assumptions": "planar interface/slab, homogeneous isotropic media, plane-wave incidence; free-space spreading is not included",
+      "output_semantics": "field reflection/transmission coefficients plus power fractions after impedance/flux handling",
+      "limitation": "does not supply a finite urban-facade geometry, roughness BRDF, or antenna pattern"
+    },
+    {
+      "source": "ITU-R P.1411-13",
+      "revision": "2025-09",
+      "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf",
+      "sections": ["§3.2", "§4.1.1", "§4.1.2", "§4.2.2", "§5", "§6"],
+      "role": "urban site-data and statistical/multipath applicability boundary",
+      "assumptions": "scenario/morphology/statistical model-specific; current Table 4 rows are not an arbitrary deterministic facade GO solver",
+      "output_semantics": "median/basic transmission loss and multipath/polarization reference context",
+      "limitation": "does not justify adding one deterministic reflected path to a P.1411 median"
+    },
+    {
+      "source": "ITU-R P.525-5",
+      "revision": "2024-11",
+      "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf",
+      "sections": ["§4", "§5", "§6"],
+      "role": "free-space image-path spreading baseline",
+      "assumptions": "far enough from source/aperture for spherical-wave 1/r behavior; point-to-point distance d",
+      "output_semantics": "field amplitude proportional to 1/d and power loss 20 log10(4πd/λ)",
+      "limitation": "not an urban obstruction, reflection coefficient, or finite-facade model"
+    },
+    {
+      "source": "ITU-R P.1410-4",
+      "revision": "2007-02",
+      "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1410-4-200702-S!!PDF-E.pdf",
+      "sections": ["§2.1.2", "equations (1)–(14)"],
+      "role": "official deterministic urban reflection/scatter geometry analogue",
+      "assumptions": "single-bounce reflection option, accurate building/terrain database, plane-wave incidence; finite diffuse facet has separate area/spreading terms",
+      "output_semantics": "perfect-mirror image-path power for an ideal reflector and separate scalar diffuse-scatter approximation",
+      "limitation": "not a 140 GHz calibrated facade model; diffuse formulation omits phase/polarization"
+    },
+    {
+      "source": "ITU Radiocommunication Handbook",
+      "revision": "1996",
+      "url": "https://www.itu.int/dms_pub/itu-r/opb/hdb/R-HDB-27-1996-PDF-E.pdf",
+      "sections": ["reflection/scattering roughness discussion around pp. 87–89"],
+      "role": "Rayleigh roughness/specular-versus-diffuse qualification",
+      "assumptions": "RMS surface height within the first Fresnel zone and grazing/incidence angle are known",
+      "output_semantics": "dimensionless roughness parameter and coherent-specular reduction context",
+      "limitation": "does not provide Ankara facade roughness evidence"
+    },
+    {
+      "source": "Xing, Kanhere, Ju, Rappaport, Indoor Wireless Channel Properties at Millimeter Wave and Sub-Terahertz Frequencies",
+      "revision": "2019 preprint; measured 28/73/140 GHz",
+      "url": "https://arxiv.org/abs/1908.09765",
+      "sections": ["abstract and reflection/scattering measurements"],
+      "role": "peer-reviewed/archival 140 GHz reflection and scattering evidence",
+      "assumptions": "indoor measured materials and geometries, not Ankara exterior facades",
+      "output_semantics": "material- and polarization-dependent reflected/scattered observations",
+      "limitation": "transferability requires a measurement campaign; it is not a universal facade coefficient"
+    },
+    {
+      "source": "Exact image-theory boundary reference",
+      "revision": "GJI 2001",
+      "url": "https://academic.oup.com/gji/article/151/2/534/616767",
+      "sections": ["image-source construction for planar interfaces"],
+      "role": "geometry/boundary-method authority analogue",
+      "assumptions": "planar interface; nonideal media require a more complete image/boundary treatment",
+      "output_semantics": "image geometry, not a complete finite-facade received-power model",
+      "limitation": "not a substitute for the RF material and finite-aperture contract"
+    }
+  ],
+  "geometry_contract": {
+    "coordinates": "local ENU metres; plane n·(x-p0)=0 with unit normal n",
+    "mirror": "Tx_image = Tx - 2 n [n·(Tx-p0)]",
+    "intersection": "S = Tx_image + t(Rx-Tx_image), t = -n·(Tx_image-p0) / n·(Rx-Tx_image)",
+    "gates": ["finite denominator", "0 <= t <= 1", "S inside finite facade segment", "S inside known vertical extent", "both endpoints on declared exterior side"],
+    "invariant": "d1 = |Tx-S|, d2 = |S-Rx|, L=d1+d2=|Tx_image-Rx| and incidence angle equals reflection angle"
+  },
+  "spreading_contract": {
+    "selected": "image-source/ideal-planar-mirror field with FSPL(d1+d2)",
+    "field": "E_ref = E0 * Gt(direction) * Gr(direction) * Gamma * exp(-j k L) / L",
+    "power_reference": "Pr_ref_dBm = Pt_dBm + Gt_dBi + Gr_dBi - FSPL(L) + 10 log10(|Gamma|^2) + declared non-geometric terms",
+    "candidate_a": {
+      "expression": "FSPL(d1) + FSPL(d2)",
+      "decision": "rejected for an ideal infinite/large planar specular mirror with dimensionless Gamma",
+      "reason": "double free-space constants and yields a 1/(d1*d2)^2 power dependence without a finite-area/RCS normalization"
+    },
+    "candidate_d": {
+      "expression": "finite-facet physical-optics/diffuse-scatter area or RCS formulation",
+      "decision": "separate future model only",
+      "reason": "requires finite reflector dimensions, aperture/area, roughness/statistics and a sourced physical-optics or BRDF model"
+    }
+  },
+  "coefficient_contract": {
+    "field_once": true,
+    "power_factor": "|Gamma|^2 exactly once",
+    "interface_mode": "use front-interface complex r_TE or r_TM when the facade is treated as semi-infinite/opaque or rear-interface coherence is unavailable",
+    "slab_mode": "use P.2040 total R_TE/R_TM only when thickness, rear medium, layers, phase/coherence, angle and polarization are explicitly known",
+    "unknown_policy": "interface_only or slab_coherence_unknown; never silently multiply an interface coefficient and a separate reflection loss",
+    "direct_plus_reflected": "complex fields must be summed if a future multipath model is explicitly authorized; powers must not be added as though coherent"
+  },
+  "applicability_gates": [
+    {
+      "id": "facade_plane",
+      "status_if_missing": "unknown",
+      "required": "surveyed or explicitly declared planar facade surface; footprint edge alone is insufficient"
+    },
+    {
+      "id": "facade_normal",
+      "status_if_missing": "blocked",
+      "required": "outward normal established from ring winding plus interior/exterior validation"
+    },
+    {
+      "id": "finite_segment",
+      "status_if_missing": "inapplicable",
+      "required": "specular point lies on the selected finite edge; infinite-plane solution is not enough"
+    },
+    {
+      "id": "vertical_extent",
+      "status_if_missing": "unknown",
+      "required": "trusted or user-declared facade bottom/top; fallback 9 m is not evidence"
+    },
+    {
+      "id": "material_and_thickness",
+      "status_if_missing": "blocked",
+      "required": "explicit P.2040 row or characterized electrical properties; explicit thickness for slab mode"
+    },
+    {
+      "id": "roughness",
+      "status_if_missing": "qualified",
+      "required": "RMS height in relevant Fresnel zone and, where diffuse separation matters, correlation/texture evidence"
+    },
+    {
+      "id": "two_leg_visibility",
+      "status_if_missing": "blocked",
+      "required": "Tx→S and S→Rx obstruction checks with reflecting endpoint exemption only"
+    },
+    {
+      "id": "terrain",
+      "status_if_missing": "terrain_unavailable",
+      "required": "terrain layer or explicit flat-ground-relative-datum declaration"
+    },
+    {
+      "id": "antenna_directions",
+      "status_if_missing": "qualified",
+      "required": "Tx departure and Rx arrival azimuth/elevation and an applicable directional pattern/aperture contract"
+    },
+    {
+      "id": "polarization",
+      "status_if_missing": "blocked",
+      "required": "explicit TE/TM or vector polarization decomposition from the actual incidence plane"
+    },
+    {
+      "id": "far_field",
+      "status_if_missing": "unknown",
+      "required": "physical aperture and range support for antenna and surface GO assumptions"
+    }
+  ],
+  "composition_boundaries": {
+    "p1411": "deterministic single-bounce branch and statistical P.1411 median are alternative model families; do not sum them",
+    "p526": "reflected path and P.526 diffraction are alternative mechanisms; do not add diffraction loss to the same isolated ray",
+    "research_sub_thz": "do not add reflection gain/path to FSPL plus the historical 80 dB/event heuristic; compare side-by-side only",
+    "atmosphere": "if later enabled, integrate specific attenuation separately over each leg; in a homogeneous medium this equals the same specific loss times d1+d2",
+    "canonical": "no network, coverage, interference, radio-quality, optimizer, building-entry, or canonical propagation coupling"
+  },
+  "ankara_readiness_reference": {
+    "artifact": "docs/concept-4i5a-ankara-readiness.json",
+    "building_footprints": 161784,
+    "outer_facade_segments_geometric_only": 936651,
+    "segments_attached_to_trusted_height_buildings": 49137,
+    "material_evidence_footprints": 0,
+    "thickness_evidence": 0,
+    "roughness_evidence": 0,
+    "geometry_only_specular_candidates": 6368,
+    "geometry_only_candidates_with_height_evidence": 777,
+    "terrain_anchored_vertical_extent_candidates": 0,
+    "interpretation": "These are readiness/sample geometry counts, not viable reflected links. Visibility, material, roughness, terrain, antenna and coherent-field gates are not passed by these counts."
+  },
+  "requirement_status": {
+    "1_image_method": "established",
+    "2_spreading": "established; FSPL(total image path) selected for ideal planar mirror",
+    "3_p2040_gamma": "established; one complex field coefficient, |Gamma|^2 once in power",
+    "4_antenna_directions": "specified; direct-path bearing reuse prohibited",
+    "5_te_tm_basis": "specified from actual incidence plane; explicit TE/TM first scope",
+    "6_facade_geometry": "required evidence defined; footprint edge alone is not physical wall proof",
+    "7_height": "required evidence defined; fallback height rejected",
+    "8_roughness": "qualified by Rayleigh criterion; unknown remains unknown",
+    "9_two_leg_visibility": "defined with endpoint/self-obstruction rules",
+    "10_double_counting": "separated",
+    "11_usefulness": "single isolated reference is useful enough for a gated 4I.5B candidate",
+    "12_terrain": "explicitly unavailable in current Ankara pack",
+    "13_diffuse": "not modelled",
+    "14_fresnel": "scale calculated; no arbitrary minimum asserted",
+    "15_far_field": "aperture-dependent; unknown without D",
+    "16_atmosphere": "separate per-leg ledger specified",
+    "17_coherence": "direct-plus-reflected coherent sum excluded from first scope",
+    "18_material": "explicit evidence required; no automatic OSM inference",
+    "19_measurement": "campaign metadata and separation requirements defined",
+    "20_go_no_go": "GO for reference-only candidate, NO for canonical/network multipath",
+    "21_contract": "smallest 4I.5B contract specified",
+    "22_invariance": "12 exact invariance targets recorded",
+    "23_no_production_physics": "satisfied by audit-only scope",
+    "24_source_authority": "official ITU plus archival/peer-reviewed geometry evidence",
+    "25_controlled_fixtures": "A–J test-only fixtures defined",
+    "26_hand_check": "140 GHz TE/TM example recorded in controlled derivation",
+    "27_ankara_counts": "quantified in readiness artifact",
+    "28_material_readiness": "zero current material/thickness/roughness evidence",
+    "29_validation": "Go tests, race/vet, JSON/docs and diff checks required",
+    "30_limitations": "explicit in audit document; no diffuse, curvature, multilayer uncertainty, or coherent network result claimed"
+  },
+  "promotion_policy": {
+    "4i5b_allowed": true,
+    "promotion_target": "reference-only, opt-in, isolated single reflected path",
+    "canonical_promotion": false,
+    "network_promotion": false,
+    "required_before_4i5b": [
+      "explicit facade/material geometry contract",
+      "measured or declared height/terrain datum",
+      "known interface/slab mode and thickness/coherence evidence",
+      "roughness/specularity evidence or a qualified unknown status",
+      "directional antenna and TE/TM inputs",
+      "two-leg visibility and finite segment tests",
+      "independent measurement validation plan"
+    ]
+  }
+}

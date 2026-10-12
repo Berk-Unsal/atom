@@ -1,0 +1,635 @@
+{
+  "routes": [
+    {
+      "endpoint": "/api/path-profile",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App.analyzePathProfile",
+      "computational_character": "sampled path RF/terrain profile",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 417
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 27,
+        "symbol": "\"/api/path-profile\""
+      }
+    },
+    {
+      "endpoint": "/api/sub-thz-reference",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App.analyzeSubTHZReference",
+      "computational_character": "reference scenario calculations",
+      "registrations": [
+        {
+          "path": "backend-go/sub_thz_reference_route.go",
+          "line": 12
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 28,
+        "symbol": "\"/api/sub-thz-reference\""
+      }
+    },
+    {
+      "endpoint": "/api/sub-thz-p1411-reference",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App reference callback",
+      "computational_character": "reference path-loss calculations",
+      "registrations": [
+        {
+          "path": "backend-go/sub_thz_p1411_reference_route.go",
+          "line": 12
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 29,
+        "symbol": "\"/api/sub-thz-p1411-reference\""
+      }
+    },
+    {
+      "endpoint": "/api/sub-thz-validation",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App reference callback",
+      "computational_character": "reference-case validation",
+      "registrations": [
+        {
+          "path": "backend-go/sub_thz_validation_route.go",
+          "line": 16
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 30,
+        "symbol": "\"/api/sub-thz-validation\""
+      }
+    },
+    {
+      "endpoint": "/api/sub-thz-material-reference",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App reference callback",
+      "computational_character": "material/interface calculations",
+      "registrations": [
+        {
+          "path": "backend-go/sub_thz_material_reference_route.go",
+          "line": 15
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 31,
+        "symbol": "\"/api/sub-thz-material-reference\""
+      }
+    },
+    {
+      "endpoint": "/api/sub-thz-reflection-reference",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App reference callback",
+      "computational_character": "reflection geometry and RF",
+      "registrations": [
+        {
+          "path": "backend-go/sub_thz_reflection_reference_route.go",
+          "line": 15
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 32,
+        "symbol": "\"/api/sub-thz-reflection-reference\""
+      }
+    },
+    {
+      "endpoint": "/api/coverage-surface",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App.analyzeCoverageSurface/exportCoverageSurface",
+      "computational_character": "RF grid computation; export POST recomputes",
+      "registrations": [
+        {
+          "path": "backend-go/coverage_surface_route.go",
+          "line": 14
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 33,
+        "symbol": "\"/api/coverage-surface\""
+      }
+    },
+    {
+      "endpoint": "/api/processes/batch-experiment/execution",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "BACKGROUND / EXPERIMENT",
+      "caller": "ExperimentPanel.start",
+      "computational_character": "one submission can expand to64 queued background runs",
+      "registrations": [
+        {
+          "path": "backend-go/experiment_jobs.go",
+          "line": 439
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 34,
+        "symbol": "\"/api/processes/batch-experiment/execution\""
+      }
+    },
+    {
+      "endpoint": "/api/analyze-sector",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "USER-INITIATED ROOT + DETERMINISTIC FOLLOW-UP",
+      "caller": "App.runSimulation; optimizeAzimuth refresh; history",
+      "computational_character": "single-Cell rays plus gaps",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 199
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 35,
+        "symbol": "\"/api/analyze-sector\""
+      }
+    },
+    {
+      "endpoint": "/api/simulate",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "DETERMINISTIC FOLLOW-UP + INDEPENDENT TOOL ACTION",
+      "caller": "network map queue; standalone API caller",
+      "computational_character": "single-Cell rays; same route may be independently expensive",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 216
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 36,
+        "symbol": "\"/api/simulate\""
+      }
+    },
+    {
+      "endpoint": "/api/coverage-gaps",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "standalone API/legacy callers; normal UI sector route includes gaps",
+      "computational_character": "coverage/demand calculation",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 298
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 37,
+        "symbol": "\"/api/coverage-gaps\""
+      }
+    },
+    {
+      "endpoint": "/api/optimize-azimuth",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "USER-INITIATED ROOT",
+      "caller": "App.optimizeAzimuth/history",
+      "computational_character": "single-Cell azimuth search",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 233
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 38,
+        "symbol": "\"/api/optimize-azimuth\""
+      }
+    },
+    {
+      "endpoint": "/api/evaluate-network",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "USER-INITIATED ROOT",
+      "caller": "App.evaluateNetwork",
+      "computational_character": "selected-network RF evaluation",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 264
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 39,
+        "symbol": "\"/api/evaluate-network\""
+      }
+    },
+    {
+      "endpoint": "/api/optimize-network",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "USER-INITIATED ROOT",
+      "caller": "App.optimizeNetwork/history",
+      "computational_character": "network search and Pareto output",
+      "registrations": [
+        {
+          "path": "backend-go/network_optimization_route.go",
+          "line": 18
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 40,
+        "symbol": "\"/api/optimize-network\""
+      }
+    },
+    {
+      "endpoint": "/api/building-entry-analysis",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App.analyzeBuildingEntry",
+      "computational_character": "network/single building-entry analysis; current-result cache can avoid request",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 281
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 41,
+        "symbol": "\"/api/building-entry-analysis\""
+      }
+    },
+    {
+      "endpoint": "/api/explain-network-cell",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App.explainNetworkCell",
+      "computational_character": "on-demand retained-solution RF explanation; cached repeat costs0",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 251
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 42,
+        "symbol": "\"/api/explain-network-cell\""
+      }
+    },
+    {
+      "endpoint": "/api/interference",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App.analyzeInterference",
+      "computational_character": "network RF/interference sampling",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 413
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 43,
+        "symbol": "\"/api/interference\""
+      }
+    },
+    {
+      "endpoint": "/api/recommend-sites",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App.recommendSites",
+      "computational_character": "candidate network evaluation/search; independent max5 existing Cells",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 367
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 44,
+        "symbol": "\"/api/recommend-sites\""
+      }
+    },
+    {
+      "endpoint": "/api/measurements/evaluate",
+      "method": "POST",
+      "current_attempt_cost": 1,
+      "classification": "INDEPENDENT TOOL ACTION",
+      "caller": "App.evaluateMeasurements",
+      "computational_character": "measurement predictions and residuals",
+      "registrations": [
+        {
+          "path": "backend-go/main.go",
+          "line": 388
+        }
+      ],
+      "protection": {
+        "path": "backend-go/rf_protection.go",
+        "line": 45,
+        "symbol": "\"/api/measurements/evaluate\""
+      }
+    }
+  ],
+  "references": [
+    {
+      "path": "backend-go/rf_protection.go",
+      "line": 100,
+      "symbol": "func (limiter *rfRequestLimiter) middlewareFor"
+    },
+    {
+      "path": "backend-go/rf_protection.go",
+      "line": 142,
+      "symbol": "func (limiter *rfRequestLimiter) acquire"
+    },
+    {
+      "path": "backend-go/rf_protection.go",
+      "line": 183,
+      "symbol": "func (limiter *rfRequestLimiter) clientState"
+    },
+    {
+      "path": "backend-go/rf_protection.go",
+      "line": 212,
+      "symbol": "func protectExpensiveRFRoutes"
+    },
+    {
+      "path": "backend-go/rf_protection.go",
+      "line": 240,
+      "symbol": "func validAPIKey"
+    },
+    {
+      "path": "backend-go/main.go",
+      "line": 83,
+      "symbol": "router.SetTrustedProxies"
+    },
+    {
+      "path": "backend-go/main.go",
+      "line": 86,
+      "symbol": "router.Use(gin.Logger"
+    },
+    {
+      "path": "backend-go/main.go",
+      "line": 88,
+      "symbol": "router.Use(limitRequestBody"
+    },
+    {
+      "path": "backend-go/main.go",
+      "line": 120,
+      "symbol": "router.Use(protectExpensiveRFRoutes"
+    },
+    {
+      "path": "backend-go/main.go",
+      "line": 636,
+      "symbol": "func bindJSON"
+    },
+    {
+      "path": "backend-go/main.go",
+      "line": 661,
+      "symbol": "func writeRFResponse"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1141,
+      "symbol": "const optimizeNetwork"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1257,
+      "symbol": "const evaluateNetwork"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1318,
+      "symbol": "const explainNetworkCell"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1022,
+      "symbol": "const optimizeAzimuth"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1476,
+      "symbol": "const analyzeInterference"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1534,
+      "symbol": "const analyzeBuildingEntry"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 899,
+      "symbol": "const analyzeCoverageSurface"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 942,
+      "symbol": "const exportCoverageSurface"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 2057,
+      "symbol": "const recommendSites"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 2120,
+      "symbol": "const evaluateMeasurements"
+    },
+    {
+      "path": "frontend-react/src/utils/requestPayloads.js",
+      "line": 5,
+      "symbol": "export function buildSimulationPayload"
+    },
+    {
+      "path": "frontend-react/src/utils/requestPayloads.js",
+      "line": 279,
+      "symbol": "export function buildNetworkOptimizationPayload"
+    },
+    {
+      "path": "frontend-react/src/utils/networkSimulationQueue.js",
+      "line": 1,
+      "symbol": "export async function"
+    },
+    {
+      "path": "frontend-react/src/utils/apiClient.js",
+      "line": 6,
+      "symbol": "export async function requestJSON"
+    },
+    {
+      "path": "frontend-react/src/hooks/useRequestCoordinator.js",
+      "line": 13,
+      "symbol": "const begin"
+    },
+    {
+      "path": "frontend-react/src/components/ExperimentPanel.jsx",
+      "line": 40,
+      "symbol": "const start"
+    },
+    {
+      "path": "backend-go/experiment_jobs.go",
+      "line": 431,
+      "symbol": "func registerExperimentRoutes"
+    }
+  ],
+  "graph": [
+    {
+      "action": "Evaluate Network",
+      "root": "/api/evaluate-network",
+      "children": "N POST /api/simulate",
+      "count": "N+1",
+      "execution": "sequential after root",
+      "inputs": "root request snapshot; each selected tower azimuth and per-Cell RF profile",
+      "independent_children": "Simulate is also standalone; map selection/Inspect does not dispatch extra RF"
+    },
+    {
+      "action": "Optimize Network",
+      "root": "/api/optimize-network",
+      "children": "N POST /api/simulate",
+      "count": "N+1",
+      "execution": "sequential after root",
+      "inputs": "same snapshot; winning optimized_towers optimal_azimuth per Cell from root response",
+      "commit": "complete result committed only after queue succeeds"
+    },
+    {
+      "action": "Re-evaluate",
+      "root": "same Evaluate callback",
+      "children": "same N maps",
+      "count": "N+1",
+      "execution": "explicit second user click; never auto-issued by Interference"
+    },
+    {
+      "action": "Interference",
+      "root": "/api/interference",
+      "children": "none",
+      "count": "1",
+      "inputs": "selected network; retained optimizer azimuths when available"
+    },
+    {
+      "action": "Explain solution/cell",
+      "root": "/api/explain-network-cell",
+      "children": "none",
+      "count": "1 uncached;0 cached/no eligible changed Cell",
+      "inputs": "retained baseline/solution/runID/domain; no new Optimize prerequisite"
+    },
+    {
+      "action": "Building Entry",
+      "root": "/api/building-entry-analysis",
+      "children": "none",
+      "count": "1;0 if source-key result current",
+      "inputs": "current single/network request snapshot"
+    },
+    {
+      "action": "Surface generation/export",
+      "root": "/api/coverage-surface",
+      "children": "none",
+      "count": "1 generate; each export separately1",
+      "inputs": "stored generation payload plus query f; POST export invokes grid again"
+    },
+    {
+      "action": "Single-Cell Propagation",
+      "root": "/api/analyze-sector",
+      "children": "none",
+      "count": "1",
+      "inputs": "sector response includes rays and gaps"
+    },
+    {
+      "action": "Single-Cell Azimuth",
+      "root": "/api/optimize-azimuth",
+      "children": "1 POST /api/analyze-sector",
+      "count": "2",
+      "execution": "sequential; refresh input optimal_azimuth from response"
+    },
+    {
+      "action": "Recommendation",
+      "root": "/api/recommend-sites",
+      "children": "none automatically",
+      "count": "1",
+      "inputs": "current network+area; applying candidate is local plan change"
+    },
+    {
+      "action": "Measurements",
+      "root": "/api/measurements/evaluate",
+      "children": "none",
+      "count": "1"
+    },
+    {
+      "action": "Experiments",
+      "root": "/api/processes/batch-experiment/execution",
+      "children": "GET /api/jobs/id polling; optional DELETE cancel",
+      "count": "1 protected POST; GET/DELETE0 RF-budget units",
+      "execution": "background worker1/queue16; max64 runs; polling initially300ms then600ms; accepted jobs detached from POST context"
+    },
+    {
+      "action": "History rerun",
+      "root": "/api/analyze-sector or /api/optimize-network or /api/optimize-azimuth",
+      "children": "none in this callback",
+      "count": "1",
+      "note": "distinct from main network/azimuth buttons; do not infer maps from endpoint alone"
+    },
+    {
+      "action": "Path/reference tools",
+      "root": "corresponding protected POST",
+      "children": "none",
+      "count": "1"
+    },
+    {
+      "action": "Inspect/tab/report/local persistence",
+      "root": "none protected",
+      "children": "none protected",
+      "count": "0",
+      "note": "optional spatial evidence GET is outside RF limiter; exports of coverage surface are the exception above"
+    }
+  ],
+  "gin_version": "v1.10.0",
+  "gin_client_ip_source": "module context.go:802 ClientIP /840 RemoteIP; no trusted platform override configured",
+  "ordering": [
+    "Gin Logger/Recovery",
+    "securityHeaders/requireHTTPS",
+    "MaxBytesReader wrapper1MiB (decode later)",
+    "CORS",
+    "protected POST/path selector",
+    "optional RF key auth",
+    "request context deadline60",
+    "ClientIP state/anchored window",
+    "charge attempt1 unless exhausted",
+    "per-client active1",
+    "global channel2",
+    "c.Next \u2192 strict JSON binding/validation \u2192 RF \u2192 serialization",
+    "deferred global/client release; defer cancel"
+  ],
+  "state": "mutex-protected process-local map\u22644096 plus overflow; no periodic TTL cleanup; lazy60s reset; capacity-triggered eviction of oldest inactive even unexpired; overflow shares counter if none evictable",
+  "deployment": "Compose atom: one container/process; process-local jobs/limiter; no shared store"
+}

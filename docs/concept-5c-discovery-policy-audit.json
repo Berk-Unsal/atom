@@ -1,0 +1,99 @@
+{
+  "infeasible_barrier": {
+    "fixture": "temporary-infeasible-barrier",
+    "policy": "feasible_only_archive;all_deterministic_starts_expand",
+    "result": "feasible-only active archive does not expand newly discovered infeasible stepping stones; the globally better feasible state is missed from the single-start traversal. Deterministic start-set diversity can still reach it when it is a configured start.",
+    "states": {
+      "0,0": {
+        "feasible": true,
+        "objectives": {
+          "coverage": 0.5,
+          "demand": 0.5
+        }
+      },
+      "0,1": {
+        "feasible": false,
+        "objectives": {
+          "coverage": 0.9,
+          "demand": 0.9
+        }
+      },
+      "1,0": {
+        "feasible": false,
+        "objectives": {
+          "coverage": 0.9,
+          "demand": 0.9
+        }
+      },
+      "1,1": {
+        "feasible": true,
+        "objectives": {
+          "coverage": 1,
+          "demand": 1
+        }
+      }
+    }
+  },
+  "interaction_trap": {
+    "bounded_dominated_novelty_control": {
+      "strategy": "pareto_only",
+      "expanded_states": [
+        "0,0",
+        "1,0",
+        "0,1",
+        "1,1"
+      ],
+      "archive_keys": [
+        "0,0",
+        "0,1",
+        "1,0",
+        "1,1"
+      ],
+      "pareto_keys": [
+        "1,1"
+      ],
+      "global_best_key": "1,1",
+      "recovered_global": true,
+      "bounded": false,
+      "priority_independent": true
+    },
+    "pareto_only_single_start": {
+      "strategy": "pareto_only",
+      "expanded_states": [
+        "0,0"
+      ],
+      "archive_keys": [
+        "0,0"
+      ],
+      "pareto_keys": [
+        "0,0"
+      ],
+      "global_best_key": "1,1",
+      "recovered_global": false,
+      "bounded": true,
+      "priority_independent": true
+    },
+    "start_set_diversity": {
+      "strategy": "pareto_only",
+      "expanded_states": [
+        "0,0",
+        "1,1"
+      ],
+      "archive_keys": [
+        "0,0",
+        "1,1"
+      ],
+      "pareto_keys": [
+        "1,1"
+      ],
+      "global_best_key": "1,1",
+      "recovered_global": true,
+      "bounded": true,
+      "priority_independent": true
+    }
+  },
+  "selected_policy": "start_set_plus_archive_admission_v1",
+  "strategy_A_expand_current_pareto_only": "audited as the exact active-archive rule; can miss dominated stepping stones",
+  "strategy_B_pareto_plus_bounded_dominated_novelty": "audited as an exhaustive bounded novelty control in the synthetic fixture; not selected for production v1 because novelty-region semantics would need a separate product contract",
+  "strategy_C_start_set_diversity_plus_pareto_expansion": "selected production policy: deterministic starts are all expanded, then newly admitted Pareto states are expanded"
+}

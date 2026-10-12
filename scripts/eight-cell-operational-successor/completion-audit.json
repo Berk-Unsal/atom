@@ -1,0 +1,740 @@
+{
+  "schema_version": 2,
+  "audited_at": "2026-10-07T15:43:46.762879+00:00",
+  "completion_status": "COMPLETE",
+  "classification": "B",
+  "qualification": "CONDITIONAL GO \u2014 REQUEST-BUDGET POLICY BLOCKER",
+  "locked_groups_verified": 837,
+  "locked_batches_verified": 15,
+  "baseline_real_e2e_proven_before_freeze": true,
+  "freeze_before_measurement": true,
+  "prior_invalid_audit_preserved": true,
+  "prior_raw_files_verified": 466,
+  "operational_pass": true,
+  "budget_mechanical_pass": true,
+  "budget_product_fit": "PRODUCT BLOCKER",
+  "six_cell_science_preservation": {
+    "passed": true,
+    "responses_matching_frozen_W1": 352,
+    "missing_reference_keys": [],
+    "regressions": []
+  },
+  "frozen_input_hashes_verified": true,
+  "standard_cap": 6,
+  "production_changes": false,
+  "VERSION": "0.11.0",
+  "audit_lock_sha256": "8d2423c56b57121f94fc658d670b0d52bbecd87c4c1fff2e0c13a39cd686efb0",
+  "domain_manifest_sha256": "d7e2a6e4ed46e3b8bc8c8dbf7ffc32f16f4caf0468365e0d7a9c581d4349ef84",
+  "run_plan_sha256": "f6a01b841061f50ec93c7dedff1f3f5de9b945dcf855bda7b8b9287d3967db2c",
+  "evidence_manifest_sha256": "f788b7a5bd60362daba43559c3ccc767de1367992f3b54858078ed9be2bdcce1",
+  "phase_coverage": [
+    {
+      "phase": 0,
+      "status": "COMPLETE",
+      "evidence": [
+        "baseline.json"
+      ]
+    },
+    {
+      "phase": 1,
+      "status": "COMPLETE",
+      "evidence": [
+        "baseline.json"
+      ]
+    },
+    {
+      "phase": 2,
+      "status": "COMPLETE",
+      "evidence": [
+        "baseline-checks.json"
+      ]
+    },
+    {
+      "phase": 3,
+      "status": "COMPLETE",
+      "evidence": [
+        "e2e_guard.py",
+        "test_e2e_guard.py"
+      ]
+    },
+    {
+      "phase": 4,
+      "status": "COMPLETE",
+      "evidence": [
+        "audit-lock.json"
+      ]
+    },
+    {
+      "phase": 5,
+      "status": "COMPLETE",
+      "evidence": [
+        "domain-manifest.json"
+      ]
+    },
+    {
+      "phase": 6,
+      "status": "COMPLETE",
+      "evidence": [
+        "binary-differential.json"
+      ]
+    },
+    {
+      "phase": 7,
+      "status": "COMPLETE",
+      "evidence": [
+        "binary-differential.json"
+      ]
+    },
+    {
+      "phase": 8,
+      "status": "COMPLETE",
+      "evidence": [
+        "execution.json"
+      ]
+    },
+    {
+      "phase": 9,
+      "status": "COMPLETE",
+      "evidence": [
+        "audit-lock.json"
+      ]
+    },
+    {
+      "phase": 10,
+      "status": "COMPLETE",
+      "evidence": [
+        "audit-lock.json"
+      ]
+    },
+    {
+      "phase": 11,
+      "status": "COMPLETE",
+      "evidence": [
+        "audit-lock.json"
+      ]
+    },
+    {
+      "phase": 12,
+      "status": "COMPLETE",
+      "evidence": [
+        "sleep-prevention.json"
+      ]
+    },
+    {
+      "phase": 13,
+      "status": "COMPLETE",
+      "evidence": [
+        "transport.py",
+        "execution.json"
+      ]
+    },
+    {
+      "phase": 14,
+      "status": "COMPLETE",
+      "evidence": [
+        "run-plans.json"
+      ]
+    },
+    {
+      "phase": 15,
+      "status": "COMPLETE",
+      "evidence": [
+        "audit-lock.json"
+      ]
+    },
+    {
+      "phase": 16,
+      "status": "COMPLETE",
+      "evidence": [
+        "mixed-reference-guard.json"
+      ]
+    },
+    {
+      "phase": 17,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:background_results"
+      ]
+    },
+    {
+      "phase": 18,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:background_results"
+      ]
+    },
+    {
+      "phase": 19,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:cancellation"
+      ]
+    },
+    {
+      "phase": 20,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:science"
+      ]
+    },
+    {
+      "phase": 21,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:six_cell_preservation"
+      ]
+    },
+    {
+      "phase": 22,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:budget"
+      ]
+    },
+    {
+      "phase": 23,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:budget"
+      ]
+    },
+    {
+      "phase": 24,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:budget"
+      ]
+    },
+    {
+      "phase": 25,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:budget"
+      ]
+    },
+    {
+      "phase": 26,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:budget"
+      ]
+    },
+    {
+      "phase": 27,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:budget"
+      ]
+    },
+    {
+      "phase": 28,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:budget"
+      ]
+    },
+    {
+      "phase": 29,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:budget"
+      ]
+    },
+    {
+      "phase": 30,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:operations"
+      ]
+    },
+    {
+      "phase": 31,
+      "status": "COMPLETE",
+      "evidence": [
+        "frontend-smoke.json"
+      ]
+    },
+    {
+      "phase": 32,
+      "status": "COMPLETE",
+      "evidence": [
+        "frontend-smoke.json"
+      ]
+    },
+    {
+      "phase": 33,
+      "status": "COMPLETE",
+      "evidence": [
+        "presentation-persistence.json"
+      ]
+    },
+    {
+      "phase": 34,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:operational_pass"
+      ]
+    },
+    {
+      "phase": 35,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:classification"
+      ]
+    },
+    {
+      "phase": 36,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:next_action"
+      ]
+    },
+    {
+      "phase": 37,
+      "status": "COMPLETE",
+      "evidence": [
+        "baseline.json",
+        "audit-lock.json"
+      ]
+    },
+    {
+      "phase": 38,
+      "status": "COMPLETE",
+      "evidence": [
+        "result:version_recommendation"
+      ]
+    },
+    {
+      "phase": 39,
+      "status": "COMPLETE",
+      "evidence": [
+        "final-checks.json"
+      ]
+    }
+  ],
+  "required_final_items": [
+    {
+      "number": 1,
+      "label": "Starting baseline",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 2,
+      "label": "Prior invalid-audit preservation result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 3,
+      "label": "Baseline RF budget E2E command",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 4,
+      "label": "Baseline RF budget E2E executed/pass/skip counts",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 5,
+      "label": "Baseline RF deadline E2E command",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 6,
+      "label": "Baseline RF deadline E2E executed/pass/skip counts",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 7,
+      "label": "Execution-guard result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 8,
+      "label": "Successor audit-lock SHA256",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 9,
+      "label": "Domain-manifest SHA256",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 10,
+      "label": "Run-plan SHA256",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 11,
+      "label": "Evidence-manifest SHA256",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 12,
+      "label": "Standard binary/image identity",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 13,
+      "label": "Audit binary/image identity",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 14,
+      "label": "Standard-vs-audit differential",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 15,
+      "label": "Confirmation production cap remains 6",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 16,
+      "label": "7/8 normal rejection result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 17,
+      "label": "Runtime identity",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 18,
+      "label": "Profile A verification",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 19,
+      "label": "Dataset verification",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 20,
+      "label": "Eight-layout identity comparison with prior audit",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 21,
+      "label": "8C-W1 confirmation",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 22,
+      "label": "Planned/observed group count",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 23,
+      "label": "Evaluate result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 24,
+      "label": "Optimize result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 25,
+      "label": "Interference result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 26,
+      "label": "Explanation result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 27,
+      "label": "Building Entry result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 28,
+      "label": "Evaluate+maps result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 29,
+      "label": "Optimize+maps result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 30,
+      "label": "Evaluation-cycle result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 31,
+      "label": "Worst required latency",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 32,
+      "label": "Minimum deadline headroom",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 33,
+      "label": "Peak RSS",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 34,
+      "label": "Peak cgroup memory",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 35,
+      "label": "Memory headroom",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 36,
+      "label": "OOM events",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 37,
+      "label": "Two-optimizer result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 38,
+      "label": "Optimize+Evaluate result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 39,
+      "label": "Evaluate+Evaluate result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 40,
+      "label": "Normal async result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 41,
+      "label": "Sustained async result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 42,
+      "label": "Final-tail result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 43,
+      "label": "Largest contention inflation",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 44,
+      "label": "Cancellation result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 45,
+      "label": "Slot-release result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 46,
+      "label": "Scientific determinism",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 47,
+      "label": "Six-Cell preservation",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 48,
+      "label": "Evaluate/maps budget count",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 49,
+      "label": "Optimize/maps budget count",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 50,
+      "label": "Full-cycle budget count",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 51,
+      "label": "Attempt-20 result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 52,
+      "label": "Attempt-21 result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 53,
+      "label": "Two-workflow result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 54,
+      "label": "Shared-IP result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 55,
+      "label": "Distinct-IP result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 56,
+      "label": "Rapid-follow-up journey result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 57,
+      "label": "Remaining time after 19-attempt cycle",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 58,
+      "label": "Budget mechanical verdict",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 59,
+      "label": "Budget product-fit classification",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 60,
+      "label": "Largest response",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 61,
+      "label": "Largest workflow response",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 62,
+      "label": "Frontend request-shape result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 63,
+      "label": "Presentation smoke result",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 64,
+      "label": "Persistence observation",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 65,
+      "label": "Operational verdict",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 66,
+      "label": "Methodology violations",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 67,
+      "label": "Missing evidence",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 68,
+      "label": "Final A/B/C/D classification",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 69,
+      "label": "Whether eight Cells are operationally qualified on Profile A",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 70,
+      "label": "Whether request budget blocks promotion",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 71,
+      "label": "Whether cap remains six",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 72,
+      "label": "Whether a promotion task is justified",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 73,
+      "label": "Whether budget-policy design is required",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 74,
+      "label": "Estimator-admission status",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 75,
+      "label": "Auto status",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 76,
+      "label": "Production invariance",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 77,
+      "label": "Final real-E2E execution/pass confirmation",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 78,
+      "label": "Version recommendation",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 79,
+      "label": "Files created/changed",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 80,
+      "label": "Raw evidence storage",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 81,
+      "label": "Tests/checks",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 82,
+      "label": "Freeze decision",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    },
+    {
+      "number": 83,
+      "label": "Single recommended next action",
+      "report": "docs/eight-cell-operational-budget-successor.md + JSON; final response"
+    }
+  ],
+  "terminal_quality_evidence": "terminal-validation.json",
+  "terminal_quality_archive": {
+    "path": "/tmp/atom-eight-cell-successor-terminal-quality.tar.gz",
+    "sha256": "530e07dac9fd91459464135fefe112059de924e340ad8bbd555464133d47d95c",
+    "byte_size": 532,
+    "members": 4
+  },
+  "next_action": "Eight-Cell Request-Budget / Workflow Policy Design in a separate task"
+}

@@ -1,0 +1,992 @@
+[
+  {
+    "file": "CHANGELOG.md",
+    "line": 18,
+    "classification": "documentation only",
+    "evidence": "- Round RF rate-limit retry timing up to the actual window expiry, add hashed-client admission-denial diagnostics, and verify the six-cell Evaluate \u2192 Interference \u2192 Re-evaluate workflow within the unchanged 20-request budget."
+  },
+  {
+    "file": "CHANGELOG.md",
+    "line": 121,
+    "classification": "documentation only",
+    "evidence": "- Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows."
+  },
+  {
+    "file": "README.md",
+    "line": 45,
+    "classification": "documentation only",
+    "evidence": "- **Deterministic Network Optimization**: Sweeps candidate azimuths and scores sectors or two-to-six-cell clusters using POI demand, residential-density demand, coverage, and overlap penalties."
+  },
+  {
+    "file": "policy/rf-policy.json",
+    "line": 89,
+    "classification": "hard safety limit",
+    "evidence": "\"network_towers_max\": 6,"
+  },
+  {
+    "file": "policy/rf-policy.json",
+    "line": 90,
+    "classification": "hard safety limit",
+    "evidence": "\"recommendation_towers_max\": 5,"
+  },
+  {
+    "file": "policy/rf-policy.json",
+    "line": 92,
+    "classification": "hard safety limit",
+    "evidence": "\"measurement_towers_max\": 6,"
+  },
+  {
+    "file": "scripts/generate_policy.py",
+    "line": 113,
+    "classification": "hard safety limit",
+    "evidence": "\"MaxNetworkTowers\": limits[\"network_towers_max\"],"
+  },
+  {
+    "file": "scripts/generate_policy.py",
+    "line": 114,
+    "classification": "hard safety limit",
+    "evidence": "\"MaxRecommendationTowers\": limits[\"recommendation_towers_max\"],"
+  },
+  {
+    "file": "scripts/generate_policy.py",
+    "line": 116,
+    "classification": "hard safety limit",
+    "evidence": "\"MaxMeasurementTowers\": limits[\"measurement_towers_max\"],"
+  },
+  {
+    "file": "backend-go/main.go",
+    "line": 462,
+    "classification": "hard safety limit",
+    "evidence": "if len(req.Towers) < raytracer.MinNetworkTowers || len(req.Towers) > raytracer.MaxNetworkTowers {"
+  },
+  {
+    "file": "backend-go/main.go",
+    "line": 463,
+    "classification": "hard safety limit",
+    "evidence": "return \"towers must contain between 2 and 6 selected towers\""
+  },
+  {
+    "file": "frontend-react/src/domain/resultContext.js",
+    "line": 159,
+    "classification": "incidental constant",
+    "evidence": "return text.length > 18 ? `${text.slice(0, 8)}\u2026${text.slice(-6)}` : text || \"\u2014\";"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 60,
+    "classification": "product UX limit",
+    "evidence": "import { MAX_NETWORK_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from \"./utils/networkSelection.js\";"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 1810,
+    "classification": "product UX limit",
+    "evidence": "if (!isSelected && currentSelection.length >= MAX_NETWORK_CELLS) {"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 1811,
+    "classification": "product UX limit",
+    "evidence": "setError(`Network planning supports up to ${MAX_NETWORK_CELLS} selected cells`);"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 1814,
+    "classification": "product UX limit",
+    "evidence": "const nextSelection = toggleNetworkSelection(currentSelection, tower.id, MAX_NETWORK_CELLS);"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 1961,
+    "classification": "product UX limit",
+    "evidence": "if (wasInNetwork) setSelectedNetworkTowerIds((current) => toggleNetworkSelection(current, towerID, MAX_NETWORK_CELLS));"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 2034,
+    "classification": "product UX limit",
+    "evidence": "const selected = selectNearestTowers(inside, finalPolygon, MAX_NETWORK_CELLS);"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 2047,
+    "classification": "product UX limit",
+    "evidence": "inside.length > MAX_NETWORK_CELLS"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 2048,
+    "classification": "product UX limit",
+    "evidence": "? `${inside.length} towers found, nearest ${MAX_NETWORK_CELLS} selected.`"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 2062,
+    "classification": "product UX limit",
+    "evidence": "if (selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS) {"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 2063,
+    "classification": "product UX limit",
+    "evidence": "setError(`Select between 2 and ${MAX_NETWORK_CELLS - 1} cells before adding one candidate`);"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 3204,
+    "classification": "product UX limit",
+    "evidence": "if (!selectedNetworkSelectionIDs.includes(candidate.id) && selectedNetworkSelectionIDs.length >= MAX_NETWORK_CELLS) {"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 3205,
+    "classification": "product UX limit",
+    "evidence": "setError(`Network planning supports up to ${MAX_NETWORK_CELLS} selected cells`);"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 3924,
+    "classification": "product UX limit",
+    "evidence": "recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}"
+  },
+  {
+    "file": "frontend-react/src/App.jsx",
+    "line": 4069,
+    "classification": "incidental constant",
+    "evidence": "return text.length > 18 ? `${text.slice(0, 8)}\u2026${text.slice(-6)}` : text || \"Run unavailable\";"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 734,
+    "classification": "test fixture assumption",
+    "evidence": "...Array.from({ length: 36 }, (_, index) => point(`dense-${index}`, `sogutozu-${index}`, 32.800 + (index % 6) * 0.0015, 39.911 + Math.floor(index / 6) * 0.0015)),"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 790,
+    "classification": "test fixture assumption",
+    "evidence": "for (const feature of features.slice(1, 6)) await clickMapPoint(page, ...feature.geometry.coordinates);"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 791,
+    "classification": "test fixture assumption",
+    "evidence": "await expect(page.getByRole(\"group\", { name: \"RF context\" })).toContainText(\"Network \u00b7 6 cells\");"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 1392,
+    "classification": "test fixture assumption",
+    "evidence": "await expect(page.locator(\".selection-summary-row strong\")).toHaveText(\"0 of 6 cells selected\");"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 3685,
+    "classification": "test fixture assumption",
+    "evidence": "...Array.from({ length: 36 }, (_, index) => point(`dense-${index}`, `sogutozu-${index}`, 32.800 + (index % 6) * 0.0015, 39.911 + Math.floor(index / 6) * 0.0015)),"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 3774,
+    "classification": "test fixture assumption",
+    "evidence": "for (const feature of features.slice(1, 6)) await clickMapPoint(page, ...feature.geometry.coordinates);"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 3775,
+    "classification": "test fixture assumption",
+    "evidence": "await expect(page.getByRole(\"group\", { name: \"RF context\" })).toContainText(\"Network \u00b7 6 cells\");"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 3876,
+    "classification": "test fixture assumption",
+    "evidence": "...Array.from({ length: 36 }, (_, index) => point(`dense-${index}`, `sogutozu-${index}`, 32.800 + (index % 6) * 0.0015, 39.911 + Math.floor(index / 6) * 0.0015)),"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 4017,
+    "classification": "test fixture assumption",
+    "evidence": "for (const feature of features.slice(1, 6)) await clickMapPoint(page, ...feature.geometry.coordinates);"
+  },
+  {
+    "file": "frontend-react/e2e/workspace.spec.js",
+    "line": 4018,
+    "classification": "test fixture assumption",
+    "evidence": "await expect(page.getByRole(\"group\", { name: \"RF context\" })).toContainText(\"Network \u00b7 6 cells\");"
+  },
+  {
+    "file": "frontend-react/e2e/real-backend.spec.js",
+    "line": 43,
+    "classification": "test fixture assumption",
+    "evidence": "test(\"evaluates six cells and keeps Signal, ray scope, and priority inspection local\", async ({ page }) => {"
+  },
+  {
+    "file": "frontend-react/e2e/network-deadline.spec.js",
+    "line": 9,
+    "classification": "test fixture assumption",
+    "evidence": "test(\"real network optimization deadline: affected six-cell defaults preserve output and one-request cost\", async ({ request }, testInfo) => {"
+  },
+  {
+    "file": "frontend-react/e2e/network-deadline.spec.js",
+    "line": 30,
+    "classification": "test fixture assumption",
+    "evidence": "expect(result.optimized_towers).toHaveLength(6);"
+  },
+  {
+    "file": "frontend-react/e2e/rf-budget.spec.js",
+    "line": 6,
+    "classification": "test fixture assumption",
+    "evidence": "test(\"real RF budget: six-cell Evaluate, Interference, inspect, re-evaluate, then abuse\", async ({ page }, testInfo) => {"
+  },
+  {
+    "file": "frontend-react/e2e/rf-budget.spec.js",
+    "line": 11,
+    "classification": "test fixture assumption",
+    "evidence": "const towers = { type: \"FeatureCollection\", features: Array.from({ length: 6 }, (_, index) => ({"
+  },
+  {
+    "file": "frontend-react/e2e/rf-budget.spec.js",
+    "line": 64,
+    "classification": "test fixture assumption",
+    "evidence": "expect(trace.map((row) => row.endpoint)).toEqual([\"/api/evaluate-network\", ...Array(6).fill(\"/api/simulate\")]);"
+  },
+  {
+    "file": "backend-go/raytracer/concept_5a_optimizer_audit_test.go",
+    "line": 1219,
+    "classification": "test fixture assumption",
+    "evidence": "The default production path performs %d candidate evaluations for a six-cell request: baseline + (2 \u00d7 6 \u00d7 36) candidates + final. It has no optimizer-level memoization; lower-level RF/radio-quality preparation may cache candidate-independent geometry."
+  },
+  {
+    "file": "backend-go/raytracer/concept_5a_optimizer_audit_test.go",
+    "line": 1252,
+    "classification": "test fixture assumption",
+    "evidence": "The controlled six-cell matrix varies request order, reverse/rotated order, starts (baseline, \u00b110\u00b0, and staggered perturbation), one/two/three passes, until-stable termination, and 20\u00b0/10\u00b0/5\u00b0 candidate steps. The full Ankara pack is used for the bounded key-run robustness set, including default, reverse order, start perturbation, pass-count, step-size, and until-stable checks."
+  },
+  {
+    "file": "backend-go/raytracer/concept_5a_optimizer_audit_test.go",
+    "line": 1256,
+    "classification": "test fixture assumption",
+    "evidence": "See concept-5a-search-sensitivity.json and concept-5a-six-cell-robustness.json."
+  },
+  {
+    "file": "backend-go/raytracer/concept_5a_optimizer_audit_test.go",
+    "line": 1390,
+    "classification": "test fixture assumption",
+    "evidence": "controlledDefault.Label = \"controlled-six-cell-default\""
+  },
+  {
+    "file": "backend-go/raytracer/concept_5a_optimizer_audit_test.go",
+    "line": 1781,
+    "classification": "test fixture assumption",
+    "evidence": "\"controlled_six_cell\": map[string]any{"
+  },
+  {
+    "file": "backend-go/raytracer/concept_5a_optimizer_audit_test.go",
+    "line": 1789,
+    "classification": "test fixture assumption",
+    "evidence": "\"scope_note\":                       \"The controlled six-cell fixture provides the complete cross-product sensitivity matrix; the full Ankara pack provides bounded key-run confirmation because each six-cell 10-degree run evaluates 434 RF states on the full building dataset.\","
+  },
+  {
+    "file": "backend-go/raytracer/concept_5a_optimizer_audit_test.go",
+    "line": 1814,
+    "classification": "test fixture assumption",
+    "evidence": "\"docs/concept-5a-six-cell-robustness.json\":    robustnessArtifact,"
+  },
+  {
+    "file": "backend-go/raytracer/concept_4i5a_reflection_audit_test.go",
+    "line": 367,
+    "classification": "test fixture assumption",
+    "evidence": "cells       = 6"
+  },
+  {
+    "file": "backend-go/raytracer/concept_4i5a_reflection_audit_test.go",
+    "line": 386,
+    "classification": "test fixture assumption",
+    "evidence": "CandidateInterpretation: \"Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.\","
+  },
+  {
+    "file": "backend-go/raytracer/concept_6a_validation_audit_test.go",
+    "line": 160,
+    "classification": "test fixture assumption",
+    "evidence": "if err := concept6AWriteJSON(filepath.Join(root, \"concept-6a-dataset-source-audit.json\"), map[string]any{\"schema_version\": 1, \"concept\": \"6A\", \"artifact\": \"dataset-source-audit\", \"audit_version\": concept6AAuditVersion, \"decision\": \"no_measurement_data\", \"usable_public_measurement_dataset_found\": false, \"audit_date\": \"2026-09-21\", \"search_scope\": []string{\"Ankara/T\u00fcrkiye first\", \"2.6 GHz LTE/NR\", \"28 GHz NR/mmWave\", \"raw numeric observations\", \"frequency and bandwidth\", \"geolocation\", \"serving cell identity or deterministic mapping\", \"license and redistribution terms\"}, \"candidate_sources\": []map[string]any{{\"name\": \"AERPAW Aerial Android-based 4G measurements\", \"url\": \"https://datadryad.org/dataset/doi:10.5061/dryad.r7sqv9sr3\", \"status\": \"metadata_only_candidate\", \"reason\": \"raw LTE RSRP/RSRQ/RSSI, GPS, PCI, CI, and EARFCN are documented, but the audited description does not provide the matched transmitter coordinates/heights, complete antenna/calibration provenance, or exact 2.6 GHz mapping needed for canonical propagation validation\"}, {\"name\": \"POWDER 2026 cellular metrics\", \"url\": \"https://zenodo.org/records/18272105\", \"status\": \"not_usable_for_6A_scope\", \"reason\": \"raw SS-RSRP/RSRQ/SINR and GPS are available, but the documented channels are 2.000 and 3.560-3.640 GHz, not 2.6 or 28 GHz; it is also a spectrum survey rather than a matched canonical serving-cell inventory\"}, {\"name\": \"Real-time 5G macro-cell signal dataset\", \"url\": \"https://zenodo.org/records/20564635\", \"status\": \"metadata_only_candidate\", \"reason\": \"raw RSRP/RSRQ/SINR, GNSS, timestamps, and cell identifiers are advertised, but the audited record does not establish exact 2.6/28 GHz scope, complete RF configuration/antenna calibration, or a usable license statement for this repository\"}, {\"name\": \"5GMeas-Dataset IMC 2025\", \"url\": \"https://github.com/mssn/5GMeas-Dataset\", \"status\": \"metadata_only_candidate\", \"reason\": \"public raw RSRP/RSRQ/GPS/cell traces are described, but the available audit does not establish exact 2.6/28 GHz carrier metadata, transmitter geometry, absolute RF calibration, or a complete redistribution license\"}, {\"name\": \"NYU Wireless 28 GHz channel-measurement publications\", \"status\": \"metadata_only_candidate\", \"reason\": \"published channel traces/plots are useful background but are not an audited redistributable observation table with this serving-cell and absolute-quantity contract\"}, {\"name\": \"OpenCellID-derived Ankara planning inventory\", \"status\": \"configuration_only\", \"reason\": \"tower locations/identifiers are configuration evidence, not measured RF observations\"}}, \"acquisition_actions\": []string{}, \"real_data_artifact\": \"not_created_by_policy\"}); err != nil {"
+  },
+  {
+    "file": "backend-go/raytracer/measurements.go",
+    "line": 230,
+    "classification": "hard safety limit",
+    "evidence": "if len(req.Radio.Towers) < MinMeasurementTowers || len(req.Radio.Towers) > MaxMeasurementTowers {"
+  },
+  {
+    "file": "backend-go/raytracer/measurements.go",
+    "line": 231,
+    "classification": "hard safety limit",
+    "evidence": "return \"towers must contain between 1 and 6 selected towers\""
+  },
+  {
+    "file": "backend-go/raytracer/recommendation.go",
+    "line": 112,
+    "classification": "hard safety limit",
+    "evidence": "if len(req.Network.Towers) < MinNetworkTowers || len(req.Network.Towers) > MaxRecommendationTowers {"
+  },
+  {
+    "file": "backend-go/raytracer/recommendation.go",
+    "line": 113,
+    "classification": "hard safety limit",
+    "evidence": "return \"towers must contain between 2 and 5 selected towers\""
+  },
+  {
+    "file": "backend-go/raytracer/receiver_noise_test.go",
+    "line": 612,
+    "classification": "test fixture assumption",
+    "evidence": "\"scenario\":       \"canonical six-cell Ankara 28 GHz optimization\","
+  },
+  {
+    "file": "backend-go/raytracer/receiver_noise_test.go",
+    "line": 640,
+    "classification": "test fixture assumption",
+    "evidence": "\"Manual mode is the compatibility baseline and remains the default; the canonical six-cell manual values are asserted against the pre-change regression contract.\","
+  },
+  {
+    "file": "backend-go/raytracer/concept_5b_optimizer_audit_test.go",
+    "line": 751,
+    "classification": "test fixture assumption",
+    "evidence": "\"evaluation_formula_six_cells\": 1 + 2*6*36 + 1,"
+  },
+  {
+    "file": "backend-go/raytracer/interference_test.go",
+    "line": 225,
+    "classification": "test fixture assumption",
+    "evidence": "func BenchmarkInterferenceSixCells(b *testing.B) {"
+  },
+  {
+    "file": "backend-go/raytracer/optimization_explanation.go",
+    "line": 197,
+    "classification": "hard safety limit",
+    "evidence": "if len(req.Baseline.CellConfigurations) < MinNetworkTowers || len(req.Baseline.CellConfigurations) > MaxNetworkTowers {"
+  },
+  {
+    "file": "backend-go/raytracer/optimization_explanation.go",
+    "line": 198,
+    "classification": "hard safety limit",
+    "evidence": "return fmt.Sprintf(\"baseline must contain between %d and %d cell configurations\", MinNetworkTowers, MaxNetworkTowers)"
+  },
+  {
+    "file": "backend-go/raytracer/concept_5d_optimizer_audit_test.go",
+    "line": 1250,
+    "classification": "test fixture assumption",
+    "evidence": "legacyRecord := concept5DRecordFromRun(\"ankara-six-cell\", profile, legacyRun, nil, \"measured below\", \"measured below\", \"fresh_search_priority_dependent\", \"fresh_legacy_search\")"
+  },
+  {
+    "file": "backend-go/raytracer/concept_5d_optimizer_audit_test.go",
+    "line": 1251,
+    "classification": "test fixture assumption",
+    "evidence": "multiRecord := concept5DRecordFromRun(\"ankara-six-cell\", profile, multiRun, nil, \"measured below\", \"measured below\", \"fresh_search_priority_dependent\", \"fresh_5b_search\")"
+  },
+  {
+    "file": "backend-go/raytracer/concept_5d_optimizer_audit_test.go",
+    "line": 1252,
+    "classification": "test fixture assumption",
+    "evidence": "paretoRecord := concept5DRecordFromRun(\"ankara-six-cell\", profile, paretoRun, nil, \"cell-ID canonical archive\", \"deterministic archive\", \"priority_independent_discovery_plus_rerank\", attribution, \"Ankara does not have an exhaustive oracle in this artifact; quality fields are therefore observational, not global-regret claims.\")"
+  },
+  {
+    "file": "backend-go/raytracer/concept_5d_optimizer_audit_test.go",
+    "line": 1283,
+    "classification": "test fixture assumption",
+    "evidence": "\"frozen_legacy_expectation\": map[string]any{\"optimized_azimuths\": []float64{70, 20, 130, 160, 290, 110}, \"score\": 41.1715, \"observed_matches\": reflect.DeepEqual(defaultLegacy.RecommendedAzimuths, []float64{70, 20, 130, 160, 290, 110}) && math.Abs(defaultLegacy.RecommendedStats.Score-41.1715) < 1e-6, \"note\": \"The canonical six-cell regression identity from the existing 5A/5B/5C audit artifacts; this 5D run records the observed value alongside it.\"},"
+  },
+  {
+    "file": "backend-go/raytracer/concept_5d_optimizer_audit_test.go",
+    "line": 1374,
+    "classification": "test fixture assumption",
+    "evidence": "The Ankara artifact records the canonical six-cell comparison when the dataset pack is available, plus realistic balanced, propagation-reach-focused, demand-focused, residential-focused, and radio-quality-focused profiles. If the dataset is unavailable, the artifact says so. Product placement is intentionally small: \u201cFast recommendation (default)\u201d, \u201cDeep search\u201d, and \u201cPareto Explorer\u201d. No frontend UI is changed."
+  },
+  {
+    "file": "backend-go/raytracer/policy_generated.go",
+    "line": 39,
+    "classification": "hard safety limit",
+    "evidence": "MaxNetworkTowers                   = 6"
+  },
+  {
+    "file": "backend-go/raytracer/policy_generated.go",
+    "line": 40,
+    "classification": "hard safety limit",
+    "evidence": "MaxRecommendationTowers            = 5"
+  },
+  {
+    "file": "backend-go/raytracer/policy_generated.go",
+    "line": 42,
+    "classification": "hard safety limit",
+    "evidence": "MaxMeasurementTowers               = 6"
+  },
+  {
+    "file": "backend-go/raytracer/interference.go",
+    "line": 334,
+    "classification": "hard safety limit",
+    "evidence": "if len(req.Towers) < MinNetworkTowers || len(req.Towers) > MaxNetworkTowers {"
+  },
+  {
+    "file": "backend-go/raytracer/interference.go",
+    "line": 335,
+    "classification": "hard safety limit",
+    "evidence": "return \"towers must contain between 2 and 6 selected cells\""
+  },
+  {
+    "file": "backend-go/raytracer/optimization_benchmark_test.go",
+    "line": 12,
+    "classification": "test fixture assumption",
+    "evidence": "// canonicalAnkaraNetworkOptimizationRequest is the repository-defined six-cell"
+  },
+  {
+    "file": "backend-go/raytracer/building_entry.go",
+    "line": 230,
+    "classification": "hard safety limit",
+    "evidence": "if len(req.Network.Towers) < 1 || len(req.Network.Towers) > MaxNetworkTowers {"
+  },
+  {
+    "file": "backend-go/raytracer/building_entry.go",
+    "line": 231,
+    "classification": "hard safety limit",
+    "evidence": "return fmt.Sprintf(\"towers must contain between 1 and %d selected towers\", MaxNetworkTowers)"
+  },
+  {
+    "file": "frontend-react/src/App.workflow.test.jsx",
+    "line": 554,
+    "classification": "test fixture assumption",
+    "evidence": "expect(screen.getByText(\"Minimum 2 \u00b7 Maximum 6\")).toBeInTheDocument();"
+  },
+  {
+    "file": "frontend-react/src/App.workflow.test.jsx",
+    "line": 689,
+    "classification": "test fixture assumption",
+    "evidence": "it(\"dispatches the six-cell RF workflow exactly once per action under StrictMode\", async () => {"
+  },
+  {
+    "file": "frontend-react/src/App.workflow.test.jsx",
+    "line": 690,
+    "classification": "test fixture assumption",
+    "evidence": "const sixCells = { type: \"FeatureCollection\", features: Array.from({ length: 6 }, (_, index) =>"
+  },
+  {
+    "file": "frontend-react/src/App.workflow.test.jsx",
+    "line": 692,
+    "classification": "test fixture assumption",
+    "evidence": "api.getJSON.mockImplementation((path) => Promise.resolve(path === \"/api/towers\" ? sixCells : {}));"
+  },
+  {
+    "file": "frontend-react/src/App.workflow.test.jsx",
+    "line": 708,
+    "classification": "test fixture assumption",
+    "evidence": "expect(api.postJSON.mock.calls.map(([path]) => path)).toEqual([\"/api/evaluate-network\", ...Array(6).fill(\"/api/simulate\")]);"
+  },
+  {
+    "file": "frontend-react/src/App.workflow.test.jsx",
+    "line": 716,
+    "classification": "test fixture assumption",
+    "evidence": "expect(api.postJSON.mock.calls.map(([path]) => path)).toEqual([\"/api/evaluate-network\", ...Array(6).fill(\"/api/simulate\"), \"/api/interference\"]);"
+  },
+  {
+    "file": "frontend-react/src/generated/policy.js",
+    "line": 216,
+    "classification": "incidental constant",
+    "evidence": "\"network_towers_max\": 6,"
+  },
+  {
+    "file": "frontend-react/src/generated/policy.js",
+    "line": 217,
+    "classification": "incidental constant",
+    "evidence": "\"recommendation_towers_max\": 5,"
+  },
+  {
+    "file": "frontend-react/src/generated/policy.js",
+    "line": 219,
+    "classification": "incidental constant",
+    "evidence": "\"measurement_towers_max\": 6,"
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 23,
+    "classification": "documentation only",
+    "evidence": "`node scripts/network-optimization-deadline-fixtures.mjs /tmp/atom-deadline-fixtures` uses the unchanged actual frontend request builder, defaults, and canonical Ankara tower positions. It generates 2\u20136-cell cases at 28 and 2.6 GHz, 120 rays, 400 m, 30 dBm, 120-degree beam, current default priorities, no positive radio-quality objective, and no explicit search-policy override. This is a closest deterministic reproduction; the user's exact selected-cell payload was not supplied."
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 45,
+    "classification": "documentation only",
+    "evidence": "For the affected six-cell legacy case:"
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 64,
+    "classification": "documentation only",
+    "evidence": "Legacy had no whole-state cache. The new map is request-scoped inside its prepared context and keyed by the complete comparable `StaticSimulationRequest`: coordinates, exact normalized azimuth, ray count, calibration, and full resolved profile (including frequency, antenna, radius, channel and receiver inputs). No floating-point rounding or truncated hash is used. Pointer-valued PCI fields can cause a conservative missed reuse when equivalent values use different pointers, but cannot alias unequal RF inputs. No state is shared between requests or persisted. At most 37 entries per cell cover the 36 grid angles plus an off-grid baseline: **at most 222 entries** for six cells. Entries retain reach scalars and building-power maps, not ray geometry."
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 123,
+    "classification": "documentation only",
+    "evidence": "Host timing controls partly overlapped the initial live/container reproduction, and one six-cell outlier overlapped cross-compilation; treat this as descriptive scaling rather than a clean fitted benchmark. The loop accounting establishes the important trend independently: before, N coordinates \u00d7 N cells per candidate produces roughly quadratic RF repetition; after, 36 independent RF settings per distinct cell gives approximately linear expensive RF work, while all original network aggregation/Pareto processing remains."
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 129,
+    "classification": "documentation only",
+    "evidence": "| 2.6 GHz / canonical 6 cells | 70.383 s | 4.625 s | 5.948 s |"
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 130,
+    "classification": "documentation only",
+    "evidence": "| 28 GHz / canonical 6 cells | 64.587 s | 5.028 s | \u2014 |"
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 131,
+    "classification": "documentation only",
+    "evidence": "| 2.6 GHz / affected 6 cells | \u2014 | 5.516 s | \u2014 |"
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 132,
+    "classification": "documentation only",
+    "evidence": "| 28 GHz / affected 6 cells | 94.707\u2013112.731 s container | 5.414 s | 6.721\u20136.761 s |"
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 154,
+    "classification": "documentation only",
+    "evidence": "- Affected six-cell defaults: first same-container corrected run **6.720739 s**, repeats **6.760776 s / 6.749160 s** (exact ledger values authoritative). All are successful under the real 60-second middleware. Min/median/max for this three-run sequence: **6.721 / 6.749 / 6.761 s**. A subsequent final detailed run overlapped the host middleware-disabled control and took **7.441 s**; it is also recorded in the ledger. The normal HTTP E2E with production spatial diagnostics disabled took **5.380 s**."
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 156,
+    "classification": "documentation only",
+    "evidence": "- Representative six-cell 2.6 GHz: **5.947744 s** controlled container, success."
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 159,
+    "classification": "documentation only",
+    "evidence": "- Intentionally excessive opt-in multistart case: same six cells and RF settings, 64-pass / 100000-unique-state limits. It returned the exact 504 error after **60.006989 s**. Context deadline was 60.000004 s; the observer noticed cancellation at 60.006806 s and response/cleanup completed **0.182918 ms** later. Overall deadline overshoot was **6.984751 ms**, including scheduling, deep-loop unwind and serialization. Three goroutines remained (the harness baseline), global/client slots were empty, and the response contained no recommendation, fingerprint or partial success. Opt-in candidate totals are unknown on this canceled path because completed search metadata is not returned; the diagnostic zero placeholders in the raw run are normalized to null in the ledger. RF subsystem counters show 1650 cell contribution attempts before cancellation."
+  },
+  {
+    "file": "docs/network-optimization-deadline-audit.md",
+    "line": 209,
+    "classification": "documentation only",
+    "evidence": "| Real backend affected-six-cell E2E | Pass: 1 test, 5.4 s request/test, 10.5 s including server setup; production summary 5380 ms, original full response hash and one budget unit |"
+  },
+  {
+    "file": "docs/concept-4g2-receiver-noise-audit.md",
+    "line": 68,
+    "classification": "documentation only",
+    "evidence": "- Canonical six-cell 28 GHz optimization: legacy/manual compatibility baseline"
+  },
+  {
+    "file": "docs/architecture.md",
+    "line": 169,
+    "classification": "documentation only",
+    "evidence": "Network evaluation scores the supplied azimuth for each of two to six selected cells. Network optimization searches candidate azimuths and includes an overlap penalty. Both return network score, unique demand coverage, overlap, and per-cell azimuth records."
+  },
+  {
+    "file": "docs/concept-4g1-antenna-link-budget.md",
+    "line": 190,
+    "classification": "documentation only",
+    "evidence": "The pre-change canonical compatibility artifact records the six-cell Ankara"
+  },
+  {
+    "file": "docs/concept-4f2-diffraction-diagnostic.md",
+    "line": 86,
+    "classification": "documentation only",
+    "evidence": "The canonical Ankara six-cell/432-path audit currently reports:"
+  },
+  {
+    "file": "docs/api.md",
+    "line": 595,
+    "classification": "documentation only",
+    "evidence": "six selected cells. This is a separate Concept 4E analysis, not a replacement"
+  },
+  {
+    "file": "docs/api.md",
+    "line": 857,
+    "classification": "documentation only",
+    "evidence": "Network requests contain two to six `towers` and may add an `optimization` object:"
+  },
+  {
+    "file": "docs/api.md",
+    "line": 1277,
+    "classification": "documentation only",
+    "evidence": "All protected RF routes share this bucket, including interference, diagnostics, signal-surface exports, and optimizer API calls. Internal optimizer evaluations do not consume HTTP request units. A six-cell Evaluate Network action sends one `/api/evaluate-network` plus six sequential `/api/simulate` requests; Interference sends one `/api/interference`. Evaluate \u2192 Interference \u2192 Re-evaluate costs 15 of 20 requests in a fresh window. Earlier runs and other tabs on the same IP also count. Denied admissions log operation, limiter-local request ID, process-local hashed client key, remaining budget, retry timing, and reason without request payloads. See the [request-budget audit](rf-analysis-request-budget-audit.md) for the measured trace and regression evidence."
+  },
+  {
+    "file": "docs/concept-4d-urban-propagation.md",
+    "line": 87,
+    "classification": "documentation only",
+    "evidence": "On the six-cell, 28 GHz Ankara scenario, the legacy mode reproduces the pre-change baseline exactly: network score `4,646,513.3`, 6 demand buildings, 28 residential buildings, 6 overlap buildings, and 16,013.3051 usable-reach score. The urban baseline produces `13,509,330.8`, 12 demand buildings, 82 residential buildings, 10 overlap buildings, and 18,330.7658 usable-reach score. The urban optimizer selects `[150, 300, 110, 300, 290, 100]` with score `32,568,641.7` and a 23-solution Pareto frontier; legacy selects `[70, 20, 130, 160, 290, 110]` with score `11,585,048.7` and a six-solution frontier."
+  },
+  {
+    "file": "frontend-react/src/utils/networkSelection.js",
+    "line": 1,
+    "classification": "product UX limit",
+    "evidence": "export const MAX_NETWORK_CELLS = 6;"
+  },
+  {
+    "file": "frontend-react/src/utils/networkSelection.js",
+    "line": 3,
+    "classification": "product UX limit",
+    "evidence": "export function normalizeNetworkSelection(ids, towers, limit = MAX_NETWORK_CELLS) {"
+  },
+  {
+    "file": "frontend-react/src/utils/networkSelection.js",
+    "line": 23,
+    "classification": "product UX limit",
+    "evidence": "export function toggleNetworkSelection(ids, cellID, limit = MAX_NETWORK_CELLS) {"
+  },
+  {
+    "file": "frontend-react/src/utils/networkSelection.test.js",
+    "line": 2,
+    "classification": "test fixture assumption",
+    "evidence": "import { fanOutSelectionOffset, MAX_NETWORK_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from \"./networkSelection.js\";"
+  },
+  {
+    "file": "frontend-react/src/utils/networkSelection.test.js",
+    "line": 30,
+    "classification": "test fixture assumption",
+    "evidence": "const selected = towers.slice(0, MAX_NETWORK_CELLS).map((tower) => tower.id);"
+  },
+  {
+    "file": "frontend-react/src/utils/networkSelection.test.js",
+    "line": 36,
+    "classification": "test fixture assumption",
+    "evidence": "const offsets = Array.from({ length: MAX_NETWORK_CELLS }, (_, index) => fanOutSelectionOffset(index, MAX_NETWORK_CELLS).join(\",\"));"
+  },
+  {
+    "file": "frontend-react/src/utils/networkSelection.test.js",
+    "line": 37,
+    "classification": "test fixture assumption",
+    "evidence": "expect(new Set(offsets).size).toBe(MAX_NETWORK_CELLS);"
+  },
+  {
+    "file": "frontend-react/src/utils/optimizationOperation.test.js",
+    "line": 18,
+    "classification": "test fixture assumption",
+    "evidence": "const scope = describeOptimizationScope({ towers: Array(6).fill({}), search_policy });"
+  },
+  {
+    "file": "frontend-react/src/utils/optimizationOperation.test.js",
+    "line": 19,
+    "classification": "test fixture assumption",
+    "evidence": "expect(scope).toEqual({ cellCount: 6, label: `6 cells \u00b7 ${label}` });"
+  },
+  {
+    "file": "docs/concept-4i2b-p1411-reference.md",
+    "line": 101,
+    "classification": "documentation only",
+    "evidence": "The existing Concept 4F.1 audit covers a deterministic sample of 6 cells \u00d7 72 rays at a 400 m radius: 432 reference paths, 25 m Tx, 1.5 m Rx, with terrain unavailable. The current data has no morphology taxonomy and no provable both-below-rooftop relation, so the automatic fully applicable count is reported as zero. The 432 paths are readiness evidence, not coverage or candidate-link validation. The artifact does not fabricate morphology-conditioned NLoS counts."
+  },
+  {
+    "file": "docs/concept-4f3a2-gba-height-source.md",
+    "line": 57,
+    "classification": "documentation only",
+    "evidence": "The isolated Go audits use temporary policy-specific copies with corrected checksums. Both policies pass the diagnostic runs. In the fixed 432-path / six-cell / 72-ray sample:"
+  },
+  {
+    "file": "docs/concept-5d-search-policy-selection.md",
+    "line": 25,
+    "classification": "documentation only",
+    "evidence": "The Ankara artifact records the canonical six-cell comparison when the dataset pack is available, plus realistic balanced, propagation-reach-focused, demand-focused, residential-focused, and radio-quality-focused profiles. If the dataset is unavailable, the artifact says so. Product placement is intentionally small: \u201cFast recommendation (default)\u201d, \u201cDeep search\u201d, and \u201cPareto Explorer\u201d. No frontend UI is changed."
+  },
+  {
+    "file": "docs/concept-4f3a3-terrain-source-audit.md",
+    "line": 34,
+    "classification": "documentation only",
+    "evidence": "The fixed six-cell, 72-ray, 400 m sample produces 432 path profiles per source. Profiles use a 30 m minimum spacing and remain diagnostic. They report valid terrain sample counts, source-local terrain range, and clearance against a straight radio line using source-local endpoint elevations plus 25 m/1.5 m antenna heights. They do not change LOS/NLOS, P.526, diffraction, P.1411, reflection, interference, radio quality, optimization, or any canonical fingerprint."
+  },
+  {
+    "file": "docs/concept-8h-visual-comparison.md",
+    "line": 53,
+    "classification": "documentation only",
+    "evidence": "Reviewed the default map, all stage menus, Setup in single and six-Cell Network modes, selected/active/inspected/focused Cells, dense S\u00f6\u011f\u00fct\u00f6z\u00fc, polygon drawing, Inventory, Propagation, RF Diagnostics, empty/current/stale Results, disabled Analyze items, and 390/768/1024/1366/1440/1512/1728 layouts."
+  },
+  {
+    "file": "docs/dark-mode.md",
+    "line": 50,
+    "classification": "documentation only",
+    "evidence": "Observed UI message: **\u201cRF analysis request budget exceeded; retry after the current rate-limit window\u201d** during an RF analysis request. The separate [RF request-budget audit](rf-analysis-request-budget-audit.md) resolves the investigation: earlier RF runs share the same 20-request, 60-second client-IP bucket. A fresh six-cell Evaluate \u2192 Interference \u2192 Re-evaluate sequence costs 15 requests and passes. Retry timing now rounds up to window expiry, and denied admissions have structured diagnostics. The budget, visible error, RF outputs, and presentation remain unchanged; exhaustion after earlier runs still requires a deliberate retry after expiry."
+  },
+  {
+    "file": "docs/concept-4f3a5-terrain-clearance-primitive.md",
+    "line": 45,
+    "classification": "documentation only",
+    "evidence": "The run uses six cells, 72 rays per cell, 400 m radius, Tx AGL 25 m, Rx AGL 1.5 m, the same source manifests, and bilinear interpolation. Corrected strict-zero results are:"
+  },
+  {
+    "file": "docs/getting-started.md",
+    "line": 124,
+    "classification": "documentation only",
+    "evidence": "1. Select **Network** mode and choose two to six cells."
+  },
+  {
+    "file": "docs/concept-4f1-height-aware-obstruction.md",
+    "line": 59,
+    "classification": "documentation only",
+    "evidence": "The gated test `TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled` runs the six-cell, 28 GHz, 400 m, 72-ray Ankara scenario against the real 161,784-footprint dataset. The current height-evidence audit is:"
+  },
+  {
+    "file": "docs/concept-4f1-height-aware-obstruction.md",
+    "line": 70,
+    "classification": "documentation only",
+    "evidence": "The urban optimizer remains the same six-cell objective workload. In the post-change ledger, baseline/optimized network scores are `13,509,330.8`/`32,568,641.1`, composite scores are `0.391373`/`0.489145`, propagation reach is `18,330.7658`/`22,141.1276`, and overlap buildings are `10`/`0`; the optimized azimuths are `[150, 300, 110, 300, 290, 100]`. The height-aware optimizer timer is 18.484 s versus the preserved 17.78 s pre-change reference. The measurements use different harness boundaries (full canonical wall time versus optimizer-only timer), so they are a bounded ledger rather than a strict apples-to-apples percentage."
+  },
+  {
+    "file": "docs/modeling-limits.md",
+    "line": 123,
+    "classification": "documentation only",
+    "evidence": "The metadata catalog in `backend-go/raytracer/reference_foundation.go` exposes explicit applicability states and failure reasons for frequency, path length, scenario, terrain, building data, and LOS/NLOS requirements. Failure results use identifiers such as `frequency_out_of_range`, `distance_out_of_range`, `unsupported_environment`, `required_terrain_missing`, `required_building_data_missing`, `required_los_or_nlos_missing`, `research_profile_only`, and `unsupported_endpoint`. Its capability matrix records 4G/2.6 GHz, 5G/28 GHz, and 6G/140 GHz across static, surface, network, azimuth/network optimization, interference, path profile, and measurement/calibration endpoints. Current support is not uniform: static, surface, and network RF evaluation accept 6G profiles; interference, measurement evaluation, and site recommendations remain restricted; path-profile 6G is research-only. Interference serviceability uses separate RSRP/SINR/RSRQ thresholds, not receiver sensitivity or building service. Receiver sensitivity is a strict carrier-admission/usability gate and is not added as another interference-noise term. This catalog is descriptive and does not dispatch a new propagation model."
+  },
+  {
+    "file": "docs/concept-4e-building-entry.md",
+    "line": 113,
+    "classification": "documentation only",
+    "evidence": "one to six selected cells. The request is batched; it does not issue one HTTP"
+  },
+  {
+    "file": "docs/concept-4e-building-entry.md",
+    "line": 182,
+    "classification": "documentation only",
+    "evidence": "## Canonical six-cell Ankara audit"
+  },
+  {
+    "file": "docs/concept-4e-building-entry.md",
+    "line": 184,
+    "classification": "documentation only",
+    "evidence": "The gated regression fixture uses the existing six-cell 28 GHz Ankara network"
+  },
+  {
+    "file": "docs/concept-4i1-140ghz-audit.md",
+    "line": 131,
+    "classification": "documentation only",
+    "evidence": "The existing [`diffraction_diagnostic.go`](../backend-go/raytracer/diffraction_diagnostic.go) correctly remains a separate diagnostic. P.526-16 equation (26) gives the signed knife-edge parameter and equation (31) gives the project\u2019s approximation for `v > -0.78`. At 140 GHz, a 50 m/50 m path has a 2.141 mm wavelength: a 1 m edge above the LOS gives `v = 6.112216` and about 28.560751 dB diagnostic loss."
+  },
+  {
+    "file": "docs/deployment.md",
+    "line": 112,
+    "classification": "documentation only",
+    "evidence": "Raise `MAX_CONCURRENT_RF_REQUESTS` or its per-client counterpart only after measuring CPU, memory, and tail latency with representative two-to-six-cell requests. Admission and request budgets are process-local; use a gateway for a shared multi-replica budget."
+  },
+  {
+    "file": "frontend-react/src/components/ControlPanel.test.jsx",
+    "line": 149,
+    "classification": "test fixture assumption",
+    "evidence": "expect(screen.getByText(\"6 of 6 cells selected\")).toBeInTheDocument();"
+  },
+  {
+    "file": "frontend-react/src/components/RunHistoryPanel.jsx",
+    "line": 275,
+    "classification": "incidental constant",
+    "evidence": "return text.length > 18 ? `${text.slice(0, 8)}\u2026${text.slice(-6)}` : text || \"\u2014\";"
+  },
+  {
+    "file": "frontend-react/src/components/ScenarioPanel.jsx",
+    "line": 466,
+    "classification": "incidental constant",
+    "evidence": "return text.length > 18 ? `${text.slice(0, 8)}\u2026${text.slice(-6)}` : text || \"\u2014\";"
+  },
+  {
+    "file": "docs/rf-analysis-request-budget-audit.md",
+    "line": 7,
+    "classification": "documentation only",
+    "evidence": "**Classification G \u2014 rate limiting is working as designed**, with **H \u2014 premature advertised retry timing** as a confirmed independent defect. The user confirmed the observed error occurred **after earlier RF runs**. Each six-cell network evaluation costs seven protected HTTP requests. Evaluate \u2192 Interference \u2192 Re-evaluate costs **15**, leaving five of the default 20 units. A prior six-cell evaluation/optimization plus that sequence requires **22** within one window: admission stops at attempted request 21. This explains exhaustion without duplicate dispatch or an incorrectly low fresh-workflow budget."
+  },
+  {
+    "file": "docs/rf-analysis-request-budget-audit.md",
+    "line": 33,
+    "classification": "documentation only",
+    "evidence": "| Evaluate Network | `/api/evaluate-network`, then N `/api/simulate` | App `evaluateNetwork`, `runNetworkSimulationQueue` | N+1 / N+1; **7 for six cells** | Sequential phases/cells |"
+  },
+  {
+    "file": "docs/rf-analysis-request-budget-audit.md",
+    "line": 34,
+    "classification": "documentation only",
+    "evidence": "| Network optimization | `/api/optimize-network`, then N `/api/simulate` | App `optimizeNetwork` | N+1 / N+1; **7 for six cells** | Sequential phases/cells |"
+  },
+  {
+    "file": "docs/rf-analysis-request-budget-audit.md",
+    "line": 36,
+    "classification": "documentation only",
+    "evidence": "| Analyze Interference | `/api/interference` | App `analyzeInterference` | **1 / 1 for six cells** | RF channel |"
+  },
+  {
+    "file": "docs/rf-analysis-request-budget-audit.md",
+    "line": 58,
+    "classification": "documentation only",
+    "evidence": "- React StrictMode, render/effect dependencies, tool changes, drawer open/close, and result inspection do not initiate RF POSTs. Initial load can repeat unprotected GETs in development StrictMode. The six-cell StrictMode regression records exactly 7 \u2192 8 \u2192 15 protected calls and identical repeat payloads."
+  },
+  {
+    "file": "docs/rf-analysis-request-budget-audit.md",
+    "line": 69,
+    "classification": "documentation only",
+    "evidence": "Trace on 2026-10-03, timestamps in Europe/Istanbul (UTC+03). E = first Evaluate, I = Analyze Interference, R = deliberate re-evaluate, A = deliberate rapid third evaluation. All responses below completed; **zero cancellations**. Load, select six cells, inspect Results, open Analyze, review Results, close/open drawer, and return to Propagation each added **zero** requests."
+  },
+  {
+    "file": "docs/rf-analysis-request-budget-audit.md",
+    "line": 103,
+    "classification": "documentation only",
+    "evidence": "History commit `a6234d8` introduced per-client attempts, global/per-client concurrency, API-key checks, and cancellation deadlines to protect expensive CPU work and preserve capacity for other clients. Keeping all expensive RF entry points under the same aggregate budget respects that purpose. Internal computational limits remain separate from the HTTP budget. Normal capacity is still two six-cell evaluations plus one interference (15 units), with five additional protected attempts; three six-cell evaluations alone would require 21 units. Burst exhaustion is expected, including across tabs behind the same IP. Request count and admitted RF compute are unchanged. The middleware adds one atomic increment per request and hashing/logging only on denial; no separate performance benchmark was run."
+  },
+  {
+    "file": "docs/rf-analysis-request-budget-audit.md",
+    "line": 109,
+    "classification": "documentation only",
+    "evidence": "- `frontend-react/src/App.workflow.test.jsx`: StrictMode, initial render, six-cell Evaluate, Interference, inspection, tool switching, drawer close/reopen, and deliberate re-evaluation; exact 15-call sequence and request payload equivalence."
+  },
+  {
+    "file": "docs/concept-4g2-receiver-noise-sensitivity.md",
+    "line": 175,
+    "classification": "documentation only",
+    "evidence": "The real Ankara six-cell comparison uses the existing compatibility scenario:"
+  },
+  {
+    "file": "frontend-react/src/components/OptimizationOperationFeedback.test.jsx",
+    "line": 10,
+    "classification": "test fixture assumption",
+    "evidence": "scope: describeOptimizationScope({ towers: Array(6).fill({}) }),"
+  },
+  {
+    "file": "frontend-react/src/components/OptimizationOperationFeedback.test.jsx",
+    "line": 27,
+    "classification": "test fixture assumption",
+    "evidence": "expect(feedback).toHaveTextContent(\"6 cells \u00b7 2 passes \u00b7 434 proposals\");"
+  },
+  {
+    "file": "docs/features.md",
+    "line": 71,
+    "classification": "documentation only",
+    "evidence": "- Network evaluation scores two to six selected cells using coverage, unique demand, and overlap."
+  },
+  {
+    "file": "docs/basemap-alidade-visual-comparison.md",
+    "line": 5,
+    "classification": "documentation only",
+    "evidence": "Reviewed all 15 matched pairs before the default change. Captures use real provider PNGs with bounded downloads and a temporary successful-tile cache. The same deterministic 42-Cell fixture (six selected plus 36 dense S\u00f6\u011f\u00fct\u00f6z\u00fc positions), building fixtures, RF fixtures, camera, overlay opacity and viewport apply within each pair. These are visual fixtures, not new RF accuracy or production-dataset claims. See [capture measurements](assets/basemap-alidade/evidence.json)."
+  },
+  {
+    "file": "docs/openapi.yaml",
+    "line": 332,
+    "classification": "documentation only",
+    "evidence": "description: Batches one to six selected cells and returns the Concept 4E 2.6/28 GHz O2I low-loss and high-loss scenarios. The estimate is not indoor, room, floor, interior-wall, or whole-building coverage. 140 GHz remains unsupported for this analysis."
+  },
+  {
+    "file": "docs/openapi.yaml",
+    "line": 1056,
+    "classification": "documentation only",
+    "evidence": "towers: { type: array, minItems: 2, maxItems: 6, items: { $ref: \"#/components/schemas/Tower\" } }"
+  },
+  {
+    "file": "docs/openapi.yaml",
+    "line": 1072,
+    "classification": "documentation only",
+    "evidence": "maxItems: 6"
+  },
+  {
+    "file": "docs/openapi.yaml",
+    "line": 1087,
+    "classification": "documentation only",
+    "evidence": "maxItems: 5"
+  },
+  {
+    "file": "docs/openapi.yaml",
+    "line": 1478,
+    "classification": "documentation only",
+    "evidence": "towers: { type: array, minItems: 2, maxItems: 5, items: { $ref: \"#/components/schemas/Tower\" } }"
+  },
+  {
+    "file": "docs/openapi.yaml",
+    "line": 1534,
+    "classification": "documentation only",
+    "evidence": "towers: { type: array, minItems: 1, maxItems: 6, items: { $ref: \"#/components/schemas/Tower\" } }"
+  },
+  {
+    "file": "docs/build-reference-pages.sh",
+    "line": 37,
+    "classification": "documentation only",
+    "evidence": "\"Measured six-cell workflow costs, shared admission policy, retry timing correction, abuse enforcement, and scientific invariance evidence.\""
+  },
+  {
+    "file": "frontend-react/src/components/AnalysisEmptyState.test.jsx",
+    "line": 9,
+    "classification": "test fixture assumption",
+    "evidence": "const props = { icon: RadioTower, title: \"No current RF result\", description: \"Evaluate the current 6-cell network to generate RF results.\", actionLabel: \"Evaluate Network\", onAction };"
+  },
+  {
+    "file": "frontend-react/src/components/SpecularReflectionReferencePanel.jsx",
+    "line": 157,
+    "classification": "incidental constant",
+    "evidence": "<Metric label=\"d1\" value={`${formatNumber(geometry.d1_m, 3)} m`} /><Metric label=\"d2\" value={`${formatNumber(geometry.d2_m, 3)} m`} /><Metric label=\"L=d1+d2\" value={`${formatNumber(geometry.total_reflected_path_length_m, 3)} m`} /><Metric label=\"Incidence\" value={`${formatNumber(geometry.incidence_angle_deg, 2)}\u00b0`} /><Metric label=\"Reflection\" value={`${formatNumber(geometry.reflection_angle_deg, 2)}\u00b0`} /><Metric label=\"FSPL(L)\" value={`${formatNumber(analysis.spreading?.fspl_reflected_path_db, 3)} dB`} /><Metric label=\"\u0393\" value={formatComplex(coefficient)} /><Metric label=\"|\u0393|\u00b2\" value={formatNumber(coefficient.power_fraction, 6)} />"
+  },
+  {
+    "file": "frontend-react/src/components/ControlPanel.jsx",
+    "line": 3,
+    "classification": "product UX limit",
+    "evidence": "import { MAX_NETWORK_CELLS } from \"../utils/networkSelection.js\";"
+  },
+  {
+    "file": "frontend-react/src/components/ControlPanel.jsx",
+    "line": 125,
+    "classification": "product UX limit",
+    "evidence": "<strong>{networkSelectionCount} of {MAX_NETWORK_CELLS} cells selected</strong>"
+  },
+  {
+    "file": "frontend-react/src/components/ControlPanel.jsx",
+    "line": 127,
+    "classification": "product UX limit",
+    "evidence": "<p className=\"selection-minimum-note\">Minimum 2 \u00b7 Maximum {MAX_NETWORK_CELLS}</p>"
+  },
+  {
+    "file": "frontend-react/src/components/ControlPanel.jsx",
+    "line": 243,
+    "classification": "product UX limit",
+    "evidence": "description=\"Interference compares serving and co-channel cells, so it needs a network cluster of two to six cells.\""
+  },
+  {
+    "file": "docs/optimization-operation-feedback.md",
+    "line": 54,
+    "classification": "documentation only",
+    "evidence": "Regression tests cover exact 2/5/6-cell legacy scope, non-legacy policies without fake totals, payload immutability, delayed disclosure, increasing elapsed time, both long thresholds, return-to-tool timing, abort/unmount cleanup, disabled duplicate-click protection, and actual App success/error/cancellation/supersession timer cleanup. A cancelled request settling after a replacement starts cannot clear its feedback. Existing request-equivalence, RF payload, recommendation, Pareto, fingerprint, Scenario, and Run workflow suites remain in the full frontend test run."
+  },
+  {
+    "file": "docs/concept-8c-map-chrome.md",
+    "line": 13,
+    "classification": "documentation only",
+    "evidence": "Network selection keeps its existing constraints: at least two cells are required to evaluate, and six cells is the maximum cluster size. Setup owns the selected count and minimum/maximum explanation. Its selection entry action changes into the active status while the mode is armed. At 900px and below, Setup closes after that action to expose the map; reopening Setup still reports the active mode rather than offering a duplicate entry action. The command bar says **Select cells** while incomplete and idle, suppresses a duplicate action while selection or a special tool is active, and says **Evaluate Network** once ready. Transient selection status uses a live region and expires after five seconds."
+  },
+  {
+    "file": "docs/concept-8h-visual-system-consolidation.md",
+    "line": 43,
+    "classification": "documentation only",
+    "evidence": "Conducted TX power retains its existing 0\u201360 dBm input bounds and adds factual support text. Selected-network information is separated into a label, \u201cN of 6 cells selected,\u201d and \u201cMinimum 2 \u00b7 Maximum 6.\u201d Informational model guidance uses neutral helper text. Advanced and Research disclosure defaults, availability, and ownership remain unchanged."
+  },
+  {
+    "file": "docs/concept-4h2-radio-quality-optimization.md",
+    "line": 181,
+    "classification": "documentation only",
+    "evidence": "It used six Ankara cells at 28 GHz, a fixed domain of 1,556 samples, and the"
+  },
+  {
+    "file": "docs/concept-5a-optimizer-search-audit.md",
+    "line": 18,
+    "classification": "documentation only",
+    "evidence": "The default production path performs 434 candidate evaluations for a six-cell request: baseline + (2 \u00d7 6 \u00d7 36) candidates + final. It has no optimizer-level memoization; lower-level RF/radio-quality preparation may cache candidate-independent geometry."
+  },
+  {
+    "file": "docs/concept-5a-optimizer-search-audit.md",
+    "line": 51,
+    "classification": "documentation only",
+    "evidence": "The controlled six-cell matrix varies request order, reverse/rotated order, starts (baseline, \u00b110\u00b0, and staggered perturbation), one/two/three passes, until-stable termination, and 20\u00b0/10\u00b0/5\u00b0 candidate steps. The full Ankara pack is used for the bounded key-run robustness set, including default, reverse order, start perturbation, pass-count, step-size, and until-stable checks."
+  },
+  {
+    "file": "docs/concept-5a-optimizer-search-audit.md",
+    "line": 55,
+    "classification": "documentation only",
+    "evidence": "See concept-5a-search-sensitivity.json and concept-5a-six-cell-robustness.json."
+  }
+]

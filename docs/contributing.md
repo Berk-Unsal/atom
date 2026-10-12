@@ -8,7 +8,7 @@ A.T.O.M is an open-source project, and we welcome contributions from the communi
 
 Found a bug? Please report it!
 
-1. **Check existing issues** first: [GitHub Issues](https://github.com/Berk-Unsal/urban-ray-tracer/issues)
+1. **Check existing issues** first: [GitHub Issues](https://github.com/Berk-Unsal/atom/issues)
 2. **Create new issue** if not already reported
 3. **Include**:
    - OS and Docker version
@@ -46,7 +46,7 @@ Server error: index out of bounds
 
 Want to suggest an improvement?
 
-1. **Check existing proposals**: [Discussions](https://github.com/Berk-Unsal/urban-ray-tracer/discussions)
+1. **Check existing proposals**: [Discussions](https://github.com/Berk-Unsal/atom/discussions)
 2. **Start a discussion** or open an issue labeled `enhancement`
 3. **Describe**:
    - What problem it solves
@@ -84,7 +84,7 @@ RF propagation is affected by hills and valleys, but A.T.O.M currently ignores t
 **Backend**:
 
 ```bash
-# Install Go 1.26+
+# Install Go 1.26.9+
 cd backend-go
 go mod download
 go run .
@@ -98,6 +98,17 @@ cd frontend-react
 npm install
 npm run dev
 ```
+
+**Python tooling**:
+
+Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution:
+
+```bash
+python -m pip install --require-hashes --only-binary=:all: -r data-pipeline/Requirements.txt
+python -m pip install --require-hashes --only-binary=:all: -r docs/requirements.txt
+```
+
+After deliberately changing either `.in` file, install `uv==0.12.0` and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles.
 
 **Both together**:
 
@@ -368,8 +379,8 @@ cd ../frontend-react && npm test
 
 - **GitHub Issues**: Bug reports, feature requests
 - **GitHub Discussions**: Questions, brainstorming
-- **Email**: [berk@berkunsal.com](mailto:berk@berkunsal.com)
-- **LinkedIn**: [Berk Ünsal](https://linkedin.com/in/berkunsal)
+- **Email**: [info@berkunsal.com](mailto:info@berkunsal.com)
+- **LinkedIn**: [Berk Ünsal](https://linkedin.com/in/berkunsaltr)
 
 ### Code of Conduct
 
@@ -429,7 +440,7 @@ If you'd like to support A.T.O.M financially:
 
 - ⭐ Star the repository (recognition counts!)
 - 🔗 Share with others in your network
-- 💼 Consider consulting: [berk@berkunsal.com](mailto:berk@berkunsal.com)
+- 💼 Consider consulting: [info@berkunsal.com](mailto:info@berkunsal.com)
 - 🤝 Contribute code or documentation (priceless!)
 
 ---
@@ -439,7 +450,7 @@ If you'd like to support A.T.O.M financially:
 **Stuck? Need guidance?**
 
 1. Check [FAQ](faq.md)
-2. Search existing [GitHub Issues](https://github.com/Berk-Unsal/urban-ray-tracer/issues)
+2. Search existing [GitHub Issues](https://github.com/Berk-Unsal/atom/issues)
 3. Review [Architecture](architecture.md) for system overview
 4. Ask in GitHub Discussions
 5. Reach out to maintainers
@@ -464,4 +475,4 @@ Thank you for contributing to A.T.O.M! Together, we're building the future of RF
 
 ---
 
-**Questions?** Open an issue or email [berk@berkunsal.com](mailto:berk@berkunsal.com)
+**Questions?** Open an issue or email [info@berkunsal.com](mailto:info@berkunsal.com)

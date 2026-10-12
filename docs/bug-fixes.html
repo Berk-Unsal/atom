@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="description" content="Prioritized confirmed defects, user
 impact, root causes, corrections, and regression evidence for A.T.O.M
 releases." />
   <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
   <link rel="stylesheet" href="./assets/docs.css" />
   <title>Bug-Fix Register | A.T.O.M Documentation</title>
 </head>
@@ -56,6 +57,16 @@ releases." />
           </div>
         </div>
       </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
       <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
         <span class="nav-toggle-lines" aria-hidden="true"></span>
       </button>
@@ -64,7 +75,7 @@ releases." />
         <a href="./architecture.html">Architecture</a>
         <a href="./api.html">API</a>
         <a href="./changelog.html">Changelog</a>
-        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
         <a class="nav-cta" href="./download.html">Download &amp; Use</a>
       </nav>
     </div>
@@ -304,6 +315,71 @@ arbitration, primary-only writes, fallback recovery, dual-backend
 failure, and strict rapid-save ordering.
 <code>useProjectWorkspace.test.jsx</code> verifies same-tick edits build
 on the latest synchronous workspace.</p>
+<h3
+id="atom-011-recommendation-details-were-duplicated-in-geojson">ATOM-011:
+Recommendation Details Were Duplicated In GeoJSON</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Recommendation responses and scenario
+persistence</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Each candidate was returned once in the ranked
+<code>recommendations</code> array and again as the complete
+<code>properties</code> object of its GeoJSON point. Network responses
+and saved scenario artifacts therefore stored the same scores,
+statistics, reasons, identifiers, and coordinates twice.</p>
+<p>Recommendation details now remain canonical in the ranked array.
+GeoJSON features carry only point geometry, an empty properties object,
+and a standard top-level feature ID that references the canonical
+record. The frontend joins records only for rendering and compacts
+legacy full-property features whenever a scenario is saved.</p>
+<p><strong>Regression evidence:</strong> Go response tests ensure
+recommendation-only fields occur once in serialized output. Frontend
+helper and project-store tests cover rendering joins and legacy artifact
+compaction.</p>
+<h3 id="atom-012-runtime-policy-copies-could-drift">ATOM-012: Runtime
+Policy Copies Could Drift</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Backend API, Core Lab adapter, and
+frontend request policy</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Core Lab scenario allowlists were independently maintained in three
+runtimes. RF defaults, technology thresholds, validation bounds,
+bandwidth choices, and structurally identical tower request types were
+also repeated across endpoint and frontend code. A change in one copy
+could silently create different accepted behavior or limits
+elsewhere.</p>
+<p>One versioned JSON policy now generates self-contained Go and
+JavaScript bindings. All three runtime layers consume those generated
+values, CI rejects stale bindings, and measurement, interference,
+optimization, and recommendation requests share one Go tower input
+type.</p>
+<p><strong>Regression evidence:</strong> generator tests verify scenario
+propagation and stale-file detection; Go and frontend tests verify the
+shared technology boundaries and generated UI defaults.</p>
+<h3
+id="atom-013-build-inputs-and-container-artifacts-were-not-reproducible">ATOM-013:
+Build Inputs And Container Artifacts Were Not Reproducible</h3>
+<p><strong>Priority:</strong> Medium</p>
+<p><strong>Affected area:</strong> Container builds, Python tooling, and
+CI supply-chain controls</p>
+<p><strong>Target release:</strong> Next release after 0.3.0</p>
+<p>Production and build stages selected container tags without immutable
+manifest digests, including a floating Alpine tag. Pipeline dependencies
+allowed broad ranges without a transitive lock or artifact hashes, while
+documentation CI installed an unconstrained PyYAML release. CI did not
+review dependency changes or inspect the resulting production image.</p>
+<p>All container stages now combine readable version tags with immutable
+multi-architecture digests. Python direct inputs are exact, and
+generated transitive locks include SHA-256 hashes enforced during
+installation. Pull requests receive dependency review; CI emits SPDX
+SBOMs for both application images and rejects fixable high or critical
+image vulnerabilities; released images include SBOM and provenance
+attestations. Weekly dependency automation covers each manifest
+family.</p>
+<p><strong>Regression evidence:</strong> the supply-chain checker and
+unit tests reject floating base images, ranged direct dependencies,
+unhashed lock entries, and missing workflow controls. CI also installs
+both Python locks and exercises the production container build.</p>
 <h2 id="open-audit-queue">Open Audit Queue</h2>
 <p>No Critical defect is currently confirmed. The next audit pass will
 focus on backend RF cancellation and timeout boundaries,
@@ -317,7 +393,7 @@ only after they are reproduced and covered by a regression test.</p>
   <footer class="site-footer">
     <div class="footer-inner">
       <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
-      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
     </div>
   </footer>
 

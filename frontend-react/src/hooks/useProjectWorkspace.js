@@ -1,29 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  createProject,
-  createProjectWorkspace,
-  createScenario,
-  datasetReference,
-  duplicateProjectData,
-  exportProjectFile,
-  importProjectFile,
-  loadProjectWorkspace,
-  queueProjectWorkspaceSave,
-  updateProjectDraft,
-} from "../utils/projectStore.js";
+import LocalRepository from "../repository/localRepository.js";
 
 export default function useProjectWorkspace(meta) {
-  const initialDatasetRef = useRef(datasetReference(meta));
-  const [workspace, setWorkspace] = useState(() => createProjectWorkspace(datasetReference(meta)));
+  const repository = useMemo(() => new LocalRepository(), []);
+  const [initialDatasetRef] = useState(() => repository.datasetReference(meta));
+  const [workspace, setWorkspace] = useState(() => repository.createProjectWorkspace(initialDatasetRef));
   const workspaceRef = useRef(workspace);
   const mountedRef = useRef(true);
+  const pendingSaveCountRef = useRef(0);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
+  const [persistenceState, setPersistenceState] = useState("saved");
 
   useEffect(() => {
     mountedRef.current = true;
     let mounted = true;
-    loadProjectWorkspace(initialDatasetRef.current)
+    repository.loadWorkspace(initialDatasetRef)
       .then((stored) => {
         if (mounted) {
           workspaceRef.current = stored;
@@ -41,22 +33,32 @@ export default function useProjectWorkspace(meta) {
       mounted = false;
       mountedRef.current = false;
     };
-  }, []);
+  }, [initialDatasetRef, repository]);
 
   const commit = useCallback((recipe) => {
-    const { workspace: next, saved } = queueProjectWorkspaceSave(recipe(workspaceRef.current));
+    const { workspace: next, saved } = repository.queueWorkspaceSave(recipe(workspaceRef.current));
     workspaceRef.current = next;
     setWorkspace(next);
+    pendingSaveCountRef.current += 1;
+    setPersistenceState("saving");
     saved.then(
       () => {
-        if (mountedRef.current) setError("");
+        pendingSaveCountRef.current = Math.max(0, pendingSaveCountRef.current - 1);
+        if (mountedRef.current) {
+          setError("");
+          if (pendingSaveCountRef.current === 0) setPersistenceState("saved");
+        }
       },
       (saveError) => {
-        if (mountedRef.current) setError(saveError.message);
+        pendingSaveCountRef.current = Math.max(0, pendingSaveCountRef.current - 1);
+        if (mountedRef.current) {
+          setError(saveError.message);
+          setPersistenceState("error");
+        }
       },
     );
     return saved;
-  }, []);
+  }, [repository]);
 
   const activeProject = useMemo(
     () => workspace.projects.find((project) => project.id === workspace.activeProjectId) ?? workspace.projects[0],
@@ -78,9 +80,9 @@ export default function useProjectWorkspace(meta) {
   }, [commit]);
 
   const addProject = useCallback(() => {
-    const project = createProject("Untitled Plan", datasetReference(meta));
+    const project = repository.createProject("Untitled Plan", repository.datasetReference(meta));
     commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }));
-  }, [commit, meta]);
+  }, [commit, meta, repository]);
 
   const renameProject = useCallback((name) => {
     if (!activeProject || !String(name).trim()) return;
@@ -89,9 +91,9 @@ export default function useProjectWorkspace(meta) {
 
   const duplicateProject = useCallback(() => {
     if (!activeProject) return;
-    const duplicate = duplicateProjectData(activeProject);
+    const duplicate = repository.duplicateProjectData(activeProject);
     commit((current) => ({ ...current, activeProjectId: duplicate.id, projects: [...current.projects, duplicate] }));
-  }, [activeProject, commit]);
+  }, [activeProject, commit, repository]);
 
   const deleteProject = useCallback(() => {
     if (!activeProject || workspace.projects.length === 1) return;
@@ -103,28 +105,151 @@ export default function useProjectWorkspace(meta) {
 
   const saveDraft = useCallback((draft) => {
     if (!activeProjectID) return;
-    updateProject(activeProjectID, (project) => updateProjectDraft({
+    updateProject(activeProjectID, (project) => repository.updateProjectDraft({
       ...project,
-      datasetRef: project.datasetRef ?? datasetReference(meta),
+      datasetRef: project.datasetRef ?? repository.datasetReference(meta),
     }, draft));
-  }, [activeProjectID, meta, updateProject]);
+  }, [activeProjectID, meta, repository, updateProject]);
 
   const activateScenario = useCallback((scenarioID) => {
     if (!activeProject || !activeProject.scenarios.some((scenario) => scenario.id === scenarioID)) return;
-    updateProject(activeProject.id, (project) => ({ ...project, activeScenarioId: scenarioID }));
+    updateProject(activeProject.id, (project) => ({ ...project, activeScenarioId: scenarioID, draft: null }));
   }, [activeProject, updateProject]);
 
-  const saveScenario = useCallback((name, snapshot) => {
+  const renameScenario = useCallback((scenarioID, name) => {
+    if (!activeProject || !String(name ?? "").trim()) return;
+    updateProject(activeProject.id, (project) => ({
+      ...project,
+      scenarios: project.scenarios.map((scenario) => scenario.id === scenarioID
+        ? { ...scenario, name: String(name).trim(), updatedAt: new Date().toISOString() }
+        : scenario),
+    }));
+  }, [activeProject, updateProject]);
+
+  const saveScenario = useCallback((name, snapshot, options = {}) => {
     if (!activeProjectID) return null;
-    const scenario = createScenario(name, snapshot);
+    const scenario = repository.createScenario(name, snapshot, options);
     const saved = updateProject(activeProjectID, (project) => ({
       ...project,
       activeScenarioId: scenario.id,
-      datasetRef: project.datasetRef ?? datasetReference(meta),
+      draft: null,
+      datasetRef: project.datasetRef ?? repository.datasetReference(meta),
       scenarios: [...project.scenarios, scenario],
     }));
     return saved.then(() => scenario);
-  }, [activeProjectID, meta, updateProject]);
+  }, [activeProjectID, meta, repository, updateProject]);
+
+  const saveScenarioVersion = useCallback(async (options = {}) => {
+    const projectID = options.projectId ?? activeProject?.domain?.project_id ?? activeProject?.id;
+    if (!projectID || !options.scenarioId) throw new Error("A saved Scenario is required before saving a Version");
+    const saved = await repository.saveScenarioVersion({ ...options, projectId: projectID });
+    if (mountedRef.current && saved.workspace) {
+      if (workspaceRef.current.persistence.revision > saved.workspace.persistence.revision) {
+        // An autosave can queue while the repository reads/builds this Version.
+        // Retain its latest draft, but commit the newly saved immutable history
+        // after that write so the older Scenario cannot win on disk.
+        const savedProject = saved.workspace.projects.find((project) => (
+          String(project.domain?.project_id ?? project.id) === String(projectID)
+        ));
+        const savedScenario = savedProject?.scenarios.find((scenario) => (
+          String(scenario.domain?.scenario_id ?? scenario.id) === String(options.scenarioId)
+            || String(scenario.id) === String(options.scenarioId)
+        ));
+        if (savedProject && savedScenario) {
+          const workspace = await commit((current) => ({
+            ...current,
+            projects: current.projects.map((project) => project.id === savedProject.id ? {
+              ...project,
+              domain: { ...project.domain, ...savedProject.domain },
+              scenarios: project.scenarios.map((scenario) => scenario.id === savedScenario.id ? savedScenario : scenario),
+            } : project),
+          }));
+          return { ...saved, workspace };
+        }
+      }
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+      setError("");
+    }
+    return saved;
+  }, [activeProject, commit, repository]);
+
+  const branchScenario = useCallback(async (options = {}) => {
+    const projectID = options.projectId ?? activeProject?.domain?.project_id ?? activeProject?.id;
+    if (!projectID || !options.scenarioId) throw new Error("A saved Scenario is required before creating a branch");
+    const saved = await repository.branchScenario({ ...options, projectId: projectID });
+    if (mountedRef.current && saved.workspace) {
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+      setError("");
+    }
+    return saved;
+  }, [activeProject, repository]);
+
+  const duplicateScenario = useCallback(async (options = {}) => {
+    const projectID = options.projectId ?? activeProject?.domain?.project_id ?? activeProject?.id;
+    if (!projectID || !options.scenarioId) throw new Error("A saved Scenario is required before duplicating it");
+    const saved = await repository.duplicateScenario({ ...options, projectId: projectID });
+    if (mountedRef.current && saved.workspace) {
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+      setError("");
+    }
+    return saved;
+  }, [activeProject, repository]);
+
+  const continueFromScenarioRevision = useCallback(async (options = {}) => {
+    const projectID = options.projectId ?? activeProject?.domain?.project_id ?? activeProject?.id;
+    if (!projectID || !options.scenarioId || !options.revisionId) {
+      throw new Error("A Scenario and Version are required to continue from history");
+    }
+    const saved = await repository.continueFromScenarioRevision({ ...options, projectId: projectID });
+    if (mountedRef.current && saved.workspace) {
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+      setError("");
+    }
+    return saved;
+  }, [activeProject, repository]);
+
+  const saveReportDefinition = useCallback(async (report) => {
+    try {
+      const saved = await repository.saveReportDefinitionWithWorkspace(report);
+      if (mountedRef.current && saved.workspace) {
+        workspaceRef.current = saved.workspace;
+        setWorkspace(saved.workspace);
+        setError("");
+      }
+      return saved;
+    } catch (saveError) {
+      if (mountedRef.current) setError(saveError.message);
+      throw saveError;
+    }
+  }, [repository]);
+
+  const applyHistoricalOptimization = useCallback(async ({ run, solution, mode = "version", scenarioId = null, revisionId = null, branchName = "" } = {}) => {
+    const projectID = activeProject?.domain?.project_id ?? activeProject?.id;
+    const scenario = activeProject?.scenarios?.find((candidate) => (
+      String(candidate.domain?.scenario_id ?? candidate.id) === String(scenarioId)
+        || String(candidate.id) === String(scenarioId)
+    )) ?? activeProject?.scenarios?.find((candidate) => candidate.id === activeProject.activeScenarioId);
+    const scenarioID = scenarioId ?? scenario?.domain?.scenario_id ?? scenario?.id;
+    if (!projectID || !scenarioID) throw new Error("Open a saved scenario before applying a historical solution");
+    const saved = await repository.applyOptimizationSolution({
+      projectId: projectID,
+      scenarioId: scenarioID,
+      revisionId: revisionId ?? run?.scenario_revision_id ?? null,
+      run,
+      solution,
+      mode,
+      branchName,
+    });
+    if (mountedRef.current && saved.workspace) {
+      workspaceRef.current = saved.workspace;
+      setWorkspace(saved.workspace);
+    }
+    return saved;
+  }, [activeProject, repository]);
 
   const deleteScenario = useCallback((scenarioID) => {
     if (!activeProject) return;
@@ -135,27 +260,53 @@ export default function useProjectWorkspace(meta) {
     }));
   }, [activeProject, updateProject]);
 
+  const restoreScenario = useCallback((scenario, index, activate = false) => {
+    if (!activeProjectID || !scenario) return;
+    return updateProject(activeProjectID, (project) => {
+      // Undo callbacks outlive the render that created them. Check duplicates
+      // against the latest committed workspace, not the captured project.
+      if (project.scenarios.some((candidate) => candidate.id === scenario.id)) return project;
+      const scenarios = [...project.scenarios];
+      scenarios.splice(Math.max(0, Math.min(Number(index) || 0, scenarios.length)), 0, scenario);
+      return {
+        ...project,
+        activeScenarioId: activate ? scenario.id : project.activeScenarioId,
+        draft: activate ? null : project.draft,
+        scenarios,
+      };
+    });
+  }, [activeProjectID, updateProject]);
+
   const importProject = useCallback((text) => {
-    const project = importProjectFile(text);
-    commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }));
-    return project;
-  }, [commit]);
+    const project = repository.importProjectFile(text);
+    return commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }))
+      .then(() => project);
+  }, [commit, repository]);
 
   return {
     activeProject,
     activateScenario,
     addProject,
+    applyHistoricalOptimization,
+    branchScenario,
     clearError: () => setError(""),
+    continueFromScenarioRevision,
     deleteProject,
     deleteScenario,
+    duplicateScenario,
     duplicateProject,
     error,
-    exportActiveProject: () => exportProjectFile(activeProject),
+    exportActiveProject: () => repository.exportProjectFile(activeProject),
     importProject,
     loaded,
+    persistenceState,
     renameProject,
+    renameScenario,
+    restoreScenario,
     saveDraft,
+    saveReportDefinition,
     saveScenario,
+    saveScenarioVersion,
     selectProject,
     workspace,
   };

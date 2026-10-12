@@ -1,0 +1,11 @@
+{
+  "concept": "8G",
+  "fixtureType": "Synthetic in-memory UI fixture; not a production dataset.",
+  "size": 10000,
+  "identity": "record-00000..record-09999 with Cell IDs cell-00000..cell-09999.",
+  "technology": "Alternating explicit 4G/5G profile values.",
+  "searchCase": { "query": "cell-", "matches": 10000, "initialRows": 50, "afterOneShowNext": 100 },
+  "mapAreaCase": { "bounds": { "west": 0, "east": 49.99, "south": 0, "north": 1 }, "capturedCells": 5000, "initialRows": 50 },
+  "test": "frontend-react/src/components/InventoryPanel.test.jsx",
+  "interpretation": "DOM/page-bound check for explicit result browsing. It does not measure backend query cost or establish million-Cell support."
+}

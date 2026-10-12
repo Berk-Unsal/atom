@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.2",
+  "artifact": "pre-change-baseline",
+  "recorded_at": "2026-10-03",
+  "repository": {
+    "branch": "main",
+    "head": "6ab445e8ff4eb091a678c7c66990d67c6cd04838",
+    "version": "0.9.2",
+    "worktree_clean_before_audit": true,
+    "diff_stat_before_audit": ""
+  },
+  "raw_files": [
+    {
+      "file": "data-stationary-test.txt",
+      "sha256": "ae4c62426eb02e6de158220fbb43a5eb978fdfa72b5550483b5cf25d12680fc7",
+      "bytes": 3642965,
+      "location": "operator-supplied external path; not tracked"
+    },
+    {
+      "file": "data-walking-test.txt",
+      "sha256": "9d7aa4830391304a1a255c059c4c15dcb1b48c6f0de623dad4d934f7966c8f2f",
+      "bytes": 22175305,
+      "location": "operator-supplied external path; not tracked"
+    }
+  ],
+  "tests": [
+    {
+      "command": "cd backend-go && go test ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go test -race ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go vet ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go test ./raytracer -run 'Concept6A|GenerateConcept6A'",
+      "result": "passed"
+    }
+  ],
+  "change_boundary": {
+    "production_code_changed": false,
+    "raw_files_modified": false,
+    "raw_files_tracked": false
+  }
+}

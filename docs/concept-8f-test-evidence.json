@@ -1,0 +1,97 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:53:57.293Z",
+  "checks": [
+    {
+      "name": "Frontend unit/workflow",
+      "command": "cd frontend-react && npm test",
+      "status": "passed",
+      "files": 57,
+      "tests": 306
+    },
+    {
+      "name": "Frontend lint",
+      "command": "cd frontend-react && npm run lint",
+      "status": "passed"
+    },
+    {
+      "name": "Production build",
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "javascriptChunkCount": 15,
+      "initialJavaScript": {
+        "file": "index-D-cGVw08.js",
+        "rawBytes": 803438,
+        "gzipBytes": 227842
+      },
+      "allJavaScript": {
+        "rawBytes": 1003121,
+        "gzipBytes": 284875
+      },
+      "css": {
+        "file": "index-KUfNh5W5.css",
+        "rawBytes": 194457,
+        "gzipBytes": 35199
+      }
+    },
+    {
+      "name": "Request equivalence",
+      "command": "cd frontend-react && npm test -- --run src/domain/requestEquivalence.test.js",
+      "status": "passed",
+      "files": 1,
+      "tests": 3
+    },
+    {
+      "name": "Playwright E2E",
+      "command": "cd frontend-react && npm run test:e2e",
+      "status": "passed",
+      "total": 184,
+      "passed": 105,
+      "skipped": 79,
+      "failed": 0,
+      "projects": [
+        "desktop-1440",
+        "desktop-1024",
+        "tablet-768",
+        "mobile-390"
+      ]
+    },
+    {
+      "name": "Backend Go",
+      "module": "backend-go",
+      "vet": "passed",
+      "raceTests": "passed"
+    },
+    {
+      "name": "Core Lab adapter",
+      "module": "core-lab-adapter",
+      "vet": "passed",
+      "raceTests": "passed"
+    },
+    {
+      "name": "Docs build",
+      "command": "sh docs/build-reference-pages.sh",
+      "status": "passed"
+    },
+    {
+      "name": "Docs validation",
+      "command": "PYTHONPATH=/tmp/atom-docs-validation-python python3 docs/validate_docs.py",
+      "status": "passed"
+    },
+    {
+      "name": "Version metadata",
+      "command": "python3 scripts/versioning.py check",
+      "status": "passed"
+    },
+    {
+      "name": "Whitespace validation",
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  ],
+  "notes": [
+    "Playwright project-gated cases were skipped by the existing suite configuration.",
+    "The Concept 8F capture test itself is project-gated and runs at desktop size.",
+    "Existing Concept 8B capture outputs are restored to the starting revision after the test suite."
+  ]
+}

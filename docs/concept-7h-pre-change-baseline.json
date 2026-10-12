@@ -1,0 +1,258 @@
+{
+  "concept": "7H",
+  "artifact": "pre-change-baseline",
+  "capturedOn": "2026-09-23",
+  "repository": {
+    "workingTree": "dirty",
+    "existingWorkPreserved": "Concept 7G changes were already present and uncommitted before Concept 7H; they are treated as the baseline.",
+    "runtimeOrigin": "http://localhost:8080/",
+    "viewport": { "width": 1440, "height": 960 },
+    "selectedContext": "Single · Cell 26380 · 5G mmWave · 28 GHz"
+  },
+  "scenarioRevision": {
+    "schemaVersion": 1,
+    "fields": [
+      "overrides", "planning_mode", "selected_cell_id", "selected_cell_ids", "enabled_cell_ids", "selection_geometry",
+      "rf_affecting_settings", "receiver_assumptions", "propagation_selection", "interference_settings",
+      "objective_constraints", "optimizer_configuration", "dataset_references", "resolved_fingerprints",
+      "originating_run_id", "originating_solution_id", "calibration_profile", "request_inputs",
+      "canonical_input_snapshot", "created_at", "change_summary", "provenance", "metadata"
+    ],
+    "snapshotFields": ["settings", "inventory", "planningMode", "selectedTowerId", "selectedNetworkTowerIds", "networkAzimuths", "selectionPolygon", "optimizationConfig"],
+    "disclosureStatePresent": false
+  },
+  "defaults": {
+    "planning": {
+      "planningMode": "single",
+      "frequencyGHz": 28,
+      "propagationModelID": "urban_short_range",
+      "txPowerDbm": 30,
+      "rayCount": 120,
+      "radiusMeters": 400,
+      "azimuthDeg": 90,
+      "beamWidthDeg": 120,
+      "calibrationOffsetDb": 0
+    },
+    "cellProfile": {
+      "networkTech": "5g",
+      "band": "NR n257",
+      "channelId": "CH-1",
+      "bandwidthMHz": 100,
+      "duplexMode": "tdd",
+      "txPowerDbm": 30,
+      "antennaGainDbi": 25,
+      "rxAntennaGainDbi": 0,
+      "systemLossDb": 0,
+      "polarizationLossDb": 0,
+      "radiusMeters": 400,
+      "beamWidthDeg": 120,
+      "antennaHeightM": 25,
+      "mechanicalDowntiltDeg": 0,
+      "electricalDowntiltDeg": 0,
+      "orientationDeg": 0,
+      "horizontalPatternId": "ideal-sector",
+      "verticalPatternId": "flat",
+      "loadFactor": 0.7,
+      "reuseFactor": 1,
+      "pci": null,
+      "receiverHeightM": 1.5,
+      "receiverSensitivityMode": "manual",
+      "receiverSensitivityDbm": -115,
+      "receiverNoiseBandwidthHz": 100000000,
+      "receiverNoiseFigureDb": 7,
+      "receiverRequiredSnrDb": 3,
+      "receiverMarginDb": 0
+    },
+    "interference": {
+      "interferenceBandwidthMHz": 100,
+      "cellLoadPct": 70,
+      "reuseFactor": 1,
+      "noiseFigureDb": 7,
+      "sampleSpacingMeters": 40
+    },
+    "pathProfile": {
+      "modelProfile": "urban-short-range",
+      "buildingLossMode": "screen-diffraction",
+      "diffractionModel": "single-knife-edge",
+      "defaultWallMaterial": "concrete",
+      "sampleSpacingM": 10,
+      "shadowSigmaDb": 6,
+      "clutterSpecificAttenuationDbPerKm": 0,
+      "vegetationDepthM": 0,
+      "vegetationSpecificAttenuationDbPerM": 0,
+      "gasSpecificAttenuationDbPerKm": 0,
+      "rainSpecificAttenuationDbPerKm": 0
+    },
+    "subThzReference": {
+      "frequencyGHz": 140,
+      "txHeightM": 25,
+      "rxHeightM": 1.5,
+      "pressureHpa": 1013.25,
+      "temperatureK": 288.15,
+      "waterVapourDensityGm3": 7.5,
+      "rainEnabled": false,
+      "rainRateMmh": 25,
+      "rainPolarization": "circular",
+      "rainPolarizationTiltDeg": 45,
+      "localFogEnabled": false,
+      "localFogDensityGm3": 0.5,
+      "localFogTemperatureK": 288.15,
+      "linkBudgetEnabled": false
+    },
+    "p1411Candidate": {
+      "frequencyGHz": 140,
+      "txHeightM": 25,
+      "rxHeightM": 1.5,
+      "candidateModelID": "all",
+      "morphology": "urban_high_rise",
+      "rooftopRelation": "both_below_rooftop",
+      "losState": "los",
+      "includeAtmosphericComparison": false,
+      "includeResearchComparison": false
+    },
+    "measurementValidation": {
+      "operation": "compare_models",
+      "modelIDs": ["p525_fspl"],
+      "method": "all_samples",
+      "groupBy": "site_id",
+      "cellSize": 100,
+      "separation": 100,
+      "includePredictions": true
+    },
+    "materialReference": {
+      "frequencyGHz": 140,
+      "materialSource": "p2040_reference",
+      "materialID": "glass_100_400",
+      "thicknessM": 0.01,
+      "thicknessProvenance": "user_declared",
+      "incidenceAngleDeg": 0,
+      "polarization": "TE"
+    },
+    "specularReflection": {
+      "frequencyGHz": 140,
+      "coordinateFrameMode": "local_enu",
+      "polarization": "TE",
+      "tx": { "x": 50, "y": -50, "z": 10, "gainDBi": 0, "antennaMode": "isotropic" },
+      "rx": { "x": 50, "y": 50, "z": 10, "gainDBi": 0, "antennaMode": "isotropic" },
+      "facade": { "startX": 0, "startY": -10, "endX": 0, "endY": 10, "planeX": 0, "planeY": 0, "normalX": 1, "normalY": 0, "normalZ": 0, "baseZ": 0, "topZ": 20 },
+      "material": { "mode": "interface", "materialSource": "user_defined", "relativePermittivity": 4, "conductivitySPerM": 0, "propertySource": "user_declared" },
+      "terrainMode": "flat_ground_relative_datum",
+      "linkBudget": { "ptConductedDbm": 30, "txPatternAttenuationDB": 0, "rxPatternAttenuationDB": 0, "systemLossDB": 0, "polarizationLossDB": 0, "calibrationDB": 0 }
+    }
+  },
+  "workflows": [
+    {
+      "id": "lte-2-6-planning",
+      "location": "Plan → Setup; Plan → Inventory; Simulate → Propagation",
+      "visibleControls": ["planning mode", "4G LTE", "propagation model", "conducted TX power", "cell selection", "frequency", "bandwidth", "radius", "azimuth", "beam width", "Run Sector"],
+      "values": { "technology": "4g", "frequencyGHz": 2.6, "propagationModelID": "urban_short_range", "txPowerDbm": 30, "radiusMeters": 400, "azimuthDeg": 90, "beamWidthDeg": 120 },
+      "scenarioRevisionFields": ["planning_mode", "selected_cell_id", "selected_cell_ids", "rf_affecting_settings", "receiver_assumptions", "propagation_selection", "request_inputs", "canonical_input_snapshot"],
+      "request": { "builder": "buildSimulationPayload", "route": "/api/simulate", "fields": ["tower_lon", "tower_lat", "rays", "radius_m", "frequency_ghz", "tx_power_dbm", "azimuth", "beam_width", "calibration_offset_db", "rf_profile"], "profileFields": ["schema_version", "network_tech", "propagation_model", "frequency_ghz", "band", "bandwidth_mhz", "channel_id", "duplex_mode", "tx_power_dbm", "tx_antenna_gain_dbi", "antenna_gain_dbi", "rx_antenna_gain_dbi", "system_loss_db", "polarization_loss_db", "radius_m", "beam_width", "antenna_height_m", "mechanical_downtilt_deg", "electrical_downtilt_deg", "orientation_deg", "horizontal_pattern_id", "vertical_pattern_id", "load_factor", "reuse_factor", "pci", "receiver_height_m", "receiver_sensitivity_dbm", "receiver_sensitivity_mode", "receiver_noise_bandwidth_hz", "receiver_noise_figure_db", "receiver_required_snr_db", "receiver_margin_db"] },
+      "prerequisites": ["one selected transmitter cell", "compatible profile and request-ready cell RF profile"],
+      "modelProfile": "Canonical urban_short_range UMa; runtime envelope and geometry applicability are returned by the existing RF contract."
+    },
+    {
+      "id": "mmwave-28-planning",
+      "location": "Plan → Setup; Plan → Inventory; Simulate → Propagation",
+      "visibleControls": ["planning mode", "5G mmWave", "propagation model", "conducted TX power", "cell selection", "frequency", "bandwidth", "radius", "azimuth", "beam width", "Run Sector"],
+      "values": { "technology": "5g", "frequencyGHz": 28, "propagationModelID": "urban_short_range", "txPowerDbm": 30, "radiusMeters": 400, "azimuthDeg": 90, "beamWidthDeg": 120 },
+      "scenarioRevisionFields": ["planning_mode", "selected_cell_id", "selected_cell_ids", "rf_affecting_settings", "receiver_assumptions", "propagation_selection", "request_inputs", "canonical_input_snapshot"],
+      "request": { "builder": "buildSimulationPayload", "route": "/api/simulate", "fields": ["tower_lon", "tower_lat", "rays", "radius_m", "frequency_ghz", "tx_power_dbm", "azimuth", "beam_width", "calibration_offset_db", "rf_profile"], "profileFields": "Same schema as LTE; the existing resolved 5G profile supplies 28 GHz, NR n257, 100 MHz, TDD, and current antenna/receiver values." },
+      "prerequisites": ["one selected transmitter cell", "compatible profile and request-ready cell RF profile"],
+      "modelProfile": "Canonical urban_short_range UMa at the supported 28 GHz planning frequency."
+    },
+    {
+      "id": "interference-enabled",
+      "location": "Plan → Setup (Network mode); Plan → Inventory; Analyze → Interference",
+      "visibleControls": ["network cell selection", "bandwidth", "cell load", "frequency reuse", "noise figure", "grid spacing", "Analyze Interference"],
+      "values": { "bandwidthMHz": 100, "loadFactor": 0.7, "reuseFactor": 1, "noiseFigureDb": 7, "sampleSpacingMeters": 40 },
+      "scenarioRevisionFields": ["planning_mode", "selected_cell_ids", "rf_affecting_settings", "interference_settings", "optimizer_configuration", "request_inputs", "canonical_input_snapshot"],
+      "request": { "builder": "buildInterferencePayload", "route": "/api/interference", "fields": ["network_tech", "towers[].id", "towers[].tower_lon", "towers[].tower_lat", "towers[].azimuth", "towers[].rf_profile", "radius_m", "frequency_ghz", "tx_power_dbm", "beam_width", "bandwidth_mhz", "load_factor", "reuse_factor", "noise_figure_db", "sample_spacing_m", "calibration_offset_db"] },
+      "prerequisites": ["Network planning mode", "two to six request-ready selected cells", "profile supported by radio-quality model"],
+      "modelProfile": "Co-channel radio-quality analysis; result semantics are distinct from propagation coverage and receiver sensitivity. 140 GHz radio quality is unsupported."
+    },
+    {
+      "id": "building-entry",
+      "location": "Analyze → Building entry",
+      "visibleControls": ["Run building-entry estimate", "selected cell/network context", "current result/status"],
+      "values": { "facadeTarget": "representative facade point selected by current analysis", "lowHighProfiles": "backend canonical coupling", "visibleFacadeInputs": 0 },
+      "scenarioRevisionFields": ["selected_cell_id", "selected_cell_ids", "rf_affecting_settings", "receiver_assumptions", "request_inputs", "canonical_input_snapshot"],
+      "request": { "builder": "buildBuildingEntryAnalysisPayload", "route": "/api/building-entry-analysis", "fields": ["towers[].id", "towers[].tower_lon", "towers[].tower_lat", "towers[].azimuth", "towers[].rf_profile", "rays", "radius_m", "frequency_ghz", "tx_power_dbm", "beam_width", "calibration_offset_db"] },
+      "prerequisites": ["one selected cell or a selected network", "2.6 or 28 GHz supported profile"],
+      "modelProfile": "Derived facade-entry service estimate; not indoor or whole-building coverage. Keeps outdoor building-service threshold distinct from receiver sensitivity and low/high entry profiles."
+    },
+    {
+      "id": "vertical-path-profile",
+      "location": "Simulate → Propagation → Vertical path profile",
+      "visibleControls": ["map receiver pick", "receiver coordinates", "applicability profile", "building treatment", "sample spacing", "shadow sigma", "environmental sensitivity", "Analyze selected path"],
+      "values": { "modelProfile": "urban-short-range", "buildingLossMode": "screen-diffraction", "sampleSpacingM": 10, "shadowSigmaDb": 6 },
+      "scenarioRevisionFields": ["request_inputs when captured with a Run only for canonical Run inputs; path diagnostic result remains a separate analysis"],
+      "request": { "builder": "buildPathProfilePayload", "route": "/api/path-profile", "fields": ["transmitter", "receiver", "sample_spacing_m", "model_profile", "azimuth", "calibration_offset_db", "rf_profile", "fidelity.building_loss_mode", "fidelity.diffraction_model", "fidelity.default_wall_material", "fidelity.clutter_specific_attenuation_db_per_km", "fidelity.vegetation_depth_m", "fidelity.vegetation_specific_attenuation_db_per_m", "fidelity.gas_specific_attenuation_db_per_km", "fidelity.rain_specific_attenuation_db_per_km", "fidelity.shadow_sigma_db"] },
+      "prerequisites": ["selected transmitter cell", "receiver point on map or explicit coordinates", "applicable path profile"],
+      "modelProfile": "Isolated point-to-point diagnostic. P.526 diffraction evidence is not added to canonical UMa NLOS."
+    },
+    {
+      "id": "sub-thz-atmosphere",
+      "location": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "visibleControls": ["frequency", "TX/RX heights", "pressure", "temperature", "water vapour", "rain/fog toggles and inputs", "optional link budget", "Run atmospheric reference"],
+      "values": { "frequencyGHz": 140, "txHeightM": 25, "rxHeightM": 1.5, "pressureHpa": 1013.25, "temperatureK": 288.15, "waterVapourDensityGm3": 7.5, "rainEnabled": false, "localFogEnabled": false, "linkBudgetEnabled": false },
+      "scenarioRevisionFields": ["No ScenarioRevision RF physics fields are changed by this isolated request; canonical ScenarioRevision still holds only configured plan and request inputs."],
+      "request": { "builder": "buildSubTHZReferencePayload", "route": "/api/sub-thz-reference", "fields": ["frequency_ghz", "transmitter.lon", "transmitter.lat", "transmitter.height_m", "receiver.lon", "receiver.lat", "receiver.height_m", "atmosphere.enabled", "atmosphere.pressure_hpa", "atmosphere.temperature_k", "atmosphere.water_vapour_density_g_m3", "rain.enabled", "rain.rain_rate_mm_h", "rain.polarization", "rain.polarization_tilt_deg", "local_fog.enabled", "local_fog.liquid_water_density_g_m3", "local_fog.temperature_k", "optional link_budget"] },
+      "prerequisites": ["selected transmitter cell", "receiver point on map"],
+      "modelProfile": "Research/reference only. P.525 plus explicit atmosphere terms; not canonical validation, not production-calibrated, and outside ordinary radio-quality support."
+    },
+    {
+      "id": "p1411-candidate-reference",
+      "location": "Simulate → Propagation → P.1411 candidate reference",
+      "visibleControls": ["frequency", "TX/RX heights", "candidate row", "morphology", "rooftop relation", "path state", "optional atmospheric/research comparisons", "Run P.1411 candidate reference"],
+      "values": { "frequencyGHz": 140, "txHeightM": 25, "rxHeightM": 1.5, "candidateModelID": "all", "morphology": "urban_high_rise", "rooftopRelation": "both_below_rooftop", "losState": "los" },
+      "scenarioRevisionFields": ["Isolated reference request; it does not modify canonical RF configuration."],
+      "request": { "builder": "buildP1411ReferencePayload", "route": "/api/sub-thz-p1411-reference", "fields": ["frequency_ghz", "transmitter", "receiver", "morphology", "rooftop_relation", "los_state", "candidate_model_id", "provenance", "optional atmospheric_reference", "optional research_wall_event_count"] },
+      "prerequisites": ["selected transmitter cell", "receiver point on map", "explicitly declared scenario labels; strict row frequency/distance envelope"],
+      "modelProfile": "Alternative/reference candidate returning candidate medians and sigma metadata; not automatically additive to propagation loss and not canonical production RF."
+    },
+    {
+      "id": "material-reference",
+      "location": "Analyze → RF Diagnostics → Material & facade reference",
+      "visibleControls": ["frequency", "material source and row", "thickness/provenance", "incidence angle", "polarization", "optional user material properties", "Run material reference"],
+      "values": { "frequencyGHz": 140, "materialSource": "p2040_reference", "materialID": "glass_100_400", "thicknessM": 0.01, "thicknessProvenance": "user_declared", "incidenceAngleDeg": 0, "polarization": "TE" },
+      "scenarioRevisionFields": ["Isolated component reference request; not a canonical ScenarioRevision input."],
+      "request": { "builder": "materialReference request mapper in MaterialReferencePanel", "route": "/api/sub-thz-material-reference", "fields": ["frequency_ghz", "material_source", "material_id or user_material", "thickness_m", "thickness_provenance", "incidence_angle_deg", "polarization", "incident_medium", "exit_medium"] },
+      "prerequisites": ["finite numeric frequency/thickness/angle", "incidence angle in [0, 90)", "user material has a declared name and positive permittivity"],
+      "modelProfile": "Research/reference component physics; slab ledger only. It does not alter network simulation or infer OSM materials."
+    },
+    {
+      "id": "specular-reflection-reference",
+      "location": "Analyze → RF Diagnostics → Specular Reflection Reference",
+      "visibleControls": ["frequency", "Tx/Rx ENU geometry", "finite facade geometry/normal/heights", "material mode and properties", "polarization", "evidence and link-budget assumptions", "Evaluate reflected path"],
+      "values": { "frequencyGHz": 140, "polarization": "TE", "tx": "(50, -50, 10) m", "rx": "(50, 50, 10) m", "facade": "x=0, y=-10..10, z=0..20 m", "materialMode": "interface", "terrainMode": "flat_ground_relative_datum" },
+      "scenarioRevisionFields": ["Isolated single-bounce reference request; not a canonical ScenarioRevision input."],
+      "request": { "builder": "buildSpecularReflectionReferencePayload", "route": "/api/sub-thz-reflection-reference", "fields": ["schema_version", "frequency_ghz", "coordinate_frame", "tx.position/antenna", "rx.position/antenna", "facade geometry/provenance", "material", "polarization", "terrain", "link_budget", "optional rms_roughness_m"] },
+      "prerequisites": ["explicit endpoints", "finite facade and normal", "declared material/provenance", "declared terrain datum"],
+      "modelProfile": "Research/reference single-bounce component. Isolated; canonical false; network coupled false."
+    },
+    {
+      "id": "measurement-validation",
+      "location": "Analyze → RF Diagnostics → RF Diagnostics; Review → Data → Field measurement validation",
+      "visibleControls": ["campaign JSON import", "synthetic control", "operation", "split strategy", "group key", "cell size", "minimum separation", "reference adapters", "per-sample predictions", "Run RF diagnostics", "measurement CSV import", "Evaluate residuals", "calibration review/apply"],
+      "values": { "campaigns": 0, "operation": "compare_models", "modelIDs": ["p525_fspl"], "method": "all_samples", "groupBy": "site_id", "cellSize": 100, "separation": 100, "includePredictions": true },
+      "scenarioRevisionFields": ["Measurement evidence and calibration result are isolated analysis state; calibration application is a separate explicit plan action."],
+      "request": { "routes": ["/api/sub-thz-validation", "/api/measurements/evaluate"], "fields": ["campaigns", "operation", "models/reference adapters", "method", "group_by", "cell_size_m", "min_separation_m", "include_predictions", "measurement samples", "calibration provenance"] },
+      "prerequisites": ["versioned campaign with valid provenance or imported CSV samples", "valid model/reference adapters"],
+      "modelProfile": "Validation/research diagnostics; does not promote a model automatically. Explicit calibration apply action changes plan calibration offset."
+    }
+  ],
+  "beforeChangeMeasurements": {
+    "viewport": { "width": 1440, "height": 960 },
+    "drawerClientHeightPx": 791,
+    "propagation": { "drawerScrollHeightPx": 2451, "visibleSections": 4, "sections": ["Propagation controls", "Vertical path profile", "Sub-THz atmospheric reference", "ITU-R P.1411 candidate reference"], "controlsPerSection": [5, 13, 10, 10], "researchSectionsVisibleByDefault": 2, "primaryRunActionLocation": "Global command bar; visible outside the drawer" },
+    "rfDiagnostics": { "drawerScrollHeightPx": 2657, "visibleSections": 3, "sections": ["RF diagnostics and measurement validation", "Material and facade interaction reference", "Specular reflection reference"], "controlsPerSection": [17, 8, 34], "researchReferenceSectionsVisibleByDefault": 3 },
+    "data": { "drawerScrollHeightPx": 1838, "topLevelVisibleSections": 1, "containedSections": ["Demand Surface", "Installed Dataset Packs", "Propagation Model assumptions", "Field measurement validation"], "measurementValidationVisibleByDefault": true }
+  },
+  "bundleBefore": {
+    "command": "cd frontend-react && npm run build",
+    "javascript": { "bytes": 946230, "gzipBytes": 259280 },
+    "css": { "bytes": 148050, "gzipBytes": 28110 },
+    "warning": "Vite reports the existing >500 kB minified JavaScript chunk warning."
+  }
+}

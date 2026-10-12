@@ -1,0 +1,40 @@
+{
+  "concept": "7C",
+  "comparison": [
+    {
+      "area": "physical storage",
+      "before": "only ProjectV2 workspace DB plus localStorage fallback",
+      "after": "separate atom-run-history IndexedDB database, version 1, runs store"
+    },
+    {
+      "area": "normal run durability",
+      "before": "no independent normal-run record",
+      "after": "queued/running/terminal Run lifecycle for simulation and optimization"
+    },
+    {
+      "area": "unsaved drafts",
+      "before": "not independently reproducible after reload",
+      "after": "exact executed request plus draft/source provenance retained"
+    },
+    {
+      "area": "results",
+      "before": "UI or workspace artifact dependent",
+      "after": "compact simulation summary and public optimization details; map-sized/private data excluded"
+    },
+    {
+      "area": "recovery",
+      "before": "no run lifecycle recovery",
+      "after": "queued/running records become explicit run_interrupted failures"
+    },
+    {
+      "area": "compatibility",
+      "before": "existing workspace behavior",
+      "after": "unchanged; history schema/version is independent"
+    },
+    {
+      "area": "server architecture",
+      "before": "local frontend plus existing API",
+      "after": "unchanged; no server/database/PostGIS/object-storage/auth/remote-job dependency"
+    }
+  ]
+}

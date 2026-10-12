@@ -1,0 +1,100 @@
+{
+  "concept": "7I",
+  "date": "2026-09-23",
+  "baselineSource": "docs/concept-7i-pre-change-baseline.json",
+  "result": {
+    "baseline": {
+      "entry": "assets/index-D6cTVo8H.js",
+      "initialJsChunks": 1,
+      "initialJsRawBytes": 957782,
+      "initialJsGzipBytesLevel9": 262186,
+      "totalJsRawBytes": 957782,
+      "totalJsGzipBytesLevel9": 262186,
+      "initialCssRawBytes": 151599,
+      "initialCssGzipBytesLevel9": 28419,
+      "dynamicChunkCount": 0,
+      "initialJavaScriptRequests": 1,
+      "specializedFeatureJsRequests": 0
+    },
+    "after": {
+      "entry": "assets/index-D1ELEa05.js",
+      "initialJsChunks": 1,
+      "initialJsRawBytes": 769861,
+      "initialJsGzipBytesLevel9": 217661,
+      "totalJsChunks": 12,
+      "totalJsRawBytes": 966129,
+      "totalJsGzipBytesLevel9": 271468,
+      "initialCssRawBytes": 152345,
+      "initialCssGzipBytesLevel9": 28559,
+      "dynamicImportRoots": 9,
+      "initialJavaScriptRequests": 1,
+      "specializedFeatureJsRequests": 0
+    },
+    "delta": {
+      "initialJsRawBytes": -187921,
+      "initialJsRawPercent": -19.620,
+      "initialJsGzipBytesLevel9": -44525,
+      "initialJsGzipPercent": -16.982,
+      "totalJsRawBytes": 8347,
+      "totalJsRawPercent": 0.871,
+      "totalJsGzipBytesLevel9": 9282,
+      "initialCssRawBytes": 746,
+      "initialCssGzipBytesLevel9": 140
+    }
+  },
+  "browserRequestGraph": {
+    "baseline": "The full 957,782-byte entry and global CSS were fetched immediately; no dynamic chunks existed.",
+    "after": "The 769,972-byte entry and global CSS were fetched immediately. Across five cold contexts, no selected feature JS was requested before intent. E2E separately observed each feature request after its own trigger.",
+    "browserTransferBytes": {"baselineEntry":263303,"afterEntry":218584,"baselineCss":29049,"afterCss":29192,"note":"Resource Timing transfer sizes include headers and differ from gzip-9 asset measurements."}
+  },
+  "localColdTiming": {
+    "baselineMedianMs": {"document":40,"setupVisible":108,"mapVisible":111},
+    "afterMedianMs": {"document":33,"setupVisible":87,"mapVisible":91},
+    "interpretation": "Small local sample, indicative only; no universal performance claim. Dataset readiness is unavailable because the backend was not running."
+  },
+  "firstUse": [
+    {"feature":"Propagation Research","mainChunkRawBytes":26558,"actionToVisibleFeatureMs":71},
+    {"feature":"RF Diagnostics Research","mainChunkRawBytes":43195,"actionToVisibleFeatureMs":76},
+    {"feature":"Experiments","mainChunkRawBytes":7376,"actionToVisibleFeatureMs":59},
+    {"feature":"Core Lab","mainChunkRawBytes":5020,"actionToVisibleFeatureMs":60},
+    {"feature":"Run History","mainChunkRawBytes":13623,"actionToVisibleFeatureMs":57},
+    {"feature":"Report UI","mainChunkRawBytes":9757,"actionToVisibleFeatureMs":54},
+    {"feature":"Report renderer/export","mainChunkRawBytes":86701,"actionToVisibleFeatureMs":null,"note":"Requested on Generate/export action; no standalone timing was captured."}
+  ],
+  "semantics": {
+    "planningStartup": "Setup, shell, and map are immediately visible; specialized chunks are absent until their feature actions.",
+    "historicalReport": "Production E2E from cold Run History loads report code after explicit confirmation and records exactly one RF compute request for the preceding Sector Run.",
+    "freshnessLineage": "Existing App-owned current workspace/result props and shared lineage displays remain the source; feature fallbacks are local.",
+    "requestSchemasAndBackend": "Unchanged; no backend files modified.",
+    "fingerprintRunReportInvariance": "No canonicalizer/run schema/source resolver was modified. Full existing regression suites pass. No separate byte-for-byte before/after artifact or Run fixture capture was made.",
+    "disclosure": "Unit and production browser tests verify state retention after research disclosure collapse/reopen.",
+    "accessibility": "Loading uses role=status and aria-busy; errors use role=alert and keyboard-accessible buttons; E2E opens the feature by keyboard.",
+    "responsive": "Responsive E2E passes at desktop/tablet/mobile projects and explicit 1440/1280/1024/640/390 drawer widths.",
+    "warning": "Vite default large-chunk advisory remains for the entry. No threshold, warning, or source-map policy change."
+  },
+  "validation": {
+    "frontendUnitWorkflow": "52 files / 275 tests passed",
+    "e2e": "69 passed / 11 skipped / 0 failed out of 80 scheduled",
+    "lint": "passed",
+    "productionBuild": "passed; 1703 modules transformed; 1.09 s measured build",
+    "backendGoVetAndRaceTests": "passed for backend-go and core-lab-adapter",
+    "docsValidation": "passed after temporarily loading repository-pinned PyYAML 6.0.3; reference generation and all Concept 7I JSON parsing passed",
+    "versionConsistency": "passed: python3 scripts/versioning.py check reports 0.8.0 consistent"
+  },
+  "claims": {
+    "measured": ["production asset sizes", "Vite manifest graph", "cold browser JS/CSS resource graph", "local cold timing samples", "first-open observations", "test outcomes"],
+    "inferred": ["less initial JavaScript should reduce download and parse pressure when the deferred features are not used"],
+    "notEstablished": ["production CDN latency", "cellular network speed", "all mobile/device performance", "dataset-ready timing", "backend startup cost", "map rendering bottleneck"]
+  },
+  "remainingStartupBottlenecks": [
+    "The initial minified JS entry remains 769.97 kB and still emits Vite's >500 kB advisory.",
+    "Initial CSS is about 152 kB raw; CSS was not split by feature.",
+    "API and dataset readiness were not measurable in the backend-free cold performance preview.",
+    "Map tile/network and map geometry work remain distinct from JavaScript chunk transfer."
+  ],
+  "nextPhaseRecommendation": {
+    "candidate": "E — Frontend Orchestrator / App.jsx Boundary Cleanup",
+    "basis": "The 7I feature presentation extractions remain coordinated by a broad App.jsx; a focused state/orchestration boundary audit is visible follow-up friction.",
+    "started": false
+  }
+}

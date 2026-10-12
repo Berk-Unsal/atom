@@ -1,0 +1,1940 @@
+{
+  "concept": "7H",
+  "artifact": "primary-presentation-classification",
+  "scope": "Documentation and presentation contract only. It is not imported by runtime code.",
+  "classificationIsUXOnly": true,
+  "runtimeIntegration": false,
+  "domainPersistence": false,
+  "rfContractField": false,
+  "fingerprintInput": false,
+  "requestPayloadField": false,
+  "scenarioRevisionField": false,
+  "runSnapshotField": false,
+  "tiers": [
+    {
+      "id": "planning",
+      "purpose": "Common inputs and actions used for ordinary RF planning."
+    },
+    {
+      "id": "advanced",
+      "purpose": "Specialist canonical configuration and diagnostic analysis."
+    },
+    {
+      "id": "research_reference",
+      "purpose": "Isolated experimental, reference, campaign-validation, or research-profile controls."
+    }
+  ],
+  "controlCount": 190,
+  "countsByTier": {
+    "planning": 33,
+    "advanced": 46,
+    "research_reference": 111
+  },
+  "controls": [
+    {
+      "id": "setup.planning_mode",
+      "label": "setup planning mode",
+      "tier": "planning",
+      "groupId": "setup.planning_mode",
+      "component": "ControlPanel",
+      "currentSection": "Plan → Setup",
+      "status": "canonical",
+      "prerequisite": "None"
+    },
+    {
+      "id": "setup.network_technology.4g",
+      "label": "4G LTE · 2.6 GHz",
+      "tier": "planning",
+      "groupId": "setup.network_technology",
+      "component": "ControlPanel",
+      "currentSection": "Plan → Setup",
+      "status": "canonical; 6G choice is research-only",
+      "prerequisite": "None"
+    },
+    {
+      "id": "setup.network_technology.5g",
+      "label": "5G mmWave · 28 GHz",
+      "tier": "planning",
+      "groupId": "setup.network_technology",
+      "component": "ControlPanel",
+      "currentSection": "Plan → Setup",
+      "status": "canonical; 6G choice is research-only",
+      "prerequisite": "None"
+    },
+    {
+      "id": "setup.network_technology.6g",
+      "label": "6G research · 140 GHz",
+      "tier": "planning",
+      "groupId": "setup.network_technology",
+      "component": "ControlPanel",
+      "currentSection": "Plan → Setup",
+      "status": "canonical; 6G choice is research-only",
+      "prerequisite": "None"
+    },
+    {
+      "id": "setup.propagation_model",
+      "label": "setup propagation model",
+      "tier": "planning",
+      "groupId": "setup.propagation_model",
+      "component": "ControlPanel",
+      "currentSection": "Plan → Setup",
+      "status": "canonical or research according to selected model",
+      "prerequisite": "Selected frequency/profile"
+    },
+    {
+      "id": "setup.tx_power",
+      "label": "setup tx power",
+      "tier": "planning",
+      "groupId": "setup.tx_power",
+      "component": "ControlPanel",
+      "currentSection": "Plan → Setup",
+      "status": "canonical",
+      "prerequisite": "None"
+    },
+    {
+      "id": "setup.select_network_cells",
+      "label": "setup select network cells",
+      "tier": "planning",
+      "groupId": "setup.select_network_cells",
+      "component": "ControlPanel",
+      "currentSection": "Plan → Setup",
+      "status": "canonical",
+      "prerequisite": "Dataset inventory loaded"
+    },
+    {
+      "id": "setup.run",
+      "label": "setup run",
+      "tier": "planning",
+      "groupId": "setup.run",
+      "component": "CommandBar",
+      "currentSection": "Global command bar, available from Plan / Simulate",
+      "status": "canonical action",
+      "prerequisite": "One selected cell, or two selected cells for network operation; selected profile must be request-ready"
+    },
+    {
+      "id": "inventory.search",
+      "label": "inventory search",
+      "tier": "planning",
+      "groupId": "inventory.search",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory",
+      "status": "planning utility",
+      "prerequisite": "Inventory loaded"
+    },
+    {
+      "id": "inventory.place_cell",
+      "label": "inventory place cell",
+      "tier": "planning",
+      "groupId": "inventory.place_cell",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory",
+      "status": "canonical inventory action",
+      "prerequisite": "Map click"
+    },
+    {
+      "id": "inventory.import_cells",
+      "label": "inventory import cells",
+      "tier": "planning",
+      "groupId": "inventory.import_cells",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory",
+      "status": "canonical inventory action",
+      "prerequisite": "Valid CSV / JSON / GeoJSON"
+    },
+    {
+      "id": "inventory.select_cell",
+      "label": "inventory select cell",
+      "tier": "planning",
+      "groupId": "inventory.select_cell",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory",
+      "status": "canonical",
+      "prerequisite": "Inventory loaded"
+    },
+    {
+      "id": "inventory.duplicate_cell",
+      "label": "inventory duplicate cell",
+      "tier": "planning",
+      "groupId": "inventory.duplicate_cell",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Cell editor",
+      "status": "canonical inventory action",
+      "prerequisite": "Editable selected cell"
+    },
+    {
+      "id": "inventory.reset_profile",
+      "label": "inventory reset profile",
+      "tier": "planning",
+      "groupId": "inventory.reset_profile",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Cell editor",
+      "status": "canonical inventory action",
+      "prerequisite": "Selected cell"
+    },
+    {
+      "id": "inventory.delete_cell",
+      "label": "inventory delete cell",
+      "tier": "planning",
+      "groupId": "inventory.delete_cell",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Cell editor",
+      "status": "canonical inventory action",
+      "prerequisite": "Editable selected cell"
+    },
+    {
+      "id": "inventory.location",
+      "label": "inventory location",
+      "tier": "planning",
+      "groupId": "inventory.location",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Cell editor → Position",
+      "status": "canonical",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.technology",
+      "label": "inventory technology",
+      "tier": "planning",
+      "groupId": "inventory.technology",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Carrier & channel",
+      "status": "canonical",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.band",
+      "label": "inventory band",
+      "tier": "advanced",
+      "groupId": "inventory.band",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Carrier & channel",
+      "status": "advanced carrier detail",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.channel",
+      "label": "inventory channel",
+      "tier": "advanced",
+      "groupId": "inventory.channel",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Carrier & channel",
+      "status": "advanced carrier detail",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.duplex",
+      "label": "inventory duplex",
+      "tier": "advanced",
+      "groupId": "inventory.duplex",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Carrier & channel",
+      "status": "advanced carrier detail",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.frequency",
+      "label": "inventory frequency",
+      "tier": "planning",
+      "groupId": "inventory.frequency",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "canonical",
+      "prerequisite": "Cell selected; must match selected technology"
+    },
+    {
+      "id": "inventory.bandwidth",
+      "label": "inventory bandwidth",
+      "tier": "planning",
+      "groupId": "inventory.bandwidth",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "canonical carrier assumption",
+      "prerequisite": "Cell selected; must satisfy profile limits"
+    },
+    {
+      "id": "inventory.tx_power",
+      "label": "inventory tx power",
+      "tier": "planning",
+      "groupId": "inventory.tx_power",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "canonical",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.tx_gain",
+      "label": "inventory tx gain",
+      "tier": "advanced",
+      "groupId": "inventory.tx_gain",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced link budget",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.rx_gain",
+      "label": "inventory rx gain",
+      "tier": "advanced",
+      "groupId": "inventory.rx_gain",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced link budget",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.system_loss",
+      "label": "inventory system loss",
+      "tier": "advanced",
+      "groupId": "inventory.system_loss",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced link budget",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.polarization_loss",
+      "label": "inventory polarization loss",
+      "tier": "advanced",
+      "groupId": "inventory.polarization_loss",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced link budget",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.radius",
+      "label": "inventory radius",
+      "tier": "planning",
+      "groupId": "inventory.radius",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "canonical",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.beam_width",
+      "label": "inventory beam width",
+      "tier": "planning",
+      "groupId": "inventory.beam_width",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "canonical",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.antenna_height",
+      "label": "inventory antenna height",
+      "tier": "planning",
+      "groupId": "inventory.antenna_height",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "canonical antenna assumption",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.mechanical_tilt",
+      "label": "inventory mechanical tilt",
+      "tier": "advanced",
+      "groupId": "inventory.mechanical_tilt",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced antenna detail",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.electrical_tilt",
+      "label": "inventory electrical tilt",
+      "tier": "advanced",
+      "groupId": "inventory.electrical_tilt",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced antenna detail",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.orientation",
+      "label": "inventory orientation",
+      "tier": "planning",
+      "groupId": "inventory.orientation",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "canonical antenna assumption",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.cell_load",
+      "label": "inventory cell load",
+      "tier": "advanced",
+      "groupId": "inventory.cell_load",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced radio-quality assumption",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.reuse",
+      "label": "inventory reuse",
+      "tier": "advanced",
+      "groupId": "inventory.reuse",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced radio-quality assumption",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.pci",
+      "label": "inventory pci",
+      "tier": "advanced",
+      "groupId": "inventory.pci",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced carrier detail",
+      "prerequisite": "Cell selected; technology-specific range"
+    },
+    {
+      "id": "inventory.receiver_height",
+      "label": "inventory receiver height",
+      "tier": "planning",
+      "groupId": "inventory.receiver_height",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "canonical receiver assumption",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.horizontal_pattern",
+      "label": "inventory horizontal pattern",
+      "tier": "advanced",
+      "groupId": "inventory.horizontal_pattern",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced antenna detail",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.vertical_pattern",
+      "label": "inventory vertical pattern",
+      "tier": "advanced",
+      "groupId": "inventory.vertical_pattern",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver",
+      "status": "advanced antenna detail",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.receiver_sensitivity_mode",
+      "label": "inventory receiver sensitivity mode",
+      "tier": "planning",
+      "groupId": "inventory.receiver_sensitivity_mode",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver → Receiver sensitivity",
+      "status": "canonical receiver assumption",
+      "prerequisite": "Cell selected"
+    },
+    {
+      "id": "inventory.manual_sensitivity",
+      "label": "inventory manual sensitivity",
+      "tier": "planning",
+      "groupId": "inventory.manual_sensitivity",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver → Receiver sensitivity",
+      "status": "canonical receiver assumption",
+      "prerequisite": "Cell selected and manual threshold mode"
+    },
+    {
+      "id": "inventory.receiver_noise_bandwidth",
+      "label": "inventory receiver noise bandwidth",
+      "tier": "advanced",
+      "groupId": "inventory.receiver_noise_bandwidth",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver → Receiver sensitivity",
+      "status": "advanced receiver/noise configuration",
+      "prerequisite": "Cell selected and derived threshold mode"
+    },
+    {
+      "id": "inventory.receiver_noise_figure",
+      "label": "inventory receiver noise figure",
+      "tier": "advanced",
+      "groupId": "inventory.receiver_noise_figure",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver → Receiver sensitivity",
+      "status": "advanced receiver/noise configuration",
+      "prerequisite": "Cell selected and derived threshold mode"
+    },
+    {
+      "id": "inventory.receiver_required_snr",
+      "label": "inventory receiver required snr",
+      "tier": "advanced",
+      "groupId": "inventory.receiver_required_snr",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver → Receiver sensitivity",
+      "status": "advanced receiver/noise configuration",
+      "prerequisite": "Cell selected and derived threshold mode"
+    },
+    {
+      "id": "inventory.receiver_margin",
+      "label": "inventory receiver margin",
+      "tier": "advanced",
+      "groupId": "inventory.receiver_margin",
+      "component": "InventoryPanel",
+      "currentSection": "Plan → Inventory → Antenna & receiver → Receiver sensitivity",
+      "status": "advanced receiver/noise configuration",
+      "prerequisite": "Cell selected and derived threshold mode"
+    },
+    {
+      "id": "propagation.ray_count",
+      "label": "propagation ray count",
+      "tier": "planning",
+      "groupId": "propagation.ray_count",
+      "component": "ControlPanel",
+      "currentSection": "Simulate → Propagation",
+      "status": "canonical",
+      "prerequisite": "None"
+    },
+    {
+      "id": "propagation.radius",
+      "label": "propagation radius",
+      "tier": "planning",
+      "groupId": "propagation.radius",
+      "component": "ControlPanel",
+      "currentSection": "Simulate → Propagation",
+      "status": "canonical",
+      "prerequisite": "None"
+    },
+    {
+      "id": "propagation.azimuth",
+      "label": "propagation azimuth",
+      "tier": "planning",
+      "groupId": "propagation.azimuth",
+      "component": "ControlPanel",
+      "currentSection": "Simulate → Propagation",
+      "status": "canonical",
+      "prerequisite": "Selected cell/network"
+    },
+    {
+      "id": "propagation.beam_width",
+      "label": "propagation beam width",
+      "tier": "planning",
+      "groupId": "propagation.beam_width",
+      "component": "ControlPanel",
+      "currentSection": "Simulate → Propagation",
+      "status": "canonical",
+      "prerequisite": "None"
+    },
+    {
+      "id": "propagation.optimize_sector",
+      "label": "propagation optimize sector",
+      "tier": "planning",
+      "groupId": "propagation.optimize_sector",
+      "component": "ControlPanel",
+      "currentSection": "Simulate → Propagation",
+      "status": "advanced optimization action",
+      "prerequisite": "Selected transmitter cell"
+    },
+    {
+      "id": "propagation.objective.demand",
+      "label": "Demand importance",
+      "tier": "advanced",
+      "groupId": "propagation.objective_priorities",
+      "component": "OptimizationGoalsPanel",
+      "currentSection": "Simulate → Propagation → Network optimization",
+      "status": "advanced optimizer configuration",
+      "prerequisite": "Network mode"
+    },
+    {
+      "id": "propagation.objective.residential",
+      "label": "Residential importance",
+      "tier": "advanced",
+      "groupId": "propagation.objective_priorities",
+      "component": "OptimizationGoalsPanel",
+      "currentSection": "Simulate → Propagation → Network optimization",
+      "status": "advanced optimizer configuration",
+      "prerequisite": "Network mode"
+    },
+    {
+      "id": "propagation.objective.coverage",
+      "label": "Propagation reach importance",
+      "tier": "advanced",
+      "groupId": "propagation.objective_priorities",
+      "component": "OptimizationGoalsPanel",
+      "currentSection": "Simulate → Propagation → Network optimization",
+      "status": "advanced optimizer configuration",
+      "prerequisite": "Network mode"
+    },
+    {
+      "id": "propagation.objective.overlap",
+      "label": "Reduce overlap importance",
+      "tier": "advanced",
+      "groupId": "propagation.objective_priorities",
+      "component": "OptimizationGoalsPanel",
+      "currentSection": "Simulate → Propagation → Network optimization",
+      "status": "advanced optimizer configuration",
+      "prerequisite": "Network mode"
+    },
+    {
+      "id": "propagation.objective.radio_quality",
+      "label": "Radio quality importance",
+      "tier": "advanced",
+      "groupId": "propagation.objective_priorities",
+      "component": "OptimizationGoalsPanel",
+      "currentSection": "Simulate → Propagation → Network optimization",
+      "status": "advanced optimizer configuration",
+      "prerequisite": "Network mode; unsupported for 140 GHz profile"
+    },
+    {
+      "id": "propagation.constraint.min_coverage_score",
+      "label": "Minimum propagation reach",
+      "tier": "advanced",
+      "groupId": "propagation.feasibility_constraints",
+      "component": "OptimizationGoalsPanel",
+      "currentSection": "Simulate → Propagation → Feasibility constraints",
+      "status": "advanced optimizer configuration",
+      "prerequisite": "Network mode; optional"
+    },
+    {
+      "id": "propagation.constraint.min_unique_demand_buildings",
+      "label": "Minimum demand buildings",
+      "tier": "advanced",
+      "groupId": "propagation.feasibility_constraints",
+      "component": "OptimizationGoalsPanel",
+      "currentSection": "Simulate → Propagation → Feasibility constraints",
+      "status": "advanced optimizer configuration",
+      "prerequisite": "Network mode; optional"
+    },
+    {
+      "id": "propagation.constraint.min_unique_residential_buildings",
+      "label": "Minimum residential buildings",
+      "tier": "advanced",
+      "groupId": "propagation.feasibility_constraints",
+      "component": "OptimizationGoalsPanel",
+      "currentSection": "Simulate → Propagation → Feasibility constraints",
+      "status": "advanced optimizer configuration",
+      "prerequisite": "Network mode; optional"
+    },
+    {
+      "id": "propagation.constraint.max_overlap_buildings",
+      "label": "Maximum overlap buildings",
+      "tier": "advanced",
+      "groupId": "propagation.feasibility_constraints",
+      "component": "OptimizationGoalsPanel",
+      "currentSection": "Simulate → Propagation → Feasibility constraints",
+      "status": "advanced optimizer configuration",
+      "prerequisite": "Network mode; optional"
+    },
+    {
+      "id": "path_profile.receiver_pick",
+      "label": "path profile receiver pick",
+      "tier": "advanced",
+      "groupId": "path_profile.receiver_pick",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Vertical path profile",
+      "status": "diagnostic",
+      "prerequisite": "Selected transmitter cell"
+    },
+    {
+      "id": "path_profile.receiver_coordinates",
+      "label": "path profile receiver coordinates",
+      "tier": "advanced",
+      "groupId": "path_profile.receiver_coordinates",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Vertical path profile",
+      "status": "diagnostic",
+      "prerequisite": "Selected transmitter cell"
+    },
+    {
+      "id": "path_profile.model_profile",
+      "label": "path profile model profile",
+      "tier": "advanced",
+      "groupId": "path_profile.model_profile",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Vertical path profile",
+      "status": "diagnostic",
+      "prerequisite": "Applicable frequency/profile"
+    },
+    {
+      "id": "path_profile.building_treatment",
+      "label": "path profile building treatment",
+      "tier": "advanced",
+      "groupId": "path_profile.building_treatment",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Vertical path profile",
+      "status": "diagnostic",
+      "prerequisite": "None"
+    },
+    {
+      "id": "path_profile.sample_spacing",
+      "label": "path profile sample spacing",
+      "tier": "advanced",
+      "groupId": "path_profile.sample_spacing",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Vertical path profile",
+      "status": "diagnostic",
+      "prerequisite": "2–100 m"
+    },
+    {
+      "id": "path_profile.shadow_sigma",
+      "label": "path profile shadow sigma",
+      "tier": "advanced",
+      "groupId": "path_profile.shadow_sigma",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Vertical path profile",
+      "status": "diagnostic",
+      "prerequisite": "0–30 dB"
+    },
+    {
+      "id": "path_profile.clutter",
+      "label": "Clutter attenuation",
+      "tier": "advanced",
+      "groupId": "path_profile.environmental_sensitivity",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Environmental sensitivity",
+      "status": "diagnostic",
+      "prerequisite": "Environmental sensitivity details"
+    },
+    {
+      "id": "path_profile.vegetation_depth",
+      "label": "Vegetation depth",
+      "tier": "advanced",
+      "groupId": "path_profile.environmental_sensitivity",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Environmental sensitivity",
+      "status": "diagnostic",
+      "prerequisite": "Environmental sensitivity details"
+    },
+    {
+      "id": "path_profile.vegetation_attenuation",
+      "label": "Vegetation attenuation",
+      "tier": "advanced",
+      "groupId": "path_profile.environmental_sensitivity",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Environmental sensitivity",
+      "status": "diagnostic",
+      "prerequisite": "Environmental sensitivity details"
+    },
+    {
+      "id": "path_profile.gas_attenuation",
+      "label": "Atmospheric gas attenuation",
+      "tier": "advanced",
+      "groupId": "path_profile.environmental_sensitivity",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Environmental sensitivity",
+      "status": "diagnostic",
+      "prerequisite": "Environmental sensitivity details"
+    },
+    {
+      "id": "path_profile.rain_attenuation",
+      "label": "Rain attenuation",
+      "tier": "advanced",
+      "groupId": "path_profile.environmental_sensitivity",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Environmental sensitivity",
+      "status": "diagnostic",
+      "prerequisite": "Environmental sensitivity details"
+    },
+    {
+      "id": "path_profile.run",
+      "label": "path profile run",
+      "tier": "advanced",
+      "groupId": "path_profile.run",
+      "component": "PathProfilePanel",
+      "currentSection": "Simulate → Propagation → Vertical path profile",
+      "status": "diagnostic action",
+      "prerequisite": "Transmitter plus receiver point"
+    },
+    {
+      "id": "sub_thz.frequency",
+      "label": "Frequency",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "sub_thz.tx_height",
+      "label": "TX height",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "sub_thz.rx_height",
+      "label": "RX height",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "sub_thz.pressure",
+      "label": "Pressure",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "sub_thz.temperature",
+      "label": "Temperature",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "sub_thz.water_vapour",
+      "label": "Water vapour density",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "sub_thz.rain_enabled",
+      "label": "Include P.838 rain",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Optional"
+    },
+    {
+      "id": "sub_thz.rain_rate",
+      "label": "Rain rate",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Rain enabled"
+    },
+    {
+      "id": "sub_thz.rain_polarization",
+      "label": "Rain polarization",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Rain enabled"
+    },
+    {
+      "id": "sub_thz.rain_polarization_tilt",
+      "label": "Rain polarization tilt",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Linear polarization"
+    },
+    {
+      "id": "sub_thz.local_fog_enabled",
+      "label": "Include local P.840 fog",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Optional"
+    },
+    {
+      "id": "sub_thz.local_fog_density",
+      "label": "Liquid water density",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Local fog enabled"
+    },
+    {
+      "id": "sub_thz.local_fog_temperature",
+      "label": "Fog temperature",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Local fog enabled"
+    },
+    {
+      "id": "sub_thz.link_budget_enabled",
+      "label": "Include explicit link budget",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Optional"
+    },
+    {
+      "id": "sub_thz.conducted_tx_power",
+      "label": "Conducted TX power",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Link budget enabled"
+    },
+    {
+      "id": "sub_thz.tx_gain",
+      "label": "TX gain",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Link budget enabled"
+    },
+    {
+      "id": "sub_thz.rx_gain",
+      "label": "RX gain",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Link budget enabled"
+    },
+    {
+      "id": "sub_thz.tx_pattern_attenuation",
+      "label": "TX pattern attenuation",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Link budget enabled"
+    },
+    {
+      "id": "sub_thz.system_loss",
+      "label": "System loss",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Link budget enabled"
+    },
+    {
+      "id": "sub_thz.polarization_loss",
+      "label": "Polarization loss",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Link budget enabled"
+    },
+    {
+      "id": "sub_thz.calibration",
+      "label": "Calibration offset",
+      "tier": "research_reference",
+      "groupId": "propagation.sub_thz_reference",
+      "component": "SubTHZReferencePanel",
+      "currentSection": "Simulate → Propagation → Sub-THz atmospheric reference",
+      "status": "research/reference",
+      "prerequisite": "Link budget enabled"
+    },
+    {
+      "id": "p1411.frequency",
+      "label": "Frequency",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "p1411.tx_height",
+      "label": "TX height",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "p1411.rx_height",
+      "label": "RX height",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "p1411.candidate_row",
+      "label": "Candidate row",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "p1411.morphology",
+      "label": "Morphology",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "p1411.rooftop_relation",
+      "label": "Rooftop relation",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "p1411.path_state",
+      "label": "Path state",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "p1411.compare_atmosphere",
+      "label": "Request atmospheric comparison",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Optional; comparison is not summed"
+    },
+    {
+      "id": "p1411.atmosphere_pressure",
+      "label": "Atmospheric comparison pressure",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Atmospheric comparison enabled"
+    },
+    {
+      "id": "p1411.atmosphere_temperature",
+      "label": "Atmospheric comparison temperature",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Atmospheric comparison enabled"
+    },
+    {
+      "id": "p1411.atmosphere_water_vapour",
+      "label": "Atmospheric comparison water vapour",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Atmospheric comparison enabled"
+    },
+    {
+      "id": "p1411.compare_research",
+      "label": "Compare research wall events",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Optional"
+    },
+    {
+      "id": "p1411.research_wall_event_count",
+      "label": "Wall-event count",
+      "tier": "research_reference",
+      "groupId": "propagation.p1411_reference",
+      "component": "P1411CandidatePanel",
+      "currentSection": "Simulate → Propagation → P.1411 candidate reference",
+      "status": "research/reference",
+      "prerequisite": "Research comparison enabled"
+    },
+    {
+      "id": "interference.bandwidth",
+      "label": "interference bandwidth",
+      "tier": "advanced",
+      "groupId": "interference.bandwidth",
+      "component": "ControlPanel",
+      "currentSection": "Analyze → Interference",
+      "status": "advanced radio-quality configuration",
+      "prerequisite": "Network planning mode and radio-quality-supported profile"
+    },
+    {
+      "id": "interference.cell_load",
+      "label": "interference cell load",
+      "tier": "advanced",
+      "groupId": "interference.cell_load",
+      "component": "ControlPanel",
+      "currentSection": "Analyze → Interference",
+      "status": "advanced radio-quality configuration",
+      "prerequisite": "Network planning mode and radio-quality-supported profile"
+    },
+    {
+      "id": "interference.reuse",
+      "label": "interference reuse",
+      "tier": "advanced",
+      "groupId": "interference.reuse",
+      "component": "ControlPanel",
+      "currentSection": "Analyze → Interference",
+      "status": "advanced radio-quality configuration",
+      "prerequisite": "Network planning mode and radio-quality-supported profile"
+    },
+    {
+      "id": "interference.noise_figure",
+      "label": "interference noise figure",
+      "tier": "advanced",
+      "groupId": "interference.noise_figure",
+      "component": "ControlPanel",
+      "currentSection": "Analyze → Interference → Advanced assumptions",
+      "status": "advanced radio-quality configuration",
+      "prerequisite": "Network planning mode and radio-quality-supported profile"
+    },
+    {
+      "id": "interference.grid_spacing",
+      "label": "interference grid spacing",
+      "tier": "advanced",
+      "groupId": "interference.grid_spacing",
+      "component": "ControlPanel",
+      "currentSection": "Analyze → Interference → Advanced assumptions",
+      "status": "advanced radio-quality configuration",
+      "prerequisite": "Network planning mode and radio-quality-supported profile"
+    },
+    {
+      "id": "interference.run",
+      "label": "interference run",
+      "tier": "advanced",
+      "groupId": "interference.run",
+      "component": "ControlPanel",
+      "currentSection": "Analyze → Interference",
+      "status": "advanced analysis action",
+      "prerequisite": "Network mode; 2–6 selected request-ready cells; supported radio-quality profile"
+    },
+    {
+      "id": "building_entry.run",
+      "label": "building entry run",
+      "tier": "advanced",
+      "groupId": "building_entry.run",
+      "component": "BuildingEntryPanel",
+      "currentSection": "Analyze → Building entry",
+      "status": "advanced analysis action",
+      "prerequisite": "Selected cell/network; 2.6 or 28 GHz applicable model"
+    },
+    {
+      "id": "diagnostics.load_campaign",
+      "label": "diagnostics load campaign",
+      "tier": "research_reference",
+      "groupId": "diagnostics.load_campaign",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Evidence ledger",
+      "status": "research/reference validation",
+      "prerequisite": "Versioned valid campaign JSON"
+    },
+    {
+      "id": "diagnostics.synthetic_control",
+      "label": "diagnostics synthetic control",
+      "tier": "research_reference",
+      "groupId": "diagnostics.synthetic_control",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Evidence ledger",
+      "status": "research/reference validation",
+      "prerequisite": "User action"
+    },
+    {
+      "id": "diagnostics.operation",
+      "label": "diagnostics operation",
+      "tier": "research_reference",
+      "groupId": "diagnostics.operation",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Evidence ledger",
+      "status": "research/reference validation",
+      "prerequisite": "At least one valid campaign"
+    },
+    {
+      "id": "diagnostics.split_strategy",
+      "label": "diagnostics split strategy",
+      "tier": "research_reference",
+      "groupId": "diagnostics.split_strategy",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Evidence ledger",
+      "status": "research/reference validation",
+      "prerequisite": "At least one valid campaign"
+    },
+    {
+      "id": "diagnostics.group_key",
+      "label": "diagnostics group key",
+      "tier": "research_reference",
+      "groupId": "diagnostics.group_key",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Evidence ledger",
+      "status": "research/reference validation",
+      "prerequisite": "At least one valid campaign"
+    },
+    {
+      "id": "diagnostics.cell_size",
+      "label": "diagnostics cell size",
+      "tier": "research_reference",
+      "groupId": "diagnostics.cell_size",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Evidence ledger",
+      "status": "research/reference validation",
+      "prerequisite": "At least one valid campaign"
+    },
+    {
+      "id": "diagnostics.minimum_separation",
+      "label": "diagnostics minimum separation",
+      "tier": "research_reference",
+      "groupId": "diagnostics.minimum_separation",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Evidence ledger",
+      "status": "research/reference validation",
+      "prerequisite": "At least one valid campaign"
+    },
+    {
+      "id": "diagnostics.adapter.p525",
+      "label": "P.525 FSPL adapter",
+      "tier": "research_reference",
+      "groupId": "diagnostics.reference_adapters",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Reference adapters",
+      "status": "research/reference",
+      "prerequisite": "Campaign loaded"
+    },
+    {
+      "id": "diagnostics.adapter.atmosphere",
+      "label": "Sub-THz atmospheric adapter",
+      "tier": "research_reference",
+      "groupId": "diagnostics.reference_adapters",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Reference adapters",
+      "status": "research/reference",
+      "prerequisite": "Campaign loaded"
+    },
+    {
+      "id": "diagnostics.adapter.p1411_los",
+      "label": "P.1411 below-rooftop LoS adapter",
+      "tier": "research_reference",
+      "groupId": "diagnostics.reference_adapters",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Reference adapters",
+      "status": "research/reference",
+      "prerequisite": "Campaign loaded"
+    },
+    {
+      "id": "diagnostics.adapter.p1411_highrise",
+      "label": "P.1411 high-rise NLoS adapter",
+      "tier": "research_reference",
+      "groupId": "diagnostics.reference_adapters",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Reference adapters",
+      "status": "research/reference",
+      "prerequisite": "Campaign loaded"
+    },
+    {
+      "id": "diagnostics.adapter.p1411_lowrise",
+      "label": "P.1411 low-rise NLoS adapter",
+      "tier": "research_reference",
+      "groupId": "diagnostics.reference_adapters",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Reference adapters",
+      "status": "research/reference",
+      "prerequisite": "Campaign loaded"
+    },
+    {
+      "id": "diagnostics.adapter.research_sub_thz",
+      "label": "Research profile comparison adapter",
+      "tier": "research_reference",
+      "groupId": "diagnostics.reference_adapters",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Reference adapters",
+      "status": "research/reference",
+      "prerequisite": "Campaign loaded"
+    },
+    {
+      "id": "diagnostics.adapter.p526",
+      "label": "P.526 diagnostic adapter",
+      "tier": "research_reference",
+      "groupId": "diagnostics.reference_adapters",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Reference adapters",
+      "status": "research/reference",
+      "prerequisite": "Campaign loaded"
+    },
+    {
+      "id": "diagnostics.include_predictions",
+      "label": "diagnostics include predictions",
+      "tier": "research_reference",
+      "groupId": "diagnostics.include_predictions",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Evidence ledger",
+      "status": "research/reference validation",
+      "prerequisite": "At least one valid campaign"
+    },
+    {
+      "id": "diagnostics.run",
+      "label": "diagnostics run",
+      "tier": "research_reference",
+      "groupId": "diagnostics.run",
+      "component": "MeasurementValidationPanel",
+      "currentSection": "Analyze → RF Diagnostics → Evidence ledger",
+      "status": "research/reference action",
+      "prerequisite": "At least one valid campaign"
+    },
+    {
+      "id": "material.frequency",
+      "label": "Frequency",
+      "tier": "research_reference",
+      "groupId": "material.frequency_source_slab",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference",
+      "status": "research/reference",
+      "prerequisite": "P.2040 material range must cover frequency"
+    },
+    {
+      "id": "material.source",
+      "label": "Material source",
+      "tier": "research_reference",
+      "groupId": "material.frequency_source_slab",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "material.row",
+      "label": "P.2040 material row",
+      "tier": "research_reference",
+      "groupId": "material.frequency_source_slab",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference",
+      "status": "research/reference",
+      "prerequisite": "P.2040 source selected"
+    },
+    {
+      "id": "material.thickness",
+      "label": "Slab thickness",
+      "tier": "research_reference",
+      "groupId": "material.thickness_provenance",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference",
+      "status": "research/reference",
+      "prerequisite": "Non-negative thickness"
+    },
+    {
+      "id": "material.thickness_provenance",
+      "label": "Thickness provenance",
+      "tier": "research_reference",
+      "groupId": "material.thickness_provenance",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "material.incidence_angle",
+      "label": "Incidence angle",
+      "tier": "research_reference",
+      "groupId": "material.angle_polarization",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference",
+      "status": "research/reference",
+      "prerequisite": "Angle [0°,90°)"
+    },
+    {
+      "id": "material.polarization",
+      "label": "Polarization",
+      "tier": "research_reference",
+      "groupId": "material.angle_polarization",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "material.user_name",
+      "label": "User material name",
+      "tier": "research_reference",
+      "groupId": "material.user_property_contract",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference → User property contract",
+      "status": "research/reference",
+      "prerequisite": "User-defined source"
+    },
+    {
+      "id": "material.user_property_source",
+      "label": "User property provenance",
+      "tier": "research_reference",
+      "groupId": "material.user_property_contract",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference → User property contract",
+      "status": "research/reference",
+      "prerequisite": "User-defined source"
+    },
+    {
+      "id": "material.relative_permittivity",
+      "label": "Relative permittivity",
+      "tier": "research_reference",
+      "groupId": "material.user_property_contract",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference → User property contract",
+      "status": "research/reference",
+      "prerequisite": "User-defined source"
+    },
+    {
+      "id": "material.loss_form",
+      "label": "Loss form",
+      "tier": "research_reference",
+      "groupId": "material.user_property_contract",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference → User property contract",
+      "status": "research/reference",
+      "prerequisite": "User-defined source"
+    },
+    {
+      "id": "material.conductivity",
+      "label": "Conductivity",
+      "tier": "research_reference",
+      "groupId": "material.user_property_contract",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference → User property contract",
+      "status": "research/reference",
+      "prerequisite": "User-defined conductivity form"
+    },
+    {
+      "id": "material.loss_tangent",
+      "label": "Loss tangent",
+      "tier": "research_reference",
+      "groupId": "material.user_property_contract",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference → User property contract",
+      "status": "research/reference",
+      "prerequisite": "User-defined loss-tangent form"
+    },
+    {
+      "id": "material.valid_from",
+      "label": "Valid from",
+      "tier": "research_reference",
+      "groupId": "material.user_property_contract",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference → User property contract",
+      "status": "research/reference",
+      "prerequisite": "User-defined source"
+    },
+    {
+      "id": "material.valid_to",
+      "label": "Valid to",
+      "tier": "research_reference",
+      "groupId": "material.user_property_contract",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference → User property contract",
+      "status": "research/reference",
+      "prerequisite": "User-defined source"
+    },
+    {
+      "id": "material.run",
+      "label": "material run",
+      "tier": "research_reference",
+      "groupId": "material.run",
+      "component": "MaterialReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Material & facade reference",
+      "status": "research/reference action",
+      "prerequisite": "Finite required numeric inputs and valid material contract"
+    },
+    {
+      "id": "reflection.frequency",
+      "label": "Frequency",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.tx_x",
+      "label": "TX X",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Local ENU geometry"
+    },
+    {
+      "id": "reflection.tx_y",
+      "label": "TX Y",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Local ENU geometry"
+    },
+    {
+      "id": "reflection.tx_z",
+      "label": "TX Z",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Local ENU geometry"
+    },
+    {
+      "id": "reflection.tx_gain",
+      "label": "TX antenna gain",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.tx_antenna_mode",
+      "label": "TX antenna mode",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.rx_x",
+      "label": "RX X",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Local ENU geometry"
+    },
+    {
+      "id": "reflection.rx_y",
+      "label": "RX Y",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Local ENU geometry"
+    },
+    {
+      "id": "reflection.rx_z",
+      "label": "RX Z",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Local ENU geometry"
+    },
+    {
+      "id": "reflection.rx_gain",
+      "label": "RX antenna gain",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.rx_antenna_mode",
+      "label": "RX antenna mode",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.facade_start_x",
+      "label": "Facade start X",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Finite facade geometry"
+    },
+    {
+      "id": "reflection.facade_start_y",
+      "label": "Facade start Y",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Finite facade geometry"
+    },
+    {
+      "id": "reflection.facade_end_x",
+      "label": "Facade end X",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Finite facade geometry"
+    },
+    {
+      "id": "reflection.facade_end_y",
+      "label": "Facade end Y",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Finite facade geometry"
+    },
+    {
+      "id": "reflection.facade_plane_x",
+      "label": "Facade plane X",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Finite facade geometry"
+    },
+    {
+      "id": "reflection.facade_plane_y",
+      "label": "Facade plane Y",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Finite facade geometry"
+    },
+    {
+      "id": "reflection.facade_normal_x",
+      "label": "Facade normal X",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Declared outward normal"
+    },
+    {
+      "id": "reflection.facade_normal_y",
+      "label": "Facade normal Y",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Declared outward normal"
+    },
+    {
+      "id": "reflection.facade_normal_z",
+      "label": "Facade normal Z",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Declared outward normal"
+    },
+    {
+      "id": "reflection.facade_base_z",
+      "label": "Facade base Z",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Finite facade geometry"
+    },
+    {
+      "id": "reflection.facade_top_z",
+      "label": "Facade top Z",
+      "tier": "research_reference",
+      "groupId": "reflection.geometry",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Geometry and finite facade",
+      "status": "research/reference",
+      "prerequisite": "Finite facade geometry"
+    },
+    {
+      "id": "reflection.mode",
+      "label": "Reflection material mode",
+      "tier": "research_reference",
+      "groupId": "reflection.material_polarization",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Interface and polarization",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.material_source",
+      "label": "Material source",
+      "tier": "research_reference",
+      "groupId": "reflection.material_polarization",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Interface and polarization",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.polarization",
+      "label": "Polarization",
+      "tier": "research_reference",
+      "groupId": "reflection.material_polarization",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Interface and polarization",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.material_row",
+      "label": "P.2040 material row",
+      "tier": "research_reference",
+      "groupId": "reflection.material_polarization",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Interface and polarization",
+      "status": "research/reference",
+      "prerequisite": "P.2040 source selected"
+    },
+    {
+      "id": "reflection.relative_permittivity",
+      "label": "Relative permittivity",
+      "tier": "research_reference",
+      "groupId": "reflection.material_polarization",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Interface and polarization",
+      "status": "research/reference",
+      "prerequisite": "User-defined source"
+    },
+    {
+      "id": "reflection.conductivity",
+      "label": "Conductivity",
+      "tier": "research_reference",
+      "groupId": "reflection.material_polarization",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Interface and polarization",
+      "status": "research/reference",
+      "prerequisite": "User-defined source"
+    },
+    {
+      "id": "reflection.property_provenance",
+      "label": "Property provenance",
+      "tier": "research_reference",
+      "groupId": "reflection.material_polarization",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Interface and polarization",
+      "status": "research/reference",
+      "prerequisite": "User-defined source"
+    },
+    {
+      "id": "reflection.slab_thickness",
+      "label": "Slab thickness",
+      "tier": "research_reference",
+      "groupId": "reflection.material_polarization",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Interface and polarization",
+      "status": "research/reference",
+      "prerequisite": "Finite slab mode"
+    },
+    {
+      "id": "reflection.terrain_mode",
+      "label": "Terrain / datum",
+      "tier": "research_reference",
+      "groupId": "reflection.evidence_link_budget",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Evidence and link-budget assumptions",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.rms_roughness",
+      "label": "RMS roughness",
+      "tier": "research_reference",
+      "groupId": "reflection.evidence_link_budget",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Evidence and link-budget assumptions",
+      "status": "research/reference",
+      "prerequisite": "Optional evidence input"
+    },
+    {
+      "id": "reflection.conducted_tx_power",
+      "label": "Conducted TX power",
+      "tier": "research_reference",
+      "groupId": "reflection.evidence_link_budget",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Evidence and link-budget assumptions",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.link_tx_gain",
+      "label": "TX gain",
+      "tier": "research_reference",
+      "groupId": "reflection.evidence_link_budget",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Evidence and link-budget assumptions",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.link_rx_gain",
+      "label": "RX gain",
+      "tier": "research_reference",
+      "groupId": "reflection.evidence_link_budget",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Evidence and link-budget assumptions",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.system_loss",
+      "label": "System loss",
+      "tier": "research_reference",
+      "groupId": "reflection.evidence_link_budget",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Evidence and link-budget assumptions",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.polarization_loss",
+      "label": "Polarization loss",
+      "tier": "research_reference",
+      "groupId": "reflection.evidence_link_budget",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Evidence and link-budget assumptions",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.calibration",
+      "label": "Calibration offset",
+      "tier": "research_reference",
+      "groupId": "reflection.evidence_link_budget",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference → Evidence and link-budget assumptions",
+      "status": "research/reference",
+      "prerequisite": "Panel default"
+    },
+    {
+      "id": "reflection.run",
+      "label": "reflection run",
+      "tier": "research_reference",
+      "groupId": "reflection.run",
+      "component": "SpecularReflectionReferencePanel",
+      "currentSection": "Analyze → RF Diagnostics → Specular Reflection Reference",
+      "status": "research/reference action",
+      "prerequisite": "Explicit valid geometry/material/terrain"
+    },
+    {
+      "id": "data.dataset_pack_activation",
+      "label": "data dataset pack activation",
+      "tier": "planning",
+      "groupId": "data.dataset_pack_activation",
+      "component": "DataPanel",
+      "currentSection": "Review → Data → Installed Dataset Packs",
+      "status": "planning data",
+      "prerequisite": "Pack discovered, hash and geometry validated"
+    },
+    {
+      "id": "data.measurement_csv",
+      "label": "data measurement csv",
+      "tier": "research_reference",
+      "groupId": "data.measurement_csv",
+      "component": "DataPanel",
+      "currentSection": "Review → Data → Field measurement validation",
+      "status": "research/reference validation",
+      "prerequisite": "Valid CSV with RSRP samples"
+    },
+    {
+      "id": "data.evaluate_measurements",
+      "label": "data evaluate measurements",
+      "tier": "research_reference",
+      "groupId": "data.evaluate_measurements",
+      "component": "DataPanel",
+      "currentSection": "Review → Data → Field measurement validation",
+      "status": "research/reference validation action",
+      "prerequisite": "At least one measurement sample"
+    },
+    {
+      "id": "data.apply_calibration",
+      "label": "data apply calibration",
+      "tier": "research_reference",
+      "groupId": "data.apply_calibration",
+      "component": "DataPanel",
+      "currentSection": "Review → Data → Calibration review",
+      "status": "research/reference analysis with explicit canonical apply action",
+      "prerequisite": "Eligible calibration result and explicit user action"
+    },
+    {
+      "id": "core_lab.enabled",
+      "label": "core lab enabled",
+      "tier": "research_reference",
+      "groupId": "core_lab.enabled",
+      "component": "CoreLabTool",
+      "currentSection": "Analyze → 5G Core",
+      "status": "research/lab",
+      "prerequisite": "Core Lab adapter available"
+    },
+    {
+      "id": "core_lab.scenario",
+      "label": "core lab scenario",
+      "tier": "research_reference",
+      "groupId": "core_lab.scenario",
+      "component": "CoreLabTool",
+      "currentSection": "Analyze → 5G Core",
+      "status": "research/lab",
+      "prerequisite": "Core Lab enabled and applicable"
+    },
+    {
+      "id": "core_lab.run",
+      "label": "core lab run",
+      "tier": "research_reference",
+      "groupId": "core_lab.run",
+      "component": "CoreLabTool",
+      "currentSection": "Analyze → 5G Core",
+      "status": "research/lab action",
+      "prerequisite": "Adapter available, enabled, and scenario applicable"
+    }
+  ],
+  "invariants": [
+    "Exactly one tier per uiControls member.",
+    "Each tier is assigned through groupId only for documentation and presentation.",
+    "Hiding or collapsing a group does not alter its domain value, request serialization, optimizer configuration, fingerprints, snapshots, or report bindings."
+  ]
+}

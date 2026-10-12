@@ -1,0 +1,8 @@
+{
+  "concept": "8G",
+  "decision": "NO dedicated Full inventory or Advanced browse scope.",
+  "rationale": ["Network, captured Map area, and intentional Search / Filter cover the primary tasks.", "Empty Search / Filter stays empty instead of silently exposing the full dataset.", "A supported technology filter is an explicit criterion and may intentionally return every matching loaded Cell."],
+  "secondaryDiscovery": "Map inspection remains the spatial path to an exact Cell editor.",
+  "scaleLimit": "Search scans the loaded array in memory. No backend pagination or external-operator scale claim is made.",
+  "revisitWhen": "Real user evidence shows a task that the three scopes cannot perform, or measured loaded-inventory latency/memory becomes a blocker."
+}

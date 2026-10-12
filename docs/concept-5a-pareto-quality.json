@@ -1,0 +1,1311 @@
+{
+  "audit_version": "concept-5a-audit-v1",
+  "canonical_frontier_priority_rerank": {
+    "available": true,
+    "frontier_ids": [
+      "70.0,20.0,130.0,160.0,290.0,110.0",
+      "70.0,20.0,130.0,160.0,280.0,110.0",
+      "70.0,20.0,130.0,160.0,240.0,110.0",
+      "70.0,20.0,130.0,280.0,290.0,110.0",
+      "70.0,20.0,130.0,270.0,290.0,110.0",
+      "70.0,120.0,130.0,160.0,290.0,110.0"
+    ],
+    "reranks": [
+      {
+        "membership_unchanged": true,
+        "priority_label": "demand-only",
+        "ranked_ids": [
+          "70.0,20.0,130.0,160.0,240.0,110.0",
+          "70.0,20.0,130.0,160.0,280.0,110.0",
+          "70.0,20.0,130.0,160.0,290.0,110.0",
+          "70.0,20.0,130.0,270.0,290.0,110.0",
+          "70.0,20.0,130.0,280.0,290.0,110.0",
+          "70.0,120.0,130.0,160.0,290.0,110.0"
+        ],
+        "recommended_id": "70.0,20.0,130.0,160.0,240.0,110.0"
+      },
+      {
+        "membership_unchanged": true,
+        "priority_label": "residential-only",
+        "ranked_ids": [
+          "70.0,20.0,130.0,280.0,290.0,110.0",
+          "70.0,20.0,130.0,270.0,290.0,110.0",
+          "70.0,120.0,130.0,160.0,290.0,110.0",
+          "70.0,20.0,130.0,160.0,290.0,110.0",
+          "70.0,20.0,130.0,160.0,280.0,110.0",
+          "70.0,20.0,130.0,160.0,240.0,110.0"
+        ],
+        "recommended_id": "70.0,20.0,130.0,280.0,290.0,110.0"
+      },
+      {
+        "membership_unchanged": true,
+        "priority_label": "reach-only",
+        "ranked_ids": [
+          "70.0,20.0,130.0,160.0,240.0,110.0",
+          "70.0,20.0,130.0,160.0,280.0,110.0",
+          "70.0,20.0,130.0,160.0,290.0,110.0",
+          "70.0,120.0,130.0,160.0,290.0,110.0",
+          "70.0,20.0,130.0,270.0,290.0,110.0",
+          "70.0,20.0,130.0,280.0,290.0,110.0"
+        ],
+        "recommended_id": "70.0,20.0,130.0,160.0,240.0,110.0"
+      },
+      {
+        "membership_unchanged": true,
+        "priority_label": "overlap-only",
+        "ranked_ids": [
+          "70.0,120.0,130.0,160.0,290.0,110.0",
+          "70.0,20.0,130.0,160.0,240.0,110.0",
+          "70.0,20.0,130.0,160.0,280.0,110.0",
+          "70.0,20.0,130.0,160.0,290.0,110.0",
+          "70.0,20.0,130.0,270.0,290.0,110.0",
+          "70.0,20.0,130.0,280.0,290.0,110.0"
+        ],
+        "recommended_id": "70.0,120.0,130.0,160.0,290.0,110.0"
+      }
+    ],
+    "scope": "stored production Pareto candidate set; reranking changes order/recommendation without changing raw RF metrics or membership"
+  },
+  "independent_exhaustive_cases": [
+    {
+      "cells": 2,
+      "name": "coverage-demand",
+      "oracle": {
+        "candidate_count": 1296,
+        "discovered_pareto_count": 4,
+        "discovered_pareto_keys": [
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "80.0,260.0"
+        ],
+        "feasible_candidate_count": 1296,
+        "global_best_key": "70.0,260.0",
+        "global_best_score": 96,
+        "global_best_stats": {
+          "network_score": 452000,
+          "unique_demand_buildings": 9,
+          "unique_residential_buildings": 9,
+          "overlap_buildings": 0,
+          "demand_score": 270000,
+          "residential_score": 180000,
+          "coverage_score": 2000,
+          "overlap_penalty": 0,
+          "data_quality": "",
+          "raw_metrics": {
+            "served_weighted_demand": 27,
+            "served_demand_weight": 27,
+            "total_weighted_demand": 30,
+            "relevant_demand_weight": 30,
+            "residential_covered": 9,
+            "residential_total": 12,
+            "relevant_residential_total": 12,
+            "coverage_reach_score": 2000,
+            "coverage_reach_maximum": 2000,
+            "propagation_reach_score": 2000,
+            "propagation_reach_maximum": 2000,
+            "covered_units": 9,
+            "overlap_buildings": 0,
+            "overlap_ratio": 0,
+            "radio_quality_total_samples": 0,
+            "radio_quality_serviceable_samples": 0,
+            "radio_quality_serviceable_fraction": 0
+          },
+          "objectives": {
+            "demand": 0.9,
+            "residential": 0.75,
+            "coverage": 1,
+            "overlap": 1,
+            "radio_quality": 0
+          },
+          "composite_score": 0.96,
+          "score": 96,
+          "objective_breakdown": {
+            "demand": {
+              "utility": 0.9,
+              "weight": 0.4,
+              "contribution": 0.36000000000000004
+            },
+            "residential": {
+              "utility": 0.75,
+              "weight": 0,
+              "contribution": 0
+            },
+            "coverage": {
+              "utility": 1,
+              "weight": 0.3,
+              "contribution": 0.3
+            },
+            "overlap": {
+              "utility": 1,
+              "weight": 0.3,
+              "contribution": 0.3
+            },
+            "radio_quality": {
+              "utility": 0,
+              "weight": 0,
+              "contribution": 0
+            }
+          },
+          "objective_status": {
+            "coverage": {
+              "available": true,
+              "configured_priority": 30,
+              "effective_weight": 0.3,
+              "utility": 1,
+              "contribution": 0.3
+            },
+            "demand": {
+              "available": true,
+              "configured_priority": 40,
+              "effective_weight": 0.4,
+              "utility": 0.9,
+              "contribution": 0.36000000000000004
+            },
+            "overlap": {
+              "available": true,
+              "configured_priority": 30,
+              "effective_weight": 0.3,
+              "utility": 1,
+              "contribution": 0.3
+            },
+            "radio_quality": {
+              "available": false,
+              "reason": "disabled",
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": null,
+              "contribution": null
+            },
+            "residential": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.75,
+              "contribution": 0
+            }
+          }
+        },
+        "missed_true_pareto_keys": [
+          "80.0,270.0",
+          "80.0,280.0"
+        ],
+        "pareto_intersection_count": 4,
+        "pareto_precision": 1,
+        "pareto_recall": 0.6666666666666666,
+        "production_recommended_key": "70.0,260.0",
+        "production_recommended_score": 96,
+        "recommendation_recovered": true,
+        "recommended_raw_metric_delta_vs_global_best": {
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "propagation_reach_score": 0,
+          "radio_quality_serviceable_fraction": 0,
+          "residential_covered": 0,
+          "served_demand_weight": 0
+        },
+        "score_regret": 0,
+        "search": {
+          "accepted_update_trace": [
+            {
+              "pass": 1,
+              "cell_index": 0,
+              "cell_id": "oracle-a",
+              "previous_configuration": [
+                17,
+                203
+              ],
+              "chosen_configuration": [
+                70,
+                203
+              ],
+              "previous_state_key": "17.0,203.0",
+              "chosen_state_key": "70.0,203.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 70,
+              "chosen_score": 0.8666666666666667,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": true,
+              "requested_evaluations_end": 37
+            },
+            {
+              "pass": 1,
+              "cell_index": 1,
+              "cell_id": "oracle-b",
+              "previous_configuration": [
+                70,
+                203
+              ],
+              "chosen_configuration": [
+                70,
+                260
+              ],
+              "previous_state_key": "70.0,203.0",
+              "chosen_state_key": "70.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 260,
+              "chosen_score": 0.96,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": true,
+              "requested_evaluations_end": 73
+            },
+            {
+              "pass": 2,
+              "cell_index": 0,
+              "cell_id": "oracle-a",
+              "previous_configuration": [
+                70,
+                260
+              ],
+              "chosen_configuration": [
+                70,
+                260
+              ],
+              "previous_state_key": "70.0,260.0",
+              "chosen_state_key": "70.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 70,
+              "chosen_score": 0.96,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": false,
+              "requested_evaluations_end": 109
+            },
+            {
+              "pass": 2,
+              "cell_index": 1,
+              "cell_id": "oracle-b",
+              "previous_configuration": [
+                70,
+                260
+              ],
+              "chosen_configuration": [
+                70,
+                260
+              ],
+              "previous_state_key": "70.0,260.0",
+              "chosen_state_key": "70.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 260,
+              "chosen_score": 0.96,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": false,
+              "requested_evaluations_end": 145
+            }
+          ],
+          "algorithm": "network_coordinate_descent",
+          "baseline_azimuths": [
+            17,
+            203
+          ],
+          "baseline_stats": {
+            "network_score": 212000,
+            "unique_demand_buildings": 5,
+            "unique_residential_buildings": 5,
+            "overlap_buildings": 0,
+            "demand_score": 100000,
+            "residential_score": 110000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 10,
+              "served_demand_weight": 10,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 5,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 5,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.3333333333333333,
+              "residential": 0.4166666666666667,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.7333333333333334,
+            "score": 73.33333333333334,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.3333333333333333,
+                "weight": 0.4,
+                "contribution": 0.13333333333333333
+              },
+              "residential": {
+                "utility": 0.4166666666666667,
+                "weight": 0,
+                "contribution": 0
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 40,
+                "effective_weight": 0.4,
+                "utility": 0.3333333333333333,
+                "contribution": 0.13333333333333333
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.4166666666666667,
+                "contribution": 0
+              }
+            }
+          },
+          "cache_hits": 0,
+          "cycle_detected": false,
+          "cycle_length": 0,
+          "duplicate_requested_states": 38,
+          "evaluated_candidates": 146,
+          "evaluated_state_set_fingerprint": "concept-5a-states-3704791af3e2db9e",
+          "final_azimuths": [
+            70,
+            260
+          ],
+          "final_stats": {
+            "network_score": 452000,
+            "unique_demand_buildings": 9,
+            "unique_residential_buildings": 9,
+            "overlap_buildings": 0,
+            "demand_score": 270000,
+            "residential_score": 180000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 27,
+              "served_demand_weight": 27,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 9,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 9,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.9,
+              "residential": 0.75,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.96,
+            "score": 96,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.9,
+                "weight": 0.4,
+                "contribution": 0.36000000000000004
+              },
+              "residential": {
+                "utility": 0.75,
+                "weight": 0,
+                "contribution": 0
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 40,
+                "effective_weight": 0.4,
+                "utility": 0.9,
+                "contribution": 0.36000000000000004
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.75,
+                "contribution": 0
+              }
+            }
+          },
+          "fixed_point": true,
+          "label": "exhaustive-search-coverage-demand",
+          "options": {
+            "label": "exhaustive-search-coverage-demand",
+            "passes": 2,
+            "azimuth_step_deg": 10,
+            "cell_order_indices": [
+              0,
+              1
+            ],
+            "cell_order_ids": [
+              "oracle-a",
+              "oracle-b"
+            ],
+            "start_azimuths": [
+              17,
+              203
+            ],
+            "start_mode": "request_azimuths_normalized",
+            "search_behavior": "fixed_pass_coordinate_descent"
+          },
+          "pareto_ids": [
+            "70.0,260.0",
+            "70.0,270.0",
+            "70.0,280.0",
+            "80.0,260.0"
+          ],
+          "passes_executed": 2,
+          "production_cache_behavior": true,
+          "recommended_id": "70.0,260.0",
+          "recommended_stats": {
+            "network_score": 452000,
+            "unique_demand_buildings": 9,
+            "unique_residential_buildings": 9,
+            "overlap_buildings": 0,
+            "demand_score": 270000,
+            "residential_score": 180000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 27,
+              "served_demand_weight": 27,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 9,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 9,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.9,
+              "residential": 0.75,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.96,
+            "score": 96,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.9,
+                "weight": 0.4,
+                "contribution": 0.36
+              },
+              "residential": {
+                "utility": 0.75,
+                "weight": 0,
+                "contribution": 0
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 40,
+                "effective_weight": 0.4,
+                "utility": 0.9,
+                "contribution": 0.36
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.75,
+                "contribution": 0
+              }
+            }
+          },
+          "repeated_state_count": 2,
+          "scenario_fingerprint": "network-e5a7d50fdbdd15dd07f655e94e44a1dd",
+          "search_fingerprint": "concept-5a-search-0d0f3a51b8396228e56da52c",
+          "state_trace": [
+            "17.0,203.0",
+            "70.0,203.0",
+            "70.0,260.0",
+            "70.0,260.0",
+            "70.0,260.0"
+          ],
+          "termination": "fixed_pass_count",
+          "unique_states": 108
+        },
+        "true_pareto_count": 6,
+        "true_pareto_keys": [
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "80.0,260.0",
+          "80.0,270.0",
+          "80.0,280.0"
+        ],
+        "unexpected_discovered_pareto_keys": []
+      },
+      "step_deg": 10
+    },
+    {
+      "cells": 2,
+      "name": "residential-tradeoff",
+      "oracle": {
+        "candidate_count": 1296,
+        "discovered_pareto_count": 5,
+        "discovered_pareto_keys": [
+          "50.0,260.0",
+          "50.0,270.0",
+          "50.0,280.0",
+          "70.0,260.0",
+          "80.0,260.0"
+        ],
+        "feasible_candidate_count": 1296,
+        "global_best_key": "50.0,260.0",
+        "global_best_score": 87.5,
+        "global_best_stats": {
+          "network_score": 422000,
+          "unique_demand_buildings": 9,
+          "unique_residential_buildings": 9,
+          "overlap_buildings": 0,
+          "demand_score": 240000,
+          "residential_score": 180000,
+          "coverage_score": 2000,
+          "overlap_penalty": 0,
+          "data_quality": "",
+          "raw_metrics": {
+            "served_weighted_demand": 24,
+            "served_demand_weight": 24,
+            "total_weighted_demand": 30,
+            "relevant_demand_weight": 30,
+            "residential_covered": 9,
+            "residential_total": 12,
+            "relevant_residential_total": 12,
+            "coverage_reach_score": 2000,
+            "coverage_reach_maximum": 2000,
+            "propagation_reach_score": 2000,
+            "propagation_reach_maximum": 2000,
+            "covered_units": 9,
+            "overlap_buildings": 0,
+            "overlap_ratio": 0,
+            "radio_quality_total_samples": 0,
+            "radio_quality_serviceable_samples": 0,
+            "radio_quality_serviceable_fraction": 0
+          },
+          "objectives": {
+            "demand": 0.8,
+            "residential": 0.75,
+            "coverage": 1,
+            "overlap": 1,
+            "radio_quality": 0
+          },
+          "composite_score": 0.875,
+          "score": 87.5,
+          "objective_breakdown": {
+            "demand": {
+              "utility": 0.8,
+              "weight": 0,
+              "contribution": 0
+            },
+            "residential": {
+              "utility": 0.75,
+              "weight": 0.5,
+              "contribution": 0.375
+            },
+            "coverage": {
+              "utility": 1,
+              "weight": 0.25,
+              "contribution": 0.25
+            },
+            "overlap": {
+              "utility": 1,
+              "weight": 0.25,
+              "contribution": 0.25
+            },
+            "radio_quality": {
+              "utility": 0,
+              "weight": 0,
+              "contribution": 0
+            }
+          },
+          "objective_status": {
+            "coverage": {
+              "available": true,
+              "configured_priority": 25,
+              "effective_weight": 0.25,
+              "utility": 1,
+              "contribution": 0.25
+            },
+            "demand": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.8,
+              "contribution": 0
+            },
+            "overlap": {
+              "available": true,
+              "configured_priority": 25,
+              "effective_weight": 0.25,
+              "utility": 1,
+              "contribution": 0.25
+            },
+            "radio_quality": {
+              "available": false,
+              "reason": "disabled",
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": null,
+              "contribution": null
+            },
+            "residential": {
+              "available": true,
+              "configured_priority": 50,
+              "effective_weight": 0.5,
+              "utility": 0.75,
+              "contribution": 0.375
+            }
+          }
+        },
+        "missed_true_pareto_keys": [
+          "70.0,270.0",
+          "70.0,280.0",
+          "70.0,320.0",
+          "80.0,270.0",
+          "80.0,280.0",
+          "80.0,320.0"
+        ],
+        "pareto_intersection_count": 5,
+        "pareto_precision": 1,
+        "pareto_recall": 0.45454545454545453,
+        "production_recommended_key": "70.0,260.0",
+        "production_recommended_score": 87.5,
+        "recommendation_recovered": false,
+        "recommended_raw_metric_delta_vs_global_best": {
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "propagation_reach_score": 0,
+          "radio_quality_serviceable_fraction": 0,
+          "residential_covered": 0,
+          "served_demand_weight": -3
+        },
+        "score_regret": 0,
+        "search": {
+          "accepted_update_trace": [
+            {
+              "pass": 1,
+              "cell_index": 0,
+              "cell_id": "oracle-a",
+              "previous_configuration": [
+                17,
+                203
+              ],
+              "chosen_configuration": [
+                50,
+                203
+              ],
+              "previous_state_key": "17.0,203.0",
+              "chosen_state_key": "50.0,203.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 50,
+              "chosen_score": 0.7916666666666667,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": true,
+              "requested_evaluations_end": 37
+            },
+            {
+              "pass": 1,
+              "cell_index": 1,
+              "cell_id": "oracle-b",
+              "previous_configuration": [
+                50,
+                203
+              ],
+              "chosen_configuration": [
+                50,
+                260
+              ],
+              "previous_state_key": "50.0,203.0",
+              "chosen_state_key": "50.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 260,
+              "chosen_score": 0.875,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": true,
+              "requested_evaluations_end": 73
+            },
+            {
+              "pass": 2,
+              "cell_index": 0,
+              "cell_id": "oracle-a",
+              "previous_configuration": [
+                50,
+                260
+              ],
+              "chosen_configuration": [
+                50,
+                260
+              ],
+              "previous_state_key": "50.0,260.0",
+              "chosen_state_key": "50.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 50,
+              "chosen_score": 0.875,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": false,
+              "requested_evaluations_end": 109
+            },
+            {
+              "pass": 2,
+              "cell_index": 1,
+              "cell_id": "oracle-b",
+              "previous_configuration": [
+                50,
+                260
+              ],
+              "chosen_configuration": [
+                50,
+                260
+              ],
+              "previous_state_key": "50.0,260.0",
+              "chosen_state_key": "50.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 260,
+              "chosen_score": 0.875,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": false,
+              "requested_evaluations_end": 145
+            }
+          ],
+          "algorithm": "network_coordinate_descent",
+          "baseline_azimuths": [
+            17,
+            203
+          ],
+          "baseline_stats": {
+            "network_score": 212000,
+            "unique_demand_buildings": 5,
+            "unique_residential_buildings": 5,
+            "overlap_buildings": 0,
+            "demand_score": 100000,
+            "residential_score": 110000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 10,
+              "served_demand_weight": 10,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 5,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 5,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.3333333333333333,
+              "residential": 0.4166666666666667,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.7083333333333334,
+            "score": 70.83333333333334,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.3333333333333333,
+                "weight": 0,
+                "contribution": 0
+              },
+              "residential": {
+                "utility": 0.4166666666666667,
+                "weight": 0.5,
+                "contribution": 0.20833333333333334
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.3333333333333333,
+                "contribution": 0
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 50,
+                "effective_weight": 0.5,
+                "utility": 0.4166666666666667,
+                "contribution": 0.20833333333333334
+              }
+            }
+          },
+          "cache_hits": 0,
+          "cycle_detected": false,
+          "cycle_length": 0,
+          "duplicate_requested_states": 38,
+          "evaluated_candidates": 146,
+          "evaluated_state_set_fingerprint": "concept-5a-states-c843f247da4d0e9d",
+          "final_azimuths": [
+            50,
+            260
+          ],
+          "final_stats": {
+            "network_score": 422000,
+            "unique_demand_buildings": 9,
+            "unique_residential_buildings": 9,
+            "overlap_buildings": 0,
+            "demand_score": 240000,
+            "residential_score": 180000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 24,
+              "served_demand_weight": 24,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 9,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 9,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.8,
+              "residential": 0.75,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.875,
+            "score": 87.5,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.8,
+                "weight": 0,
+                "contribution": 0
+              },
+              "residential": {
+                "utility": 0.75,
+                "weight": 0.5,
+                "contribution": 0.375
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.8,
+                "contribution": 0
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 50,
+                "effective_weight": 0.5,
+                "utility": 0.75,
+                "contribution": 0.375
+              }
+            }
+          },
+          "fixed_point": true,
+          "label": "exhaustive-search-residential-tradeoff",
+          "options": {
+            "label": "exhaustive-search-residential-tradeoff",
+            "passes": 2,
+            "azimuth_step_deg": 10,
+            "cell_order_indices": [
+              0,
+              1
+            ],
+            "cell_order_ids": [
+              "oracle-a",
+              "oracle-b"
+            ],
+            "start_azimuths": [
+              17,
+              203
+            ],
+            "start_mode": "request_azimuths_normalized",
+            "search_behavior": "fixed_pass_coordinate_descent"
+          },
+          "pareto_ids": [
+            "70.0,260.0",
+            "80.0,260.0"
+          ],
+          "passes_executed": 2,
+          "production_cache_behavior": true,
+          "recommended_id": "70.0,260.0",
+          "recommended_stats": {
+            "network_score": 452000,
+            "unique_demand_buildings": 9,
+            "unique_residential_buildings": 9,
+            "overlap_buildings": 0,
+            "demand_score": 270000,
+            "residential_score": 180000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 27,
+              "served_demand_weight": 27,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 9,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 9,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.9,
+              "residential": 0.75,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.875,
+            "score": 87.5,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.9,
+                "weight": 0,
+                "contribution": 0
+              },
+              "residential": {
+                "utility": 0.75,
+                "weight": 0.5,
+                "contribution": 0.375
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.9,
+                "contribution": 0
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 50,
+                "effective_weight": 0.5,
+                "utility": 0.75,
+                "contribution": 0.375
+              }
+            }
+          },
+          "repeated_state_count": 2,
+          "scenario_fingerprint": "network-d3b89b31f0461932391bc40655602ead",
+          "search_fingerprint": "concept-5a-search-618135590ac0a2877df30b1d",
+          "state_trace": [
+            "17.0,203.0",
+            "50.0,203.0",
+            "50.0,260.0",
+            "50.0,260.0",
+            "50.0,260.0"
+          ],
+          "termination": "fixed_pass_count",
+          "unique_states": 108
+        },
+        "true_pareto_count": 11,
+        "true_pareto_keys": [
+          "50.0,260.0",
+          "50.0,270.0",
+          "50.0,280.0",
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "70.0,320.0",
+          "80.0,260.0",
+          "80.0,270.0",
+          "80.0,280.0",
+          "80.0,320.0"
+        ],
+        "unexpected_discovered_pareto_keys": []
+      },
+      "step_deg": 10
+    }
+  ],
+  "quality_metrics": [
+    "recommendation_recovered",
+    "score_regret",
+    "raw_metric_delta",
+    "pareto_recall",
+    "pareto_precision",
+    "missed_true_pareto_keys"
+  ]
+}

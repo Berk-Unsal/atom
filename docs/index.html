@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="description" content="Documentation for A.T.O.M, the Ankara Telecom Optimization Model." />
   <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
   <link rel="stylesheet" href="./assets/docs.css" />
   <title>A.T.O.M Documentation</title>
 </head>
@@ -54,6 +55,16 @@
           </div>
         </div>
       </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
       <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
         <span class="nav-toggle-lines" aria-hidden="true"></span>
       </button>
@@ -62,7 +73,7 @@
         <a href="./architecture.html">Architecture</a>
         <a href="./api.html">API</a>
         <a href="./changelog.html">Changelog</a>
-        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
         <a class="nav-cta" href="./download.html">Download &amp; Use</a>
       </nav>
     </div>
@@ -75,7 +86,7 @@
         <h1 id="home-title">Understand the model. Run the system. Inspect every result.</h1>
         <p>
           A.T.O.M is a local-first telecom planning workspace for deterministic 4G LTE, 5G mmWave,
-          and 6G Sub-THz propagation analysis across Ankara. These docs explain how the focused
+          and the 6G research profile at 140 GHz across Ankara. These docs explain how the focused
           workspace, Go RF engines, spatial data, interference model, and optional 5G Core path fit together.
         </p>
         <div class="hero-actions">
@@ -84,7 +95,8 @@
         </div>
       </div>
       <figure class="hero-preview">
-          <img src="./assets/focused-workspace.jpg" alt="The current A.T.O.M focused workspace showing the tool rail, overlay drawer, and Ankara map" />
+          <img class="theme-preview-light" src="./assets/focused-workspace.jpg" alt="The current A.T.O.M focused workspace showing the tool rail, overlay drawer, and Ankara map" />
+        <img class="theme-preview-dark" src="./assets/v0.12.0/network-workspace.png" alt="A.T.O.M dark network workspace showing eight selected cells, propagation rays, and the map key" />
         <figcaption>Current workspace: compact command bar, focused tools, persistent map, and contextual results.</figcaption>
       </figure>
     </section>
@@ -207,7 +219,7 @@
           <span class="info-icon" aria-hidden="true">!</span>
           <div>
             <strong>Planning estimate, not a measurement</strong>
-            <p>Fast fading, diffraction, multipath reflection, MIMO scheduling, sidelobes, and uplink interference are outside the current model.</p>
+            <p>Fast fading, reflection-heavy multipath, multiple-edge diffraction, MIMO scheduling, vendor antenna diagrams, and uplink interference remain outside the model; the 2.5D path tool is an inspectable planning approximation.</p>
           </div>
         </div>
       </div>
@@ -224,7 +236,18 @@
         <a href="./features.html"><span>Capability details</span><span>Supported workflows</span></a>
         <a href="./visualization.html"><span>Reading propagation maps</span><span>Visual interpretation</span></a>
         <a href="./deployment.html"><span>Production deployment</span><span>Operations guide</span></a>
+        <a href="./dataset-pack-studio.html"><span>Dataset Pack Studio</span><span>Build arbitrary-region packs</span></a>
         <a href="./modeling-limits.html"><span>Modeling limits</span><span>Confidence boundary</span></a>
+        <a href="./concept-4e-building-entry.html"><span>Concept 4E building entry</span><span>Facade-entry model reference</span></a>
+        <a href="./concept-4f1-height-aware-obstruction.html"><span>Concept 4F.1 height-aware obstruction</span><span>Centerline roof classifier</span></a>
+        <a href="./concept-4g1-antenna-link-budget.html"><span>Concept 4G.1 antenna and link budget</span><span>Explicit RF term contract</span></a>
+        <a href="./concept-4i1-140ghz-audit.html"><span>Concept 4I.1 140 GHz audit</span><span>Applicability and evidence boundary</span></a>
+        <a href="./concept-4i2b-p1411-reference.html"><span>Concept 4I.2B P.1411 candidates</span><span>Strict Table 4 reference gates</span></a>
+        <a href="./concept-4i3-measurement-validation.html"><span>Concept 4I.3 measurement validation</span><span>Evidence, calibration, and spatial holdouts</span></a>
+        <a href="./concept-7c-run-history.html"><span>Concept 7C durable run history</span><span>Local execution lineage</span></a>
+        <a href="./concept-7d-report-artifacts.html"><span>Concept 7D report artifacts</span><span>Local evidence and delivery</span></a>
+        <a href="./concept-7e-scenario-ux.html"><span>Concept 7E Scenario UX</span><span>Versions, branches, and lineage</span></a>
+        <a href="./concept-7h-rf-progressive-disclosure.html"><span>Concept 7H RF configuration</span><span>Planning, Advanced, and Research / reference</span></a>
         <a href="./faq.html"><span>FAQ and troubleshooting</span><span>Common questions</span></a>
         <a href="./changelog.html"><span>Project changelog</span><span>Releases and updates</span></a>
         <a href="./contributing.html"><span>Contributor guide</span><span>Development workflow</span></a>
@@ -236,7 +259,7 @@
     <div class="footer-inner">
       <span>A.T.O.M documentation. Deterministic, inspectable, and explicit about model limits.</span>
       <nav class="footer-links" aria-label="Footer links">
-        <a href="https://github.com/Berk-Unsal/urban-ray-tracer">GitHub</a>
+        <a href="https://github.com/Berk-Unsal/atom">GitHub</a>
         <a href="./architecture.html">Architecture</a>
         <a href="./download.html">Download</a>
         <a href="https://berkunsal.com">Berk Unsal</a>

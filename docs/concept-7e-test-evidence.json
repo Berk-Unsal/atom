@@ -1,0 +1,28 @@
+{
+  "concept": "7E",
+  "title": "Scenario UX test evidence",
+  "captured_at": "2026-09-22",
+  "status": "passed",
+  "frontend": {
+    "tests": "45 files / 237 tests passed",
+    "lint": "passed",
+    "build": "passed with existing bundle-size warning",
+    "browser_workflows": "33 passed / 11 skipped across desktop, tablet, and mobile projects",
+    "focused_regressions": [
+      "scenarioDiff.test.js",
+      "ScenarioPanel.test.jsx",
+      "localRepository.test.js",
+      "RunHistoryPanel.test.jsx",
+      "ReportArtifactsPanel.test.jsx"
+    ]
+  },
+  "backend": {
+    "backend_go": "go vet ./... and go test -race ./... passed",
+    "core_lab_adapter": "go vet ./... and go test -race ./... passed"
+  },
+  "documentation": "documentation valid: 39 HTML pages and 41 API paths",
+  "versioning": "A.T.O.M version metadata is consistent: 0.8.0",
+  "diff_check": "git diff --check passed",
+  "reference_pages": "generated successfully; Pandoc emitted existing --mathml deprecation warnings",
+  "remaining": []
+}

@@ -1,0 +1,130 @@
+{
+  "concept": "8C",
+  "phase": "pre-change baseline",
+  "capturedAt": "2026-09-24T08:04:47Z",
+  "workingTree": {
+    "head": "b57b1efc98bda9ac37c75fe32d1d8b9618feea8c",
+    "branch": "main",
+    "version": "0.9.0",
+    "dirty": true,
+    "statusLines": [
+      " M CHANGELOG.md",
+      " M frontend-react/e2e/workspace.spec.js",
+      " M frontend-react/src/App.jsx",
+      " M frontend-react/src/components/MapCanvas.jsx",
+      " M frontend-react/src/components/PathProfilePanel.jsx",
+      " M frontend-react/src/components/ResearchReferenceBadge.jsx",
+      " M frontend-react/src/components/WorkspaceChrome.jsx",
+      " M frontend-react/src/components/WorkspaceChrome.test.jsx",
+      " M frontend-react/src/styles.css",
+      " M frontend-react/src/utils/projectStore.js",
+      " M frontend-react/src/utils/projectStore.test.js",
+      "?? docs/assets/concept-8b1/",
+      "?? docs/assets/concept-8e/",
+      "?? docs/concept-8b1-accessibility-evidence.json",
+      "?? docs/concept-8b1-chrome-geometry.json",
+      "?? docs/concept-8b1-invariance.json",
+      "?? docs/concept-8b1-navigation-polish.json",
+      "?? docs/concept-8b1-post-change-comparison.json",
+      "?? docs/concept-8b1-pre-change-baseline.json",
+      "?? docs/concept-8b1-responsive-evidence.json",
+      "?? docs/concept-8b1-test-evidence.json",
+      "?? docs/concept-8b1-visual-polish.md",
+      "?? docs/concept-8b1-visual-principles.json",
+      "?? docs/concept-8d-8e-test-plan.json",
+      "?? docs/concept-8d-container-audit.json",
+      "?? docs/concept-8d-cvat-comparison.json",
+      "?? docs/concept-8d-decision.json",
+      "?? docs/concept-8d-implementation-risk.json",
+      "?? docs/concept-8d-information-priority.json",
+      "?? docs/concept-8d-inspector-candidates.json",
+      "?? docs/concept-8d-panel-coexistence.json",
+      "?? docs/concept-8d-pre-change-baseline.json",
+      "?? docs/concept-8d-role-classification.json",
+      "?? docs/concept-8d-selection-semantics.json",
+      "?? docs/concept-8d-tool-inventory.json",
+      "?? docs/concept-8d-wireframes.md",
+      "?? docs/concept-8d-workspace-roles-audit.md",
+      "?? docs/concept-8e-implementation.md",
+      "?? docs/concept-8e-pre-change-baseline.json",
+      "?? docs/concept-8e-pre-change-selection-flow.json",
+      "?? docs/concept-8e-responsive-evidence.json",
+      "?? docs/concept-8e-test-evidence.json",
+      "?? frontend-react/src/components/ContextualInspector.jsx",
+      "?? frontend-react/src/utils/interferenceInspector.js",
+      "?? frontend-react/src/utils/interferenceInspector.test.js"
+    ],
+    "diffStat": "CHANGELOG.md                                       |  10 +\n frontend-react/e2e/workspace.spec.js               | 729 ++++++++++++++++++++-\n frontend-react/src/App.jsx                         | 599 +++++++++++++----\n frontend-react/src/components/MapCanvas.jsx        | 100 +--\n frontend-react/src/components/PathProfilePanel.jsx |   1 +\n .../src/components/ResearchReferenceBadge.jsx      |   2 +-\n frontend-react/src/components/WorkspaceChrome.jsx  |  95 ++-\n .../src/components/WorkspaceChrome.test.jsx        |  56 +-\n frontend-react/src/styles.css                      | 361 ++++++++--\n frontend-react/src/utils/projectStore.js           |  24 +-\n frontend-react/src/utils/projectStore.test.js      |  29 +-\n 11 files changed, 1755 insertions(+), 251 deletions(-)",
+    "preservationNote": "The listed existing Concept 8B.1, 8D, and 8E changes were present before Concept 8C and are preserved as baseline work."
+  },
+  "checks": {
+    "frontendUnitWorkflow": {
+      "command": "cd frontend-react && npm test",
+      "status": "passed",
+      "files": 56,
+      "tests": 295
+    },
+    "frontendLint": {
+      "command": "cd frontend-react && npm run lint",
+      "status": "passed"
+    },
+    "frontendProductionBuild": {
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "javascriptChunkCount": 12,
+      "initialJavaScript": {
+        "rawKiB": 796.62,
+        "gzipKiB": 225.44
+      },
+      "css": {
+        "rawKiB": 174.7,
+        "gzipKiB": 32.25
+      },
+      "warning": "Vite reports the initial JavaScript chunk exceeds 500 kB after minification."
+    },
+    "requestEquivalence": {
+      "command": "cd frontend-react && npx vitest run src/domain/requestEquivalence.test.js",
+      "status": "passed",
+      "files": 1,
+      "tests": 3
+    },
+    "e2e": {
+      "command": "cd frontend-react && npm run test:e2e",
+      "status": "passed",
+      "total": 160,
+      "passed": 100,
+      "skipped": 60,
+      "failed": 0,
+      "projects": [
+        "desktop-1440",
+        "desktop-1024",
+        "tablet-768",
+        "mobile-390"
+      ],
+      "notes": "The 60 skips are project-gated or real-backend tests disabled by default. Existing Concept 8B screenshot/evidence outputs overwritten by the capture test were restored byte-for-byte from a pre-run copy."
+    },
+    "backendGo": {
+      "module": "backend-go",
+      "vet": {
+        "command": "cd backend-go && go vet ./...",
+        "status": "passed"
+      },
+      "race": {
+        "command": "cd backend-go && go test -race ./...",
+        "status": "passed"
+      }
+    },
+    "coreLabAdapter": {
+      "module": "core-lab-adapter",
+      "vet": {
+        "command": "cd core-lab-adapter && go vet ./...",
+        "status": "passed"
+      },
+      "race": {
+        "command": "cd core-lab-adapter && go test -race ./...",
+        "status": "passed"
+      }
+    }
+  },
+  "baselineConclusion": "No unexplained baseline failures. Concept 8C implementation may proceed."
+}

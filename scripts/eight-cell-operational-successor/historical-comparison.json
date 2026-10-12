@@ -1,0 +1,166 @@
+{
+  "control_rf_radius_m": 400,
+  "control_rf_rays": 120,
+  "eight_cell_ids": [
+    "9664800",
+    "26390",
+    "9664790",
+    "9664795",
+    "9664791",
+    "9664794",
+    "12261147",
+    "9664785"
+  ],
+  "original_rf_radius_m": 400,
+  "original_rf_rays": 120,
+  "paired_domain_matches": [],
+  "role": "secondary historical geometry continuity only; explicitly W1 RF settings, not a primary layout or requalification of historical timing",
+  "selection_rule": "deadline-audit six IDs in original order; append nearest distinct cell IDs by cosine-adjusted squared coordinate distance, ID tie-break",
+  "source_tool": "scripts/network-capacity-audit/fixtures.mjs",
+  "towers": [
+    {
+      "cellId": "9664800",
+      "coordinates": [
+        32.8274,
+        39.9255
+      ],
+      "id": "LTE-9664800",
+      "properties": {
+        "area": 8208,
+        "cell_id": 9664800,
+        "is_simulated": true,
+        "mcc": 286,
+        "net": 1,
+        "radio_type": "LTE",
+        "range": 1000,
+        "samples": 2
+      }
+    },
+    {
+      "cellId": "26390",
+      "coordinates": [
+        32.8272,
+        39.9267
+      ],
+      "id": "LTE-26390",
+      "properties": {
+        "area": 8208,
+        "cell_id": 26390,
+        "is_simulated": true,
+        "mcc": 286,
+        "net": 1,
+        "radio_type": "LTE",
+        "range": 1000,
+        "samples": 8
+      }
+    },
+    {
+      "cellId": "9664790",
+      "coordinates": [
+        32.8276,
+        39.9251
+      ],
+      "id": "LTE-9664790",
+      "properties": {
+        "area": 8208,
+        "cell_id": 9664790,
+        "is_simulated": true,
+        "mcc": 286,
+        "net": 1,
+        "radio_type": "LTE",
+        "range": 1000,
+        "samples": 9
+      }
+    },
+    {
+      "cellId": "9664795",
+      "coordinates": [
+        32.8282,
+        39.9254
+      ],
+      "id": "LTE-9664795",
+      "properties": {
+        "area": 8208,
+        "cell_id": 9664795,
+        "is_simulated": true,
+        "mcc": 286,
+        "net": 1,
+        "radio_type": "LTE",
+        "range": 1000,
+        "samples": 3
+      }
+    },
+    {
+      "cellId": "9664791",
+      "coordinates": [
+        32.8282,
+        39.9253
+      ],
+      "id": "LTE-9664791",
+      "properties": {
+        "area": 8208,
+        "cell_id": 9664791,
+        "is_simulated": true,
+        "mcc": 286,
+        "net": 1,
+        "radio_type": "LTE",
+        "range": 1000,
+        "samples": 1
+      }
+    },
+    {
+      "cellId": "9664794",
+      "coordinates": [
+        32.8282,
+        39.9253
+      ],
+      "id": "LTE-9664794",
+      "properties": {
+        "area": 8208,
+        "cell_id": 9664794,
+        "is_simulated": true,
+        "mcc": 286,
+        "net": 1,
+        "radio_type": "LTE",
+        "range": 1000,
+        "samples": 1
+      }
+    },
+    {
+      "cellId": "12261147",
+      "coordinates": [
+        32.8291,
+        39.9254
+      ],
+      "id": "LTE-12261147",
+      "properties": {
+        "area": 8208,
+        "cell_id": 12261147,
+        "is_simulated": true,
+        "mcc": 286,
+        "net": 1,
+        "radio_type": "LTE",
+        "range": 1000,
+        "samples": 1
+      }
+    },
+    {
+      "cellId": "9664785",
+      "coordinates": [
+        32.8283,
+        39.9265
+      ],
+      "id": "LTE-9664785",
+      "properties": {
+        "area": 8208,
+        "cell_id": 9664785,
+        "is_simulated": true,
+        "mcc": 286,
+        "net": 1,
+        "radio_type": "LTE",
+        "range": 1000,
+        "samples": 16
+      }
+    }
+  ]
+}

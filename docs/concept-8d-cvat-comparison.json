@@ -1,0 +1,49 @@
+{
+  "concept": "8D",
+  "bounded_reference": "CVAT is used only as a role-separation reference: left task/tool, center spatial canvas, right selected-object context. The user explicitly rejects copying its visual density/style.",
+  "adopt": [
+    {
+      "lesson": "Center canvas dominance",
+      "application": "The Ankara map remains the primary spatial workspace and receives remaining width; a compact inspector cannot create a narrow persistent strip."
+    },
+    {
+      "lesson": "Left task/action ownership",
+      "application": "Setup, Propagation, Interference and other workflows remain in the left task drawer."
+    },
+    {
+      "lesson": "Right selected-object ownership",
+      "application": "The selected cell/building/result sample gets contextual facts and direct actions without displacing the active tool."
+    },
+    {
+      "lesson": "Collapsible panels",
+      "application": "Both task and inspector can be independently closed/collapsed to recover map space."
+    },
+    {
+      "lesson": "Spatial continuity",
+      "application": "Keep selection highlight, map layer legend, entity identity and inspector facts synchronized."
+    }
+  ],
+  "reject": [
+    {
+      "lesson": "Extreme information density",
+      "reason": "A.T.O.M must preserve readable RF terminology, scientific evidence boundaries and operational clarity."
+    },
+    {
+      "lesson": "Permanent dual panels at all widths",
+      "reason": "A.T.O.M map/cell interactions need real width; below desktop thresholds panels must overlay, replace or become a single sheet."
+    },
+    {
+      "lesson": "Icon overload",
+      "reason": "Map and RF states already have multiple semantic colors; use named controls and visible status text."
+    },
+    {
+      "lesson": "Object-list complexity",
+      "reason": "Do not add a general object browser, task queue or new navigation hierarchy to justify an inspector."
+    },
+    {
+      "lesson": "Desktop-only assumptions",
+      "reason": "At 768 and 390, one sheet at a time is clearer and map-first than three narrow columns."
+    }
+  ],
+  "A_T_O_M_difference": "A.T.O.M is a scientific planning instrument with explicit compute/freshness and a local-first workspace. The inspector is contextual spatial evidence, not a general object editor or production dashboard."
+}

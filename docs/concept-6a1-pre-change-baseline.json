@@ -1,0 +1,323 @@
+{
+  "artifact": "pre-change-baseline",
+  "audit_version": "concept-6a1-campaign-tooling-v1",
+  "baseline_commit": "working-tree-before-concept-6a1-artifacts",
+  "boundary": {
+    "calibration_active_before": false,
+    "canonical_production_changed_before": false,
+    "concept_6a1_tooling_present_before": false,
+    "concept_6a_present_before": true,
+    "optimizer_or_planning_route_changed": false
+  },
+  "canonical_rf_versions": {
+    "applicability_policy": "existing Concept 6A policy; unchanged",
+    "calibration_policy": "existing diagnostic-only holdout policy; unchanged",
+    "evaluator_version": "existing Concept 6A canonical evaluator; unchanged by 6A.1",
+    "frequencies_ghz": [
+      2.6,
+      28
+    ],
+    "matching_policy": "existing explicit identity/mapping policy; never strongest cell",
+    "production_model_id": "urban_short_range",
+    "residual_policy": "existing measured-minus-predicted policy; unchanged"
+  },
+  "canonical_scenario_fingerprint": "network-def2ab8c875ff267a6e7969d297216f0",
+  "canonical_snapshots": {
+    "2.6": {
+      "frequency_ghz": 2.6,
+      "los": {
+        "applicable": true,
+        "applied_model_id": "urban_short_range",
+        "path_loss_db": 80.55626274926324,
+        "received_power_dbm": -25.55626274926324,
+        "receiver_link_margin_db": 89.44373725073676
+      },
+      "network_tech": "4g",
+      "nlos": {
+        "applicable": true,
+        "applied_model_id": "urban_short_range",
+        "path_loss_db": 100.45562966247162,
+        "received_power_dbm": -45.45562966247162,
+        "receiver_link_margin_db": 69.54437033752838
+      },
+      "profile": {
+        "schema_version": 1,
+        "network_tech": "4g",
+        "propagation_model": "urban_short_range",
+        "frequency_ghz": 2.6,
+        "band": "LTE Band 7",
+        "bandwidth_mhz": 20,
+        "channel_id": "CH-1",
+        "duplex_mode": "fdd",
+        "tx_power_dbm": 30,
+        "antenna_gain_dbi": 25,
+        "rx_antenna_gain_dbi": 0,
+        "system_loss_db": 0,
+        "polarization_loss_db": 0,
+        "radius_m": 5000,
+        "beam_width": 360,
+        "antenna_height_m": 25,
+        "mechanical_downtilt_deg": 0,
+        "electrical_downtilt_deg": 0,
+        "orientation_deg": 0,
+        "horizontal_pattern_id": "ideal-sector",
+        "vertical_pattern_id": "flat",
+        "load_factor": 0.7,
+        "reuse_factor": 1,
+        "receiver_height_m": 1.5,
+        "receiver_sensitivity_dbm": -115,
+        "receiver_sensitivity_mode": "manual",
+        "receiver_noise_bandwidth_hz": 20000000,
+        "receiver_noise_bandwidth_source": "channel_bandwidth_approximation",
+        "receiver_noise_figure_db": 7,
+        "receiver_required_snr_db": 3,
+        "receiver_margin_db": 0,
+        "tx_antenna_gain_dbi": 25
+      },
+      "propagation_model": "urban_short_range",
+      "receiver_threshold": {
+        "error": "",
+        "value": {
+          "mode": "manual",
+          "sensitivity_dbm": -115,
+          "noise_bandwidth_source": "not_applicable",
+          "assumptions": [
+            "receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated",
+            "network interference is evaluated separately through RSRP, SINR, and RSRQ"
+          ],
+          "applicability": "manual noise-limited receiver threshold for deterministic planning"
+        }
+      },
+      "rf_contract": {
+        "model_id": "urban_short_range",
+        "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+        "applied_model_id": "urban_short_range",
+        "model_family": "3GPP TR 38.901 UMa median path loss",
+        "scenario": "urban short-range outdoor-to-outdoor planning",
+        "model_status": "deterministic planning baseline",
+        "reference": "3GPP TR 38.901 V19.4.0, Table 7.4.1-1 UMa path loss",
+        "applicability": "0.5 \u003c f_c \u003c 100 GHz, 10 m \u003c= d_2D \u003c= 5000 m, known Tx/Rx heights in the deterministic UMa envelope, outdoor-to-outdoor endpoint, and footprint LOS/NLOS classification",
+        "fallback_model_id": "legacy_fspl_walls",
+        "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+        "los_classification_rule": "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable",
+        "building_height_note": "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS",
+        "deterministic": true,
+        "propagation_dimensions": "height-aware 2D footprint centerline visibility with flat-ground relative heights and 3D distance in the 3GPP UMa median path-loss equation",
+        "uses_terrain": false,
+        "uses_building_height": true,
+        "uses_diffraction": false,
+        "uses_reflection": false,
+        "wall_model": "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB",
+        "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL_3GPP_UMa(LOS|NLOS) - L_system - L_polarization + G_rx + calibration",
+        "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+        "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+        "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+        "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+        "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+        "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+        "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+        "antenna_pattern_id": "ideal-sector",
+        "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+        "antenna_pattern_uses_hard_beam": true,
+        "absolute_terms": [
+          "conducted transmit power",
+          "absolute TX boresight gain",
+          "receive antenna gain",
+          "system loss",
+          "global calibration offset"
+        ],
+        "relative_attenuation_terms": [
+          "horizontal antenna attenuation",
+          "vertical antenna attenuation"
+        ],
+        "propagation_terms": [
+          "3GPP UMa PL1/PL2 breakpoint LOS path loss",
+          "3GPP UMa NLOS max(LOS, PL') path loss",
+          "footprint-height-los-v1 geometric centerline classifier",
+          "conservative unknown-height fallback"
+        ],
+        "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+        "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+        "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+        "building_service_threshold_dbm": -100,
+        "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+        "propagation_reach_definition": "usable receiver-power reach",
+        "surface_definition": "raw single-cell received-power surface",
+        "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+        "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+        "interference_rsrp_threshold_dbm": -110,
+        "interference_sinr_threshold_db": 0,
+        "interference_rsrq_threshold_db": -20,
+        "calibration_offset_db": 0,
+        "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+        "endpoint_scope": "canonical network RF evaluation"
+      }
+    },
+    "28": {
+      "frequency_ghz": 28,
+      "los": {
+        "applicable": true,
+        "applied_model_id": "urban_short_range",
+        "path_loss_db": 101.19995641669126,
+        "received_power_dbm": -46.199956416691265,
+        "receiver_link_margin_db": 68.80004358330874
+      },
+      "network_tech": "5g",
+      "nlos": {
+        "applicable": true,
+        "applied_model_id": "urban_short_range",
+        "path_loss_db": 121.09932332989965,
+        "received_power_dbm": -66.09932332989965,
+        "receiver_link_margin_db": 48.90067667010035
+      },
+      "profile": {
+        "schema_version": 1,
+        "network_tech": "5g",
+        "propagation_model": "urban_short_range",
+        "frequency_ghz": 28,
+        "band": "NR n257",
+        "bandwidth_mhz": 100,
+        "channel_id": "CH-1",
+        "duplex_mode": "tdd",
+        "tx_power_dbm": 30,
+        "antenna_gain_dbi": 25,
+        "rx_antenna_gain_dbi": 0,
+        "system_loss_db": 0,
+        "polarization_loss_db": 0,
+        "radius_m": 5000,
+        "beam_width": 360,
+        "antenna_height_m": 25,
+        "mechanical_downtilt_deg": 0,
+        "electrical_downtilt_deg": 0,
+        "orientation_deg": 0,
+        "horizontal_pattern_id": "ideal-sector",
+        "vertical_pattern_id": "flat",
+        "load_factor": 0.7,
+        "reuse_factor": 1,
+        "receiver_height_m": 1.5,
+        "receiver_sensitivity_dbm": -115,
+        "receiver_sensitivity_mode": "manual",
+        "receiver_noise_bandwidth_hz": 100000000,
+        "receiver_noise_bandwidth_source": "channel_bandwidth_approximation",
+        "receiver_noise_figure_db": 7,
+        "receiver_required_snr_db": 3,
+        "receiver_margin_db": 0,
+        "tx_antenna_gain_dbi": 25
+      },
+      "propagation_model": "urban_short_range",
+      "receiver_threshold": {
+        "error": "",
+        "value": {
+          "mode": "manual",
+          "sensitivity_dbm": -115,
+          "noise_bandwidth_source": "not_applicable",
+          "assumptions": [
+            "receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated",
+            "network interference is evaluated separately through RSRP, SINR, and RSRQ"
+          ],
+          "applicability": "manual noise-limited receiver threshold for deterministic planning"
+        }
+      },
+      "rf_contract": {
+        "model_id": "urban_short_range",
+        "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+        "applied_model_id": "urban_short_range",
+        "model_family": "3GPP TR 38.901 UMa median path loss",
+        "scenario": "urban short-range outdoor-to-outdoor planning",
+        "model_status": "deterministic planning baseline",
+        "reference": "3GPP TR 38.901 V19.4.0, Table 7.4.1-1 UMa path loss",
+        "applicability": "0.5 \u003c f_c \u003c 100 GHz, 10 m \u003c= d_2D \u003c= 5000 m, known Tx/Rx heights in the deterministic UMa envelope, outdoor-to-outdoor endpoint, and footprint LOS/NLOS classification",
+        "fallback_model_id": "legacy_fspl_walls",
+        "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+        "los_classification_rule": "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable",
+        "building_height_note": "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS",
+        "deterministic": true,
+        "propagation_dimensions": "height-aware 2D footprint centerline visibility with flat-ground relative heights and 3D distance in the 3GPP UMa median path-loss equation",
+        "uses_terrain": false,
+        "uses_building_height": true,
+        "uses_diffraction": false,
+        "uses_reflection": false,
+        "wall_model": "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB",
+        "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL_3GPP_UMa(LOS|NLOS) - L_system - L_polarization + G_rx + calibration",
+        "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+        "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+        "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+        "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+        "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+        "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+        "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+        "antenna_pattern_id": "ideal-sector",
+        "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+        "antenna_pattern_uses_hard_beam": true,
+        "absolute_terms": [
+          "conducted transmit power",
+          "absolute TX boresight gain",
+          "receive antenna gain",
+          "system loss",
+          "global calibration offset"
+        ],
+        "relative_attenuation_terms": [
+          "horizontal antenna attenuation",
+          "vertical antenna attenuation"
+        ],
+        "propagation_terms": [
+          "3GPP UMa PL1/PL2 breakpoint LOS path loss",
+          "3GPP UMa NLOS max(LOS, PL') path loss",
+          "footprint-height-los-v1 geometric centerline classifier",
+          "conservative unknown-height fallback"
+        ],
+        "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+        "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+        "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+        "building_service_threshold_dbm": -100,
+        "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+        "propagation_reach_definition": "usable receiver-power reach",
+        "surface_definition": "raw single-cell received-power surface",
+        "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+        "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+        "interference_rsrp_threshold_dbm": -110,
+        "interference_sinr_threshold_db": 0,
+        "interference_rsrq_threshold_db": -20,
+        "calibration_offset_db": 0,
+        "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+        "endpoint_scope": "canonical network RF evaluation"
+      }
+    }
+  },
+  "captured_at": "2026-09-21",
+  "concept": "6A.1",
+  "files_present_before": [
+    "docs/concept-6a-pre-change-baseline.json",
+    "docs/concept-6a-readiness.json",
+    "docs/concept-6a-validation-schema.json"
+  ],
+  "frozen_concept_6a": {
+    "applicability": "canonical_rf_validation.go UMa frequency/distance/height/outdoor/LOS gates",
+    "canonical_baseline": "docs/concept-6a-pre-change-baseline.json",
+    "changed_by_6a1": false,
+    "evaluator": "backend-go/raytracer/canonical_rf_validation.go",
+    "matching": "canonical_rf_validation.go explicit ID/mapping -\u003e PCI/channel/frequency -\u003e opt-in geographic candidate",
+    "readiness": "docs/concept-6a-readiness.json remains no_measurement_data",
+    "residual": "measured minus predicted; quantity-preserving",
+    "schema": "docs/concept-6a-validation-schema.json"
+  },
+  "invariance_targets": [
+    "2.6 GHz canonical RF",
+    "28 GHz canonical RF",
+    "UMa propagation",
+    "antenna/link budget",
+    "interference/radio quality",
+    "optimizer semantics",
+    "terrain-disabled behavior",
+    "140 GHz/4I references",
+    "Concept 6A matching/applicability/residual/readiness"
+  ],
+  "measurement_state": {
+    "concept_6a1_tooling_present_before": false,
+    "readiness": "no_measurement_data",
+    "real_data_artifact_should_exist": false,
+    "real_measurement_data_available": false
+  },
+  "optimizer_independent_fingerprint": "network-def2ab8c875ff267a6e7969d297216f0",
+  "schema_version": 1
+}

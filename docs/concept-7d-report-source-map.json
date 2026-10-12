@@ -1,0 +1,98 @@
+{
+  "concept": "7D",
+  "source_of_truth": "frontend-react/src/utils/reportExport.js",
+  "policy": "Historical reports resolve only from the exact ScenarioRevision plus explicit Run records; missing retained detail is labelled unavailable.",
+  "sections": [
+    {
+      "section": "executive_summary",
+      "renderer": ["renderMarkdownExecutiveSummary", "renderPrintableExecutiveSummary"],
+      "historical_sources": ["ScenarioRevision planning mode/settings", "Run compact stats", "Run optimization summary when present"],
+      "live_sources": ["current report model derived from React state"],
+      "recomputed": false,
+      "ui_only": false
+    },
+    {
+      "section": "evidence_and_source_binding",
+      "renderer": ["renderMarkdownEvidence", "renderPrintableEvidence"],
+      "historical_sources": ["ReportDefinition", "ScenarioRevision", "Run IDs", "run/input/dataset fingerprints"],
+      "recomputed": false,
+      "ui_only": false
+    },
+    {
+      "section": "recommended_solution_or_rf_result",
+      "renderer": ["renderMarkdownRecommendedSolution", "renderPrintableRecommendedSolution"],
+      "historical_sources": ["public optimization solution details", "compact simulation result summary"],
+      "recomputed": false,
+      "ui_only": false
+    },
+    {
+      "section": "baseline_vs_recommended",
+      "renderer": ["renderMarkdownComparison", "renderPrintableComparison"],
+      "historical_sources": ["public optimization baseline and recommended solution summaries"],
+      "recomputed": "pure comparison formatting only",
+      "ui_only": false
+    },
+    {
+      "section": "optimization_tradeoffs",
+      "renderer": ["renderMarkdownPareto", "renderPrintablePareto"],
+      "historical_sources": ["public Pareto solutions retained in Run.details"],
+      "recomputed": "ranking display only; no optimizer search",
+      "ui_only": false
+    },
+    {
+      "section": "evaluated_cell_changes",
+      "renderer": ["renderMarkdownCellExplanations", "renderPrintableCellExplanations"],
+      "historical_sources": ["retained explanation details when present"],
+      "recomputed": false,
+      "historical_default": "unavailable when not retained",
+      "ui_only": false
+    },
+    {
+      "section": "rf_performance",
+      "renderer": ["renderMarkdownRFPerformance", "renderPrintableRFPerformance"],
+      "historical_sources": ["compact simulation Run summary"],
+      "recomputed": false,
+      "ui_only": false
+    },
+    {
+      "section": "interference_and_radio_quality",
+      "renderer": ["renderMarkdownInterferenceSection", "renderPrintableInterferenceSection"],
+      "historical_sources": ["retained interference result when a future compatible Run provides it"],
+      "current_live_sources": ["current interferenceAnalysis"],
+      "recomputed": false,
+      "historical_default": "not evaluated / unavailable unless retained",
+      "ui_only": false
+    },
+    {
+      "section": "planning_map",
+      "renderer": ["renderMarkdownPlanningMap", "renderPrintablePlanningMap"],
+      "historical_sources": ["ScenarioRevision tower configuration for a planning context"],
+      "recomputed": false,
+      "historical_default": "detailed signal surface and ray geometry unavailable because Run History intentionally omits large arrays",
+      "ui_only": false
+    },
+    {
+      "section": "coverage_gaps",
+      "renderer": ["renderMarkdownCoverageGaps", "renderPrintableCoverageGaps"],
+      "historical_sources": ["compact coverage gap stats when retained"],
+      "recomputed": false,
+      "historical_default": "unavailable when no compact gap summary exists",
+      "ui_only": false
+    },
+    {
+      "section": "rf_configuration_and_assumptions",
+      "renderer": ["renderMarkdownRFConfiguration", "renderPrintableRFConfiguration"],
+      "historical_sources": ["ScenarioRevision RF settings", "Run RF contract", "ScenarioRevision inventory profiles"],
+      "recomputed": false,
+      "ui_only": false
+    },
+    {
+      "section": "data_methodology_and_limitations",
+      "renderer": ["renderMarkdownDataMethodology", "renderPrintableDataMethodology"],
+      "historical_sources": ["dataset references and hashes", "engine/RF contract metadata", "stored Run identities"],
+      "recomputed": false,
+      "ui_only": false
+    }
+  ],
+  "explicitly_excluded": ["current map viewport", "drawer state", "hovered cell", "browser filesystem paths", "credentials", "raw measurement private identifiers"]
+}

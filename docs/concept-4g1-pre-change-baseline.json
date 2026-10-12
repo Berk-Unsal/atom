@@ -1,0 +1,127 @@
+{
+  "concept": "4G.1",
+  "title": "Antenna and link-budget realism foundation pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "git_ref": "20807e3",
+  "working_tree_before_artifact": "clean",
+  "validation": {
+    "real_backend_acceptance": {
+      "command": "ATOM_REAL_E2E=1 ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline npm run test:e2e",
+      "result": "36 tests: 27 passed, 9 skipped"
+    },
+    "canonical_optimization": {
+      "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_BENCHMARK=1 go test ./raytracer -run TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled -count=1 -v",
+      "result": "pass"
+    },
+    "canonical_building_entry": {
+      "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_BUILDING_ENTRY=1 go test ./raytracer -run TestCanonicalAnkaraBuildingEntryAnalysisIsDeterministicWhenDatasetIsEnabled -count=1 -v",
+      "result": "pass"
+    },
+    "canonical_height_audit": {
+      "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_HEIGHT_AUDIT=1 go test ./raytracer -run TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled -count=1 -v",
+      "result": "pass"
+    }
+  },
+  "current_contract": {
+    "default_tx_power_dbm": 30,
+    "default_antenna_gain_dbi": 25,
+    "default_pre_pattern_system_calibration_eirp_dbm": 55,
+    "default_system_loss_db": 0,
+    "default_calibration_offset_db": 0,
+    "receiver_gain_db": "not represented; implicit 0",
+    "polarization_loss_db": "not represented; implicit 0",
+    "equation_as_implemented": "P_rx = P_tx + G_tx - L_system + calibration - L_propagation - A_pattern",
+    "semantic_issue": "PropagationPathTerms.EIRPDBm currently contains Tx + gain - system loss + calibration, so the field is an effective transmit term rather than pure boresight EIRP."
+  },
+  "controlled_analytic_patterns": {
+    "profile": {
+      "tx_power_dbm": 30,
+      "antenna_gain_dbi": 25,
+      "beam_width_deg": 120,
+      "antenna_height_m": 25,
+      "receiver_height_m": 1.5,
+      "mechanical_downtilt_deg": 0,
+      "electrical_downtilt_deg": 0
+    },
+    "horizontal_relative_attenuation_db_by_offset": {
+      "ideal-sector": {"0": 0, "15": 0, "30": 0, "60": 0, "90": 0},
+      "cosine-sector": {"0": 0, "15": 0.75, "30": 3, "60": 12, "90": 27},
+      "omni": {"0": 0, "15": 0, "30": 0, "60": 0, "90": 0}
+    },
+    "vertical_relative_attenuation_db": {
+      "flat_distance_100m": 0,
+      "panel-10deg_distance_100m_zero_tilt": 1.849126,
+      "panel-20deg_distance_100m_zero_tilt": 0.462282,
+      "panel-10deg_distance_100m_four_degree_total_tilt": 0.009744
+    },
+    "hard_beam_eligibility": {
+      "ideal_sector_120deg": {"offset_60": true, "offset_60_001": false},
+      "cosine_sector_120deg": {"offset_60": true, "offset_60_001": false},
+      "omni": {"offset_179_999": true, "offset_180": true}
+    }
+  },
+  "canonical_ankara_six_cell_28ghz": {
+    "request": {
+      "rays": 72,
+      "radius_m": 400,
+      "frequency_ghz": 28,
+      "tx_power_dbm": 30,
+      "beam_width_deg": 120,
+      "azimuths_deg": [0, 60, 120, 180, 240, 300],
+      "tower_ids": ["LTE-35084", "LTE-35104", "LTE-35877", "LTE-313100", "LTE-313110", "LTE-322828"],
+      "objective_weights": {"demand": 50, "residential": 50, "coverage": 50, "overlap": 50}
+    },
+    "legacy_compatibility_profile": {
+      "model_id": "fspl-walls-2p5d-v3",
+      "baseline": {"served_demand_weight": 185, "residential_covered": 28, "propagation_reach_score": 16013.3051, "overlap_ratio": 0.098361, "score": 33.7894},
+      "optimized": {"served_demand_weight": 555, "residential_covered": 43, "propagation_reach_score": 19548.691, "overlap_ratio": 0, "score": 41.1715},
+      "recommended_azimuths_deg": [70, 20, 130, 160, 290, 110],
+      "pareto_frontier_size": 6,
+      "optimizer_elapsed_s": 20.03
+    },
+    "urban_planning_profile": {
+      "model_id": "urban_short_range",
+      "baseline": {"network_score": 13509330.8, "composite_score": 0.391373, "served_demand_weight": 430, "residential_covered": 82, "propagation_reach_score": 18330.7658, "overlap_buildings": 10, "overlap_ratio": 0.060976, "score": 39.1373},
+      "optimized": {"network_score": 32568641.1, "composite_score": 0.489145, "served_demand_weight": 1115, "residential_covered": 137, "propagation_reach_score": 22141.1276, "overlap_buildings": 0, "overlap_ratio": 0, "score": 48.9145},
+      "recommended_azimuths_deg": [150, 300, 110, 300, 290, 100],
+      "height_audit_paths": 432,
+      "height_audit_transitions": {"los_to_los": 29, "nlos_to_nlos": 248, "unknown_to_unknown": 155},
+      "optimizer_elapsed_s": 17.518
+    }
+  },
+  "representative_current_outputs": {
+    "controlled_link_rx_dbm": {
+      "2.6ghz_100m_los": -33.982918,
+      "2.6ghz_400m_nlos": -45.805631,
+      "28ghz_100m_los": -76.626611,
+      "28ghz_400m_nlos": -88.449324
+    },
+    "urban_surface": {
+      "valid_cell_count": 267,
+      "below_sensitivity_cell_count": 34,
+      "min_dbm": -506,
+      "max_dbm": -33.8,
+      "center_value_dbm": -33.8
+    },
+    "urban_interference": {
+      "signal_samples": 307,
+      "serviceable_samples": 179,
+      "serviceable_pct": 18.1,
+      "avg_rsrp_dbm": -100.4,
+      "p10_rsrp_dbm": -117,
+      "avg_sinr_db": 14.3,
+      "p10_sinr_db": -0.8
+    },
+    "building_entry": {
+      "relevant_buildings": 1488,
+      "outdoor_serviceable_buildings": 521,
+      "low_loss_serviceable_buildings": 521,
+      "high_loss_serviceable_buildings": 194,
+      "candidate_cell_link_evaluations": 698,
+      "unsupported_buildings": 967,
+      "elapsed_ms": 34.3
+    }
+  },
+  "interpretation": "This artifact records the current implementation before Concept 4G.1 production edits. It is a compatibility baseline, not a measurement validation set. The legacy and urban sections are intentionally separated because the repository retains both selectable model identities."
+}

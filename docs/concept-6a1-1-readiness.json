@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "real-pilot-readiness",
+  "audit_version": "concept-6a1-real-ingestion-v1",
+  "state": "real_data_ingested_validation_blocked",
+  "decision": "A_REAL_INGESTION_FAILED",
+  "real_data_available": true,
+  "raw_source_parse": "passed_all_53005_data_rows",
+  "canonical_observation_ingestion": "failed_trustworthy_source_semantics_gate",
+  "canonical_observation_count": 0,
+  "source_quality": {
+    "malformed_rows": 0,
+    "dropped_samples": 0,
+    "elapsed_realtime_warnings": 1858,
+    "registered_flag_true_rows": 83,
+    "confirmed_serving_rows": 0,
+    "collector_serving_cell_changed_events": 37,
+    "b7_candidate_rows": 29,
+    "b7_candidate_rsrp_rows": 28,
+    "b7_exact_mappings": 0
+  },
+  "quantity_readiness": {
+    "rsrp_dbm": {
+      "source_candidate_values": 28,
+      "canonical_observations": 0,
+      "suitable_for_validation": false,
+      "blocker": "No trustworthy canonical serving snapshot."
+    },
+    "rsrq_db": {
+      "source_candidate_values": 29,
+      "canonical_observations": 0,
+      "suitable_for_validation": false,
+      "blocker": "Serving status unresolved and neighbor/resource context incomplete."
+    },
+    "sinr_db": {
+      "source_candidate_values": 29,
+      "zero_values_are_valid": true,
+      "canonical_observations": 0,
+      "suitable_for_validation": false,
+      "blocker": "Serving status unresolved and interference denominator incomplete."
+    },
+    "rssi_dbm": {
+      "source_candidate_values": 29,
+      "canonical_observations": 0,
+      "suitable_for_validation": false,
+      "blocker": "Serving status unresolved and neighbor/resource context incomplete."
+    },
+    "received_power_dbm": {
+      "source_candidate_values": 0,
+      "canonical_observations": 0,
+      "suitable_for_validation": false,
+      "blocker": "Handset RSRP is not converted to received carrier power."
+    }
+  },
+  "calibration_active": false,
+  "suitable_for_calibration_study": false,
+  "production_candidate": false,
+  "concept_6b_ready": false,
+  "concept_6a_state": "no_measurement_data",
+  "concept_6a_real_raw_data_available": true,
+  "concept_6a_usable_canonical_observations": 0,
+  "synthetic_dry_run_history": {
+    "state": "dry_run_ready_real_data_unavailable",
+    "artifact": "concept-6a1-dry-run-validation.json",
+    "preserved_as_historical_tooling_evidence": true
+  },
+  "pilot_validation_artifact": {
+    "path": "concept-6a1-pilot-validation.json",
+    "present": false,
+    "reason": "Validation gates did not pass; no residual metrics are manufactured."
+  },
+  "primary_blocker_and_next_action": {
+    "priority": 1,
+    "blocker": "Signal Collector source semantics conflict: registered=true snapshots all report connection_status=NONE while separate events are named SERVING_CELL_CHANGED.",
+    "action": "Obtain authoritative collector/source documentation or vendor confirmation for how these fields and event IDs relate; only then decide whether an additive, deterministic adapter rule can preserve the 6A.1 canonical-serving contract."
+  },
+  "other_validation_blocks": [
+    "No exact A.T.O.M inventory identity match.",
+    "No assignable measured B7 bandwidth/resource semantics.",
+    "2.665 GHz versus canonical 2.600 GHz exact profile mismatch.",
+    "Transmitter power, antenna, site height, outdoor and LOS/NLOS truth absent.",
+    "Device response uncalibrated; interference neighbor context incomplete."
+  ],
+  "future_collection_authorized_or_scheduled": false
+}

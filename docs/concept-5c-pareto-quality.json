@@ -1,0 +1,63 @@
+{
+  "audit_version": "concept-5c-audit-v1",
+  "cost_per_recovered_pareto_point": {
+    "three_cell_recovered_points": 1,
+    "three_cell_unique_evaluations": 158,
+    "two_cell_recovered_points": 6,
+    "two_cell_unique_evaluations": 426
+  },
+  "three_cell": {
+    "candidate_count": 1728,
+    "discovered_pareto_keys": [
+      "0.0,150.0,240.0"
+    ],
+    "feasible_candidate_count": 1728,
+    "global_best_key": "0.0,150.0,240.0",
+    "global_best_score": 88.04945054945054,
+    "incomplete_search": false,
+    "pareto_intersection_count": 1,
+    "pareto_precision": 1,
+    "pareto_recall": 1,
+    "priority_independent_discovery": true,
+    "recommendation_recovered": true,
+    "recommended_key": "0.0,150.0,240.0",
+    "recommended_score": 88.0495,
+    "score_regret": 0,
+    "termination_reason": "archive_exhausted",
+    "true_pareto_keys": [
+      "0.0,150.0,240.0"
+    ]
+  },
+  "two_cell": {
+    "candidate_count": 1296,
+    "discovered_pareto_keys": [
+      "70.0,260.0",
+      "70.0,270.0",
+      "70.0,280.0",
+      "80.0,260.0",
+      "80.0,270.0",
+      "80.0,280.0"
+    ],
+    "feasible_candidate_count": 1296,
+    "global_best_key": "70.0,260.0",
+    "global_best_score": 96,
+    "incomplete_search": false,
+    "pareto_intersection_count": 6,
+    "pareto_precision": 1,
+    "pareto_recall": 1,
+    "priority_independent_discovery": true,
+    "recommendation_recovered": true,
+    "recommended_key": "70.0,260.0",
+    "recommended_score": 96,
+    "score_regret": 0,
+    "termination_reason": "archive_exhausted",
+    "true_pareto_keys": [
+      "70.0,260.0",
+      "70.0,270.0",
+      "70.0,280.0",
+      "80.0,260.0",
+      "80.0,270.0",
+      "80.0,280.0"
+    ]
+  }
+}

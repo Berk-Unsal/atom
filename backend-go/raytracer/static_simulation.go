@@ -11,15 +11,19 @@ import (
 	"sync/atomic"
 )
 
-const ReceiverSensitivity = -115.0 // dBm
-const AntennaGainDBi = 25.0
+// ReceiverSensitivity is a legacy default-only alias. Production ray
+// evaluation resolves the effective ReceiverThreshold per cell.
+const ReceiverSensitivity = DefaultReceiverSensitivityDBm
+
+// AntennaGainDBi is a legacy default-only alias. Production link budgets use
+// CellRFProfile.AntennaGainDBi per cell.
+const AntennaGainDBi = DefaultAntennaGainDBi
 const SegmentStepMeters = 25.0
 const DemandScoreMultiplier = 10000.0
 const ResidentialScoreMultiplier = 10000.0
 const CoverageTieBreakerPerRay = 100.0
 const CoverageTieBreakerMaxMeters = 500.0
 const NetworkOverlapPenaltyPerBuilding = 2500.0
-const CoveredBuildingThresholdDBm = -100.0
 const MaxCoverageGapFeatures = 500
 const MaxSimulationResponseFeatures = 25000
 
@@ -54,32 +58,58 @@ func ValidateSimulationFeatureBudget(rays int, radiusMeters float64) string {
 }
 
 type StaticSimulationRequest struct {
-	TowerLon            float64 `json:"tower_lon"`
-	TowerLat            float64 `json:"tower_lat"`
-	Rays                int     `json:"rays"`
-	RadiusMeters        float64 `json:"radius_m"`
-	FrequencyGHz        float64 `json:"frequency_ghz"`
-	TxPowerDBm          float64 `json:"tx_power_dbm"`
-	AzimuthDeg          float64 `json:"azimuth"`
-	BeamWidthDeg        float64 `json:"beam_width"`
-	CalibrationOffsetDB float64 `json:"calibration_offset_db,omitempty"`
+	TowerLon            float64       `json:"tower_lon"`
+	TowerLat            float64       `json:"tower_lat"`
+	Rays                int           `json:"rays"`
+	RadiusMeters        float64       `json:"radius_m"`
+	FrequencyGHz        float64       `json:"frequency_ghz"`
+	TxPowerDBm          float64       `json:"tx_power_dbm"`
+	AzimuthDeg          float64       `json:"azimuth"`
+	BeamWidthDeg        float64       `json:"beam_width"`
+	CalibrationOffsetDB float64       `json:"calibration_offset_db,omitempty"`
+	RFProfile           CellRFProfile `json:"rf_profile"`
 }
 
 type NetworkTowerRequest struct {
-	ID         string  `json:"id"`
-	TowerLon   float64 `json:"tower_lon"`
-	TowerLat   float64 `json:"tower_lat"`
-	AzimuthDeg float64 `json:"azimuth"`
+	ID         string        `json:"id"`
+	TowerLon   float64       `json:"tower_lon"`
+	TowerLat   float64       `json:"tower_lat"`
+	AzimuthDeg float64       `json:"azimuth"`
+	RFProfile  CellRFProfile `json:"rf_profile"`
 }
 
 type NetworkOptimizationRequest struct {
-	Towers              []NetworkTowerRequest `json:"towers"`
-	Rays                int                   `json:"rays"`
-	RadiusMeters        float64               `json:"radius_m"`
-	FrequencyGHz        float64               `json:"frequency_ghz"`
-	TxPowerDBm          float64               `json:"tx_power_dbm"`
-	BeamWidthDeg        float64               `json:"beam_width"`
-	CalibrationOffsetDB float64               `json:"calibration_offset_db,omitempty"`
+	Towers               []NetworkTowerRequest `json:"towers"`
+	Rays                 int                   `json:"rays"`
+	RadiusMeters         float64               `json:"radius_m"`
+	FrequencyGHz         float64               `json:"frequency_ghz"`
+	TxPowerDBm           float64               `json:"tx_power_dbm"`
+	BeamWidthDeg         float64               `json:"beam_width"`
+	CalibrationOffsetDB  float64               `json:"calibration_offset_db,omitempty"`
+	RFProfile            CellRFProfile         `json:"rf_profile"`
+	Optimization         OptimizationConfig    `json:"optimization"`
+	SearchPolicy         string                `json:"search_policy,omitempty"`
+	MaxSearchPasses      int                   `json:"max_search_passes,omitempty"`
+	MaxUniqueEvaluations int                   `json:"max_unique_evaluations,omitempty"`
+	MaxExpandedStates    int                   `json:"max_expanded_states,omitempty"`
+	MaxSearchRounds      int                   `json:"max_search_rounds,omitempty"`
+}
+
+type OptimizationObjective struct {
+	ID     string  `json:"id"`
+	Weight float64 `json:"weight"`
+}
+
+type OptimizationConstraints struct {
+	MinCoverageScore              *float64 `json:"min_coverage_score,omitempty"`
+	MinUniqueDemandBuildings      *int     `json:"min_unique_demand_buildings,omitempty"`
+	MinUniqueResidentialBuildings *int     `json:"min_unique_residential_buildings,omitempty"`
+	MaxOverlapBuildings           *int     `json:"max_overlap_buildings,omitempty"`
+}
+
+type OptimizationConfig struct {
+	Objectives  []OptimizationObjective `json:"objectives"`
+	Constraints OptimizationConstraints `json:"constraints"`
 }
 
 type RayFeatureCollection struct {
@@ -88,8 +118,11 @@ type RayFeatureCollection struct {
 }
 
 type StaticSimulationResponse struct {
-	GeoJSON RayFeatureCollection `json:"geojson"`
-	Stats   SimulationStats      `json:"stats"`
+	GeoJSON           RayFeatureCollection `json:"geojson"`
+	Stats             SimulationStats      `json:"stats"`
+	RFProfile         CellRFProfile        `json:"rf_profile"`
+	ReceiverThreshold ReceiverThreshold    `json:"receiver_threshold"`
+	RFContract        RFContractMetadata   `json:"rf_contract"`
 }
 
 type SectorAnalysisResponse struct {
@@ -98,52 +131,149 @@ type SectorAnalysisResponse struct {
 }
 
 type AzimuthOptimizationResponse struct {
-	OptimalAzimuth          float64 `json:"optimal_azimuth"`
-	CoverageScore           float64 `json:"coverage_score"`
-	DemandScore             float64 `json:"demand_score"`
-	ResidentialScore        float64 `json:"residential_score"`
-	HitDemandBuildings      int     `json:"hit_demand_buildings"`
-	HitResidentialBuildings int     `json:"hit_residential_buildings"`
-	DataQuality             string  `json:"data_quality"`
+	OptimalAzimuth          float64            `json:"optimal_azimuth"`
+	CoverageScore           float64            `json:"coverage_score"`
+	PropagationReachScore   float64            `json:"propagation_reach_score"`
+	DemandScore             float64            `json:"demand_score"`
+	ResidentialScore        float64            `json:"residential_score"`
+	HitDemandBuildings      int                `json:"hit_demand_buildings"`
+	HitResidentialBuildings int                `json:"hit_residential_buildings"`
+	DataQuality             string             `json:"data_quality"`
+	ReceiverThreshold       ReceiverThreshold  `json:"receiver_threshold"`
+	RFContract              RFContractMetadata `json:"rf_contract"`
 }
 
 type NetworkOptimizedTower struct {
-	ID             string  `json:"id"`
-	OptimalAzimuth float64 `json:"optimal_azimuth"`
-	Score          float64 `json:"score"`
+	ID                string            `json:"id"`
+	OptimalAzimuth    float64           `json:"optimal_azimuth"`
+	Score             float64           `json:"score"`
+	RFProfile         CellRFProfile     `json:"rf_profile"`
+	ReceiverThreshold ReceiverThreshold `json:"receiver_threshold"`
 }
 
 type NetworkOptimizationStats struct {
-	NetworkScore               float64 `json:"network_score"`
-	UniqueDemandBuildings      int     `json:"unique_demand_buildings"`
-	UniqueResidentialBuildings int     `json:"unique_residential_buildings"`
-	OverlapBuildings           int     `json:"overlap_buildings"`
-	DemandScore                float64 `json:"demand_score"`
-	ResidentialScore           float64 `json:"residential_score"`
-	CoverageScore              float64 `json:"coverage_score"`
-	OverlapPenalty             float64 `json:"overlap_penalty"`
-	DataQuality                string  `json:"data_quality"`
+	NetworkScore               float64                        `json:"network_score"`
+	UniqueDemandBuildings      int                            `json:"unique_demand_buildings"`
+	UniqueResidentialBuildings int                            `json:"unique_residential_buildings"`
+	OverlapBuildings           int                            `json:"overlap_buildings"`
+	DemandScore                float64                        `json:"demand_score"`
+	ResidentialScore           float64                        `json:"residential_score"`
+	CoverageScore              float64                        `json:"coverage_score"`
+	OverlapPenalty             float64                        `json:"overlap_penalty"`
+	DataQuality                string                         `json:"data_quality"`
+	RawMetrics                 OptimizationRawMetrics         `json:"raw_metrics"`
+	Objectives                 OptimizationUtilities          `json:"objectives"`
+	CompositeScore             float64                        `json:"composite_score"`
+	Score                      float64                        `json:"score"`
+	ObjectiveBreakdown         OptimizationObjectiveBreakdown `json:"objective_breakdown"`
+	ObjectiveStatus            OptimizationObjectiveStatusMap `json:"objective_status,omitempty"`
+}
+
+// NetworkOptimizationCellConfiguration is the resolved configuration of one
+// selected cell at the boundary of a network optimization execution. Keeping
+// this alongside the baseline stats makes the baseline identity independent of
+// any later UI re-ranking or project edits.
+type NetworkOptimizationCellConfiguration struct {
+	ID                string            `json:"id"`
+	TowerLon          float64           `json:"tower_lon"`
+	TowerLat          float64           `json:"tower_lat"`
+	AzimuthDeg        float64           `json:"azimuth_deg"`
+	RFProfile         CellRFProfile     `json:"rf_profile"`
+	ReceiverThreshold ReceiverThreshold `json:"receiver_threshold"`
+}
+
+// NetworkOptimizationParameters contains request-level RF inputs that are not
+// repeated in each resolved cell profile.
+type NetworkOptimizationParameters struct {
+	Rays                int           `json:"rays"`
+	RadiusMeters        float64       `json:"radius_m"`
+	FrequencyGHz        float64       `json:"frequency_ghz"`
+	TxPowerDBm          float64       `json:"tx_power_dbm"`
+	BeamWidthDeg        float64       `json:"beam_width"`
+	BandwidthMHz        float64       `json:"bandwidth_mhz,omitempty"`
+	LoadFactor          float64       `json:"load_factor,omitempty"`
+	ReuseFactor         int           `json:"reuse_factor,omitempty"`
+	CalibrationOffsetDB float64       `json:"calibration_offset_db,omitempty"`
+	RFProfile           CellRFProfile `json:"rf_profile"`
+}
+
+// NetworkOptimizationSolution is a compact, authoritative solution snapshot.
+// The baseline is retained by optimize-network; optimized solutions continue
+// to use the existing response stats and Pareto frontier records.
+type NetworkOptimizationSolution struct {
+	CellConfigurations   []NetworkOptimizationCellConfiguration `json:"cell_configurations"`
+	Parameters           NetworkOptimizationParameters          `json:"parameters"`
+	Stats                NetworkOptimizationStats               `json:"stats"`
+	ConstraintsSatisfied bool                                   `json:"constraints_satisfied"`
+	Violations           []string                               `json:"violations,omitempty"`
 }
 
 type NetworkOptimizationResponse struct {
-	OptimizedTowers []NetworkOptimizedTower  `json:"optimized_towers"`
-	Stats           NetworkOptimizationStats `json:"stats"`
+	OptimizedTowers       []NetworkOptimizedTower      `json:"optimized_towers"`
+	Stats                 NetworkOptimizationStats     `json:"stats"`
+	OptimizationDomain    OptimizationDomainMetadata   `json:"optimization_domain"`
+	Optimization          OptimizationOutcome          `json:"optimization"`
+	ParetoFrontier        []NetworkParetoSolution      `json:"pareto_frontier"`
+	OptimizationRunID     string                       `json:"optimization_run_id,omitempty"`
+	Baseline              *NetworkOptimizationSolution `json:"baseline,omitempty"`
+	RequestDefaults       RFRequestDefaults            `json:"request_defaults"`
+	EffectiveCellProfiles []EffectiveCellRFProfile     `json:"effective_cell_profiles"`
+	RFContract            RFContractMetadata           `json:"rf_contract"`
+	ScenarioFingerprint   string                       `json:"scenario_fingerprint"`
+	ScenarioSchemaVersion string                       `json:"scenario_schema_version"`
+}
+
+type OptimizationOutcome struct {
+	Objectives            []OptimizationObjective            `json:"objectives"`
+	ConfiguredPriorities  map[string]float64                 `json:"configured_priorities"`
+	NormalizedWeights     map[string]float64                 `json:"normalized_weights"`
+	EffectiveWeights      map[string]float64                 `json:"effective_weights"`
+	ObjectiveStatus       OptimizationObjectiveStatusMap     `json:"objective_status"`
+	Constraints           OptimizationConstraints            `json:"constraints"`
+	ObjectiveScore        float64                            `json:"objective_score"`
+	CompositeScore        float64                            `json:"composite_score"`
+	Score                 float64                            `json:"score"`
+	RecommendedSolutionID string                             `json:"recommended_solution_id,omitempty"`
+	ConstraintsSatisfied  bool                               `json:"constraints_satisfied"`
+	Recommended           bool                               `json:"recommended"`
+	Violations            []string                           `json:"violations"`
+	AdjustedParameters    []string                           `json:"adjusted_parameters"`
+	RadioQuality          *OptimizationRadioQualityMetadata  `json:"radio_quality,omitempty"`
+	Search                *NetworkOptimizationSearchMetadata `json:"search,omitempty"`
+}
+
+type ParetoTowerSetting struct {
+	ID         string  `json:"id"`
+	AzimuthDeg float64 `json:"azimuth_deg"`
+}
+
+type NetworkParetoSolution struct {
+	ID             string                   `json:"id,omitempty"`
+	Towers         []ParetoTowerSetting     `json:"towers"`
+	Stats          NetworkOptimizationStats `json:"stats"`
+	ObjectiveScore float64                  `json:"objective_score"`
+	CompositeScore float64                  `json:"composite_score"`
+	Score          float64                  `json:"score"`
+	Explanation    string                   `json:"explanation"`
 }
 
 type CoverageGapResponse struct {
-	GeoJSON PointFeatureCollection `json:"geojson"`
-	Stats   CoverageGapStats       `json:"stats"`
+	GeoJSON           PointFeatureCollection `json:"geojson"`
+	Stats             CoverageGapStats       `json:"stats"`
+	ReceiverThreshold ReceiverThreshold      `json:"receiver_threshold"`
+	RFContract        RFContractMetadata     `json:"rf_contract"`
 }
 
 type CoverageGapStats struct {
-	CandidateBuildings int     `json:"candidate_buildings"`
-	ServedBuildings    int     `json:"served_buildings"`
-	GapBuildings       int     `json:"gap_buildings"`
-	ReturnedGaps       int     `json:"returned_gaps"`
-	GapPct             float64 `json:"gap_pct"`
-	TotalGapDemand     float64 `json:"total_gap_demand"`
-	WorstRxDBm         float64 `json:"worst_rx_dbm"`
-	ThresholdDBm       float64 `json:"threshold_dbm"`
+	CandidateBuildings          int     `json:"candidate_buildings"`
+	ServedBuildings             int     `json:"served_buildings"`
+	GapBuildings                int     `json:"gap_buildings"`
+	ReturnedGaps                int     `json:"returned_gaps"`
+	GapPct                      float64 `json:"gap_pct"`
+	TotalGapDemand              float64 `json:"total_gap_demand"`
+	WorstRxDBm                  float64 `json:"worst_rx_dbm"`
+	ThresholdDBm                float64 `json:"threshold_dbm"`
+	BuildingServiceThresholdDBm float64 `json:"building_service_threshold_dbm"`
 }
 
 type SimulationStats struct {
@@ -160,20 +290,31 @@ type RayFeature struct {
 }
 
 type RayProperties struct {
-	AngleDeg        float64 `json:"angle_deg"`
-	RayIndex        int     `json:"ray_index"`
-	SegmentIndex    int     `json:"segment_index"`
-	SignalDBm       float64 `json:"signal_dbm"`
-	SignalStartDBm  float64 `json:"signal_start_dbm"`
-	SignalEndDBm    float64 `json:"signal_end_dbm"`
-	PathLossDB      float64 `json:"path_loss_db"`
-	WallLossDB      float64 `json:"wall_loss_db"`
-	IsBlocked       bool    `json:"is_blocked"`
-	DistanceMeters  float64 `json:"distance_m"`
-	SegmentStartM   float64 `json:"segment_start_m"`
-	SegmentEndM     float64 `json:"segment_end_m"`
-	HitBuildingID   string  `json:"hit_building_id,omitempty"`
-	CandidateChecks int     `json:"candidate_checks"`
+	AngleDeg                  float64            `json:"angle_deg"`
+	RayIndex                  int                `json:"ray_index"`
+	SegmentIndex              int                `json:"segment_index"`
+	SignalDBm                 float64            `json:"signal_dbm"`
+	SignalStartDBm            float64            `json:"signal_start_dbm"`
+	SignalEndDBm              float64            `json:"signal_end_dbm"`
+	PathLossDB                float64            `json:"path_loss_db"`
+	WallLossDB                float64            `json:"wall_loss_db"`
+	IsBlocked                 bool               `json:"is_blocked"`
+	DistanceMeters            float64            `json:"distance_m"`
+	SegmentStartM             float64            `json:"segment_start_m"`
+	SegmentEndM               float64            `json:"segment_end_m"`
+	HitBuildingID             string             `json:"hit_building_id,omitempty"`
+	CandidateChecks           int                `json:"candidate_checks"`
+	PropagationModelID        string             `json:"propagation_model_id,omitempty"`
+	AppliedPropagationModelID string             `json:"applied_propagation_model_id,omitempty"`
+	LOSState                  string             `json:"los_state,omitempty"`
+	LOSClassifierID           string             `json:"los_classifier_id,omitempty"`
+	LOSClassificationBasis    string             `json:"los_classification_basis,omitempty"`
+	TerrainStatus             string             `json:"terrain_status,omitempty"`
+	LOSClassification         *LOSClassification `json:"los_classification,omitempty"`
+	FallbackUsed              bool               `json:"fallback_used,omitempty"`
+	ApplicabilityReason       string             `json:"applicability_reason,omitempty"`
+	LinkBudget                RFLinkBudgetTerms  `json:"link_budget"`
+	ReceiverLinkMarginDB      float64            `json:"receiver_link_margin_db"`
 }
 
 type LineGeometry struct {
@@ -193,15 +334,16 @@ type PointFeature struct {
 }
 
 type GapProperties struct {
-	BuildingID        string  `json:"building_id"`
-	RxDBm             float64 `json:"rx_dbm"`
-	DistanceMeters    float64 `json:"distance_m"`
-	DemandWeight      float64 `json:"demand_weight"`
-	ResidentialDemand float64 `json:"residential_demand"`
-	DensityScore      float64 `json:"density_score"`
-	TotalDemand       float64 `json:"total_demand"`
-	Reason            string  `json:"reason"`
-	Severity          string  `json:"severity"`
+	BuildingID                  string  `json:"building_id"`
+	RxDBm                       float64 `json:"rx_dbm"`
+	BuildingServiceThresholdDBm float64 `json:"building_service_threshold_dbm"`
+	DistanceMeters              float64 `json:"distance_m"`
+	DemandWeight                float64 `json:"demand_weight"`
+	ResidentialDemand           float64 `json:"residential_demand"`
+	DensityScore                float64 `json:"density_score"`
+	TotalDemand                 float64 `json:"total_demand"`
+	Reason                      string  `json:"reason"`
+	Severity                    string  `json:"severity"`
 }
 
 type PointGeometry struct {
@@ -232,6 +374,15 @@ func NormalizeStaticSimulationRequest(req *StaticSimulationRequest) {
 	if req.BeamWidthDeg > MaxBeamWidthDeg {
 		req.BeamWidthDeg = MaxBeamWidthDeg
 	}
+	if req.RFProfile.SchemaVersion == 0 {
+		req.RFProfile = DefaultCellRFProfile(NetworkTechnologyForFrequency(req.FrequencyGHz), req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, 0, 0, 0)
+	} else {
+		req.RFProfile = req.RFProfile.normalized()
+		req.RadiusMeters = req.RFProfile.RadiusMeters
+		req.FrequencyGHz = req.RFProfile.FrequencyGHz
+		req.TxPowerDBm = req.RFProfile.TxPowerDBm
+		req.BeamWidthDeg = req.RFProfile.BeamWidthDeg
+	}
 }
 
 func NormalizeNetworkOptimizationRequest(req *NetworkOptimizationRequest) {
@@ -256,17 +407,22 @@ func NormalizeNetworkOptimizationRequest(req *NetworkOptimizationRequest) {
 	if req.BeamWidthDeg > MaxBeamWidthDeg {
 		req.BeamWidthDeg = MaxBeamWidthDeg
 	}
+	if req.RFProfile.SchemaVersion == 0 {
+		req.RFProfile = DefaultCellRFProfile(NetworkTechnologyForFrequency(req.FrequencyGHz), req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, 0, 0, 0)
+	}
 	for index := range req.Towers {
 		req.Towers[index].AzimuthDeg = normalizeDegrees(req.Towers[index].AzimuthDeg)
+		if req.Towers[index].RFProfile.SchemaVersion == 0 {
+			req.Towers[index].RFProfile = req.RFProfile
+		} else {
+			req.Towers[index].RFProfile = req.Towers[index].RFProfile.normalized()
+		}
 	}
-}
-
-func SimulateStaticRays(req StaticSimulationRequest, buildings *BuildingIndex) StaticSimulationResponse {
-	response, _ := SimulateStaticRaysContext(context.Background(), req, buildings)
-	return response
+	req.Optimization = NormalizeOptimizationConfig(&req.Optimization)
 }
 
 func SimulateStaticRaysContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (StaticSimulationResponse, error) {
+	NormalizeStaticSimulationRequest(&req)
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
@@ -310,12 +466,16 @@ func staticSimulationResponseFromProfilesContext(ctx context.Context, req Static
 		Features: features,
 	}
 	return StaticSimulationResponse{
-		GeoJSON: geojson,
-		Stats:   CalculateSimulationStats(terminals),
+		GeoJSON:           geojson,
+		Stats:             CalculateSimulationStats(terminals),
+		RFProfile:         req.RFProfile,
+		ReceiverThreshold: receiverThresholdForProfileOrManual(req.RFProfile),
+		RFContract:        rfContractForProfile(&req.RFProfile, req.CalibrationOffsetDB),
 	}, nil
 }
 
 func AnalyzeSectorContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (SectorAnalysisResponse, error) {
+	NormalizeStaticSimulationRequest(&req)
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
@@ -337,13 +497,8 @@ func AnalyzeSectorContext(ctx context.Context, req StaticSimulationRequest, buil
 	return SectorAnalysisResponse{Simulation: simulation, CoverageGaps: coverageGaps}, nil
 }
 
-func OptimizeAzimuth(req StaticSimulationRequest, buildings *BuildingIndex) AzimuthOptimizationResponse {
-	NormalizeStaticSimulationRequest(&req)
-	response, _ := OptimizeAzimuthContext(context.Background(), req, buildings)
-	return response
-}
-
 func OptimizeAzimuthContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (AzimuthOptimizationResponse, error) {
+	NormalizeStaticSimulationRequest(&req)
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 
 	type sweepResult struct {
@@ -419,135 +574,373 @@ func OptimizeAzimuthContext(ctx context.Context, req StaticSimulationRequest, bu
 	return AzimuthOptimizationResponse{
 		OptimalAzimuth:          best.azimuth,
 		CoverageScore:           math.Round(best.breakdown.CoverageScore*10) / 10,
+		PropagationReachScore:   math.Round(best.breakdown.CoverageScore*10) / 10,
 		DemandScore:             math.Round(best.breakdown.DemandScore*10) / 10,
 		ResidentialScore:        math.Round(best.breakdown.ResidentialScore*10) / 10,
 		HitDemandBuildings:      best.breakdown.HitDemandBuildings,
 		HitResidentialBuildings: best.breakdown.HitResidentialBuildings,
 		DataQuality:             demandSummary.DataQuality,
+		ReceiverThreshold:       receiverThresholdForProfileOrManual(req.RFProfile),
+		RFContract:              rfContractForProfile(&req.RFProfile, req.CalibrationOffsetDB),
 	}, nil
 }
 
-func OptimizeNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) NetworkOptimizationResponse {
-	NormalizeNetworkOptimizationRequest(&req)
-	response, _ := OptimizeNetworkContext(context.Background(), req, buildings)
-	return response
+func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
+	if validationError := ValidateNetworkOptimizationSearchOptions(req); validationError != "" {
+		return NetworkOptimizationResponse{}, fmt.Errorf("%s", validationError)
+	}
+	if normalizeNetworkSearchPolicy(req.SearchPolicy) == DeterministicMultiStartCoordinateV1 {
+		return OptimizeNetworkMultiStartContext(ctx, req, buildings)
+	}
+	if normalizeNetworkSearchPolicy(req.SearchPolicy) == DeterministicParetoArchiveSearchV1 {
+		return OptimizeNetworkParetoArchiveContext(ctx, req, buildings)
+	}
+	return optimizeNetworkLegacyContext(ctx, req, buildings, true)
 }
 
-func OptimizeNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
+// memoizeCells=false is the uncached reference path used by invariance tests.
+func optimizeNetworkLegacyContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex, memoizeCells bool) (NetworkOptimizationResponse, error) {
+	setupDone := timeOptimizationPhase(ctx, "setup")
+	defer setupDone()
+	NormalizeNetworkOptimizationRequest(&req)
+	scenarioFingerprint := NetworkScenarioFingerprint(req)
+	config := req.Optimization
+	if validationError := ValidateOptimizationConfig(config); validationError != "" {
+		return NetworkOptimizationResponse{}, fmt.Errorf("%s", validationError)
+	}
+	if buildings == nil {
+		buildings = EmptyBuildingIndex()
+	}
+	prepareDone := timeOptimizationPhase(ctx, "domain_preparation")
+	prepared, prepareErr := prepareNetworkOptimizationContext(ctx, req, buildings)
+	prepareDone()
+	if prepareErr != nil {
+		return NetworkOptimizationResponse{}, prepareErr
+	}
+	if memoizeCells {
+		prepared.cellContributions = make(networkCellContributionCache)
+	}
+	if _, weightErr := NormalizeAvailableOptimizationPriorities(config.Objectives, prepared.ObjectiveAvailability); weightErr != nil {
+		return NetworkOptimizationResponse{}, weightErr
+	}
 	azimuths := make([]float64, len(req.Towers))
 	for index, tower := range req.Towers {
 		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
 	}
+	baselineAzimuths := append([]float64(nil), azimuths...)
 
+	setupDone()
+	initializationDone := timeOptimizationPhase(ctx, "search_initialization")
+	evaluated := make([]networkOptimizationCandidate, 0, len(req.Towers)*72+1)
+	initializationDone()
+	baselineDone := timeOptimizationPhase(ctx, "baseline")
+	defer baselineDone()
+	baselineBreakdown, err := timedNetworkCandidate(ctx, req, azimuths, buildings, prepared)
+	baselineDone()
+	if err != nil {
+		return NetworkOptimizationResponse{}, err
+	}
+	evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), azimuths...), Stats: baselineBreakdown})
+	searchDone := timeOptimizationPhase(ctx, "search")
+	defer searchDone()
+	startDone := timeOptimizationStep(ctx, "start", 0, -1)
+	defer startDone()
 	for pass := 0; pass < 2; pass++ {
+		passDone := timeOptimizationStep(ctx, "pass", pass, -1)
+		defer passDone()
 		for towerIndex := range req.Towers {
+			coordinateDone := timeOptimizationStep(ctx, "coordinate", pass, towerIndex)
+			defer coordinateDone()
 			bestAzimuth := azimuths[towerIndex]
 			bestScore := math.Inf(-1)
+			bestFeasible := false
 			for candidate := 0; candidate < 36; candidate++ {
 				if err := ctx.Err(); err != nil {
 					return NetworkOptimizationResponse{}, err
 				}
+				generationDone := timeOptimizationPhase(ctx, "candidate_generation")
 				testAzimuths := append([]float64(nil), azimuths...)
 				testAzimuths[towerIndex] = float64(candidate * 10)
-				breakdown, err := NetworkCoverageScoreBreakdownContext(ctx, req, testAzimuths, buildings)
+				generationDone()
+				breakdown, err := timedNetworkCandidate(ctx, req, testAzimuths, buildings, prepared)
 				if err != nil {
 					return NetworkOptimizationResponse{}, err
 				}
-				if breakdown.NetworkScore > bestScore {
-					bestScore = breakdown.NetworkScore
+				evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), testAzimuths...), Stats: breakdown})
+				constraintDone := timeOptimizationPhase(ctx, "objective_constraints")
+				score := optimizationObjectiveScoreWithAvailability(breakdown, config, prepared.ObjectiveAvailability)
+				feasible := len(OptimizationConstraintViolations(breakdown, config.Constraints)) == 0
+				constraintDone()
+				if (feasible && (!bestFeasible || score > bestScore)) || (!bestFeasible && !feasible && score > bestScore) {
+					bestScore = score
 					bestAzimuth = testAzimuths[towerIndex]
+					bestFeasible = feasible
 				}
 			}
 			azimuths[towerIndex] = bestAzimuth
+			coordinateDone()
 		}
+		passDone()
 	}
+	startDone()
+	searchDone()
 
-	breakdown, err := NetworkCoverageScoreBreakdownContext(ctx, req, azimuths, buildings)
+	breakdown, err := timedNetworkCandidate(ctx, req, azimuths, buildings, prepared)
 	if err != nil {
 		return NetworkOptimizationResponse{}, err
 	}
-	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
-	for index, tower := range req.Towers {
-		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
-		towerBreakdown, scoreErr := CoverageAreaScoreBreakdownContext(ctx, Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings)
-		if scoreErr != nil {
-			return NetworkOptimizationResponse{}, scoreErr
-		}
-		score := towerBreakdown.TotalScore
-		optimized = append(optimized, NetworkOptimizedTower{
-			ID:             tower.ID,
-			OptimalAzimuth: azimuths[index],
-			Score:          math.Round(score*10) / 10,
-		})
+	evaluated = append(evaluated, networkOptimizationCandidate{Azimuths: append([]float64(nil), azimuths...), Stats: breakdown})
+	rankingDone := timeOptimizationPhase(ctx, "ranking_recommendation")
+	defer rankingDone()
+	finalStats, scoreErr := scoreNetworkOptimization(breakdown, config, prepared.ObjectiveAvailability)
+	if scoreErr != nil {
+		return NetworkOptimizationResponse{}, scoreErr
 	}
-
+	baselineStats, scoreErr := scoreNetworkOptimization(baselineBreakdown, config, prepared.ObjectiveAvailability)
+	if scoreErr != nil {
+		return NetworkOptimizationResponse{}, scoreErr
+	}
+	paretoDone := timeOptimizationPhase(ctx, "pareto_archive")
+	frontier := networkParetoFrontierWithTiming(optimizationTiming(ctx), evaluated, req.Towers, config, prepared.ObjectiveAvailability)
+	paretoDone()
+	if timing := optimizationTiming(ctx); timing != nil {
+		timing.Pareto = len(frontier)
+	}
+	recommendedAzimuths := []float64(nil)
+	recommendedStats := finalStats
+	recommended := len(frontier) > 0
+	recommendedSolutionID := ""
+	if recommended {
+		recommendedAzimuths = azimuthsForParetoSolution(frontier[0], req.Towers)
+		recommendedSolutionID = frontier[0].ID
+		if candidateStats, found := networkCandidateStats(evaluated, recommendedAzimuths); found {
+			recommendedStats, scoreErr = scoreNetworkOptimization(candidateStats, config, prepared.ObjectiveAvailability)
+			if scoreErr != nil {
+				return NetworkOptimizationResponse{}, scoreErr
+			}
+		}
+	}
 	demandSummary := buildings.DemandSummary("")
-	breakdown.DataQuality = demandSummary.DataQuality
+	baselineStats.DataQuality = demandSummary.DataQuality
+	recommendedStats.DataQuality = demandSummary.DataQuality
+	baselineViolations := OptimizationConstraintViolations(baselineStats, config.Constraints)
+	violations := OptimizationConstraintViolations(recommendedStats, config.Constraints)
+	normalizedWeights, weightErr := NormalizeAvailableOptimizationPriorities(config.Objectives, prepared.ObjectiveAvailability)
+	if weightErr != nil {
+		return NetworkOptimizationResponse{}, weightErr
+	}
+	configuredPriorities := configuredOptimizationPriorities(config.Objectives)
+	rankingDone()
+	summaryDone := timeOptimizationPhase(ctx, "compatibility_tower_summaries")
+	defer summaryDone()
+	optimized, optimizedErr := optimizedTowerResults(ctx, req, recommendedAzimuths, buildings)
+	summaryDone()
+	if optimizedErr != nil {
+		return NetworkOptimizationResponse{}, optimizedErr
+	}
+	responseAzimuths := append([]float64(nil), azimuths...)
+	if len(recommendedAzimuths) == len(req.Towers) {
+		responseAzimuths = recommendedAzimuths
+	}
 	return NetworkOptimizationResponse{
-		OptimizedTowers: optimized,
-		Stats:           breakdown.rounded(),
+		OptimizedTowers:       optimized,
+		Stats:                 recommendedStats.rounded(),
+		OptimizationDomain:    prepared.DomainMetadata,
+		OptimizationRunID:     NetworkOptimizationRunID(req),
+		RequestDefaults:       networkRequestDefaults(req),
+		EffectiveCellProfiles: effectiveCellRFProfiles(req, responseAzimuths),
+		RFContract:            rfContractForProfile(&req.RFProfile, req.CalibrationOffsetDB),
+		ScenarioFingerprint:   scenarioFingerprint,
+		ScenarioSchemaVersion: ScenarioFingerprintSchemaVersion,
+		Baseline: &NetworkOptimizationSolution{
+			CellConfigurations:   networkOptimizationCellConfigurations(req, baselineAzimuths),
+			Parameters:           networkOptimizationParameters(req),
+			Stats:                baselineStats.rounded(),
+			ConstraintsSatisfied: len(baselineViolations) == 0,
+			Violations:           baselineViolations,
+		},
+		Optimization: OptimizationOutcome{
+			Objectives: config.Objectives, ConfiguredPriorities: configuredPriorities, NormalizedWeights: normalizedWeights, EffectiveWeights: normalizedWeights,
+			ObjectiveStatus: recommendedStats.ObjectiveStatus, Constraints: config.Constraints,
+			ObjectiveScore: math.Round(LegacyOptimizationObjectiveScore(recommendedStats, config)*10) / 10,
+			CompositeScore: roundFloat(recommendedStats.CompositeScore, 6), Score: roundFloat(recommendedStats.Score, 4),
+			RecommendedSolutionID: recommendedSolutionID,
+			ConstraintsSatisfied:  len(violations) == 0, Recommended: recommended, Violations: violations,
+			AdjustedParameters: []string{"azimuth"},
+			RadioQuality:       radioQualityOptimizationMetadataPointer(prepared.RadioQualityMetadata),
+		},
+		ParetoFrontier: frontier,
 	}, nil
 }
 
-func EvaluateNetwork(req NetworkOptimizationRequest, buildings *BuildingIndex) NetworkOptimizationResponse {
-	NormalizeNetworkOptimizationRequest(&req)
-	response, _ := EvaluateNetworkContext(context.Background(), req, buildings)
-	return response
-}
-
 func EvaluateNetworkContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (NetworkOptimizationResponse, error) {
+	NormalizeNetworkOptimizationRequest(&req)
+	scenarioFingerprint := NetworkScenarioFingerprint(req)
+	config := req.Optimization
+	if validationError := ValidateOptimizationConfig(config); validationError != "" {
+		return NetworkOptimizationResponse{}, fmt.Errorf("%s", validationError)
+	}
+	if buildings == nil {
+		buildings = EmptyBuildingIndex()
+	}
+	prepared, prepareErr := prepareNetworkOptimizationContext(ctx, req, buildings)
+	if prepareErr != nil {
+		return NetworkOptimizationResponse{}, prepareErr
+	}
+	if _, weightErr := NormalizeAvailableOptimizationPriorities(config.Objectives, prepared.ObjectiveAvailability); weightErr != nil {
+		return NetworkOptimizationResponse{}, weightErr
+	}
 	azimuths := make([]float64, len(req.Towers))
 	for index, tower := range req.Towers {
 		azimuths[index] = normalizeDegrees(tower.AzimuthDeg)
 	}
 
-	breakdown, err := NetworkCoverageScoreBreakdownContext(ctx, req, azimuths, buildings)
+	breakdown, err := networkCoverageScoreBreakdownPreparedContext(ctx, req, azimuths, buildings, prepared)
 	if err != nil {
 		return NetworkOptimizationResponse{}, err
 	}
-	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
-	for index, tower := range req.Towers {
-		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
-		towerBreakdown, scoreErr := CoverageAreaScoreBreakdownContext(ctx, Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings)
-		if scoreErr != nil {
-			return NetworkOptimizationResponse{}, scoreErr
-		}
-		score := towerBreakdown.TotalScore
-		optimized = append(optimized, NetworkOptimizedTower{
-			ID:             tower.ID,
-			OptimalAzimuth: azimuths[index],
-			Score:          math.Round(score*10) / 10,
-		})
+	scoredStats, scoreErr := scoreNetworkOptimization(breakdown, config, prepared.ObjectiveAvailability)
+	if scoreErr != nil {
+		return NetworkOptimizationResponse{}, scoreErr
 	}
-
 	demandSummary := buildings.DemandSummary("")
-	breakdown.DataQuality = demandSummary.DataQuality
+	scoredStats.DataQuality = demandSummary.DataQuality
+	violations := OptimizationConstraintViolations(scoredStats, config.Constraints)
+	candidate := networkOptimizationCandidate{Azimuths: azimuths, Stats: breakdown}
+	frontier := networkParetoFrontier([]networkOptimizationCandidate{candidate}, req.Towers, config, prepared.ObjectiveAvailability)
+	normalizedWeights, weightErr := NormalizeAvailableOptimizationPriorities(config.Objectives, prepared.ObjectiveAvailability)
+	if weightErr != nil {
+		return NetworkOptimizationResponse{}, weightErr
+	}
+	configuredPriorities := configuredOptimizationPriorities(config.Objectives)
+	optimized, optimizedErr := optimizedTowerResults(ctx, req, azimuths, buildings)
+	if optimizedErr != nil {
+		return NetworkOptimizationResponse{}, optimizedErr
+	}
 	return NetworkOptimizationResponse{
-		OptimizedTowers: optimized,
-		Stats:           breakdown.rounded(),
+		OptimizedTowers:       optimized,
+		Stats:                 scoredStats.rounded(),
+		OptimizationDomain:    prepared.DomainMetadata,
+		RequestDefaults:       networkRequestDefaults(req),
+		EffectiveCellProfiles: effectiveCellRFProfiles(req, azimuths),
+		RFContract:            rfContractForProfile(&req.RFProfile, req.CalibrationOffsetDB),
+		ScenarioFingerprint:   scenarioFingerprint,
+		ScenarioSchemaVersion: ScenarioFingerprintSchemaVersion,
+		Optimization: OptimizationOutcome{
+			Objectives: config.Objectives, ConfiguredPriorities: configuredPriorities, NormalizedWeights: normalizedWeights, EffectiveWeights: normalizedWeights,
+			ObjectiveStatus: scoredStats.ObjectiveStatus, Constraints: config.Constraints,
+			ObjectiveScore: math.Round(LegacyOptimizationObjectiveScore(scoredStats, config)*10) / 10,
+			CompositeScore: roundFloat(scoredStats.CompositeScore, 6), Score: roundFloat(scoredStats.Score, 4),
+			ConstraintsSatisfied: len(violations) == 0, Recommended: false, Violations: violations,
+			AdjustedParameters: []string{},
+			RadioQuality:       radioQualityOptimizationMetadataPointer(prepared.RadioQualityMetadata),
+		},
+		ParetoFrontier: frontier,
 	}, nil
 }
 
-func NetworkCoverageScoreBreakdown(req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) NetworkOptimizationStats {
-	stats, _ := NetworkCoverageScoreBreakdownContext(context.Background(), req, azimuths, buildings)
-	return stats
+func optimizedTowerResults(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) ([]NetworkOptimizedTower, error) {
+	if len(azimuths) == 0 {
+		return []NetworkOptimizedTower{}, nil
+	}
+	optimized := make([]NetworkOptimizedTower, 0, len(req.Towers))
+	for index, tower := range req.Towers {
+		if index >= len(azimuths) {
+			return []NetworkOptimizedTower{}, nil
+		}
+		simReq := networkTowerToStaticRequest(req, tower, azimuths[index])
+		towerBreakdown, scoreErr := CoverageAreaScoreBreakdownContext(ctx, Point{Lon: tower.TowerLon, Lat: tower.TowerLat}, simReq, buildings)
+		if scoreErr != nil {
+			return nil, scoreErr
+		}
+		optimized = append(optimized, NetworkOptimizedTower{
+			ID:                tower.ID,
+			OptimalAzimuth:    normalizeDegrees(azimuths[index]),
+			Score:             math.Round(towerBreakdown.TotalScore*10) / 10,
+			RFProfile:         simReq.RFProfile,
+			ReceiverThreshold: receiverThresholdForProfileOrManual(simReq.RFProfile),
+		})
+	}
+	return optimized, nil
+}
+
+func networkOptimizationParameters(req NetworkOptimizationRequest) NetworkOptimizationParameters {
+	return NetworkOptimizationParameters{
+		Rays:                req.Rays,
+		RadiusMeters:        req.RadiusMeters,
+		FrequencyGHz:        req.FrequencyGHz,
+		TxPowerDBm:          req.TxPowerDBm,
+		BeamWidthDeg:        req.BeamWidthDeg,
+		BandwidthMHz:        req.RFProfile.BandwidthMHz,
+		LoadFactor:          req.RFProfile.LoadFactor,
+		ReuseFactor:         req.RFProfile.ReuseFactor,
+		CalibrationOffsetDB: req.CalibrationOffsetDB,
+		RFProfile:           req.RFProfile,
+	}
+}
+
+func networkOptimizationCellConfigurations(req NetworkOptimizationRequest, azimuths []float64) []NetworkOptimizationCellConfiguration {
+	configurations := make([]NetworkOptimizationCellConfiguration, 0, len(req.Towers))
+	for index, tower := range req.Towers {
+		azimuth := tower.AzimuthDeg
+		if index < len(azimuths) {
+			azimuth = azimuths[index]
+		}
+		resolved := networkTowerToStaticRequest(req, tower, azimuth)
+		configurations = append(configurations, NetworkOptimizationCellConfiguration{
+			ID:                tower.ID,
+			TowerLon:          tower.TowerLon,
+			TowerLat:          tower.TowerLat,
+			AzimuthDeg:        normalizeDegrees(azimuth),
+			RFProfile:         resolved.RFProfile,
+			ReceiverThreshold: receiverThresholdForProfileOrManual(resolved.RFProfile),
+		})
+	}
+	return configurations
+}
+
+func networkCandidateStats(candidates []networkOptimizationCandidate, azimuths []float64) (NetworkOptimizationStats, bool) {
+	key := azimuthKey(azimuths)
+	for _, candidate := range candidates {
+		if azimuthKey(candidate.Azimuths) == key {
+			return candidate.Stats, true
+		}
+	}
+	return NetworkOptimizationStats{}, false
+}
+
+func azimuthsForParetoSolution(solution NetworkParetoSolution, towers []NetworkTowerRequest) []float64 {
+	byID := make(map[string]float64, len(solution.Towers))
+	for _, setting := range solution.Towers {
+		byID[setting.ID] = setting.AzimuthDeg
+	}
+	azimuths := make([]float64, 0, len(towers))
+	for _, tower := range towers {
+		azimuth, ok := byID[tower.ID]
+		if !ok {
+			return nil
+		}
+		azimuths = append(azimuths, normalizeDegrees(azimuth))
+	}
+	return azimuths
 }
 
 func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex) (NetworkOptimizationStats, error) {
-	stats := NetworkOptimizationStats{}
+	NormalizeNetworkOptimizationRequest(&req)
 	if buildings == nil {
-		return stats, nil
+		buildings = EmptyBuildingIndex()
 	}
-	buildingByID := make(map[string]*BuildingFootprint, len(buildings.Footprints()))
-	for index, building := range buildings.Footprints() {
-		if index%64 == 0 {
-			if err := ctx.Err(); err != nil {
-				return NetworkOptimizationStats{}, err
-			}
-		}
-		if building != nil && building.ID != "" {
-			buildingByID[building.ID] = building
-		}
+	prepared, err := prepareNetworkOptimizationContext(ctx, req, buildings)
+	if err != nil {
+		return NetworkOptimizationStats{}, err
+	}
+	return networkCoverageScoreBreakdownPreparedContext(ctx, req, azimuths, buildings, prepared)
+}
+
+func networkCoverageScoreBreakdownPreparedContext(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex, prepared *PreparedNetworkOptimizationContext) (NetworkOptimizationStats, error) {
+	stats := NetworkOptimizationStats{}
+	if prepared == nil {
+		return stats, nil
 	}
 
 	servedCounts := make(map[string]int)
@@ -561,16 +954,12 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 			azimuth = azimuths[index]
 		}
 		simReq := networkTowerToStaticRequest(req, tower, azimuth)
-		origin := Point{Lon: tower.TowerLon, Lat: tower.TowerLat}
-		towerBreakdown, err := CoverageAreaScoreBreakdownContext(ctx, origin, simReq, buildings)
+		contribution, err := networkCellRFContribution(ctx, simReq, buildings, prepared.cellContributions)
 		if err != nil {
 			return NetworkOptimizationStats{}, err
 		}
-		stats.CoverageScore += towerBreakdown.CoverageScore
-		coverageMap, err := BuildingCoverageMapContext(ctx, origin, simReq, buildings)
-		if err != nil {
-			return NetworkOptimizationStats{}, err
-		}
+		stats.CoverageScore += contribution.Reach
+		coverageMap := contribution.BuildingCoverage
 		coverageIndex := 0
 		for buildingID, rx := range coverageMap {
 			if coverageIndex%64 == 0 {
@@ -579,7 +968,10 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 				}
 			}
 			coverageIndex++
-			if rx <= CoveredBuildingThresholdDBm {
+			if rx <= BuildingServiceThresholdDBm {
+				continue
+			}
+			if _, relevant := prepared.RelevantBuildings[buildingID]; !relevant {
 				continue
 			}
 			servedCounts[buildingID]++
@@ -589,23 +981,28 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 		}
 	}
 
-	buildingIndex := 0
+	aggregationDone := timeOptimizationPhase(ctx, "domain_aggregation")
+	defer aggregationDone()
+	coveredBuildingIDs := make([]string, 0, len(bestRxByBuilding))
 	for buildingID := range bestRxByBuilding {
+		coveredBuildingIDs = append(coveredBuildingIDs, buildingID)
+	}
+	sort.Strings(coveredBuildingIDs)
+	for buildingIndex, buildingID := range coveredBuildingIDs {
 		if buildingIndex%64 == 0 {
 			if err := ctx.Err(); err != nil {
 				return NetworkOptimizationStats{}, err
 			}
 		}
-		buildingIndex++
-		building := buildingByID[buildingID]
+		building := prepared.RelevantBuildings[buildingID]
 		if building == nil {
 			continue
 		}
-		if building.DemandWeight > 0 {
+		if _, relevant := prepared.RelevantDemandBuildings[buildingID]; relevant {
 			stats.UniqueDemandBuildings++
 			stats.DemandScore += building.DemandWeight * DemandScoreMultiplier
 		}
-		if building.ResidentialDemand > 0 {
+		if _, relevant := prepared.RelevantResidentialBuildings[buildingID]; relevant {
 			stats.UniqueResidentialBuildings++
 			stats.ResidentialScore += building.ResidentialDemand * ResidentialScoreMultiplier
 		}
@@ -615,20 +1012,65 @@ func NetworkCoverageScoreBreakdownContext(ctx context.Context, req NetworkOptimi
 	}
 	stats.OverlapPenalty = float64(stats.OverlapBuildings) * NetworkOverlapPenaltyPerBuilding
 	stats.NetworkScore = stats.DemandScore + stats.ResidentialScore + stats.CoverageScore - stats.OverlapPenalty
+	coveredUnits := len(coveredBuildingIDs)
+	overlapRatio := ratio01(float64(stats.OverlapBuildings), float64(coveredUnits))
+	stats.RawMetrics = OptimizationRawMetrics{
+		ServedWeightedDemand:     stats.DemandScore / DemandScoreMultiplier,
+		ServedDemandWeight:       stats.DemandScore / DemandScoreMultiplier,
+		TotalWeightedDemand:      prepared.TotalRelevantDemandWeight,
+		RelevantDemandWeight:     prepared.TotalRelevantDemandWeight,
+		ResidentialCovered:       stats.UniqueResidentialBuildings,
+		ResidentialTotal:         prepared.TotalRelevantResidential,
+		RelevantResidentialTotal: prepared.TotalRelevantResidential,
+		CoverageReachScore:       stats.CoverageScore,
+		CoverageReachMaximum:     float64(len(req.Towers)*req.Rays) * CoverageTieBreakerPerRay,
+		PropagationReachScore:    stats.CoverageScore,
+		PropagationReachMaximum:  float64(len(req.Towers)*req.Rays) * CoverageTieBreakerPerRay,
+		CoveredUnits:             coveredUnits,
+		OverlapBuildings:         stats.OverlapBuildings,
+		OverlapRatio:             overlapRatio,
+	}
+	if prepared.RadioQuality != nil && prepared.RadioQualityMetadata.Available {
+		radioDone := timeOptimizationPhase(ctx, "rf_radio_quality")
+		radioMetrics, radioErr := prepared.RadioQuality.evaluate(ctx, azimuths)
+		radioDone()
+		if radioErr != nil {
+			return NetworkOptimizationStats{}, radioErr
+		}
+		stats.RawMetrics.RadioQualityTotalSamples = radioMetrics.RadioQualityTotalSamples
+		stats.RawMetrics.RadioQualityServiceableSamples = radioMetrics.RadioQualityServiceableSamples
+		stats.RawMetrics.RadioQualityServiceableFraction = radioMetrics.RadioQualityServiceableFraction
+		stats.RawMetrics.RadioQualityP10SINRDB = radioMetrics.RadioQualityP10SINRDB
+		stats.RawMetrics.RadioQualityMedianSINRDB = radioMetrics.RadioQualityMedianSINRDB
+		stats.RawMetrics.RadioQualityP10RSRPDBm = radioMetrics.RadioQualityP10RSRPDBm
+		stats.RawMetrics.RadioQualityMedianRSRPDBm = radioMetrics.RadioQualityMedianRSRPDBm
+		stats.RawMetrics.RadioQualityP10RSRQDB = radioMetrics.RadioQualityP10RSRQDB
+		stats.RawMetrics.RadioQualityMedianRSRQDB = radioMetrics.RadioQualityMedianRSRQDB
+		stats.RawMetrics.RadioQualityOutageByReason = radioMetrics.RadioQualityOutageByReason
+		stats.RawMetrics.RadioQualityServingCellSamples = radioMetrics.RadioQualityServingCellSamples
+	}
 	return stats, nil
 }
 
 func networkTowerToStaticRequest(req NetworkOptimizationRequest, tower NetworkTowerRequest, azimuth float64) StaticSimulationRequest {
+	profile := tower.RFProfile
+	if profile.SchemaVersion == 0 {
+		profile = req.RFProfile
+		if profile.SchemaVersion == 0 {
+			profile = DefaultCellRFProfile(NetworkTechnologyForFrequency(req.FrequencyGHz), req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, 0, 0, 0)
+		}
+	}
 	return StaticSimulationRequest{
 		TowerLon:            tower.TowerLon,
 		TowerLat:            tower.TowerLat,
 		Rays:                req.Rays,
-		RadiusMeters:        req.RadiusMeters,
-		FrequencyGHz:        req.FrequencyGHz,
-		TxPowerDBm:          req.TxPowerDBm,
+		RadiusMeters:        profile.RadiusMeters,
+		FrequencyGHz:        profile.FrequencyGHz,
+		TxPowerDBm:          profile.TxPowerDBm,
 		AzimuthDeg:          normalizeDegrees(azimuth),
-		BeamWidthDeg:        req.BeamWidthDeg,
+		BeamWidthDeg:        profile.BeamWidthDeg,
 		CalibrationOffsetDB: req.CalibrationOffsetDB,
+		RFProfile:           profile,
 	}
 }
 
@@ -638,16 +1080,44 @@ func (stats NetworkOptimizationStats) rounded() NetworkOptimizationStats {
 	stats.ResidentialScore = math.Round(stats.ResidentialScore*10) / 10
 	stats.CoverageScore = math.Round(stats.CoverageScore*10) / 10
 	stats.OverlapPenalty = math.Round(stats.OverlapPenalty*10) / 10
+	stats.RawMetrics.ServedWeightedDemand = roundFloat(stats.RawMetrics.ServedWeightedDemand, 4)
+	stats.RawMetrics.ServedDemandWeight = roundFloat(stats.RawMetrics.ServedDemandWeight, 4)
+	stats.RawMetrics.TotalWeightedDemand = roundFloat(stats.RawMetrics.TotalWeightedDemand, 4)
+	stats.RawMetrics.RelevantDemandWeight = roundFloat(stats.RawMetrics.RelevantDemandWeight, 4)
+	stats.RawMetrics.CoverageReachScore = roundFloat(stats.RawMetrics.CoverageReachScore, 4)
+	stats.RawMetrics.CoverageReachMaximum = roundFloat(stats.RawMetrics.CoverageReachMaximum, 4)
+	stats.RawMetrics.PropagationReachScore = roundFloat(stats.RawMetrics.PropagationReachScore, 4)
+	stats.RawMetrics.PropagationReachMaximum = roundFloat(stats.RawMetrics.PropagationReachMaximum, 4)
+	stats.RawMetrics.OverlapRatio = roundFloat(stats.RawMetrics.OverlapRatio, 6)
+	stats.RawMetrics.RadioQualityServiceableFraction = roundFloat(stats.RawMetrics.RadioQualityServiceableFraction, 6)
+	stats.RawMetrics.RadioQualityP10SINRDB = roundOptionalFloat(stats.RawMetrics.RadioQualityP10SINRDB, 4)
+	stats.RawMetrics.RadioQualityMedianSINRDB = roundOptionalFloat(stats.RawMetrics.RadioQualityMedianSINRDB, 4)
+	stats.RawMetrics.RadioQualityP10RSRPDBm = roundOptionalFloat(stats.RawMetrics.RadioQualityP10RSRPDBm, 4)
+	stats.RawMetrics.RadioQualityMedianRSRPDBm = roundOptionalFloat(stats.RawMetrics.RadioQualityMedianRSRPDBm, 4)
+	stats.RawMetrics.RadioQualityP10RSRQDB = roundOptionalFloat(stats.RawMetrics.RadioQualityP10RSRQDB, 4)
+	stats.RawMetrics.RadioQualityMedianRSRQDB = roundOptionalFloat(stats.RawMetrics.RadioQualityMedianRSRQDB, 4)
+	stats.CompositeScore = roundFloat(stats.CompositeScore, 6)
+	stats.Score = roundFloat(stats.Score, 4)
+	stats.Objectives.Demand = roundFloat(stats.Objectives.Demand, 6)
+	stats.Objectives.Residential = roundFloat(stats.Objectives.Residential, 6)
+	stats.Objectives.Coverage = roundFloat(stats.Objectives.Coverage, 6)
+	stats.Objectives.Overlap = roundFloat(stats.Objectives.Overlap, 6)
+	stats.Objectives.RadioQuality = roundFloat(stats.Objectives.RadioQuality, 6)
+	stats.ObjectiveBreakdown = roundObjectiveBreakdown(stats.ObjectiveBreakdown)
+	stats.ObjectiveStatus = roundObjectiveStatus(stats.ObjectiveStatus)
 	return stats
 }
 
-func FindCoverageGaps(req StaticSimulationRequest, buildings *BuildingIndex) CoverageGapResponse {
-	NormalizeStaticSimulationRequest(&req)
-	response, _ := FindCoverageGapsContext(context.Background(), req, buildings)
-	return response
+func roundOptionalFloat(value *float64, digits int) *float64 {
+	if value == nil {
+		return nil
+	}
+	rounded := roundFloat(*value, digits)
+	return &rounded
 }
 
 func FindCoverageGapsContext(ctx context.Context, req StaticSimulationRequest, buildings *BuildingIndex) (CoverageGapResponse, error) {
+	NormalizeStaticSimulationRequest(&req)
 	origin := Point{Lon: req.TowerLon, Lat: req.TowerLat}
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
@@ -662,15 +1132,17 @@ func FindCoverageGapsContext(ctx context.Context, req StaticSimulationRequest, b
 }
 
 func coverageGapResponseFromProfilesContext(ctx context.Context, origin Point, req StaticSimulationRequest, candidates []*BuildingFootprint, profiles []rayCoverageProfile) (CoverageGapResponse, error) {
+	receiverThreshold := receiverThresholdForProfileOrManual(req.RFProfile)
 	coverageMap, err := buildingCoverageMapFromProfilesContext(ctx, profiles)
 	if err != nil {
 		return CoverageGapResponse{}, err
 	}
 	gaps := make([]PointFeature, 0, len(candidates))
 	stats := CoverageGapStats{
-		CandidateBuildings: len(candidates),
-		ThresholdDBm:       CoveredBuildingThresholdDBm,
-		WorstRxDBm:         math.Inf(1),
+		CandidateBuildings:          len(candidates),
+		ThresholdDBm:                BuildingServiceThresholdDBm,
+		BuildingServiceThresholdDBm: BuildingServiceThresholdDBm,
+		WorstRxDBm:                  math.Inf(1),
 	}
 
 	for index, building := range candidates {
@@ -692,10 +1164,10 @@ func coverageGapResponseFromProfilesContext(ctx context.Context, origin Point, r
 			}
 		}
 		if !hasCoverage {
-			rx = ReceiverSensitivity
+			rx = receiverThreshold.SensitivityDBm
 		}
 		totalDemand := building.DemandWeight + building.ResidentialDemand
-		if hasCoverage && rx > CoveredBuildingThresholdDBm {
+		if hasCoverage && rx > BuildingServiceThresholdDBm {
 			stats.ServedBuildings++
 			continue
 		}
@@ -703,7 +1175,7 @@ func coverageGapResponseFromProfilesContext(ctx context.Context, origin Point, r
 		stats.GapBuildings++
 		stats.TotalGapDemand += totalDemand
 		stats.WorstRxDBm = math.Min(stats.WorstRxDBm, rx)
-		gaps = append(gaps, makeCoverageGapFeature(building, centroid, distance, rx))
+		gaps = append(gaps, makeCoverageGapFeature(building, centroid, distance, rx, BuildingServiceThresholdDBm))
 	}
 
 	sort.SliceStable(gaps, func(i, j int) bool {
@@ -734,7 +1206,9 @@ func coverageGapResponseFromProfilesContext(ctx context.Context, origin Point, r
 			Type:     "FeatureCollection",
 			Features: gaps,
 		},
-		Stats: stats,
+		Stats:             stats,
+		ReceiverThreshold: receiverThreshold,
+		RFContract:        rfContractForProfile(&req.RFProfile, req.CalibrationOffsetDB),
 	}, nil
 }
 
@@ -768,13 +1242,8 @@ func (budget *simulationFeatureBudget) reserve() error {
 	return nil
 }
 
-func BuildingCoverageMap(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) map[string]float64 {
-	NormalizeStaticSimulationRequest(&req)
-	coverage, _ := BuildingCoverageMapContext(context.Background(), origin, req, buildings)
-	return coverage
-}
-
 func BuildingCoverageMapContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) (map[string]float64, error) {
+	NormalizeStaticSimulationRequest(&req)
 	profiles, err := buildBeamCoverageProfilesContext(ctx, origin, req, buildings)
 	if err != nil {
 		return nil, err
@@ -787,12 +1256,6 @@ func releaseRayProfileSegments(profiles []rayCoverageProfile) {
 	for index := range profiles {
 		profiles[index].segments = nil
 	}
-}
-
-func buildBeamCoverageProfiles(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) []rayCoverageProfile {
-	NormalizeStaticSimulationRequest(&req)
-	profiles, _ := buildBeamCoverageProfilesContext(context.Background(), origin, req, buildings)
-	return profiles
 }
 
 func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) ([]rayCoverageProfile, error) {
@@ -830,7 +1293,7 @@ func buildBeamCoverageProfilesContext(ctx context.Context, origin Point, req Sta
 					if !ok {
 						return
 					}
-					angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
+					angle := BeamAngleForIndex(req.RFProfile.EffectiveAzimuth(req.AzimuthDeg), req.RFProfile.EffectiveBeamWidthDeg(), req.Rays, index)
 					segments, terminal, err := simulateSegmentedRayWithBudgetContext(workCtx, origin, index, angle, req, buildings, featureBudget)
 					if err != nil {
 						select {
@@ -990,10 +1453,6 @@ func angularSeparationDegrees(a float64, b float64) float64 {
 	return delta
 }
 
-func CoverageAreaScore(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) float64 {
-	return CoverageAreaScoreBreakdown(origin, req, buildings).TotalScore
-}
-
 type CoverageScoreBreakdown struct {
 	CoverageScore           float64
 	DemandScore             float64
@@ -1001,11 +1460,6 @@ type CoverageScoreBreakdown struct {
 	TotalScore              float64
 	HitDemandBuildings      int
 	HitResidentialBuildings int
-}
-
-func CoverageAreaScoreBreakdown(origin Point, req StaticSimulationRequest, buildings *BuildingIndex) CoverageScoreBreakdown {
-	breakdown, _ := CoverageAreaScoreBreakdownContext(context.Background(), origin, req, buildings)
-	return breakdown
 }
 
 func CoverageAreaScoreBreakdownContext(ctx context.Context, origin Point, req StaticSimulationRequest, buildings *BuildingIndex) (CoverageScoreBreakdown, error) {
@@ -1016,7 +1470,7 @@ func CoverageAreaScoreBreakdownContext(ctx context.Context, origin Point, req St
 		if err := ctx.Err(); err != nil {
 			return CoverageScoreBreakdown{}, err
 		}
-		angle := BeamAngleForIndex(req.AzimuthDeg, req.BeamWidthDeg, req.Rays, index)
+		angle := BeamAngleForIndex(req.RFProfile.EffectiveAzimuth(req.AzimuthDeg), req.RFProfile.EffectiveBeamWidthDeg(), req.Rays, index)
 		terminal, err := simulateRayTerminalContext(ctx, origin, index, angle, req, buildings)
 		if err != nil {
 			return CoverageScoreBreakdown{}, err
@@ -1100,7 +1554,8 @@ func demandCandidatesInBeamContext(ctx context.Context, origin Point, req Static
 			continue
 		}
 		bearing := BearingDegrees(origin, centroid)
-		if !AngleInBeam(bearing, req.AzimuthDeg, req.BeamWidthDeg) {
+		antenna := EvaluateAntennaLink(req.RFProfile, math.Max(distance, 1), bearing, req.AzimuthDeg)
+		if !antenna.Eligible {
 			continue
 		}
 		demandCandidates = append(demandCandidates, building)
@@ -1108,24 +1563,25 @@ func demandCandidatesInBeamContext(ctx context.Context, origin Point, req Static
 	return demandCandidates, nil
 }
 
-func makeCoverageGapFeature(building *BuildingFootprint, centroid Point, distance float64, rx float64) PointFeature {
+func makeCoverageGapFeature(building *BuildingFootprint, centroid Point, distance float64, rx float64, buildingServiceThresholdDBm float64) PointFeature {
 	totalDemand := building.DemandWeight + building.ResidentialDemand
 	severity := "weak"
-	if rx <= ReceiverSensitivity {
+	if rx <= buildingServiceThresholdDBm {
 		severity = "outage"
 	}
 	return PointFeature{
 		Type: "Feature",
 		Properties: GapProperties{
-			BuildingID:        building.ID,
-			RxDBm:             math.Round(rx*10) / 10,
-			DistanceMeters:    math.Round(distance*10) / 10,
-			DemandWeight:      math.Round(building.DemandWeight*10) / 10,
-			ResidentialDemand: math.Round(building.ResidentialDemand*10) / 10,
-			DensityScore:      math.Round(building.DensityScore*10) / 10,
-			TotalDemand:       math.Round(totalDemand*10) / 10,
-			Reason:            gapReason(building),
-			Severity:          severity,
+			BuildingID:                  building.ID,
+			RxDBm:                       math.Round(rx*10) / 10,
+			BuildingServiceThresholdDBm: math.Round(buildingServiceThresholdDBm*10) / 10,
+			DistanceMeters:              math.Round(distance*10) / 10,
+			DemandWeight:                math.Round(building.DemandWeight*10) / 10,
+			ResidentialDemand:           math.Round(building.ResidentialDemand*10) / 10,
+			DensityScore:                math.Round(building.DensityScore*10) / 10,
+			TotalDemand:                 math.Round(totalDemand*10) / 10,
+			Reason:                      gapReason(building),
+			Severity:                    severity,
 		},
 		Geometry: PointGeometry{
 			Type:        "Point",
@@ -1198,16 +1654,59 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 	if err := ctx.Err(); err != nil {
 		return nil, rayTerminal{}, err
 	}
-	effectiveTxPowerDBm := req.TxPowerDBm + req.CalibrationOffsetDB
-	clearAirLimit := MaxTheoreticalDistanceMeters(effectiveTxPowerDBm, req.FrequencyGHz, 0)
-	castDistance := math.Min(req.RadiusMeters, clearAirLimit)
-	wallLossPerIntersection := PenetrationLossForFrequencyGHz(req.FrequencyGHz)
+	profile := req.RFProfile
+	if profile.SchemaVersion == 0 {
+		profile = DefaultCellRFProfile(NetworkTechnologyForFrequency(req.FrequencyGHz), req.FrequencyGHz, req.TxPowerDBm, req.RadiusMeters, req.BeamWidthDeg, 0, 0, 0)
+	}
+	profile = profile.normalized()
+	receiverThreshold := receiverThresholdForProfileOrManual(profile)
+	if profile.ReceiverSensitivityMode == ReceiverSensitivityModeDerived {
+		if _, err := ReceiverThresholdForProfile(profile); err != nil {
+			return nil, rayTerminal{}, err
+		}
+	}
+	castDistance := profile.RadiusMeters
+	wallLossPerIntersection := PenetrationLossForFrequencyGHz(profile.FrequencyGHz)
+	antenna := EvaluateAntennaLink(profile, math.Max(castDistance, 1), angle, req.AzimuthDeg)
+	horizontalOffsetDeg := antenna.HorizontalOffsetDeg
+	castEndpoint := DestinationPoint(origin, angle, castDistance)
+	pathGeometry, err := buildPropagationPathGeometryContextWithOptions(ctx, origin, castEndpoint, buildings, propagationPathGeometryOptions{
+		TxHeightM: profile.AntennaHeightM,
+		RxHeightM: profile.ReceiverHeightM,
+	})
+	if err != nil {
+		return nil, rayTerminal{}, err
+	}
+	propagationAt := func(distanceMeters float64, point Point, attenuationDB float64) PropagationResult {
+		losState, endpointCase, geometryWallEvents, losClassification := classifyPropagationPath(profile, pathGeometry, point, distanceMeters)
+		wallEventCount := geometryWallEvents
+		if wallLossPerIntersection > 0 {
+			wallEventCount = int(math.Max(float64(wallEventCount), math.Round(math.Max(attenuationDB, 0)/wallLossPerIntersection)))
+		}
+		return EvaluatePropagationLink(PropagationLinkContext{
+			Profile: profile, GroundDistanceM: distanceMeters,
+			HorizontalOffsetDeg: horizontalOffsetDeg, CalibrationOffsetDB: req.CalibrationOffsetDB,
+			LOSState: losState, EndpointCase: endpointCase,
+			LOSClassification:     losClassification,
+			BuildingDataAvailable: pathGeometry.available, WallEventCount: wallEventCount,
+			ReceiverThreshold: &receiverThreshold,
+		})
+	}
+	receivedPowerAt := func(distanceMeters float64, point Point, attenuationDB float64) float64 {
+		return propagationAt(distanceMeters, point, attenuationDB).ReceivedPowerDBm
+	}
+	pathLossAt := func(propagation PropagationResult) float64 {
+		return propagation.LinkBudget.TotalLossDB
+	}
+	isObstructed := func(propagation PropagationResult) bool {
+		return propagation.Terms.WallLossDB > 0 || propagation.LOSState == PropagationLOSState(PropagationNLOS) || propagation.EndpointCase == PropagationEndpointCase(PropagationEndpointIndoorTx) || propagation.EndpointCase == PropagationEndpointCase(PropagationEndpointIndoorRx)
+	}
 
 	if castDistance <= 0 {
 		return nil, rayTerminal{
 			blocked:          false,
 			distanceMeters:   0,
-			signalDBm:        ReceiverSensitivity,
+			signalDBm:        receiverThreshold.SensitivityDBm,
 			buildingCoverage: make(map[string]float64),
 		}, nil
 	}
@@ -1216,10 +1715,11 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 	if collectFeatures {
 		segments = make([]RayFeature, 0, int(math.Ceil(castDistance/SegmentStepMeters)))
 	}
+	initialPropagation := propagationAt(castDistance, castEndpoint, float64(countPropagationWallEvents(pathGeometry.intersections, castDistance))*wallLossPerIntersection)
 	terminal := rayTerminal{
-		blocked:        false,
+		blocked:        isObstructed(initialPropagation),
 		distanceMeters: castDistance,
-		signalDBm:      ReceivedPowerDBm(castDistance, req.FrequencyGHz, effectiveTxPowerDBm, 0),
+		signalDBm:      initialPropagation.ReceivedPowerDBm,
 	}
 
 	segmentIndex := 0
@@ -1228,6 +1728,7 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 	hitBuildingDemandWeights := make(map[string]float64)
 	hitBuildingResidentialDemands := make(map[string]float64)
 	buildingCoverage := make(map[string]float64)
+	receiverTerminated := false
 	for startDistance := 0.0; startDistance < castDistance; startDistance += SegmentStepMeters {
 		if err := ctx.Err(); err != nil {
 			return nil, rayTerminal{}, err
@@ -1235,18 +1736,19 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 		endDistance := math.Min(startDistance+SegmentStepMeters, castDistance)
 		start := currentPoint
 		nextPoint := DestinationPoint(origin, angle, endDistance)
-		startRx := ReceivedPowerDBm(math.Max(startDistance, 1), req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
+		startPropagation := propagationAt(math.Max(startDistance, 1), start, cumulativeWallLoss)
+		startRx := startPropagation.ReceivedPowerDBm
 
-		if startDistance > 0 && startRx <= ReceiverSensitivity {
+		if startDistance > 0 && !receiverTerminated && !ReceiverUsableSignal(startRx, receiverThreshold.SensitivityDBm) {
 			terminal = rayTerminal{
-				blocked:                       cumulativeWallLoss > 0,
+				blocked:                       isObstructed(startPropagation),
 				distanceMeters:                startDistance,
 				signalDBm:                     startRx,
 				hitBuildingDemandWeights:      hitBuildingDemandWeights,
 				hitBuildingResidentialDemands: hitBuildingResidentialDemands,
 				buildingCoverage:              buildingCoverage,
 			}
-			break
+			receiverTerminated = true
 		}
 
 		intersections, candidateChecks, err := wallIntersectionsForSegmentContext(ctx, origin, start, nextPoint, buildings)
@@ -1256,21 +1758,22 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 		segmentStartPoint := start
 		segmentStartDistance := startDistance
 		segmentStartRx := startRx
-		rayStopped := false
-
 		for _, intersection := range intersections {
 			if err := ctx.Err(); err != nil {
 				return nil, rayTerminal{}, err
 			}
 			hitDistance := startDistance + intersection.distanceMeters
-			recordHitBuildingDemandWeight(hitBuildingDemandWeights, intersection.building)
-			recordHitBuildingResidentialDemand(hitBuildingResidentialDemands, intersection.building)
+			if !receiverTerminated {
+				recordHitBuildingDemandWeight(hitBuildingDemandWeights, intersection.building)
+				recordHitBuildingResidentialDemand(hitBuildingResidentialDemands, intersection.building)
+			}
 			cumulativeWallLoss += wallLossPerIntersection
-			wallRx := ReceivedPowerDBm(hitDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
+			wallPropagation := propagationAt(hitDistance, intersection.point, cumulativeWallLoss)
+			wallRx := wallPropagation.ReceivedPowerDBm
 			recordBuildingCoverage(buildingCoverage, intersection.building, wallRx)
-			pathLoss := FreeSpacePathLossMetersGHz(hitDistance, req.FrequencyGHz) + cumulativeWallLoss
-			isTerminalBlock := wallRx <= ReceiverSensitivity
-			if collectFeatures {
+			pathLossDB := pathLossAt(wallPropagation)
+			isTerminalBlock := !receiverTerminated && !ReceiverUsableSignal(wallRx, receiverThreshold.SensitivityDBm)
+			if collectFeatures && !receiverTerminated {
 				if ApproxDistanceMeters(segmentStartPoint, intersection.point) > 0.01 {
 					if err := featureBudget.reserve(); err != nil {
 						return nil, rayTerminal{}, err
@@ -1285,11 +1788,12 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 						hitDistance,
 						segmentStartRx,
 						wallRx,
-						pathLoss,
-						cumulativeWallLoss,
+						pathLossDB,
+						wallPropagation.Terms.WallLossDB,
 						isTerminalBlock,
 						intersection.buildingID,
 						candidateChecks,
+						wallPropagation,
 					))
 					segmentIndex++
 				}
@@ -1297,34 +1801,33 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 
 			if isTerminalBlock {
 				terminal = rayTerminal{
-					blocked:                       true,
+					blocked:                       isObstructed(wallPropagation),
 					distanceMeters:                hitDistance,
 					signalDBm:                     wallRx,
 					hitBuildingDemandWeights:      hitBuildingDemandWeights,
 					hitBuildingResidentialDemands: hitBuildingResidentialDemands,
 					buildingCoverage:              buildingCoverage,
 				}
-				rayStopped = true
-				break
+				receiverTerminated = true
 			}
 
 			segmentStartPoint = intersection.point
 			segmentStartDistance = hitDistance
 			segmentStartRx = wallRx
 		}
-		if rayStopped {
-			break
-		}
-
-		endRx := ReceivedPowerDBm(endDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
-		if endRx <= ReceiverSensitivity {
-			stopDistance := MaxTheoreticalDistanceMeters(effectiveTxPowerDBm, req.FrequencyGHz, cumulativeWallLoss)
+		endPropagation := propagationAt(endDistance, nextPoint, cumulativeWallLoss)
+		endRx := endPropagation.ReceivedPowerDBm
+		if !receiverTerminated && !ReceiverUsableSignal(endRx, receiverThreshold.SensitivityDBm) {
+			stopDistance := sensitivityCrossingDistanceWithEvaluator(segmentStartDistance, endDistance, receiverThreshold.SensitivityDBm, func(distanceMeters float64) float64 {
+				return receivedPowerAt(distanceMeters, DestinationPoint(origin, angle, distanceMeters), cumulativeWallLoss)
+			})
 			if stopDistance < segmentStartDistance {
 				stopDistance = segmentStartDistance
 			}
 			stopPoint := DestinationPoint(origin, angle, stopDistance)
-			stopRx := ReceivedPowerDBm(stopDistance, req.FrequencyGHz, effectiveTxPowerDBm, cumulativeWallLoss)
-			pathLoss := FreeSpacePathLossMetersGHz(stopDistance, req.FrequencyGHz) + cumulativeWallLoss
+			stopPropagation := propagationAt(stopDistance, stopPoint, cumulativeWallLoss)
+			stopRx := stopPropagation.ReceivedPowerDBm
+			pathLossDB := pathLossAt(stopPropagation)
 			if err := recordBuildingsContainingSegmentCoverageContext(ctx, buildingCoverage, origin, segmentStartPoint, stopPoint, buildings, math.Max(segmentStartRx, stopRx)); err != nil {
 				return nil, rayTerminal{}, err
 			}
@@ -1342,30 +1845,36 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 					stopDistance,
 					segmentStartRx,
 					stopRx,
-					pathLoss,
-					cumulativeWallLoss,
+					pathLossDB,
+					stopPropagation.Terms.WallLossDB,
 					cumulativeWallLoss > 0,
 					"",
 					candidateChecks,
+					stopPropagation,
 				))
 			}
 
 			terminal = rayTerminal{
-				blocked:                       cumulativeWallLoss > 0,
+				blocked:                       isObstructed(stopPropagation),
 				distanceMeters:                stopDistance,
 				signalDBm:                     stopRx,
 				hitBuildingDemandWeights:      hitBuildingDemandWeights,
 				hitBuildingResidentialDemands: hitBuildingResidentialDemands,
 				buildingCoverage:              buildingCoverage,
 			}
-			break
+			receiverTerminated = true
+			if err := recordBuildingsContainingSegmentCoverageContext(ctx, buildingCoverage, origin, stopPoint, nextPoint, buildings, math.Max(stopRx, endRx)); err != nil {
+				return nil, rayTerminal{}, err
+			}
+			currentPoint = nextPoint
+			continue
 		}
 
 		if err := recordBuildingsContainingSegmentCoverageContext(ctx, buildingCoverage, origin, segmentStartPoint, nextPoint, buildings, math.Max(segmentStartRx, endRx)); err != nil {
 			return nil, rayTerminal{}, err
 		}
-		pathLoss := FreeSpacePathLossMetersGHz(endDistance, req.FrequencyGHz) + cumulativeWallLoss
-		if collectFeatures {
+		pathLossDB := pathLossAt(endPropagation)
+		if collectFeatures && !receiverTerminated {
 			if err := featureBudget.reserve(); err != nil {
 				return nil, rayTerminal{}, err
 			}
@@ -1379,22 +1888,25 @@ func simulateSegmentedRayInternalWithBudgetContext(ctx context.Context, origin P
 				endDistance,
 				segmentStartRx,
 				endRx,
-				pathLoss,
-				cumulativeWallLoss,
+				pathLossDB,
+				endPropagation.Terms.WallLossDB,
 				false,
 				"",
 				candidateChecks,
+				endPropagation,
 			))
 			segmentIndex++
 		}
 
-		terminal = rayTerminal{
-			blocked:                       false,
-			distanceMeters:                endDistance,
-			signalDBm:                     endRx,
-			hitBuildingDemandWeights:      hitBuildingDemandWeights,
-			hitBuildingResidentialDemands: hitBuildingResidentialDemands,
-			buildingCoverage:              buildingCoverage,
+		if !receiverTerminated {
+			terminal = rayTerminal{
+				blocked:                       false,
+				distanceMeters:                endDistance,
+				signalDBm:                     endRx,
+				hitBuildingDemandWeights:      hitBuildingDemandWeights,
+				hitBuildingResidentialDemands: hitBuildingResidentialDemands,
+				buildingCoverage:              buildingCoverage,
+			}
 		}
 		currentPoint = nextPoint
 	}
@@ -1424,14 +1936,26 @@ func wallIntersectionsForSegment(origin Point, start Point, end Point, buildings
 }
 
 func wallIntersectionsForSegmentContext(ctx context.Context, origin Point, start Point, end Point, buildings *BuildingIndex) ([]wallIntersection, int, error) {
+	if buildings == nil || buildings.Len() == 0 {
+		return []wallIntersection{}, 0, nil
+	}
 	candidates := buildings.SearchRay(start, end)
+	recordOptimizationSpatialQuery(ctx, len(candidates))
+	intersections, err := wallIntersectionsForCandidatesContext(ctx, origin, start, end, candidates)
+	return intersections, len(candidates), err
+}
+
+func wallIntersectionsForCandidatesContext(ctx context.Context, origin Point, start Point, end Point, candidates []*BuildingFootprint) ([]wallIntersection, error) {
 	intersections := make([]wallIntersection, 0, len(candidates))
 
 	for index, building := range candidates {
 		if index%16 == 0 {
 			if err := ctx.Err(); err != nil {
-				return nil, len(candidates), err
+				return nil, err
 			}
+		}
+		if building == nil {
+			continue
 		}
 		if PointInPolygon(origin, building.Vertices) {
 			continue
@@ -1439,7 +1963,7 @@ func wallIntersectionsForSegmentContext(ctx context.Context, origin Point, start
 
 		points, err := segmentPolygonIntersectionsContext(ctx, start, end, building.Vertices)
 		if err != nil {
-			return nil, len(candidates), err
+			return nil, err
 		}
 		for _, point := range points {
 			distance := ApproxDistanceMeters(start, point)
@@ -1458,7 +1982,7 @@ func wallIntersectionsForSegmentContext(ctx context.Context, origin Point, start
 	sort.SliceStable(intersections, func(i, j int) bool {
 		return intersections[i].distanceMeters < intersections[j].distanceMeters
 	})
-	return intersections, len(candidates), nil
+	return intersections, nil
 }
 
 func appendUniqueWallIntersection(intersections []wallIntersection, candidate wallIntersection) []wallIntersection {
@@ -1554,24 +2078,36 @@ func makeRaySegmentFeature(
 	blocked bool,
 	hitBuildingID string,
 	candidateChecks int,
+	propagation PropagationResult,
 ) RayFeature {
 	return RayFeature{
 		Type: "Feature",
 		Properties: RayProperties{
-			AngleDeg:        normalizeDegrees(angle),
-			RayIndex:        rayIndex,
-			SegmentIndex:    segmentIndex,
-			SignalDBm:       math.Round(endRx*10) / 10,
-			SignalStartDBm:  math.Round(startRx*10) / 10,
-			SignalEndDBm:    math.Round(endRx*10) / 10,
-			PathLossDB:      math.Round(pathLoss*10) / 10,
-			WallLossDB:      math.Round(wallLoss*10) / 10,
-			IsBlocked:       blocked,
-			DistanceMeters:  math.Round(endDistance*10) / 10,
-			SegmentStartM:   math.Round(startDistance*10) / 10,
-			SegmentEndM:     math.Round(endDistance*10) / 10,
-			HitBuildingID:   hitBuildingID,
-			CandidateChecks: candidateChecks,
+			AngleDeg:                  normalizeDegrees(angle),
+			RayIndex:                  rayIndex,
+			SegmentIndex:              segmentIndex,
+			SignalDBm:                 math.Round(endRx*10) / 10,
+			SignalStartDBm:            math.Round(startRx*10) / 10,
+			SignalEndDBm:              math.Round(endRx*10) / 10,
+			PathLossDB:                math.Round(pathLoss*10) / 10,
+			WallLossDB:                math.Round(wallLoss*10) / 10,
+			IsBlocked:                 blocked,
+			DistanceMeters:            math.Round(endDistance*10) / 10,
+			SegmentStartM:             math.Round(startDistance*10) / 10,
+			SegmentEndM:               math.Round(endDistance*10) / 10,
+			HitBuildingID:             hitBuildingID,
+			CandidateChecks:           candidateChecks,
+			PropagationModelID:        propagation.ModelID,
+			AppliedPropagationModelID: propagation.AppliedModelID,
+			LOSState:                  string(propagation.LOSState),
+			LOSClassifierID:           propagation.LOSClassifierID,
+			LOSClassificationBasis:    propagation.ClassificationBasis,
+			TerrainStatus:             propagation.TerrainStatus,
+			LOSClassification:         propagation.LOSClassification,
+			FallbackUsed:              propagation.FallbackUsed,
+			ApplicabilityReason:       propagation.ApplicabilityReason,
+			LinkBudget:                propagation.LinkBudget,
+			ReceiverLinkMarginDB:      roundOne(propagation.ReceiverLinkMarginDB),
 		},
 		Geometry: LineGeometry{
 			Type: "LineString",
@@ -1583,122 +2119,33 @@ func makeRaySegmentFeature(
 	}
 }
 
-func FreeSpacePathLossMetersGHz(distanceMeters float64, frequencyGHz float64) float64 {
-	distance := math.Max(distanceMeters, 1)
-	return 20*math.Log10(distance) + 20*math.Log10(frequencyGHz) + 32.45
-}
-
-func PenetrationLossForFrequencyGHz(frequencyGHz float64) float64 {
-	switch {
-	case frequencyGHz < LTEFrequencyMaxGHz:
-		return 8
-	case frequencyGHz < NRFrequencyMaxGHz:
-		return 30
-	default:
-		return 80
-	}
-}
-
-func ReceivedPowerDBm(distanceMeters float64, frequencyGHz float64, txPowerDBm float64, attenuationDB float64) float64 {
-	return EffectiveIsotropicRadiatedPowerDBm(txPowerDBm) - FreeSpacePathLossMetersGHz(distanceMeters, frequencyGHz) - attenuationDB
-}
-
-func MaxTheoreticalDistanceMeters(txPowerDBm float64, frequencyGHz float64, attenuationDB float64) float64 {
-	if frequencyGHz <= 0 {
-		return 0
-	}
-	exponent := (EffectiveIsotropicRadiatedPowerDBm(txPowerDBm) - ReceiverSensitivity - attenuationDB - 20*math.Log10(frequencyGHz) - 32.45) / 20
-	return math.Pow(10, exponent)
-}
-
-func EffectiveIsotropicRadiatedPowerDBm(txPowerDBm float64) float64 {
-	return txPowerDBm + AntennaGainDBi
-}
-
-func SegmentPolygonFirstIntersection(a Point, b Point, polygon []Point) (bool, Point) {
-	if len(polygon) < 3 {
-		return false, Point{}
-	}
-	if PointInPolygon(a, polygon) {
-		return true, a
-	}
-
-	found := false
-	closestPoint := Point{}
-	closestDistance := math.Inf(1)
-	for index := range polygon {
-		next := (index + 1) % len(polygon)
-		hit, point := SegmentIntersectionPoint(a, b, polygon[index], polygon[next])
-		if !hit {
-			continue
-		}
-		distance := ApproxDistanceMeters(a, point)
-		if distance < closestDistance {
-			closestDistance = distance
-			closestPoint = point
-			found = true
+func sensitivityCrossingDistance(profile CellRFProfile, startDistance, endDistance, attenuationDB, calibrationOffsetDB, horizontalOffsetDeg float64) float64 {
+	threshold := receiverThresholdForProfileOrManual(profile)
+	low := math.Max(startDistance, 0)
+	high := math.Max(endDistance, low)
+	for iteration := 0; iteration < 32; iteration++ {
+		mid := (low + high) / 2
+		if ReceiverUsableSignal(profile.ReceivedPowerDBm(mid, attenuationDB, calibrationOffsetDB, horizontalOffsetDeg), threshold.SensitivityDBm) {
+			low = mid
+		} else {
+			high = mid
 		}
 	}
-	return found, closestPoint
+	return high
 }
 
-func SegmentPolygonIntersections(a Point, b Point, polygon []Point) []Point {
-	points, _ := segmentPolygonIntersectionsContext(context.Background(), a, b, polygon)
-	return points
-}
-
-func segmentPolygonIntersectionsContext(ctx context.Context, a Point, b Point, polygon []Point) ([]Point, error) {
-	if len(polygon) < 3 {
-		return nil, nil
-	}
-
-	points := make([]Point, 0, 2)
-	for index := range polygon {
-		if index%64 == 0 {
-			if err := ctx.Err(); err != nil {
-				return nil, err
-			}
-		}
-		next := (index + 1) % len(polygon)
-		hit, point := SegmentIntersectionPoint(a, b, polygon[index], polygon[next])
-		if !hit {
-			continue
-		}
-		points = appendUniquePoint(points, point)
-	}
-	return points, nil
-}
-
-func appendUniquePoint(points []Point, candidate Point) []Point {
-	for _, existing := range points {
-		if ApproxDistanceMeters(existing, candidate) <= 0.05 {
-			return points
+func sensitivityCrossingDistanceWithEvaluator(startDistance, endDistance, sensitivityDBm float64, receivedPower func(float64) float64) float64 {
+	low := math.Max(startDistance, 0)
+	high := math.Max(endDistance, low)
+	for iteration := 0; iteration < 32; iteration++ {
+		mid := (low + high) / 2
+		if receivedPower(mid) > sensitivityDBm {
+			low = mid
+		} else {
+			high = mid
 		}
 	}
-	return append(points, candidate)
-}
-
-func SegmentIntersectionPoint(p1 Point, p2 Point, q1 Point, q2 Point) (bool, Point) {
-	x1, y1 := p1.Lon, p1.Lat
-	x2, y2 := p2.Lon, p2.Lat
-	x3, y3 := q1.Lon, q1.Lat
-	x4, y4 := q2.Lon, q2.Lat
-
-	denominator := (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4)
-	if math.Abs(denominator) < 1e-14 {
-		return false, Point{}
-	}
-
-	t := ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / denominator
-	u := -((x1-x2)*(y1-y3) - (y1-y2)*(x1-x3)) / denominator
-	if t < 0 || t > 1 || u < 0 || u > 1 {
-		return false, Point{}
-	}
-
-	return true, Point{
-		Lon: x1 + t*(x2-x1),
-		Lat: y1 + t*(y2-y1),
-	}
+	return high
 }
 
 func CalculateSimulationStats(terminals []rayTerminal) SimulationStats {

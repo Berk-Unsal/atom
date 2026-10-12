@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "b7-evidence",
+  "target": "LTE Band 7 / EARFCN 3200 / source frequency 2665.000 MHz",
+  "source_candidate_population": {
+    "registered_flag_cell_rows": 29,
+    "confirmed_serving_cell_rows": 0,
+    "distinct_pseudonymous_identity_tuples": 2,
+    "identities": [
+      {
+        "pseudonym": "cell-d3d772729614",
+        "sessions": [
+          "stationary_control",
+          "walking_pilot"
+        ],
+        "rows": 11,
+        "reported_pci": 276,
+        "earfcn": 3200,
+        "frequency_mhz": 2665.0
+      },
+      {
+        "pseudonym": "cell-e8389d1a5860",
+        "sessions": [
+          "walking_pilot"
+        ],
+        "rows": 18,
+        "reported_pci": 296,
+        "earfcn": 3200,
+        "frequency_mhz": 2665.0
+      }
+    ],
+    "connection_status_counts": {
+      "NONE": 29
+    }
+  },
+  "candidate_quantity_evidence": {
+    "rsrp_dbm": {
+      "valid": 28,
+      "missing": 1,
+      "distribution": {
+        "count": 28,
+        "p50": -67.0,
+        "p90": -61.7,
+        "p95": -57.1,
+        "min": -83.0,
+        "max": -54.0
+      }
+    },
+    "rsrq_db": {
+      "valid": 29,
+      "missing": 0,
+      "distribution": {
+        "count": 29,
+        "p50": -12.0,
+        "p90": -8.0,
+        "p95": -7.4,
+        "min": -16.0,
+        "max": 0.0
+      }
+    },
+    "rssi_dbm": {
+      "valid": 29,
+      "missing": 0,
+      "distribution": {
+        "count": 29,
+        "p50": -57.0,
+        "p90": -51.0,
+        "p95": -51.0,
+        "min": -113.0,
+        "max": -51.0
+      }
+    },
+    "sinr_rssnr_db": {
+      "valid": 29,
+      "missing": 0,
+      "distribution": {
+        "count": 29,
+        "p50": 0.0,
+        "p90": 0.0,
+        "p95": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "zero_values": 29,
+      "interpretation": "Android LTE RSSNR accepts -20 through +30 dB and has a distinct unavailable sentinel; exported zero is retained as valid zero."
+    }
+  },
+  "gps_candidate_evidence": {
+    "registered_flag_rows_with_accuracy_le_20m": 28,
+    "rows_with_both_valid_rsrp_and_gps_le_20m": 27,
+    "serving_status_gate_passes": false,
+    "canonical_usable_b7_observations": 0
+  },
+  "stationary_candidate": {
+    "rows": 1,
+    "rsrp_valid": 1,
+    "rsrp_dbm": -82.0,
+    "gps_le_20m": 1,
+    "interpretation": "One source candidate only; not a confirmed fixed-point serving observation."
+  },
+  "walking_candidate": {
+    "rows": 28,
+    "rsrp_valid": 27,
+    "rsrp_dbm": {
+      "p50": -67.0,
+      "p90": -61.6,
+      "p95": -56.8,
+      "min": -83.0,
+      "max": -54.0
+    },
+    "gps_le_20m": 27,
+    "interpretation": "Repeated route observations are autocorrelated; row count is not independent sample count."
+  },
+  "signal_strength_callback_decision": {
+    "callbacks_total": 802,
+    "callbacks_with_cell_id_pci_earfcn": 0,
+    "callbacks_joined_to_b7_snapshots": 0,
+    "reason": "The generic dbm callback lacks exact serving identity and is not reinterpreted as RSRP."
+  },
+  "diagnostic_only_reason": "Although B7 quantities and GNSS are present, every B7 CellInfo snapshot has connection_status=NONE. No raw B7 row satisfies the existing adapter serving predicate. These values are source diagnostics only and cannot enter canonical residual evaluation."
+}

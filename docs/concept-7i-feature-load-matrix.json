@@ -1,0 +1,143 @@
+{
+  "concept": "7I",
+  "date": "2026-09-23",
+  "loadContract": {
+    "pattern": "Local LazyFeatureBoundary starts import() from an effect only while its surface is active. DisclosureSection keeps the boundary mounted after the first open while its owner tool remains mounted.",
+    "automaticPreload": false,
+    "importTimeDomainWork": "None found in selected feature module entry points; operations remain explicit callbacks.",
+    "importFailure": "Feature-local alert with a Reload application action. Reload resets a browser-cached failed module URL before it is attempted again. Event-triggered report imports show an inline alert with the same reload action.",
+    "hashedAssets": "Vite content-hashed chunks; no behavior depends on generated hash strings."
+  },
+  "features": [
+    {
+      "feature": "Propagation Research",
+      "owner": "Simulate > Propagation > Research / reference",
+      "module": "src/features/propagation-research/PropagationResearchFeature.jsx",
+      "trigger": "User opens the collapsed Research / reference disclosure by pointer or keyboard.",
+      "initialLoad": false,
+      "keepsComponentStateAfterFirstLoad": "Yes while the Propagation tool stays mounted; closing the disclosure hides the retained child, and reopening reuses it.",
+      "preloaded": false,
+      "importSideEffects": "None; Run buttons invoke existing reference actions.",
+      "persistence": "Transient Sub-THz/P.1411 form values remain component-local as before; not persisted as Scenario/RF configuration. Propagation settings snapshot preserves prior first-mount defaults.",
+      "firstUseAssets": [{"asset":"Propagation Research","rawBytes":26558,"gzipBytesLevel9":5782},{"asset":"shared book-open icon","rawBytes":447,"gzipBytesLevel9":308}],
+      "firstOpenObservedMs": 71,
+      "tests": ["LazyFeatureBoundary preserves local value through collapse/reopen", "E2E asserts absent before disclosure and requested after keyboard open", "E2E asserts no reference request merely from loading/opening"]
+    },
+    {
+      "feature": "RF Diagnostics Research",
+      "owner": "Analyze > RF Diagnostics > Research / reference",
+      "module": "src/features/rf-diagnostics/RFDiagnosticsResearchFeature.jsx",
+      "trigger": "User opens the collapsed Research / reference disclosure.",
+      "initialLoad": false,
+      "keepsComponentStateAfterFirstLoad": "Yes while the owning RF Diagnostics tool remains mounted; disclosure collapse hides but does not unmount the loaded child.",
+      "preloaded": false,
+      "importSideEffects": "None; campaign/material/reflection requests remain explicit actions.",
+      "persistence": "Existing analysis state and workspace props stay App-owned; local form state follows the prior tool mounting rules.",
+      "firstUseAssets": [{"asset":"RF Diagnostics Research","rawBytes":43195,"gzipBytesLevel9":10850},{"asset":"shared book-open icon if not cached","rawBytes":447,"gzipBytesLevel9":308}],
+      "firstOpenObservedMs": 76,
+      "tests": ["E2E asserts absent before disclosure and requested after open", "Existing measurement/material/reflection workflow E2E tests pass"]
+    },
+    {
+      "feature": "Experiments",
+      "owner": "Simulate > Experiments",
+      "module": "src/components/ExperimentPanel.jsx",
+      "trigger": "User selects the Experiments tool.",
+      "initialLoad": false,
+      "keepsComponentStateAfterFirstLoad": "Mounted for the active tool; leaving the tool follows its pre-existing conditional unmount behavior.",
+      "preloaded": false,
+      "importSideEffects": "None; experiment execution remains a user action.",
+      "persistence": "Current tower/settings passed as props; JavaScript cache does not cache domain state.",
+      "firstUseAssets": [{"asset":"ExperimentPanel","rawBytes":7376,"gzipBytesLevel9":3048}],
+      "firstOpenObservedMs": 59,
+      "tests": ["E2E asserts chunk absent on startup and requested on tool selection; feature region becomes visible"]
+    },
+    {
+      "feature": "Core Lab",
+      "owner": "Analyze > 5G Core",
+      "module": "src/features/core-lab/CoreLabFeature.jsx",
+      "trigger": "User selects the 5G Core tool.",
+      "initialLoad": false,
+      "keepsComponentStateAfterFirstLoad": "Follows the pre-existing active-tool mount behavior; App owns core-lab domain state.",
+      "preloaded": false,
+      "importSideEffects": "None; Run/toggle/settings actions remain callbacks.",
+      "persistence": "App-owned current core-lab state is passed as props.",
+      "firstUseAssets": [{"asset":"CoreLabFeature","rawBytes":5020,"gzipBytesLevel9":1767}],
+      "firstOpenObservedMs": 60,
+      "tests": ["E2E asserts absent on startup and requested on tool selection; feature region becomes visible"]
+    },
+    {
+      "feature": "Run History",
+      "owner": "Review > Run History",
+      "module": "src/components/RunHistoryPanel.jsx",
+      "trigger": "User selects Run History or an existing open-run action selects the history tool.",
+      "initialLoad": false,
+      "keepsComponentStateAfterFirstLoad": "Follows existing tool mount behavior; focused Run is still keyed explicitly.",
+      "preloaded": false,
+      "importSideEffects": "None; hook-backed local Runs remain in App.",
+      "persistence": "Run records remain in the existing local repository; no schema or storage change.",
+      "firstUseAssets": [{"asset":"RunHistoryPanel","rawBytes":13623,"gzipBytesLevel9":4245},{"asset":"shared refresh-cw icon","rawBytes":795,"gzipBytesLevel9":397}],
+      "firstOpenObservedMs": 57,
+      "tests": ["E2E opens history from cold page", "E2E generates a historical Report before opening Report UI"]
+    },
+    {
+      "feature": "Report UI",
+      "owner": "Review > Report",
+      "module": "src/features/reports/ReportFeature.jsx",
+      "trigger": "User selects Report or an existing report navigation action selects that tool.",
+      "initialLoad": false,
+      "keepsComponentStateAfterFirstLoad": "Follows existing active-tool mount behavior.",
+      "preloaded": false,
+      "importSideEffects": "None; UI callbacks invoke report persistence, export, download, or source navigation.",
+      "persistence": "Existing report-artifact repository hook remains in App; exact stored bytes and metadata remain available.",
+      "firstUseAssets": [{"asset":"ReportFeature","rawBytes":9757,"gzipBytesLevel9":2861},{"asset":"shared refresh-cw icon if not cached","rawBytes":795,"gzipBytesLevel9":397}],
+      "firstOpenObservedMs": 54,
+      "tests": ["E2E asserts ReportFeature absent in cold Run History path until historical report completes and selects Report"]
+    },
+    {
+      "feature": "Report renderer/export generator",
+      "owner": "Reports and Run History report actions",
+      "module": "src/utils/reportExport.js",
+      "trigger": "Explicit Markdown/PDF export, artifact regeneration, or Run History > Generate report.",
+      "initialLoad": false,
+      "keepsComponentStateAfterFirstLoad": "Not a React component; Vite module cache reuses loaded code.",
+      "preloaded": false,
+      "importSideEffects": "No domain work on module load; builders run after explicit handler invocation.",
+      "persistence": "Report source binding stays constructed by existing eager domain helper and App state; artifact semantics unchanged.",
+      "firstUseAssets": [{"asset":"reportExport","rawBytes":86701,"gzipBytesLevel9":23217}],
+      "firstOpenObservedMs": null,
+      "tests": ["Cold Run History E2E aborts the first reportExport request, checks local reload recovery, then generates after reload; exactly one compute request, the initial Run"]
+    },
+    {
+      "feature": "Report artifact construction",
+      "owner": "App report persistence callbacks",
+      "module": "src/utils/reportArtifact.js",
+      "trigger": "Persist or explicitly regenerate a report artifact.",
+      "initialLoad": false,
+      "keepsComponentStateAfterFirstLoad": "Not a React component; module cache reuses code.",
+      "preloaded": false,
+      "importSideEffects": "No artifact write until build/persist callback runs.",
+      "persistence": "Existing IndexedDB/repository writes and hashes are retained unchanged.",
+      "firstUseAssets": [{"asset":"reportArtifact","rawBytes":2158,"gzipBytesLevel9":909},{"asset":"reportExport dependency","rawBytes":86701,"gzipBytesLevel9":23217}],
+      "firstOpenObservedMs": null,
+      "tests": ["Cold Run History E2E observes artifact builder import after the report generator recovers from a failed request"]
+    },
+    {
+      "feature": "Stored report download/open",
+      "owner": "Reports artifact actions",
+      "module": "src/utils/reportArtifactDownload.js",
+      "trigger": "User downloads or opens already-retained report bytes.",
+      "initialLoad": false,
+      "keepsComponentStateAfterFirstLoad": "Not a React component; module cache reuses code.",
+      "preloaded": false,
+      "importSideEffects": "Browser download/open only on explicit action.",
+      "persistence": "Uses the exact bytes retrieved from existing artifact repository; no RF rerun.",
+      "firstUseAssets": [{"asset":"reportArtifactDownload","rawBytes":638,"gzipBytesLevel9":423}],
+      "firstOpenObservedMs": null,
+      "tests": ["Existing report artifact workflow tests remain in the 275-test passing suite; direct hash-before/after comparison was not separately captured"]
+    }
+  ],
+  "sharedChunks": [
+    {"asset":"book-open","reason":"Shared by the two research entries; requested only when a research feature is opened."},
+    {"asset":"refresh-cw","reason":"Shared by Run History and Report UI; requested only when one of those surfaces opens."}
+  ]
+}

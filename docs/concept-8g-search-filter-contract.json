@@ -1,0 +1,12 @@
+{
+  "concept": "8G",
+  "searchFields": ["display Cell ID (cellId)", "internal record ID (id)"],
+  "match": "Trimmed, case-insensitive identity substring. No geocoding or free-text metadata search.",
+  "filter": "Optional exact network technology match after resolving the Cell profile against current settings and policy defaults.",
+  "emptyCriteria": "Return zero rows and show Search the inventory. Do not render the entire loaded inventory.",
+  "ranking": ["exact display/internal ID", "display ID prefix", "internal ID prefix", "display ID substring", "internal ID substring"],
+  "tieBreak": "Locale-independent intent via English numeric, case-insensitive identity comparison, then case-sensitive identity comparison.",
+  "resultBound": { "initialRows": 50, "showNext": 50, "behavior": "Explicitly increases the rendered page limit by 50; query/filter change resets it." },
+  "loadedInventorySearch": "Client-side across all currently loaded tower records; the result count is exact for that loaded array.",
+  "tests": ["empty criteria", "exact/prefix/substr ranking", "technology filtering", "10,000-cell page bounds"]
+}

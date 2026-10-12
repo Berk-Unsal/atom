@@ -1,0 +1,79 @@
+{
+  "concept": "8D",
+  "current_state": [
+    {
+      "state": "selectedTower",
+      "meaning": "Active transmitter in Single mode; also anchor cell/selectedTower during plan operations.",
+      "owner": "App plan orchestration",
+      "durable": "Plan snapshot semantics, subject to current domain inputs"
+    },
+    {
+      "state": "selectedNetworkTowerIds / selectedNetworkSelectionIDs",
+      "meaning": "Cell membership/order in current network cluster; directly affects evaluation/optimization inputs.",
+      "owner": "App plan orchestration",
+      "durable": "Plan snapshot semantics"
+    },
+    {
+      "state": "selectedMapCellId",
+      "meaning": "Map Focus/ray-cell choice; UI state name says selected, toolbar label says Focus.",
+      "owner": "App/map toolbar",
+      "durable": "Visualization state; must not become active RF source by itself"
+    },
+    {
+      "state": "selectedMapObject",
+      "meaning": "Current map entity plus a broad payload; renders current MapInspector.",
+      "owner": "App orchestration",
+      "durable": "Transient UI state; not persisted"
+    },
+    {
+      "state": "selectedSolutionId",
+      "meaning": "Which Pareto solution is being inspected in Results; does not change recommended solution or RF rays.",
+      "owner": "App Results state",
+      "durable": "Tied to current optimization output/run"
+    },
+    {
+      "state": "focusedRunId / selectedRunId",
+      "meaning": "Historical Run focus/selection in Run History; does not hydrate it as the current working plan.",
+      "owner": "App and RunHistoryPanel",
+      "durable": "Run history is durable; focus is UI state"
+    }
+  ],
+  "current_map_click_facts": [
+    "TowerMarkersLayer currently calls onSelectMapCell, onSelectMapObject, and onSelectTower for one normal marker click.",
+    "In Single mode that click changes the active tower; in Network mode it toggles cluster membership and can invalidate the current result.",
+    "The same click opens Map Inspector and currently replaces the active left task drawer.",
+    "Area selection has an existing higher-priority isDrawingSelection guard; placement/path-endpoint workflows must also keep priority over inspection."
+  ],
+  "terms": {
+    "Plan selection": "Active transmitter in Single mode, or explicit member/order of the Network cluster. It is an RF/optimizer input.",
+    "Map Focus": "Display choice for map centering/ray scope; does not change serving cell, cluster membership, or compute inputs.",
+    "Inspected entity": "Read-only entity currently shown in the contextual inspector; inspecting never mutates Plan selection.",
+    "Selected Pareto solution": "Result-view choice among alternatives from one exact Optimization Run; not a selected cell and not the recommendation.",
+    "Active Scenario / Version / draft": "Workspace lineage and current editable input state; separate from all spatial selection."
+  },
+  "recommended_interaction_contract": {
+    "explicit_inspect_select_boundary": true,
+    "decision": "Add only a minimal Inspect / Select-cells map interaction choice as part of the 8E cell pilot. Default map click inspects a cell/result feature; Select-cells mode preserves existing active-cell/cluster toggle semantics. Existing draw-area, place-cell, and path-endpoint tasks take priority and suppress inspection until completed/cancelled.",
+    "why": "The current tower marker click is a three-way action that changes RF inputs, changes Focus, and opens an inspector. A right inspector without a visible mode boundary would retain selection side effects for users who only meant to inspect.",
+    "inspection": "Sets inspected entity identity only. It never activates an RF serving cell, changes cluster membership, selects an optimizer solution, changes map Focus, or starts compute.",
+    "selection": "Explicit Select-cells mode continues the established one-cell activation or Network membership toggle. UI labels/current counts continue to communicate the action.",
+    "non_cell_result_features": "Click on an inspectable result feature opens the inspector only when no map-edit mode is armed. Hover never opens it."
+  },
+  "minimal_future_identity_shape": {
+    "kind": "cell | building | interference_sample | coverage_gap | communication_path | measurement_sample | site_recommendation",
+    "id": "stable source entity ID, stringified",
+    "source": "map layer or owning tool",
+    "projectId": "current project identity when the feature is workspace-scoped",
+    "scenarioId": "current scenario identity when the feature is scenario-scoped",
+    "runId": "exact source Run for result-derived samples; null when not a Run result"
+  },
+  "ownership_and_lifecycle": {
+    "owner": "App-level local orchestration state, because map, task drawer and inspector cross feature boundaries. Keep local React state; no Redux/Zustand/XState, event bus, URL state, or plugin framework.",
+    "payload_rule": "Prefer a small identity/source reference resolved from existing tower/result data; retain only the minimum immutable sample snapshot needed to label a stale selected result. Do not create one unbounded generic data store.",
+    "close": "Close clears inspected entity and returns focus to the map/trigger; Plan selection and map Focus remain unchanged.",
+    "tool_switch": "Inspector stays open and the left task can change when the same entity/source remains valid. Left tool state remains mounted/retained by current orchestration semantics.",
+    "scenario_project_switch": "Clear inspected context before restoring a different Project/Scenario; do not show an entity from the previous workspace.",
+    "stale": "Retain selected sample only as a stale snapshot with exact source Run ID/freshness. No silent rerun. If snapshot cannot be retained, show UNAVAILABLE with source identity.",
+    "entity_removed": "Show UNAVAILABLE for the retained identity and an owning-tool action; do not retarget to another same-position feature."
+  }
+}

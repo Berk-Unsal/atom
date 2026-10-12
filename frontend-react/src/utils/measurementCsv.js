@@ -1,4 +1,15 @@
 const MAX_SAMPLES = 5000;
+export const MAX_MEASUREMENT_CSV_BYTES = 2 * 1024 * 1024;
+
+export async function readMeasurementCsvFile(file) {
+  if (!file || typeof file.text !== "function" || !Number.isSafeInteger(file.size) || file.size < 0) {
+    throw new Error("Measurement CSV file metadata is invalid");
+  }
+  if (file.size > MAX_MEASUREMENT_CSV_BYTES) {
+    throw new Error(`Measurement CSV must be no larger than ${MAX_MEASUREMENT_CSV_BYTES / (1024 * 1024)} MiB`);
+  }
+  return parseMeasurementCsv(await file.text());
+}
 
 export function parseMeasurementCsv(text) {
   const lines = String(text).replace(/^\uFEFF/, "").split(/\r?\n/).filter((line) => line.trim());

@@ -1,0 +1,208 @@
+{
+  "concept": "7J",
+  "status": "implemented workflow map; App remains the composition and cross-feature transaction boundary",
+  "workflows": [
+    {
+      "name": "application hydration",
+      "steps": [
+        "App effects load app metadata and dataset catalog for datasetRevision",
+        "App loads tower inventory; its success sets hydratedDatasetRevision",
+        "useProjectWorkspace loads LocalRepository workspace independently and exposes loaded/activeProject",
+        "App restorePlanningSnapshot waits for workspaceLoaded, an active Project and non-empty towers, then restores Scenario or draft exactly once per Project ID",
+        "App debounced effect waits for restoredProjectRef and matching hydrated/dataset revisions before saveDraft"
+      ],
+      "owners": [
+        "App composition",
+        "useProjectWorkspace",
+        "LocalRepository"
+      ],
+      "orderingGuards": [
+        "workspaceLoaded",
+        "towers.length > 0",
+        "restoredProjectRef",
+        "hydratedDatasetRevision === datasetRevision"
+      ],
+      "externalCalls": [
+        "GET /api/meta",
+        "GET /api/datasets",
+        "GET /api/towers",
+        "GET /api/buildings/summary",
+        "LocalRepository.loadWorkspace",
+        "LocalRepository.queueWorkspaceSave"
+      ]
+    },
+    {
+      "name": "Run simulation",
+      "steps": [
+        "ControlPanel/WorkflowRail invokes App runSimulation",
+        "App validates selected tower, clears surface and begins the rf request channel",
+        "requestPayloads.buildSimulationPayload captures the request from selectedTower/settings",
+        "Run execution boundary records queued and running SimulationRun snapshots",
+        "App simulateForSettings calls /api/analyze-sector and /api/coverage-gaps using the same request signal",
+        "App checks request identity, updates simulation/gap output and view metadata, then finishes the Run as succeeded",
+        "Run execution boundary persists final Run and associates its exact source snapshot with current result",
+        "Run-history persistence failure leaves successful output usable and reports a non-fatal warning"
+      ],
+      "owners": [
+        "App RF workflow",
+        "requestPayloads",
+        "useRequestCoordinator",
+        "useRunExecution",
+        "useRunHistory",
+        "API"
+      ],
+      "semanticDistinctions": [
+        "Simulation result remains simulation+coverage gaps; no optimization response is synthesized."
+      ],
+      "invariants": [
+        "Simulation request construction, API calls and simulation/coverage-gap result semantics remain in the named App simulation workflow.",
+        "Only successful current simulation results replace currentResultRun."
+      ]
+    },
+    {
+      "name": "Run optimization",
+      "steps": [
+        "OptimizationGoalsPanel/Run action invokes optimizeAzimuth or optimizeNetwork",
+        "App validates optimization constraints and selected cells, begins rf request channel and captures the builder-produced request",
+        "Run execution boundary records queued/running OptimizationRun and optimization contract",
+        "App calls the distinct optimize endpoint and, for network mode, composes follow-up simulations",
+        "App checks request identity and writes optimization-specific output, Pareto/recommendation, comparison and map result state",
+        "Run execution boundary captures/persists OptimizationRun response/details and associates the current Run",
+        "selectParetoSolution updates the retained optimization Run lifecycle details without changing its execution request"
+      ],
+      "owners": [
+        "App optimization workflows",
+        "requestPayloads",
+        "useRequestCoordinator",
+        "useRunExecution",
+        "useRunHistory",
+        "API"
+      ],
+      "semanticDistinctions": [
+        "Optimization captures response and optimizer contract; it is not genericized with simulation output.",
+        "Network evaluation is a separate non-optimization action and does not create an OptimizationRun."
+      ]
+    },
+    {
+      "name": "RF-affecting edit → stale/invalidate",
+      "steps": [
+        "An RF-affecting plan mutation calls invalidatePlanResults before accepting the input edit",
+        "invalidatePlanResults cancels rf and dependent analysis request channels",
+        "It clears rendered simulation/gap/coverage-surface overlays and dependent network/diagnostic artifacts",
+        "It marks planDirty; retained currentResultRun stays as the source identity for stale disclosure",
+        "buildResultContext resolves current/stale/historical/unavailable from existing Concept 7G lineage rules"
+      ],
+      "owners": [
+        "App plan mutation/invalidation contract",
+        "useRequestCoordinator",
+        "buildResultContext"
+      ],
+      "mustNotInvalidate": [
+        "disclosure-only changes",
+        "tool/drawer navigation",
+        "lazy-feature load",
+        "report inspection",
+        "map viewport/legend changes"
+      ],
+      "mustInvalidate": [
+        "frequency/power/radius/beam/profile changes",
+        "optimization constraints when current scoring/result changes",
+        "inventory or selected RF source changes",
+        "dataset switch"
+      ]
+    },
+    {
+      "name": "Scenario switch",
+      "steps": [
+        "ScenarioPanel invokes App openSavedScenario",
+        "App blocks destructive switch from an unsaved draft and retains the draft",
+        "App clears current-result association and focused Run, then calls useProjectWorkspace.activateScenario",
+        "App restores the selected Scenario plan/artifacts and updates focused revision/navigation state",
+        "result context is rebuilt against the activated Scenario and retained Run identity"
+      ],
+      "owners": [
+        "App transition guard and restore order",
+        "useProjectWorkspace",
+        "buildResultContext"
+      ],
+      "invariants": [
+        "Historical inspection does not become the current active draft.",
+        "Unsaved destructive switch is blocked."
+      ]
+    },
+    {
+      "name": "Continue from Version",
+      "steps": [
+        "ScenarioPanel invokes App handleContinueFromVersion",
+        "App calls useProjectWorkspace.continueFromScenarioRevision",
+        "Repository operation creates the mutable draft from the selected historical Version",
+        "App restores the new draft, focuses the source revision and marks the plan dirty"
+      ],
+      "owners": [
+        "App transition orchestration",
+        "useProjectWorkspace",
+        "LocalRepository/domain operation"
+      ],
+      "invariants": [
+        "Open source Version is inspection; Continue from Version mutates the working draft."
+      ]
+    },
+    {
+      "name": "Apply current or historical optimization solution",
+      "steps": [
+        "Current apply validates currentResultRun is a succeeded OptimizationRun with Scenario/Version lineage; historical apply validates dataset and retained source lineage",
+        "Both paths route to applyHistoricalSolution, then useProjectWorkspace.applyHistoricalOptimization and domain applyOptimizationSolution",
+        "App invalidates current plan results, restores the returned destination Scenario/Version with requiresRerun, and marks the plan dirty",
+        "App reports whether a new Version or branch was created"
+      ],
+      "owners": [
+        "App authoritative apply transaction",
+        "useProjectWorkspace",
+        "domain applyOptimizationSolution"
+      ],
+      "invariants": [
+        "Current and historical optimization use one transaction when their semantics match; source Run and public solution identity are preserved."
+      ]
+    },
+    {
+      "name": "Historical Run rerun",
+      "steps": [
+        "RunHistoryPanel calls App runAgainFromHistory",
+        "App checks active dataset, retained exact request and supported Run type",
+        "App replays the historical request; useRunExecution persists the newly captured Run without reusing the old run_id",
+        "App replays retained request to the appropriate simulation or optimization endpoint",
+        "App captures and persists the new historical Run through useRunExecution.persistRun; it focuses the new historical Run and leaves the current working plan and current-result association unchanged."
+      ],
+      "owners": [
+        "App historical replay workflow",
+        "useRunExecution.persistRun",
+        "useRunHistory",
+        "API"
+      ],
+      "invariants": [
+        "A stale current result reruns the current working plan; a historical Run replays its retained request as a new Run."
+      ]
+    },
+    {
+      "name": "Report generation",
+      "steps": [
+        "Current report action asks lazy reportExport to build a report from the live current result/plan; current definition binds source revision when clean and uses live compatibility source when dirty",
+        "Historical Run action resolves the exact retained Scenario Version and builds a separate historical report from that Run",
+        "Report workflow creates/persists the ReportDefinition through useProjectWorkspace and dynamically builds artifact bytes",
+        "useReportArtifacts attempts local retention; failure remains non-fatal and current output is still downloadable/openable",
+        "Report view can regenerate from retained source, download stored bytes or delete only the artifact"
+      ],
+      "owners": [
+        "useReportWorkflow",
+        "reportExport/reportArtifact/reportArtifactDownload dynamic modules",
+        "useProjectWorkspace",
+        "useReportArtifacts/LocalArtifactStore"
+      ],
+      "invariants": [
+        "Live current plan and historical source Run remain separate actions.",
+        "Artifact storage schema and source resolution remain unchanged."
+      ]
+    }
+  ],
+  "invalidationContract": "RF-affecting edits clear rendered outputs and dependent requests, set planDirty, and retain currentResultRun as the stale-source identity. Opening another saved Scenario or selecting/creating/importing a Project clears the current association when the transition is accepted. Dataset switch clears rendered data and sets planDirty while retaining the Run identity. Continue/branch/apply transitions keep source identity as stale lineage while restoring a destination that requires rerun."
+}

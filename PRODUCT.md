@@ -10,7 +10,7 @@ Telecom engineers, RF planning students, geospatial simulation reviewers, and te
 
 ## Product Purpose
 
-A.T.O.M, Ankara Telecom Optimization Model, is a local-first RF propagation and antenna optimization dashboard. It simulates 4G LTE, 5G mmWave, and 6G Sub-THz propagation using static tower and building data, then visualizes ray attenuation, obstruction, and demand-aware azimuth choices on an interactive map. Success means users can understand the physical model, trust the data quality, and adjust simulation controls without losing spatial context.
+A.T.O.M, Ankara Telecom Optimization Model, is a local-first RF propagation and antenna optimization dashboard. It simulates 4G LTE, 5G mmWave, and a 6G research profile at 140 GHz using static tower and building data, then visualizes ray attenuation, obstruction, and demand-aware azimuth choices on an interactive map. Success means users can understand the physical model, trust the data quality, and adjust simulation controls without losing spatial context.
 
 ## Brand Personality
 

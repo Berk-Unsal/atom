@@ -1,0 +1,2958 @@
+{
+  "by_source": {
+    "fabdem": {
+      "canonical_summary": {
+        "candidate_counts_by_threshold_m": {
+          "lt_-0.5_m": 5,
+          "lt_-1_m": 3,
+          "lt_-2_m": 0,
+          "lt_-5_m": 0,
+          "lt_0_m": 19
+        },
+        "complete_profiles": 432,
+        "endpoint_clearance_contract_m": {
+          "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+          "rx": 1.5,
+          "tx": 25.0
+        },
+        "interpolation": "bilinear",
+        "legacy_candidate_count": 432,
+        "legacy_signed_min_distribution_m": {
+          "count": 432,
+          "mae": 25.107671714010344,
+          "max": -25.0,
+          "mean": -25.107671714010344,
+          "mean_signed": -25.107671714010344,
+          "median": -25.0,
+          "min": -27.673752427067598,
+          "p01": -27.33979882374095,
+          "p10": -25.0,
+          "p75": -25.0,
+          "p90": -25.0,
+          "p99": -25.0,
+          "rmse": 25.111482161505727
+        },
+        "min_clearance_distribution_m": {
+          "count": 432,
+          "mae": 1.3768343203752953,
+          "max": 1.5,
+          "mean": 1.3353601610066108,
+          "mean_signed": 1.3353601610066108,
+          "median": 1.5,
+          "min": -1.6849772600795632,
+          "p01": -0.6058326143985993,
+          "p10": 0.9901728379683391,
+          "p75": 1.5,
+          "p90": 1.5,
+          "p99": 1.5,
+          "rmse": 1.415352362614996
+        },
+        "minimum_distance_from_rx_histogram": {
+          "0_30m": 400,
+          "100_200m": 5,
+          "200_300m": 0,
+          "300_400m": 0,
+          "30_60m": 21,
+          "60_100m": 6
+        },
+        "minimum_distance_from_tx_histogram": {
+          "0_30m": 0,
+          "100_200m": 0,
+          "200_300m": 5,
+          "300_400m": 427,
+          "30_60m": 0,
+          "60_100m": 0
+        },
+        "minimum_location_counts": {
+          "interior": 76,
+          "rx_endpoint": 356,
+          "tx_endpoint": 0
+        },
+        "partial_profiles": 0,
+        "paths": 432,
+        "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+        "requested_spacing_m": 30.0,
+        "rx_height_m": 1.5,
+        "source": "fabdem",
+        "strict_zero_candidate_count": 19,
+        "terrain_range_distribution_m": {
+          "count": 432,
+          "max": 32.9630732423534,
+          "mean": 12.729799241501134,
+          "median": 11.453470976536437,
+          "min": 2.695314698125003,
+          "p01": 3.5192279874572807,
+          "p10": 5.632265609833382,
+          "p75": 16.88094275181561,
+          "p90": 20.963611248801122,
+          "p99": 30.27843301969729
+        },
+        "tx_height_m": 25.0
+      },
+      "interpolation_sensitivity": {
+        "bilinear_summary": {
+          "candidate_counts_by_threshold_m": {
+            "lt_-0.5_m": 5,
+            "lt_-1_m": 3,
+            "lt_-2_m": 0,
+            "lt_-5_m": 0,
+            "lt_0_m": 19
+          },
+          "complete_profiles": 432,
+          "endpoint_clearance_contract_m": {
+            "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+            "rx": 1.5,
+            "tx": 25.0
+          },
+          "interpolation": "bilinear",
+          "legacy_candidate_count": 432,
+          "legacy_signed_min_distribution_m": {
+            "count": 432,
+            "mae": 25.107671714010344,
+            "max": -25.0,
+            "mean": -25.107671714010344,
+            "mean_signed": -25.107671714010344,
+            "median": -25.0,
+            "min": -27.673752427067598,
+            "p01": -27.33979882374095,
+            "p10": -25.0,
+            "p75": -25.0,
+            "p90": -25.0,
+            "p99": -25.0,
+            "rmse": 25.111482161505727
+          },
+          "min_clearance_distribution_m": {
+            "count": 432,
+            "mae": 1.3768343203752953,
+            "max": 1.5,
+            "mean": 1.3353601610066108,
+            "mean_signed": 1.3353601610066108,
+            "median": 1.5,
+            "min": -1.6849772600795632,
+            "p01": -0.6058326143985993,
+            "p10": 0.9901728379683391,
+            "p75": 1.5,
+            "p90": 1.5,
+            "p99": 1.5,
+            "rmse": 1.415352362614996
+          },
+          "minimum_distance_from_rx_histogram": {
+            "0_30m": 400,
+            "100_200m": 5,
+            "200_300m": 0,
+            "300_400m": 0,
+            "30_60m": 21,
+            "60_100m": 6
+          },
+          "minimum_distance_from_tx_histogram": {
+            "0_30m": 0,
+            "100_200m": 0,
+            "200_300m": 5,
+            "300_400m": 427,
+            "30_60m": 0,
+            "60_100m": 0
+          },
+          "minimum_location_counts": {
+            "interior": 76,
+            "rx_endpoint": 356,
+            "tx_endpoint": 0
+          },
+          "partial_profiles": 0,
+          "paths": 432,
+          "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+          "requested_spacing_m": 30.0,
+          "rx_height_m": 1.5,
+          "source": "fabdem",
+          "strict_zero_candidate_count": 19,
+          "terrain_range_distribution_m": {
+            "count": 432,
+            "max": 32.9630732423534,
+            "mean": 12.729799241501134,
+            "median": 11.453470976536437,
+            "min": 2.695314698125003,
+            "p01": 3.5192279874572807,
+            "p10": 5.632265609833382,
+            "p75": 16.88094275181561,
+            "p90": 20.963611248801122,
+            "p99": 30.27843301969729
+          },
+          "tx_height_m": 25.0
+        },
+        "interpretation": "Interpolation changes the sampled diagnostic; it does not turn a sampled candidate into an exact obstruction.",
+        "nearest_minus_bilinear_min_clearance_m": {
+          "count": 432,
+          "mae": 0.20671422481064902,
+          "max": 0.8847890936087879,
+          "mean": -0.17806221926385746,
+          "mean_signed": -0.17806221926385746,
+          "median": 0.0,
+          "min": -6.000714983258945,
+          "p01": -2.1411783437021072,
+          "p10": -0.6506401476647966,
+          "p75": 0.0,
+          "p90": 0.0,
+          "p99": 0.5594408807846875,
+          "rmse": 0.5877708005067418
+        },
+        "nearest_summary": {
+          "candidate_counts_by_threshold_m": {
+            "lt_-0.5_m": 26,
+            "lt_-1_m": 21,
+            "lt_-2_m": 6,
+            "lt_-5_m": 0,
+            "lt_0_m": 37
+          },
+          "complete_profiles": 432,
+          "endpoint_clearance_contract_m": {
+            "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+            "rx": 1.5,
+            "tx": 25.0
+          },
+          "interpolation": "nearest",
+          "legacy_candidate_count": 432,
+          "legacy_signed_min_distribution_m": {
+            "count": 432,
+            "mae": 25.123207203294864,
+            "max": -25.0,
+            "mean": -25.123207203294864,
+            "mean_signed": -25.123207203294864,
+            "median": -25.0,
+            "min": -28.15141950334828,
+            "p01": -27.43084873744422,
+            "p10": -25.15439671107695,
+            "p75": -25.0,
+            "p90": -25.0,
+            "p99": -25.0,
+            "rmse": 25.12720048903323
+          },
+          "min_clearance_distribution_m": {
+            "count": 432,
+            "mae": 1.377622523635784,
+            "max": 1.5,
+            "mean": 1.1572979417427534,
+            "mean_signed": 1.1572979417427534,
+            "median": 1.5,
+            "min": -4.500714983258945,
+            "p01": -2.4003974260601977,
+            "p10": 0.2857613699776948,
+            "p75": 1.5,
+            "p90": 1.5,
+            "p99": 1.5,
+            "rmse": 1.4388269179027284
+          },
+          "minimum_distance_from_rx_histogram": {
+            "0_30m": 396,
+            "100_200m": 8,
+            "200_300m": 0,
+            "300_400m": 0,
+            "30_60m": 22,
+            "60_100m": 6
+          },
+          "minimum_distance_from_tx_histogram": {
+            "0_30m": 0,
+            "100_200m": 0,
+            "200_300m": 8,
+            "300_400m": 424,
+            "30_60m": 0,
+            "60_100m": 0
+          },
+          "minimum_location_counts": {
+            "interior": 113,
+            "rx_endpoint": 319,
+            "tx_endpoint": 0
+          },
+          "partial_profiles": 0,
+          "paths": 432,
+          "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+          "requested_spacing_m": 30.0,
+          "rx_height_m": 1.5,
+          "source": "fabdem",
+          "strict_zero_candidate_count": 37,
+          "terrain_range_distribution_m": {
+            "count": 432,
+            "max": 32.6300048828125,
+            "mean": 13.14824210272895,
+            "median": 11.82000732421875,
+            "min": 2.5899658203125,
+            "p01": 3.5232513427734378,
+            "p10": 6.025958251953125,
+            "p75": 17.092514038085938,
+            "p90": 21.38701171875,
+            "p99": 31.790812377929687
+          },
+          "tx_height_m": 25.0
+        },
+        "paired_complete_paths": 432,
+        "path_geometry": {
+          "distance_m": 400.0,
+          "requested_spacing_m": 30.0
+        },
+        "source": "fabdem",
+        "strict_candidate_switch_count": 24
+      },
+      "rx_tx_height_sensitivity": {
+        "rx_sensitivity": {
+          "fixed_tx_height_m": 25.0,
+          "runs": {
+            "1.5": {
+              "rx_height_m": 1.5,
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 5,
+                  "lt_-1_m": 3,
+                  "lt_-2_m": 0,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 19
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.107671714010344,
+                  "max": -25.0,
+                  "mean": -25.107671714010344,
+                  "mean_signed": -25.107671714010344,
+                  "median": -25.0,
+                  "min": -27.673752427067598,
+                  "p01": -27.33979882374095,
+                  "p10": -25.0,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.111482161505727
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 1.3768343203752953,
+                  "max": 1.5,
+                  "mean": 1.3353601610066108,
+                  "mean_signed": 1.3353601610066108,
+                  "median": 1.5,
+                  "min": -1.6849772600795632,
+                  "p01": -0.6058326143985993,
+                  "p10": 0.9901728379683391,
+                  "p75": 1.5,
+                  "p90": 1.5,
+                  "p99": 1.5,
+                  "rmse": 1.415352362614996
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 400,
+                  "100_200m": 5,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 21,
+                  "60_100m": 6
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 0,
+                  "200_300m": 5,
+                  "300_400m": 427,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 76,
+                  "rx_endpoint": 356,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 1.5,
+                "source": "fabdem",
+                "strict_zero_candidate_count": 19,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 32.9630732423534,
+                  "mean": 12.729799241501134,
+                  "median": 11.453470976536437,
+                  "min": 2.695314698125003,
+                  "p01": 3.5192279874572807,
+                  "p10": 5.632265609833382,
+                  "p75": 16.88094275181561,
+                  "p90": 20.963611248801122,
+                  "p99": 30.27843301969729
+                },
+                "tx_height_m": 25.0
+              }
+            },
+            "10.0": {
+              "rx_height_m": 10.0,
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 0,
+                  "lt_-1_m": 0,
+                  "lt_-2_m": 0,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 0
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.38832022859019,
+                  "max": -25.0,
+                  "mean": -25.38832022859019,
+                  "mean_signed": -25.38832022859019,
+                  "median": -25.0,
+                  "min": -30.10232385563893,
+                  "p01": -29.18190048064191,
+                  "p10": -26.26361449803386,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.405614118663063
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 9.512395846596318,
+                  "max": 10.0,
+                  "mean": 9.512395846596318,
+                  "mean_signed": 9.512395846596318,
+                  "median": 10.0,
+                  "min": 5.340956428699769,
+                  "p01": 6.480123844527244,
+                  "p10": 7.972130463636438,
+                  "p75": 10.0,
+                  "p90": 10.0,
+                  "p99": 10.0,
+                  "rmse": 9.557843636925362
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 337,
+                  "100_200m": 36,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 38,
+                  "60_100m": 21
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 0,
+                  "200_300m": 36,
+                  "300_400m": 396,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 144,
+                  "rx_endpoint": 288,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 10.0,
+                "source": "fabdem",
+                "strict_zero_candidate_count": 0,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 32.9630732423534,
+                  "mean": 12.729799241501134,
+                  "median": 11.453470976536437,
+                  "min": 2.695314698125003,
+                  "p01": 3.5192279874572807,
+                  "p10": 5.632265609833382,
+                  "p75": 16.88094275181561,
+                  "p90": 20.963611248801122,
+                  "p99": 30.27843301969729
+                },
+                "tx_height_m": 25.0
+              }
+            },
+            "3.0": {
+              "rx_height_m": 3.0,
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 0,
+                  "lt_-1_m": 0,
+                  "lt_-2_m": 0,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 3
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.13357977260376,
+                  "max": -25.0,
+                  "mean": -25.13357977260376,
+                  "mean_signed": -25.13357977260376,
+                  "median": -25.0,
+                  "min": -28.10232385563893,
+                  "p01": -27.661227395169504,
+                  "p10": -25.0,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.138830178784445
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 2.8033457587821577,
+                  "max": 3.0,
+                  "mean": 2.800634350514635,
+                  "mean_signed": 2.800634350514635,
+                  "median": 3.0,
+                  "min": -0.39926297436522873,
+                  "p01": 0.7538102427442153,
+                  "p10": 2.283083995711047,
+                  "p75": 3.0,
+                  "p90": 3.0,
+                  "p99": 3.0,
+                  "rmse": 2.8498994475049533
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 391,
+                  "100_200m": 9,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 23,
+                  "60_100m": 9
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 0,
+                  "200_300m": 9,
+                  "300_400m": 423,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 89,
+                  "rx_endpoint": 343,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 3.0,
+                "source": "fabdem",
+                "strict_zero_candidate_count": 3,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 32.9630732423534,
+                  "mean": 12.729799241501134,
+                  "median": 11.453470976536437,
+                  "min": 2.695314698125003,
+                  "p01": 3.5192279874572807,
+                  "p10": 5.632265609833382,
+                  "p75": 16.88094275181561,
+                  "p90": 20.963611248801122,
+                  "p99": 30.27843301969729
+                },
+                "tx_height_m": 25.0
+              }
+            },
+            "5.0": {
+              "rx_height_m": 5.0,
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 0,
+                  "lt_-1_m": 0,
+                  "lt_-2_m": 0,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 0
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.176048722169973,
+                  "max": -25.0,
+                  "mean": -25.176048722169973,
+                  "mean_signed": -25.176048722169973,
+                  "median": -25.0,
+                  "min": -28.673752427067598,
+                  "p01": -28.08979882374095,
+                  "p10": -25.17807472582151,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.183703181197146
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 4.744854592148607,
+                  "max": 5.0,
+                  "mean": 4.744854592148607,
+                  "mean_signed": 4.744854592148607,
+                  "median": 5.0,
+                  "min": 1.3150227399204368,
+                  "p01": 2.5508817527440524,
+                  "p10": 3.8762084307851525,
+                  "p75": 5.0,
+                  "p90": 5.0,
+                  "p99": 5.0,
+                  "rmse": 4.784956114887543
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 377,
+                  "100_200m": 13,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 32,
+                  "60_100m": 10
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 0,
+                  "200_300m": 13,
+                  "300_400m": 419,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 101,
+                  "rx_endpoint": 331,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 5.0,
+                "source": "fabdem",
+                "strict_zero_candidate_count": 0,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 32.9630732423534,
+                  "mean": 12.729799241501134,
+                  "median": 11.453470976536437,
+                  "min": 2.695314698125003,
+                  "p01": 3.5192279874572807,
+                  "p10": 5.632265609833382,
+                  "p75": 16.88094275181561,
+                  "p90": 20.963611248801122,
+                  "p99": 30.27843301969729
+                },
+                "tx_height_m": 25.0
+              }
+            }
+          }
+        },
+        "tx_sensitivity": {
+          "fixed_rx_height_m": 1.5,
+          "runs": {
+            "10.0": {
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 102,
+                  "lt_-1_m": 82,
+                  "lt_-2_m": 46,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 122
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 11.011592934736798,
+                  "max": -10.0,
+                  "mean": -11.011592934736798,
+                  "mean_signed": -11.011592934736798,
+                  "median": -10.273750287854682,
+                  "min": -17.668052307646235,
+                  "p01": -15.844138820518321,
+                  "p10": -13.297276952231448,
+                  "p75": -10.0,
+                  "p90": -10.0,
+                  "p99": -10.0,
+                  "rmse": 11.113019180913629
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 1.4453015301753966,
+                  "max": 1.5,
+                  "mean": 0.4811630555122106,
+                  "mean_signed": 0.4811630555122106,
+                  "median": 1.5,
+                  "min": -4.812594371564046,
+                  "p01": -4.028976982510824,
+                  "p10": -2.0498752080121903,
+                  "p75": 1.5,
+                  "p90": 1.5,
+                  "p99": 1.5,
+                  "rmse": 1.6068205660248882
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 276,
+                  "100_200m": 86,
+                  "200_300m": 4,
+                  "300_400m": 0,
+                  "30_60m": 32,
+                  "60_100m": 34
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 10,
+                  "200_300m": 80,
+                  "300_400m": 342,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 201,
+                  "rx_endpoint": 231,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 1.5,
+                "source": "fabdem",
+                "strict_zero_candidate_count": 122,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 32.9630732423534,
+                  "mean": 12.729799241501134,
+                  "median": 11.453470976536437,
+                  "min": 2.695314698125003,
+                  "p01": 3.5192279874572807,
+                  "p10": 5.632265609833382,
+                  "p75": 16.88094275181561,
+                  "p90": 20.963611248801122,
+                  "p99": 30.27843301969729
+                },
+                "tx_height_m": 10.0
+              },
+              "tx_height_m": 10.0
+            },
+            "25.0": {
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 5,
+                  "lt_-1_m": 3,
+                  "lt_-2_m": 0,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 19
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.107671714010344,
+                  "max": -25.0,
+                  "mean": -25.107671714010344,
+                  "mean_signed": -25.107671714010344,
+                  "median": -25.0,
+                  "min": -27.673752427067598,
+                  "p01": -27.33979882374095,
+                  "p10": -25.0,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.111482161505727
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 1.3768343203752953,
+                  "max": 1.5,
+                  "mean": 1.3353601610066108,
+                  "mean_signed": 1.3353601610066108,
+                  "median": 1.5,
+                  "min": -1.6849772600795632,
+                  "p01": -0.6058326143985993,
+                  "p10": 0.9901728379683391,
+                  "p75": 1.5,
+                  "p90": 1.5,
+                  "p99": 1.5,
+                  "rmse": 1.415352362614996
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 400,
+                  "100_200m": 5,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 21,
+                  "60_100m": 6
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 0,
+                  "200_300m": 5,
+                  "300_400m": 427,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 76,
+                  "rx_endpoint": 356,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 1.5,
+                "source": "fabdem",
+                "strict_zero_candidate_count": 19,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 32.9630732423534,
+                  "mean": 12.729799241501134,
+                  "median": 11.453470976536437,
+                  "min": 2.695314698125003,
+                  "p01": 3.5192279874572807,
+                  "p10": 5.632265609833382,
+                  "p75": 16.88094275181561,
+                  "p90": 20.963611248801122,
+                  "p99": 30.27843301969729
+                },
+                "tx_height_m": 25.0
+              },
+              "tx_height_m": 25.0
+            },
+            "50.0": {
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 0,
+                  "lt_-1_m": 0,
+                  "lt_-2_m": 0,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 0
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 50.0,
+                  "max": -50.0,
+                  "mean": -50.0,
+                  "mean_signed": -50.0,
+                  "median": -50.0,
+                  "min": -50.0,
+                  "p01": -50.0,
+                  "p10": -50.0,
+                  "p75": -50.0,
+                  "p90": -50.0,
+                  "p99": -50.0,
+                  "rmse": 50.0
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 1.4965400434884146,
+                  "max": 1.5,
+                  "mean": 1.4965400434884146,
+                  "mean_signed": 1.4965400434884146,
+                  "median": 1.5,
+                  "min": 1.011176362261267,
+                  "p01": 1.4349879979619902,
+                  "p10": 1.5,
+                  "p75": 1.5,
+                  "p90": 1.5,
+                  "p99": 1.5,
+                  "rmse": 1.4969772371800234
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 432,
+                  "100_200m": 0,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 0,
+                  "200_300m": 0,
+                  "300_400m": 432,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 6,
+                  "rx_endpoint": 426,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 1.5,
+                "source": "fabdem",
+                "strict_zero_candidate_count": 0,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 32.9630732423534,
+                  "mean": 12.729799241501134,
+                  "median": 11.453470976536437,
+                  "min": 2.695314698125003,
+                  "p01": 3.5192279874572807,
+                  "p10": 5.632265609833382,
+                  "p75": 16.88094275181561,
+                  "p90": 20.963611248801122,
+                  "p99": 30.27843301969729
+                },
+                "tx_height_m": 50.0
+              },
+              "tx_height_m": 50.0
+            }
+          }
+        }
+      },
+      "source_local_note": "Endpoint ground and radio line use this source only; no raw cross-datum difference is inserted into the path decision.",
+      "source_metadata": {
+        "geoid_model": "EGM2008",
+        "horizontal_crs": "EPSG:4326",
+        "interpolation": "bilinear",
+        "nominal_bounds": [
+          32,
+          39,
+          34,
+          41
+        ],
+        "resolution_deg": [
+          0.0002777777777777778,
+          0.00027777777777777875
+        ],
+        "source": "fabdem",
+        "tile_count": 4,
+        "tile_dimensions": [
+          "3600x3600"
+        ],
+        "vertical_datum": "EGM2008",
+        "vertical_datum_kind": "orthometric"
+      },
+      "spacing_sensitivity": {
+        "interpretation": "The source-scale label uses one north-south posting interval; east-west spacing is smaller at Ankara latitude.",
+        "runs": {
+          "half_source_scale": {
+            "requested_spacing_m": 15.443739811744322,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 7,
+                "lt_-1_m": 3,
+                "lt_-2_m": 0,
+                "lt_-5_m": 0,
+                "lt_0_m": 19
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.12125282321081,
+                "max": -25.0,
+                "mean": -25.12125282321081,
+                "mean_signed": -25.12125282321081,
+                "median": -25.0,
+                "min": -27.83816678202834,
+                "p01": -27.512904692399072,
+                "p10": -25.031810155159235,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.12564701958367
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.3660800066909047,
+                "max": 1.5,
+                "mean": 1.317593441579335,
+                "mean_signed": 1.317593441579335,
+                "median": 1.5,
+                "min": -1.7436273210475974,
+                "p01": -0.8192991219449162,
+                "p10": 0.7769763148048242,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.4061685033743292
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 369,
+                "100_200m": 4,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 42,
+                "60_100m": 17
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 0,
+                "200_300m": 4,
+                "300_400m": 428,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 88,
+                "rx_endpoint": 344,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 15.443739811744322,
+              "rx_height_m": 1.5,
+              "source": "fabdem",
+              "strict_zero_candidate_count": 19,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 32.9630732423534,
+                "mean": 12.800934908835412,
+                "median": 11.489221073509214,
+                "min": 2.7686003540103457,
+                "p01": 3.657092344787967,
+                "p10": 5.7034364130784185,
+                "p75": 16.88094275181561,
+                "p90": 20.995036716568972,
+                "p99": 30.28246326954384
+              },
+              "tx_height_m": 25.0
+            }
+          },
+          "requested_15m": {
+            "requested_spacing_m": 15.0,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 6,
+                "lt_-1_m": 3,
+                "lt_-2_m": 0,
+                "lt_-5_m": 0,
+                "lt_0_m": 20
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.12111550764163,
+                "max": -25.0,
+                "mean": -25.12111550764163,
+                "mean_signed": -25.12111550764163,
+                "median": -25.0,
+                "min": -27.76754804895438,
+                "p01": -27.443541286885054,
+                "p10": -25.0466995566233,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.125396465043433
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.3655621811986607,
+                "max": 1.5,
+                "mean": 1.3168413879241911,
+                "mean_signed": 1.3168413879241911,
+                "median": 1.5,
+                "min": -1.71832435662634,
+                "p01": -0.8194543106625769,
+                "p10": 0.7803538113450487,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.4054650777897078
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 390,
+                "100_200m": 5,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 30,
+                "60_100m": 7
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 0,
+                "200_300m": 5,
+                "300_400m": 427,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 93,
+                "rx_endpoint": 339,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 15.0,
+              "rx_height_m": 1.5,
+              "source": "fabdem",
+              "strict_zero_candidate_count": 20,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 32.9630732423534,
+                "mean": 12.803193411332346,
+                "median": 11.489221073509214,
+                "min": 2.7687936254924352,
+                "p01": 3.6258762949079606,
+                "p10": 5.755100725596878,
+                "p75": 16.88094275181561,
+                "p90": 20.995036716568972,
+                "p99": 30.291861193400347
+              },
+              "tx_height_m": 25.0
+            }
+          },
+          "requested_30m": {
+            "requested_spacing_m": 30.0,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 5,
+                "lt_-1_m": 3,
+                "lt_-2_m": 0,
+                "lt_-5_m": 0,
+                "lt_0_m": 19
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.107671714010344,
+                "max": -25.0,
+                "mean": -25.107671714010344,
+                "mean_signed": -25.107671714010344,
+                "median": -25.0,
+                "min": -27.673752427067598,
+                "p01": -27.33979882374095,
+                "p10": -25.0,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.111482161505727
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.3768343203752953,
+                "max": 1.5,
+                "mean": 1.3353601610066108,
+                "mean_signed": 1.3353601610066108,
+                "median": 1.5,
+                "min": -1.6849772600795632,
+                "p01": -0.6058326143985993,
+                "p10": 0.9901728379683391,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.415352362614996
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 400,
+                "100_200m": 5,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 21,
+                "60_100m": 6
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 0,
+                "200_300m": 5,
+                "300_400m": 427,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 76,
+                "rx_endpoint": 356,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 30.0,
+              "rx_height_m": 1.5,
+              "source": "fabdem",
+              "strict_zero_candidate_count": 19,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 32.9630732423534,
+                "mean": 12.729799241501134,
+                "median": 11.453470976536437,
+                "min": 2.695314698125003,
+                "p01": 3.5192279874572807,
+                "p10": 5.632265609833382,
+                "p75": 16.88094275181561,
+                "p90": 20.963611248801122,
+                "p99": 30.27843301969729
+              },
+              "tx_height_m": 25.0
+            }
+          },
+          "requested_60m": {
+            "requested_spacing_m": 60.0,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 4,
+                "lt_-1_m": 2,
+                "lt_-2_m": 0,
+                "lt_-5_m": 0,
+                "lt_0_m": 14
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.081838144295098,
+                "max": -25.0,
+                "mean": -25.081838144295098,
+                "mean_signed": -25.081838144295098,
+                "median": -25.0,
+                "min": -27.673752427067598,
+                "p01": -26.90995007295226,
+                "p10": -25.0,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.084308062189884
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.4167030013893371,
+                "max": 1.5,
+                "mean": 1.3891395583225798,
+                "mean_signed": 1.3891395583225798,
+                "median": 1.5,
+                "min": -1.6849772600795632,
+                "p01": -0.4369895314982818,
+                "p10": 1.2607588507744936,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.442407203132575
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 379,
+                "100_200m": 6,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 47,
+                "60_100m": 0
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 0,
+                "200_300m": 6,
+                "300_400m": 426,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 53,
+                "rx_endpoint": 379,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 60.0,
+              "rx_height_m": 1.5,
+              "source": "fabdem",
+              "strict_zero_candidate_count": 14,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 32.9630732423534,
+                "mean": 12.595142913707846,
+                "median": 11.356470010861528,
+                "min": 2.494264151097809,
+                "p01": 3.371580883440336,
+                "p10": 5.497484184299924,
+                "p75": 16.75744428108416,
+                "p90": 20.86900654861167,
+                "p99": 30.27843301969729
+              },
+              "tx_height_m": 25.0
+            }
+          },
+          "source_scale": {
+            "requested_spacing_m": 30.887479623488645,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 5,
+                "lt_-1_m": 2,
+                "lt_-2_m": 0,
+                "lt_-5_m": 0,
+                "lt_0_m": 18
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.10227531794635,
+                "max": -25.0,
+                "mean": -25.10227531794635,
+                "mean_signed": -25.10227531794635,
+                "median": -25.0,
+                "min": -27.486569165322067,
+                "p01": -27.216797365940504,
+                "p10": -25.0,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.105780222539572
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.3798812862484808,
+                "max": 1.5,
+                "mean": 1.3417589378072263,
+                "mean_signed": 1.3417589378072263,
+                "median": 1.5,
+                "min": -1.7436273210475974,
+                "p01": -0.5399266068677763,
+                "p10": 0.9951268008280408,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.4179256619877878
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 360,
+                "100_200m": 0,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 46,
+                "60_100m": 26
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 0,
+                "200_300m": 0,
+                "300_400m": 432,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 72,
+                "rx_endpoint": 360,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 30.887479623488645,
+              "rx_height_m": 1.5,
+              "source": "fabdem",
+              "strict_zero_candidate_count": 18,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 32.9630732423534,
+                "mean": 12.7195184678692,
+                "median": 11.48893079008269,
+                "min": 2.6843970633631216,
+                "p01": 3.657092344787967,
+                "p10": 5.617365386165034,
+                "p75": 16.88094275181561,
+                "p90": 20.959520760413536,
+                "p99": 30.27843301969729
+              },
+              "tx_height_m": 25.0
+            }
+          }
+        },
+        "source_native_resolution_m_east_west_at_39_9N": 23.69579799454564,
+        "source_native_resolution_m_north_south": 30.887479623488645
+      },
+      "tolerance_classification": {
+        "margin_0_m": {
+          "counts": {
+            "clear": 413,
+            "near_uncertainty_boundary": 0,
+            "obstruction_candidate": 19,
+            "unavailable": 0
+          },
+          "margin_m": 0.0
+        },
+        "margin_1_m": {
+          "counts": {
+            "clear": 387,
+            "near_uncertainty_boundary": 42,
+            "obstruction_candidate": 3,
+            "unavailable": 0
+          },
+          "margin_m": 1.0
+        },
+        "margin_2_m": {
+          "counts": {
+            "clear": 0,
+            "near_uncertainty_boundary": 432,
+            "obstruction_candidate": 0,
+            "unavailable": 0
+          },
+          "margin_m": 2.0
+        },
+        "margin_5_m": {
+          "counts": {
+            "clear": 0,
+            "near_uncertainty_boundary": 432,
+            "obstruction_candidate": 0,
+            "unavailable": 0
+          },
+          "margin_m": 5.0
+        }
+      }
+    },
+    "nasadem": {
+      "canonical_summary": {
+        "candidate_counts_by_threshold_m": {
+          "lt_-0.5_m": 36,
+          "lt_-1_m": 30,
+          "lt_-2_m": 18,
+          "lt_-5_m": 0,
+          "lt_0_m": 50
+        },
+        "complete_profiles": 432,
+        "endpoint_clearance_contract_m": {
+          "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+          "rx": 1.5,
+          "tx": 25.0
+        },
+        "interpolation": "bilinear",
+        "legacy_candidate_count": 432,
+        "legacy_signed_min_distribution_m": {
+          "count": 432,
+          "mae": 25.151189628762566,
+          "max": -25.0,
+          "mean": -25.151189628762566,
+          "mean_signed": -25.151189628762566,
+          "median": -25.0,
+          "min": -27.31415440651972,
+          "p01": -26.64927739586745,
+          "p10": -25.68630003932403,
+          "p75": -25.0,
+          "p90": -25.0,
+          "p99": -25.0,
+          "rmse": 25.15409090361785
+        },
+        "min_clearance_distribution_m": {
+          "count": 432,
+          "mae": 1.4251991198530038,
+          "max": 1.5,
+          "mean": 1.0327612322785276,
+          "mean_signed": 1.0327612322785276,
+          "median": 1.5,
+          "min": -4.641654555694913,
+          "p01": -3.8495426990994326,
+          "p10": -0.25104881067015855,
+          "p75": 1.5,
+          "p90": 1.5,
+          "p99": 1.5,
+          "rmse": 1.524873561756542
+        },
+        "minimum_distance_from_rx_histogram": {
+          "0_30m": 351,
+          "100_200m": 18,
+          "200_300m": 0,
+          "300_400m": 0,
+          "30_60m": 35,
+          "60_100m": 28
+        },
+        "minimum_distance_from_tx_histogram": {
+          "0_30m": 0,
+          "100_200m": 1,
+          "200_300m": 17,
+          "300_400m": 414,
+          "30_60m": 0,
+          "60_100m": 0
+        },
+        "minimum_location_counts": {
+          "interior": 121,
+          "rx_endpoint": 311,
+          "tx_endpoint": 0
+        },
+        "partial_profiles": 0,
+        "paths": 432,
+        "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+        "requested_spacing_m": 30.0,
+        "rx_height_m": 1.5,
+        "source": "nasadem",
+        "strict_zero_candidate_count": 50,
+        "terrain_range_distribution_m": {
+          "count": 432,
+          "max": 35.568707538042986,
+          "mean": 14.663279282619866,
+          "median": 13.639986100205192,
+          "min": 1.9652491347903833,
+          "p01": 3.1335317530727913,
+          "p10": 6.922119392865545,
+          "p75": 19.21170372184409,
+          "p90": 25.100592328081028,
+          "p99": 32.273317657777206
+        },
+        "tx_height_m": 25.0
+      },
+      "interpolation_sensitivity": {
+        "bilinear_summary": {
+          "candidate_counts_by_threshold_m": {
+            "lt_-0.5_m": 36,
+            "lt_-1_m": 30,
+            "lt_-2_m": 18,
+            "lt_-5_m": 0,
+            "lt_0_m": 50
+          },
+          "complete_profiles": 432,
+          "endpoint_clearance_contract_m": {
+            "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+            "rx": 1.5,
+            "tx": 25.0
+          },
+          "interpolation": "bilinear",
+          "legacy_candidate_count": 432,
+          "legacy_signed_min_distribution_m": {
+            "count": 432,
+            "mae": 25.151189628762566,
+            "max": -25.0,
+            "mean": -25.151189628762566,
+            "mean_signed": -25.151189628762566,
+            "median": -25.0,
+            "min": -27.31415440651972,
+            "p01": -26.64927739586745,
+            "p10": -25.68630003932403,
+            "p75": -25.0,
+            "p90": -25.0,
+            "p99": -25.0,
+            "rmse": 25.15409090361785
+          },
+          "min_clearance_distribution_m": {
+            "count": 432,
+            "mae": 1.4251991198530038,
+            "max": 1.5,
+            "mean": 1.0327612322785276,
+            "mean_signed": 1.0327612322785276,
+            "median": 1.5,
+            "min": -4.641654555694913,
+            "p01": -3.8495426990994326,
+            "p10": -0.25104881067015855,
+            "p75": 1.5,
+            "p90": 1.5,
+            "p99": 1.5,
+            "rmse": 1.524873561756542
+          },
+          "minimum_distance_from_rx_histogram": {
+            "0_30m": 351,
+            "100_200m": 18,
+            "200_300m": 0,
+            "300_400m": 0,
+            "30_60m": 35,
+            "60_100m": 28
+          },
+          "minimum_distance_from_tx_histogram": {
+            "0_30m": 0,
+            "100_200m": 1,
+            "200_300m": 17,
+            "300_400m": 414,
+            "30_60m": 0,
+            "60_100m": 0
+          },
+          "minimum_location_counts": {
+            "interior": 121,
+            "rx_endpoint": 311,
+            "tx_endpoint": 0
+          },
+          "partial_profiles": 0,
+          "paths": 432,
+          "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+          "requested_spacing_m": 30.0,
+          "rx_height_m": 1.5,
+          "source": "nasadem",
+          "strict_zero_candidate_count": 50,
+          "terrain_range_distribution_m": {
+            "count": 432,
+            "max": 35.568707538042986,
+            "mean": 14.663279282619866,
+            "median": 13.639986100205192,
+            "min": 1.9652491347903833,
+            "p01": 3.1335317530727913,
+            "p10": 6.922119392865545,
+            "p75": 19.21170372184409,
+            "p90": 25.100592328081028,
+            "p99": 32.273317657777206
+          },
+          "tx_height_m": 25.0
+        },
+        "interpretation": "Interpolation changes the sampled diagnostic; it does not turn a sampled candidate into an exact obstruction.",
+        "nearest_minus_bilinear_min_clearance_m": {
+          "count": 432,
+          "mae": 0.2847371589079512,
+          "max": 1.7661889851411843,
+          "mean": -0.1984358354531316,
+          "mean_signed": -0.1984358354531316,
+          "median": 0.0,
+          "min": -2.947208063107155,
+          "p01": -1.9983765552462103,
+          "p10": -0.9280214524654866,
+          "p75": 0.0,
+          "p90": 0.0,
+          "p99": 1.1349717638210517,
+          "rmse": 0.587068377112829
+        },
+        "nearest_summary": {
+          "candidate_counts_by_threshold_m": {
+            "lt_-0.5_m": 56,
+            "lt_-1_m": 43,
+            "lt_-2_m": 22,
+            "lt_-5_m": 2,
+            "lt_0_m": 70
+          },
+          "complete_profiles": 432,
+          "endpoint_clearance_contract_m": {
+            "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+            "rx": 1.5,
+            "tx": 25.0
+          },
+          "interpolation": "nearest",
+          "legacy_candidate_count": 432,
+          "legacy_signed_min_distribution_m": {
+            "count": 432,
+            "mae": 25.342013888888896,
+            "max": -25.0,
+            "mean": -25.342013888888896,
+            "mean_signed": -25.342013888888896,
+            "median": -25.0,
+            "min": -28.21428571428578,
+            "p01": -27.82142857142852,
+            "p10": -26.710714285714346,
+            "p75": -25.0,
+            "p90": -25.0,
+            "p99": -25.0,
+            "rmse": 25.353308393196674
+          },
+          "min_clearance_distribution_m": {
+            "count": 432,
+            "mae": 1.3976521164021178,
+            "max": 1.5,
+            "mean": 0.8343253968253961,
+            "mean_signed": 0.8343253968253961,
+            "median": 1.5,
+            "min": -6.071428571428555,
+            "p01": -4.1528571428571075,
+            "p10": -0.9892857142857222,
+            "p75": 1.5,
+            "p90": 1.5,
+            "p99": 1.5,
+            "rmse": 1.5504724153896967
+          },
+          "minimum_distance_from_rx_histogram": {
+            "0_30m": 339,
+            "100_200m": 30,
+            "200_300m": 0,
+            "300_400m": 0,
+            "30_60m": 38,
+            "60_100m": 25
+          },
+          "minimum_distance_from_tx_histogram": {
+            "0_30m": 0,
+            "100_200m": 1,
+            "200_300m": 29,
+            "300_400m": 402,
+            "30_60m": 0,
+            "60_100m": 0
+          },
+          "minimum_location_counts": {
+            "interior": 154,
+            "rx_endpoint": 278,
+            "tx_endpoint": 0
+          },
+          "partial_profiles": 0,
+          "paths": 432,
+          "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+          "requested_spacing_m": 30.0,
+          "rx_height_m": 1.5,
+          "source": "nasadem",
+          "strict_zero_candidate_count": 70,
+          "terrain_range_distribution_m": {
+            "count": 432,
+            "max": 35.0,
+            "mean": 15.090277777777779,
+            "median": 14.0,
+            "min": 2.0,
+            "p01": 3.3100000000000005,
+            "p10": 7.0,
+            "p75": 20.0,
+            "p90": 25.0,
+            "p99": 32.0
+          },
+          "tx_height_m": 25.0
+        },
+        "paired_complete_paths": 432,
+        "path_geometry": {
+          "distance_m": 400.0,
+          "requested_spacing_m": 30.0
+        },
+        "source": "nasadem",
+        "strict_candidate_switch_count": 30
+      },
+      "rx_tx_height_sensitivity": {
+        "rx_sensitivity": {
+          "fixed_tx_height_m": 25.0,
+          "runs": {
+            "1.5": {
+              "rx_height_m": 1.5,
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 36,
+                  "lt_-1_m": 30,
+                  "lt_-2_m": 18,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 50
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.151189628762566,
+                  "max": -25.0,
+                  "mean": -25.151189628762566,
+                  "mean_signed": -25.151189628762566,
+                  "median": -25.0,
+                  "min": -27.31415440651972,
+                  "p01": -26.64927739586745,
+                  "p10": -25.68630003932403,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.15409090361785
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 1.4251991198530038,
+                  "max": 1.5,
+                  "mean": 1.0327612322785276,
+                  "mean_signed": 1.0327612322785276,
+                  "median": 1.5,
+                  "min": -4.641654555694913,
+                  "p01": -3.8495426990994326,
+                  "p10": -0.25104881067015855,
+                  "p75": 1.5,
+                  "p90": 1.5,
+                  "p99": 1.5,
+                  "rmse": 1.524873561756542
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 351,
+                  "100_200m": 18,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 35,
+                  "60_100m": 28
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 1,
+                  "200_300m": 17,
+                  "300_400m": 414,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 121,
+                  "rx_endpoint": 311,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 1.5,
+                "source": "nasadem",
+                "strict_zero_candidate_count": 50,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 35.568707538042986,
+                  "mean": 14.663279282619866,
+                  "median": 13.639986100205192,
+                  "min": 1.9652491347903833,
+                  "p01": 3.1335317530727913,
+                  "p10": 6.922119392865545,
+                  "p75": 19.21170372184409,
+                  "p90": 25.100592328081028,
+                  "p99": 32.273317657777206
+                },
+                "tx_height_m": 25.0
+              }
+            },
+            "10.0": {
+              "rx_height_m": 10.0,
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 0,
+                  "lt_-1_m": 0,
+                  "lt_-2_m": 0,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 0
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.516372176857384,
+                  "max": -25.0,
+                  "mean": -25.516372176857384,
+                  "mean_signed": -25.516372176857384,
+                  "median": -25.0,
+                  "min": -29.56477061247699,
+                  "p01": -28.85747214519174,
+                  "p10": -26.614116223311203,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.533188820213383
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 8.95752594063991,
+                  "max": 10.0,
+                  "mean": 8.95752594063991,
+                  "mean_signed": 8.95752594063991,
+                  "median": 10.0,
+                  "min": 1.4424760274455366,
+                  "p01": 2.8094292135366423,
+                  "p10": 6.395010081794192,
+                  "p75": 10.0,
+                  "p90": 10.0,
+                  "p99": 10.0,
+                  "rmse": 9.122363041072992
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 286,
+                  "100_200m": 63,
+                  "200_300m": 3,
+                  "300_400m": 0,
+                  "30_60m": 41,
+                  "60_100m": 39
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 8,
+                  "200_300m": 58,
+                  "300_400m": 366,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 189,
+                  "rx_endpoint": 243,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 10.0,
+                "source": "nasadem",
+                "strict_zero_candidate_count": 0,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 35.568707538042986,
+                  "mean": 14.663279282619866,
+                  "median": 13.639986100205192,
+                  "min": 1.9652491347903833,
+                  "p01": 3.1335317530727913,
+                  "p10": 6.922119392865545,
+                  "p75": 19.21170372184409,
+                  "p90": 25.100592328081028,
+                  "p99": 32.273317657777206
+                },
+                "tx_height_m": 25.0
+              }
+            },
+            "3.0": {
+              "rx_height_m": 3.0,
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 21,
+                  "lt_-1_m": 18,
+                  "lt_-2_m": 9,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 27
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.192144514186268,
+                  "max": -25.0,
+                  "mean": -25.192144514186268,
+                  "mean_signed": -25.192144514186268,
+                  "median": -25.0,
+                  "min": -27.635582977948275,
+                  "p01": -26.983700250926148,
+                  "p10": -25.84469930890301,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.1963173741501
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 2.6459512216352215,
+                  "max": 3.0,
+                  "mean": 2.459898664803197,
+                  "mean_signed": 2.459898664803197,
+                  "median": 3.0,
+                  "min": -3.5575239725544634,
+                  "p01": -2.6433599289744403,
+                  "p10": 1.0824025904932797,
+                  "p75": 3.0,
+                  "p90": 3.0,
+                  "p99": 3.0,
+                  "rmse": 2.7404779430207764
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 341,
+                  "100_200m": 25,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 37,
+                  "60_100m": 29
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 1,
+                  "200_300m": 24,
+                  "300_400m": 407,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 131,
+                  "rx_endpoint": 301,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 3.0,
+                "source": "nasadem",
+                "strict_zero_candidate_count": 27,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 35.568707538042986,
+                  "mean": 14.663279282619866,
+                  "median": 13.639986100205192,
+                  "min": 1.9652491347903833,
+                  "p01": 3.1335317530727913,
+                  "p10": 6.922119392865545,
+                  "p75": 19.21170372184409,
+                  "p90": 25.100592328081028,
+                  "p99": 32.273317657777206
+                },
+                "tx_height_m": 25.0
+              }
+            },
+            "5.0": {
+              "rx_height_m": 5.0,
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 7,
+                  "lt_-1_m": 5,
+                  "lt_-2_m": 1,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 11
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.258935605064085,
+                  "max": -25.0,
+                  "mean": -25.258935605064085,
+                  "mean_signed": -25.258935605064085,
+                  "median": -25.0,
+                  "min": -28.06415440651972,
+                  "p01": -27.417319797890855,
+                  "p10": -25.9945486866667,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.26540871716497
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 4.391513652861362,
+                  "max": 5.0,
+                  "mean": 4.34525226447799,
+                  "mean_signed": 4.34525226447799,
+                  "median": 5.0,
+                  "min": -2.1289525439831323,
+                  "p01": -1.0276456432601024,
+                  "p10": 2.6790598075199568,
+                  "p75": 5.0,
+                  "p90": 5.0,
+                  "p99": 5.0,
+                  "rmse": 4.545667633652345
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 323,
+                  "100_200m": 39,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 41,
+                  "60_100m": 29
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 1,
+                  "200_300m": 38,
+                  "300_400m": 393,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 146,
+                  "rx_endpoint": 286,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 5.0,
+                "source": "nasadem",
+                "strict_zero_candidate_count": 11,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 35.568707538042986,
+                  "mean": 14.663279282619866,
+                  "median": 13.639986100205192,
+                  "min": 1.9652491347903833,
+                  "p01": 3.1335317530727913,
+                  "p10": 6.922119392865545,
+                  "p75": 19.21170372184409,
+                  "p90": 25.100592328081028,
+                  "p99": 32.273317657777206
+                },
+                "tx_height_m": 25.0
+              }
+            }
+          }
+        },
+        "tx_sensitivity": {
+          "fixed_rx_height_m": 1.5,
+          "runs": {
+            "10.0": {
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 152,
+                  "lt_-1_m": 141,
+                  "lt_-2_m": 109,
+                  "lt_-5_m": 23,
+                  "lt_0_m": 169
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 11.136595846840951,
+                  "max": -10.0,
+                  "mean": -11.136595846840951,
+                  "mean_signed": -11.136595846840951,
+                  "median": -10.381140665300222,
+                  "min": -16.886199183905433,
+                  "p01": -15.888595550435179,
+                  "p10": -13.860333544284298,
+                  "p75": -10.0,
+                  "p90": -10.0,
+                  "p99": -10.0,
+                  "rmse": 11.247643721288863
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 1.915951302084033,
+                  "max": 1.5,
+                  "mean": -0.312968323851726,
+                  "mean_signed": -0.312968323851726,
+                  "median": 1.0705694036793147,
+                  "min": -8.91466682969758,
+                  "p01": -7.403785072177848,
+                  "p10": -3.859596668426002,
+                  "p75": 1.5,
+                  "p90": 1.5,
+                  "p99": 1.5,
+                  "rmse": 2.3984197476860136
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 231,
+                  "100_200m": 92,
+                  "200_300m": 25,
+                  "300_400m": 0,
+                  "30_60m": 37,
+                  "60_100m": 47
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 36,
+                  "200_300m": 81,
+                  "300_400m": 315,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 242,
+                  "rx_endpoint": 190,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 1.5,
+                "source": "nasadem",
+                "strict_zero_candidate_count": 169,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 35.568707538042986,
+                  "mean": 14.663279282619866,
+                  "median": 13.639986100205192,
+                  "min": 1.9652491347903833,
+                  "p01": 3.1335317530727913,
+                  "p10": 6.922119392865545,
+                  "p75": 19.21170372184409,
+                  "p90": 25.100592328081028,
+                  "p99": 32.273317657777206
+                },
+                "tx_height_m": 10.0
+              },
+              "tx_height_m": 10.0
+            },
+            "25.0": {
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 36,
+                  "lt_-1_m": 30,
+                  "lt_-2_m": 18,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 50
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 25.151189628762566,
+                  "max": -25.0,
+                  "mean": -25.151189628762566,
+                  "mean_signed": -25.151189628762566,
+                  "median": -25.0,
+                  "min": -27.31415440651972,
+                  "p01": -26.64927739586745,
+                  "p10": -25.68630003932403,
+                  "p75": -25.0,
+                  "p90": -25.0,
+                  "p99": -25.0,
+                  "rmse": 25.15409090361785
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 1.4251991198530038,
+                  "max": 1.5,
+                  "mean": 1.0327612322785276,
+                  "mean_signed": 1.0327612322785276,
+                  "median": 1.5,
+                  "min": -4.641654555694913,
+                  "p01": -3.8495426990994326,
+                  "p10": -0.25104881067015855,
+                  "p75": 1.5,
+                  "p90": 1.5,
+                  "p99": 1.5,
+                  "rmse": 1.524873561756542
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 351,
+                  "100_200m": 18,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 35,
+                  "60_100m": 28
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 1,
+                  "200_300m": 17,
+                  "300_400m": 414,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 121,
+                  "rx_endpoint": 311,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 1.5,
+                "source": "nasadem",
+                "strict_zero_candidate_count": 50,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 35.568707538042986,
+                  "mean": 14.663279282619866,
+                  "median": 13.639986100205192,
+                  "min": 1.9652491347903833,
+                  "p01": 3.1335317530727913,
+                  "p10": 6.922119392865545,
+                  "p75": 19.21170372184409,
+                  "p90": 25.100592328081028,
+                  "p99": 32.273317657777206
+                },
+                "tx_height_m": 25.0
+              },
+              "tx_height_m": 25.0
+            },
+            "50.0": {
+              "summary": {
+                "candidate_counts_by_threshold_m": {
+                  "lt_-0.5_m": 2,
+                  "lt_-1_m": 1,
+                  "lt_-2_m": 0,
+                  "lt_-5_m": 0,
+                  "lt_0_m": 3
+                },
+                "complete_profiles": 432,
+                "endpoint_clearance_contract_m": {
+                  "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                  "rx": 1.5,
+                  "tx": 25.0
+                },
+                "interpolation": "bilinear",
+                "legacy_candidate_count": 432,
+                "legacy_signed_min_distribution_m": {
+                  "count": 432,
+                  "mae": 50.0,
+                  "max": -50.0,
+                  "mean": -50.0,
+                  "mean_signed": -50.0,
+                  "median": -50.0,
+                  "min": -50.0,
+                  "p01": -50.0,
+                  "p10": -50.0,
+                  "p75": -50.0,
+                  "p90": -50.0,
+                  "p99": -50.0,
+                  "rmse": 50.0
+                },
+                "min_clearance_distribution_m": {
+                  "count": 432,
+                  "mae": 1.4679865301191488,
+                  "max": 1.5,
+                  "mean": 1.4587160893062572,
+                  "mean_signed": 1.4587160893062572,
+                  "median": 1.5,
+                  "min": -1.377181664468253,
+                  "p01": 0.1534482136775705,
+                  "p10": 1.5,
+                  "p75": 1.5,
+                  "p90": 1.5,
+                  "p99": 1.5,
+                  "rmse": 1.4792884833298439
+                },
+                "minimum_distance_from_rx_histogram": {
+                  "0_30m": 424,
+                  "100_200m": 0,
+                  "200_300m": 0,
+                  "300_400m": 0,
+                  "30_60m": 6,
+                  "60_100m": 2
+                },
+                "minimum_distance_from_tx_histogram": {
+                  "0_30m": 0,
+                  "100_200m": 0,
+                  "200_300m": 0,
+                  "300_400m": 432,
+                  "30_60m": 0,
+                  "60_100m": 0
+                },
+                "minimum_location_counts": {
+                  "interior": 20,
+                  "rx_endpoint": 412,
+                  "tx_endpoint": 0
+                },
+                "partial_profiles": 0,
+                "paths": 432,
+                "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+                "requested_spacing_m": 30.0,
+                "rx_height_m": 1.5,
+                "source": "nasadem",
+                "strict_zero_candidate_count": 3,
+                "terrain_range_distribution_m": {
+                  "count": 432,
+                  "max": 35.568707538042986,
+                  "mean": 14.663279282619866,
+                  "median": 13.639986100205192,
+                  "min": 1.9652491347903833,
+                  "p01": 3.1335317530727913,
+                  "p10": 6.922119392865545,
+                  "p75": 19.21170372184409,
+                  "p90": 25.100592328081028,
+                  "p99": 32.273317657777206
+                },
+                "tx_height_m": 50.0
+              },
+              "tx_height_m": 50.0
+            }
+          }
+        }
+      },
+      "source_local_note": "Endpoint ground and radio line use this source only; no raw cross-datum difference is inserted into the path decision.",
+      "source_metadata": {
+        "geoid_model": "EGM96",
+        "horizontal_crs": "EPSG:4326",
+        "interpolation": "bilinear",
+        "nominal_bounds": [
+          32,
+          39,
+          34,
+          41
+        ],
+        "resolution_deg": [
+          0.0002777777777777778
+        ],
+        "source": "nasadem",
+        "tile_count": 4,
+        "tile_dimensions": [
+          "3601x3601"
+        ],
+        "vertical_datum": "EGM96 geoid",
+        "vertical_datum_kind": "orthometric"
+      },
+      "spacing_sensitivity": {
+        "interpretation": "The source-scale label uses one north-south posting interval; east-west spacing is smaller at Ankara latitude.",
+        "runs": {
+          "half_source_scale": {
+            "requested_spacing_m": 15.443739811744269,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 38,
+                "lt_-1_m": 30,
+                "lt_-2_m": 21,
+                "lt_-5_m": 1,
+                "lt_0_m": 50
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.173564753243475,
+                "max": -25.0,
+                "mean": -25.173564753243475,
+                "mean_signed": -25.173564753243475,
+                "median": -25.0,
+                "min": -27.43981856563107,
+                "p01": -26.706800252831027,
+                "p10": -25.674351820318908,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.176659884229238
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.4240415721046646,
+                "max": 1.5,
+                "mean": 1.0096753073971865,
+                "mean_signed": 1.0096753073971865,
+                "median": 1.5,
+                "min": -5.104228312685336,
+                "p01": -3.893938120934531,
+                "p10": -0.22913344476538666,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.5346000245403009
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 320,
+                "100_200m": 18,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 45,
+                "60_100m": 49
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 1,
+                "200_300m": 17,
+                "300_400m": 414,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 131,
+                "rx_endpoint": 301,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 15.443739811744269,
+              "rx_height_m": 1.5,
+              "source": "nasadem",
+              "strict_zero_candidate_count": 50,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 35.58544165721867,
+                "mean": 14.7918635727262,
+                "median": 13.74769394227809,
+                "min": 1.9968013389589032,
+                "p01": 3.2399589264647943,
+                "p10": 7.080702376449733,
+                "p75": 19.46147291587795,
+                "p90": 25.125124673342793,
+                "p99": 32.273317657777206
+              },
+              "tx_height_m": 25.0
+            }
+          },
+          "requested_15m": {
+            "requested_spacing_m": 15.0,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 37,
+                "lt_-1_m": 30,
+                "lt_-2_m": 20,
+                "lt_-5_m": 1,
+                "lt_0_m": 50
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.17711609573715,
+                "max": -25.0,
+                "mean": -25.17711609573715,
+                "mean_signed": -25.17711609573715,
+                "median": -25.0,
+                "min": -27.56723222714345,
+                "p01": -26.68597762152295,
+                "p10": -25.66109918802307,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.180268883863068
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.4236815623836125,
+                "max": 1.5,
+                "mean": 1.007350943210811,
+                "mean_signed": 1.007350943210811,
+                "median": 1.5,
+                "min": -5.334947016520914,
+                "p01": -3.8434609671140345,
+                "p10": -0.2644736592035315,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.5338562078771727
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 339,
+                "100_200m": 21,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 41,
+                "60_100m": 31
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 0,
+                "200_300m": 21,
+                "300_400m": 411,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 133,
+                "rx_endpoint": 299,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 15.0,
+              "rx_height_m": 1.5,
+              "source": "nasadem",
+              "strict_zero_candidate_count": 50,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 35.57795983238543,
+                "mean": 14.806236042192161,
+                "median": 13.798999098226773,
+                "min": 1.904645498966147,
+                "p01": 3.2679264085203843,
+                "p10": 7.098079445195606,
+                "p75": 19.462180516886633,
+                "p90": 25.125124673342793,
+                "p99": 32.273317657777206
+              },
+              "tx_height_m": 25.0
+            }
+          },
+          "requested_30m": {
+            "requested_spacing_m": 30.0,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 36,
+                "lt_-1_m": 30,
+                "lt_-2_m": 18,
+                "lt_-5_m": 0,
+                "lt_0_m": 50
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.151189628762566,
+                "max": -25.0,
+                "mean": -25.151189628762566,
+                "mean_signed": -25.151189628762566,
+                "median": -25.0,
+                "min": -27.31415440651972,
+                "p01": -26.64927739586745,
+                "p10": -25.68630003932403,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.15409090361785
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.4251991198530038,
+                "max": 1.5,
+                "mean": 1.0327612322785276,
+                "mean_signed": 1.0327612322785276,
+                "median": 1.5,
+                "min": -4.641654555694913,
+                "p01": -3.8495426990994326,
+                "p10": -0.25104881067015855,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.524873561756542
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 351,
+                "100_200m": 18,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 35,
+                "60_100m": 28
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 1,
+                "200_300m": 17,
+                "300_400m": 414,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 121,
+                "rx_endpoint": 311,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 30.0,
+              "rx_height_m": 1.5,
+              "source": "nasadem",
+              "strict_zero_candidate_count": 50,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 35.568707538042986,
+                "mean": 14.663279282619866,
+                "median": 13.639986100205192,
+                "min": 1.9652491347903833,
+                "p01": 3.1335317530727913,
+                "p10": 6.922119392865545,
+                "p75": 19.21170372184409,
+                "p90": 25.100592328081028,
+                "p99": 32.273317657777206
+              },
+              "tx_height_m": 25.0
+            }
+          },
+          "requested_60m": {
+            "requested_spacing_m": 60.0,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 32,
+                "lt_-1_m": 27,
+                "lt_-2_m": 18,
+                "lt_-5_m": 0,
+                "lt_0_m": 41
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.086649363416058,
+                "max": -25.0,
+                "mean": -25.086649363416058,
+                "mean_signed": -25.086649363416058,
+                "median": -25.0,
+                "min": -26.726667531511794,
+                "p01": -26.583837087851684,
+                "p10": -25.0,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.088492314920252
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.450967306111258,
+                "max": 1.5,
+                "mean": 1.108582100389122,
+                "mean_signed": 1.108582100389122,
+                "median": 1.5,
+                "min": -4.628952543983132,
+                "p01": -3.3616277640924683,
+                "p10": 0.09880166308954587,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.5285804510782153
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 336,
+                "100_200m": 26,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 70,
+                "60_100m": 0
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 0,
+                "200_300m": 26,
+                "300_400m": 406,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 96,
+                "rx_endpoint": 336,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 60.0,
+              "rx_height_m": 1.5,
+              "source": "nasadem",
+              "strict_zero_candidate_count": 41,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 35.093658299121444,
+                "mean": 14.378153335021171,
+                "median": 13.217385496373197,
+                "min": 1.9302101743164712,
+                "p01": 3.033794392482721,
+                "p10": 6.398744269219298,
+                "p75": 19.096273022274858,
+                "p90": 24.79369140395726,
+                "p99": 31.877205175684896
+              },
+              "tx_height_m": 25.0
+            }
+          },
+          "source_scale": {
+            "requested_spacing_m": 30.887479623488538,
+            "summary": {
+              "candidate_counts_by_threshold_m": {
+                "lt_-0.5_m": 36,
+                "lt_-1_m": 29,
+                "lt_-2_m": 20,
+                "lt_-5_m": 1,
+                "lt_0_m": 48
+              },
+              "complete_profiles": 432,
+              "endpoint_clearance_contract_m": {
+                "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+                "rx": 1.5,
+                "tx": 25.0
+              },
+              "interpolation": "bilinear",
+              "legacy_candidate_count": 432,
+              "legacy_signed_min_distribution_m": {
+                "count": 432,
+                "mae": 25.147437704912583,
+                "max": -25.0,
+                "mean": -25.147437704912583,
+                "mean_signed": -25.147437704912583,
+                "median": -25.0,
+                "min": -27.43981856563107,
+                "p01": -26.706800252831027,
+                "p10": -25.62554893709488,
+                "p75": -25.0,
+                "p90": -25.0,
+                "p99": -25.0,
+                "rmse": 25.150425080274637
+              },
+              "min_clearance_distribution_m": {
+                "count": 432,
+                "mae": 1.4301146712324426,
+                "max": 1.5,
+                "mean": 1.0415384214969363,
+                "mean_signed": 1.0415384214969363,
+                "median": 1.5,
+                "min": -5.0420172293218,
+                "p01": -3.7248482262315825,
+                "p10": -0.15954283480880346,
+                "p75": 1.5,
+                "p90": 1.5,
+                "p99": 1.5,
+                "rmse": 1.5306923868320295
+              },
+              "minimum_distance_from_rx_histogram": {
+                "0_30m": 315,
+                "100_200m": 12,
+                "200_300m": 0,
+                "300_400m": 0,
+                "30_60m": 45,
+                "60_100m": 60
+              },
+              "minimum_distance_from_tx_histogram": {
+                "0_30m": 0,
+                "100_200m": 0,
+                "200_300m": 12,
+                "300_400m": 420,
+                "30_60m": 0,
+                "60_100m": 0
+              },
+              "minimum_location_counts": {
+                "interior": 117,
+                "rx_endpoint": 315,
+                "tx_endpoint": 0
+              },
+              "partial_profiles": 0,
+              "paths": 432,
+              "profile_sample_semantics": "The minimum is over sampled terrain postings/interpolates only; it is not an exact continuous obstruction test.",
+              "requested_spacing_m": 30.887479623488538,
+              "rx_height_m": 1.5,
+              "source": "nasadem",
+              "strict_zero_candidate_count": 48,
+              "terrain_range_distribution_m": {
+                "count": 432,
+                "max": 35.530525826177495,
+                "mean": 14.65287746437905,
+                "median": 13.606808562353592,
+                "min": 1.7611275869078327,
+                "p01": 3.092498465214934,
+                "p10": 6.847172896393215,
+                "p75": 19.253264178135794,
+                "p90": 25.100592328081028,
+                "p99": 32.273317657777206
+              },
+              "tx_height_m": 25.0
+            }
+          }
+        },
+        "source_native_resolution_m_east_west_at_39_9N": 23.695797994545558,
+        "source_native_resolution_m_north_south": 30.887479623488538
+      },
+      "tolerance_classification": {
+        "margin_0_m": {
+          "counts": {
+            "clear": 382,
+            "near_uncertainty_boundary": 0,
+            "obstruction_candidate": 50,
+            "unavailable": 0
+          },
+          "margin_m": 0.0
+        },
+        "margin_1_m": {
+          "counts": {
+            "clear": 348,
+            "near_uncertainty_boundary": 54,
+            "obstruction_candidate": 30,
+            "unavailable": 0
+          },
+          "margin_m": 1.0
+        },
+        "margin_2_m": {
+          "counts": {
+            "clear": 0,
+            "near_uncertainty_boundary": 414,
+            "obstruction_candidate": 18,
+            "unavailable": 0
+          },
+          "margin_m": 2.0
+        },
+        "margin_5_m": {
+          "counts": {
+            "clear": 0,
+            "near_uncertainty_boundary": 432,
+            "obstruction_candidate": 0,
+            "unavailable": 0
+          },
+          "margin_m": 5.0
+        }
+      }
+    }
+  },
+  "canonical_geometry": {
+    "cells": [
+      "LTE-35084",
+      "LTE-35104",
+      "LTE-35877",
+      "LTE-313100",
+      "LTE-313110",
+      "LTE-322828"
+    ],
+    "cells_count": 6,
+    "distance_m": 400.0,
+    "interpolation": "bilinear",
+    "paths": 432,
+    "rays_per_cell": 72,
+    "rx_height_m": 1.5,
+    "spacing_m": 30.0,
+    "tx_height_m": 25.0
+  },
+  "captured_at": "2026-09-19",
+  "concept": "4F.3A.4",
+  "equation": {
+    "candidate_rule": "min(terrain_clearance) < threshold; strict audit threshold is 0 m",
+    "clearance": "terrain_clearance(u) = z_radio(u) - z_terrain(u)",
+    "endpoint_clearance": "Tx=h_tx_agl and Rx=h_rx_agl for valid endpoint samples",
+    "parameter": "u in [0,1]",
+    "positive_sign": "positive means radio line above sampled terrain",
+    "radio_line": "z_radio(u) = (1-u)*(z_tx_ground+h_tx_agl) + u*(z_rx_ground+h_rx_agl)"
+  },
+  "schema_version": 1
+}

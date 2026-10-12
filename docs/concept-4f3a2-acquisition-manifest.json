@@ -1,0 +1,803 @@
+{
+  "active_aoi": {
+    "bounds_west_south_east_north": [
+      32.45,
+      39.55,
+      33.25,
+      40.25
+    ],
+    "crs": "EPSG:4326",
+    "dataset_id": "ankara-open-planning",
+    "dataset_manifest": "data-pipeline/manifest.json",
+    "dataset_version": "2026.07",
+    "selection_rule": "official height_tif.geojson entries whose tile bounds intersect the exact active AOI"
+  },
+  "artifact": "acquisition-manifest",
+  "canonical_rf_activation": false,
+  "concept": "4F.3A.2",
+  "controlled_fixture_suite": {
+    "fixtures": [
+      {
+        "case": "flat exact footprint",
+        "expected": "exact_geometry",
+        "id": "A"
+      },
+      {
+        "case": "small offset high-IoU footprint",
+        "expected": "high_confidence_iou",
+        "id": "B"
+      },
+      {
+        "case": "centroid gate but below IoU threshold",
+        "expected": "unmatched",
+        "id": "C"
+      },
+      {
+        "case": "two plausible candidates",
+        "expected": "ambiguous",
+        "id": "D"
+      },
+      {
+        "case": "one external footprint over subdivisions",
+        "expected": "one_to_many",
+        "id": "E"
+      },
+      {
+        "case": "many external footprints over one building",
+        "expected": "many_to_one",
+        "id": "F"
+      },
+      {
+        "case": "exact source identifier",
+        "expected": "exact_id",
+        "id": "G"
+      },
+      {
+        "case": "large disagreement threshold",
+        "expected": "review_required",
+        "id": "H"
+      },
+      {
+        "case": "OSM explicit precedence",
+        "expected": "osm_explicit_wins",
+        "id": "I"
+      },
+      {
+        "case": "levels-derived agreement",
+        "expected": "levels_derived",
+        "id": "J"
+      },
+      {
+        "case": "fallback replacement opportunity",
+        "expected": "external_selected",
+        "id": "K"
+      },
+      {
+        "case": "invalid/duplicate/out-of-AOI input QA",
+        "expected": "rejected_and_counted",
+        "id": "L"
+      }
+    ],
+    "name": "A-L external-height evidence fixtures",
+    "scope": "matching, precedence, disagreement, fallback, and input-QA contracts reused by this diagnostic source adapter",
+    "test_file": "data-pipeline/test_external_height_pilot.py"
+  },
+  "official_indexes": {
+    "files": {
+      "README.txt": {
+        "bytes": 2405,
+        "reused_cached_file": true,
+        "sha256": "a4a17212e9acf25d53d98cef7acba8b00c4ba77e0e14294d034194ebc2317785",
+        "sha512": "80e1e22d24cd62c7f6cd9b85a693322b6ff6dad3aa4d2f47368e0a678a2c4bda2b240738a7abe6c07c90b5462c9d3ea1ee8404e382c7945369b69ff302f858cb"
+      },
+      "checksums.sha512": {
+        "bytes": 590,
+        "reused_cached_file": true,
+        "sha256": "e4185584c619566c62ebd1c3083c4165a0cf1972a20ade2c4fb6a5715362766e",
+        "sha512": "121d82df292e54130ac7afa4460ae91e715aa1ecd82c4c6961023af7348a5b649f1da1721f1821cbca67225b2a62b9844e98f3dc19e4dd02b93c303b86236440"
+      },
+      "height_tif.geojson": {
+        "bytes": 62507972,
+        "reused_cached_file": true,
+        "sha256": "1aae138b44b323a30023b9e7a30471e434e1d6dc6d4ee6ad1db364dbf0d62bb4",
+        "sha512": "767f26324724e3bee832466273efa51bfc6dd011a8d41cb25d65bb71f90986aaf76363a946fa724723f8400cf415e3239969cf0628edb180f2fa1e77ed3408ae"
+      },
+      "height_zip.geojson": {
+        "bytes": 346670,
+        "reused_cached_file": true,
+        "sha256": "045d7fef05d2d68d2ade123a7dd18690b14cdfd9039a938c992ff9564d5eb455",
+        "sha512": "9a58cb51e65c6979184cfab7802c9e0d8ecd715a37127bbdb8ecafb50c5b0887087b2f4d970d9cd5b7b7b158328cd596b9015ca40d8ccc8827e9cef5c0b351fc"
+      }
+    },
+    "height_tif_feature_count": 195104,
+    "height_zip_feature_count": 920
+  },
+  "raw_storage": {
+    "acquisition_method": "official FTP; ZIP central-directory tail plus exact compressed member ranges",
+    "directory": "/tmp/atom-gba-height-2026",
+    "mode": "external_cache",
+    "parent_archives_fully_downloaded": false,
+    "repository_committed": false
+  },
+  "schema_version": 1,
+  "selected_parent_archives": [
+    {
+      "archive_size": 92342612454,
+      "bounds": [
+        30.0,
+        35.0,
+        35.0,
+        40.0
+      ],
+      "official_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "path": "./Height/africa/e030_n40_e035_n35.zip",
+      "selected_member_compressed_bytes": 2800965299,
+      "selected_member_count": 15,
+      "selected_member_uncompressed_bytes": 3088685014,
+      "sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip"
+    },
+    {
+      "archive_size": 44497706352,
+      "bounds": [
+        30.0,
+        40.0,
+        35.0,
+        45.0
+      ],
+      "official_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "path": "./Height/europe/e030_n45_e035_n40.zip",
+      "selected_member_compressed_bytes": 1860409453,
+      "selected_member_count": 10,
+      "selected_member_uncompressed_bytes": 2044487238,
+      "sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip"
+    }
+  ],
+  "selected_tiles": [
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.4,
+        39.4,
+        32.6,
+        39.6
+      ],
+      "bytes": 207643610,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.4_39.6_32.6_39.4_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/32.4_39.6_32.6_39.4_sr_ss.tif",
+      "sha256": "b3a967794f8d749d7d1dd2dfb4244758af15ad6302cded0fa269eae73a63d4e9",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/32.4_39.6_32.6_39.4_sr_ss.tif",
+      "tile_id": "32.4_39.6_32.6_39.4_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 188265626,
+      "zip_member_crc32": "3a497aef",
+      "zip_member_local_header_offset": 37634651637,
+      "zip_member_uncompressed_bytes": 207643610
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.4,
+        39.6,
+        32.6,
+        39.8
+      ],
+      "bytes": 207055154,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.4_39.8_32.6_39.6_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/32.4_39.8_32.6_39.6_sr_ss.tif",
+      "sha256": "6954a18ba3729f8315f52924aaf58bfbe37a20a17c286c189b9a34dcdb029329",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/32.4_39.8_32.6_39.6_sr_ss.tif",
+      "tile_id": "32.4_39.8_32.6_39.6_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 186671333,
+      "zip_member_crc32": "84f8a1be",
+      "zip_member_local_header_offset": 72447632534,
+      "zip_member_uncompressed_bytes": 207055154
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.4,
+        39.8,
+        32.6,
+        40.0
+      ],
+      "bytes": 206434006,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.4_40.0_32.6_39.8_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/32.4_40.0_32.6_39.8_sr_ss.tif",
+      "sha256": "c5c761607e6ceecc91b68e4f84e6f1cbf33a92f7dce139859ff47a63c8a53c8f",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/32.4_40.0_32.6_39.8_sr_ss.tif",
+      "tile_id": "32.4_40.0_32.6_39.8_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 187589377,
+      "zip_member_crc32": "964a17b7",
+      "zip_member_local_header_offset": 11206488321,
+      "zip_member_uncompressed_bytes": 206434006
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.6,
+        39.4,
+        32.8,
+        39.6
+      ],
+      "bytes": 206667842,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.6_39.6_32.8_39.4_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/32.6_39.6_32.8_39.4_sr_ss.tif",
+      "sha256": "94f850a1f87609b4a26c2bcdccb6e8649568161866064f3dbc525063f65a9dc5",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/32.6_39.6_32.8_39.4_sr_ss.tif",
+      "tile_id": "32.6_39.6_32.8_39.4_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 185285643,
+      "zip_member_crc32": "6b2666c4",
+      "zip_member_local_header_offset": 41533440515,
+      "zip_member_uncompressed_bytes": 206667842
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.6,
+        39.6,
+        32.8,
+        39.8
+      ],
+      "bytes": 206080394,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.6_39.8_32.8_39.6_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/32.6_39.8_32.8_39.6_sr_ss.tif",
+      "sha256": "b8b6ec84fc475d289b8895afa3074ce8a9bf284c0fd9e1785ec71cd3d41a06d7",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/32.6_39.8_32.8_39.6_sr_ss.tif",
+      "tile_id": "32.6_39.8_32.8_39.6_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 186314788,
+      "zip_member_crc32": "c5682e89",
+      "zip_member_local_header_offset": 39003821538,
+      "zip_member_uncompressed_bytes": 206080394
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.6,
+        39.8,
+        32.8,
+        40.0
+      ],
+      "bytes": 205492946,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.6_40.0_32.8_39.8_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/32.6_40.0_32.8_39.8_sr_ss.tif",
+      "sha256": "2a36cbe2b6539bfa4667cc4215bec7407a1a8edd9faac8810058445eb2a6a5e7",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/32.6_40.0_32.8_39.8_sr_ss.tif",
+      "tile_id": "32.6_40.0_32.8_39.8_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 188308684,
+      "zip_member_crc32": "d7c97033",
+      "zip_member_local_header_offset": 7136803097,
+      "zip_member_uncompressed_bytes": 205492946
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.8,
+        39.4,
+        33.0,
+        39.6
+      ],
+      "bytes": 205734100,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.8_39.6_33.0_39.4_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/32.8_39.6_33.0_39.4_sr_ss.tif",
+      "sha256": "e10326ba1e5aa944f131b3c1ac9a67cb9f3051664616833dc7e31abfe8422515",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/32.8_39.6_33.0_39.4_sr_ss.tif",
+      "tile_id": "32.8_39.6_33.0_39.4_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 185093236,
+      "zip_member_crc32": "4377694e",
+      "zip_member_local_header_offset": 11599650665,
+      "zip_member_uncompressed_bytes": 205734100
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.8,
+        39.6,
+        33.0,
+        39.8
+      ],
+      "bytes": 205172922,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.8_39.8_33.0_39.6_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/32.8_39.8_33.0_39.6_sr_ss.tif",
+      "sha256": "4bc0c24ca40d8aa06faf28f28be7da1f4db31b1b64a201f40a99abeb4cf97abc",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/32.8_39.8_33.0_39.6_sr_ss.tif",
+      "tile_id": "32.8_39.8_33.0_39.6_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 186118109,
+      "zip_member_crc32": "c67652ff",
+      "zip_member_local_header_offset": 29114207393,
+      "zip_member_uncompressed_bytes": 205172922
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.8,
+        39.8,
+        33.0,
+        40.0
+      ],
+      "bytes": 204611600,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.8_40.0_33.0_39.8_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/32.8_40.0_33.0_39.8_sr_ss.tif",
+      "sha256": "68f83d139d880856144bf663ab03f922551e686f64deb8d9661f4a0272aea1f2",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/32.8_40.0_33.0_39.8_sr_ss.tif",
+      "tile_id": "32.8_40.0_33.0_39.8_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 187594450,
+      "zip_member_crc32": "8aad678e",
+      "zip_member_local_header_offset": 73210655943,
+      "zip_member_uncompressed_bytes": 204611600
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.0,
+        39.4,
+        33.2,
+        39.6
+      ],
+      "bytes": 205734100,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.0_39.6_33.2_39.4_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/33.0_39.6_33.2_39.4_sr_ss.tif",
+      "sha256": "21e292851583e9d9b2ee0899e5cb37a4d1298bd88867fedb329fe905ce15befc",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/33.0_39.6_33.2_39.4_sr_ss.tif",
+      "tile_id": "33.0_39.6_33.2_39.4_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 186767073,
+      "zip_member_crc32": "8722dca6",
+      "zip_member_local_header_offset": 23462039755,
+      "zip_member_uncompressed_bytes": 205734100
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.0,
+        39.6,
+        33.2,
+        39.8
+      ],
+      "bytes": 205172922,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.0_39.8_33.2_39.6_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/33.0_39.8_33.2_39.6_sr_ss.tif",
+      "sha256": "43ead475c1a086c1d98dc0240bec311dc0a500d74c341de7409accf1032a1358",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/33.0_39.8_33.2_39.6_sr_ss.tif",
+      "tile_id": "33.0_39.8_33.2_39.6_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 186201163,
+      "zip_member_crc32": "8b7988bd",
+      "zip_member_local_header_offset": 51876767468,
+      "zip_member_uncompressed_bytes": 205172922
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.0,
+        39.8,
+        33.2,
+        40.0
+      ],
+      "bytes": 204611600,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.0_40.0_33.2_39.8_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/33.0_40.0_33.2_39.8_sr_ss.tif",
+      "sha256": "eb938db8e884791c79de50e8bbc834bdf787f1210edde534892b3c846f249965",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/33.0_40.0_33.2_39.8_sr_ss.tif",
+      "tile_id": "33.0_40.0_33.2_39.8_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 186404341,
+      "zip_member_crc32": "434b5cea",
+      "zip_member_local_header_offset": 78876851777,
+      "zip_member_uncompressed_bytes": 204611600
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.2,
+        39.4,
+        33.4,
+        39.6
+      ],
+      "bytes": 206667842,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.2_39.6_33.4_39.4_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/33.2_39.6_33.4_39.4_sr_ss.tif",
+      "sha256": "ca39a3c8353bf72cd38f4505b1468bff246f6f5ca576a7a4d7f9eee01e3f6198",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/33.2_39.6_33.4_39.4_sr_ss.tif",
+      "tile_id": "33.2_39.6_33.4_39.4_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 186623409,
+      "zip_member_crc32": "415b2719",
+      "zip_member_local_header_offset": 33001532361,
+      "zip_member_uncompressed_bytes": 206667842
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.2,
+        39.6,
+        33.4,
+        39.8
+      ],
+      "bytes": 206080394,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.2_39.8_33.4_39.6_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/33.2_39.8_33.4_39.6_sr_ss.tif",
+      "sha256": "cb6b4e7fb066c5fc2ac1ec47921565d75f2a94ddb3bfd9d7064efc6ad5819f8e",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/33.2_39.8_33.4_39.6_sr_ss.tif",
+      "tile_id": "33.2_39.8_33.4_39.6_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 187886308,
+      "zip_member_crc32": "2a4d5ed3",
+      "zip_member_local_header_offset": 24616712041,
+      "zip_member_uncompressed_bytes": 206080394
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.2,
+        39.8,
+        33.4,
+        40.0
+      ],
+      "bytes": 205525582,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.2_40.0_33.4_39.8_sr_ss.tif",
+      "parent_archive": "./Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_remote_path": "Height/africa/e030_n40_e035_n35.zip",
+      "parent_archive_sha512": "952197edf37674c80b5e4a37911f643796944f8f3dd40a8ee84b2fb45bdef8b6cf988fdc9f238d3bfe7047718bcf248ff4182ab8874be4523271db5c4aed3b1a",
+      "parent_archive_size": 92342612454,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35.zip",
+      "path": "./Height/africa/e030_n40_e035_n35/33.2_40.0_33.4_39.8_sr_ss.tif",
+      "sha256": "9bb4253d3688307ff18c32c11532023dae85f801beb27d6bc68ef7ce54f9b3e7",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/africa/e030_n40_e035_n35/33.2_40.0_33.4_39.8_sr_ss.tif",
+      "tile_id": "33.2_40.0_33.4_39.8_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 185841759,
+      "zip_member_crc32": "737279bd",
+      "zip_member_local_header_offset": 1933344675,
+      "zip_member_uncompressed_bytes": 205525582
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.4,
+        40.0,
+        32.6,
+        40.2
+      ],
+      "bytes": 205845550,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.4_40.2_32.6_40.0_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/32.4_40.2_32.6_40.0_sr_ss.tif",
+      "sha256": "64f38c5f655a871320c674418d6fb8f256855c58dab6a94ae21dbb213176f4a4",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/32.4_40.2_32.6_40.0_sr_ss.tif",
+      "tile_id": "32.4_40.2_32.6_40.0_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 187593756,
+      "zip_member_crc32": "dd2767b5",
+      "zip_member_local_header_offset": 16050883343,
+      "zip_member_uncompressed_bytes": 205845550
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.4,
+        40.2,
+        32.6,
+        40.4
+      ],
+      "bytes": 205282208,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.4_40.4_32.6_40.2_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/32.4_40.4_32.6_40.2_sr_ss.tif",
+      "sha256": "35bcaf535fa51e8def5f5f29903de8b81a7d122b87fd65ae8387598a439c63fb",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/32.4_40.4_32.6_40.2_sr_ss.tif",
+      "tile_id": "32.4_40.4_32.6_40.2_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 187327504,
+      "zip_member_crc32": "967eea6d",
+      "zip_member_local_header_offset": 43000294086,
+      "zip_member_uncompressed_bytes": 205282208
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.6,
+        40.0,
+        32.8,
+        40.2
+      ],
+      "bytes": 204930612,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.6_40.2_32.8_40.0_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/32.6_40.2_32.8_40.0_sr_ss.tif",
+      "sha256": "fd8a026baafd7d04dbf11104f029278b7ca8943a576b4363f8ea3d3885c841c1",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/32.6_40.2_32.8_40.0_sr_ss.tif",
+      "tile_id": "32.6_40.2_32.8_40.0_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 186947895,
+      "zip_member_crc32": "34acd228",
+      "zip_member_local_header_offset": 35789564003,
+      "zip_member_uncompressed_bytes": 204930612
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.6,
+        40.2,
+        32.8,
+        40.4
+      ],
+      "bytes": 204343092,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.6_40.4_32.8_40.2_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/32.6_40.4_32.8_40.2_sr_ss.tif",
+      "sha256": "3e3435a85ec7578056bc5c573b7de96f058c27d39ecf23804c99fb50a9c6f2a2",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/32.6_40.4_32.8_40.2_sr_ss.tif",
+      "tile_id": "32.6_40.4_32.8_40.2_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 186210526,
+      "zip_member_crc32": "5ea8ce8c",
+      "zip_member_local_header_offset": 6420327169,
+      "zip_member_uncompressed_bytes": 204343092
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.8,
+        40.0,
+        33.0,
+        40.2
+      ],
+      "bytes": 204000042,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.8_40.2_33.0_40.0_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/32.8_40.2_33.0_40.0_sr_ss.tif",
+      "sha256": "e0057062d6a316905010ed545c60b8383070589f21ce4d3fc8f5ccba2f583879",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/32.8_40.2_33.0_40.0_sr_ss.tif",
+      "tile_id": "32.8_40.2_33.0_40.0_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 185901128,
+      "zip_member_crc32": "bbb9e1c5",
+      "zip_member_local_header_offset": 36161012587,
+      "zip_member_uncompressed_bytes": 204000042
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        32.8,
+        40.2,
+        33.0,
+        40.4
+      ],
+      "bytes": 203405992,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/32.8_40.4_33.0_40.2_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/32.8_40.4_33.0_40.2_sr_ss.tif",
+      "sha256": "eed39f89e63f028041988514fbe5a2e978a9784fe6f01262cd223f605afa4c83",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/32.8_40.4_33.0_40.2_sr_ss.tif",
+      "tile_id": "32.8_40.4_33.0_40.2_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 185522615,
+      "zip_member_crc32": "b62e75a9",
+      "zip_member_local_header_offset": 14195571848,
+      "zip_member_uncompressed_bytes": 203405992
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.0,
+        40.0,
+        33.2,
+        40.2
+      ],
+      "bytes": 203967462,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.0_40.2_33.2_40.0_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/33.0_40.2_33.2_40.0_sr_ss.tif",
+      "sha256": "f67c6b31a25ee0cf074266876bb9a7e97b4366cbe0f71b1040612c35eb20fc67",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/33.0_40.2_33.2_40.0_sr_ss.tif",
+      "tile_id": "33.0_40.2_33.2_40.0_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 185147530,
+      "zip_member_crc32": "f2f74c7c",
+      "zip_member_local_header_offset": 27243581516,
+      "zip_member_uncompressed_bytes": 203967462
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.0,
+        40.2,
+        33.2,
+        40.4
+      ],
+      "bytes": 203438576,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.0_40.4_33.2_40.2_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/33.0_40.4_33.2_40.2_sr_ss.tif",
+      "sha256": "ae18590dd62cb6c31db2b56abe44da72dc8f795f184573a93c738f5bd1a60dfa",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/33.0_40.4_33.2_40.2_sr_ss.tif",
+      "tile_id": "33.0_40.4_33.2_40.2_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 185321618,
+      "zip_member_crc32": "59243873",
+      "zip_member_local_header_offset": 33359132656,
+      "zip_member_uncompressed_bytes": 203438576
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.2,
+        40.0,
+        33.4,
+        40.2
+      ],
+      "bytes": 204930612,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.2_40.2_33.4_40.0_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/33.2_40.2_33.4_40.0_sr_ss.tif",
+      "sha256": "2b369f3bb95f137e98ba9038f2c91ebccf26293f8ae9b63b4cd5fd7ad02bbdc0",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/33.2_40.2_33.4_40.0_sr_ss.tif",
+      "tile_id": "33.2_40.2_33.4_40.0_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 184899978,
+      "zip_member_crc32": "109e0d3b",
+      "zip_member_local_header_offset": 3459773939,
+      "zip_member_uncompressed_bytes": 204930612
+    },
+    {
+      "acquisition_method": "ftp_rest_compressed_member_range",
+      "bounds": [
+        33.2,
+        40.2,
+        33.4,
+        40.4
+      ],
+      "bytes": 204343092,
+      "local_path": "/tmp/atom-gba-height-2026/tiles/33.2_40.4_33.4_40.2_sr_ss.tif",
+      "parent_archive": "./Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_remote_path": "Height/europe/e030_n45_e035_n40.zip",
+      "parent_archive_sha512": "dbbf0050c2ca8e673e6e0df222f350b2ca3c15878a2731323f025d4393634d1dd1ec054e2f32a0931534a8b05cc47b9b11e41223c4423c5b2af4ab496dfad86d",
+      "parent_archive_size": 44497706352,
+      "parent_archive_source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40.zip",
+      "path": "./Height/europe/e030_n45_e035_n40/33.2_40.4_33.4_40.2_sr_ss.tif",
+      "sha256": "cacb6e31612edb333720ed2bdfb89937ec025d34f50e730b5ab2afbe256d7140",
+      "source_url": "ftp://dataserv.ub.tum.de/Height/europe/e030_n45_e035_n40/33.2_40.4_33.4_40.2_sr_ss.tif",
+      "tile_id": "33.2_40.4_33.4_40.2_sr_ss.tif",
+      "zip_entry_reused": true,
+      "zip_member_compressed_bytes": 185536903,
+      "zip_member_crc32": "cbb951a8",
+      "zip_member_local_header_offset": 9926507518,
+      "zip_member_uncompressed_bytes": 204343092
+    }
+  ],
+  "source": {
+    "acquisition_epoch": "source paper reports 2018/2019 PlanetScope imagery; tile metadata does not expose a per-pixel acquisition date",
+    "format": "GeoTIFF height map entries in official 5-degree ZIP archives",
+    "height_semantics": "qualified relative building/object height above local ground (nDSM-style model prediction), not absolute elevation",
+    "license": "CC BY-NC 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "mediaTUM": "https://mediatum.ub.tum.de/1782307",
+    "nominal_resolution": "3 m x 3 m",
+    "product": "GBA.Height",
+    "provider": "GlobalBuildingAtlas",
+    "publication": "https://essd.copernicus.org/articles/17/6647/2025/",
+    "release": "mediaTUM-1782307-current-2026-02-10",
+    "repository": "https://github.com/zhu-xlab/GlobalBuildingAtlas",
+    "source_imagery": "PlanetScope surface-reflectance imagery; source paper describes approximately 3 m imagery and 2018/2019 acquisition selection",
+    "source_readme": "https://github.com/zhu-xlab/GlobalBuildingAtlas/blob/main/README.md",
+    "terms_of_use": "https://tubvsig-so2sat-vm1.srv.mwn.de/terms_of_use.html",
+    "uncertainty_semantics": "per-pixel variance across up to four test-time-augmentation predictions; not a calibrated physical confidence interval"
+  },
+  "title": "Ankara GBA.Height acquisition manifest"
+}

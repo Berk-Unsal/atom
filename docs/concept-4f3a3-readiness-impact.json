@@ -1,0 +1,117 @@
+{
+  "canonical_activation": false,
+  "canonical_height_audit": {
+    "canonical_propagation_coupling": false,
+    "note": "The repository's opt-in canonical audit was rerun after the source pilot; it still evaluated the active pack without a terrain layer.",
+    "paths": 432,
+    "status": "validated",
+    "terrain_status": "terrain_unavailable",
+    "transitions": {
+      "los_to_los": 29,
+      "los_to_nlos": 0,
+      "nlos_to_los": 0,
+      "nlos_to_nlos": 248,
+      "other": 0,
+      "unknown_to_unknown": 155
+    }
+  },
+  "concept": "4F.3A.3",
+  "datum_gate": {
+    "compatible": false,
+    "cross_source_absolute_comparison": "unavailable",
+    "fabdem": {
+      "vertical_datum": "EGM2008",
+      "vertical_datum_kind": "orthometric"
+    },
+    "nasadem": {
+      "vertical_datum": "EGM96",
+      "vertical_datum_kind": "orthometric"
+    },
+    "reason": "No explicit sourced EGM96-to-EGM2008 transformation was applied; raw differences are not interpreted as source error."
+  },
+  "four_f_3b": {
+    "reason": "This phase stops at source semantics, local evidence, and diagnostic readiness; no terrain source is promoted into canonical RF or numeric comparison.",
+    "started": false,
+    "status": "not_started"
+  },
+  "p1411": {
+    "after_diagnostic": {
+      "audited_paths": 432,
+      "both_below_rooftop_provable": false,
+      "fully_automatic_paths": 0,
+      "morphology_taxonomy_present": false,
+      "reason": "Terrain profiles do not supply the missing morphology, rooftop relation, facade/material, or compatible absolute-datum gate.",
+      "status": "not_ready",
+      "terrain_profiles_available": true
+    },
+    "before": {
+      "audited_paths": 432,
+      "both_below_rooftop_provable": false,
+      "fully_automatic_paths": 0,
+      "morphology_taxonomy_present": false,
+      "reference": "docs/concept-4i2b-p1411-applicability.json",
+      "status": "not_ready",
+      "terrain_available": false
+    }
+  },
+  "p526": {
+    "after_diagnostic": {
+      "canonical_propagation_coupling": false,
+      "fabdem_complete_profiles": 432,
+      "nasadem_complete_profiles": 432,
+      "paths": 432,
+      "status": "diagnostic_profile_available_but_no_canonical_terrain_term",
+      "terrain_clearance_is_diagnostic_only": true
+    },
+    "before": {
+      "blocked_only_by_unknown_height": 338,
+      "canonical_propagation_coupling": false,
+      "diagnostic_eligible": 29,
+      "diagnostic_id": "p526-single-edge-v1",
+      "geometric_los": 29,
+      "paths": 432,
+      "unknown_height_ineligible": 403
+    }
+  },
+  "reflection": {
+    "after_diagnostic": {
+      "candidates_with_terrain_anchored_vertical_span": 0,
+      "material_evidence_footprints": 0,
+      "reason": "Source-local diagnostic roofs and terrain profiles are not enough to establish a compatible, production-authoritative reflected-link vertical span.",
+      "sample_paths": 432,
+      "status": "not_ready",
+      "terrain_profile_sources": [
+        "nasadem",
+        "fabdem"
+      ]
+    },
+    "before": {
+      "candidates_with_height_evidence": 777,
+      "candidates_with_terrain_anchored_vertical_span": 0,
+      "geometry_only_specular_candidates": 6368,
+      "material_evidence_footprints": 0,
+      "reference": "docs/concept-4i5a-ankara-readiness.json",
+      "sample_paths": 432,
+      "status": "not_ready"
+    }
+  },
+  "schema_version": 1,
+  "source_decisions": {
+    "fabdem": {
+      "legal_reuse": "research_only_pending_noncommercial_and_sharealike_review",
+      "primary_candidate": false,
+      "technical_ground_readiness": "research_comparator_only"
+    },
+    "nasadem": {
+      "legal_reuse": "go_with_citation",
+      "primary_candidate": true,
+      "technical_ground_readiness": "no_go_pending_semantics_and_local_control"
+    }
+  },
+  "stop_conditions_triggered": [
+    "NASADEM EGM96 and FABDEM EGM2008 are not directly comparable without an explicit sourced transformation.",
+    "NASADEM surface/DEM semantics are not promoted to authoritative DTM from the product name alone.",
+    "No local ground-control or independent building-base validation source was available in this phase."
+  ],
+  "terrain_layer_installed_in_canonical_dataset": false
+}

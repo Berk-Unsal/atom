@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2.1",
+  "artifact": "post-change-comparison",
+  "audit_version": "concept-6a21-chongqing-rf-metadata-reconciliation-v1",
+  "captured_at": "2026-09-21",
+  "before_state": {
+    "concept_6a": "no_measurement_data",
+    "concept_6a1": "dry_run_ready_real_data_unavailable",
+    "concept_6a2": "research audit complete; benchmark unselected; no adapter",
+    "concept_6b": "closed",
+    "production_code_changed": false,
+    "inventory_changed": false,
+    "rf_or_calibration_changed": false
+  },
+  "audit_only_change_set": [
+    "docs/concept-6a21-chongqing-reconciliation.md",
+    "docs/concept-6a21-field-semantics.json",
+    "docs/concept-6a21-id-reconciliation.json",
+    "docs/concept-6a21-frequency-reconciliation.json",
+    "docs/concept-6a21-inventory-mapping.json",
+    "docs/concept-6a21-readiness.json",
+    "docs/concept-6a21-post-change-comparison.json"
+  ],
+  "pre_existing_changes_preserved": true,
+  "after_state": {
+    "concept_6a": "no_measurement_data",
+    "concept_6a1": "dry_run_ready_real_data_unavailable",
+    "concept_6a2": "research audit complete; benchmark unselected; no adapter",
+    "concept_6a21": "D_insufficient_metadata; 6A.3 NO-GO",
+    "concept_6b": "closed",
+    "production_code_changed": false,
+    "inventory_changed": false,
+    "rf_or_calibration_changed": false,
+    "calibration_active": false,
+    "adapter_created": false
+  },
+  "comparison": {
+    "concept_6a": {"before": "no_measurement_data", "after": "no_measurement_data", "changed": false},
+    "concept_6a1": {"before": "dry_run_ready_real_data_unavailable", "after": "dry_run_ready_real_data_unavailable", "changed": false},
+    "concept_6a2": {"before": "research audit complete; benchmark unselected; no adapter", "after": "research audit complete; benchmark unselected; no adapter", "changed": false},
+    "concept_6b": {"before": "closed", "after": "closed", "changed": false},
+    "canonical_rf": {"before": "existing evaluator, profiles, patterns, and defaults", "after": "unchanged", "changed": false},
+    "inventory_semantics": {"before": "existing inventory contract and planning defaults", "after": "unchanged; Chongqing mapping is research-only documentation", "changed": false},
+    "calibration_and_validation": {"before": "synthetic/dry-run infrastructure only; no real-data calibration", "after": "unchanged; no calibration or production validation activated", "changed": false},
+    "terrain_optimizer_and_radio_quality": {"before": "existing behavior and fingerprints", "after": "unchanged", "changed": false}
+  },
+  "research_findings_recorded": [
+    "Current Zenodo v1.0 and older Zenodo/GitHub releases have different files and checksums.",
+    "Current release checksums and example script are internally stale/mismatched.",
+    "Exact NCI-to-ECI mapping leaves 342 rows and eight unique NCI values unresolved.",
+    "Mapped raw/base PCI values disagree for 254 rows across 32 cells.",
+    "Raw and base frequency fields have zero exact channel agreement and non-constant conditional deltas.",
+    "Power reference plane, antenna gain/pattern, receiver calibration, ground receiver height, and exact SS-RSRP resource semantics are absent.",
+    "The paper claims a GIS/configuration supplement that is absent from the audited Zenodo file list."
+  ],
+  "validation": {
+    "status": "passed",
+    "commands": [
+      "jq empty docs/concept-6a21-*.json",
+      "python3 docs/validate_docs.py",
+      "python3 scripts/versioning.py check",
+      "git diff --check",
+      "git diff --name-only -- backend-go frontend-react core-lab-adapter data-pipeline"
+    ],
+    "expected": [
+      "all seven new artifacts parse",
+      "documentation validation passes",
+      "version metadata check passes",
+      "no whitespace errors",
+      "no production-directory diff"
+    ]
+  }
+}

@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2",
+  "artifact": "benchmark-fitness-contract",
+  "audit_version": "concept-6a2-external-rf-benchmark-audit-v1",
+  "effective_date": "2026-09-21",
+  "purpose": "Define evidence and claim gates for an external cellular/RF benchmark before any future adapter is implemented.",
+  "source_truth_states": [
+    "direct",
+    "configured",
+    "inferred",
+    "recoverable_from_publication",
+    "unavailable",
+    "restricted",
+    "not_documented",
+    "conditional_after_reconciliation"
+  ],
+  "required_evidence": {
+    "transmitter_truth": [
+      {
+        "id": "T1",
+        "requirement": "Site/cell geographic coordinates",
+        "minimum_evidence": "Source coordinates with declared CRS and deterministic mapping to the observed cell.",
+        "missing_state_policy": "No inventory reconstruction claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "T2",
+        "requirement": "Stable transmitter identity and serving-cell mapping",
+        "minimum_evidence": "Stable cell/site identifier, source field definition, and observation-to-transmitter join coverage.",
+        "missing_state_policy": "Quantity-only validation at most; no per-cell RF claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "T3",
+        "requirement": "Antenna height",
+        "minimum_evidence": "Height with reference point and provenance.",
+        "missing_state_policy": "No height-sensitive absolute claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "T4",
+        "requirement": "Horizontal orientation or sector azimuth",
+        "minimum_evidence": "Azimuth with reference frame, accuracy, and sector mapping.",
+        "missing_state_policy": "No directional inventory claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "T5",
+        "requirement": "Mechanical and electrical downtilt",
+        "minimum_evidence": "Separate tilt fields with explicit convention.",
+        "missing_state_policy": "Tilt is unavailable; do not infer from a footprint.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "T6",
+        "requirement": "Carrier frequency, band, and duplex direction",
+        "minimum_evidence": "Frequency in Hz/MHz/GHz or a validated band-specific channel mapping, with raw value retained.",
+        "missing_state_policy": "Keep frequency-specific results separate; no cross-band claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "T7",
+        "requirement": "Configured bandwidth/resource bandwidth",
+        "minimum_evidence": "Bandwidth value and whether it is configured, occupied, or measurement resolution.",
+        "missing_state_policy": "No receiver-noise or RSRP/SINR normalization claim that depends on bandwidth.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "T8",
+        "requirement": "Conducted TX power or EIRP with reference plane",
+        "minimum_evidence": "Power value plus semantics, antenna gain, feeder/system loss, and calibration/reference plane.",
+        "missing_state_policy": "No absolute link-budget validation.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "T9",
+        "requirement": "Antenna gain and radiation pattern",
+        "minimum_evidence": "Absolute gain and supported pattern parameters or a traceable equivalent.",
+        "missing_state_policy": "No directional or absolute-power validation.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "T10",
+        "requirement": "Technology, channel, and resource/interference context",
+        "minimum_evidence": "Technology plus carrier/resource/load/noise semantics sufficient for the declared quantity.",
+        "missing_state_policy": "SINR/RSRQ/RSSI/radio-quality claims are closed.",
+        "full_inventory_candidate": true
+      }
+    ],
+    "measurement_truth": [
+      {
+        "id": "M1",
+        "requirement": "Observation coordinates",
+        "minimum_evidence": "Coordinates, CRS, and accuracy or uncertainty.",
+        "missing_state_policy": "No spatial residual or map claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "M2",
+        "requirement": "Time and campaign identity",
+        "minimum_evidence": "Timestamp/timezone plus campaign/route/session identity.",
+        "missing_state_policy": "No temporal stability or campaign holdout claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "M3",
+        "requirement": "Exact measured quantity",
+        "minimum_evidence": "Raw received_power, RSRP, RSRQ, SINR, RSSI, or path_loss field with units.",
+        "missing_state_policy": "Do not substitute a related radio metric.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "M4",
+        "requirement": "Metric definition and reporting semantics",
+        "minimum_evidence": "Definition, device/vendor semantics, and any reference-signal or averaging behavior.",
+        "missing_state_policy": "Measurement remains descriptive only.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "M5",
+        "requirement": "Serving identity in each observation",
+        "minimum_evidence": "Serving cell identity/PCI plus deterministic mapping to the transmitter table.",
+        "missing_state_policy": "No serving-link residual claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "M6",
+        "requirement": "Neighbor/detected-cell context",
+        "minimum_evidence": "Per-observation detected neighbors and identities when the claim needs interference or handover context.",
+        "missing_state_policy": "Radio-quality and interference claims are closed.",
+        "full_inventory_candidate": false
+      },
+      {
+        "id": "M7",
+        "requirement": "Per-observation band/channel/frequency",
+        "minimum_evidence": "Raw channel/frequency fields with units and join semantics.",
+        "missing_state_policy": "Do not combine bands or infer a carrier from the transmitter table alone.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "M8",
+        "requirement": "Receiver, device, antenna, and calibration provenance",
+        "minimum_evidence": "Instrument/device identity, antenna chain, calibration/detection behavior, and correction status.",
+        "missing_state_policy": "Absolute received-power claims are closed; relative trends may remain conditional.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "M9",
+        "requirement": "Receiver height and source",
+        "minimum_evidence": "Height in meters with measured/estimated/reference-point provenance.",
+        "missing_state_policy": "No height-sensitive validation.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "M10",
+        "requirement": "Sampling, aggregation, missingness, and censoring semantics",
+        "minimum_evidence": "Raw row meaning, sample interval, aggregation method, detection floor, and missing-value encoding.",
+        "missing_state_policy": "No uncertainty-aware summary or calibration claim.",
+        "full_inventory_candidate": true
+      }
+    ],
+    "environment_truth": [
+      {
+        "id": "E1",
+        "requirement": "Building geometry and heights",
+        "minimum_evidence": "Geometry/height source, CRS, resolution, and date.",
+        "missing_state_policy": "LOS/NLOS stratification unavailable unless measured labels exist.",
+        "full_inventory_candidate": false
+      },
+      {
+        "id": "E2",
+        "requirement": "Terrain/DEM and altitude reference",
+        "minimum_evidence": "Terrain model or observation altitude with vertical datum.",
+        "missing_state_policy": "No terrain-dependent claim.",
+        "full_inventory_candidate": false
+      },
+      {
+        "id": "E3",
+        "requirement": "Measured LOS/NLOS or reproducible classification inputs",
+        "minimum_evidence": "Measured label or geometry inputs sufficient to recompute the label.",
+        "missing_state_policy": "Report aggregate results only; do not label residuals LOS/NLOS.",
+        "full_inventory_candidate": false
+      },
+      {
+        "id": "E4",
+        "requirement": "Route, site, and campaign spatial split support",
+        "minimum_evidence": "Stable route/site/session identifiers and enough independent spatial coverage.",
+        "missing_state_policy": "No independent spatial holdout claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "E5",
+        "requirement": "Land-use/obstruction context",
+        "minimum_evidence": "Documented map layers or source classes joined to observations.",
+        "missing_state_policy": "No morphology-conditioned claim.",
+        "full_inventory_candidate": false
+      }
+    ],
+    "legal_and_access": [
+      {
+        "id": "L1",
+        "requirement": "Publicly retrievable record",
+        "minimum_evidence": "Stable landing page and raw metadata/sample access.",
+        "missing_state_policy": "Not a current benchmark candidate.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "L2",
+        "requirement": "License or rights statement",
+        "minimum_evidence": "Dataset-specific license covering intended analysis and redistribution of derived artifacts.",
+        "missing_state_policy": "No adapter or derived benchmark artifact.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "L3",
+        "requirement": "Permitted processing and reproducibility",
+        "minimum_evidence": "Terms allow local processing, citation, and required derived summaries.",
+        "missing_state_policy": "Research-only note; no production path.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "L4",
+        "requirement": "Raw or lossless-enough observation access",
+        "minimum_evidence": "Raw export or documented lossless representation; not screenshot-only or summary-only.",
+        "missing_state_policy": "No validation adapter.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "L5",
+        "requirement": "Versioned provenance and persistent identifier",
+        "minimum_evidence": "Version/release date, DOI or immutable commit, checksums where available.",
+        "missing_state_policy": "No reproducible benchmark claim.",
+        "full_inventory_candidate": true
+      },
+      {
+        "id": "L6",
+        "requirement": "Documentation sufficient to interpret fields",
+        "minimum_evidence": "Data dictionary, README, paper, or equivalent authoritative field definitions.",
+        "missing_state_policy": "Treat undocumented fields as unavailable.",
+        "full_inventory_candidate": true
+      }
+    ]
+  },
+  "claim_gates": {
+    "full_inventory_validation": {
+      "requires_all": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "M1", "M2", "M3", "M4", "M5", "M7", "M8", "M9", "M10", "L1", "L2", "L3", "L4", "L5", "L6"],
+      "status": "not_met_by_audited_sources"
+    },
+    "absolute_received_power_or_path_loss": {
+      "requires_all": ["T1", "T2", "T3", "T6", "T7", "T8", "T9", "M1", "M2", "M3", "M4", "M5", "M7", "M8", "M9", "M10"],
+      "prohibits": ["calibrated_or_tuned_transmitter_parameters_with_no_independent_raw_truth", "silent_receiver_or_height_defaults", "unresolved_frequency_or_power_reference"],
+      "status": "conditional_only"
+    },
+    "relative_spatial_trend": {
+      "requires_all": ["M1", "M3", "M4", "M5", "M7", "M10", "L1", "L4", "L5", "L6"],
+      "allows": ["inferred transmitter geometry when clearly labeled", "device effects as provenance", "frequency-specific analysis"],
+      "status": "available_for_some_sources"
+    },
+    "rsrp_quantity_validation": {
+      "requires_all": ["M1", "M3", "M4", "M5", "M7", "M8", "M10"],
+      "status": "available_for_some_sources"
+    },
+    "sinr_rsrq_rssi_or_radio_quality": {
+      "requires_all": ["M1", "M3", "M4", "M5", "M6", "M7", "M8", "M10", "T10"],
+      "status": "closed_without_neighbor_resource_noise_context"
+    },
+    "los_nlos_stratified_validation": {
+      "requires_all": ["M1", "M3", "M5", "E1", "E2", "E3"],
+      "status": "conditional_on_measured_or_reproducible_labels"
+    }
+  },
+  "no_go_conditions": [
+    "Source is inaccessible or restricted at the raw-data level.",
+    "Source requires silently invented site, height, power, pattern, receiver, or serving-cell values.",
+    "A calibrated transmitter or receiver correction is presented as independent validation truth.",
+    "Carrier frequency, bandwidth, or ARFCN units cannot be reconciled.",
+    "Observed metric is substituted for another metric with different semantics.",
+    "The source has no lawful rights statement for the intended processing.",
+    "Results would alter canonical RF, inventory semantics, validation readiness, optimizer behavior, terrain behavior, or fingerprints."
+  ],
+  "readiness_classes": {
+    "full_inventory_validation_candidate": "Public, versioned, lawfully usable data with deterministic transmitter truth, complete RF semantics, exact measurement quantities, receiver provenance, and reproducible mapping.",
+    "propagation_validation_candidate": "Useful for frequency-specific or relative propagation/measurement validation, but one or more absolute transmitter fields or environment labels remain incomplete.",
+    "quantity_validation_only": "Useful for checking a measured quantity and its parsing/aggregation semantics, not for reconstructing a canonical transmitter inventory.",
+    "rejected": "Fails public-access, legal, exact-quantity, compatibility, provenance, or uncalibrated-truth gates."
+  },
+  "audit_decision_rule": "Do not select a benchmark by numeric score. Select only when the claim-specific gates are met; otherwise publish the blocker and keep 6B closed."
+}

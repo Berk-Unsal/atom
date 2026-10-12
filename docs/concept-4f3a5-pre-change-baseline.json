@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "concept": "4F.3A.5",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-20",
+  "baseline_commit": "bf4bb4e9703366cab488d1e0d9a644eb365f5088",
+  "worktree_status": "clean",
+  "scope": "Freeze immediately before the terrain-clearance primitive correction. This record is diagnostic evidence only.",
+  "canonical_rf": {
+    "terrain_activation": false,
+    "terrain_status": "terrain_unavailable",
+    "canonical_rf_snapshots": {
+      "canonical_2_6_ghz": {
+        "endpoint": "POST /api/simulate",
+        "model_id": "urban_short_range",
+        "stats": {"blocked_pct": 0, "avg_rx_dbm": -43, "min_range_m": 100, "max_range_m": 100},
+        "first_feature": {"distance_m": 25, "path_loss_db": 70.07902264967872, "wall_loss_db": 0, "signal_dbm": -15.07902264967872, "los_state": "los"}
+      },
+      "canonical_28_ghz": {
+        "endpoint": "POST /api/simulate",
+        "model_id": "urban_short_range",
+        "stats": {"blocked_pct": 12.5, "avg_rx_dbm": -72.1, "min_range_m": 72.3, "max_range_m": 100},
+        "first_feature": {"distance_m": 25, "path_loss_db": 90.72271631710674, "wall_loss_db": 0, "signal_dbm": -35.722716317106745, "los_state": "los"}
+      },
+      "research_sub_thz_140_ghz": {
+        "endpoint": "POST /api/simulate",
+        "model_id": "research_sub_thz",
+        "stats": {"blocked_pct": 87.5, "avg_rx_dbm": -123.6, "min_range_m": 17.6, "max_range_m": 100},
+        "composition": "FSPL + max(wall_event_count, 0) * 80 dB; unchanged research-only profile"
+      }
+    },
+    "invariance_targets": [
+      "canonical 2.6 GHz",
+      "canonical 28 GHz",
+      "research_sub_thz",
+      "4F.1 LOS/NLOS",
+      "P.526",
+      "P.1411",
+      "reflection",
+      "building entry",
+      "interference",
+      "radio quality",
+      "optimizer",
+      "Pareto outputs",
+      "scenario fingerprints"
+    ],
+    "invariance_evidence": {
+      "historical_baseline": "docs/concept-4f3a3-pre-change-baseline.json",
+      "canonical_manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+      "height_aware_los": {"paths": 432, "tx_height_m": 25, "rx_height_m": 1.5, "terrain_status": "terrain_unavailable"},
+      "p526": {"diagnostic_id": "p526-single-edge-v1", "canonical_propagation_coupling": false},
+      "p1411": {"status": "not_ready", "terrain_available": false},
+      "reflection": {"status": "not_ready", "terrain_anchored_vertical_span": 0},
+      "building_entry": {"status": "existing canonical behavior"},
+      "interference_radio_quality": {"status": "existing canonical behavior"},
+      "optimizer": {"artifact": "docs/concept-4h2-canonical-experiment.json", "terrain_coupled": false},
+      "scenario_fingerprints": {"status": "existing canonical behavior"}
+    }
+  },
+  "dataset": {
+    "id": "ankara-open-planning",
+    "version": "2026.07",
+    "manifest": "data-pipeline/manifest.json",
+    "terrain_layer_present": false,
+    "terrain_status": "terrain_unavailable",
+    "terrain_reference": "The canonical pack has no terrain layer; flat relative heights are not measured elevation."
+  },
+  "diagnostic_terrain_clearance_before": {
+    "active_code_path": "data-pipeline/terrain_source_pilot.py::path_profiles",
+    "active_artifact": "docs/concept-4f3a3-terrain-quality.json",
+    "active_artifact_sha256": "65859862274d2e5ccde09d135100c2a71cb27451a73cc80665abaff74732681c",
+    "source_manifests": {
+      "nasadem": {"path": "docs/concept-4f3a3-nasadem-manifest.json", "sha256": "034bda8a9b13dcc60b5fbac8d5f4c17985630ec75607e69bfb0c561a4082ff98"},
+      "fabdem": {"path": "docs/concept-4f3a3-fabdem-manifest.json", "sha256": "f164d3738d0592c6d8a0ec17efecc4b1c4bd61c6f2744af3629c2ae8961b9c47"}
+    },
+    "configuration": {"cells": 6, "rays_per_cell": 72, "paths": 432, "radius_m": 400, "tx_agl_m": 25, "rx_agl_m": 1.5, "requested_spacing_m": 30, "interpolation": "bilinear"},
+    "formula": "terrain_clearance_min_m = terrain_m - radio_line_m",
+    "candidate_rule": "min(terrain - radio_line) < 0",
+    "endpoint_signatures": {"tx": -25, "rx": -1.5},
+    "sources": {
+      "nasadem": {"complete_profiles": 432, "legacy_candidate_count": 432, "minimum_m": -27.31415440651972, "median_m": -25.0, "mean_m": -25.151189628762566},
+      "fabdem": {"complete_profiles": 432, "legacy_candidate_count": 432, "minimum_m": -27.673752427067598, "median_m": -25.0, "mean_m": -25.107671714010344}
+    },
+    "interpretation": "The negative Tx endpoint is the known sign-inversion bug: terrain - (terrain + Tx AGL) = -Tx AGL. These values are frozen as the before state and are not authoritative RF behavior."
+  },
+  "do_not_modify_contract": [
+    "Do not activate terrain in canonical RF.",
+    "Do not begin Concept 4F.3B.",
+    "Do not change canonical LOS/NLOS, propagation, P.526, P.1411, reflection, building entry, interference, radio quality, optimization, or scenario fingerprints.",
+    "Do not overwrite the 4F.3A.3 terrain-quality artifact."
+  ]
+}

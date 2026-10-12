@@ -1,6 +1,6 @@
 {
   "name": "ankara-5g-raytracer-frontend",
-  "version": "0.3.0",
+  "version": "0.12.1",
   "private": true,
   "type": "module",
   "engines": {
@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "build": "vite build",
+    "audit:security": "npm audit --audit-level=high",
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {

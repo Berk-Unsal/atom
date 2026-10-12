@@ -1,0 +1,126 @@
+{
+  "concept": "8G",
+  "capturedOn": "2026-09-24",
+  "applicationVersion": "0.9.1",
+  "git": {
+    "head": "0e4f624a1e08826e4381bc3ff11747eae140bd66",
+    "branch": "main",
+    "workingTreeAtStart": "Dirty with the user's uncommitted Concept 8F implementation and evidence; all of it was preserved.",
+    "trackedDiffStatAtStart": "19 files changed, 1453 insertions(+), 608 deletions(-)",
+    "preExistingTrackedPaths": [
+      "CHANGELOG.md",
+      "frontend-react/e2e/workspace.spec.js",
+      "frontend-react/src/App.jsx",
+      "frontend-react/src/App.test.jsx",
+      "frontend-react/src/App.workflow.test.jsx",
+      "frontend-react/src/components/BuildingEntryPanel.jsx",
+      "frontend-react/src/components/ExperimentPanel.jsx",
+      "frontend-react/src/components/InterferenceResultsPanel.jsx",
+      "frontend-react/src/components/MaterialReferencePanel.jsx",
+      "frontend-react/src/components/OptimizationGoalsPanel.jsx",
+      "frontend-react/src/components/RunHistoryPanel.jsx",
+      "frontend-react/src/components/RunHistoryPanel.test.jsx",
+      "frontend-react/src/components/ScenarioPanel.jsx",
+      "frontend-react/src/components/ScenarioPanel.test.jsx",
+      "frontend-react/src/components/SpecularReflectionReferencePanel.jsx",
+      "frontend-react/src/components/workspaceTools.js",
+      "frontend-react/src/features/core-lab/CoreLabFeature.jsx",
+      "frontend-react/src/features/rf-diagnostics/RFDiagnosticsResearchFeature.jsx",
+      "frontend-react/src/styles.css"
+    ],
+    "preExistingUntrackedGroups": [
+      "docs/assets/concept-8f/",
+      "docs/concept-8f-*.json",
+      "docs/concept-8f-tool-information-architecture.md",
+      "frontend-react/src/components/InterferenceResultsPanel.test.jsx",
+      "frontend-react/src/components/ToolPrimitives.jsx"
+    ]
+  },
+  "dataset": {
+    "path": "data-pipeline/ankara_5g_nodes.geojson",
+    "manifest": "data-pipeline/manifest.json",
+    "manifestVersion": "2026.07",
+    "cellCount": 451,
+    "geojsonPointCount": 451,
+    "sourceDescription": "OpenCellID-derived planning records; not an operator-verified inventory."
+  },
+  "inventoryBefore": {
+    "listCap": 250,
+    "renderedRowsFor451LoadedCells": 250,
+    "ordering": "Loaded tower/GeoJSON feature order; no search relevance sort.",
+    "search": "Case-insensitive substring over internal tower id and displayed cell_id. Empty query matches all loaded Cells.",
+    "editorRelationship": "Browse list and the selected Cell editor render together in one scroll surface.",
+    "browseEditorRowsAt1440": {
+      "drawerClientHeightPx": 766,
+      "drawerScrollHeightPx": 1364,
+      "primaryInventoryActions": 2
+    },
+    "visualEvidence": "docs/concept-8g-pre-change-visual-capture.json"
+  },
+  "bundleBefore": {
+    "javascriptChunks": 15,
+    "initialJavaScriptRawBytes": 803438,
+    "initialJavaScriptGzipBytes": 227842,
+    "allJavaScriptRawBytes": 1003121,
+    "allJavaScriptGzipBytes": 284875,
+    "cssRawBytes": 194457,
+    "cssGzipBytes": 35199,
+    "warning": "Vite reports the initial JavaScript chunk exceeds 500 kB after minification; this predates Concept 8G."
+  },
+  "checks": [
+    {
+      "name": "Frontend unit/workflow suite",
+      "command": "cd frontend-react && npm test -- --reporter=dot",
+      "status": "passed",
+      "testFiles": 57,
+      "tests": 306
+    },
+    {
+      "name": "Frontend lint",
+      "command": "cd frontend-react && npm run lint",
+      "status": "passed"
+    },
+    {
+      "name": "Production build",
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "warning": "Initial JavaScript chunk exceeds 500 kB after minification."
+    },
+    {
+      "name": "Request equivalence",
+      "command": "cd frontend-react && npx vitest run src/domain/requestEquivalence.test.js --reporter=dot",
+      "status": "passed",
+      "testFiles": 1,
+      "tests": 3
+    },
+    {
+      "name": "Playwright E2E",
+      "command": "cd frontend-react && npm run test:e2e -- --workers=1",
+      "status": "passed on full rerun",
+      "total": 184,
+      "passed": 105,
+      "skipped": 79,
+      "failed": 0,
+      "firstAttempt": {
+        "passed": 104,
+        "skipped": 79,
+        "failed": 1,
+        "failure": "Existing Concept 8B evidence test expected Ready after clearing browser storage and reload but received Run needed.",
+        "followUp": "The exact test passed alone, and the complete suite then passed 105/184 with no failures."
+      }
+    },
+    {
+      "name": "backend-go vet and race suite",
+      "commands": ["cd backend-go && go vet ./...", "cd backend-go && go test -race ./..."],
+      "status": "passed",
+      "raceTestPackages": 2
+    },
+    {
+      "name": "core-lab-adapter vet and race suite",
+      "commands": ["cd core-lab-adapter && go vet ./...", "cd core-lab-adapter && go test -race ./..."],
+      "status": "passed",
+      "raceTestPackages": 1
+    }
+  ],
+  "scope": "Baseline was measured against the current Concept 8F working tree before any Concept 8G application or test changes."
+}

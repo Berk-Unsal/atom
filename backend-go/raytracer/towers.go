@@ -3,8 +3,9 @@ package raytracer
 import (
 	"encoding/json"
 	"errors"
-	"os"
 )
+
+const MaxTowerDatasetBytes int64 = 64 << 20
 
 type TowerStation struct {
 	ID          string  `json:"id"`
@@ -16,7 +17,7 @@ type TowerStation struct {
 }
 
 func LoadTowersFromGeoJSON(path string) ([]TowerStation, error) {
-	bytes, err := os.ReadFile(path)
+	bytes, err := readFileWithLimit(path, MaxTowerDatasetBytes, "tower dataset")
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1",
+  "artifact": "collector-audit",
+  "audit_version": "concept-6a1-campaign-tooling-v1",
+  "audit_date": "2026-09-21",
+  "scope": {
+    "city": "Ankara, Türkiye",
+    "frequencies_ghz": [2.6, 28.0],
+    "phase": "measurement acquisition and data quality before calibration",
+    "required_evidence": ["raw export", "serving identity", "frequency/channel", "quantity semantics", "GPS/timestamp", "device/antenna/calibration provenance", "neighbor context where relevant", "license/privacy/automation"],
+    "forbidden_actions": ["transmit or alter the network", "root-only collection as an unstated dependency", "infer strongest modeled cell", "copy planning defaults into missing measurements", "calibrate canonical RF"]
+  },
+  "selected": {
+    "name": "Signal Collector",
+    "selection_status": "selected_for_phase_1_handset_mode",
+    "platform": "Android",
+    "hardware": ["LTE/NR handset modem", "GNSS receiver", "SIM/eSIM and operator permission as required by the campaign"],
+    "root_requirement": {
+      "documented_mode": "not required by the documented standard handset export",
+      "audit_rule": "record the actual device and reject the run if it silently depends on root or privileged modem access"
+    },
+    "export": {
+      "format": "SIGNAL_COLLECTOR_TXT_V6",
+      "containers": ["UTF-8 .txt", "gzip-wrapped V6 text"],
+      "raw_preservation": "keep the original bytes and SHA-256 separately from canonical JSON"
+    },
+    "quantities": {
+      "lte": ["rsrp", "rsrq", "rssnr/sinr", "rssi"],
+      "nr": ["ss_rsrp", "ss_rsrq", "ss_sinr"],
+      "identity": ["registered", "connection_status", "cell_id/nci", "pci", "plmn", "tac"],
+      "resource": ["earfcn", "nrarfcn", "band", "frequency_mhz", "LTE bandwidth when exported"],
+      "context": ["cell_timestamp_ms", "UTC timestamp", "GNSS coordinate", "horizontal accuracy", "altitude", "speed"]
+    },
+    "semantics": [
+      "The V6 payload is an escaped key=value list separated by semicolons; the adapter decodes the nested grammar after decoding the TSV envelope.",
+      "The documented NR shared snapshot uses ss_rsrp/ss_rsrq/ss_sinr; generic RSSI is not relabeled as RSRP.",
+      "LTE bandwidth is exported in kHz in the documented field; the adapter converts only that explicit field to MHz.",
+      "A missing NR bandwidth/resource field remains missing even when the transmitter map has configured planning bandwidth.",
+      "Only registered PRIMARY_SERVING and SECONDARY_SERVING rows become serving observations; raw unregistered neighbor rows are retained as context and never selected by strength."
+    ],
+    "automation": "manual start/stop and local export; export checksum and session metadata are captured by the campaign runner",
+    "privacy": "local-first export is kept under campaign custody; exclude subscriber/device personal identifiers from the canonical record and restrict raw access",
+    "licensing": "verify the app/export terms and operator/site/participant permissions for the actual pilot; the repository fixture is synthetic and carries no field-data license claim",
+    "sources": [
+      "https://signalcollector.app/format",
+      "https://signalcollector.app/",
+      "https://play.google.com/store/apps/details?id=app.signalcollector"
+    ],
+    "limitations": [
+      "NR bandwidth/resource metadata is not guaranteed by the selected V6 export, so 28 GHz RSRP and radio-quality readiness may remain blocked.",
+      "Handset modem values are source-declared measurements, not automatically calibrated absolute received power.",
+      "A complete SINR/RSRQ/RSSI evaluation still needs auditable serving/resource/neighbor context and compatible canonical radio-quality inputs.",
+      "The collector does not by itself establish transmitter height, azimuth, tilt, or exact planning-cell truth."
+    ]
+  },
+  "alternatives": [
+    {
+      "name": "CellMapper standard CSV",
+      "platform": "Android",
+      "format": "CSV",
+      "support_level": "reject_for_full_concept_6a1_scope",
+      "root_requirement": "not required for the ordinary app mode; verify actual device behavior",
+      "quantities": ["latitude", "longitude", "altitude", "MCC", "MNC", "LAC", "CID", "signal", "type", "subtype", "ARFCN", "PSC"],
+      "missing_or_ambiguous": ["standard CSV has no timestamp column", "standard CSV does not provide the required RSRQ/SINR context", "signal meaning differs by radio type", "standard CSV does not establish complete antenna/calibration provenance"],
+      "sources": ["https://www.cellmapper.net/CellMapper_CSV", "https://play.google.com/store/apps/details?hl=en_US&id=cellmapper.net.cellmapper"]
+    },
+    {
+      "name": "Android native CellInfo collector",
+      "platform": "Android custom application",
+      "format": "application-defined JSON/NDJSON",
+      "support_level": "engineering_mode_candidate_not_selected",
+      "root_requirement": "standard TelephonyManager APIs are available, but field/device/operator support varies",
+      "quantities": ["CellInfo LTE/NR registered state", "cell timestamp", "PCI", "EARFCN/NR-ARFCN", "RSRP/RSRQ/RSSNR or SSRSRP/SSRSRQ/SSSINR"],
+      "missing_or_ambiguous": ["requires building and maintaining a collection app", "vendor APIs and permissions vary", "GNSS synchronization, raw preservation, and export provenance must be implemented by the campaign team"],
+      "sources": ["https://developer.android.com/reference/android/telephony/CellInfo", "https://source.android.google.cn/docs/core/connect/signal-strength?hl=en"]
+    },
+    {
+      "name": "Engineering/modem logs or Network Cell Info style exports",
+      "platform": "device/vendor dependent",
+      "format": "vendor-specific log or manual export",
+      "support_level": "audit_before_use",
+      "root_requirement": "unknown until the exact handset, firmware, modem interface, and export path are tested",
+      "quantities": ["may expose richer serving/neighbor/resource fields"],
+      "missing_or_ambiguous": ["root or privileged access", "timestamp/GNSS synchronization", "export schema", "licensing and redistribution", "absolute calibration semantics", "automation and repeatability"],
+      "sources": []
+    },
+    {
+      "name": "CellTraceLogger",
+      "platform": "Android",
+      "format": "custom JSON/NDJSON",
+      "support_level": "not_selected_for_this_audit",
+      "root_requirement": "verify per device",
+      "quantities": ["cell identity and modem measurements according to the project implementation"],
+      "missing_or_ambiguous": ["the audited project export does not provide the complete GPS/timestamp/transmitter-map contract required here without additional campaign code"],
+      "sources": ["https://github.com/Nuulz/CellTraceLogger"]
+    }
+  ],
+  "decision": {
+    "selected_mode": "handset field measurement with Signal Collector V6 plus an independent transmitter truth map",
+    "phase_2_escalation": "use a native CellInfo/custom engineering collector only if a target device cannot export the required V6 fields or if NR resource metadata remains unavailable",
+    "real_measurement_data_supplied": false,
+    "pilot_validation_artifact_created": false,
+    "calibration_active": false,
+    "production_candidate": false
+  }
+}

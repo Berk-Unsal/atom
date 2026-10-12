@@ -1,0 +1,23 @@
+{
+  "concept": "8B.1",
+  "title": "Workspace Chrome Visual Principles",
+  "principles": [
+    "Navigation should look like navigation, not content.",
+    "The map remains the dominant visual surface.",
+    "One active tool gets one obvious title.",
+    "Metadata should be grouped before adding another container.",
+    "Typography and spacing should establish hierarchy before borders.",
+    "Status should be legible without demanding attention.",
+    "Scientific safety language stays visible where necessary.",
+    "Internal provenance should not dominate normal operation.",
+    "Interactive controls remain visibly interactive.",
+    "Empty space is allowed."
+  ],
+  "implementationRules": {
+    "chooser": "Rows use names and only state/reason when useful; tool descriptions remain in the drawer.",
+    "borders": "Strong borders remain on controls and floating surfaces; metadata uses alignment and typography; no per-row cards.",
+    "activeStates": "Stage selection remains the strongest navigation state; current tool gets a restrained fill plus a Current label; disclosures stay structural.",
+    "status": "Keep status text and semantic dot; do not rely on color alone.",
+    "map": "Preserve existing map toolbar and legend DOM/semantics; correct chooser position and compact the map-plan prompt only."
+  }
+}

@@ -1,0 +1,604 @@
+{
+  "schema_version": 1,
+  "frozen_contract_inventory_sha256": "96bfe8e6d53dd2656b13bcf83d21f6eaf7e3e5bf14b6526272b2e2d80b220d99",
+  "changes_applied": false,
+  "rows": [
+    {
+      "path": "backend-go/main.go",
+      "line": 471,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "if len(req.Towers) < raytracer.MinNetworkTowers || len(req.Towers) > raytracer.MaxNetworkTowers {",
+      "note": "Validators inherit generated network cap; deliberately review semantics, no literal edit needed"
+    },
+    {
+      "path": "backend-go/resource_profile.go",
+      "line": 25,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "GlobalConcurrency: cap(limiter.slots), PerClientConcurrency: limiter.perClientConcurrency, AttemptLimit: limiter.requestsPerMinute, WindowSeconds: 60, DeadlineSeconds: deadline.Seconds(), MaxCells: raytracer.MaxNetworkTowers, Source: \"configured RF limiter + request deadline + generated Cell cap; ClientIP anchored window\"}, resourceprofile.Experiments{Workers: experiments.workers, QueueCapacity: cap(experiments.queue), MaxRuns: maxExperimentRuns, Source: \"normalized experiment manager configuration\"}, dataset)",
+      "note": "Auto reflects existing configured constant; observation-only"
+    },
+    {
+      "path": "backend-go/raytracer/policy_generated.go",
+      "line": 39,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "MaxNetworkTowers                   = 6",
+      "note": "Regenerate from canonical policy; audit changes only temporary copy"
+    },
+    {
+      "path": "backend-go/raytracer/interference.go",
+      "line": 334,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "if len(req.Towers) < MinNetworkTowers || len(req.Towers) > MaxNetworkTowers {",
+      "note": "Shared selected-network cap"
+    },
+    {
+      "path": "backend-go/raytracer/building_entry.go",
+      "line": 230,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "if len(req.Network.Towers) < 1 || len(req.Network.Towers) > MaxNetworkTowers {",
+      "note": "Shared selected-network cap, lower bound one"
+    },
+    {
+      "path": "backend-go/raytracer/building_entry.go",
+      "line": 231,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "return fmt.Sprintf(\"towers must contain between 1 and %d selected towers\", MaxNetworkTowers)",
+      "note": "Shared selected-network cap, lower bound one"
+    },
+    {
+      "path": "backend-go/raytracer/optimization_explanation.go",
+      "line": 197,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "if len(req.Baseline.CellConfigurations) < MinNetworkTowers || len(req.Baseline.CellConfigurations) > MaxNetworkTowers {",
+      "note": "Retained baseline and solution must have identical selected Cells"
+    },
+    {
+      "path": "backend-go/raytracer/optimization_explanation.go",
+      "line": 198,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "return fmt.Sprintf(\"baseline must contain between %d and %d cell configurations\", MinNetworkTowers, MaxNetworkTowers)",
+      "note": "Retained baseline and solution must have identical selected Cells"
+    },
+    {
+      "path": "backend-go/raytracer/recommendation.go",
+      "line": 112,
+      "contract": "ENDPOINT-SPECIFIC CAP",
+      "future_action": "SHOULD REMAIN INDEPENDENT",
+      "source": "if len(req.Network.Towers) < MinNetworkTowers || len(req.Network.Towers) > MaxRecommendationTowers {",
+      "note": "Five existing Cells plus a candidate is independent recommendation contract"
+    },
+    {
+      "path": "backend-go/raytracer/measurements.go",
+      "line": 230,
+      "contract": "INDEPENDENT CAP",
+      "future_action": "SHOULD REMAIN INDEPENDENT",
+      "source": "if len(req.Radio.Towers) < MinMeasurementTowers || len(req.Radio.Towers) > MaxMeasurementTowers {",
+      "note": "Measurement validation six-transmitter contract; no eight-Cell invention"
+    },
+    {
+      "path": "frontend-react/src/generated/policy.js",
+      "line": 216,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "\"network_towers_max\": 6,",
+      "note": "Regenerate canonical network policy"
+    },
+    {
+      "path": "frontend-react/src/generated/policy.js",
+      "line": 219,
+      "contract": "INDEPENDENT CAP",
+      "future_action": "SHOULD REMAIN INDEPENDENT",
+      "source": "\"measurement_towers_max\": 6,",
+      "note": "Separate measurement field"
+    },
+    {
+      "path": "frontend-react/src/utils/networkSelection.js",
+      "line": 1,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "export const MAX_NETWORK_CELLS = 6;",
+      "note": "Production clamp remains six in this audit"
+    },
+    {
+      "path": "frontend-react/src/utils/networkSelection.js",
+      "line": 3,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "export function normalizeNetworkSelection(ids, towers, limit = MAX_NETWORK_CELLS) {",
+      "note": "Production clamp remains six in this audit"
+    },
+    {
+      "path": "frontend-react/src/utils/networkSelection.js",
+      "line": 23,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "export function toggleNetworkSelection(ids, cellID, limit = MAX_NETWORK_CELLS) {",
+      "note": "Production clamp remains six in this audit"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 60,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "import { MAX_NETWORK_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from \"./utils/networkSelection.js\";",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 574,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "const normalized = normalizeNetworkSelection(current, towers);",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 601,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "const restoredNetworkTowerIds = normalizeNetworkSelection(plan.selectedNetworkTowerIds, restoredInventory);",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 688,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "selectedNetworkTowerIds: normalizeNetworkSelection(selectedNetworkTowerIds, towers),",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1147,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "const selectedNetworkTowers = normalizeNetworkSelection(selectedNetworkTowerIds, towers)",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1263,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "const selected = normalizeNetworkSelection(selectedNetworkTowerIds, towers)",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1379,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "() => normalizeNetworkSelection(selectedNetworkTowerIds, towers)",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1808,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "const currentSelection = normalizeNetworkSelection(selectedNetworkTowerIds, towers);",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1810,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "if (!isSelected && currentSelection.length >= MAX_NETWORK_CELLS) {",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1811,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "setError(`Network planning supports up to ${MAX_NETWORK_CELLS} selected cells`);",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1814,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "const nextSelection = toggleNetworkSelection(currentSelection, tower.id, MAX_NETWORK_CELLS);",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1961,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "if (wasInNetwork) setSelectedNetworkTowerIds((current) => toggleNetworkSelection(current, towerID, MAX_NETWORK_CELLS));",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 1983,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "const currentSelection = normalizeNetworkSelection(selectedNetworkTowerIds, towers);",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 2034,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "const selected = selectNearestTowers(inside, finalPolygon, MAX_NETWORK_CELLS);",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 2047,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "inside.length > MAX_NETWORK_CELLS",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 2048,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "? `${inside.length} towers found, nearest ${MAX_NETWORK_CELLS} selected.`",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 2062,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "if (selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS) {",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 2063,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "setError(`Select between 2 and ${MAX_NETWORK_CELLS - 1} cells before adding one candidate`);",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 3204,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "if (!selectedNetworkSelectionIDs.includes(candidate.id) && selectedNetworkSelectionIDs.length >= MAX_NETWORK_CELLS) {",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 3205,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "setError(`Network planning supports up to ${MAX_NETWORK_CELLS} selected cells`);",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 3924,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}",
+      "note": "Selection, polygon selection, restore and candidate insertion inherit clamp; Recommendation enablement deserves deliberate independent review"
+    },
+    {
+      "path": "frontend-react/src/components/ControlPanel.jsx",
+      "line": 3,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "import { MAX_NETWORK_CELLS } from \"../utils/networkSelection.js\";",
+      "note": "Count and maximum labels derive clamp"
+    },
+    {
+      "path": "frontend-react/src/components/ControlPanel.jsx",
+      "line": 125,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "<strong>{networkSelectionCount} of {MAX_NETWORK_CELLS} cells selected</strong>",
+      "note": "Count and maximum labels derive clamp"
+    },
+    {
+      "path": "frontend-react/src/components/ControlPanel.jsx",
+      "line": 127,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "<p className=\"selection-minimum-note\">Minimum 2 \u00b7 Maximum {MAX_NETWORK_CELLS}</p>",
+      "note": "Count and maximum labels derive clamp"
+    },
+    {
+      "path": "frontend-react/src/components/ControlPanel.jsx",
+      "line": 243,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "description=\"Interference compares serving and co-channel cells, so it needs a network cluster of two to six cells.\"",
+      "note": "Literal Interference copy needs future review"
+    },
+    {
+      "path": "docs/openapi.yaml",
+      "line": 332,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "description: Batches one to six selected cells and returns the Concept 4E 2.6/28 GHz O2I low-loss and high-loss scenarios. The estimate is not indoor, room, floor, interior-wall, or whole-building coverage. 140 GHz remains unsupported for this analysis.",
+      "note": "Network, retained explanation and Building Entry arrays; inspect each schema independently"
+    },
+    {
+      "path": "docs/openapi.yaml",
+      "line": 1056,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "towers: { type: array, minItems: 2, maxItems: 6, items: { $ref: \"#/components/schemas/Tower\" } }",
+      "note": "Network, retained explanation and Building Entry arrays; inspect each schema independently"
+    },
+    {
+      "path": "docs/openapi.yaml",
+      "line": 1072,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "maxItems: 6",
+      "note": "Network, retained explanation and Building Entry arrays; inspect each schema independently"
+    },
+    {
+      "path": "docs/openapi.yaml",
+      "line": 1534,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "towers: { type: array, minItems: 1, maxItems: 6, items: { $ref: \"#/components/schemas/Tower\" } }",
+      "note": "Network, retained explanation and Building Entry arrays; inspect each schema independently"
+    },
+    {
+      "path": "scripts/generate_policy.py",
+      "line": 113,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "\"MaxNetworkTowers\": limits[\"network_towers_max\"],",
+      "note": "Generator maps distinct canonical fields; do not broaden every six"
+    },
+    {
+      "path": "scripts/generate_policy.py",
+      "line": 114,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "\"MaxRecommendationTowers\": limits[\"recommendation_towers_max\"],",
+      "note": "Generator maps distinct canonical fields; do not broaden every six"
+    },
+    {
+      "path": "scripts/generate_policy.py",
+      "line": 116,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "NO CHANGE",
+      "source": "\"MaxMeasurementTowers\": limits[\"measurement_towers_max\"],",
+      "note": "Generator maps distinct canonical fields; do not broaden every six"
+    },
+    {
+      "path": "policy/rf-policy.json",
+      "line": 89,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "MUST CHANGE 6\u21928",
+      "source": "\"network_towers_max\": 6,"
+    },
+    {
+      "path": "policy/rf-policy.json",
+      "line": 90,
+      "contract": "INDEPENDENT CAP",
+      "future_action": "SHOULD REMAIN INDEPENDENT",
+      "source": "\"recommendation_towers_max\": 5,"
+    },
+    {
+      "path": "policy/rf-policy.json",
+      "line": 92,
+      "contract": "INDEPENDENT CAP",
+      "future_action": "SHOULD REMAIN INDEPENDENT",
+      "source": "\"measurement_towers_max\": 6,"
+    },
+    {
+      "path": "backend-go/raytracer/request_inputs.go",
+      "exists": true,
+      "contract": "NO CARDINALITY DEPENDENCE",
+      "future_action": "NO CHANGE",
+      "note": "Generated-style request structs have no binding cardinality tags; explicit route/RF validators own caps"
+    },
+    {
+      "path": "backend-go/experiment_jobs.go",
+      "exists": true,
+      "contract": "NO CARDINALITY DEPENDENCE",
+      "future_action": "NO CHANGE",
+      "note": "Experiment matrix limits and retained jobs/cache independent of selected-network cardinality"
+    },
+    {
+      "path": "frontend-react/src/utils/requestPayloads.js",
+      "exists": true,
+      "contract": "NO CARDINALITY DEPENDENCE",
+      "future_action": "NO CHANGE",
+      "note": "Builders map selected arrays; simulation receives one Cell; indices choose per-Cell profiles"
+    },
+    {
+      "path": "frontend-react/src/utils/projectStore.js",
+      "exists": true,
+      "contract": "NO CARDINALITY DEPENDENCE",
+      "future_action": "NO CHANGE",
+      "note": "v3 graph encoding has independent 16MiB file,32MiB expansion,1million nodes; restoration App selection clamp remains six"
+    },
+    {
+      "path": "frontend-react/src/utils/reportExport.js",
+      "exists": true,
+      "contract": "NO CARDINALITY DEPENDENCE",
+      "future_action": "NO CHANGE",
+      "note": "Array-driven network report and map numbering; independent sampling/frontier display limits"
+    },
+    {
+      "path": "frontend-react/src/components/ResultTabs.jsx",
+      "exists": true,
+      "contract": "NO CARDINALITY DEPENDENCE",
+      "future_action": "NO CHANGE",
+      "note": "Result arrays and per-Cell solutions are data-driven; inspect bounded test fixture"
+    },
+    {
+      "path": "backend-go/network_capacity_audit_test.go",
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "TEST ONLY",
+      "note": "Future promotion would require explicit production-cap expectations review"
+    },
+    {
+      "path": "backend-go/resource_profile_test.go",
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "TEST ONLY",
+      "note": "Future promotion would require explicit production-cap expectations review"
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 2062,
+      "contract": "ENDPOINT-SPECIFIC CAP",
+      "future_action": "SHOULD REMAIN INDEPENDENT",
+      "source": "if (selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS) {",
+      "note": "Recommendation presently accepts five existing Cells plus one candidate. Raising the shared network cap must not enable seven existing Cells for this independent endpoint."
+    },
+    {
+      "path": "frontend-react/src/App.jsx",
+      "line": 3924,
+      "contract": "ENDPOINT-SPECIFIC CAP",
+      "future_action": "SHOULD REMAIN INDEPENDENT",
+      "source": "recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length >= MAX_NETWORK_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}",
+      "note": "Recommendation presently accepts five existing Cells plus one candidate. Raising the shared network cap must not enable seven existing Cells for this independent endpoint."
+    },
+    {
+      "path": "README.md",
+      "line": 45,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "- **Deterministic Network Optimization**: Sweeps candidate azimuths and scores sectors or two-to-six-cell clusters using POI demand, residential-density demand, coverage, and overlap penalties.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/api.md",
+      "line": 110,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "| Identity | schema `1`; technology `4g`, `5g`, or `6g`; non-empty band/channel up to 64 UTF-8 bytes; duplex `fdd`, `tdd`, `sdl`, or `sul` |",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/api.md",
+      "line": 595,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "six selected cells. This is a separate Concept 4E analysis, not a replacement",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/api.md",
+      "line": 764,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "The request accepts 2\u20136 unique cells. LTE bandwidths are `1.4`, `3`, `5`, `10`, `15`, or `20` MHz; 5G NR bandwidths are `50`, `100`, `200`, or `400` MHz. Reuse must be `1` or `3`. 6G is rejected because standardized project-level RSRP/RSRQ assumptions are not defined for the 6G research profile.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/api.md",
+      "line": 1277,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "All protected RF routes share this bucket, including interference, diagnostics, signal-surface exports, and optimizer API calls. Internal optimizer evaluations do not consume HTTP request units. A six-cell Evaluate Network action sends one `/api/evaluate-network` plus six sequential `/api/simulate` requests; Interference sends one `/api/interference`. Evaluate \u2192 Interference \u2192 Re-evaluate costs 15 of 20 requests in a fresh window. Earlier runs and other tabs on the same IP also count. Denied admissions log operation, limiter-local request ID, process-local hashed client key, remaining budget, retry timing, and reason without request payloads. See the [request-budget audit](rf-analysis-request-budget-audit.md) for the measured trace and regression evidence.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/features.md",
+      "line": 18,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "- Result-bearing six-Cell projects use [lossless project file v3](project-format.md) with bounded import and preserved Version provenance; valid v1/v2 files remain readable. Scenario Undo restores the same saved identity durably across reload.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/features.md",
+      "line": 72,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "- Network evaluation scores two to six selected cells using coverage, unique demand, and overlap.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/features.md",
+      "line": 77,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "- Sweeps frequency, conducted TX power, beam width, azimuth, and calibration offset across at most 64 deterministic combinations.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/features.md",
+      "line": 88,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "- Exports the regular grid as float32 EPSG:4326 GeoTIFF, valid grid cells as CSV, and isolines as GeoJSON.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/deployment.md",
+      "line": 40,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "and 1 per client, a 60-second RF deadline, six selected Cells and one experiment",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/deployment.md",
+      "line": 46,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "The [W1 shipping-runtime qualification](./w1-shipping-runtime-qualification.md) names **A** as the minimum and **B** as the recommended W1 reference for A.T.O.M **0.11.0**, commit `e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8`, shipping **Go 1.26.6**, qualified **2026-10-05 UTC**. A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested resource floors under the exact Ankara 2026.07 hashes, eight layouts and frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and shipping binary assumptions. CPU quota does not reserve dedicated cores. Current policy remains 20 attempts/ClientIP/anchored 60 s, global 2/per-client 1, RF deadline 60 s, six Cells, experiment worker 1/queue 16. Unknown runtime/resource evidence never establishes eligibility. This is not a universal hardware requirement, arbitrary pack/layout guarantee, heavier-workload qualification, or eight-Cell approval. Auto remains observation-only; no resource selector or admission change. See the qualification for GC-trace observability, memory/timing gates, actual HTTP evidence and limitations.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/deployment.md",
+      "line": 131,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "Raise `MAX_CONCURRENT_RF_REQUESTS` or its per-client counterpart only after measuring CPU, memory, and tail latency with representative two-to-six-cell requests. Admission and request budgets are process-local; use a gateway for a shared multi-replica budget.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/project-format.md",
+      "line": 47,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "Export checks both budgets too. A larger or more complex project fails explicitly with its limit reason; it does not download an artifact this importer would reject or silently remove scientific data. This is six-Cell reliability coverage, not a larger-network support guarantee or unbounded archival storage.",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "docs/project-format.md",
+      "line": 51,
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "DOCUMENTATION ONLY",
+      "source": "See [the persistence reliability audit](persistence-reliability-audit.md). `node scripts/persistence-reliability-audit.mjs` reproduces byte composition and timings from the compressed real UI export fixture. The dedicated browser workflow replays captured six-Cell backend responses through the ordinary Evaluate / Interference / Optimize / Save Version / Export / Import UI. Run it with:",
+      "note": "Review current product wording deliberately; retain historical six-Cell qualification and benchmark evidence unchanged."
+    },
+    {
+      "path": "frontend-react/src/utils/apiClient.js",
+      "contract": "INDEPENDENT CAP",
+      "future_action": "SHOULD REMAIN INDEPENDENT",
+      "note": "32MiB JSON and64MiB blob response guards are independent. Compare measured individual response volume; do not automatically raise guards."
+    },
+    {
+      "path": "frontend-react/src/utils/reportExport.js",
+      "contract": "INDEPENDENT CAP",
+      "future_action": "SHOULD REMAIN INDEPENDENT",
+      "note": "Map/frontier sampling limits are independent of selected-network cap."
+    },
+    {
+      "path": "scripts/eight-cell-operational-successor",
+      "contract": "NETWORK PRODUCT CAP",
+      "future_action": "TEST ONLY",
+      "note": "Keep this audit-only override and immutable evidence; promotion needs a separate reviewed production patch."
+    }
+  ]
+}

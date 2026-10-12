@@ -30,6 +30,27 @@ func TestInterferenceRouteRejectsMalformedJSON(t *testing.T) {
 	if !strings.Contains(recorder.Body.String(), "invalid interference JSON") {
 		t.Fatalf("body = %q, want malformed JSON error", recorder.Body.String())
 	}
+	if strings.Contains(recorder.Body.String(), "unexpected") {
+		t.Fatalf("body leaked parser diagnostics: %q", recorder.Body.String())
+	}
+}
+
+func TestInterferenceRouteRejectsUnknownJSONField(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	registerInterferenceRoute(router, raytracer.EmptyBuildingIndex())
+	req := httptest.NewRequest(http.MethodPost, "/api/interference", strings.NewReader(`{"network_tech":"4g","network_tehc":"4g"}`))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, body = %s; want 400", recorder.Code, recorder.Body.String())
+	}
+	if strings.Contains(recorder.Body.String(), "network_tehc") {
+		t.Fatalf("body leaked rejected field name: %q", recorder.Body.String())
+	}
 }
 
 func TestInterferenceRouteRejects6G(t *testing.T) {
@@ -162,6 +183,71 @@ func TestInterferenceRoutePreservesExplicitZeroNoiseFigure(t *testing.T) {
 	}
 }
 
+func TestInterferenceRouteExposesRadioQualityContract(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	registerInterferenceRoute(router, raytracer.EmptyBuildingIndex())
+	body := `{
+		"network_tech":"4g",
+		"serving_cell_id":"a",
+		"towers":[
+			{"id":"a","tower_lon":32.85,"tower_lat":39.92,"azimuth":90},
+			{"id":"b","tower_lon":32.851,"tower_lat":39.92,"azimuth":90}
+		],
+		"frequency_ghz":2.6,
+		"radius_m":100,
+		"tx_power_dbm":30,
+		"beam_width":120,
+		"bandwidth_mhz":20,
+		"load_factor":1,
+		"reuse_factor":1,
+		"noise_figure_db":7,
+		"sample_spacing_m":40
+	}`
+	req := httptest.NewRequest(http.MethodPost, "/api/interference", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", recorder.Code, recorder.Body.String())
+	}
+	var payload raytracer.InterferenceResponse
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if payload.Model.ScenarioFingerprint == "" || payload.Model.ScenarioSchemaVersion != raytracer.ScenarioFingerprintSchemaVersion {
+		t.Fatalf("missing scenario identity: %+v", payload.Model)
+	}
+	if payload.Model.CoChannelEligibilityRule == "" || len(payload.Model.RadioQualityReferences) < 2 {
+		t.Fatalf("missing radio-quality model contract: %+v", payload.Model)
+	}
+	if len(payload.Model.InterferenceHorizonMeters) != 2 || payload.Model.InterferenceHorizonSource != raytracer.RadioQualityInterferenceHorizonSource {
+		t.Fatalf("missing interference horizon contract: %+v", payload.Model)
+	}
+	var signal *raytracer.InterferenceProperties
+	for index := range payload.GeoJSON.Features {
+		candidate := &payload.GeoJSON.Features[index].Properties
+		if candidate.RSRPDBm != nil {
+			signal = candidate
+			break
+		}
+	}
+	if signal == nil {
+		t.Fatal("response did not contain a valid signal feature")
+	}
+	if signal.ServingSelectionMode != "explicit_cell_id" || signal.ServingCellID != "a" || len(signal.PowerLedger) != 2 {
+		t.Fatalf("serving selection/ledger = %+v", signal)
+	}
+	if signal.ServingReceivedCarrierPowerDBm == nil || signal.DesiredSignalPowerMW == nil || signal.ThermalNoisePowerMW == nil {
+		t.Fatalf("missing power ledger terms: %+v", signal)
+	}
+	for _, entry := range signal.PowerLedger {
+		if entry.Eligible && !entry.ServingEligible {
+			t.Fatalf("eligible route fixture ledger entry was not serving-admitted: %+v", entry)
+		}
+	}
+}
+
 func TestRequestBodyLimitReturns413(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
@@ -202,14 +288,29 @@ func TestReadinessRequiresAllRuntimeAssets(t *testing.T) {
 	}
 }
 
+func TestReadinessRedactsDatasetDiagnostics(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	router.GET("/readyz", readinessHandler(false, false, true, "/private/data/manifest.json: checksum mismatch"))
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/readyz", nil))
+	if recorder.Code != http.StatusServiceUnavailable {
+		t.Fatalf("status = %d, want 503", recorder.Code)
+	}
+	if strings.Contains(recorder.Body.String(), "/private/data") || !strings.Contains(recorder.Body.String(), "dataset unavailable") {
+		t.Fatalf("body = %s, want generic dataset diagnostic", recorder.Body.String())
+	}
+}
+
 func TestGeoJSONRouteUsesJSONMediaTypeAndDisablesCaching(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	path := filepath.Join(t.TempDir(), "towers.geojson")
 	if err := os.WriteFile(path, []byte(`{"type":"FeatureCollection","features":[]}`), 0o600); err != nil {
 		t.Fatalf("write fixture: %v", err)
 	}
+	runtime := newDatasetRuntime(&raytracer.DatasetPack{TowerPath: path}, nil, "")
 	router := gin.New()
-	router.GET("/api/towers", serveGeoJSONFile(path, "missing"))
+	router.GET("/api/towers", serveRuntimeTowerGeoJSON(runtime))
 	req := httptest.NewRequest(http.MethodGet, "/api/towers", nil)
 	req.Header.Set("If-Modified-Since", "Wed, 15 Jul 2026 00:00:00 GMT")
 	recorder := httptest.NewRecorder()

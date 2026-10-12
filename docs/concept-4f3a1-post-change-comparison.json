@@ -1,0 +1,146 @@
+{
+  "after": {
+    "accepted_external_matches": 0,
+    "building_counts": {
+      "explicit_height_count": {
+        "after": 1108,
+        "before": 1108,
+        "delta": 0
+      },
+      "external_selected_count": {
+        "after": 0,
+        "before": 0,
+        "delta": 0
+      },
+      "fallback_only_count": {
+        "after": 155710,
+        "before": 155710,
+        "delta": 0
+      },
+      "fallback_reduction_pct": 0.0,
+      "levels_derived_count": {
+        "after": 4966,
+        "before": 4966,
+        "delta": 0
+      },
+      "loader_visible_footprints": 161784,
+      "qualified_or_trusted_count": {
+        "after": 6074,
+        "before": 6074,
+        "delta": 0
+      }
+    },
+    "external_positive_records": 0,
+    "p1411": {
+      "audited_paths": 432,
+      "both_below_rooftop_provable": false,
+      "fully_automatic_paths": 0,
+      "morphology_taxonomy_present": false,
+      "reference": "docs/concept-4i2b-p1411-applicability.json",
+      "status": "not_ready",
+      "terrain_available": false
+    },
+    "p526": {
+      "blocked_only_by_unknown_height": 338,
+      "canonical_propagation_coupling": false,
+      "diagnostic_eligible": 29,
+      "diagnostic_id": "p526-single-edge-v1",
+      "geometric_los": 29,
+      "paths": 432,
+      "unknown_height_ineligible": 403
+    },
+    "path_432": {
+      "cells": 6,
+      "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_HEIGHT_AUDIT=1 go test ./raytracer -run '^TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled$' -count=1 -v",
+      "frequency_ghz": 28,
+      "paths": 432,
+      "radius_m": 400,
+      "rays_per_cell": 72,
+      "rx_height_m": 1.5,
+      "terrain_status": "terrain_unavailable",
+      "transitions": {
+        "los_to_los": 29,
+        "los_to_nlos": 0,
+        "nlos_to_los": 0,
+        "nlos_to_nlos": 248,
+        "other": 0,
+        "unknown_to_unknown": 155
+      },
+      "tx_height_m": 25
+    },
+    "reflection": {
+      "candidates_with_height_evidence": 777,
+      "candidates_with_terrain_anchored_vertical_span": 0,
+      "geometry_only_specular_candidates": 6368,
+      "material_evidence_footprints": 0,
+      "reference": "docs/concept-4i5a-ankara-readiness.json",
+      "sample_paths": 432,
+      "status": "not_ready"
+    }
+  },
+  "artifact": "post-change-comparison",
+  "before_artifact": "docs/concept-4f3a1-pre-change-baseline.json",
+  "canonical_invariance": {
+    "4h2_optimizer_changed": false,
+    "building_entry_changed": false,
+    "canonical_output_changed": false,
+    "canonical_rf_path_changed": false,
+    "fingerprint_includes_source_release_checksums_policy_adapter_and_accepted_match_set": true,
+    "reason": "The pilot is a separate data-quality artifact and does not alter the canonical dataset, RF equations, propagation defaults, or optimizer inputs.",
+    "ui_state_in_fingerprint": false
+  },
+  "captured_at": "2026-09-19",
+  "comparison_scope": "Pilot acquisition and diagnostics only; no external height was activated in canonical RF code.",
+  "concept": "4F.3A.1",
+  "decision": "NO-GO for future 4F.3B numeric promotion; GO for bounded acquisition/normalization/audit tooling",
+  "diagnostic_rerun": {
+    "canonical_coupling": false,
+    "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_HEIGHT_AUDIT=1 go test ./raytracer -run '^TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled$' -count=1 -v",
+    "observed": {
+      "cells": 6,
+      "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_HEIGHT_AUDIT=1 go test ./raytracer -run '^TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled$' -count=1 -v",
+      "frequency_ghz": 28,
+      "paths": 432,
+      "radius_m": 400,
+      "rays_per_cell": 72,
+      "rx_height_m": 1.5,
+      "terrain_status": "terrain_unavailable",
+      "transitions": {
+        "los_to_los": 29,
+        "los_to_nlos": 0,
+        "nlos_to_los": 0,
+        "nlos_to_nlos": 248,
+        "other": 0,
+        "unknown_to_unknown": 155
+      },
+      "tx_height_m": 25
+    },
+    "status": "passed"
+  },
+  "fingerprint": "pilot-ed25b1f6a5e7c27e44e987f0e7c67f2d8d3b55936b386ce5106b6536ae46eb92",
+  "performance": {
+    "download_seconds": 0.131400833,
+    "matching_seconds": 5.7499999996935e-06,
+    "osm_index_load_seconds": 5.419999986600033e-07,
+    "parse_and_normalize_seconds": 27.325496167,
+    "peak_rss_mb": 306.5,
+    "spatial_index": "STRtree; avoids 161626 x external all-pairs candidate evaluation"
+  },
+  "remaining_gaps": [
+    "No positive external height estimate exists in the exact active Ankara tile set.",
+    "No accepted external-to-OSM one-to-one match exists, so agreement and conflict statistics are empty.",
+    "No fallback-only building is reduced and no new map provenance record is activated.",
+    "A future positive release still requires source refresh, re-acquisition, hash verification, and rerunning the full audit."
+  ],
+  "reproducibility_command": "python data-pipeline/external_height_pilot.py --manifest data-pipeline/manifest.json --buildings data-pipeline/ankara_buildings.geojson --links-url https://bfppub.blob.core.windows.net/%24web/2026-08-13/dataset-links.csv --version 2026-08-13 --raw-dir /tmp/globml-2026-08-13-ankara/raw --output-dir docs --download",
+  "schema_version": 1,
+  "title": "Ankara external-height post-change comparison",
+  "transition_explanation": {
+    "los_to_los": "unchanged; no external records were accepted",
+    "los_to_nlos": "unchanged at zero",
+    "nlos_to_los": "unchanged at zero",
+    "nlos_to_nlos": "unchanged; no external records were accepted",
+    "unknown_to_unknown": "unchanged; external input had no positive heights"
+  },
+  "validation_note": "The 432-path Go diagnostic is recorded as passed when --path-diagnostic-verified is supplied; the copied path counts are the pre-change diagnostic contract because canonical coupling is false."
+}

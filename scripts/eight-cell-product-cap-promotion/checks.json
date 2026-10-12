@@ -1,0 +1,300 @@
+{
+  "rf_budget_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/rf-budget.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "started_at": "2026-10-07T22:01:40.858542+00:00",
+    "completed_at": "2026-10-07T22:01:51.745057+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/rf_budget_e2e.playwright.json",
+    "stdout_sha256": "44c01716f1440239f9ffcfe9341421e4c377fc123b0b217c5202328817b797f5",
+    "execution_guard": {
+      "passed": 1,
+      "discovered": 1,
+      "executed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "required_tests": [
+        {
+          "id": "517ab816924a3a36e3da-c2d80f0f63cf255099be",
+          "file": "rf-budget.spec.js",
+          "title": "real RF budget: six-cell Evaluate, Interference, inspect, re-evaluate, then abuse",
+          "project": "desktop-1440",
+          "result_statuses": [
+            "passed"
+          ],
+          "passed": true
+        }
+      ],
+      "opt_in_active": true
+    }
+  },
+  "rf_deadline_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/network-deadline.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "started_at": "2026-10-07T22:01:51.745773+00:00",
+    "completed_at": "2026-10-07T22:02:01.402304+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/rf_deadline_e2e.playwright.json",
+    "stdout_sha256": "865441bb7886fe7b420a8bce03d4064d32e39261b4915c035b2814734b9b0fd8",
+    "execution_guard": {
+      "passed": 1,
+      "discovered": 1,
+      "executed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "required_tests": [
+        {
+          "id": "6eb2bebe5f7dbec70ae0-03ce0a2405ac15553026",
+          "file": "network-deadline.spec.js",
+          "title": "real network optimization deadline: affected six-cell defaults preserve output and one-request cost",
+          "project": "desktop-1440",
+          "result_statuses": [
+            "passed"
+          ],
+          "passed": true
+        }
+      ],
+      "opt_in_active": true
+    }
+  },
+  "bounded_six_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/bounded-followup.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "started_at": "2026-10-07T22:02:01.402759+00:00",
+    "completed_at": "2026-10-07T22:02:15.596035+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/bounded_six_e2e.playwright.json",
+    "stdout_sha256": "550345be0d7ba32b33444f66994c71e8a2e8e1ca68577311873c2f89396b1963",
+    "execution_guard": {
+      "passed": 1,
+      "discovered": 1,
+      "executed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "required_tests": [
+        {
+          "id": "6691c121a9643fc34a51-c4f673f79a0f3ee36e63",
+          "file": "bounded-followup.spec.js",
+          "title": "bounded follow-ups: real six-cell cycle then Optimize maps and shared-tab prebooking",
+          "project": "desktop-1440",
+          "result_statuses": [
+            "passed"
+          ],
+          "passed": true
+        }
+      ],
+      "opt_in_active": true
+    }
+  },
+  "product_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/eight-cell-product.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "started_at": "2026-10-07T22:09:29.714011+00:00",
+    "completed_at": "2026-10-07T22:09:48.264024+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/product_e2e.playwright.json",
+    "stdout_sha256": "39f37013a332d6315b33acb1b0a3b388a8347d7b2dcc857dcc090f141f5495fe",
+    "execution_guard": {
+      "passed": 1,
+      "discovered": 1,
+      "executed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "required_tests": [
+        {
+          "id": "da4cb25146008bd23923-e30587ac0e29ef9c6d6d",
+          "file": "eight-cell-product.spec.js",
+          "title": "normal product eight Cells: F28, markers and ninth selection guard",
+          "project": "desktop-1440",
+          "result_statuses": [
+            "passed"
+          ],
+          "passed": true
+        }
+      ],
+      "opt_in_active": true
+    }
+  },
+  "backend_tests": {
+    "command": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "environment": {},
+    "started_at": "2026-10-07T22:06:45.941799+00:00",
+    "completed_at": "2026-10-07T22:06:51.244813+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/backend_tests.log",
+    "stdout_sha256": "57683d20c43e37f0c61cd59c085578d53307dae0082d0c15a70e2776f194e210"
+  },
+  "backend_race": {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "environment": {},
+    "started_at": "2026-10-07T22:06:51.245252+00:00",
+    "completed_at": "2026-10-07T22:07:11.498937+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/backend_race.log",
+    "stdout_sha256": "778eb35e3f4f8aecbffcba6ac93aff041951fbcfbc6e541bc4ddb46666fe9cad"
+  },
+  "backend_vet": {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "environment": {},
+    "started_at": "2026-10-07T22:07:11.499529+00:00",
+    "completed_at": "2026-10-07T22:07:11.851829+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/backend_vet.log",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "frontend_tests": {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "frontend-react",
+    "environment": {},
+    "started_at": "2026-10-07T22:07:11.852410+00:00",
+    "completed_at": "2026-10-07T22:07:22.185696+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/frontend_tests.log",
+    "stdout_sha256": "059ee06e1feea5f588d5e60c5a71173f9544fd63633c59098f9feb7e795a0de9"
+  },
+  "frontend_lint": {
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "cwd": "frontend-react",
+    "environment": {},
+    "started_at": "2026-10-07T22:12:23.050020+00:00",
+    "completed_at": "2026-10-07T22:12:26.843777+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/frontend_lint.log",
+    "stdout_sha256": "dcc59411610f7cb936e9e893a439d8beb791096843bc59b12bb03b71b5e17321"
+  },
+  "frontend_build": {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "frontend-react",
+    "environment": {},
+    "started_at": "2026-10-07T22:12:26.844312+00:00",
+    "completed_at": "2026-10-07T22:12:28.144108+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/frontend_build.log",
+    "stdout_sha256": "537e3ea6114fffea5fd4a0af69e7616e4f16da071c63f1d137d4a81052568546"
+  },
+  "docs_build": {
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "cwd": ".",
+    "environment": {},
+    "started_at": "2026-10-07T22:16:04.464401+00:00",
+    "completed_at": "2026-10-07T22:16:11.230474+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/docs_build.log",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "docs_validation": {
+    "command": [
+      "/tmp/atom-persistence-docs-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": ".",
+    "environment": {},
+    "started_at": "2026-10-07T22:16:11.230853+00:00",
+    "completed_at": "2026-10-07T22:16:11.610260+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/docs_validation.log",
+    "stdout_sha256": "40c7849872945216e28b877d9f6d4220eae3185ee939b6620b1bba9e2ee0e648"
+  },
+  "version_consistency": {
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "cwd": ".",
+    "environment": {},
+    "started_at": "2026-10-07T22:16:11.610775+00:00",
+    "completed_at": "2026-10-07T22:16:11.645447+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/version_consistency.log",
+    "stdout_sha256": "b95f3079af993769526c2caf981ca7f9187fd998309c5019f4404574bb15df4c"
+  },
+  "diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": ".",
+    "environment": {},
+    "started_at": "2026-10-07T22:16:11.645857+00:00",
+    "completed_at": "2026-10-07T22:16:11.673683+00:00",
+    "exit_code": 0,
+    "stdout_path": "/tmp/atom-eight-cell-product-cap-promotion/diff_check.log",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

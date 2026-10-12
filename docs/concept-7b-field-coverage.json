@@ -1,0 +1,32 @@
+{
+  "artifact": "concept-7b-field-coverage",
+  "artifact_version": "1.0.0",
+  "scope": "Current frontend planning inputs used by simulation, optimization, interference, and live report construction.",
+  "covered_fields": [
+    { "current_field": "plan.inventory[]", "domain_field": "InventoryRevision.cells[]", "request_consumers": ["buildSimulationPayload", "buildNetworkOptimizationPayload", "buildInterferencePayload", "buildBuildingEntryAnalysisPayload"], "status": "covered" },
+    { "current_field": "plan.settings.frequencyGHz", "domain_field": "ScenarioRevision.rf_affecting_settings.frequencyGHz", "request_consumers": ["simulation", "optimization", "interference", "report"], "status": "covered" },
+    { "current_field": "plan.settings.propagationModelID", "domain_field": "ScenarioRevision.propagation_selection.model_id and rf_affecting_settings", "request_consumers": ["simulation", "path/reference context"], "status": "covered" },
+    { "current_field": "plan.settings.txPowerDbm/rayCount/radiusMeters/azimuthDeg/beamWidthDeg/calibrationOffsetDb", "domain_field": "ScenarioRevision.rf_affecting_settings", "request_consumers": ["simulation", "optimization", "interference"], "status": "covered" },
+    { "current_field": "plan.settings.interferenceBandwidthMHz/cellLoadPct/reuseFactor/noiseFigureDb/sampleSpacingMeters", "domain_field": "ScenarioRevision.interference_settings plus rf_affecting_settings", "request_consumers": ["buildInterferencePayload"], "status": "covered" },
+    { "current_field": "InventoryCell.rfProfile receiver and antenna fields", "domain_field": "InventoryRevision.cells[].rf_profile plus ScenarioRevision receiver_assumptions/overrides", "request_consumers": ["rfProfileToPayload", "simulation", "optimization", "interference"], "status": "covered" },
+    { "current_field": "plan.planningMode", "domain_field": "ScenarioRevision.planning_mode", "request_consumers": ["single/network request selection", "report mode"], "status": "covered" },
+    { "current_field": "plan.selectedTowerId", "domain_field": "ScenarioRevision.selected_cell_id", "request_consumers": ["single-cell simulation"], "status": "covered" },
+    { "current_field": "plan.selectedNetworkTowerIds", "domain_field": "ScenarioRevision.selected_cell_ids/enabled_cell_ids", "request_consumers": ["network optimization", "interference"], "status": "covered" },
+    { "current_field": "plan.networkAzimuths", "domain_field": "ScenarioRevision.overrides[cell].fields.azimuth_deg", "request_consumers": ["network optimization", "interference", "recommendations"], "status": "covered" },
+    { "current_field": "plan.selectionPolygon", "domain_field": "ScenarioRevision.selection_geometry", "request_consumers": ["recommendation search", "AOI context"], "status": "covered" },
+    { "current_field": "plan.optimizationConfig", "domain_field": "ScenarioRevision.objective_constraints and optimizer_configuration", "request_consumers": ["buildNetworkOptimizationPayload", "ranking/Pareto display"], "status": "covered" },
+    { "current_field": "snapshot.request", "domain_field": "ScenarioRevision.request_inputs", "request_consumers": ["exact current request replay/evidence"], "status": "covered" },
+    { "current_field": "snapshot.datasetRef", "domain_field": "ScenarioRevision.dataset_references and DatasetReference", "request_consumers": ["dataset compatibility", "reproducibility"], "status": "covered" },
+    { "current_field": "snapshot.calibrationProfile", "domain_field": "ScenarioRevision.calibration_profile", "request_consumers": ["calibrated RF/report context"], "status": "covered" },
+    { "current_field": "snapshot.meta", "domain_field": "ScenarioRevision.metadata.app_meta / Run engine metadata", "request_consumers": ["model/dataset provenance"], "status": "covered" }
+  ],
+  "excluded_ui_fields": [
+    "layerVisibility", "selectedMapCellId", "rayScope", "active drawer", "hovered cell", "selected map object", "map viewport", "open tabs", "loading", "notices", "errors", "abort controllers", "request cancellation", "temporary rendering visibility"
+  ],
+  "specialized_reference_endpoints": {
+    "status": "not part of current Save current planning snapshot",
+    "policy": "Their request objects can be carried in ScenarioRevision.request_inputs when explicitly captured; no endpoint-specific defaults were invented or moved into RF resolution.",
+    "reason": "Concept 7B establishes the domain boundary without expanding current UI save behavior."
+  },
+  "audit_result": "No RF-affecting field used by the current saved simulation/network/interference planning paths is left dependent on React state alone."
+}

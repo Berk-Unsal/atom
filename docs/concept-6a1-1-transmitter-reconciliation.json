@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "transmitter-reconciliation",
+  "inventory": {
+    "dataset_id": "ankara-open-planning",
+    "version": "2026.07",
+    "feature_count": 451,
+    "source": "OpenCellID-derived planning records; not operator verified",
+    "field_semantics": {
+      "cell_id": "OpenCellID source cell column carried into the planning feature (normalized by pack tooling if duplicate/invalid); it is cell-level identity, not PCI, site ID, or tower ID",
+      "source_cell_id": "preserved only when pack normalization changes a source ID; absent from all 451 active features",
+      "available_keys": [
+        "area",
+        "cell_id",
+        "is_simulated",
+        "mcc",
+        "net",
+        "radio_type",
+        "range",
+        "samples"
+      ],
+      "radio_type_counts": {
+        "LTE": 451
+      },
+      "is_simulated_true_count": 451,
+      "plmn_28603_rows": 8,
+      "pci_fields": 0,
+      "earfcn_fields": 0
+    }
+  },
+  "method": {
+    "priority_1": "Exact PLMN + observed source Cell ID; no exact matches found.",
+    "priority_2": "Existing authoritative source mapping; none exists for these observations.",
+    "priority_3": "Unique PCI + channel composite; inventory has neither PCI nor EARFCN, so not available.",
+    "geographic_candidates": "Not used; no canonical observation geometry and the existing pack is planning-grade.",
+    "forbidden_fallbacks_used": []
+  },
+  "all_registered_flag_identity_reconciliation": {
+    "distinct_pseudonymous_identity_tuples": 8,
+    "snapshot_rows": 83,
+    "exact_mappings": 0,
+    "deterministic_identity_mappings": 0,
+    "ambiguous": 0,
+    "unresolved_identities": 8,
+    "observation_weighted_exact_mappings": 0,
+    "observation_weighted_unresolved_snapshots": 83,
+    "identity_status_note": "Cell snapshots are not confirmed serving measurements; unresolved counts describe the registered-flag candidate pool only."
+  },
+  "b7_reconciliation": {
+    "distinct_candidate_identities": 2,
+    "candidate_snapshot_rows": 29,
+    "exact_mappings": 0,
+    "deterministic_mappings": 0,
+    "ambiguous": 0,
+    "unresolved_identities": 2,
+    "observation_weighted_exact_mapping_rows": 0,
+    "observation_weighted_unresolved_rows": 29,
+    "pseudonymous_rows": [
+      {
+        "identity": "cell-d3d772729614",
+        "band": "B7",
+        "pci": 276,
+        "earfcn": 3200,
+        "frequency_mhz": 2665.0,
+        "candidate_rows": 11,
+        "sessions": [
+          "stationary_control",
+          "walking_pilot"
+        ],
+        "exact_inventory_candidates": 0,
+        "mapping_class": "unresolved"
+      },
+      {
+        "identity": "cell-e8389d1a5860",
+        "band": "B7",
+        "pci": 296,
+        "earfcn": 3200,
+        "frequency_mhz": 2665.0,
+        "candidate_rows": 18,
+        "sessions": [
+          "walking_pilot"
+        ],
+        "exact_inventory_candidates": 0,
+        "mapping_class": "unresolved"
+      }
+    ]
+  },
+  "exact_mapping_rate": {
+    "unique_candidate_identities": 8,
+    "exact_or_deterministic_mappings": 0,
+    "rate": 0.0,
+    "b7_unique_candidate_identities": 2,
+    "b7_exact_or_deterministic_mappings": 0,
+    "b7_rate": 0.0
+  },
+  "transmitter_map_candidate_created": false,
+  "blocking_reason": "No trustworthy canonical serving observations can be constructed from the source status conflict, and no observed identity exactly matches the planning pack source identity fields. No strongest, nearest, or residual-based selection was performed."
+}

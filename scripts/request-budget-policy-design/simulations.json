@@ -1,0 +1,7125 @@
+{
+  "generated_at": "2026-10-07T17:58:47.957312+00:00",
+  "method": "offline closed-form finite event tapes; no production implementation or new RF evidence",
+  "assumptions": "fresh retained IP, one anchored window, successful valid RF, no concurrency conflict; shared tabs sequential unless stated; no timing estimate",
+  "journeys": {
+    "A": [
+      "evaluate"
+    ],
+    "B": [
+      "optimize"
+    ],
+    "C": [
+      "evaluate",
+      "interference"
+    ],
+    "D": [
+      "evaluate",
+      "interference",
+      "evaluate"
+    ],
+    "E": [
+      "evaluate",
+      "optimize"
+    ],
+    "F": [
+      "evaluate",
+      "interference",
+      "evaluate",
+      "optimize"
+    ],
+    "G": [
+      "optimize",
+      "explain"
+    ],
+    "H1": [
+      "evaluate",
+      "evaluate"
+    ],
+    "H2": [
+      "evaluate",
+      "interference",
+      "evaluate",
+      "evaluate",
+      "interference",
+      "evaluate"
+    ],
+    "H3": [
+      "evaluate",
+      "interference",
+      "evaluate",
+      "optimize",
+      "evaluate",
+      "interference",
+      "evaluate",
+      "optimize"
+    ],
+    "L3+inspection": [
+      "evaluate",
+      "interference",
+      "evaluate",
+      "optimize",
+      "explain"
+    ],
+    "azimuth": [
+      "azimuth"
+    ]
+  },
+  "rows": [
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": 13,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": 13,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 12,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 15,
+      "accepted_RF_calls": 15,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 15,
+      "verified_extra_units": 0,
+      "remaining": 5,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": 6,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 22,
+      "accepted_RF_calls": 20,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 21,
+        "action": "optimize",
+        "stage": "optimize-map-5",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 12,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": 6,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 30,
+      "accepted_RF_calls": 20,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 21,
+        "action": "evaluate",
+        "stage": "evaluate-map-5",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 44,
+      "accepted_RF_calls": 20,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 21,
+        "action": "optimize",
+        "stage": "optimize-map-5",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 23,
+      "accepted_RF_calls": 20,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 21,
+        "action": "optimize",
+        "stage": "optimize-map-5",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P0",
+      "cells": 6,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": 2
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": 11,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": 11,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 19,
+      "accepted_RF_calls": 19,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 19,
+      "verified_extra_units": 0,
+      "remaining": 1,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 2,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 28,
+      "accepted_RF_calls": 20,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 21,
+        "action": "optimize",
+        "stage": "optimize-map-1",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 2,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 38,
+      "accepted_RF_calls": 20,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 21,
+        "action": "evaluate",
+        "stage": "evaluate-map-1",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 56,
+      "accepted_RF_calls": 20,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 21,
+        "action": "optimize",
+        "stage": "optimize-map-1",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 29,
+      "accepted_RF_calls": 20,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 21,
+        "action": "optimize",
+        "stage": "optimize-map-1",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P0",
+      "cells": 8,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": 2
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": 21,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": 21,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 20,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 15,
+      "accepted_RF_calls": 15,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 15,
+      "verified_extra_units": 0,
+      "remaining": 13,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 22,
+      "accepted_RF_calls": 22,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 22,
+      "verified_extra_units": 0,
+      "remaining": 6,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 20,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 30,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "evaluate",
+        "stage": "evaluate-map-5",
+        "charged": 0
+      },
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 44,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "evaluate",
+        "stage": "evaluate-map-6",
+        "charged": 0
+      },
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 7
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 23,
+      "accepted_RF_calls": 23,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 23,
+      "verified_extra_units": 0,
+      "remaining": 5,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 7
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P1",
+      "cells": 6,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 26,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": 2
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 19,
+      "accepted_RF_calls": 19,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 19,
+      "verified_extra_units": 0,
+      "remaining": 9,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 28,
+      "accepted_RF_calls": 28,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": 1
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 38,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "interference",
+        "stage": "interference",
+        "charged": 0
+      },
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 56,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "evaluate",
+        "stage": "evaluate",
+        "charged": 0
+      },
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 29,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "explain",
+        "stage": "explain",
+        "charged": 0
+      },
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 1
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 9
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 9
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P1",
+      "cells": 8,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 26,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": 2
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 15,
+      "verified_extra_units": 0,
+      "remaining": 45,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 15,
+      "verified_extra_units": 0,
+      "remaining": 45,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 15
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 42,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 15,
+      "accepted_RF_calls": 15,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 33,
+      "verified_extra_units": 0,
+      "remaining": 27,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 30,
+      "verified_extra_units": 0,
+      "remaining": 30,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 15
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 22,
+      "accepted_RF_calls": 22,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 48,
+      "verified_extra_units": 0,
+      "remaining": 12,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 15
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 42,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": 3
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 30,
+      "verified_extra_units": 0,
+      "remaining": 30,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 30,
+      "accepted_RF_calls": 27,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 28,
+        "action": "evaluate",
+        "stage": "evaluate-map-4",
+        "charged": 0
+      },
+      "charged_units": 60,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 44,
+      "accepted_RF_calls": 27,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 28,
+        "action": "evaluate",
+        "stage": "evaluate-map-5",
+        "charged": 0
+      },
+      "charged_units": 59,
+      "verified_extra_units": 0,
+      "remaining": 1,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 15
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 23,
+      "accepted_RF_calls": 23,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 51,
+      "verified_extra_units": 0,
+      "remaining": 9,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": 15
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": 3
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P2",
+      "cells": 6,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 6,
+      "verified_extra_units": 0,
+      "remaining": 54,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": 6
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 19,
+      "verified_extra_units": 0,
+      "remaining": 41,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 19,
+      "verified_extra_units": 0,
+      "remaining": 41,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 19
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 22,
+      "verified_extra_units": 0,
+      "remaining": 38,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 19,
+      "accepted_RF_calls": 19,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 41,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 38,
+      "verified_extra_units": 0,
+      "remaining": 22,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 19
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 28,
+      "accepted_RF_calls": 28,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 60,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 19
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 22,
+      "verified_extra_units": 0,
+      "remaining": 38,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": 3
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 38,
+      "verified_extra_units": 0,
+      "remaining": 22,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 38,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "interference",
+        "stage": "interference",
+        "charged": 0
+      },
+      "charged_units": 60,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 56,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "evaluate",
+        "stage": "evaluate",
+        "charged": 0
+      },
+      "charged_units": 60,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 19
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 29,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "explain",
+        "stage": "explain",
+        "charged": 0
+      },
+      "charged_units": 60,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": 3
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": 19
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": 19
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P2",
+      "cells": 8,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 6,
+      "verified_extra_units": 0,
+      "remaining": 54,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": 6
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 15,
+      "accepted_RF_calls": 15,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 3,
+      "verified_extra_units": 0,
+      "remaining": 17,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 22,
+      "accepted_RF_calls": 22,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 4,
+      "verified_extra_units": 0,
+      "remaining": 16,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 30,
+      "accepted_RF_calls": 30,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 6,
+      "verified_extra_units": 0,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 44,
+      "accepted_RF_calls": 44,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 12,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 23,
+      "accepted_RF_calls": 23,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 5,
+      "verified_extra_units": 0,
+      "remaining": 15,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 6,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": null
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 19,
+      "accepted_RF_calls": 19,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 3,
+      "verified_extra_units": 0,
+      "remaining": 17,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 28,
+      "accepted_RF_calls": 28,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 4,
+      "verified_extra_units": 0,
+      "remaining": 16,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 38,
+      "accepted_RF_calls": 38,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 6,
+      "verified_extra_units": 0,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 56,
+      "accepted_RF_calls": 56,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 12,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 29,
+      "accepted_RF_calls": 29,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 5,
+      "verified_extra_units": 0,
+      "remaining": 15,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P3-naive",
+      "cells": 8,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": null
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 6,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 6,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 6,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 2
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 15,
+      "accepted_RF_calls": 15,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 8,
+      "remaining": 13,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 5,
+          "verified_extra_units": 2,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 6,
+      "verified_extra_units": 8,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 5,
+          "verified_extra_units": 2,
+          "post_complete_ordinary_remaining": 14,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 22,
+      "accepted_RF_calls": 22,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 8,
+      "remaining": 6,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 5,
+          "verified_extra_units": 2,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 6,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 2
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 6,
+      "verified_extra_units": 8,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 5,
+          "verified_extra_units": 2,
+          "post_complete_ordinary_remaining": 14,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 30,
+      "accepted_RF_calls": 23,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 24,
+        "action": "evaluate",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 16,
+      "verified_extra_units": 8,
+      "remaining": 4,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 5,
+          "verified_extra_units": 2,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 5,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 44,
+      "accepted_RF_calls": 22,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 23,
+        "action": "evaluate",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 15,
+      "verified_extra_units": 8,
+      "remaining": 5,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 5,
+          "verified_extra_units": 2,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 23,
+      "accepted_RF_calls": 23,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 15,
+      "verified_extra_units": 8,
+      "remaining": 5,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 1,
+          "verified_extra_units": 6,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 2
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 5,
+          "verified_extra_units": 2,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 5,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 6,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 1,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "ordinary_units": 1,
+          "verified_extra_units": 1,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 7
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 8,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 8,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 8,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 19,
+      "accepted_RF_calls": 19,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 11,
+      "verified_extra_units": 8,
+      "remaining": 9,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 8,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 28,
+      "accepted_RF_calls": 28,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 20,
+      "verified_extra_units": 8,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 0,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 8,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 8,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 38,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "interference",
+        "stage": "root before RF",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 8,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 0,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 56,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "evaluate",
+        "stage": "root before RF",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 8,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 0,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 29,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "explain",
+        "stage": "root before RF",
+        "charged": 0
+      },
+      "charged_units": 20,
+      "verified_extra_units": 8,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 1,
+          "verified_extra_units": 8,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 0,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P3-capped",
+      "cells": 8,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 1,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "ordinary_units": 1,
+          "verified_extra_units": 1,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 7
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 19,
+        "map": 18
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 19,
+        "map": 18
+      },
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 18
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 15,
+      "accepted_RF_calls": 15,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 15,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 17,
+        "map": 12
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 12
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 22,
+      "accepted_RF_calls": 22,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 22,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 16,
+        "map": 6
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 18
+      },
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 12
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 30,
+      "accepted_RF_calls": 30,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 30,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 14,
+        "map": 0
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 44,
+      "accepted_RF_calls": 31,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 32,
+        "action": "evaluate",
+        "stage": "evaluate-map-1",
+        "charged": 0
+      },
+      "charged_units": 31,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 13,
+        "map": 0
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 23,
+      "accepted_RF_calls": 23,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 23,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 15,
+        "map": 6
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P4",
+      "cells": 6,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 24
+      },
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": null
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 19,
+        "map": 16
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 19,
+        "map": 16
+      },
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 16
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 19,
+      "accepted_RF_calls": 19,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 19,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 17,
+        "map": 8
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 8
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 28,
+      "accepted_RF_calls": 28,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 16,
+        "map": 0
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 16
+      },
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 8
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 38,
+      "accepted_RF_calls": 30,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 31,
+        "action": "evaluate",
+        "stage": "evaluate-map-1",
+        "charged": 0
+      },
+      "charged_units": 30,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 14,
+        "map": 0
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 56,
+      "accepted_RF_calls": 29,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 30,
+        "action": "evaluate",
+        "stage": "evaluate-map-1",
+        "charged": 0
+      },
+      "charged_units": 29,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 15,
+        "map": 0
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 29,
+      "accepted_RF_calls": 29,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 29,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 15,
+        "map": 0
+      },
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P4",
+      "cells": 8,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": {
+        "root": 18,
+        "map": 24
+      },
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": null
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": 13,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": 13,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 12,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 12,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 15,
+      "accepted_RF_calls": 15,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 15,
+      "verified_extra_units": 0,
+      "remaining": 5,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 12,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 5,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": 6,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 22,
+      "accepted_RF_calls": 15,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 16,
+        "action": "optimize",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 16,
+      "verified_extra_units": 0,
+      "remaining": 4,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 12,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 5,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 12,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 12,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": 6,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 30,
+      "accepted_RF_calls": 15,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 16,
+        "action": "evaluate",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 16,
+      "verified_extra_units": 0,
+      "remaining": 4,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 12,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 5,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 44,
+      "accepted_RF_calls": 15,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 16,
+        "action": "optimize",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 16,
+      "verified_extra_units": 0,
+      "remaining": 4,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 12,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 5,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 23,
+      "accepted_RF_calls": 15,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 16,
+        "action": "optimize",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 16,
+      "verified_extra_units": 0,
+      "remaining": 4,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 12,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 5,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 6,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "ordinary_units": 2,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": 11,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": 11,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 19,
+      "accepted_RF_calls": 19,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 19,
+      "verified_extra_units": 0,
+      "remaining": 1,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 1,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 2,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 2,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 28,
+      "accepted_RF_calls": 19,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 20,
+        "action": "optimize",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 1,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 2,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 2,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 38,
+      "accepted_RF_calls": 19,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 20,
+        "action": "evaluate",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 1,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 56,
+      "accepted_RF_calls": 19,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 20,
+        "action": "optimize",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 1,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 29,
+      "accepted_RF_calls": 19,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 20,
+        "action": "optimize",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 20,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 11,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 1,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P5-reserve20",
+      "cells": 8,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "ordinary_units": 2,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": 21,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 7,
+      "verified_extra_units": 0,
+      "remaining": 21,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 20,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 20,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 15,
+      "accepted_RF_calls": 15,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 15,
+      "verified_extra_units": 0,
+      "remaining": 13,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 20,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 14,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 22,
+      "accepted_RF_calls": 22,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 22,
+      "verified_extra_units": 0,
+      "remaining": 6,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 20,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 20,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 20,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 14,
+      "verified_extra_units": 0,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 14,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 30,
+      "accepted_RF_calls": 23,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 24,
+        "action": "evaluate",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 24,
+      "verified_extra_units": 0,
+      "remaining": 4,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 20,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 5,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 44,
+      "accepted_RF_calls": 22,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 23,
+        "action": "evaluate",
+        "stage": "root before RF",
+        "charged": 1
+      },
+      "charged_units": 23,
+      "verified_extra_units": 0,
+      "remaining": 5,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 20,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 23,
+      "accepted_RF_calls": 23,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 23,
+      "verified_extra_units": 0,
+      "remaining": 5,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 21,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 20,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 13,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "ordinary_units": 7,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 6,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 5,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 6,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 26,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "ordinary_units": 2,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 26,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 9,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 19,
+      "accepted_RF_calls": 19,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 19,
+      "verified_extra_units": 0,
+      "remaining": 9,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 28,
+      "accepted_RF_calls": 28,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 0,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 10,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 18,
+      "verified_extra_units": 0,
+      "remaining": 10,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 10,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 38,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "interference",
+        "stage": "root before RF",
+        "charged": 0
+      },
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 0,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 56,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "evaluate",
+        "stage": "root before RF",
+        "charged": 0
+      },
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 0,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 29,
+      "accepted_RF_calls": 28,
+      "all_complete": false,
+      "first_denial": {
+        "attempt": 29,
+        "action": "explain",
+        "stage": "root before RF",
+        "charged": 0
+      },
+      "charged_units": 28,
+      "verified_extra_units": 0,
+      "remaining": 0,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 19,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "ordinary_units": 1,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 18,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 9,
+          "post_complete_extra_remaining": 0
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "ordinary_units": 9,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 0,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P5-reserve28",
+      "cells": 8,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 26,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "ordinary_units": 2,
+          "verified_extra_units": 0,
+          "post_complete_ordinary_remaining": 26,
+          "post_complete_extra_remaining": 0
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 7,
+      "accepted_RF_calls": 7,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 15,
+      "accepted_RF_calls": 15,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 3,
+      "verified_extra_units": 0,
+      "remaining": 17,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 22,
+      "accepted_RF_calls": 22,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 4,
+      "verified_extra_units": 0,
+      "remaining": 16,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 8,
+      "accepted_RF_calls": 8,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 14,
+      "accepted_RF_calls": 14,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 30,
+      "accepted_RF_calls": 30,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 6,
+      "verified_extra_units": 0,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 44,
+      "accepted_RF_calls": 44,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 12,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 23,
+      "accepted_RF_calls": 23,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 5,
+      "verified_extra_units": 0,
+      "remaining": 15,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 7,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P6",
+      "cells": 6,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": null
+        }
+      ],
+      "journey": "azimuth"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "A"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 9,
+      "accepted_RF_calls": 9,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "B"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "C"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 19,
+      "accepted_RF_calls": 19,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 3,
+      "verified_extra_units": 0,
+      "remaining": 17,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "D"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "E"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 28,
+      "accepted_RF_calls": 28,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 4,
+      "verified_extra_units": 0,
+      "remaining": 16,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "F"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 10,
+      "accepted_RF_calls": 10,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "G"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 18,
+      "accepted_RF_calls": 18,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 2,
+      "verified_extra_units": 0,
+      "remaining": 18,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "H1"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 38,
+      "accepted_RF_calls": 38,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 6,
+      "verified_extra_units": 0,
+      "remaining": 14,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "H2"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 56,
+      "accepted_RF_calls": 56,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 8,
+      "verified_extra_units": 0,
+      "remaining": 12,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        }
+      ],
+      "journey": "H3"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 29,
+      "accepted_RF_calls": 29,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 5,
+      "verified_extra_units": 0,
+      "remaining": 15,
+      "actions": [
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "interference",
+          "calls": 1,
+          "charged_units": null
+        },
+        {
+          "action": "evaluate",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "optimize",
+          "calls": 9,
+          "charged_units": null
+        },
+        {
+          "action": "explain",
+          "calls": 1,
+          "charged_units": null
+        }
+      ],
+      "journey": "L3+inspection"
+    },
+    {
+      "policy": "P6",
+      "cells": 8,
+      "planned_calls": 2,
+      "accepted_RF_calls": 2,
+      "all_complete": true,
+      "first_denial": null,
+      "charged_units": 1,
+      "verified_extra_units": 0,
+      "remaining": 19,
+      "actions": [
+        {
+          "action": "azimuth",
+          "calls": 2,
+          "charged_units": null
+        }
+      ],
+      "journey": "azimuth"
+    }
+  ],
+  "threshold_derivation": [
+    {
+      "journey": "A",
+      "cells": 6,
+      "minimum_flat_budget": 7
+    },
+    {
+      "journey": "A",
+      "cells": 8,
+      "minimum_flat_budget": 9
+    },
+    {
+      "journey": "B",
+      "cells": 6,
+      "minimum_flat_budget": 7
+    },
+    {
+      "journey": "B",
+      "cells": 8,
+      "minimum_flat_budget": 9
+    },
+    {
+      "journey": "C",
+      "cells": 6,
+      "minimum_flat_budget": 8
+    },
+    {
+      "journey": "C",
+      "cells": 8,
+      "minimum_flat_budget": 10
+    },
+    {
+      "journey": "D",
+      "cells": 6,
+      "minimum_flat_budget": 15
+    },
+    {
+      "journey": "D",
+      "cells": 8,
+      "minimum_flat_budget": 19
+    },
+    {
+      "journey": "E",
+      "cells": 6,
+      "minimum_flat_budget": 14
+    },
+    {
+      "journey": "E",
+      "cells": 8,
+      "minimum_flat_budget": 18
+    },
+    {
+      "journey": "F",
+      "cells": 6,
+      "minimum_flat_budget": 22
+    },
+    {
+      "journey": "F",
+      "cells": 8,
+      "minimum_flat_budget": 28
+    },
+    {
+      "journey": "G",
+      "cells": 6,
+      "minimum_flat_budget": 8
+    },
+    {
+      "journey": "G",
+      "cells": 8,
+      "minimum_flat_budget": 10
+    },
+    {
+      "journey": "H1",
+      "cells": 6,
+      "minimum_flat_budget": 14
+    },
+    {
+      "journey": "H1",
+      "cells": 8,
+      "minimum_flat_budget": 18
+    },
+    {
+      "journey": "H2",
+      "cells": 6,
+      "minimum_flat_budget": 30
+    },
+    {
+      "journey": "H2",
+      "cells": 8,
+      "minimum_flat_budget": 38
+    },
+    {
+      "journey": "H3",
+      "cells": 6,
+      "minimum_flat_budget": 44
+    },
+    {
+      "journey": "H3",
+      "cells": 8,
+      "minimum_flat_budget": 56
+    },
+    {
+      "journey": "L3+inspection",
+      "cells": 6,
+      "minimum_flat_budget": 23
+    },
+    {
+      "journey": "L3+inspection",
+      "cells": 8,
+      "minimum_flat_budget": 29
+    },
+    {
+      "journey": "azimuth",
+      "cells": 6,
+      "minimum_flat_budget": 2
+    },
+    {
+      "journey": "azimuth",
+      "cells": 8,
+      "minimum_flat_budget": 2
+    }
+  ],
+  "flat_thresholds": [
+    {
+      "budget": 19,
+      "root_and_independent_map_delta": -1,
+      "percentage_delta": -5.000000000000004,
+      "loose_boundary": 38,
+      "tight_boundary": 37,
+      "six_F": false,
+      "eight_F": false
+    },
+    {
+      "budget": 20,
+      "root_and_independent_map_delta": 0,
+      "percentage_delta": 0.0,
+      "loose_boundary": 40,
+      "tight_boundary": 39,
+      "six_F": false,
+      "eight_F": false
+    },
+    {
+      "budget": 28,
+      "root_and_independent_map_delta": 8,
+      "percentage_delta": 39.99999999999999,
+      "loose_boundary": 56,
+      "tight_boundary": 55,
+      "six_F": true,
+      "eight_F": true
+    },
+    {
+      "budget": 29,
+      "root_and_independent_map_delta": 9,
+      "percentage_delta": 44.99999999999999,
+      "loose_boundary": 58,
+      "tight_boundary": 57,
+      "six_F": true,
+      "eight_F": true
+    },
+    {
+      "budget": 38,
+      "root_and_independent_map_delta": 18,
+      "percentage_delta": 89.99999999999999,
+      "loose_boundary": 76,
+      "tight_boundary": 75,
+      "six_F": true,
+      "eight_F": true
+    },
+    {
+      "budget": 56,
+      "root_and_independent_map_delta": 36,
+      "percentage_delta": 179.99999999999997,
+      "loose_boundary": 112,
+      "tight_boundary": 111,
+      "six_F": true,
+      "eight_F": true
+    }
+  ],
+  "abuse_envelopes": [
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 2,
+      "total_RF_admissions": 20,
+      "loose_two_window_bound": 40,
+      "tight_retained_anchored_boundary": 39,
+      "policy": "P0",
+      "cells": 6
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 2,
+      "total_RF_admissions": 20,
+      "loose_two_window_bound": 40,
+      "tight_retained_anchored_boundary": 39,
+      "policy": "P0",
+      "cells": 8
+    },
+    {
+      "Optimize": 28,
+      "Evaluate": 28,
+      "independent_Simulate": 28,
+      "complete_map_workflows": 4,
+      "total_RF_admissions": 28,
+      "loose_two_window_bound": 56,
+      "tight_retained_anchored_boundary": 55,
+      "policy": "P1",
+      "cells": 6
+    },
+    {
+      "Optimize": 28,
+      "Evaluate": 28,
+      "independent_Simulate": 28,
+      "complete_map_workflows": 3,
+      "total_RF_admissions": 28,
+      "loose_two_window_bound": 56,
+      "tight_retained_anchored_boundary": 55,
+      "policy": "P1",
+      "cells": 8
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 30,
+      "complete_map_workflows": 4,
+      "total_RF_admissions": 30,
+      "loose_two_window_bound": 60,
+      "tight_map_boundary": 59,
+      "tight_root_boundary": 39,
+      "policy": "P2",
+      "cells": 6
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 30,
+      "complete_map_workflows": 3,
+      "total_RF_admissions": 30,
+      "loose_two_window_bound": 60,
+      "tight_map_boundary": 59,
+      "tight_root_boundary": 39,
+      "policy": "P2",
+      "cells": 8
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 20,
+      "total_RF_steps_fresh_no_hoard": 140,
+      "loose_two_window_bound_no_hoard": 280,
+      "carry_hazard": "without a shared executed/held cap, outstanding grants from older windows can amplify this bound",
+      "policy": "P3-naive",
+      "cells": 6
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 20,
+      "total_RF_steps_fresh_no_hoard": 180,
+      "loose_two_window_bound_no_hoard": 360,
+      "carry_hazard": "without a shared executed/held cap, outstanding grants from older windows can amplify this bound",
+      "policy": "P3-naive",
+      "cells": 8
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 4,
+      "fresh_verified_maps_in_full_workflows": 24,
+      "fresh_max_maps_including_independent": 26,
+      "carried_maps_ceiling_in_current_window": 28,
+      "extra_RF_admissions": 8,
+      "total_RF_admissions": 28,
+      "loose_two_window_bound": 56,
+      "tight_retained_anchored_boundary": 55,
+      "ordinary_loose_boundary": 40,
+      "ordinary_tight_if_extra_anchors_window": 40,
+      "policy": "P3-capped",
+      "cells": 6
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 3,
+      "fresh_verified_maps_in_full_workflows": 24,
+      "fresh_max_maps_including_independent": 27,
+      "carried_maps_ceiling_in_current_window": 28,
+      "extra_RF_admissions": 8,
+      "total_RF_admissions": 28,
+      "loose_two_window_bound": 56,
+      "tight_retained_anchored_boundary": 55,
+      "ordinary_loose_boundary": 40,
+      "ordinary_tight_if_extra_anchors_window": 40,
+      "policy": "P3-capped",
+      "cells": 8
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 24,
+      "complete_map_workflows": 4,
+      "total_RF_admissions": 44,
+      "loose_two_window_bound": 88,
+      "tight_aligned_bucket_boundary": 86,
+      "policy": "P4",
+      "cells": 6
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 24,
+      "complete_map_workflows": 3,
+      "total_RF_admissions": 44,
+      "loose_two_window_bound": 88,
+      "tight_aligned_bucket_boundary": 86,
+      "policy": "P4",
+      "cells": 8
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 2,
+      "total_RF_admissions": 20,
+      "loose_two_window_bound": 40,
+      "tight_retained_anchored_boundary": 39,
+      "policy": "P5-reserve20",
+      "cells": 6
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 2,
+      "total_RF_admissions": 20,
+      "loose_two_window_bound": 40,
+      "tight_retained_anchored_boundary": 39,
+      "policy": "P5-reserve20",
+      "cells": 8
+    },
+    {
+      "Optimize": 28,
+      "Evaluate": 28,
+      "independent_Simulate": 28,
+      "complete_map_workflows": 4,
+      "total_RF_admissions": 28,
+      "loose_two_window_bound": 56,
+      "tight_retained_anchored_boundary": 55,
+      "policy": "P5-reserve28",
+      "cells": 6
+    },
+    {
+      "Optimize": 28,
+      "Evaluate": 28,
+      "independent_Simulate": 28,
+      "complete_map_workflows": 3,
+      "total_RF_admissions": 28,
+      "loose_two_window_bound": 56,
+      "tight_retained_anchored_boundary": 55,
+      "policy": "P5-reserve28",
+      "cells": 8
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 20,
+      "total_RF_steps_fresh_no_hoard": 140,
+      "loose_two_window_bound_no_hoard": 280,
+      "carry_hazard": "without a shared executed/held cap, outstanding grants from older windows can amplify this bound",
+      "policy": "P6",
+      "cells": 6
+    },
+    {
+      "Optimize": 20,
+      "Evaluate": 20,
+      "independent_Simulate": 20,
+      "complete_map_workflows": 20,
+      "total_RF_steps_fresh_no_hoard": 180,
+      "loose_two_window_bound_no_hoard": 360,
+      "carry_hazard": "without a shared executed/held cap, outstanding grants from older windows can amplify this bound",
+      "policy": "P6",
+      "cells": 8
+    }
+  ],
+  "recommended_funding_invariants": [
+    "ordinary_spent + ordinary_held <=20",
+    "extra_spent + extra_held <=8",
+    "all currently admitted RF attempts <=28 in retained window",
+    "window reset clears spent counters only; held liabilities survive",
+    "claim atomically held--, matching spent++; never refund spent",
+    "only valid new slot progress can renew idle expiry; no renewal on invalid/replay/duplicates"
+  ],
+  "boundary_note": "loose bound2B; tight near-boundary bound2B\u22121 because an earlier charge anchors the window. Restart/eviction/IP churn are outside retained-state guarantees; concurrency further constrains actual throughput."
+}

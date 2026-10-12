@@ -7,7 +7,7 @@ The recommended way to run A.T.O.M is Docker Compose. For the visual, task-based
 - Docker Desktop or Docker Engine with Compose
 - Git and [Git LFS](https://git-lfs.com/)
 - Internet access during the first build and for the default OpenStreetMap basemap
-- For source development: Go 1.26 and Node.js 24 or newer
+- For source development: Go 1.26.9 and Node.js 24 or newer
 
 ## Get the Complete Repository
 
@@ -15,12 +15,12 @@ The Ankara building dataset is approximately 111 MB and is managed by Git LFS.
 
 ```bash
 git lfs install
-git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
-cd urban-ray-tracer
+git clone https://github.com/Berk-Unsal/atom.git
+cd atom
 git lfs pull
 ```
 
-If you use the [repository ZIP](https://github.com/Berk-Unsal/urban-ray-tracer/archive/refs/heads/main.zip), verify that `data-pipeline/ankara_buildings.geojson` is roughly 111 MB and contains GeoJSON rather than a Git LFS pointer. Clone with Git LFS if it does not.
+If you use the [repository ZIP](https://github.com/Berk-Unsal/atom/archive/refs/heads/main.zip), verify that `data-pipeline/ankara_buildings.geojson` is roughly 111 MB and contains GeoJSON rather than a Git LFS pointer. Clone with Git LFS if it does not.
 
 ## Docker Compose
 
@@ -84,11 +84,12 @@ Open `http://localhost:5173`. Vite proxies API requests to the Go service on por
 Core Lab is opt-in and applies only to 5G mode. Start the main application and adapter with:
 
 ```bash
+export CORE_LAB_API_KEY="$(openssl rand -hex 32)"
 docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
   --profile core-lab up --build
 ```
 
-The adapter provides deterministic Xn-C, Xn-U, N2, and N3 communication-path state. It can probe configured Open5GS status or metrics endpoints, but it does not bundle a complete Open5GS deployment.
+The adapter is available only to the Compose service network and runs as a non-root, read-only service. It provides deterministic Xn-C, Xn-U, N2, and N3 communication-path state. Scenario changes require `CORE_LAB_API_KEY`. The adapter can probe configured Open5GS status or metrics endpoints, but it does not bundle a complete Open5GS deployment.
 
 ## First Use
 
@@ -101,6 +102,16 @@ The adapter provides deterministic Xn-C, Xn-U, N2, and N3 communication-path sta
 
 The five most recently used scenarios retain complete map layers. Older scenarios keep settings and summaries and may require a rerun.
 
+### Build A Cell Inventory
+
+1. Open **Inventory** to search or select the active local cells.
+2. Choose **Place cell**, click the map, and drag the new marker or edit its coordinates precisely.
+3. Configure the cell's carrier, link budget, radius/beam, antenna heights/tilts/orientation/patterns, interference load/reuse/PCI, and receiver assumptions.
+4. Duplicate a cell to create a nearby sector, or import CSV/GeoJSON inventory records in bulk.
+5. Resolve every inline validation error before running an analysis. The complete inventory and per-cell overrides autosave with the project.
+
+Legacy Setup/Propagation values supply defaults when a cell has no explicit override. Use **Reset profile** to return a selected cell to those defaults.
+
 ### Single-Cell Sector Planning
 
 1. Open **Setup**, select **Single** mode and a network technology, then choose a tower.
@@ -110,7 +121,7 @@ The five most recently used scenarios retain complete map layers. Older scenario
 
 ### Network Evaluation and Optimization
 
-1. Select **Network** mode and choose two to six cells.
+1. Select **Network** mode and choose two to eight cells.
 2. Use **Evaluate Network** in the command bar to score the current plan.
 3. Use **Optimize Network** in Propagation to test deterministic azimuth candidates.
 4. Review score, demand reach, overlap, and before/after deltas in Results.
@@ -147,6 +158,12 @@ Candidate records come from the active tower dataset and do not imply site avail
 4. With at least 20 valid samples, review holdout error before explicitly applying the suggested global bias correction.
 
 Applied correction is stored in the project and recorded in reports. It is a global bias adjustment, not full propagation calibration.
+
+### Build Or Switch Dataset Packs
+
+Use [Dataset Pack Studio](dataset-pack-studio.html) to preview source coverage, invalid geometry, CRS, and missing fields before building a local schema-v2 pack for another region. Validate its output with `go run ./cmd/validate-dataset /path/to/pack` from `backend-go`.
+
+When the server has `ATOM_DATASETS_ROOT` configured, **Data** lists installed child packs with provenance and QA. Activating one clears current rendered analysis and inventory selection, then reloads the new immutable pack. Existing saved scenarios remain bound to their original dataset identity and are marked stale rather than silently reinterpreted.
 
 ### 5G Communication Paths
 
@@ -189,7 +206,7 @@ A.T.O.M admits two RF jobs by default. A saturated request returns `429` with `R
 
 ### Blank Basemap
 
-The RF engines and datasets run locally, but the default Leaflet layer requests OpenStreetMap tiles. Confirm network access or configure a separate local tile source.
+The RF engines and datasets run locally, but the default Leaflet layer requests OpenStreetMap tiles from `https://tile.openstreetmap.org/{z}/{x}/{y}.png`. The app keeps the required OpenStreetMap attribution and sends the browser's normal origin Referer so the community tile service can apply its usage policy. Confirm network access if the basemap is blank; a production deployment that cannot use the public community service should use an appropriate OSM-derived provider or a self-hosted tile service, while retaining attribution and that provider's caching and usage requirements. A tile failure does not affect RF results or create a tile prefetch loop.
 
 ## Next References
 
@@ -198,3 +215,6 @@ The RF engines and datasets run locally, but the default Leaflet layer requests 
 - [RF algorithms](./algorithms.md)
 - [Model limitations](./modeling-limits.md)
 - [Deployment](./deployment.md)
+
+
+Eight selected network Cells are qualified only for the frozen Ankara2026.07 W1 envelope (120 rays,400m,30dBm,120° beam,2.6/28GHz,legacy two-pass) on Profile A2CPU/4GiB and the shipping Go1.26.6 Linux/arm64 runtime. This does not certify heavier W2/W3 settings or arbitrary hardware/datasets. Large ray-bearing project exports can still hit existing persistence guards at both six and eight Cells; network-result-only eight-Cell projects round-trip without changing those guards.

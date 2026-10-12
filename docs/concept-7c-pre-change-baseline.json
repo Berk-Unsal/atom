@@ -1,0 +1,63 @@
+{
+  "concept": "7C",
+  "phase": "pre_change_baseline",
+  "captured_at": "2026-09-21",
+  "scope": "normal simulation and optimization actions",
+  "existing_persistence": {
+    "database": "atom-planning-workspace",
+    "database_version": 1,
+    "object_store": "workspace",
+    "project_schema_version": 2,
+    "fallback": "atom.planning.workspace.v1 localStorage",
+    "separate_run_history_store": false,
+    "normal_compute_run_write": "none; only cached scenario artifacts could be embedded in ProjectV2"
+  },
+  "representative_cases": [
+    {
+      "id": "2.6_simulation",
+      "request_source": "buildSimulationPayload",
+      "request_shape": "single-cell RF payload with frequency_ghz=2.6",
+      "fingerprints": "API/model identity only; no local run identity existed",
+      "summary": "not durable outside a saved scenario artifact",
+      "optimizer_identity": null,
+      "workspace_serialized_size_bytes": null
+    },
+    {
+      "id": "28_simulation",
+      "request_source": "buildSimulationPayload",
+      "request_shape": "single-cell RF payload with frequency_ghz=28",
+      "fingerprints": "API/model identity only; no local run identity existed",
+      "summary": "not durable outside a saved scenario artifact",
+      "optimizer_identity": null,
+      "workspace_serialized_size_bytes": null
+    },
+    {
+      "id": "interference",
+      "request_source": "buildInterferencePayload",
+      "request_shape": "network interference request",
+      "fingerprints": "interference model identity could be rendered but was not a normal durable Run",
+      "summary": "UI state only unless included in a saved scenario",
+      "optimizer_identity": null,
+      "workspace_serialized_size_bytes": null
+    },
+    {
+      "id": "legacy_default_optimization",
+      "request_source": "buildNetworkOptimizationPayload",
+      "request_shape": "network optimization with default policy",
+      "fingerprints": "optimization_run_id and scenario fingerprint remained response/UI data",
+      "summary": "full optimization response could be retained in scenario artifacts",
+      "optimizer_identity": "response-defined only",
+      "workspace_serialized_size_bytes": null
+    },
+    {
+      "id": "optional_policy_optimization",
+      "request_source": "buildNetworkOptimizationPayload",
+      "request_shape": "network optimization with explicit policy objectives/constraints",
+      "fingerprints": "no separate durable local history identity",
+      "summary": "full response retention was workspace-bound",
+      "optimizer_identity": "response-defined only",
+      "workspace_serialized_size_bytes": null
+    }
+  ],
+  "measurement_note": "The pre-change implementation had no normal-run history record to measure. Null sizes are intentional baseline evidence, not zero-byte claims. Concept 7C introduces the independently measured 512 KiB per-run guard documented in concept-7c-storage-size.json."
+}

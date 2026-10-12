@@ -1,0 +1,24 @@
+{
+  "artifact": "concept-7b-repository-contract",
+  "artifact_version": "1.0.0",
+  "contract": "local-domain-repository-v1",
+  "operations": [
+    "listProjects", "getProject", "saveProject",
+    "listScenarios", "getScenario", "saveScenario",
+    "getScenarioRevision", "saveScenarioRevision",
+    "getInventory", "getInventoryRevision", "saveInventoryRevision",
+    "listRuns", "getRun", "saveRun",
+    "saveReportDefinition", "getReportDefinition"
+  ],
+  "implementation": {
+    "name": "LocalRepository",
+    "workspace_boundary": "useProjectWorkspace -> LocalRepository -> projectCompatibility -> ProjectV2 workspace",
+    "physical_backend": "existing projectStore",
+    "indexeddb": { "default": true, "database": "atom-planning-workspace", "store": "workspace", "key": "current" },
+    "localstorage": { "fallback_only": true, "key": "atom.planning.workspace.v1" },
+    "server_repository": "not implemented"
+  },
+  "normalized_errors": ["not_found", "invalid_entity", "serialization_failed", "persistence_failed", "incompatible_schema", "dataset_unavailable"],
+  "immutability": { "scenario_revision": "new revision for each saved change", "inventory_revision": "new revision for changed inventory", "run": "status transitions only; input/result identity remains immutable", "report_artifact": "new generated artifact on regeneration" },
+  "compatibility_helpers": ["loadWorkspace", "saveWorkspace", "queueWorkspaceSave", "exportProjectFile", "importProjectFile", "createScenario"]
+}

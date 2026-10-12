@@ -1,0 +1,34 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:34:20.238Z",
+  "repositoryVersion": "0.9.1",
+  "primary": [
+    "planning-relevant data quality with interpretation",
+    "building total",
+    "POI demand count",
+    "residential building count",
+    "dataset name and version"
+  ],
+  "secondary": [
+    "dataset identity, sources, license and optional layers",
+    "compact Pack QA rows",
+    "RF model summary and calibration state"
+  ],
+  "tertiary": [
+    "hashes and fingerprints",
+    "application version",
+    "developer commands",
+    "Advanced model details",
+    "Research/reference evidence"
+  ],
+  "fixture": {
+    "buildings": 12,
+    "poiDemand": 8,
+    "residentialBuildings": 4,
+    "quality": "Good; geometry and hashes validated, while RF inventory and demand attributes remain planning-grade."
+  },
+  "boundaries": [
+    "Data details do not trigger a dataset reload.",
+    "Measurement validation and calibration diagnostics stay distinct from research/reference datasets."
+  ]
+}

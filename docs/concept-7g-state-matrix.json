@@ -1,0 +1,92 @@
+{
+  "concept": "7G",
+  "artifact": "state-matrix",
+  "capturedOn": "2026-09-22",
+  "dimensions": {
+    "plan": ["saved", "unsaved"],
+    "activeResult": ["none", "current", "stale"],
+    "inspection": ["current_workspace", "historical_record"],
+    "availability": ["available", "unavailable", "unsupported_quantity"]
+  },
+  "independenceRules": [
+    "Saved versus unsaved describes draft persistence and never implies result freshness.",
+    "The activeResult field describes the current workspace result even when the user inspects another historical record.",
+    "Inspection selects which result object is foregrounded; a historical inspection never activates its Scenario or Version as the current draft.",
+    "Availability can override the primary result label while known source identity remains visible.",
+    "Unsupported quantity is a feature-level state; show it beside, not instead of, the underlying Run state when both apply."
+  ],
+  "decisionTable": [
+    {
+      "when": {"inspection": "current_workspace", "activeResult": "none", "availability": "available"},
+      "primaryState": "none",
+      "visibleOutput": "Run needed / explicit empty state. Do not invent a CURRENT Run.",
+      "actions": ["Run current plan"]
+    },
+    {
+      "when": {"inspection": "current_workspace", "activeResult": "none", "availability": "unavailable"},
+      "primaryState": "unavailable",
+      "visibleOutput": "UNAVAILABLE with reason; keep the active Scenario/Version draft cue.",
+      "actions": ["Refresh or rerun only when required inputs are available"]
+    },
+    {
+      "when": {"inspection": "current_workspace", "activeResult": "none", "availability": "unsupported_quantity"},
+      "primaryState": "unsupported",
+      "visibleOutput": "UNSUPPORTED for the selected quantity with model/profile reason.",
+      "actions": ["Choose a supported profile"]
+    },
+    {
+      "when": {"inspection": "current_workspace", "activeResult": "current", "availability": "available"},
+      "primaryState": "current",
+      "visibleOutput": "CURRENT / Current result with source Scenario, source Version or draft source, result type, and Run.",
+      "actions": ["Inspect", "View Run", "Report"]
+    },
+    {
+      "when": {"inspection": "current_workspace", "activeResult": "stale", "availability": "available"},
+      "primaryState": "stale",
+      "visibleOutput": "STALE / Result out of date with original source Version, Run, and run time; map artifacts remain safely invalidated.",
+      "actions": ["Run again for current plan", "View source Run"]
+    },
+    {
+      "when": {"inspection": "current_workspace", "activeResult": "current_or_stale", "availability": "unavailable"},
+      "primaryState": "unavailable",
+      "visibleOutput": "UNAVAILABLE for the missing result detail or artifact; preserve the known CURRENT/STALE source as technical/current-workspace context.",
+      "actions": ["Inspect retained summary", "Reload or rerun if safe"]
+    },
+    {
+      "when": {"inspection": "current_workspace", "activeResult": "current_or_stale", "availability": "unsupported_quantity"},
+      "primaryState": "unsupported",
+      "visibleOutput": "UNSUPPORTED for that quantity plus the underlying CURRENT or STALE result context.",
+      "actions": ["Choose a supported profile", "Inspect other supported results"]
+    },
+    {
+      "when": {"inspection": "historical_record", "availability": "available"},
+      "primaryState": "historical",
+      "visibleOutput": "HISTORICAL with source Scenario, Version, Run type/date; show current workspace Scenario/Version and draft state if different.",
+      "actions": ["Inspect", "Open source Version", "Run again from this Run only with exact input and matching dataset", "Confirm Report source", "Confirm Apply source and destination"]
+    },
+    {
+      "when": {"inspection": "historical_record", "availability": "unavailable"},
+      "primaryState": "unavailable",
+      "visibleOutput": "UNAVAILABLE with reason for missing report bytes or required historical detail, retaining any known historical Scenario/Version/Run identity and current workspace distinction. A Report may legitimately have No Run.",
+      "actions": ["Inspect retained metadata", "Refresh", "Disable unavailable recompute/apply/report actions"]
+    },
+    {
+      "when": {"inspection": "historical_record", "availability": "unsupported_quantity"},
+      "primaryState": "unsupported",
+      "visibleOutput": "UNSUPPORTED for the quantity; keep the historical Run/Report source visible.",
+      "actions": ["Inspect supported retained metrics", "Read the profile limitation"]
+    }
+  ],
+  "planStateOverlay": {
+    "saved": "Header shows Project / Scenario / Version and Saved Version.",
+    "unsaved": "Header shows Project / Scenario / base Version and Unsaved changes; local autosave does not create an immutable Version.",
+    "rule": "Apply each plan overlay to every decision-table row. Never use saved/unsaved state as a substitute for freshness."
+  },
+  "currentResultResolution": {
+    "evidence": ["explicit run status", "known project/scenario/revision identity mismatches", "existing draft invalidation state", "comparable input fingerprint", "comparable scenario fingerprint as fallback"],
+    "timestampInference": false,
+    "unknownEvidence": "Unknown identity/fingerprint remains unknown; restored result without unambiguous Run is UNAVAILABLE.",
+    "draftRunSource": "A Run without a retained ScenarioRevision remains draft-sourced; do not label it as belonging to the draft's base Version.",
+    "sourceVersionNavigation": "Only navigate to an exact retained Version. Block Scenario activation while an unsaved current draft would be discarded; keep the working draft intact and explain that the user must save it as a Version first."
+  }
+}

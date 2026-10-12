@@ -1,0 +1,183 @@
+{
+  "concept": "8G",
+  "checks": [
+    {
+      "check": "Named Inventory scope switch",
+      "evidence": "Role=group, aria-label=Inventory scope; scope buttons expose aria-pressed and counts."
+    },
+    {
+      "check": "Keyboard-only row open and return",
+      "result": "passed",
+      "test": "Inventory editor returns keyboard focus to the exact browse row"
+    },
+    {
+      "check": "Detail heading focus",
+      "result": "passed",
+      "behavior": "Cell editor heading receives programmatic focus when opened."
+    },
+    {
+      "check": "Stable map snapshot announcement",
+      "evidence": "Map area state uses role=status and refresh is a labelled button."
+    },
+    {
+      "check": "Batch selection labels",
+      "evidence": "Each Cell checkbox has a Cell-specific accessible name; inputs retain explicit field labels."
+    },
+    {
+      "check": "Responsive horizontal overflow",
+      "result": "passed",
+      "viewports": [
+        {
+          "label": "1440px empty Search / Filter state",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1440px Search / Filter (451 loaded Cells; 50 rendered)",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1440px Network working set empty state",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1440px captured Map area working set",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1440px separate Cell detail editor",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1440px reviewed multi-edit form",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1024px empty Search / Filter state",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1024px Search / Filter (451 loaded Cells; 50 rendered)",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1024px Network working set empty state",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1024px captured Map area working set",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1024px separate Cell detail editor",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1024px reviewed multi-edit form",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "768px empty Search / Filter state",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "768px Search / Filter (451 loaded Cells; 50 rendered)",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "768px Network working set empty state",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "768px captured Map area working set",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "768px separate Cell detail editor",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "768px reviewed multi-edit form",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "390px empty Search / Filter state",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "390px Search / Filter (451 loaded Cells; 50 rendered)",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "390px Network working set empty state",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "390px captured Map area working set",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "390px separate Cell detail editor",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "390px reviewed multi-edit form",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        },
+        {
+          "label": "1440px Inspector → exact Cell editor handoff",
+          "documentOverflowX": 0,
+          "drawerOverflowX": 0,
+          "panelOverflowX": 0
+        }
+      ]
+    }
+  ]
+}

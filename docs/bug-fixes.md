@@ -121,6 +121,62 @@ The Markdown entry point now directs readers to the maintained documentation hub
 
 **Regression evidence:** `docs/validate_docs.py` verifies internal documentation targets after each documentation build.
 
+### ATOM-010: Workspace Copies Could Diverge And Restore Stale State
+
+**Priority:** Medium
+
+**Affected area:** Browser persistence ordering and fallback storage
+
+**Target release:** Next release after 0.3.0
+
+Every commit launched an independent IndexedDB write and then duplicated the full workspace into local storage. Rapid edits could finish out of order, partial failures could leave divergent copies, and loading preferred IndexedDB even when the fallback contained a newer workspace.
+
+Commits now receive monotonic persistence revisions and run through one save queue. IndexedDB is the normal authoritative store; local storage is written only when the primary commit fails. Loads compare both valid copies by revision and commit time, with project-content timestamps providing arbitration for legacy records.
+
+**Regression evidence:** `projectStore.test.js` covers revision and legacy arbitration, primary-only writes, fallback recovery, dual-backend failure, and strict rapid-save ordering. `useProjectWorkspace.test.jsx` verifies same-tick edits build on the latest synchronous workspace.
+
+### ATOM-011: Recommendation Details Were Duplicated In GeoJSON
+
+**Priority:** Medium
+
+**Affected area:** Recommendation responses and scenario persistence
+
+**Target release:** Next release after 0.3.0
+
+Each candidate was returned once in the ranked `recommendations` array and again as the complete `properties` object of its GeoJSON point. Network responses and saved scenario artifacts therefore stored the same scores, statistics, reasons, identifiers, and coordinates twice.
+
+Recommendation details now remain canonical in the ranked array. GeoJSON features carry only point geometry, an empty properties object, and a standard top-level feature ID that references the canonical record. The frontend joins records only for rendering and compacts legacy full-property features whenever a scenario is saved.
+
+**Regression evidence:** Go response tests ensure recommendation-only fields occur once in serialized output. Frontend helper and project-store tests cover rendering joins and legacy artifact compaction.
+
+### ATOM-012: Runtime Policy Copies Could Drift
+
+**Priority:** Medium
+
+**Affected area:** Backend API, Core Lab adapter, and frontend request policy
+
+**Target release:** Next release after 0.3.0
+
+Core Lab scenario allowlists were independently maintained in three runtimes. RF defaults, technology thresholds, validation bounds, bandwidth choices, and structurally identical tower request types were also repeated across endpoint and frontend code. A change in one copy could silently create different accepted behavior or limits elsewhere.
+
+One versioned JSON policy now generates self-contained Go and JavaScript bindings. All three runtime layers consume those generated values, CI rejects stale bindings, and measurement, interference, optimization, and recommendation requests share one Go tower input type.
+
+**Regression evidence:** generator tests verify scenario propagation and stale-file detection; Go and frontend tests verify the shared technology boundaries and generated UI defaults.
+
+### ATOM-013: Build Inputs And Container Artifacts Were Not Reproducible
+
+**Priority:** Medium
+
+**Affected area:** Container builds, Python tooling, and CI supply-chain controls
+
+**Target release:** Next release after 0.3.0
+
+Production and build stages selected container tags without immutable manifest digests, including a floating Alpine tag. Pipeline dependencies allowed broad ranges without a transitive lock or artifact hashes, while documentation CI installed an unconstrained PyYAML release. CI did not review dependency changes or inspect the resulting production image.
+
+All container stages now combine readable version tags with immutable multi-architecture digests. Python direct inputs are exact, and generated transitive locks include SHA-256 hashes enforced during installation. Pull requests receive dependency review; CI emits SPDX SBOMs for both application images and rejects fixable high or critical image vulnerabilities; released images include SBOM and provenance attestations. Weekly dependency automation covers each manifest family.
+
+**Regression evidence:** the supply-chain checker and unit tests reject floating base images, ranged direct dependencies, unhashed lock entries, and missing workflow controls. CI also installs both Python locks and exercises the production container build.
+
 ## Open Audit Queue
 
 No Critical defect is currently confirmed. The next audit pass will focus on backend RF cancellation and timeout boundaries, calibration/dataset identity, map-layer lifecycle, report consistency, and release pipeline failure recovery. Items enter the resolved register only after they are reproduced and covered by a regression test.

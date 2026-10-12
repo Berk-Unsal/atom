@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "concept": "4I.2B",
+  "title": "Applicability-gated ITU-R P.1411-13 Table 4 candidate models",
+  "captured_at": "2026-09-18",
+  "reference": {
+    "name": "ITU-R P.1411-13",
+    "revision": "2025-09",
+    "section": "4.1.1",
+    "table": "Table 4",
+    "url": "https://www.itu.int/rec/R-REC-P.1411-13-202509-I/en",
+    "pdf_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf",
+    "scope_note": "The recommendation's main scope reaches 300 GHz, but individual Table 4 rows and footnotes gate frequency, distance, morphology, rooftop relation, and LoS/NLoS scenario separately."
+  },
+  "equation": {
+    "identifier": "equation (1)",
+    "expression": "Lb(d,f) = 10 alpha log10(d) + beta + 10 gamma log10(f) dB",
+    "distance_definition": "d is 3D direct distance between terminals in metres",
+    "frequency_definition": "f is frequency in GHz",
+    "output_semantics": "median/basic transmission loss only",
+    "statistical_term": "The source describes additive zero-mean Gaussian N(0, sigma) variation; this implementation reports sigma metadata and never samples it."
+  },
+  "supported_initial_set": [
+    "p1411_below_rooftop_los_v1",
+    "p1411_urban_highrise_nlos_v1",
+    "p1411_urban_lowrise_nlos_v1"
+  ],
+  "candidate_rows": [
+    {
+      "model_id": "p1411_below_rooftop_los_v1",
+      "table_row": "Urban high-rise, urban low-rise/suburban, LoS",
+      "frequency_range_ghz": [0.45, 300],
+      "general_distance_range_m": [5, 660],
+      "distance_range_at_140_ghz_m": [5, 500],
+      "morphologies": ["urban_high_rise", "urban_low_rise", "suburban"],
+      "rooftop_relation": "both_below_rooftop",
+      "los_state": "los",
+      "coefficients": {"alpha": 2.07, "beta": 31.23, "gamma": 2.06, "sigma_db": 4.91},
+      "frequency_distance_rule": "Footnote (1): up to 500 m for 82 < f <= 159 GHz, 250 m for 159 < f <= 255 GHz, and 155 m for 255 < f <= 300 GHz; otherwise use the Table 4 nominal maximum.",
+      "required_inputs": ["frequency_ghz", "transmitter.lon", "transmitter.lat", "transmitter.height_m", "receiver.lon", "receiver.lat", "receiver.height_m", "morphology", "rooftop_relation", "los_state", "provenance"],
+      "statistical_interpretation": "Median/basic transmission loss; sigma is a zero-mean Gaussian variation descriptor, not an automatic margin.",
+      "limitations": ["Below-rooftop site-general scenario only", "No extrapolation beyond 500 m at 140 GHz", "No atmospheric, wall, diffraction, material, or receiver-threshold term"]
+    },
+    {
+      "model_id": "p1411_urban_highrise_nlos_v1",
+      "table_row": "Urban high-rise, NLoS",
+      "frequency_range_ghz": [0.8, 159],
+      "general_distance_range_m": [20, 715],
+      "distance_range_at_140_ghz_m": [20, 150],
+      "morphologies": ["urban_high_rise"],
+      "rooftop_relation": "both_below_rooftop",
+      "los_state": "nlos",
+      "coefficients": {"alpha": 3.73, "beta": 16.02, "gamma": 2.26, "sigma_db": 7.62},
+      "frequency_distance_rule": "Footnote (2): up to 150 m for 82 < f <= 159 GHz; otherwise use the Table 4 nominal maximum.",
+      "required_inputs": ["frequency_ghz", "transmitter.lon", "transmitter.lat", "transmitter.height_m", "receiver.lon", "receiver.lat", "receiver.height_m", "morphology", "rooftop_relation", "los_state", "provenance"],
+      "statistical_interpretation": "Median/basic transmission loss; sigma is a zero-mean Gaussian variation descriptor, not an automatic margin.",
+      "limitations": ["Below-rooftop urban high-rise NLoS only", "No extrapolation beyond 150 m at 140 GHz", "No atmospheric, wall, diffraction, material, or receiver-threshold term"]
+    },
+    {
+      "model_id": "p1411_urban_lowrise_nlos_v1",
+      "table_row": "Urban low-rise/suburban, NLoS",
+      "frequency_range_ghz": [0.45, 255],
+      "general_distance_range_m": [10, 250],
+      "distance_range_at_140_ghz_m": [10, 150],
+      "morphologies": ["urban_low_rise", "suburban"],
+      "rooftop_relation": "both_below_rooftop",
+      "los_state": "nlos",
+      "coefficients": {"alpha": 4.52, "beta": 6.04, "gamma": 2.14, "sigma_db": 8.02},
+      "frequency_distance_rule": "Footnote (3): up to 150 m for 73 < f <= 159 GHz and 80 m for 159 < f <= 255 GHz; otherwise use the Table 4 nominal maximum.",
+      "required_inputs": ["frequency_ghz", "transmitter.lon", "transmitter.lat", "transmitter.height_m", "receiver.lon", "receiver.lat", "receiver.height_m", "morphology", "rooftop_relation", "los_state", "provenance"],
+      "statistical_interpretation": "Median/basic transmission loss; sigma is a zero-mean Gaussian variation descriptor, not an automatic margin.",
+      "limitations": ["Below-rooftop urban low-rise/suburban NLoS only", "No extrapolation beyond 150 m at 140 GHz", "No atmospheric, wall, diffraction, material, or receiver-threshold term"]
+    }
+  ],
+  "strict_gates": {
+    "frequency": "Candidate frequency range and current-frequency footnote envelope are both required.",
+    "distance": "The 3D direct/slant distance is checked against the current-frequency effective envelope; out-of-range results have no median path loss.",
+    "morphology": "Unknown or non-row morphology is inapplicable; no urban taxonomy is inferred from density or footprint counts.",
+    "rooftop_relation": "All supported rows require explicit both_below_rooftop. One-above/one-below, both-above, and unknown are not inferred or extrapolated.",
+    "los_state": "The caller must declare LoS or NLoS. The existing 4F.1 classifier is not silently mapped into a P.1411 row.",
+    "provenance": "Frequency and endpoint heights default to user_declared; distance defaults to geometry_derived; scenario facts default to unknown and therefore remain inapplicable until explicitly sourced or declared.",
+    "reason_codes": ["frequency_out_of_range", "distance_out_of_range", "morphology_mismatch", "morphology_unknown", "rooftop_relation_mismatch", "rooftop_relation_unknown", "los_state_mismatch", "los_state_unknown", "insufficient_scene_evidence", "unsupported_geometry"]
+  },
+  "comparison_policy": {
+    "p525": "Exact wavelength-form P.525 FSPL is shown at the same 3D distance. excess_relative_to_fspl_db = P1411 median - P525 FSPL; it is not added.",
+    "atmospheric_reference": "The 4I.2A P.676/P.838/P.840 ledger is deferred by default and available only as an explicit comparison_only calculation; it is never summed.",
+    "research_sub_thz": "The current research_sub_thz 80 dB wall-event planning profile is an explicit alternative comparison only; it is never summed.",
+    "p526": "The existing P.526 diagnostic remains a separate path-profile diagnostic and is not invoked.",
+    "canonical": "No canonical model dispatch, coverage, interference, radio quality, building entry, or optimization path calls this evaluator."
+  },
+  "ankara_readiness": {
+    "dataset": "Current Ankara dataset pack",
+    "building_footprints": 161784,
+    "tower_cells": 451,
+    "height_evidence": {
+      "observed_tag": {"count": 1108, "percent": 0.68},
+      "derived_from_levels": {"count": 4966, "percent": 3.07},
+      "fallback_only": {"count": 155710, "percent": 96.25},
+      "unavailable": {"count": 0, "percent": 0.0},
+      "usable_explicit_or_levels_count": 6074,
+      "usable_explicit_or_levels_percent": 3.75
+    },
+    "audited_reference_sample": {
+      "cells": 6,
+      "radius_m": 400,
+      "rays_per_cell": 72,
+      "paths": 432,
+      "tx_height_m": 25,
+      "rx_height_m": 1.5,
+      "terrain_available": false,
+      "source": "Concept 4F.1 canonical audit sample"
+    },
+    "automatic_applicability": {
+      "fully_auto_applicable_paths": 0,
+      "reason": "The current pack has no morphology taxonomy and no dataset-proven both-below-rooftop relation. Generic 25 m/1.5 m defaults and fallback-only heights are not roof evidence.",
+      "interpretation": "The 432 paths are readiness evidence, not 140 GHz coverage or candidate-link validation. User-declared scenario provenance is the supported 4I.2B workflow."
+    },
+    "distance_readiness": {
+      "sample_radius_m": 400,
+      "los_140ghz_envelope_m": [5, 500],
+      "highrise_nlos_140ghz_envelope_m": [20, 150],
+      "lowrise_suburban_nlos_140ghz_envelope_m": [10, 150],
+      "exact_candidate_path_distribution_available": false,
+      "note": "The audit radius is within the LoS maximum but does not make NLoS paths eligible; exact morphology/rooftop/LOS-conditioned counts were not fabricated."
+    }
+  },
+  "deferred_work": [
+    "4I.3 measurement-backed 100–200 GHz calibration/validation",
+    "Explicit site-general morphology taxonomy and rooftop relation evidence",
+    "Terrestrial atmospheric profile integration and weather provenance",
+    "Optional material/interface and diffraction studies, kept separate from P.1411 empirical rows",
+    "No current claim of canonical 140 GHz coverage or radio-quality support"
+  ]
+}

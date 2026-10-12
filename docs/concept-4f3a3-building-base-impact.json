@@ -1,0 +1,165 @@
+{
+  "aoi": [
+    32.45,
+    39.55,
+    33.25,
+    40.25
+  ],
+  "by_source": {
+    "fabdem": {
+      "absolute_roof_note": "Roof = source-local robust perimeter median + OSM AGL evidence; diagnostic only and not an RF input.",
+      "base_available_count": 161751,
+      "base_available_fraction": 0.9997960243287346,
+      "base_median_elevation_distribution_m": {
+        "count": 161751,
+        "max": 1855.6653038750403,
+        "mean": 944.9462106844612,
+        "median": 924.2564974096241,
+        "min": 782.2684166651443,
+        "p01": 790.1530742831119,
+        "p10": 820.6884915868602,
+        "p75": 1018.972259612724,
+        "p90": 1094.3350918229237,
+        "p99": 1207.6692086212474
+      },
+      "base_no_data_count": 33,
+      "base_spread_distribution_m": {
+        "count": 161751,
+        "max": 42.66981602518024,
+        "mean": 2.0617531176147676,
+        "median": 1.6053335571814387,
+        "min": 0.0,
+        "p01": 0.07120707118667724,
+        "p10": 0.3638992196321169,
+        "p75": 2.8253448929459637,
+        "p90": 4.33131517021161,
+        "p99": 8.018366202787547
+      },
+      "base_uncertain_spread_gt_5m_count": 10627,
+      "base_uncertain_spread_gt_5m_fraction_of_available": 0.06569974837868081,
+      "diagnostic_absolute_roof_count": 6073,
+      "diagnostic_absolute_roof_distribution_m": {
+        "count": 6073,
+        "max": 1360.7478816442963,
+        "mean": 947.0447451667413,
+        "median": 919.7920299946552,
+        "min": 789.6673616801456,
+        "p01": 796.0208001760877,
+        "p10": 829.0447011684242,
+        "p75": 1023.1850869722505,
+        "p90": 1110.4660566012908,
+        "p99": 1271.7019675509628
+      },
+      "ground_qualification": "research_bare_earth_candidate; not production-approved",
+      "method": "robust_perimeter_median",
+      "population_feature_count": 161784,
+      "sample_count_distribution": {
+        "count": 161784,
+        "max": 25.0,
+        "mean": 11.458685654947336,
+        "median": 9.0,
+        "min": 7.0,
+        "p01": 9.0,
+        "p10": 9.0,
+        "p75": 11.0,
+        "p90": 21.0,
+        "p99": 25.0
+      },
+      "sample_geometry": "outer-ring vertices plus edge midpoints plus polygon centroid; deterministic cap of 12 perimeter vertices",
+      "vertical_datum": "EGM2008"
+    },
+    "nasadem": {
+      "absolute_roof_note": "Roof = source-local robust perimeter median + OSM AGL evidence; diagnostic only and not an RF input.",
+      "base_available_count": 161784,
+      "base_available_fraction": 1.0,
+      "base_median_elevation_distribution_m": {
+        "count": 161784,
+        "max": 1859.623679999996,
+        "mean": 947.6560066101566,
+        "median": 927.6280937632127,
+        "min": 782.3808599999929,
+        "p01": 791.4050663823167,
+        "p10": 823.0392514088398,
+        "p75": 1021.8773262432096,
+        "p90": 1097.224084451798,
+        "p99": 1209.6675334355368
+      },
+      "base_no_data_count": 0,
+      "base_spread_distribution_m": {
+        "count": 161784,
+        "max": 36.66627692461486,
+        "mean": 2.4126523859405804,
+        "median": 1.9411258967898561,
+        "min": 0.0,
+        "p01": 0.144984235459367,
+        "p10": 0.6454799999970191,
+        "p75": 3.1891574368015085,
+        "p90": 4.744653598734534,
+        "p99": 8.899561364613826
+      },
+      "base_uncertain_spread_gt_5m_count": 13943,
+      "base_uncertain_spread_gt_5m_fraction_of_available": 0.08618281165010137,
+      "diagnostic_absolute_roof_count": 6074,
+      "diagnostic_absolute_roof_distribution_m": {
+        "count": 6074,
+        "max": 1363.3840400000045,
+        "mean": 950.169472410329,
+        "median": 923.2825381582159,
+        "min": 792.3516399999896,
+        "p01": 797.9660874886935,
+        "p10": 833.8981533264001,
+        "p75": 1026.3563340021244,
+        "p90": 1114.49925322813,
+        "p99": 1271.812523806581
+      },
+      "ground_qualification": "unresolved_dem_semantics; no production ground anchor",
+      "method": "robust_perimeter_median",
+      "population_feature_count": 161784,
+      "sample_count_distribution": {
+        "count": 161784,
+        "max": 25.0,
+        "mean": 11.458685654947336,
+        "median": 9.0,
+        "min": 7.0,
+        "p01": 9.0,
+        "p10": 9.0,
+        "p75": 11.0,
+        "p90": 21.0,
+        "p99": 25.0
+      },
+      "sample_geometry": "outer-ring vertices plus edge midpoints plus polygon centroid; deterministic cap of 12 perimeter vertices",
+      "vertical_datum": "EGM96 geoid"
+    }
+  },
+  "captured_at": "2026-09-19",
+  "concept": "4F.3A.3",
+  "cross_source_roof_comparison": "unavailable_due_to_EGM96_vs_EGM2008",
+  "input_scope": {
+    "loader_visible_footprints": 161784,
+    "manifest_building_features": 161626,
+    "multipolygon_parts_expanded": 158
+  },
+  "known_osm_height_population": {
+    "by_source": {
+      "fabdem": 6074,
+      "nasadem": 6074
+    },
+    "count": 6074,
+    "semantics": "OSM explicit height or 3 m-per-level derived AGL; generic fallback excluded"
+  },
+  "production_activation": false,
+  "schema_version": 1,
+  "source_datum_gate": {
+    "compatible": false,
+    "cross_source_absolute_comparison": "unavailable",
+    "fabdem": {
+      "vertical_datum": "EGM2008",
+      "vertical_datum_kind": "orthometric"
+    },
+    "nasadem": {
+      "vertical_datum": "EGM96",
+      "vertical_datum_kind": "orthometric"
+    },
+    "reason": "No explicit sourced EGM96-to-EGM2008 transformation was applied; raw differences are not interpreted as source error."
+  }
+}

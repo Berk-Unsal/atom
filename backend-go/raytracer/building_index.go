@@ -1,15 +1,20 @@
 package raytracer
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"math"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/tidwall/rtree"
 )
+
+const MaxBuildingDatasetBytes int64 = 512 << 20
 
 type Bounds struct {
 	MinLon float64 `json:"minLon"`
@@ -20,7 +25,14 @@ type Bounds struct {
 
 type BuildingFootprint struct {
 	ID                    string            `json:"id"`
+	LogicalID             string            `json:"logicalId,omitempty"`
 	Tags                  map[string]string `json:"tags"`
+	HeightMeters          float64           `json:"heightMeters"`
+	HeightSource          string            `json:"heightSource"`
+	HeightEvidenceMeters  float64           `json:"heightEvidenceMeters,omitempty"`
+	HeightEvidenceSource  string            `json:"heightEvidenceSource,omitempty"`
+	HeightEvidenceTag     string            `json:"heightEvidenceTag,omitempty"`
+	Material              string            `json:"material"`
 	Weight                float64           `json:"weight"`
 	DemandWeight          float64           `json:"demandWeight"`
 	ResidentialDemand     float64           `json:"residentialDemand"`
@@ -36,18 +48,20 @@ type BuildingFootprint struct {
 }
 
 type BuildingIndex struct {
-	tree       rtree.RTreeG[*BuildingFootprint]
-	footprints []*BuildingFootprint
+	tree        rtree.RTreeG[*BuildingFootprint]
+	footprints  []*BuildingFootprint
+	vertexCount int
+	byID        map[string]*BuildingFootprint
 }
 
 type BuildingIndexStats struct {
 	FootprintCount int    `json:"footprintCount"`
 	TreeCount      int    `json:"treeCount"`
-	SourcePath     string `json:"sourcePath"`
+	SourcePath     string `json:"sourcePath,omitempty"`
 }
 
 type BuildingDemandSummary struct {
-	SourcePath                   string             `json:"source_path"`
+	SourcePath                   string             `json:"source_path,omitempty"`
 	TotalBuildings               int                `json:"total_buildings"`
 	DemandWeightedBuildings      int                `json:"demand_weighted_buildings"`
 	ResidentialWeightedBuildings int                `json:"residential_weighted_buildings"`
@@ -59,96 +73,95 @@ type BuildingDemandSummary struct {
 	AvgDensityScore              float64            `json:"avg_density_score"`
 	MaxDensityScore              float64            `json:"max_density_score"`
 	TagCoveragePct               map[string]float64 `json:"tag_coverage_pct"`
+	MaterialMetadataBuildings    int                `json:"material_metadata_buildings"`
+	MaterialMetadataCoveragePct  float64            `json:"material_metadata_coverage_pct"`
+	MaterialTagCoveragePct       map[string]float64 `json:"material_tag_coverage_pct"`
+	MaterialCategories           map[string]int     `json:"material_categories"`
+	ExplicitHeightBuildings      int                `json:"explicit_height_buildings"`
+	LevelsDerivedHeightBuildings int                `json:"levels_derived_height_buildings"`
+	FallbackOnlyHeightBuildings  int                `json:"fallback_only_height_buildings"`
+	UnavailableHeightBuildings   int                `json:"unavailable_height_buildings"`
 	DataQuality                  string             `json:"data_quality"`
 }
 
+const (
+	HeightEvidenceObservedTag  = "observed_tag"
+	HeightEvidenceFromLevels   = "derived_from_levels"
+	HeightEvidenceUnavailable  = "unavailable"
+	HeightSourceExplicitLegacy = "height"
+	HeightSourceLevelsLegacy   = "building:levels"
+	HeightSourceFallbackLegacy = "default-3-storey"
+)
+
 func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexStats, error) {
-	bytes, err := os.ReadFile(path)
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, BuildingIndexStats{SourcePath: path}, err
 	}
-
-	var collection featureCollection
-	if err := json.Unmarshal(bytes, &collection); err != nil {
+	defer file.Close()
+	info, err := file.Stat()
+	if err != nil {
 		return nil, BuildingIndexStats{SourcePath: path}, err
 	}
-	if collection.Type != "FeatureCollection" {
-		return nil, BuildingIndexStats{SourcePath: path}, errors.New("expected GeoJSON FeatureCollection")
+	if info.Size() > MaxBuildingDatasetBytes {
+		return nil, BuildingIndexStats{SourcePath: path}, fmt.Errorf("building dataset exceeds %d MiB", MaxBuildingDatasetBytes>>20)
+	}
+	if !info.Mode().IsRegular() {
+		return nil, BuildingIndexStats{SourcePath: path}, errors.New("building dataset must be a regular file")
 	}
 
-	footprints := make([]*BuildingFootprint, 0, len(collection.Features))
-	for featureIndex, feature := range collection.Features {
-		tags := feature.StringProperties()
-		weight := feature.FloatProperty("weight", 1.0)
-		if weight <= 0 {
-			weight = 1.0
+	decoder := json.NewDecoder(bufio.NewReaderSize(file, 1<<20))
+	start, err := decoder.Token()
+	if err != nil || start != json.Delim('{') {
+		return nil, BuildingIndexStats{SourcePath: path}, errors.New("expected GeoJSON object")
+	}
+	collectionType := ""
+	featureIndex := 0
+	footprints := make([]*BuildingFootprint, 0, 1024)
+	for decoder.More() {
+		keyToken, tokenErr := decoder.Token()
+		if tokenErr != nil {
+			return nil, BuildingIndexStats{SourcePath: path}, tokenErr
 		}
-		demandWeight := feature.FloatProperty("demand_weight", 0)
-		if demandWeight < 0 {
-			demandWeight = 0
+		key, ok := keyToken.(string)
+		if !ok {
+			return nil, BuildingIndexStats{SourcePath: path}, errors.New("invalid GeoJSON object field")
 		}
-		residentialDemand := feature.FloatProperty("residential_demand", 0)
-		if residentialDemand < 0 {
-			residentialDemand = 0
-		}
-		densityScore := feature.FloatProperty("density_score", 0)
-		if densityScore < 0 {
-			densityScore = 0
-		}
-		nearbyBuildings := int(math.Round(feature.FloatProperty("nearby_buildings", 0)))
-		if nearbyBuildings < 0 {
-			nearbyBuildings = 0
-		}
-		nearbyResidential := int(math.Round(feature.FloatProperty("nearby_residential_buildings", 0)))
-		if nearbyResidential < 0 {
-			nearbyResidential = 0
-		}
-		weightReason := strings.TrimSpace(feature.StringProperty("weight_reason", "generic"))
-		if weightReason == "" {
-			weightReason = "generic"
-		}
-		weightConfidence := strings.TrimSpace(feature.StringProperty("weight_confidence", "none"))
-		if weightConfidence == "" {
-			weightConfidence = "none"
-		}
-		residentialReason := strings.TrimSpace(feature.StringProperty("residential_reason", "none"))
-		if residentialReason == "" {
-			residentialReason = "none"
-		}
-		residentialConfidence := strings.TrimSpace(feature.StringProperty("residential_confidence", "none"))
-		if residentialConfidence == "" {
-			residentialConfidence = "none"
-		}
-
-		rings := feature.Geometry.OuterRings()
-		for ringIndex, ring := range rings {
-			bounds, ok := BoundsFromPoints(ring)
-			if !ok {
-				continue
+		switch key {
+		case "type":
+			if err := decoder.Decode(&collectionType); err != nil {
+				return nil, BuildingIndexStats{SourcePath: path}, err
 			}
-
-			id := feature.IDOrIndex(featureIndex)
-			if len(rings) > 1 {
-				id = fmt.Sprintf("%s-%d", id, ringIndex)
+		case "features":
+			arrayStart, arrayErr := decoder.Token()
+			if arrayErr != nil || arrayStart != json.Delim('[') {
+				return nil, BuildingIndexStats{SourcePath: path}, errors.New("GeoJSON features must be an array")
 			}
-
-			footprints = append(footprints, &BuildingFootprint{
-				ID:                    id,
-				Tags:                  tags,
-				Weight:                weight,
-				DemandWeight:          demandWeight,
-				ResidentialDemand:     residentialDemand,
-				DensityScore:          densityScore,
-				NearbyBuildings:       nearbyBuildings,
-				NearbyResidential:     nearbyResidential,
-				WeightReason:          weightReason,
-				WeightConfidence:      weightConfidence,
-				ResidentialReason:     residentialReason,
-				ResidentialConfidence: residentialConfidence,
-				Bounds:                bounds,
-				Vertices:              ring,
-			})
+			for decoder.More() {
+				var feature feature
+				if err := decoder.Decode(&feature); err != nil {
+					return nil, BuildingIndexStats{SourcePath: path}, err
+				}
+				footprints = appendFeatureFootprints(footprints, feature, featureIndex)
+				featureIndex++
+			}
+			if _, err := decoder.Token(); err != nil {
+				return nil, BuildingIndexStats{SourcePath: path}, err
+			}
+		default:
+			if err := skipJSONValue(decoder); err != nil {
+				return nil, BuildingIndexStats{SourcePath: path}, err
+			}
 		}
+	}
+	if _, err := decoder.Token(); err != nil {
+		return nil, BuildingIndexStats{SourcePath: path}, err
+	}
+	if err := decoder.Decode(&struct{}{}); err != io.EOF {
+		return nil, BuildingIndexStats{SourcePath: path}, errors.New("unexpected content after GeoJSON object")
+	}
+	if collectionType != "FeatureCollection" {
+		return nil, BuildingIndexStats{SourcePath: path}, errors.New("expected GeoJSON FeatureCollection")
 	}
 
 	index := NewBuildingIndex(footprints)
@@ -159,9 +172,192 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 	}, nil
 }
 
+func appendFeatureFootprints(footprints []*BuildingFootprint, feature feature, featureIndex int) []*BuildingFootprint {
+	tags := feature.StringProperties()
+	heightMeters, heightSource, evidenceMeters, evidenceSource, evidenceTag := buildingHeightWithEvidence(feature)
+	material := buildingMaterial(tags)
+	weight := feature.FloatProperty("weight", 1.0)
+	if weight <= 0 {
+		weight = 1.0
+	}
+	demandWeight := feature.FloatProperty("demand_weight", 0)
+	if demandWeight < 0 {
+		demandWeight = 0
+	}
+	residentialDemand := feature.FloatProperty("residential_demand", 0)
+	if residentialDemand < 0 {
+		residentialDemand = 0
+	}
+	densityScore := feature.FloatProperty("density_score", 0)
+	if densityScore < 0 {
+		densityScore = 0
+	}
+	nearbyBuildings := int(math.Round(feature.FloatProperty("nearby_buildings", 0)))
+	if nearbyBuildings < 0 {
+		nearbyBuildings = 0
+	}
+	nearbyResidential := int(math.Round(feature.FloatProperty("nearby_residential_buildings", 0)))
+	if nearbyResidential < 0 {
+		nearbyResidential = 0
+	}
+	weightReason := strings.TrimSpace(feature.StringProperty("weight_reason", "generic"))
+	if weightReason == "" {
+		weightReason = "generic"
+	}
+	weightConfidence := strings.TrimSpace(feature.StringProperty("weight_confidence", "none"))
+	if weightConfidence == "" {
+		weightConfidence = "none"
+	}
+	residentialReason := strings.TrimSpace(feature.StringProperty("residential_reason", "none"))
+	if residentialReason == "" {
+		residentialReason = "none"
+	}
+	residentialConfidence := strings.TrimSpace(feature.StringProperty("residential_confidence", "none"))
+	if residentialConfidence == "" {
+		residentialConfidence = "none"
+	}
+
+	rings := feature.Geometry.OuterRings()
+	for ringIndex, ring := range rings {
+		bounds, ok := BoundsFromPoints(ring)
+		if !ok {
+			continue
+		}
+
+		logicalID := feature.IDOrIndex(featureIndex)
+		id := logicalID
+		if len(rings) > 1 {
+			id = fmt.Sprintf("%s-%d", id, ringIndex)
+		}
+
+		footprints = append(footprints, &BuildingFootprint{
+			ID:                    id,
+			LogicalID:             logicalID,
+			Tags:                  tags,
+			HeightMeters:          heightMeters,
+			HeightSource:          heightSource,
+			HeightEvidenceMeters:  evidenceMeters,
+			HeightEvidenceSource:  evidenceSource,
+			HeightEvidenceTag:     evidenceTag,
+			Material:              material,
+			Weight:                weight,
+			DemandWeight:          demandWeight,
+			ResidentialDemand:     residentialDemand,
+			DensityScore:          densityScore,
+			NearbyBuildings:       nearbyBuildings,
+			NearbyResidential:     nearbyResidential,
+			WeightReason:          weightReason,
+			WeightConfidence:      weightConfidence,
+			ResidentialReason:     residentialReason,
+			ResidentialConfidence: residentialConfidence,
+			Bounds:                bounds,
+			Vertices:              ring,
+		})
+	}
+	return footprints
+}
+
+const defaultBuildingHeightMeters = 9.0
+
+func buildingHeight(feature feature) (float64, string) {
+	heightMeters, heightSource, _, _, _ := buildingHeightWithEvidence(feature)
+	return heightMeters, heightSource
+}
+
+func buildingHeightWithEvidence(feature feature) (float64, string, float64, string, string) {
+	if height, ok := parseBuildingLength(feature.StringProperty("height", "")); ok {
+		return height, HeightSourceExplicitLegacy, height, HeightEvidenceObservedTag, "height"
+	}
+	if levels, ok := parsePositiveNumber(feature.StringProperty("building:levels", "")); ok {
+		height := math.Min(levels*3, 500)
+		return height, HeightSourceLevelsLegacy, height, HeightEvidenceFromLevels, "building:levels"
+	}
+	return defaultBuildingHeightMeters, HeightSourceFallbackLegacy, 0, HeightEvidenceUnavailable, ""
+}
+
+func parseBuildingLength(value string) (float64, bool) {
+	cleaned := strings.ToLower(strings.TrimSpace(value))
+	if cleaned == "" {
+		return 0, false
+	}
+	multiplier := 1.0
+	if strings.HasSuffix(cleaned, "ft") || strings.HasSuffix(cleaned, "feet") || strings.HasSuffix(cleaned, "'") {
+		multiplier = 0.3048
+	}
+	for _, suffix := range []string{"meters", "metres", "meter", "metre", "m", "feet", "ft", "'"} {
+		cleaned = strings.TrimSpace(strings.TrimSuffix(cleaned, suffix))
+	}
+	number, ok := parsePositiveNumber(cleaned)
+	if !ok {
+		return 0, false
+	}
+	height := number * multiplier
+	if height < 1 || height > 500 {
+		return 0, false
+	}
+	return height, true
+}
+
+func parsePositiveNumber(value string) (float64, bool) {
+	number, err := strconv.ParseFloat(strings.TrimSpace(value), 64)
+	return number, err == nil && !math.IsNaN(number) && !math.IsInf(number, 0) && number > 0
+}
+
+func buildingMaterial(tags map[string]string) string {
+	for _, key := range []string{"building:material", "material", "facade:material"} {
+		value := strings.ToLower(strings.TrimSpace(tags[key]))
+		switch {
+		case strings.Contains(value, "glass"):
+			return "glass"
+		case strings.Contains(value, "brick"):
+			return "brick"
+		case strings.Contains(value, "wood") || strings.Contains(value, "timber"):
+			return "wood"
+		case strings.Contains(value, "metal") || strings.Contains(value, "steel"):
+			return "metal"
+		case strings.Contains(value, "concrete") || strings.Contains(value, "cement") || strings.Contains(value, "stone"):
+			return "concrete"
+		}
+	}
+	return "unknown"
+}
+
+func skipJSONValue(decoder *json.Decoder) error {
+	token, err := decoder.Token()
+	if err != nil {
+		return err
+	}
+	delimiter, ok := token.(json.Delim)
+	if !ok {
+		return nil
+	}
+	switch delimiter {
+	case '{':
+		for decoder.More() {
+			if _, err := decoder.Token(); err != nil {
+				return err
+			}
+			if err := skipJSONValue(decoder); err != nil {
+				return err
+			}
+		}
+	case '[':
+		for decoder.More() {
+			if err := skipJSONValue(decoder); err != nil {
+				return err
+			}
+		}
+	default:
+		return errors.New("invalid JSON delimiter")
+	}
+	_, err = decoder.Token()
+	return err
+}
+
 func NewBuildingIndex(footprints []*BuildingFootprint) *BuildingIndex {
 	index := &BuildingIndex{
 		footprints: make([]*BuildingFootprint, 0, len(footprints)),
+		byID:       make(map[string]*BuildingFootprint, len(footprints)),
 	}
 
 	for _, footprint := range footprints {
@@ -169,6 +365,10 @@ func NewBuildingIndex(footprints []*BuildingFootprint) *BuildingIndex {
 			continue
 		}
 		index.footprints = append(index.footprints, footprint)
+		index.vertexCount += len(footprint.Vertices)
+		if _, exists := index.byID[footprint.ID]; !exists {
+			index.byID[footprint.ID] = footprint
+		}
 		index.tree.Insert(footprint.Bounds.Min(), footprint.Bounds.Max(), footprint)
 	}
 
@@ -186,11 +386,26 @@ func (idx *BuildingIndex) Len() int {
 	return idx.tree.Len()
 }
 
+// VertexCount is computed while the index is built; diagnostics never rescan geometry.
+func (idx *BuildingIndex) VertexCount() int {
+	if idx == nil {
+		return 0
+	}
+	return idx.vertexCount
+}
+
 func (idx *BuildingIndex) Footprints() []*BuildingFootprint {
 	if idx == nil {
 		return nil
 	}
 	return idx.footprints
+}
+
+func (idx *BuildingIndex) BuildingByID(id string) *BuildingFootprint {
+	if idx == nil {
+		return nil
+	}
+	return idx.byID[id]
 }
 
 func (idx *BuildingIndex) SearchBounds(bounds Bounds) []*BuildingFootprint {
@@ -210,11 +425,23 @@ func (idx *BuildingIndex) SearchRay(origin Point, end Point) []*BuildingFootprin
 	return idx.SearchBounds(BoundsFromSegment(origin, end))
 }
 
+func (idx *BuildingIndex) BuildingAt(point Point) *BuildingFootprint {
+	var tallest *BuildingFootprint
+	for _, building := range idx.SearchBounds(BoundsAroundPoint(point, 0.5)) {
+		if building != nil && PointInPolygon(point, building.Vertices) && (tallest == nil || building.HeightMeters > tallest.HeightMeters) {
+			tallest = building
+		}
+	}
+	return tallest
+}
+
 func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary {
 	summary := BuildingDemandSummary{
-		SourcePath:     sourcePath,
-		TagCoveragePct: make(map[string]float64),
-		DataQuality:    "sparse",
+		SourcePath:             sourcePath,
+		TagCoveragePct:         make(map[string]float64),
+		MaterialTagCoveragePct: make(map[string]float64),
+		MaterialCategories:     make(map[string]int),
+		DataQuality:            "sparse",
 	}
 	if idx == nil || len(idx.footprints) == 0 {
 		return summary
@@ -228,6 +455,12 @@ func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary
 		"shop":            0,
 		"office":          0,
 		"name":            0,
+	}
+	materialTagHits := map[string]int{
+		"building:material": 0,
+		"facade:material":   0,
+		"roof:material":     0,
+		"material":          0,
 	}
 	totalDemandWeight := 0.0
 	totalResidentialDemand := 0.0
@@ -253,6 +486,46 @@ func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary
 				tagHits[tag]++
 			}
 		}
+		materialEvidence := false
+		for tag := range materialTagHits {
+			if meaningfulTagValue(footprint.Tags[tag]) {
+				materialTagHits[tag]++
+				materialEvidence = true
+			}
+		}
+		if materialEvidence {
+			summary.MaterialMetadataBuildings++
+		}
+		switch footprint.HeightEvidenceSource {
+		case HeightEvidenceObservedTag:
+			summary.ExplicitHeightBuildings++
+		case HeightEvidenceFromLevels:
+			summary.LevelsDerivedHeightBuildings++
+		case HeightEvidenceUnavailable:
+			if footprint.HeightSource == HeightSourceFallbackLegacy {
+				summary.FallbackOnlyHeightBuildings++
+			} else {
+				summary.UnavailableHeightBuildings++
+			}
+		default:
+			// Manually constructed fixtures predate the evidence fields. Their
+			// legacy height source remains authoritative when it is explicit.
+			switch footprint.HeightSource {
+			case HeightSourceExplicitLegacy:
+				summary.ExplicitHeightBuildings++
+			case HeightSourceLevelsLegacy:
+				summary.LevelsDerivedHeightBuildings++
+			case HeightSourceFallbackLegacy:
+				summary.FallbackOnlyHeightBuildings++
+			default:
+				summary.UnavailableHeightBuildings++
+			}
+		}
+		category := strings.TrimSpace(strings.ToLower(footprint.Material))
+		if category == "" {
+			category = "unknown"
+		}
+		summary.MaterialCategories[category]++
 	}
 	if summary.DemandWeightedBuildings > 0 {
 		summary.AvgDemandWeight = math.Round((totalDemandWeight/float64(summary.DemandWeightedBuildings))*100) / 100
@@ -267,6 +540,10 @@ func (idx *BuildingIndex) DemandSummary(sourcePath string) BuildingDemandSummary
 	for tag, count := range tagHits {
 		summary.TagCoveragePct[tag] = math.Round((float64(count)/float64(summary.TotalBuildings))*10000) / 100
 	}
+	for tag, count := range materialTagHits {
+		summary.MaterialTagCoveragePct[tag] = math.Round((float64(count)/float64(summary.TotalBuildings))*10000) / 100
+	}
+	summary.MaterialMetadataCoveragePct = math.Round((float64(summary.MaterialMetadataBuildings)/float64(summary.TotalBuildings))*10000) / 100
 
 	weightedPct := float64(summary.DemandWeightedBuildings+summary.ResidentialWeightedBuildings) / float64(summary.TotalBuildings) * 100
 	switch {

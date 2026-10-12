@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2",
+  "artifact": "next-phase",
+  "audit_version": "concept-6a2-external-rf-benchmark-audit-v1",
+  "prepared_at": "2026-09-21",
+  "next_concept": "6A.3",
+  "status": "not_started_and_not_authorized_by_this_audit",
+  "conditional_pilot_source": "chongqing-macro-5g",
+  "pilot_scope": "Research-only metadata reconciliation and adapter design; no production RF or inventory change.",
+  "entry_gates": [
+    "Obtain and archive the exact versioned source metadata, license, README, dictionary, and checksums.",
+    "Resolve raw ARFCN/base downlink/frequency units and carrier direction against authoritative source documentation.",
+    "Resolve the transmit-power reference plane and obtain absolute antenna gain/pattern or explicitly narrow the claim to relative/quantity validation.",
+    "Define deterministic NCI/ECI/cell mapping including the 342 currently unmapped rows.",
+    "Document receiver height, device/instrument, calibration, detection floor, aggregation, missingness, and route/session semantics.",
+    "Confirm that the intended processing and derived artifacts are permitted by the data license."
+  ],
+  "required_research_only_artifacts": [
+    "docs/concept-6a3-source-manifest.json",
+    "docs/concept-6a3-field-mapping.json",
+    "docs/concept-6a3-reconciliation-report.json",
+    "docs/concept-6a3-observation-quality-report.json",
+    "docs/concept-6a3-provenance-checksums.json",
+    "examples/concept-6a3-source-sample.json"
+  ],
+  "hypothetical_adapter_boundary": {
+    "adapter_name": "backend-go/cmd/import-concept-6a3/",
+    "status": "not_created",
+    "responsibilities": [
+      "Read only the approved source version and fail closed on unresolved semantics.",
+      "Emit the existing concept-6a validation schema without changing the canonical RF evaluator.",
+      "Preserve raw source fields and field-level provenance in adapter artifacts.",
+      "Reject silent defaults, unparseable station configuration, unmapped serving identities, and unresolved frequency/power units."
+    ],
+    "non_responsibilities": [
+      "No RF calibration",
+      "No optimizer or radio-quality policy changes",
+      "No terrain enablement",
+      "No replacement of canonical antenna patterns",
+      "No changes to production inventory schema"
+    ]
+  },
+  "expected_source_to_validation_mapping": [
+    {
+      "source_fields": ["raw_datas.NCI", "raw_datas.GNODEB", "raw_datas.GCELLID", "base_station_data.ECI", "base_station_data.CGI"],
+      "target_fields": ["observation.transmitter_id", "transmitter.cell_id", "observation.serving_cell_id"],
+      "acceptance": "Deterministic join with coverage report and explicit unmapped rows."
+    },
+    {
+      "source_fields": ["raw_datas.LATITUDE", "raw_datas.LONGITUDE", "raw_datas.ACCURACY(M)"],
+      "target_fields": ["observation.lat", "observation.lon", "observation.position_accuracy_m"],
+      "acceptance": "WGS84 and accuracy retained; no grid-cell replacement."
+    },
+    {
+      "source_fields": ["raw_datas.TIME(BeiJing)", "raw_datas.source_file"],
+      "target_fields": ["observation.timestamp", "observation.campaign_id", "observation.provenance"],
+      "acceptance": "Timezone and route/session meaning documented."
+    },
+    {
+      "source_fields": ["raw_datas.SS_RSRP", "raw_datas.SS_RSRQ", "raw_datas.SS_SINR"],
+      "target_fields": ["observation.rsrp_dbm", "observation.rsrq_db", "observation.sinr_db"],
+      "acceptance": "Exact quantities only; no received-power/path-loss substitution."
+    },
+    {
+      "source_fields": ["raw_datas.NR_ARFCN", "raw_datas.NR_BAND", "base_station_data.Downlink Frequency", "base_station_data.FREQUENCY"],
+      "target_fields": ["observation.channel_id", "observation.band", "observation.frequency_ghz", "transmitter.rf_profile.frequency_ghz"],
+      "acceptance": "Mapping remains blocked until unit/epoch/direction reconciliation passes."
+    },
+    {
+      "source_fields": ["base_station_data.longitude", "base_station_data.latitude", "base_station_data.Height"],
+      "target_fields": ["transmitter.lon", "transmitter.lat", "transmitter.rf_profile.antenna_height_m"],
+      "acceptance": "Coordinate and zero-height policy explicitly reported."
+    },
+    {
+      "source_fields": ["base_station_data.angle", "base_station_data.Electrical Tilt", "base_station_data.Mechanical Tilt"],
+      "target_fields": ["transmitter.azimuth", "transmitter.rf_profile.electrical_downtilt_deg", "transmitter.rf_profile.mechanical_downtilt_deg"],
+      "acceptance": "Reference frame and sign convention documented."
+    },
+    {
+      "source_fields": ["base_station_data.Antenna transmit power(dBm)", "base_station_data.Bandwidth"],
+      "target_fields": ["transmitter.rf_profile.tx_power_dbm", "transmitter.rf_profile.bandwidth_mhz"],
+      "acceptance": "Power reference plane and bandwidth semantics established; otherwise preserve as source-only fields."
+    }
+  ],
+  "validation_sequence": [
+    {
+      "stage": "source_manifest",
+      "gate": "version, license, checksums, file inventory, and small-sample reproducibility"
+    },
+    {
+      "stage": "schema_and_unit_reconciliation",
+      "gate": "all required units and field semantics resolve without defaults"
+    },
+    {
+      "stage": "identity_join_audit",
+      "gate": "serving mapping coverage, duplicate identities, and unmapped rows are explicit"
+    },
+    {
+      "stage": "measurement_quality_audit",
+      "gate": "metric definitions, device/calibration, censoring, aggregation, and spatial accuracy are explicit"
+    },
+    {
+      "stage": "research_only_validation",
+      "gate": "run existing evaluator in validation mode with 2.6/N78 or other resolved frequency only; report exact quantity and residual"
+    },
+    {
+      "stage": "independent_holdout",
+      "gate": "site/route/time holdouts and no calibration leakage"
+    },
+    {
+      "stage": "6B_review",
+      "gate": "only after all 6A/6A.1 blockers and the existing 6B gate are independently satisfied"
+    }
+  ],
+  "6b_status": "closed_until_independent_usable_samples_complete_metadata_deterministic_mapping_reproducible_provenance_and_review_are_all_present",
+  "invariance_requirements": [
+    "canonical RF evaluator and profile defaults remain unchanged",
+    "inventory semantics and normal-planning defaults remain unchanged",
+    "scenario and interference fingerprints remain stable for existing fixtures",
+    "optimizer and radio-quality policy remain unchanged",
+    "terrain remains disabled for the canonical urban_short_range path",
+    "research_sub_thz and 140 GHz references remain unchanged"
+  ]
+}

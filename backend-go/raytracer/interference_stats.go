@@ -11,6 +11,8 @@ func calculateInterferenceStats(req InterferenceRequest, features []Interference
 		DemandCandidates:        demandCandidates,
 		AffectedDemandBuildings: affectedDemandBuildings,
 		AffectedDemand:          affectedDemand,
+		OutageByReason:          make(map[string]int),
+		PerServingCell:          make([]InterferenceCellSummary, 0),
 	}
 	sinrValues := make([]float64, 0, len(features))
 	rsrpValues := make([]float64, 0, len(features))
@@ -20,6 +22,13 @@ func calculateInterferenceStats(req InterferenceRequest, features []Interference
 		properties := feature.Properties
 		if properties.RSRPDBm == nil || properties.SINRDB == nil || properties.RSRQDB == nil {
 			stats.NoSignalCount++
+			if len(properties.ServiceabilityFailures) == 0 {
+				stats.OutageByReason["no_eligible_carrier"]++
+			} else {
+				for _, reason := range properties.ServiceabilityFailures {
+					stats.OutageByReason[reason]++
+				}
+			}
 			continue
 		}
 		stats.SignalSamples++
@@ -28,6 +37,11 @@ func calculateInterferenceStats(req InterferenceRequest, features []Interference
 		}
 		if properties.InterferenceLimited {
 			stats.InterferenceLimitedCount++
+		}
+		if !properties.Serviceable {
+			for _, reason := range properties.ServiceabilityFailures {
+				stats.OutageByReason[reason]++
+			}
 		}
 		sinrValues = append(sinrValues, *properties.SINRDB)
 		rsrpValues = append(rsrpValues, *properties.RSRPDBm)
@@ -53,10 +67,15 @@ func calculateInterferenceStats(req InterferenceRequest, features []Interference
 	if stats.ValidSampleCount > 0 {
 		stats.AvgSINRDB = floatPointer(roundOne(averageFloat64(sinrValues)))
 		stats.P10SINRDB = floatPointer(roundOne(nearestRankPercentile(sinrValues, 10)))
+		stats.MedianSINRDB = floatPointer(roundOne(nearestRankPercentile(sinrValues, 50)))
 		stats.AvgRSRPDBm = floatPointer(roundOne(averageFloat64(rsrpValues)))
 		stats.P10RSRPDBm = floatPointer(roundOne(nearestRankPercentile(rsrpValues, 10)))
 		stats.AvgRSRQDB = floatPointer(roundOne(averageFloat64(rsrqValues)))
 		stats.P10RSRQDB = floatPointer(roundOne(nearestRankPercentile(rsrqValues, 10)))
+	}
+	if stats.SignalSamples > 0 {
+		fraction := roundOne(float64(stats.ServiceableSamples) / float64(stats.SignalSamples))
+		stats.ServiceableFraction = floatPointer(fraction)
 	}
 	for _, tower := range req.Towers {
 		accumulator := cellStats[tower.ID]
@@ -89,7 +108,7 @@ func MilliwattsToDBm(milliwatts float64) float64 {
 }
 
 func ThermalNoisePerREDBm(subcarrierSpacingKHz float64, noiseFigureDB float64) float64 {
-	return -174 + 10*math.Log10(subcarrierSpacingKHz*1000) + noiseFigureDB
+	return ThermalNoiseDBm(subcarrierSpacingKHz*1000, noiseFigureDB, ReceiverReferenceTemperatureK)
 }
 
 func interferenceQualityClass(rsrpDBm float64, sinrDB float64, rsrqDB float64) string {

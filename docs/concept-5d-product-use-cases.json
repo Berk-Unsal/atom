@@ -1,0 +1,50 @@
+{
+  "audit_version": "concept-5d-audit-v1",
+  "no_ui_scope": "This artifact proposes product language and policy placement only; no frontend UI is changed by Concept 5D.",
+  "policy_names": {
+    "deterministic_multistart_coordinate_v1": "Deep search",
+    "deterministic_pareto_archive_search_v1": "Pareto Explorer",
+    "legacy_two_pass_coordinate": "Legacy default"
+  },
+  "use_cases": [
+    {
+      "default_policy": "legacy_two_pass_coordinate",
+      "use_case": "fast interactive single recommendation",
+      "user_facing_label": "Fast recommendation",
+      "why": "preserves the current latency and response contract"
+    },
+    {
+      "default_policy": "deterministic_multistart_coordinate_v1",
+      "use_case": "offline planning run where a deeper single answer is worth more RF work",
+      "user_facing_label": "Deep search",
+      "why": "deterministic start diversity and until-stable traces improve basin coverage"
+    },
+    {
+      "default_policy": "deterministic_pareto_archive_search_v1",
+      "use_case": "planner compares several objective priorities",
+      "user_facing_label": "Pareto Explorer",
+      "why": "one priority-independent evaluated archive can be reranked without RF calls"
+    },
+    {
+      "default_policy": "legacy_two_pass_coordinate",
+      "use_case": "audit/reproducibility and regression evidence",
+      "user_facing_label": "Compatibility mode",
+      "why": "the frozen legacy identity remains the compatibility anchor"
+    }
+  ],
+  "ux_naming_proposal": {
+    "avoid": [
+      "global optimum",
+      "guaranteed best",
+      "complete Pareto frontier"
+    ],
+    "concept_5b": "Deep search",
+    "concept_5c": "Pareto Explorer",
+    "legacy": "Fast recommendation (default)",
+    "use": [
+      "best evaluated candidate",
+      "bounded discovered trade-offs",
+      "recommended candidate under this search policy"
+    ]
+  }
+}

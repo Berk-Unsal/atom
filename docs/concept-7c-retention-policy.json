@@ -1,0 +1,18 @@
+{
+  "concept": "7C",
+  "policy": "user_managed_compact_history",
+  "automatic_retention": "none",
+  "size_guard": {
+    "max_run_record_bytes": 524288,
+    "behavior": "strip explicitly forbidden large fields, then reject records still over the limit"
+  },
+  "delete": {
+    "individual": "allowed when unreferenced",
+    "referenced": "rejected with run_referenced",
+    "project_delete": "delete unreferenced runs for the deleted project; preserve referenced lineage",
+    "scenario_delete": "preserve run history",
+    "bulk_clear": "explicit confirmation and never referenced",
+    "time_based_expiry": false
+  },
+  "failure_behavior": "history persistence failure warns and never fails the RF/optimizer computation"
+}

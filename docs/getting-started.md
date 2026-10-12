@@ -7,7 +7,7 @@ The recommended way to run A.T.O.M is Docker Compose. For the visual, task-based
 - Docker Desktop or Docker Engine with Compose
 - Git and [Git LFS](https://git-lfs.com/)
 - Internet access during the first build and for the default OpenStreetMap basemap
-- For source development: Go 1.26.5 and Node.js 24 or newer
+- For source development: Go 1.26.9 and Node.js 24 or newer
 
 ## Get the Complete Repository
 
@@ -15,12 +15,12 @@ The Ankara building dataset is approximately 111 MB and is managed by Git LFS.
 
 ```bash
 git lfs install
-git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
-cd urban-ray-tracer
+git clone https://github.com/Berk-Unsal/atom.git
+cd atom
 git lfs pull
 ```
 
-If you use the [repository ZIP](https://github.com/Berk-Unsal/urban-ray-tracer/archive/refs/heads/main.zip), verify that `data-pipeline/ankara_buildings.geojson` is roughly 111 MB and contains GeoJSON rather than a Git LFS pointer. Clone with Git LFS if it does not.
+If you use the [repository ZIP](https://github.com/Berk-Unsal/atom/archive/refs/heads/main.zip), verify that `data-pipeline/ankara_buildings.geojson` is roughly 111 MB and contains GeoJSON rather than a Git LFS pointer. Clone with Git LFS if it does not.
 
 ## Docker Compose
 
@@ -121,7 +121,7 @@ Legacy Setup/Propagation values supply defaults when a cell has no explicit over
 
 ### Network Evaluation and Optimization
 
-1. Select **Network** mode and choose two to six cells.
+1. Select **Network** mode and choose two to eight cells.
 2. Use **Evaluate Network** in the command bar to score the current plan.
 3. Use **Optimize Network** in Propagation to test deterministic azimuth candidates.
 4. Review score, demand reach, overlap, and before/after deltas in Results.
@@ -206,7 +206,7 @@ A.T.O.M admits two RF jobs by default. A saturated request returns `429` with `R
 
 ### Blank Basemap
 
-The RF engines and datasets run locally, but the default Leaflet layer requests OpenStreetMap tiles. Confirm network access or configure a separate local tile source.
+The RF engines and datasets run locally, but the default Leaflet layer requests OpenStreetMap tiles from `https://tile.openstreetmap.org/{z}/{x}/{y}.png`. The app keeps the required OpenStreetMap attribution and sends the browser's normal origin Referer so the community tile service can apply its usage policy. Confirm network access if the basemap is blank; a production deployment that cannot use the public community service should use an appropriate OSM-derived provider or a self-hosted tile service, while retaining attribution and that provider's caching and usage requirements. A tile failure does not affect RF results or create a tile prefetch loop.
 
 ## Next References
 
@@ -215,3 +215,6 @@ The RF engines and datasets run locally, but the default Leaflet layer requests 
 - [RF algorithms](./algorithms.md)
 - [Model limitations](./modeling-limits.md)
 - [Deployment](./deployment.md)
+
+
+Eight selected network Cells are qualified only for the frozen Ankara2026.07 W1 envelope (120 rays,400m,30dBm,120° beam,2.6/28GHz,legacy two-pass) on Profile A2CPU/4GiB and the shipping Go1.26.6 Linux/arm64 runtime. This does not certify heavier W2/W3 settings or arbitrary hardware/datasets. Large ray-bearing project exports can still hit existing persistence guards at both six and eight Cells; network-result-only eight-Cell projects round-trip without changing those guards.

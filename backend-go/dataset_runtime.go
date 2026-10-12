@@ -24,22 +24,23 @@ type datasetRuntime struct {
 }
 
 type installedDataset struct {
-	ID            string                            `json:"id"`
-	Name          string                            `json:"name"`
-	Version       string                            `json:"version"`
-	SchemaVersion int                               `json:"schema_version"`
-	CRS           string                            `json:"crs"`
-	Bounds        []float64                         `json:"bounds"`
-	GeneratedAt   string                            `json:"generated_at"`
-	Sources       []string                          `json:"sources"`
-	Licenses      []string                          `json:"licenses"`
-	Confidence    string                            `json:"confidence"`
-	Files         raytracer.DatasetFiles            `json:"files"`
-	SHA256        map[string]string                 `json:"sha256"`
-	Layers        map[string]raytracer.DatasetLayer `json:"layers,omitempty"`
-	Quality       *raytracer.DatasetQualityReport   `json:"quality,omitempty"`
-	Active        bool                              `json:"active"`
-	Available     bool                              `json:"available"`
+	ID              string                            `json:"id"`
+	Name            string                            `json:"name"`
+	Version         string                            `json:"version"`
+	SchemaVersion   int                               `json:"schema_version"`
+	CRS             string                            `json:"crs"`
+	Bounds          []float64                         `json:"bounds"`
+	GeneratedAt     string                            `json:"generated_at"`
+	Sources         []string                          `json:"sources"`
+	Licenses        []string                          `json:"licenses"`
+	Confidence      string                            `json:"confidence"`
+	Files           raytracer.DatasetFiles            `json:"files"`
+	SHA256          map[string]string                 `json:"sha256"`
+	Layers          map[string]raytracer.DatasetLayer `json:"layers,omitempty"`
+	Quality         *raytracer.DatasetQualityReport   `json:"quality,omitempty"`
+	SpatialEvidence *raytracer.DatasetSpatialEvidence `json:"spatial_evidence,omitempty"`
+	Active          bool                              `json:"active"`
+	Available       bool                              `json:"available"`
 }
 
 type installedDatasetList struct {
@@ -115,7 +116,7 @@ func (runtime *datasetRuntime) List() installedDatasetList {
 			SchemaVersion: manifest.SchemaVersion, CRS: manifest.CRS, Bounds: manifest.Bounds,
 			GeneratedAt: manifest.GeneratedAt, Sources: manifest.Sources, Licenses: manifest.Licenses,
 			Confidence: manifest.Confidence, Files: manifest.Files, Layers: manifest.Layers,
-			SHA256: manifest.SHA256, Quality: manifest.Quality, Active: id == activeID, Available: true,
+			SHA256: manifest.SHA256, Quality: manifest.Quality, SpatialEvidence: manifest.SpatialEvidence, Active: id == activeID, Available: true,
 		})
 	}
 	if datasets == nil {

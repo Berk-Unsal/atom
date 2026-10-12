@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="description" content="Repository structure, development
 setup, testing expectations, and contribution workflow for A.T.O.M." />
   <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
   <link rel="stylesheet" href="./assets/docs.css" />
   <title>Contributing | A.T.O.M Documentation</title>
 </head>
@@ -55,6 +56,16 @@ setup, testing expectations, and contribution workflow for A.T.O.M." />
           </div>
         </div>
       </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
       <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
         <span class="nav-toggle-lines" aria-hidden="true"></span>
       </button>
@@ -63,7 +74,7 @@ setup, testing expectations, and contribution workflow for A.T.O.M." />
         <a href="./architecture.html">Architecture</a>
         <a href="./api.html">API</a>
         <a href="./changelog.html">Changelog</a>
-        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
         <a class="nav-cta" href="./download.html">Download &amp; Use</a>
       </nav>
     </div>
@@ -123,8 +134,7 @@ the community!</p>
 <p>Found a bug? Please report it!</p>
 <ol type="1">
 <li><strong>Check existing issues</strong> first: <a
-href="https://github.com/Berk-Unsal/urban-ray-tracer/issues">GitHub
-Issues</a></li>
+href="https://github.com/Berk-Unsal/atom/issues">GitHub Issues</a></li>
 <li><strong>Create new issue</strong> if not already reported</li>
 <li><strong>Include</strong>:
 <ul>
@@ -160,7 +170,7 @@ class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><
 <p>Want to suggest an improvement?</p>
 <ol type="1">
 <li><strong>Check existing proposals</strong>: <a
-href="https://github.com/Berk-Unsal/urban-ray-tracer/discussions">Discussions</a></li>
+href="https://github.com/Berk-Unsal/atom/discussions">Discussions</a></li>
 <li><strong>Start a discussion</strong> or open an issue labeled
 <code>enhancement</code></li>
 <li><strong>Describe</strong>:
@@ -195,7 +205,7 @@ class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><
 Environment</h3>
 <p><strong>Backend</strong>:</p>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install Go 1.26.5+</span></span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install Go 1.26.9+</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> mod download</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run .</span></code></pre></div>
@@ -473,9 +483,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href=
 <li><strong>GitHub Issues</strong>: Bug reports, feature requests</li>
 <li><strong>GitHub Discussions</strong>: Questions, brainstorming</li>
 <li><strong>Email</strong>: <a
-href="mailto:berk@berkunsal.com"><span>berk@berkunsal.com</span></a></li>
+href="mailto:info@berkunsal.com"><span>info@berkunsal.com</span></a></li>
 <li><strong>LinkedIn</strong>: <a
-href="https://linkedin.com/in/berkunsal">Berk Ünsal</a></li>
+href="https://linkedin.com/in/berkunsaltr">Berk Ünsal</a></li>
 </ul>
 <h3 id="code-of-conduct">Code of Conduct</h3>
 <p>We're committed to providing a welcoming and inspiring community for
@@ -528,7 +538,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href=
 <li>⭐ Star the repository (recognition counts!)</li>
 <li>🔗 Share with others in your network</li>
 <li>💼 Consider consulting: <a
-href="mailto:berk@berkunsal.com"><span>berk@berkunsal.com</span></a></li>
+href="mailto:info@berkunsal.com"><span>info@berkunsal.com</span></a></li>
 <li>🤝 Contribute code or documentation (priceless!)</li>
 </ul>
 <hr />
@@ -537,8 +547,7 @@ href="mailto:berk@berkunsal.com"><span>berk@berkunsal.com</span></a></li>
 <ol type="1">
 <li>Check <a href="./faq.html">FAQ</a></li>
 <li>Search existing <a
-href="https://github.com/Berk-Unsal/urban-ray-tracer/issues">GitHub
-Issues</a></li>
+href="https://github.com/Berk-Unsal/atom/issues">GitHub Issues</a></li>
 <li>Review <a href="./architecture.html">Architecture</a> for system
 overview</li>
 <li>Ask in GitHub Discussions</li>
@@ -568,7 +577,7 @@ CHANGELOG</label></li>
 future of RF simulation. 🚀</p>
 <hr />
 <p><strong>Questions?</strong> Open an issue or email <a
-href="mailto:berk@berkunsal.com"><span>berk@berkunsal.com</span></a></p>
+href="mailto:info@berkunsal.com"><span>info@berkunsal.com</span></a></p>
       </div>
     </article>
   </main>
@@ -576,7 +585,7 @@ href="mailto:berk@berkunsal.com"><span>berk@berkunsal.com</span></a></p>
   <footer class="site-footer">
     <div class="footer-inner">
       <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
-      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
     </div>
   </footer>
 

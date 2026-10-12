@@ -1,0 +1,78 @@
+{
+  "concept": "7G",
+  "artifact": "state-vocabulary",
+  "capturedOn": "2026-09-22",
+  "states": [
+    {
+      "key": "current",
+      "label": "CURRENT",
+      "definition": "The successful Run matches the active effective planning input using existing identity, invalidation, and comparable fingerprint evidence.",
+      "userHeading": "Current result",
+      "colorIndependentCue": "Visible CURRENT text plus Scenario/Version and Run source.",
+      "safeActions": ["Inspect", "View Run", "Report current result"]
+    },
+    {
+      "key": "stale",
+      "label": "STALE",
+      "definition": "A known result Run remains available as source evidence, while an RF- or optimization-affecting edit or incompatible source identity means it does not describe the active effective input.",
+      "userHeading": "Result out of date",
+      "colorIndependentCue": "Visible STALE text, original Version/Run source, and a Run again action for the current working plan.",
+      "safeActions": ["View source Run", "Run current plan", "Save current plan as a Version"]
+    },
+    {
+      "key": "historical",
+      "label": "HISTORICAL",
+      "definition": "The user deliberately opened a persisted Run or Report. Its source remains distinct from the current workspace. A retained Report generated directly from a plan may have no Run; display No Run rather than treating its source as missing.",
+      "userHeading": "Historical result",
+      "colorIndependentCue": "Visible HISTORICAL text, source Scenario/Version/Run/date, and current workspace summary when different.",
+      "safeActions": ["Inspect", "Open source Version", "Run again from this Run when its exact input is retained", "Generate Report after source confirmation"]
+    },
+    {
+      "key": "unavailable",
+      "label": "UNAVAILABLE",
+      "definition": "A legitimate result, detail, input, dataset, or artifact is not retained or cannot currently be loaded.",
+      "userHeading": "Result unavailable",
+      "colorIndependentCue": "Visible UNAVAILABLE text, a concrete reason, and an explicit next safe action when one exists.",
+      "safeActions": ["Inspect retained summary", "Refresh", "Regenerate a Report explicitly", "Enable rerun only when dataset and exact request are available"]
+    },
+    {
+      "key": "unsupported",
+      "label": "UNSUPPORTED",
+      "definition": "The selected profile intentionally has no defined implementation for the requested quantity or feature.",
+      "userHeading": "Unsupported",
+      "colorIndependentCue": "Visible UNSUPPORTED text and the model/profile reason.",
+      "safeActions": ["Choose a supported model/profile", "Inspect a separate research/reference output if available"]
+    },
+    {
+      "key": "running",
+      "label": "RUNNING",
+      "definition": "Optional execution activity wording; existing operation-specific progress labels remain authoritative.",
+      "userHeading": "Simulating, Optimizing, Evaluating, or another exact operation label",
+      "colorIndependentCue": "Visible operation text and busy state.",
+      "safeActions": ["Wait", "Cancel where supported"]
+    },
+    {
+      "key": "research_reference",
+      "label": "Research / reference",
+      "definition": "An isolated research or reference analysis that is not canonical planning output.",
+      "userHeading": "Research / reference",
+      "colorIndependentCue": "Visible text on the tool or result.",
+      "safeActions": ["Inspect assumptions and limitations"]
+    }
+  ],
+  "precedence": [
+    "UNSUPPORTED applies to a specific feature or quantity; it does not change the freshness of the underlying Run.",
+    "UNAVAILABLE applies when bytes, detail, exact input, or required dataset cannot be loaded; preserve known historical source identity beside it.",
+    "HISTORICAL describes deliberate inspection of a persisted record and remains separate from the active workspace plan/result.",
+    "STALE describes a retained known Run that no longer matches the current effective plan.",
+    "CURRENT describes a matching successful Run only when evidence is comparable.",
+    "Do not infer freshness from timestamps. Unknown identity or missing fingerprints do not prove equality."
+  ],
+  "prohibitedOverlappingPrimaryLabels": ["old", "previous", "archived", "outdated", "inactive", "best"],
+  "separateAxes": [
+    "Draft persistence state: Saved Version / Unsaved changes.",
+    "Result freshness/inspection state: CURRENT / STALE / HISTORICAL / UNAVAILABLE / UNSUPPORTED.",
+    "Optimization role: Baseline / Optimized / Recommended / Selected / Pareto.",
+    "Evidence class: canonical planning output / Research / reference."
+  ]
+}

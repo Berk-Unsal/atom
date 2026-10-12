@@ -1,0 +1,79 @@
+{
+  "concept": "8C",
+  "phase": "post-change validation",
+  "baselineReference": "concept-8c-pre-change-baseline.json",
+  "frontend": {
+    "unitWorkflow": {
+      "command": "cd frontend-react && npm test",
+      "status": "passed",
+      "files": 56,
+      "tests": 301
+    },
+    "lint": {
+      "command": "cd frontend-react && npm run lint",
+      "status": "passed"
+    },
+    "productionBuild": {
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "modulesTransformed": 1707,
+      "javascriptChunkCount": 12,
+      "initialJavaScript": {"rawKiB": 801.83, "gzipKiB": 226.62},
+      "css": {"rawKiB": 184.31, "gzipKiB": 33.58},
+      "warning": "Existing Vite advisory that an initial JavaScript chunk exceeds 500 kB after minification."
+    },
+    "requestEquivalence": {
+      "command": "cd frontend-react && npx vitest run src/domain/requestEquivalence.test.js",
+      "status": "passed",
+      "files": 1,
+      "tests": 3
+    },
+    "e2e": {
+      "command": "cd frontend-react && npm run test:e2e",
+      "status": "passed",
+      "testRecords": 172,
+      "passed": 102,
+      "skipped": 70,
+      "failed": 0,
+      "projects": ["desktop-1440", "desktop-1024", "tablet-768", "mobile-390"],
+      "notes": "Skips are project-gated or real-backend cases disabled by default. The normal run's Concept 8B screenshot/evidence outputs were restored byte-for-byte from a pre-run copy."
+    },
+    "focusedMapChromeE2E": {
+      "command": "ATOM_8C_CAPTURE=after npx playwright test e2e/workspace.spec.js --project=desktop-1440 --grep \"Concept 8C map chrome\"",
+      "status": "passed",
+      "tests": 1,
+      "details": "Captured Inspect/View and Select cells at all seven widths, plus Setup, Layers, area, Place cell, Pick receiver, and phone cluster-edit actions; geometry and restoration assertions passed."
+    }
+  },
+  "mobileSetupSelectionE2E": {
+    "test": "Setup selection entry frees the phone map and keeps its active state",
+    "project": "mobile-390",
+    "status": "passed",
+    "assertions": "Setup closes after selection entry, the map stays over 500px high, and reopening Setup shows Selecting cells on map… with no duplicate entry CTA."
+  },
+  "backend": {
+    "backendGo": {
+      "module": "backend-go",
+      "vet": {"command": "cd backend-go && go vet ./...", "status": "passed"},
+      "race": {"command": "cd backend-go && go test -race ./...", "status": "passed"}
+    },
+    "coreLabAdapter": {
+      "module": "core-lab-adapter",
+      "vet": {"command": "cd core-lab-adapter && go vet ./...", "status": "passed"},
+      "race": {"command": "cd core-lab-adapter && go test -race ./...", "status": "passed"}
+    }
+  },
+  "documentationAndRepository": {
+    "referenceBuild": {"command": "sh docs/build-reference-pages.sh", "status": "passed", "notes": "Builder prints the existing Pandoc --mathml deprecation warning."},
+    "docsValidator": {"command": "python3 docs/validate_docs.py", "status": "passed", "environment": "Executed with PyYAML 6.0.3 from docs/requirements.txt in a temporary virtual environment because the system Python lacked the declared dependency.", "result": "41 HTML pages and 41 API paths valid."},
+    "concept8cJsonParse": {"command": "Parse every docs/concept-8c-*.json", "status": "passed", "files": 11},
+    "screenshotIndex": {"command": "Validate every screenshot file reference, after-capture inventory, and Markdown evidence link", "status": "passed", "files": 33, "before": 8, "after": 25},
+    "versionConsistency": {"command": "python3 scripts/versioning.py check", "status": "passed", "version": "0.9.0"},
+    "diffCheck": {"command": "git diff --check", "status": "passed"}
+  },
+  "baselineComparison": {
+    "unitWorkflow": "56 files / 295 tests before; 56 files / 301 tests after.",
+    "e2e": "160 records / 100 passed / 60 skipped / 0 failed before; 172 records / 102 passed / 70 skipped / 0 failed after.",
+    "bundle": "See concept-8c-post-change-comparison.json; 12 chunks before and after, with no dependency added."
+  }
+}

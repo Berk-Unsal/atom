@@ -4,8 +4,205 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-10-09
+
+### Changed
+
+- Refresh the README for 0.12.1 capabilities, qualified eight-cell planning and independent workflow limits, with four current Ankara workspace screenshots.
+
+### Fixed
+
+- Wait for imported projects to finish saving and keep narrow tool drawers within their viewport.
+- Upgrade to Go 1.26.9 and golang.org/x/net 0.60.0 to include fixes for newly reported Go HTTP and HTTP/2 vulnerabilities.
+
 ### Added
 
+- Add documentation appearance using the application palette and shared browser preference, with a sun/moon toggle, System appearance by default, and matching light and dark landing-page previews.
+
+- Promote normal network selection from six to eight Cells within the qualified Ankara W1/Profile A scope; bounded verified follow-ups allow the complete28-call analysis/optimization journey. Independent Recommendation5 and Measurement Validation6 limits remain.
+
+
+- Bounded verified RF follow-ups: retain 20 ordinary attempts per ClientIP/60s and prebook up to 8 shared verified follow-up units for network maps and Azimuth refreshes. Add one-time input-bound capabilities, finite expiry, cleanup, operational headers and legacy-server compatibility. The original implementation was validated at six Cells; the normal product cap is now eight within the separately qualified W1/Profile A scope.
+
+- Document the eight-Cell request-budget/workflow policy design, comparing alternatives and specifying a bounded verified-follow-up recommendation without implementing a limiter or changing the six-Cell product cap.
+
+- Record the clean successor eight-Cell qualification with verified pre-measurement real E2Es and a request-budget policy blocker; preserve the prior invalid audit, six-Cell product cap and fixed production policy.
+
+- Record the audit-only eight-Cell W1 operational and request-budget re-audit while preserving the six-Cell product cap and fixed production policy.
+
+- Record the independent W1 shipping-runtime reference qualification, preserving previous studies and fixed production policy.
+
+- Record the conservative fixed deployment profile study for the exact Ankara six-Cell workload envelope: no reference profile certified; preserve empirical HTTP evidence, operational headroom gates and unchanged fixed production policy.
+
+- Observe CPU, cgroup and memory constraints with provenance at startup; add local Auto profile diagnostics and controlled-container calibration while preserving fixed RF admission, deadlines, workers and scientific identities.
+- Document locked estimator validation on fresh Ankara domains and unchanged models: retain the invalid-validation decision, numerical failures, HTTP evidence and sustained-load limitations; keep Auto observation-only.
+
+## [0.12.0] - 2026-10-08
+
+### Added
+
+- Promote normal selected-network planning from six to eight Cells within the frozen Ankara W1/Profile A qualification; retain independent Recommendation5 and Measurement Validation6 limits.
+- Enable complete eight-Cell workflows with20 ordinary attempts plus8 bounded verified follow-up units, preserving concurrency2/1, deadline60s, worker1/queue16 and existing RF science and persistence guards.
+
+## [0.11.0] - 2026-10-04
+
+### Fixed
+
+- Make six-Cell result-bearing project exports importable using lossless columnar GeoJSON, retaining scientific results, Version provenance and independent imported identity mappings under bounded validation.
+- Preserve newly saved immutable Version history when a concurrently queued autosave contains the previous Scenario, retaining the latest working draft.
+- Persist Scenario Delete → Undo through captured callbacks and immediate reload by checking the latest workspace, restoring the active Scenario, and promptly committing writes on the reusable workspace database connection.
+
+### Changed
+
+- Export project file schema v3; continue importing valid v1/v2 files. Keep workspace schema v2, the 16 MiB file ceiling, and existing encoded JSON guards; add explicit 32 MiB / one-million-value decoded-content budgets.
+
+## [0.10.2] - 2026-10-03
+
+### Changed
+
+- Give network optimization a stable, quiet busy action and delayed inline search scope plus elapsed time, with truthful long-running feedback and unchanged requests, search behavior, results, and deadlines.
+- Distinguish running network optimization from unavailable actions using a readable teal-accented surface, and compact its stable feedback reserve from 126 px to approximately 104 px.
+
+## [0.10.1] - 2026-10-03
+
+### Fixed
+
+- Avoid retracing unchanged cells during network optimization with a bounded request-local cache of independent RF contributions; preserve the full search, scientific results, fingerprints and existing 60-second deadline.
+
+- Round RF rate-limit retry timing up to the actual window expiry, add hashed-client admission-denial diagnostics, and verify the six-cell Evaluate → Interference → Re-evaluate workflow within the unchanged 20-request budget.
+
+## [0.10.0] - 2026-10-03
+
+### Added
+
+- Add locally persisted Light, Dark and System appearance, semantic dark shell tokens, and a native Alidade Smooth Dark basemap; preserve light rendering, RF palettes, camera, selection, result identity and explicit provider fallbacks. Include matched visual evidence and provider deployment guidance.
+
+### Fixed
+
+- Reduce RF ray stroke density in both themes without changing colors, geometry or counts; correct shared dark Interference/diagnostic action variants and deliberate disabled styling while preserving readiness and light action appearance.
+
+- Allow the exact Stadia Maps tile origin in the application's image CSP so Alidade Smooth loads in Go-served and container deployments while preserving OpenStreetMap support and all other directives.
+
+### Changed
+
+- Use Alidade Smooth as the default light raster basemap after matched overlay/context evaluation; keep muted OpenStreetMap selectable in Layers and keep basemap choice outside RF and project state.
+
+- Consolidate workspace typography, spacing, controls, panel headers, and stage menus; keep the primary Run/Evaluate action visible across tools and add relevant Results empty-state actions.
+- Quiet the OSM basemap and available Cells, center selected Cell order labels, distinguish active/selected/inspected/focused markers, and simplify header status and stage badges without changing RF, optimization, request, or persistence semantics.
+
+## [0.9.3] - 2026-10-03
+
+### Added
+
+- Add sanitized real Ankara Concept 6A.1.1 ingestion, GNSS/radio QA, transmitter reconciliation, and blocked-readiness evidence without calibration or RF behavior changes.
+
+### Fixed
+
+- Update vulnerable frontend and Go module dependencies, move Go builds to 1.26.6, and refresh the Alpine 3.24 image digest to patched releases.
+
+## [0.9.2] - 2026-09-27
+
+### Changed
+
+- Restructure workspace tools around clearer primary, secondary, and provenance details; add Plan > Scenarios, compact Run History list/detail, single-workflow RF Diagnostics research views, and denser optimization, Results, Data, Experiments, Building Entry, and Core Lab presentations without changing RF or persistence semantics.
+- Replace full-list Cell browsing with explicit Network, Map area, and Search / Filter working sets; separate Cell detail editing, keep browse selection outside RF state, and add reviewed batch edits for three validated scalar fields.
+
+## [0.9.1] - 2026-09-24
+
+### Added
+
+- Add a read-only contextual inspector for map-linked Cells, Buildings, Interference samples, and existing map entities, with exact source/freshness context and direct Inventory and Path Profile actions.
+- Separate map Inspect and Select cells modes, preserve task state across supported panel layouts, and give area drawing, cell placement, and path endpoint selection priority over inspection.
+- Consolidate map chrome into interaction, result visualization, View context, and Layers controls; remove duplicate map popups, clarify Network selection guidance, and keep the compact interaction, View, and Layers controls reachable on phones.
+
+### Fixed
+
+- Keep retained Interference samples inspectable when switching map interaction modes and show unavailable values when the response lacks evidence.
+- Keep active Scenario lineage when draft and saved plan values differ only by object key order or map-only focus/ray scope.
+
+## [0.9.0] - 2026-09-23
+
+### Added
+
+- Add local-first Concept 7D report artifacts with exact ScenarioRevision/Run lineage, SHA-256 verification, separate IndexedDB retention, historical Run generation, offline download, regeneration, corruption handling, and explicit cleanup/quota behavior.
+- Add local-first Concept 7E Scenario UX with explicit immutable Versions, draft/Save version semantics, Scenario switching, input diffs, branch and duplicate lineage, optimization application choices, friendly Run/Report navigation, and safe input-first comparison.
+- Add Concept 7G result freshness and source lineage across the workspace, Results, Run History, Reports, map legend, and optimization actions, with explicit stale/history safety, draft-source clarity, and accessible state labels.
+- Add Concept 7H RF configuration progressive disclosure, keeping Planning visible while grouping specialist and reference controls under Advanced and Research / reference without changing RF behavior or saved inputs.
+
+## [0.8.0] - 2026-09-19
+
+### Added
+
+- Add opt-in `deterministic_pareto_archive_search_v1` for bounded priority-independent Pareto candidate discovery, exact evaluated-state archiving, post-discovery priority reranking, deterministic discovery/ranking fingerprints, and Concept 5C audit artifacts; legacy and Concept 5B search policies remain available.
+- Add opt-in `deterministic_multistart_coordinate_v1` network search with until-stable coordinate descent, deterministic starts, request-scoped memoization, evaluated-state archive/Pareto metadata, explicit budgets, and Concept 5B audit artifacts while preserving the legacy default.
+- Add Concept 4F.3A.5 diagnostic terrain-clearance primitive with radio-minus-terrain endpoint/sign/no-data/datum/interpolation contracts, NASADEM/FABDEM 432-path regression artifacts, and no canonical RF coupling.
+- Add Concept 4F.1 deterministic height-aware `urban_short_range` centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts.
+- Add Concept 4F.2 `p526-single-edge-v1` diffraction diagnostics with independent P.526-16 reference fixtures, known-height obstruction ledgers, deterministic roof-edge selection, canonical UMa comparison, Fresnel separation, restrained Path Profile UI, and no network/optimizer/surface/interference/building-entry coupling.
+- Add Concept 4F.3A spatial-evidence foundations with explicit DTM/DSM and vertical-datum semantics, windowed GeoTIFF sampling, terrain path evidence, robust building-base/roof ledgers, source-independent external-height matching, conflict/precedence policies, deterministic fingerprints, Ankara readiness artifacts, diagnostic-only inspector routes, and no canonical RF coupling.
+- Add Concept 4F.3A.1 bounded Ankara external-height acquisition and matching pilot with exact Microsoft GlobalMLBuildingFootprints tile selection, raw checksums, input QA, normalized sidecar output, deterministic STRtree matching, source-agreement audits, diagnostic impact, reproducibility, and an honest NO-GO for numeric promotion when the active tiles contain no positive heights.
+- Add Concept 4F.3A.2 diagnostic-only GlobalBuildingAtlas GBA.Height Ankara acquisition with official index/tile checksums, CC BY-NC license gate, windowed raster sampling, deterministic extraction policy, height agreement and precedence audits, 432-path/P.526/P.1411/reflection readiness evidence, canonical-invariance ledger, and a measured NO-GO for 4F.3B numeric comparison.
+- Add Concept 4F.3A.3 Ankara ground-elevation evidence pilot with NASADEM primary-source audits, FABDEM research-only comparison, HGT/GeoTIFF sampling fixtures, exact tile checksums, robust perimeter building-base diagnostics, 432-path terrain profiles, explicit EGM96/EGM2008 datum gating, readiness artifacts, and no canonical RF coupling.
+- Add Concept 4F.3A.4 read-only terrain-clearance and vertical-datum validation with frozen 4F.3A.3 evidence, corrected signed-clearance diagnostics, endpoint/height/spacing/interpolation/no-data audits, EGM96-to-EGM2008 frame reconciliation, local-control and building-base evidence, representative profiles, canonical-invariance records, and a gated 4F.3B NO-GO decision.
+- Add Concept 4G.1 explicit conducted-power/EIRP semantics, absolute TX gain versus relative antenna-pattern attenuation, shared antenna evaluation, scalar RX gain and deterministic polarization-loss terms, a bounded 3GPP single-element reference preset, signed link-budget diagnostics, and compatibility regression evidence without adding array, beamforming, noise, or stochastic polarization behavior.
+- Add Concept 4G.2 deterministic receiver noise and sensitivity foundation with manual compatibility mode, opt-in `kTB`-based per-cell thresholds, strict link margin and usable-reach semantics, explicit bandwidth provenance, separate building/interference behavior, UI/API/report contracts, and canonical comparison evidence without adding PHY, MCS, throughput, or UE-conformance behavior.
+- Add Concept 4H.1 inspectable interference and radio-quality bookkeeping with raw received-carrier power, explicit serving selection, exact co-channel eligibility, linear desired/interference/noise ledgers, planning RSRP/RSRQ/SINR semantics, outage reasons, scenario fingerprints, API/report/UI diagnostics, and canonical compatibility evidence without coupling radio KPIs into optimization.
+- Add Concept 4H.2 optional interference-aware optimization with a fixed candidate-independent radio-quality domain, denominator-complete serviceability fraction, stable utility, Pareto/reranking/explainability/report/UI integration, explicit finite-horizon and policy metadata, 2.6 GHz support, 140 GHz unavailability, canonical disabled-mode invariance, and deterministic enabled-mode evidence without hard radio constraints, MCS, scheduler, or traffic simulation.
+- Add Concept 4I.1 read-only 140 GHz/sub-THz applicability audit with exact `research_sub_thz` baseline, clause-level ITU/3GPP reference ledger, independent atmospheric/material/diffraction fixtures, measurement transferability assessment, double-counting rules, and a gated 4I.2 roadmap without changing production RF behavior.
+- Add Concept 4I.2A opt-in `sub_thz_atmospheric_reference_v1` with explicit P.525-5 FSPL, P.676-13 gas, P.838-3 rain, local-fog P.840-9 sensitivity, auditable ledgers, controlled fixtures, isolated API/UI workflow, and no canonical RF coupling.
+- Add Concept 4I.2B isolated ITU-R P.1411-13 Table 4 candidates with strict applicability gates, provenance, 140 GHz envelopes, median-only statistics, side-by-side comparison boundaries, diagnostics UI, API/docs contracts, and Ankara readiness artifacts.
+- Add Concept 4I.3 isolated measurement-evidence validation with versioned campaign/quantity/calibration provenance, applicability-first P.525/atmospheric/P.1411/reference adapters, censored and directional-basis handling, common-sample metrics, constant-bias-only diagnostics, deterministic spatial/site/campaign holdouts, metadata-only external evidence, synthetic controls, readiness gates, API/docs artifacts, and a restrained RF Diagnostics UI without canonical RF coupling.
+- Add Concept 4I.4 isolated P.2040-4 material/facade reference evaluation with strict Table 3 ranges, explicit electrical-property provenance, complex TE/TM slab coefficients, internal reflections, stable power ledgers, controlled fixtures, separate 80 dB comparison, optional material-characterization adapter, API/UI/docs contracts, and no canonical RF coupling.
+- Add Concept 4I.5A read-only 140 GHz specular-reflection geometry and composition audit with sourced image-method spreading, P.2040 interface/slab composition rules, direction-aware antenna and TE/TM requirements, finite facade/height/roughness/visibility gates, Ankara readiness counts, controlled derivations, and an isolated 4I.5B reference-only contract without production RF coupling.
+- Add Concept 4I.5B isolated `single_bounce_specular_reflection_reference_v1` with explicit image-source geometry, finite-facade and vertical gates, TE/TM P.2040 interface/slab coefficients, roughness/Fresnel/far-field evidence, independent two-leg visibility, one-path P.525 spreading, reflected-path link-budget diagnostics, API/UI/docs contracts, and controlled 140 GHz invariance fixtures without canonical or network coupling.
+
+## [0.7.0] - 2026-09-17
+
+### Added
+
+- Add Concept 4E building-entry analysis for deterministic 2.6/28 GHz service estimates immediately inside representative facades, with standard-derived low/high O2I scenarios, material-data auditing, one batched API request, RF-aware caching, and restrained Analyze/report surfaces.
+
+### Changed
+
+- Replace network optimization's arbitrary raw weighted score with stable 0–1 objective utilities, normalized importance priorities, a 0–100 composite score, raw metric preservation, contribution breakdowns, and preference-ranked feasible Pareto solutions.
+- Scope demand and residential normalization to a deterministic selected-cell radius-union domain, report unavailable objectives as N/A with effective weights, and present the legacy `coverage` objective as propagation reach.
+- Add lazy per-cell Pareto explanations that compare a selected solution with a single baseline-reverted counterfactual in the same target domain, preserving raw metric deltas, direction-aware interpretation, feasibility evidence, and priority-only score re-ranking.
+- Redesign generated Markdown/HTML planning reports around network scope, authoritative recommendations, baseline/Pareto evidence, evaluated cell explanations, conditional interference summaries, and concise report-only maps.
+- Clarify report priorities as relative 0–100 values, distinguish unconfigured hard constraints, humanize optimization-domain labels, and omit universally unavailable PCI columns.
+- Add map-first RF display controls for received-power surfaces, scoped/hidden propagation rays, and independent selected-cell focus without launching new RF work.
+
+### Fixed
+
+- Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows.
+- Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on `main` reach the published site.
+
+## [0.6.0] - 2026-08-02
+
+### Added
+
+- Add a unified map key, visible local-save status, and recoverable deletion controls.
+
+### Changed
+
+- Reorganize the frontend into four labeled workflow stages with contextual tool navigation and run actions, stronger text contrast, and clearer focus states.
+- Standardize RF unit and unavailable-value formatting, replace side-stripe status treatments, and align drawer, layer, and result transitions to one reduced-motion-safe timing system.
+
+### Fixed
+
+- Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary.
+- Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport.
+- Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly.
+- Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image.
+
+## [0.5.0] - 2026-07-31
+
+### Added
+
+- Add an inspectable 2.5D point-to-point path profiler with optional COG/GeoTIFF terrain, building heights, LOS/Fresnel classification, single knife-edge diffraction, material-aware penetration, environmental sensitivity terms, uncertainty ranges, and an interactive vertical cross section.
+- Add asynchronous batch experiment matrices with cancellation, deterministic dataset/model fingerprints, bounded caching, a headless CLI, progress UI, scenario tables, and Pareto evidence.
+- Add configurable network objectives, weights, hard constraints, feasibility evidence, and non-dominated azimuth solutions while keeping unsupported tilt, power, candidate-site, cost, fiber, and permitting inputs explicit.
+- Add spatially blocked five-fold calibration validation, spatial-diversity rejection, per-cell/per-band and distance/obstruction residual summaries, robust outlier flags, uncertainty quantiles, confidence intervals, and campaign provenance/expiration support.
+- Add regular-grid analytical coverage surfaces, marching-square isolines, opacity and display-threshold controls, plus GeoTIFF, contour GeoJSON, and CSV exports.
+- Add OGC API Features-style, viewport-bounded building queries with pagination and GeoJSON/CSV representations so clients need not transfer the full building dataset.
 - Add a persistent cell Inventory workspace with manual map placement, dragging, duplication, deletion, bounded CSV/GeoJSON import, search, validation, and independent per-cell RF profiles across propagation, network, interference, recommendation, measurement, and report workflows.
 - Add Dataset Pack Studio for arbitrary-region source inspection, geometry repair, reprojection/cropping, schema-v2 manifests, hashes, provenance/licenses/confidence, QA evidence, and optional terrain, clutter, building-height, and material layers.
 - Add a local installed-dataset catalog and atomic manifest-ID switching that retains the active immutable pack on validation failure, with optional administration-key protection.
@@ -39,6 +236,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Remove redundant RF convenience APIs that created background contexts and silently discarded computation errors.
 - Drain in-flight backend and Core Lab adapter requests on interrupt or termination signals with a bounded graceful-shutdown window.
 - Consolidate report escaping, numeric/Markdown formatting, and printable table construction behind one tested utility.
+
+### Fixed
+
+- Keep focused-drawer actions in normal layout flow so the propagation optimizer cannot overlap the vertical path-profile panel.
 
 ## [0.4.0] - 2026-07-30
 
@@ -105,7 +306,21 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.1...HEAD
+[0.12.1]: https://github.com/Berk-Unsal/atom/compare/v0.12.0...v0.12.1
+[0.12.0]: https://github.com/Berk-Unsal/atom/compare/v0.11.0...v0.12.0
+[0.11.0]: https://github.com/Berk-Unsal/atom/compare/v0.10.2...v0.11.0
+[0.10.2]: https://github.com/Berk-Unsal/atom/compare/v0.10.1...v0.10.2
+[0.10.1]: https://github.com/Berk-Unsal/atom/compare/v0.10.0...v0.10.1
+[0.10.0]: https://github.com/Berk-Unsal/atom/compare/v0.9.3...v0.10.0
+[0.9.3]: https://github.com/Berk-Unsal/atom/compare/v0.9.2...v0.9.3
+[0.9.2]: https://github.com/Berk-Unsal/atom/compare/v0.9.1...v0.9.2
+[0.9.1]: https://github.com/Berk-Unsal/atom/compare/v0.9.0...v0.9.1
+[0.9.0]: https://github.com/Berk-Unsal/atom/compare/v0.8.0...v0.9.0
+[0.8.0]: https://github.com/Berk-Unsal/atom/compare/v0.7.0...v0.8.0
+[0.7.0]: https://github.com/Berk-Unsal/atom/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/Berk-Unsal/atom/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/Berk-Unsal/atom/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Berk-Unsal/atom/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Berk-Unsal/atom/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Berk-Unsal/atom/compare/v0.1.0...v0.2.0

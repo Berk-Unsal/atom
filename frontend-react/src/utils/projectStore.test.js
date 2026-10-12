@@ -74,16 +74,39 @@ describe("projectStore", () => {
 
   it("keeps an active scenario only while the autosaved draft still matches it", () => {
     const project = createProjectWorkspace().projects[0];
-    const scenario = createScenario("Baseline", { plan: { settings: { rays: 60 } } });
+    const scenario = createScenario("Baseline", { plan: { settings: { rays: 60, power: 30 } } });
     project.scenarios.push(scenario);
     project.activeScenarioId = scenario.id;
 
-    const matching = updateProjectDraft(project, { plan: { settings: { rays: 60 } } });
-    const changed = updateProjectDraft(matching, { plan: { settings: { rays: 120 } } });
+    const matching = updateProjectDraft(project, { plan: { settings: { power: 30, rays: 60 } } });
+    const changed = updateProjectDraft(matching, { plan: { settings: { power: 30, rays: 120 } } });
 
     expect(matching.activeScenarioId).toBe(scenario.id);
     expect(changed.activeScenarioId).toBeNull();
     expect(changed.draft.requiresRerun).toBe(true);
+  });
+
+  it("keeps Map Focus and ray Scope out of Scenario identity", () => {
+    const project = createProjectWorkspace().projects[0];
+    const scenario = createScenario("Baseline", {
+      plan: {
+        settings: { rays: 60 },
+        selectedMapCellId: "cell-2",
+        rayScope: "all",
+      },
+    });
+    project.scenarios.push(scenario);
+    project.activeScenarioId = scenario.id;
+
+    const mapOnlyChange = updateProjectDraft(project, {
+      plan: { settings: { rays: 60 }, selectedMapCellId: "cell-3", rayScope: "selected" },
+    });
+    const rfInputChange = updateProjectDraft(mapOnlyChange, {
+      plan: { settings: { rays: 120 }, selectedMapCellId: "cell-3", rayScope: "selected" },
+    });
+
+    expect(mapOnlyChange.activeScenarioId).toBe(scenario.id);
+    expect(rfInputChange.activeScenarioId).toBeNull();
   });
 
   it("rejects unsupported future schemas", () => {
@@ -237,6 +260,23 @@ describe("projectStore", () => {
     expect(secondSaved.persistence.revision).toBeGreaterThan(firstSaved.persistence.revision);
   });
 
+  it("reuses the workspace connection for Undo writes and releases it on a version change", async () => {
+    vi.stubGlobal("localStorage", { getItem: vi.fn(), removeItem: vi.fn(), setItem: vi.fn() });
+    const indexedDB = controlledIndexedDB();
+    const open = vi.spyOn(indexedDB, "open");
+    vi.stubGlobal("indexedDB", indexedDB);
+    const workspace = createProjectWorkspace();
+    await saveProjectWorkspace(workspace);
+    await saveProjectWorkspace(workspace);
+    expect(open).toHaveBeenCalledOnce();
+    const database = indexedDB.state.databases[0];
+    database.onversionchange();
+    expect(database.close).toHaveBeenCalledOnce();
+    await saveProjectWorkspace(workspace);
+    expect(open).toHaveBeenCalledTimes(2);
+    expect(indexedDB.state.writes).toHaveLength(3);
+  });
+
   it("removes duplicate recommendation properties from persisted scenario artifacts", async () => {
     vi.stubGlobal("localStorage", { getItem: vi.fn(), removeItem: vi.fn(), setItem: vi.fn() });
     const indexedDB = controlledIndexedDB();
@@ -274,7 +314,7 @@ describe("projectStore", () => {
 });
 
 function controlledIndexedDB({ failWrites = false, writeDelay = 0 } = {}) {
-  const state = { activeWrites: 0, maxActiveWrites: 0, writes: [] };
+  const state = { activeWrites: 0, maxActiveWrites: 0, writes: [], databases: [] };
   return {
     state,
     open() {
@@ -304,6 +344,7 @@ function controlledIndexedDB({ failWrites = false, writeDelay = 0 } = {}) {
           return transaction;
         },
       };
+      state.databases.push(database);
       queueMicrotask(() => {
         request.result = database;
         request.onsuccess?.();

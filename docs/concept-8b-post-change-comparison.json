@@ -1,0 +1,51 @@
+{
+  "concept": "8A to 8B",
+  "navigation": {
+    "before": "Persistent sibling tool row within the drawer; natural Analyze/Review row width 513px with hidden horizontal scrolling.",
+    "after": "Persistent row removed. Each existing stage button opens a temporary overlay chooser with all of that stage's tools.",
+    "persistentToolNavigationNodesAfter": 0
+  },
+  "drawer": {
+    "beforeDesktop": {"headerPx": 62, "siblingRowPx": 51, "toolContentStartsAfterPx": 133},
+    "afterDesktop1440": {"headerPx": 62, "toolContentStartsAfterPx": 82, "reclaimedVerticalChromePx": 51},
+    "beforePhone": {"headerPx": 65, "siblingRowPx": 59, "toolContentStartsAfterPx": 143},
+    "afterPhone390": {"headerPx": 65, "toolContentStartsAfterPx": 84, "reclaimedVerticalChromePx": 59},
+    "chooser": "uses the same open drawer/sheet and does not create a second overlapping surface"
+  },
+  "commandBar": {
+    "before": {"layout": "many peer objects", "resultMetricShortcut": true, "mobileOperationStatus": "dot only"},
+    "after": {"groups": ["Workspace", "RF context", "Status", "Primary action"], "resultMetricShortcut": false, "mobileOperationStatus": "visible text"},
+    "barHeightPxByWidth": {"1440": 60, "1280": 60, "1024": 60, "768": 64, "390": 78},
+    "resultMetrics": "Results and relevant map legend"
+  },
+  "responsive": {
+    "viewports": [1440, 1280, 1024, 768, 390],
+    "documentOverflowXByWidthPx": {"1440": 0, "1280": 0, "1024": 0, "768": 0, "390": 0},
+    "desktopFlyout1440": {"x": 91.5, "y": 70, "width": 264, "height": 125, "mapDrawerRailReflow": false},
+    "phoneDrawer390": {"x": 0, "y": 189.2, "width": 390, "height": 590.8},
+    "phoneReviewChooserToolCount": 4
+  },
+  "scientificUi": {
+    "mapToolbar": "unchanged in 8B; 8C only",
+    "mapLegend": "scientific ranges/source and layer information retained",
+    "RFAndOptimizerSemantics": "unchanged"
+  },
+  "productionBundle": {
+    "javascriptChunkCount": {"before": 12, "after": 12},
+    "initialJavaScriptRawBytes": {"before": 771408, "after": 778271, "delta": 6863},
+    "initialJavaScriptGzipKB": {"before": 219.05, "after": 220.98, "delta": 1.93},
+    "initialCssRawBytes": {"before": 152345, "after": 162609, "delta": 10264},
+    "initialCssGzipKB": {"before": 28.89, "after": 30.45, "delta": 1.56},
+    "warning": "Vite still reports the existing initial JS entry over 500kB."
+  },
+  "validation": {
+    "frontendUnit": "55 files; 289 tests passed",
+    "frontendE2E": {"total": 100, "passed": 74, "failed": 3, "skipped": 23},
+    "knownE2EFailure": "same historical Run source Version assertion documented by the pre-change baseline; failed in desktop-1440, tablet-768, and mobile-390 this run, while desktop-1024 passed",
+    "lint": "passed",
+    "build": "passed",
+    "backendGoAndAdapter": "go vet and go test -race passed in both modules"
+  },
+  "screenshots": "See docs/concept-8b-responsive-evidence.json and docs/assets/concept-8b/.",
+  "e2e": "See docs/concept-8b-test-evidence.json for exact post-change totals and the remaining pre-existing source-Version issue."
+}

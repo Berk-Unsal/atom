@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -26,12 +27,13 @@ const maxRequestBodyBytes int64 = 1 << 20
 var (
 	appVersion   = "dev"
 	buildCommit  = "unknown"
-	modelVersion = "fspl-walls-cell-profiles-v2"
+	modelVersion = raytracer.UrbanShortRangePropagationID
 )
 
 func main() {
 	datasetPack, datasetErr := loadRuntimeDataset()
 	datasets := newDatasetRuntime(datasetPack, datasetErr, os.Getenv("ATOM_DATASETS_ROOT"))
+	experiments := newExperimentManager(modelVersion, envInt("EXPERIMENT_WORKERS", 1), envInt("EXPERIMENT_QUEUE_SIZE", defaultExperimentQueueSize))
 	buildingIndex := raytracer.EmptyBuildingIndex()
 	buildingStats := raytracer.BuildingIndexStats{SourcePath: "not found"}
 	var towers []raytracer.TowerStation
@@ -60,6 +62,38 @@ func main() {
 	)
 
 	log.Printf("tower store ready: %d cells loaded from %s", len(towers), towerGeoJSONPath)
+	rfLimiter := newRFRequestLimiterWithBudget(
+		envInt("MAX_CONCURRENT_RF_REQUESTS", 2),
+		envInt("MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT", defaultRFClientLimit),
+		envInt("RF_REQUESTS_PER_MINUTE", defaultRFRequestsPerMinute),
+	)
+	rfLimiter.currentContext = func() rfWorkflowContext {
+		pack := datasets.Current()
+		if pack == nil {
+			return rfWorkflowContext{}
+		}
+		data, _ := json.Marshal(struct {
+			Model    string
+			Manifest raytracer.DatasetManifest
+		}{modelVersion, pack.Manifest})
+		return rfWorkflowContext{Identity: sha256.Sum256(data), Buildings: pack.BuildingIndex}
+	}
+	defer func() {
+		rfLimiter.mu.Lock()
+		if rfLimiter.expiryTimer != nil {
+			rfLimiter.expiryTimer.Stop()
+		}
+		rfLimiter.mu.Unlock()
+	}()
+	rfDeadline := time.Duration(envInt("RF_REQUEST_TIMEOUT_SECONDS", int(defaultRFRequestTimeout/time.Second))) * time.Second
+	profile := collectAutoResourceProfile(datasetPack, rfLimiter, rfDeadline, experiments)
+	if len(os.Args) == 2 && os.Args[1] == "--resource-profile" {
+		if err := json.NewEncoder(os.Stdout).Encode(profile); err != nil {
+			log.Fatalf("encode resource profile: %v", err)
+		}
+		return
+	}
+	logAutoResourceProfile(profile)
 	distPath := getenv("FRONTEND_DIST_PATH", filepath.Clean("../frontend-react/dist"))
 	indexPath := filepath.Join(distPath, "index.html")
 	frontendReady := fileExists(indexPath)
@@ -73,8 +107,9 @@ func main() {
 	router.Use(limitRequestBody(maxRequestBodyBytes))
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173"},
-		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Key"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodOptions},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Key", "RF-Workflow", "RF-Workflow-ID", "RF-Workflow-Index"},
+		ExposeHeaders:    []string{"RateLimit-Limit", "RateLimit-Remaining", "RateLimit-Reset", "Retry-After", "RF-Budget-Policy", "RF-Followup-Limit", "RF-Followup-Remaining", "RF-Followup-Reset", "RF-Workflow-ID", "RF-Workflow-Remaining", "RF-Workflow-Expires"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
@@ -102,29 +137,40 @@ func main() {
 		})
 	})
 	router.GET("/readyz", runtimeReadinessHandler(datasets, frontendReady))
-	rfLimiter := newRFRequestLimiterWithBudget(
-		envInt("MAX_CONCURRENT_RF_REQUESTS", 2),
-		envInt("MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT", defaultRFClientLimit),
-		envInt("RF_REQUESTS_PER_MINUTE", defaultRFRequestsPerMinute),
-	)
 	router.Use(protectExpensiveRFRoutes(
 		rfLimiter,
-		time.Duration(envInt("RF_REQUEST_TIMEOUT_SECONDS", int(defaultRFRequestTimeout/time.Second)))*time.Second,
+		rfDeadline,
 		strings.TrimSpace(os.Getenv("RF_API_KEY")),
 	))
+	router.DELETE("/api/rf-workflows", rfLimiter.cleanupWorkflow)
 	buildingAPIKey := strings.TrimSpace(os.Getenv("BUILDINGS_API_KEY"))
 	buildingLimiter := newRFRequestLimiterWithBudget(
 		envInt("MAX_CONCURRENT_BUILDING_DOWNLOADS", defaultBuildingDownloadCapacity),
 		envInt("MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT", defaultBuildingDownloadClientLimit),
 		envInt("BUILDING_DOWNLOADS_PER_MINUTE", defaultBuildingDownloadsPerMinute),
 	)
+	buildingFeatureLimiter := newRFRequestLimiterWithBudget(
+		envInt("MAX_CONCURRENT_BUILDING_FEATURE_QUERIES", 4),
+		envInt("MAX_CONCURRENT_BUILDING_FEATURE_QUERIES_PER_CLIENT", 2),
+		envInt("BUILDING_FEATURE_QUERIES_PER_MINUTE", 120),
+	)
 	buildingCacheControl := buildingDatasetCacheControl(buildingAPIKey != "")
 	router.GET("/api/meta", func(c *gin.Context) {
 		response := gin.H{
-			"application_version":    appVersion,
-			"build_commit":           buildCommit,
-			"model_version":          modelVersion,
-			"supported_technologies": []string{"4g", "5g", "6g-research"},
+			"application_version": appVersion,
+
+			"build_commit":            buildCommit,
+			"model_version":           modelVersion,
+			"model_id":                raytracer.UrbanShortRangePropagationID,
+			"model_description":       raytracer.UrbanShortRangeModelDescription,
+			"propagation_models":      raytracer.PropagationModelCatalog(),
+			"building_entry_model":    raytracer.BuildingEntryModelInfo(raytracer.DefaultFrequencyGHz),
+			"rf_contract":             raytracer.RFContractMetadataForModel(raytracer.UrbanShortRangePropagationID, raytracer.DefaultCalibrationOffsetDB),
+			"supported_technologies":  []string{"4g", "5g", "6g-research"},
+			"technology_capabilities": raytracer.RFTechnologyEndpointCapabilityMatrix(),
+		}
+		if rfLimiter.workflowPolicyEnabled() {
+			response["rf_budget_policy"] = rfBudgetPolicy
 		}
 		if pack := datasets.Current(); pack != nil {
 			response["dataset"] = pack.Manifest
@@ -159,7 +205,22 @@ func main() {
 		}
 		c.JSON(http.StatusOK, pack.BuildingIndex.DemandSummary(""))
 	})
+	registerBuildingFeatureRoutes(
+		router,
+		datasets,
+		requireBuildingAPIKey(buildingAPIKey),
+		buildingFeatureLimiter.middlewareFor("bounded building feature query"),
+	)
 	registerDatasetRoutes(router, datasets, strings.TrimSpace(os.Getenv("DATASET_ADMIN_API_KEY")))
+	registerSpatialEvidenceRoutes(router, datasets)
+	registerExperimentRoutes(router, experiments, datasets)
+	registerPathProfileRoute(router, datasets)
+	registerSubTHZReferenceRoute(router, datasets)
+	registerSubTHZP1411ReferenceRoute(router, datasets)
+	registerSubTHZValidationRoute(router)
+	registerSubTHZMaterialReferenceRoute(router)
+	registerSubTHZReflectionReferenceRoute(router, datasets)
+	registerCoverageSurfaceRoute(router, datasets)
 	router.POST("/api/analyze-sector", func(c *gin.Context) {
 		var input raytracer.StaticSimulationRequestInput
 		if !bindJSON(c, &input, "sector analysis") {
@@ -174,7 +235,10 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
-		payload, runErr := raytracer.AnalyzeSectorContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		if !verifyRFChild(c, input) {
+			return
+		}
+		payload, runErr := raytracer.AnalyzeSectorContext(c.Request.Context(), req, workflowBuildings(c, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) }))
 		writeRFResponse(c, payload, runErr)
 	})
 	router.POST("/api/simulate", func(c *gin.Context) {
@@ -191,7 +255,10 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
-		payload, runErr := raytracer.SimulateStaticRaysContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		if !verifyRFChild(c, input) {
+			return
+		}
+		payload, runErr := raytracer.SimulateStaticRaysContext(c.Request.Context(), req, workflowBuildings(c, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) }))
 		writeRFResponse(c, payload, runErr)
 	})
 	router.POST("/api/optimize-azimuth", func(c *gin.Context) {
@@ -208,24 +275,29 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
-		payload, runErr := raytracer.OptimizeAzimuthContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		if !prebookRFWorkflow(c, 1, input) {
+			return
+		}
+		payload, runErr := raytracer.OptimizeAzimuthContext(c.Request.Context(), req, workflowBuildings(c, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) }))
+		child := input
+		child.AzimuthDeg = rfPointer(payload.OptimalAzimuth)
+		if !issueRFWorkflow(c, []raytracer.StaticSimulationRequestInput{child}, "", runErr) {
+			return
+		}
 		writeRFResponse(c, payload, runErr)
 	})
-	router.POST("/api/optimize-network", func(c *gin.Context) {
-		var input raytracer.NetworkOptimizationRequestInput
-		if !bindJSON(c, &input, "network optimization") {
+	registerNetworkOptimizationRoute(router, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) })
+	router.POST("/api/explain-network-cell", func(c *gin.Context) {
+		var input raytracer.NetworkCellExplanationRequestInput
+		if !bindJSON(c, &input, "network cell explanation") {
 			return
 		}
-		if input.MissingRequiredTowerFields() {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "each tower must include id, tower_lon, and tower_lat"})
-			return
-		}
-		req := input.ToRequest()
-		if validationError := validateNetworkOptimizationRequest(req); validationError != "" {
+		request := input.ToRequest()
+		if validationError := raytracer.ValidateNetworkCellExplanationRequest(request); validationError != "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
-		payload, runErr := raytracer.OptimizeNetworkContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		payload, runErr := raytracer.ExplainNetworkCellContext(c.Request.Context(), request, currentBuildingIndex(datasets))
 		writeRFResponse(c, payload, runErr)
 	})
 	router.POST("/api/evaluate-network", func(c *gin.Context) {
@@ -242,7 +314,30 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
-		payload, runErr := raytracer.EvaluateNetworkContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		if !prebookRFWorkflow(c, len(req.Towers), input) {
+			return
+		}
+		payload, runErr := raytracer.EvaluateNetworkContext(c.Request.Context(), req, workflowBuildings(c, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) }))
+		if !issueRFWorkflow(c, networkRFChildren(input, nil), payload.ScenarioFingerprint, runErr) {
+			return
+		}
+		writeRFResponse(c, payload, runErr)
+	})
+	router.POST("/api/building-entry-analysis", func(c *gin.Context) {
+		var input raytracer.BuildingEntryAnalysisRequestInput
+		if !bindJSON(c, &input, "building-entry analysis") {
+			return
+		}
+		if input.MissingRequiredTowerFields() {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "each tower must include id, tower_lon, and tower_lat"})
+			return
+		}
+		req := input.ToRequest()
+		if validationError := raytracer.ValidateBuildingEntryAnalysisRequest(req); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		payload, runErr := raytracer.AnalyzeBuildingEntryContext(c.Request.Context(), req, currentBuildingIndex(datasets))
 		writeRFResponse(c, payload, runErr)
 	})
 	router.POST("/api/coverage-gaps", func(c *gin.Context) {
@@ -363,6 +458,27 @@ func registerInterferenceRouteProvider(router *gin.Engine, provider func() *rayt
 	router.POST("/api/interference", append(middleware, handler)...)
 }
 
+func registerPathProfileRoute(router *gin.Engine, runtime *datasetRuntime) {
+	router.POST("/api/path-profile", func(c *gin.Context) {
+		var input raytracer.PathProfileRequestInput
+		if !bindJSON(c, &input, "path profile") {
+			return
+		}
+		request := input.ToRequest()
+		if validationError := raytracer.ValidatePathProfileRequest(input, request); validationError != "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
+			return
+		}
+		pack := runtime.Current()
+		if pack == nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "dataset unavailable"})
+			return
+		}
+		response, err := raytracer.AnalyzePathProfileContext(c.Request.Context(), request, pack.Terrain, pack.BuildingIndex)
+		writeRFResponse(c, response, err)
+	})
+}
+
 func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
 	if req.TowerLon < raytracer.MinLongitude || req.TowerLon > raytracer.MaxLongitude || req.TowerLat < raytracer.MinLatitude || req.TowerLat > raytracer.MaxLatitude {
 		return "tower_lon and tower_lat must be valid coordinates"
@@ -398,7 +514,7 @@ func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
 
 func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest) string {
 	if len(req.Towers) < raytracer.MinNetworkTowers || len(req.Towers) > raytracer.MaxNetworkTowers {
-		return "towers must contain between 2 and 6 selected towers"
+		return "towers must contain between 2 and 8 selected towers"
 	}
 	if req.Rays < raytracer.MinSimulationRays || req.Rays > raytracer.MaxSimulationRays {
 		return "rays must be between 8 and 720"
@@ -443,6 +559,12 @@ func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest
 		if validationError := raytracer.ValidateSimulationFeatureBudget(req.Rays, profileRadius); validationError != "" {
 			return fmt.Sprintf("tower %q: %s", tower.ID, validationError)
 		}
+	}
+	if validationError := raytracer.ValidateOptimizationConfig(req.Optimization); validationError != "" {
+		return validationError
+	}
+	if validationError := raytracer.ValidateNetworkOptimizationSearchOptions(req); validationError != "" {
+		return validationError
 	}
 	return ""
 }
@@ -490,8 +612,8 @@ func registerFrontendRoutes(router *gin.Engine, distPath string, indexPath strin
 				"service": "A.T.O.M API",
 				"routes": []string{
 					"/healthz", "/readyz", "/api/meta", "/api/datasets", "/api/datasets/switch", "/api/towers", "/api/buildings", "/api/buildings/summary",
-					"/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network",
-					"/api/optimize-network", "/api/interference", "/api/recommend-sites", "/api/measurements/evaluate",
+					"/api/conformance", "/api/collections", "/api/collections/buildings", "/api/collections/buildings/items", "/api/path-profile", "/api/sub-thz-reference", "/api/sub-thz-p1411-reference", "/api/sub-thz-validation", "/api/sub-thz-material-reference", "/api/coverage-surface", "/api/processes/batch-experiment", "/api/processes/batch-experiment/execution", "/api/jobs/:jobID", "/api/analyze-sector", "/api/simulate", "/api/coverage-gaps", "/api/optimize-azimuth", "/api/evaluate-network", "/api/explain-network-cell",
+					"/api/optimize-network", "/api/building-entry-analysis", "/api/interference", "/api/recommend-sites", "/api/measurements/evaluate",
 					"/api/core/status", "/api/core/topology", "/api/core/sessions", "/api/core/events", "/api/core/scenario",
 				},
 			})
@@ -597,6 +719,11 @@ func writeRFResponse[T any](c *gin.Context, payload T, err error) {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"error": "simulation response exceeded the " + strconv.Itoa(raytracer.MaxSimulationResponseFeatures) + "-feature limit; reduce rays or radius_m",
 		})
+		return
+	}
+	var explanationValidationError *raytracer.NetworkCellExplanationValidationError
+	if errors.As(err, &explanationValidationError) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid network cell explanation"})
 		return
 	}
 	c.JSON(http.StatusInternalServerError, gin.H{"error": "RF analysis failed"})

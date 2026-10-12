@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2.1",
+  "artifact": "frequency-reconciliation",
+  "audit_version": "concept-6a21-chongqing-rf-metadata-reconciliation-v1",
+  "prepared_at": "2026-09-21",
+  "release": {
+    "record": "https://zenodo.org/records/20564635",
+    "raw_file": "raw_datas.csv",
+    "base_file": "base_station_data.csv"
+  },
+  "standard": {
+    "source": "ETSI TS 138 104 V15.12.0",
+    "url": "https://www.etsi.org/deliver/etsi_ts/138100_138199/138104/15.12.00_60/ts_138104v151200p.pdf",
+    "formula": "FREF = FREF-Offs + deltaFGlobal * (NREF - NREF-Offs)",
+    "ranges": [
+      {"nref_min": 0, "nref_max": 599999, "frequency_min_mhz": 0, "frequency_max_mhz": 3000, "delta_khz": 5, "offset_mhz": 0, "nref_offset": 0},
+      {"nref_min": 600000, "nref_max": 2016666, "frequency_min_mhz": 3000, "frequency_max_mhz": 24250, "delta_khz": 15, "offset_mhz": 3000, "nref_offset": 600000},
+      {"nref_min": 2016667, "nref_max": 3279166, "frequency_min_mhz": 24250, "frequency_max_mhz": 100000, "delta_khz": 60, "offset_mhz": 24250.08, "nref_offset": 2016667}
+    ],
+    "band_reference": "ETSI TS 138 104 V17.14.0 band table is available at https://www.etsi.org/deliver/etsi_TS/138100_138199/138104/17.14.00_60/ts_138104v171400p.pdf"
+  },
+  "raw_observations": {
+    "arfcn_counts": {
+      "633984": {"rows": 71490, "band": "N78", "derived_frequency_mhz": 3509.76},
+      "627264": {"rows": 601, "band": "N78", "derived_frequency_mhz": 3408.96},
+      "428910": {"rows": 9328, "band": "N1", "derived_frequency_mhz": 2144.55}
+    },
+    "band_counts": {"N78": 72091, "N1": 9328},
+    "band_arfcn_consistency": "Each observed raw ARFCN is consistently paired with the listed raw band in this release."
+  },
+  "base_observations": {
+    "downlink_frequency_values": [426000, 427980, 630000, 636664],
+    "conditional_nr_arfcn_interpretation": [
+      {"source_value": 636664, "conditional_frequency_mhz": 3549.96},
+      {"source_value": 630000, "conditional_frequency_mhz": 3450.0},
+      {"source_value": 427980, "conditional_frequency_mhz": 2139.9},
+      {"source_value": 426000, "conditional_frequency_mhz": 2130.0}
+    ],
+    "frequency_field": {
+      "dictionary_meaning": "wireless carrier center frequency used by the base station",
+      "unique_values": 150,
+      "examples": [1, 5, 117, 4144],
+      "unit_or_encoding": "not documented",
+      "status": "unresolved"
+    }
+  },
+  "mapped_cross_tab": [
+    {
+      "raw_arfcn": 633984,
+      "base_downlink_frequency": 636664,
+      "mapped_rows": 71148,
+      "raw_derived_mhz": 3509.76,
+      "conditional_base_derived_mhz": 3549.96,
+      "raw_minus_base_mhz": -40.2
+    },
+    {
+      "raw_arfcn": 627264,
+      "base_downlink_frequency": 630000,
+      "mapped_rows": 601,
+      "raw_derived_mhz": 3408.96,
+      "conditional_base_derived_mhz": 3450.0,
+      "raw_minus_base_mhz": -41.04
+    },
+    {
+      "raw_arfcn": 428910,
+      "base_downlink_frequency": 427980,
+      "mapped_rows": 6510,
+      "raw_derived_mhz": 2144.55,
+      "conditional_base_derived_mhz": 2139.9,
+      "raw_minus_base_mhz": 4.65
+    },
+    {
+      "raw_arfcn": 428910,
+      "base_downlink_frequency": 426000,
+      "mapped_rows": 2818,
+      "raw_derived_mhz": 2144.55,
+      "conditional_base_derived_mhz": 2130.0,
+      "raw_minus_base_mhz": 14.55
+    }
+  ],
+  "agreement": {
+    "mapped_rows": 81077,
+    "exact_raw_arfcn_equals_base_downlink_frequency_rows": 0,
+    "exact_agreement_fraction": 0,
+    "delta_is_single_constant": false,
+    "conclusion": "The two fields cannot be joined as the same NR-ARFCN without an undocumented release or encoding rule."
+  },
+  "other_frequency_evidence": {
+    "paper": "The current paper says the handset was locked to N1 and N78. Its reproducibility text also says 'N1 and N78 (3.5 GHz)', which is imprecise wording because N1 is not a 3.5 GHz band; the audit preserves the source wording and does not silently correct it.",
+    "bandwidth": "Base values are 100M for 166 rows, 40M for 10 rows, and 20M for 13 rows; the field does not resolve the raw/base frequency discrepancy.",
+    "direction": "The public metadata does not state whether any frequency field is downlink center, carrier raster, duplex pair, or an internal operator identifier beyond the dictionary descriptions."
+  },
+  "decision": {
+    "status": "UNRESOLVED_NO_PATCH",
+    "safe_source_fields": ["raw NR_ARFCN as channel identifier", "raw NR_BAND as band category", "conditional 3GPP-derived raw frequency for analysis with provenance"],
+    "blocked_targets": ["production transmitter frequency", "absolute link-budget frequency-specific validation", "automatic raw-to-base carrier assignment"],
+    "do_not_do": ["do not apply a guessed constant offset", "do not rewrite base values to match raw values", "do not infer base field units from numeric plausibility", "do not use label encoding as physical frequency"]
+  },
+  "required_source_owner_clarifications": [
+    "Define the units and coding of base Downlink Frequency and FREQUENCY.",
+    "State whether the base and raw records are from the same carrier snapshot and release.",
+    "Provide a carrier-level mapping from raw NR_ARFCN/band to each base-table cell.",
+    "Explain whether center frequency refers to downlink, uplink, carrier center, or an operator-internal field."
+  ]
+}

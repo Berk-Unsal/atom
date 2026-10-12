@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "concept": "4I.4",
+  "title": "Material and facade interaction reference pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "baseline_commit": "d66ad902075402a2df8df413bec63e9a51059561",
+  "worktree_note": "Concepts 4I.1, 4I.2A, 4I.2B, and 4I.3 were already present in the shared worktree. This artifact freezes their recorded behavior before adding the isolated P.2040 material-slab reference.",
+  "before_change": {
+    "material_reference_model_present": false,
+    "material_reference_route": false,
+    "material_characterization_adapter": false,
+    "automatic_osm_material_physics": false,
+    "canonical_material_composition": false,
+    "research_sub_thz_material_composition": false,
+    "material_reference_ui": false
+  },
+  "canonical_snapshots": {
+    "canonical_2_6_ghz": {
+      "source": "docs/concept-4i2b-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "model_id": "urban_short_range",
+      "stats": {"blocked_pct": 0, "avg_rx_dbm": -43, "min_range_m": 100, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "path_loss_db": 70.07902264967872, "wall_loss_db": 0, "signal_dbm": -15.07902264967872}
+    },
+    "canonical_28_ghz": {
+      "source": "docs/concept-4i2b-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "model_id": "urban_short_range",
+      "stats": {"blocked_pct": 12.5, "avg_rx_dbm": -72.1, "min_range_m": 72.3, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "path_loss_db": 90.72271631710674, "wall_loss_db": 0, "signal_dbm": -35.722716317106745}
+    },
+    "research_sub_thz_140_ghz": {
+      "source": "docs/concept-4i2b-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "model_id": "research_sub_thz",
+      "applicability_reason": "research_profile_only",
+      "wall_loss_rule_db_per_event": 80,
+      "stats": {"blocked_pct": 87.5, "avg_rx_dbm": -123.6, "min_range_m": 17.6, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "slant_distance_m": 34.3110769286, "fspl_db": 106.08124770471235, "wall_loss_db": 0, "signal_dbm": -51.081247704712354}
+    },
+    "concept_4i2a_atmospheric_reference": "docs/concept-4i2a-post-change-comparison.json",
+    "concept_4i2b_p1411_reference": "docs/concept-4i2b-reference-comparison.json",
+    "p526_diagnostic": "docs/concept-4f1-canonical-audit.json",
+    "building_entry": "docs/concept-4e-building-entry.md",
+    "interference_radio_quality": "docs/concept-4h1-interference-radio-quality.md",
+    "optimizer": "docs/concept-4h2-radio-quality-optimization.md"
+  },
+  "existing_route_inventory": {
+    "research_reference": "POST /api/sub-thz-reference",
+    "p1411_reference": "POST /api/sub-thz-p1411-reference",
+    "measurement_validation": "POST /api/sub-thz-validation",
+    "material_reference": "absent"
+  },
+  "required_post_change_invariance": [
+    "canonical 2.6 GHz simulation",
+    "canonical 28 GHz simulation",
+    "research_sub_thz 80 dB/event heuristic and 140 GHz dispatch",
+    "4I.2A atmospheric reference",
+    "4I.2B P.1411 reference",
+    "P.526 diagnostic",
+    "building entry",
+    "interference and radio quality",
+    "4H.2 optimizer and Pareto outputs"
+  ],
+  "planned_4i4_boundary": {
+    "model_id": "p2040_material_slab_reference_v1",
+    "new_route": "POST /api/sub-thz-material-reference",
+    "new_ui_surface": "RF Diagnostics",
+    "scope": "one homogeneous finite slab between explicitly declared incident and exit media",
+    "production_coupling": false,
+    "readiness": "reference_only",
+    "promotion": false,
+    "multilayer": "deferred",
+    "whole_building_entry": "not claimed"
+  }
+}

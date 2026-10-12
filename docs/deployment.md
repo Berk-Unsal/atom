@@ -6,8 +6,8 @@ A.T.O.M is local-first and stateless on the server. The production image serves 
 
 ```bash
 git lfs install
-git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
-cd urban-ray-tracer
+git clone https://github.com/Berk-Unsal/atom.git
+cd atom
 git lfs pull
 docker compose up --build -d atom
 curl --fail http://localhost:8080/readyz
@@ -21,10 +21,29 @@ Open `http://localhost:8080`. Stop the service with `docker compose down`.
 |---|---|---|
 | `atom` container | Required | Static frontend, REST API, RF engines, spatial index, active dataset pack |
 | Browser IndexedDB | Required for projects | Local project/scenario history; not shared across users |
-| OpenStreetMap tiles | External by default | Visual basemap only; RF computation remains local |
+| Stadia Maps / OpenStreetMap tiles | External by default | Alidade Smooth light/dark and selectable OSM; visual basemap only; RF computation remains local |
 | `core-lab-adapter` | Optional profile | Deterministic 5G path state and optional Open5GS probes |
 
 The Go server does not persist projects, jobs, reports, or measurements. Multiple API replicas can serve independent requests, but browser projects do not become collaborative storage.
+
+## Auto resource diagnostics
+
+A.T.O.M automatically observes runtime CPU, Go scheduler and memory constraints
+once at startup for diagnostics and calibration. The startup log includes one
+structured Auto resource summary. Developers can inspect full JSON locally with
+`docker exec atom-app ./server --resource-profile`; the one-shot command opens no
+HTTP listener. No machine-capacity diagnostics endpoint or product resource
+controls are added. Local diagnostic logs should stay with operators.
+
+Detection does not adapt RF admission or experiment settings: defaults remain
+20 attempts per ClientIP per anchored 60-second window, concurrency 2 globally
+and 1 per client, a 60-second RF deadline, six selected Cells and one experiment
+worker. This foundation establishes no automatic scaling or certified minimum
+or recommended hardware. See the [foundation and measured calibration](./auto-resource-profile-foundation.md).
+
+## Qualified shipping-runtime W1 reference
+
+The [W1 shipping-runtime qualification](./w1-shipping-runtime-qualification.md) names **A** as the minimum and **B** as the recommended W1 reference for A.T.O.M **0.11.0**, commit `e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8`, shipping **Go 1.26.6**, qualified **2026-10-05 UTC**. A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested resource floors under the exact Ankara 2026.07 hashes, eight layouts and frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and shipping binary assumptions. CPU quota does not reserve dedicated cores. Current policy remains 20 attempts/ClientIP/anchored 60 s, global 2/per-client 1, RF deadline 60 s, six Cells, experiment worker 1/queue 16. Unknown runtime/resource evidence never establishes eligibility. This is not a universal hardware requirement, arbitrary pack/layout guarantee, heavier-workload qualification, or eight-Cell approval. Auto remains observation-only; no resource selector or admission change. See the qualification for GC-trace observability, memory/timing gates, actual HTTP evidence and limitations.
 
 ## Configuration
 
@@ -44,7 +63,12 @@ The Go server does not persist projects, jobs, reports, or measurements. Multipl
 | `MAX_CONCURRENT_BUILDING_DOWNLOADS` | `2` | Process-wide admission limit for fresh full-dataset transfers |
 | `MAX_CONCURRENT_BUILDING_DOWNLOADS_PER_CLIENT` | `1` | Maximum simultaneous full-dataset transfers from one client identity |
 | `BUILDING_DOWNLOADS_PER_MINUTE` | `2` | Per-client fresh building-dataset transfer budget per process |
-| `BUILDINGS_API_KEY` | unset | Require this key on the full building-dataset route when configured |
+| `MAX_CONCURRENT_BUILDING_FEATURE_QUERIES` | `4` | Process-wide admission limit for bounded building viewport queries |
+| `MAX_CONCURRENT_BUILDING_FEATURE_QUERIES_PER_CLIENT` | `2` | Maximum simultaneous bounded building queries from one client identity |
+| `BUILDING_FEATURE_QUERIES_PER_MINUTE` | `120` | Per-client bounded building-query budget per process |
+| `BUILDINGS_API_KEY` | unset | Require this key on full and bounded building-data routes when configured |
+| `EXPERIMENT_WORKERS` | `1` | Concurrent batch-experiment workers |
+| `EXPERIMENT_QUEUE_SIZE` | `16` | Accepted asynchronous experiment jobs waiting for a worker |
 | `TRUSTED_PROXIES` | unset | Comma-separated proxy CIDRs whose forwarded client-IP headers are trusted |
 | `REQUIRE_HTTPS` | `false` | Reject non-HTTPS requests with `426`; enable behind a TLS proxy that supplies `X-Forwarded-Proto` |
 | `CORE_LAB_ENABLED` | `false` | Enables backend proxy routes for the optional adapter |
@@ -167,3 +191,8 @@ Imported projects include a schema version and dataset reference. A mismatch is 
 - Public deployments enforce TLS and user authentication at the gateway and set `RF_API_KEY` plus `BUILDINGS_API_KEY` on the backend hop.
 
 See [Download and Use](download.html), [System Architecture](architecture.html), and the [OpenAPI contract](openapi.yaml).
+
+
+## Basemap access and appearance
+
+Alidade Smooth and Alidade Smooth Dark use Stadia Maps. Production browser deployments require domain registration with Stadia and an appropriate subscription (commercial use requires a paid plan). Localhost development has a rate-limited keyless exemption; private LAN addresses do not. Keep linked attribution visible and preserve Origin/Referer headers. OpenStreetMap remains an explicit alternative in Layers, subject to its own tile usage policy. See [theme/provider guidance](dark-mode.md) for authentication, licensing, and failure recovery.

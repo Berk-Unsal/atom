@@ -1,0 +1,245 @@
+{
+  "concept": "8D",
+  "decision": {
+    "adopt_contextual_right_inspector": true,
+    "purpose": "Answer “what spatial/result entity is being inspected?” while preserving current task drawer and map context.",
+    "model": "Read-only context with actions that route to existing task owners."
+  },
+  "candidates": [
+    {
+      "entity": "Cell",
+      "decision": "strong",
+      "pilot": true,
+      "why": "Stable spatial identity and most frequent switch from map/plan to Inventory. Current TowerInspector is only five facts and misses effective RF profile/provenance.",
+      "show": [
+        "Cell ID and physical/site identity only where distinct",
+        "Technology/frequency",
+        "Effective TX power, azimuth, beam width, radius only when resolved from current plan",
+        "Active transmitter / cluster membership as separate statuses",
+        "Source (dataset/manual/project override)",
+        "Current result/source Run/freshness when an exact relation exists"
+      ],
+      "actions": [
+        "Edit in Inventory",
+        "Focus on map",
+        "Open path profile"
+      ],
+      "do_not": [
+        "Edit RF parameters in inspector",
+        "Set serving cell or add to cluster because the inspector opened"
+      ]
+    },
+    {
+      "entity": "Building",
+      "decision": "strong",
+      "pilot": true,
+      "why": "A spatially selected building can require source, AGL, terrain, facade and compatibility context. Current BuildingInspector performs lazy spatial-evidence fetch and must keep its diagnostic-only claim.",
+      "show": [
+        "Building stable ID",
+        "Planning AGL versus selected evidence AGL",
+        "Evidence/confidence/source/version",
+        "Terrain/base/roof only when returned",
+        "Diagnostic-only boundary"
+      ],
+      "actions": [
+        "Focus building",
+        "Open Building Entry when a supported current estimate exists"
+      ],
+      "do_not": [
+        "Claim indoor/whole-building coverage",
+        "Infer material loss or canonical RF behavior from evidence alone"
+      ]
+    },
+    {
+      "entity": "Interference/radio-quality sample",
+      "decision": "strong",
+      "pilot": true,
+      "why": "Selection-specific RSRP/SINR/RSRQ and serving/interferer context are useful while the Interference task remains visible.",
+      "show": [
+        "Sample ID/location",
+        "Only returned RSRP/SINR/RSRQ values with units",
+        "Serving cell, strongest interferer/count, serviceability/quality",
+        "Distance/LOS/wall facts only if present in source output",
+        "Model family and exact source Run/freshness"
+      ],
+      "actions": [
+        "Focus serving cell",
+        "Open path profile when endpoints are supported",
+        "View source Run"
+      ],
+      "do_not": [
+        "Calculate missing metrics",
+        "Rerun on selection",
+        "Label a stale value as current"
+      ]
+    },
+    {
+      "entity": "Coverage-gap building sample",
+      "decision": "strong after pilot",
+      "pilot": false,
+      "why": "A gap is a map-specific sample with severity, received power, demand and reason; it is compact enough for context detail.",
+      "show": [
+        "Gap severity",
+        "received power/threshold",
+        "demand/reason",
+        "source result state"
+      ],
+      "actions": [
+        "Focus",
+        "Open corresponding Results view"
+      ],
+      "do_not": [
+        "Recreate full Results analysis"
+      ]
+    },
+    {
+      "entity": "Communication path",
+      "decision": "medium",
+      "pilot": false,
+      "why": "A rendered 5G communication route is spatial and current MapInspector already shows route/status/from/to; keep concise.",
+      "show": [
+        "Route type/status",
+        "from/to",
+        "reason"
+      ],
+      "actions": [
+        "Focus route",
+        "Open Core Lab"
+      ],
+      "do_not": [
+        "Treat the route as an RF ray or path profile"
+      ]
+    },
+    {
+      "entity": "Selected RF ray/path-profile sample",
+      "decision": "weak until supported",
+      "pilot": false,
+      "why": "PathProfilePanel is a workflow with endpoints and calculation; no stable selected ray/sample entity was verified for a generic inspector contract.",
+      "show": [
+        "Nothing until a stable map feature identity and result payload exist"
+      ],
+      "actions": [
+        "Open existing Propagation > Advanced path-profile workflow"
+      ],
+      "do_not": [
+        "Invent ray geometry/sample values"
+      ]
+    },
+    {
+      "entity": "Signal-surface sample",
+      "decision": "not currently supported",
+      "pilot": false,
+      "why": "MapCanvas renders a raster/grid overlay with no stable clickable point feature. Adding point sampling is a separate map behavior/design decision.",
+      "show": [
+        "No point inspector in 8D/8E"
+      ],
+      "actions": [
+        "Use aggregate legend and surface controls"
+      ],
+      "do_not": [
+        "Sample pixels or interpolate values without defined scientific semantics"
+      ]
+    },
+    {
+      "entity": "Measurement sample",
+      "decision": "medium",
+      "pilot": false,
+      "why": "Current MapInspector can show measured/predicted RSRP and residual; it is useful, but it belongs to an isolated validation evidence source and needs validation/source freshness context.",
+      "show": [
+        "Measured/predicted RSRP/residual only from retained sample payload",
+        "Campaign identity and evidence status"
+      ],
+      "actions": [
+        "Open RF Diagnostics > Research > Validation"
+      ],
+      "do_not": [
+        "Apply calibration from point inspection"
+      ]
+    },
+    {
+      "entity": "Site recommendation",
+      "decision": "weak",
+      "pilot": false,
+      "why": "Map point is spatial, but candidate ranking/reason and apply behavior belong to Results; keep map interaction as a shortcut into the selected candidate in Results.",
+      "show": [
+        "Candidate ID and one-line reason only if the current marker stays selectable"
+      ],
+      "actions": [
+        "Open Results > Candidates"
+      ],
+      "do_not": [
+        "Duplicate candidate scoring/detail and Apply workflow"
+      ]
+    },
+    {
+      "entity": "Pareto solution / optimization candidate",
+      "decision": "not inspector material",
+      "pilot": false,
+      "why": "Not inherently spatial; current Results already owns recommended-versus-selected candidate state, objective detail, configuration deltas, comparison and Apply action.",
+      "show": [
+        "Keep full selected-candidate detail inside Results master/detail"
+      ],
+      "actions": [
+        "Existing Apply solution flow from exact source Run"
+      ],
+      "do_not": [
+        "Duplicate selectedSolutionId in inspector or use inspector as the only comparison surface"
+      ]
+    },
+    {
+      "entity": "Run",
+      "decision": "not inspector material",
+      "pilot": false,
+      "why": "Run History is a browsing/history task, not an entity selected from the spatial canvas.",
+      "show": [
+        "Compact source Run badge in spatial inspector only when a sample comes from it"
+      ],
+      "actions": [
+        "View Run opens Review > Run History"
+      ],
+      "do_not": [
+        "Move full Run metadata into right inspector"
+      ]
+    },
+    {
+      "entity": "Report artifact",
+      "decision": "not inspector material",
+      "pilot": false,
+      "why": "Report lifecycle, byte integrity, source binding, download and deletion belong to Reports.",
+      "show": [
+        "No artifact inspector"
+      ],
+      "actions": [
+        "Open Reports artifact detail"
+      ],
+      "do_not": [
+        "Load report tools or bytes from map selection"
+      ]
+    },
+    {
+      "entity": "Demand point/area",
+      "decision": "defer",
+      "pilot": false,
+      "why": "No stable user-facing selected demand entity/geometry contract was verified in the current map behavior.",
+      "show": [
+        "No fabricated point detail"
+      ],
+      "actions": [
+        "Review Data/Results aggregate"
+      ],
+      "do_not": [
+        "Add new demand-point selection state as part of 8E"
+      ]
+    }
+  ],
+  "exclusions": [
+    "Global RF configuration",
+    "Scenario creation/Version history",
+    "Optimization priority configuration",
+    "Campaign import/full reference experiment forms",
+    "Report generation",
+    "General dataset administration",
+    "Run History detail",
+    "Any inspector edit form that duplicates Inventory or Results"
+  ]
+}

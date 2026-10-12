@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="description" content="What the deterministic planning
 model includes, what it excludes, and how to interpret its outputs
 responsibly." />
   <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
   <link rel="stylesheet" href="./assets/docs.css" />
   <title>Modeling Limits | A.T.O.M Documentation</title>
 </head>
@@ -56,6 +57,16 @@ responsibly." />
           </div>
         </div>
       </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
       <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
         <span class="nav-toggle-lines" aria-hidden="true"></span>
       </button>
@@ -64,7 +75,7 @@ responsibly." />
         <a href="./architecture.html">Architecture</a>
         <a href="./api.html">API</a>
         <a href="./changelog.html">Changelog</a>
-        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
         <a class="nav-cta" href="./download.html">Download &amp; Use</a>
       </nav>
     </div>
@@ -75,6 +86,8 @@ responsibly." />
 Limits page contents">
       <strong>On this page</strong>
       <ul>
+      <li><a href="#rf-semantic-contract"
+      id="toc-rf-semantic-contract">RF Semantic Contract</a></li>
       <li><a href="#what-the-model-uses"
       id="toc-what-the-model-uses">What the Model Uses</a></li>
       <li><a href="#propagation-effects-not-modeled"
@@ -84,6 +97,12 @@ Limits page contents">
       id="toc-interference-metrics">Interference Metrics</a></li>
       <li><a href="#data-confidence" id="toc-data-confidence">Data
       Confidence</a></li>
+      <li><a href="#recommendation-applicability"
+      id="toc-recommendation-applicability">Recommendation
+      Applicability</a></li>
+      <li><a href="#reference-and-applicability-foundation"
+      id="toc-reference-and-applicability-foundation">Reference and
+      Applicability Foundation</a></li>
       <li><a href="#appropriate-interpretation"
       id="toc-appropriate-interpretation">Appropriate
       Interpretation</a></li>
@@ -110,22 +129,183 @@ comparative RF planning, education, API experimentation, and inspectable
 scenario analysis. Its outputs are not UE measurements, drive-test
 results, calibrated link budgets, or a replacement for a commercial
 propagation tool.</p>
+<p>The network engine dispatches explicit propagation models.
+<code>urban_short_range</code> is the deterministic 3GPP UMa LOS/NLOS
+baseline for 2.6/28 GHz, using the shared height-aware
+<code>footprint-height-los-v1</code> centerline classifier;
+<code>legacy_fspl_walls</code> is the compatibility model and fallback,
+and <code>research_sub_thz</code> is the explicitly research-only 140
+GHz profile. Known heights can clear a footprint, while unknown-height
+intersections remain conservative NLOS. The current Ankara network has
+no terrain layer, so height-aware results report
+<code>terrain_unavailable</code> and use flat-ground relative heights.
+Its applicability and classification metadata are returned in
+<code>rf_contract</code>, ray explainability, interference, surface, and
+building-entry fields. The separate Concept 4E building-entry analysis
+adds one standard O2I facade term at zero indoor depth; it is not indoor
+or whole-building coverage. The point-to-point path profile remains an
+isolated advanced diagnostic with model id
+<code>path-profile-diagnostic-v1</code>. The separate Concept 4I.2A
+atmospheric reference is an opt-in standards ledger and is never
+silently added to any network model. Read the Concept 4F.1 design note
+for the centerline rule and audit, and the Concept 4G.2 receiver-noise
+note for the effective per-cell receiver threshold and link-margin
+contract.</p>
+<h2 id="rf-semantic-contract">RF Semantic Contract</h2>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Meaning in the API</th>
+<th>Threshold or scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw received power</td>
+<td>The signed link-budget output for a cell at a valid geometry
+sample</td>
+<td><code>P_rx</code> may be below sensitivity; the value remains
+numeric</td>
+</tr>
+<tr>
+<td>Conducted TX power</td>
+<td>Transmitter output before absolute antenna gain</td>
+<td><code>tx_power_dbm</code>; never an EIRP input</td>
+</tr>
+<tr>
+<td>TX boresight gain</td>
+<td>Absolute transmit antenna gain at boresight</td>
+<td><code>tx_antenna_gain_dbi</code>; <code>antenna_gain_dbi</code> is a
+stable alias</td>
+</tr>
+<tr>
+<td>TX pattern attenuation</td>
+<td>Relative loss from the TX boresight direction</td>
+<td>Non-negative dB; separate from absolute gain and hard-beam
+eligibility</td>
+</tr>
+<tr>
+<td>Boresight/directional EIRP</td>
+<td>Conducted TX plus absolute TX gain, before/after relative pattern
+loss</td>
+<td><code>boresight_eirp_dbm</code> and
+<code>directional_eirp_dbm</code>; neither includes an implicit receiver
+gain</td>
+</tr>
+<tr>
+<td>Receiver gain</td>
+<td>Scalar receiver-side gain</td>
+<td><code>rx_antenna_gain_dbi</code>, default <code>0 dBi</code>; no
+receiver orientation/pattern model</td>
+</tr>
+<tr>
+<td>System loss</td>
+<td>Aggregate non-propagation implementation loss</td>
+<td><code>system_loss_db</code>; does not include antenna pattern,
+building entry, polarization, or propagation</td>
+</tr>
+<tr>
+<td>Polarization loss</td>
+<td>Explicit deterministic mismatch loss</td>
+<td><code>polarization_loss_db</code>, default <code>0 dB</code>; no
+vector or stochastic model</td>
+</tr>
+<tr>
+<td>Receiver sensitivity</td>
+<td>Per-cell static-ray termination and usable-carrier admission
+threshold</td>
+<td><code>manual</code> reads
+<code>rf_profile.receiver_sensitivity_dbm</code>; <code>derived</code>
+uses the returned <code>receiver_threshold</code> from noise bandwidth,
+noise figure, required SNR, and receiver margin</td>
+</tr>
+<tr>
+<td>Usable signal</td>
+<td>A cell/ray whose raw received power is strictly above its effective
+receiver sensitivity</td>
+<td>Per-cell, not a building-service or interference threshold</td>
+</tr>
+<tr>
+<td>Building service</td>
+<td>Demand-building classification from raw received power</td>
+<td>Served only when <code>raw P_rx &gt; -100 dBm</code></td>
+</tr>
+<tr>
+<td>Propagation reach</td>
+<td>Aggregate usable-ray reach used by coverage/reach scores</td>
+<td>Capped by configured radius and compatibility hard-beam geometry;
+full-azimuth reference patterns retain finite off-axis power</td>
+</tr>
+<tr>
+<td>Received-signal surface</td>
+<td>One selected cell's raw received-power raster</td>
+<td>Numeric below-sensitivity cells are retained; NoData means only
+radius/beam geometry exclusion</td>
+</tr>
+<tr>
+<td>Interference serviceability</td>
+<td>Quality classification after serving/interferer formation</td>
+<td><code>RSRP &gt;= -110 dBm</code> <strong>and</strong>
+<code>SINR &gt;= 0 dB</code> <strong>and</strong>
+<code>RSRQ &gt;= -20 dB</code>, independent of receiver sensitivity</td>
+</tr>
+</tbody>
+</table>
+<p>The building and interference thresholds above are current planning
+defaults. They are intentionally separate from each cell's receiver
+sensitivity. In derived mode,
+<code>Sensitivity = -174 dBm/Hz + 10 log10(B_noise_Hz) + NF + RequiredSNR + ReceiverMargin</code>;
+the <code>-174 dBm/Hz</code> value is a rounded 290 K reference
+convention and the selected planning SNR/margin are not UE or 3GPP
+conformance parameters. The canonical ledger is
+<code>P_rx = P_tx_conducted + G_tx_boresight - A_tx_pattern + G_rx - L_system - L_polarization + calibration - L_propagation - L_building</code>.
+A global calibration offset is signed: positive dB raises predicted
+received power. The historical <code>eirp_dbm</code> field is retained
+as an effective-transmit compatibility alias and must not be read as
+conducted power or as boresight EIRP.</p>
 <h2 id="what-the-model-uses">What the Model Uses</h2>
 <ul>
 <li>Per-cell coordinates, azimuth, technology/frequency/bandwidth,
-interference channel, beam width, radius, transmit power, antenna
-gain/loss, antenna and receiver heights, downtilts, orientation, pattern
-preset, sensitivity, and load</li>
+interference channel, beam width, radius, conducted TX power, absolute
+antenna gain, relative pattern, antenna and receiver heights, downtilts,
+orientation, pattern preset, receiver sensitivity mode, manual
+sensitivity, noise bandwidth, noise figure, required SNR, receiver
+margin, and load</li>
+<li>Explicit propagation model selection and the requested/applied model
+identity</li>
 <li>Free-space path loss (FSPL)</li>
-<li>Configured per-cell antenna gain and system loss</li>
-<li>Beam-sector, horizontal/vertical pattern-preset attenuation,
-receiver-sensitivity, and configured-radius eligibility</li>
+<li>Configured per-cell conducted TX power, absolute TX boresight gain,
+scalar RX gain, system loss, deterministic polarization loss, and
+calibration</li>
+<li>One shared antenna evaluator for horizontal/vertical relative
+attenuation, tilt, orientation, and eligibility across direct links,
+rays, surfaces, interference, building entry, and optimization</li>
+<li>Analytic compatibility patterns with hard-sector eligibility, plus
+the optional full-azimuth <code>3gpp-single-element</code> reference
+cut</li>
 <li>Building-polygon intersections from the local Ankara GeoJSON
 dataset</li>
-<li>Frequency-dependent cumulative wall attenuation</li>
+<li>Frequency-dependent cumulative wall attenuation only in
+<code>legacy_fspl_walls</code>; urban empirical NLOS does not receive an
+additional legacy wall term, and indoor endpoint fallback is
+explicit</li>
 <li>Deterministic POI and residential-demand enrichment for scoring</li>
 <li>Co-channel cell power, load, reuse, thermal noise, and
 resource-block presets for interference analysis</li>
+<li>A shared thermal-noise arithmetic helper with distinct receiver
+noise-equivalent bandwidth and interference per-resource-element
+bandwidth semantics</li>
+<li>Optional COG/GeoTIFF or explicitly declared standard HGT ground
+elevation, building-height obstruction, LOS/Fresnel geometry, and one
+dominant single knife-edge approximation in the isolated point-to-point
+path-profile workflow</li>
+<li>Optional, user-entered material, clutter, vegetation, gas, rain, and
+shadow-sensitivity components in that path-profile workflow</li>
+<li>Separate opt-in <code>sub_thz_atmospheric_reference_v1</code>
+component ledger for explicit P.525-5 free space, P.676-13 gas, P.838-3
+rain, and local-fog P.840-9 sensitivity; this ledger is not a canonical
+propagation model and does not make serviceability decisions</li>
 </ul>
 <p>The same request and dataset produce the same RF result. Core Lab
 scenario state does not modify propagation or interference
@@ -134,27 +314,42 @@ calculations.</p>
 Modeled</h2>
 <ul>
 <li>Fast or slow fading</li>
-<li>Diffraction around roofs, corners, and terrain</li>
+<li>Multiple-obstacle diffraction, roof/corner diffraction beyond the
+selected single knife-edge approximation</li>
 <li>Multipath reflection or ray bouncing</li>
-<li>Terrain elevation, foliage, weather, and atmospheric absorption</li>
-<li>Measured antenna diagrams, sidelobes, polarization, and
-per-frequency pattern interpolation</li>
-<li>MIMO layers, beamforming codebooks, polarization, or device
-orientation</li>
+<li>Automatic foliage, weather, atmospheric, and clutter datasets; those
+effects are explicit sensitivity inputs when enabled</li>
+<li>Measured/vendor antenna diagrams, tabulated-pattern
+upload/interpolation, array factor, codebooks, and per-frequency
+hardware calibration</li>
+<li>MIMO layers, beamforming codebooks, stochastic polarization,
+UE/device orientation, or receiver radiation patterns. A scalar RX gain,
+scalar polarization loss, and deterministic noise-limited receiver
+threshold are the receiver-side terms; no UE implementation model is
+implied.</li>
 <li>Dynamic scheduling, mobility, handover margins, and UE
 implementation behavior</li>
 <li>Uplink interference and adjacent-channel leakage</li>
 </ul>
 <p>Cells outside their configured beam or radius contribute no signal in
-the current model. This sharp planning boundary explains why samples can
-show no signal immediately outside a sector even when a real antenna
+the current model. Static rays terminate as usable rays when modeled
+power is at or below the effective per-cell receiver sensitivity;
+coverage surfaces retain those valid below-sensitivity values instead of
+converting them to NoData. Building-entry outdoor service remains the
+separate raw-power <code>&gt; -100 dBm</code> rule, and post-threshold
+geometry is retained only where needed for that independent building
+accounting. This sharp planning boundary explains why samples can show
+no usable signal immediately outside a sector even when a real antenna
 might contribute sidelobe energy.</p>
 <p>The <code>ideal-sector</code>, <code>cosine-sector</code>,
 <code>omni</code>, <code>flat</code>, <code>panel-10deg</code>, and
 <code>panel-20deg</code> choices are deterministic analytic presets, not
-vendor antenna files. Mechanical and electrical downtilt are combined
-against a simple elevation angle; antenna and receiver heights affect
-slant distance but do not create a full 3D scene.</p>
+vendor antenna files. Compatibility sector presets use hard beam
+eligibility; <code>omni</code> and <code>3gpp-single-element</code>
+evaluate finite directions across the full azimuth. Mechanical and
+electrical downtilt are combined against a simple elevation angle;
+antenna and receiver heights affect slant distance but do not create a
+full 3D scene. Positive downtilt points the boresight downward.</p>
 <p>Band labels, duplex mode, reuse factor, and PCI are retained and
 validated as inventory/reproducibility metadata. Channel IDs determine
 co-channel interference, while reuse supplies deterministic default
@@ -164,8 +359,9 @@ timing, PCI planning, or band-specific protocol behavior.</p>
 <p>LTE RSRP and RSRQ are CRS-style planning estimates. 5G values are
 modeled SS-RSRP and SS-RSRQ estimates. SINR, RSSI, RSRP, and RSRQ are
 derived from deterministic carrier powers and standardized
-resource-block concepts; they are not sampled from UE or PHY measurement
-reports.</p>
+resource-block concepts; their per-RE thermal noise remains separate
+from the receiver noise-equivalent bandwidth and is not sampled from UE
+or PHY measurement reports.</p>
 <p>An SINR near <code>0 dB</code> is expected when the serving cell and
 a co-channel interferer arrive at similar power and noise is
 comparatively small. A no-signal sample means no configured cell
@@ -180,13 +376,191 @@ OpenCellID-oriented source processing, not an operator inventory.</li>
 enrichment; missing tags reduce semantic confidence.</li>
 <li>Basemap tiles provide visual context only and do not enter RF
 calculations.</li>
-<li>Schema-v2 terrain, clutter, building-height, and material layers are
-integrity-checked and exposed as pack metadata, but the current RF model
-does not consume them. Their presence must not be described as terrain-
-or material-aware propagation.</li>
+<li>A supported north-up EPSG:4326 COG/GeoTIFF or standard HGT terrain
+layer is consumed by the point-to-point profile only. The fast sector,
+interference, optimization, batch, and regular-surface engines do not
+consume terrain.</li>
+<li>Building footprints preserve height provenance: reliable
+<code>height</code> is <code>observed_tag</code>,
+<code>building:levels</code> is <code>derived_from_levels</code> at 3 m
+per level, and the explicit 9 m display fallback is
+<code>unavailable</code> roof evidence. Unknown-height urban
+intersections are conservative NLOS. Material tags are normalized when
+present; explicit material/environment controls must not be described as
+surveyed site data.</li>
+<li>Separate clutter, height, and material sidecar layers are validated
+as pack metadata but are not automatically spatially joined into all
+analyses.</li>
 </ul>
 <p>Review the Data tool and exported report for the assumptions attached
 to a specific analysis.</p>
+<h2 id="recommendation-applicability">Recommendation Applicability</h2>
+<p>The <code>terrain-profile</code> label is available only from 30 MHz
+to 6 GHz, matching the frequency scope recorded for the current <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf">ITU-R
+P.1812-8 (2025-09) Recommendation</a>. The runtime profile also requires
+a terrain-capable path context for that reference scope; missing terrain
+uses the explicit zero-metre local datum and is not P.1812
+conformance.</p>
+<p>The <code>urban-short-range</code> label is available from 300 MHz to
+100 GHz in the current runtime profile. The current <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf">ITU-R
+P.1411-13 (2025-09) Recommendation</a> has a broader 300 MHz to 300 GHz
+outdoor short-range scope, but A.T.O.M retains its existing 100 GHz
+runtime ceiling and does not claim full P.1411 implementation. A
+research sub-THz profile is explicitly outside both standards-based
+profiles.</p>
+<p>The isolated Concept 4F.2 single-edge diagnostic is aligned with <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.526-16-202511-I!!PDF-E.pdf">ITU-R
+P.526-16 (2025-11), §4.1 equations (26) and (31)</a>. It uses FSPL plus
+explicit diffraction as an alternative view; it is not summed with
+canonical UMa NLOS. Explicit <code>height</code> and
+<code>building:levels</code> evidence are required, while the generic 9
+m fallback is unavailable geometry. User-selected material,
+atmospheric-gas, and rain terms are informed by <a
+href="https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf">ITU-R
+P.2040-4</a>, <a href="https://www.itu.int/rec/R-REC-P.676/en">ITU-R
+P.676</a>, and <a href="https://www.itu.int/rec/R-REC-P.838/en">ITU-R
+P.838</a>, respectively. They are not automatic implementations driven
+by surveyed construction or current meteorological data.</p>
+<p>The isolated Concept 4I.2B candidate reference evaluates three
+non-canonical P.1411-13 §4.1.1 Table 4 rows at their strict frequency
+and distance envelopes: below-rooftop LoS (5–500 m at 140 GHz), urban
+high-rise NLoS (20–150 m), and urban low-rise/suburban NLoS (10–150 m).
+It requires explicit morphology, both-below-rooftop relation, LoS/NLoS
+state, and provenance. It returns the Table 4 median and sigma metadata
+only; P.525, atmospheric, research wall, diffraction, material, and
+receiver terms remain comparisons or separate diagnostics. The endpoint
+is not called by canonical simulation, coverage, interference, building
+entry, radio quality, or optimization. See Concept 4I.2B.</p>
+<p>Concept 4I.3 adds an isolated measurement-evidence ledger at
+<code>/api/sub-thz-validation</code>. It requires explicit campaign,
+quantity, antenna-basis, calibration, geometry, weather, and label
+provenance before normalizing observations into path loss. Its residual
+is measured minus predicted path loss; censored and
+directional-incompatible observations remain visible but do not enter
+ordinary metrics. P.525, the atmospheric reference, P.1411 rows, the
+comparison-only research profile, and the P.526 diagnostic are evaluated
+through a shared adapter contract. Constant-bias calibration and
+deterministic spatial/site/campaign holdouts are diagnostic only, and
+the response has no production-candidate state. The repository registers
+external literature metadata without importing or inventing numeric
+samples. See Concept 4I.3.</p>
+<p>Concept 4I.4 adds a separate
+<code>p2040_material_slab_reference_v1</code> endpoint at
+<code>/api/sub-thz-material-reference</code>. It evaluates one
+explicitly declared homogeneous slab with P.2040-4 complex material
+properties, TE/TM Fresnel coefficients, internal reflections, power
+fractions, and strict Table 3 frequency ranges. Thickness, angle,
+polarization, exterior media, and property provenance are required;
+metal without a covered row, multilayer construction, OSM material
+physics, P.2109 extrapolation, and whole-building entry are excluded.
+Its side-by-side 80 dB/event comparison is never summed and the result
+remains <code>reference_only</code>. See Concept 4I.4.</p>
+<p>Concept 4I.5B adds the isolated
+<code>single_bounce_specular_reflection_reference_v1</code> endpoint at
+<code>/api/sub-thz-reflection-reference</code>. It requires explicit
+Tx/Rx geometry and heights, a finite vertical planar facade with
+normal/geometry/height provenance, TE or TM polarization, explicit
+P.2040 interface or coherent finite-slab material inputs, and a declared
+terrain mode. Image-source geometry is evaluated in metric ENU
+coordinates; Tx-to-reflector and reflector-to-Rx visibility are checked
+independently; the only spreading term is P.525 FSPL over
+<code>L=d1+d2</code>; and the P.2040 field coefficient power is applied
+exactly once. Roughness, Fresnel footprint, and physical-aperture
+far-field are evidence gates, not invented corrections. Direct paths,
+coherent multipath, diffuse scattering, atmosphere, P.1411/P.526
+composition, the research 80 dB wall heuristic, canonical RF, and
+optimization remain excluded. The result is <code>reference_only</code>
+and may be <code>applicable_reference</code>,
+<code>qualified_reference</code>, or <code>inapplicable</code>. See
+Concept 4I.5B.</p>
+<p>The reference catalog also records <a
+href="https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=3173">3GPP
+TR 38.901 V19.4.0 (2026-06-23)</a> as a comparison scope for 0.5–100 GHz
+channel evaluation. The runtime dispatches the documented deterministic
+UMa path-loss subset as <code>urban_short_range</code>, without claiming
+full 3GPP channel-model conformance. Measurement and calibration
+behavior is represented by <code>/api/measurements/evaluate</code>;
+there is no standalone calibration endpoint in this matrix.</p>
+<p>Concept 4H.1 adds inspectable interference bookkeeping, but it
+remains a planning approximation: total-carrier propagation power is
+normalized to a common reference-resource basis, LTE/NR signal-resource
+density and scheduler timing are not modeled,
+adjacent-channel/partial-overlap selectivity is deferred, and each
+cell's configured radius is only a finite analysis horizon. The declared
+power ledger separates serving admission from non-serving interference
+eligibility, while exact co-channel rules, thermal-noise bandwidth,
+serviceability thresholds, and failure reasons are returned so results
+are auditable. See the Concept 4H.1 interference and radio-quality
+note.</p>
+<p>Concept 4H.2 optionally couples that contract to optimization through
+the <code>radio_quality</code> objective. The utility is the fraction of
+a deterministic fixed sampled union domain that meets the combined
+RSRP/SINR/RSRQ planning policy. No-carrier samples remain failures in
+the denominator, and the domain does not change with azimuth, coverage,
+serviceability, or Pareto membership. The domain is sampled rather than
+a continuous-area integral. Its interference is bounded by each cell's
+effective <code>rf_profile.radius_m</code>; this is a declared
+compatibility horizon, not physical zero power outside the radius and
+not a claim of network-wide interference completeness. Radio quality is
+disabled by default, does not change the existing optimizer when its
+priority is zero, and does not redefine demand, residential,
+building-entry, or raw signal-surface semantics. The 140 GHz research
+profile is unavailable for this objective with reason
+<code>unsupported_radio_quality_model</code>. See the Concept 4H.2
+optimization note for the fixed-domain contract, Pareto/reranking
+behavior, performance architecture, policy/horizon limitations, and
+canonical enabled experiment.</p>
+<h2 id="reference-and-applicability-foundation">Reference and
+Applicability Foundation</h2>
+<p>Concept 4B adds an independent, human-auditable fixture corpus at
+<code>backend-go/raytracer/testdata/rf-reference-fixtures.json</code>
+and the corresponding contract tests in
+<code>backend-go/raytracer/rf_reference_fixtures_test.go</code>. The
+corpus covers FSPL, slant-distance link budgets, antenna-pattern
+attenuation and beam boundaries, dBm/mW and thermal-noise arithmetic,
+RSRP/SINR arithmetic, Fresnel radius, knife-edge loss, exact polygon
+boundary cases, sensitivity termination, raw received-power surfaces,
+and point-sampled path-profile behavior. Concept 4G.2 adds independent
+receiver fixtures and a gated 2.6/28 GHz sensitivity matrix in
+<code>backend-go/raytracer/receiver_noise_test.go</code>, including
+bandwidth, noise-figure, SNR, margin, per-cell, surface, building,
+propagation, and interference separation checks. Expected values are
+independently calculated fixtures; the tests compare them with the
+existing implementation without changing its equations.</p>
+<p>The metadata catalog in
+<code>backend-go/raytracer/reference_foundation.go</code> exposes
+explicit applicability states and failure reasons for frequency, path
+length, scenario, terrain, building data, and LOS/NLOS requirements.
+Failure results use identifiers such as
+<code>frequency_out_of_range</code>, <code>distance_out_of_range</code>,
+<code>unsupported_environment</code>,
+<code>required_terrain_missing</code>,
+<code>required_building_data_missing</code>,
+<code>required_los_or_nlos_missing</code>,
+<code>research_profile_only</code>, and
+<code>unsupported_endpoint</code>. Its capability matrix records 4G/2.6
+GHz, 5G/28 GHz, and 6G/140 GHz across static, surface, network,
+azimuth/network optimization, interference, path profile, and
+measurement/calibration endpoints. Current support is not uniform:
+static, surface, and network RF evaluation accept 6G profiles;
+interference, measurement evaluation, and site recommendations remain
+restricted; path-profile 6G is research-only. Interference
+serviceability uses separate RSRP/SINR/RSRQ thresholds, not receiver
+sensitivity or building service. Receiver sensitivity is a strict
+carrier-admission/usability gate and is not added as another
+interference-noise term. This catalog is descriptive and does not
+dispatch a new propagation model.</p>
+<p>Network responses intentionally expose separate score
+representations. <code>stats.network_score</code> is the legacy raw
+aggregate of weighted domain metrics; it may be much larger than 100.
+<code>stats.objectives</code> contains normalized utilities,
+<code>stats.composite_score</code> is their weighted 0–1 composite, and
+<code>stats.score</code> is the authoritative 0–100 presentation score.
+<code>optimization.objective_score</code> and recommendation
+<code>marginal_network_score</code> remain raw compatibility values and
+must not be formatted as /100 scores.</p>
 <h2 id="appropriate-interpretation">Appropriate Interpretation</h2>
 <p>Use A.T.O.M to compare configurations, find deterministic coverage
 gaps, understand co-channel relationships, inspect communication-path
@@ -199,6 +573,7 @@ measurements.</p>
 <li><a href="./architecture.html">System architecture</a></li>
 <li><a href="./algorithms.html">RF algorithms</a></li>
 <li><a href="./api.html">REST API</a></li>
+<li>Concept 4G.2 receiver noise and sensitivity</li>
 </ul>
       </div>
     </article>
@@ -207,7 +582,7 @@ measurements.</p>
   <footer class="site-footer">
     <div class="footer-inner">
       <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
-      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
     </div>
   </footer>
 

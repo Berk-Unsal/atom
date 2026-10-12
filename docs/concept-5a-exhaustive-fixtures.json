@@ -1,0 +1,2823 @@
+{
+  "audit_version": "concept-5a-audit-v1",
+  "feasibility_and_unavailable_objective_checks": {
+    "demand_only_error": "optimization has no available positively weighted objectives in the target domain",
+    "effective_weights": {
+      "coverage": 1,
+      "demand": 0,
+      "overlap": 0,
+      "radio_quality": 0,
+      "residential": 0
+    },
+    "mixed_available_unavailable_succeeds": true,
+    "objective_status": {
+      "coverage": {
+        "available": true,
+        "configured_priority": 50,
+        "effective_weight": 1,
+        "utility": 1,
+        "contribution": 1
+      },
+      "demand": {
+        "available": false,
+        "reason": "no_relevant_entities",
+        "configured_priority": 50,
+        "effective_weight": 0,
+        "utility": null,
+        "contribution": null
+      },
+      "overlap": {
+        "available": false,
+        "reason": "no_relevant_entities",
+        "configured_priority": 0,
+        "effective_weight": 0,
+        "utility": null,
+        "contribution": null
+      },
+      "radio_quality": {
+        "available": false,
+        "reason": "disabled",
+        "configured_priority": 0,
+        "effective_weight": 0,
+        "utility": null,
+        "contribution": null
+      },
+      "residential": {
+        "available": false,
+        "reason": "no_relevant_entities",
+        "configured_priority": 0,
+        "effective_weight": 0,
+        "utility": null,
+        "contribution": null
+      }
+    }
+  },
+  "numeric_tie_policy": {
+    "comparison": "exact IEEE floating-point comparisons; no epsilon",
+    "near_tie_behavior": "a positive 1e-12 score delta wins; exact equality does not replace the incumbent",
+    "near_tie_fixture": {
+      "exact_tie_scores": [
+        1,
+        1
+      ],
+      "exact_tie_winner": "first",
+      "scores": [
+        1,
+        1.000000000001
+      ],
+      "strict_winner": "second"
+    },
+    "plateau_behavior": "strict greater-than retains first candidate"
+  },
+  "radio_quality_mode_check": {
+    "candidate_independent_preparation": true,
+    "disabled_comparison": {
+      "enabled_mode_has_radio_quality_metadata": true,
+      "error": null,
+      "same_rf_request_except_objective": true,
+      "search": {
+        "accepted_update_trace": [
+          {
+            "pass": 1,
+            "cell_index": 0,
+            "cell_id": "fixture-cell-1",
+            "previous_configuration": [
+              20,
+              80
+            ],
+            "chosen_configuration": [
+              0,
+              80
+            ],
+            "previous_state_key": "20.0,80.0",
+            "chosen_state_key": "0.0,80.0",
+            "candidate_count": 36,
+            "chosen_azimuth_deg": 0,
+            "chosen_score": 1,
+            "previous_score_known": false,
+            "chosen_feasible": true,
+            "changed": true,
+            "requested_evaluations_end": 37
+          },
+          {
+            "pass": 1,
+            "cell_index": 1,
+            "cell_id": "fixture-cell-2",
+            "previous_configuration": [
+              0,
+              80
+            ],
+            "chosen_configuration": [
+              0,
+              0
+            ],
+            "previous_state_key": "0.0,80.0",
+            "chosen_state_key": "0.0,0.0",
+            "candidate_count": 36,
+            "chosen_azimuth_deg": 0,
+            "chosen_score": 1,
+            "previous_score_known": false,
+            "chosen_feasible": true,
+            "changed": true,
+            "requested_evaluations_end": 73
+          },
+          {
+            "pass": 2,
+            "cell_index": 0,
+            "cell_id": "fixture-cell-1",
+            "previous_configuration": [
+              0,
+              0
+            ],
+            "chosen_configuration": [
+              0,
+              0
+            ],
+            "previous_state_key": "0.0,0.0",
+            "chosen_state_key": "0.0,0.0",
+            "candidate_count": 36,
+            "chosen_azimuth_deg": 0,
+            "chosen_score": 1,
+            "previous_score_known": false,
+            "chosen_feasible": true,
+            "changed": false,
+            "requested_evaluations_end": 109
+          },
+          {
+            "pass": 2,
+            "cell_index": 1,
+            "cell_id": "fixture-cell-2",
+            "previous_configuration": [
+              0,
+              0
+            ],
+            "chosen_configuration": [
+              0,
+              0
+            ],
+            "previous_state_key": "0.0,0.0",
+            "chosen_state_key": "0.0,0.0",
+            "candidate_count": 36,
+            "chosen_azimuth_deg": 0,
+            "chosen_score": 1,
+            "previous_score_known": false,
+            "chosen_feasible": true,
+            "changed": false,
+            "requested_evaluations_end": 145
+          }
+        ],
+        "algorithm": "network_coordinate_descent",
+        "baseline_azimuths": [
+          20,
+          80
+        ],
+        "baseline_stats": {
+          "network_score": 112400,
+          "unique_demand_buildings": 5,
+          "unique_residential_buildings": 2,
+          "overlap_buildings": 0,
+          "demand_score": 90000,
+          "residential_score": 20000,
+          "coverage_score": 2400,
+          "overlap_penalty": 0,
+          "data_quality": "",
+          "raw_metrics": {
+            "served_weighted_demand": 9,
+            "served_demand_weight": 9,
+            "total_weighted_demand": 41,
+            "relevant_demand_weight": 41,
+            "residential_covered": 2,
+            "residential_total": 10,
+            "relevant_residential_total": 10,
+            "coverage_reach_score": 2400,
+            "coverage_reach_maximum": 2400,
+            "propagation_reach_score": 2400,
+            "propagation_reach_maximum": 2400,
+            "covered_units": 5,
+            "overlap_buildings": 0,
+            "overlap_ratio": 0,
+            "radio_quality_total_samples": 0,
+            "radio_quality_serviceable_samples": 0,
+            "radio_quality_serviceable_fraction": 0
+          },
+          "objectives": {
+            "demand": 0.21951219512195122,
+            "residential": 0.2,
+            "coverage": 1,
+            "overlap": 1,
+            "radio_quality": 0
+          },
+          "composite_score": 1,
+          "score": 100,
+          "objective_breakdown": {
+            "demand": {
+              "utility": 0.21951219512195122,
+              "weight": 0,
+              "contribution": 0
+            },
+            "residential": {
+              "utility": 0.2,
+              "weight": 0,
+              "contribution": 0
+            },
+            "coverage": {
+              "utility": 1,
+              "weight": 1,
+              "contribution": 1
+            },
+            "overlap": {
+              "utility": 1,
+              "weight": 0,
+              "contribution": 0
+            },
+            "radio_quality": {
+              "utility": 0,
+              "weight": 0,
+              "contribution": 0
+            }
+          },
+          "objective_status": {
+            "coverage": {
+              "available": true,
+              "configured_priority": 100,
+              "effective_weight": 1,
+              "utility": 1,
+              "contribution": 1
+            },
+            "demand": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.21951219512195122,
+              "contribution": 0
+            },
+            "overlap": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 1,
+              "contribution": 0
+            },
+            "radio_quality": {
+              "available": false,
+              "reason": "disabled",
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": null,
+              "contribution": null
+            },
+            "residential": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.2,
+              "contribution": 0
+            }
+          }
+        },
+        "cache_hits": 0,
+        "cycle_detected": false,
+        "cycle_length": 0,
+        "duplicate_requested_states": 40,
+        "evaluated_candidates": 146,
+        "evaluated_state_set_fingerprint": "concept-5a-states-8daa44b0baced68a",
+        "final_azimuths": [
+          0,
+          0
+        ],
+        "final_stats": {
+          "network_score": 107400,
+          "unique_demand_buildings": 5,
+          "unique_residential_buildings": 2,
+          "overlap_buildings": 2,
+          "demand_score": 90000,
+          "residential_score": 20000,
+          "coverage_score": 2400,
+          "overlap_penalty": 5000,
+          "data_quality": "",
+          "raw_metrics": {
+            "served_weighted_demand": 9,
+            "served_demand_weight": 9,
+            "total_weighted_demand": 41,
+            "relevant_demand_weight": 41,
+            "residential_covered": 2,
+            "residential_total": 10,
+            "relevant_residential_total": 10,
+            "coverage_reach_score": 2400,
+            "coverage_reach_maximum": 2400,
+            "propagation_reach_score": 2400,
+            "propagation_reach_maximum": 2400,
+            "covered_units": 5,
+            "overlap_buildings": 2,
+            "overlap_ratio": 0.4,
+            "radio_quality_total_samples": 0,
+            "radio_quality_serviceable_samples": 0,
+            "radio_quality_serviceable_fraction": 0
+          },
+          "objectives": {
+            "demand": 0.21951219512195122,
+            "residential": 0.2,
+            "coverage": 1,
+            "overlap": 0.6,
+            "radio_quality": 0
+          },
+          "composite_score": 1,
+          "score": 100,
+          "objective_breakdown": {
+            "demand": {
+              "utility": 0.21951219512195122,
+              "weight": 0,
+              "contribution": 0
+            },
+            "residential": {
+              "utility": 0.2,
+              "weight": 0,
+              "contribution": 0
+            },
+            "coverage": {
+              "utility": 1,
+              "weight": 1,
+              "contribution": 1
+            },
+            "overlap": {
+              "utility": 0.6,
+              "weight": 0,
+              "contribution": 0
+            },
+            "radio_quality": {
+              "utility": 0,
+              "weight": 0,
+              "contribution": 0
+            }
+          },
+          "objective_status": {
+            "coverage": {
+              "available": true,
+              "configured_priority": 100,
+              "effective_weight": 1,
+              "utility": 1,
+              "contribution": 1
+            },
+            "demand": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.21951219512195122,
+              "contribution": 0
+            },
+            "overlap": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.6,
+              "contribution": 0
+            },
+            "radio_quality": {
+              "available": false,
+              "reason": "disabled",
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": null,
+              "contribution": null
+            },
+            "residential": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.2,
+              "contribution": 0
+            }
+          }
+        },
+        "fixed_point": true,
+        "label": "production-default",
+        "options": {
+          "label": "production-default",
+          "passes": 2,
+          "azimuth_step_deg": 10,
+          "cell_order_indices": [
+            0,
+            1
+          ],
+          "cell_order_ids": [
+            "fixture-cell-1",
+            "fixture-cell-2"
+          ],
+          "start_azimuths": [
+            20,
+            80
+          ],
+          "start_mode": "request_azimuths_normalized",
+          "search_behavior": "fixed_pass_coordinate_descent"
+        },
+        "pareto_ids": [
+          "250.0,0.0"
+        ],
+        "passes_executed": 2,
+        "production_cache_behavior": true,
+        "recommended_id": "250.0,0.0",
+        "recommended_stats": {
+          "network_score": 212400,
+          "unique_demand_buildings": 9,
+          "unique_residential_buildings": 5,
+          "overlap_buildings": 0,
+          "demand_score": 160000,
+          "residential_score": 50000,
+          "coverage_score": 2400,
+          "overlap_penalty": 0,
+          "data_quality": "",
+          "raw_metrics": {
+            "served_weighted_demand": 16,
+            "served_demand_weight": 16,
+            "total_weighted_demand": 41,
+            "relevant_demand_weight": 41,
+            "residential_covered": 5,
+            "residential_total": 10,
+            "relevant_residential_total": 10,
+            "coverage_reach_score": 2400,
+            "coverage_reach_maximum": 2400,
+            "propagation_reach_score": 2400,
+            "propagation_reach_maximum": 2400,
+            "covered_units": 9,
+            "overlap_buildings": 0,
+            "overlap_ratio": 0,
+            "radio_quality_total_samples": 0,
+            "radio_quality_serviceable_samples": 0,
+            "radio_quality_serviceable_fraction": 0
+          },
+          "objectives": {
+            "demand": 0.390244,
+            "residential": 0.5,
+            "coverage": 1,
+            "overlap": 1,
+            "radio_quality": 0
+          },
+          "composite_score": 1,
+          "score": 100,
+          "objective_breakdown": {
+            "demand": {
+              "utility": 0.390244,
+              "weight": 0,
+              "contribution": 0
+            },
+            "residential": {
+              "utility": 0.5,
+              "weight": 0,
+              "contribution": 0
+            },
+            "coverage": {
+              "utility": 1,
+              "weight": 1,
+              "contribution": 1
+            },
+            "overlap": {
+              "utility": 1,
+              "weight": 0,
+              "contribution": 0
+            },
+            "radio_quality": {
+              "utility": 0,
+              "weight": 0,
+              "contribution": 0
+            }
+          },
+          "objective_status": {
+            "coverage": {
+              "available": true,
+              "configured_priority": 100,
+              "effective_weight": 1,
+              "utility": 1,
+              "contribution": 1
+            },
+            "demand": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.390244,
+              "contribution": 0
+            },
+            "overlap": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 1,
+              "contribution": 0
+            },
+            "radio_quality": {
+              "available": false,
+              "reason": "disabled",
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": null,
+              "contribution": null
+            },
+            "residential": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.5,
+              "contribution": 0
+            }
+          }
+        },
+        "repeated_state_count": 2,
+        "scenario_fingerprint": "network-38082ecee8f4c077c93fd8529a6830e0",
+        "search_fingerprint": "concept-5a-search-aea575ff571ca743d85a2b50",
+        "state_trace": [
+          "20.0,80.0",
+          "0.0,80.0",
+          "0.0,0.0",
+          "0.0,0.0",
+          "0.0,0.0"
+        ],
+        "termination": "fixed_pass_count",
+        "unique_states": 106
+      }
+    },
+    "enabled": true,
+    "error": null,
+    "metadata": {
+      "enabled": true,
+      "available": true,
+      "radio_quality_domain_id": "radio-quality-domain-3d949465c908dbef017aecd7e3ee025b",
+      "radio_quality_domain_description": "Deterministic union grid of per-cell effective-radius disks; fixed before azimuth scoring and sampled, not a continuous-area integral",
+      "radio_quality_sample_count": 84,
+      "radio_quality_sample_spacing_m": 40,
+      "radio_quality_sample_ordering": "row-major grid row then column",
+      "radio_quality_domain_source": "interference_compatibility_grid_union",
+      "interference_horizon_mode": "per_cell_effective_radius",
+      "interference_horizon_description": "finite per-cell interference-analysis horizon; outside_radius means the point is beyond that cell's configured radius and is not physical zero RF power or a receiver-sensitivity result",
+      "interference_horizon_meters": [
+        190,
+        190
+      ],
+      "radio_quality_policy_id": "planning-default-v1",
+      "radio_quality_rsrp_threshold_dbm": -110,
+      "radio_quality_rsrq_threshold_db": -20,
+      "radio_quality_serviceability_rule": "serviceable = RSRP \u003e= threshold AND SINR \u003e= threshold AND RSRQ \u003e= threshold",
+      "radio_quality_serving_selection_mode": "automatic_strongest_eligible",
+      "radio_quality_serving_selection_metric": "rsrp_dbm",
+      "radio_quality_co_channel_eligibility_rule": "exact channel_id, frequency_ghz, bandwidth_mhz, and technology match",
+      "interference_horizon_bounded": true
+    },
+    "runtime_seconds": 0.221427167,
+    "search": {
+      "accepted_update_trace": [
+        {
+          "pass": 1,
+          "cell_index": 0,
+          "cell_id": "fixture-cell-1",
+          "previous_configuration": [
+            20,
+            80
+          ],
+          "chosen_configuration": [
+            0,
+            80
+          ],
+          "previous_state_key": "20.0,80.0",
+          "chosen_state_key": "0.0,80.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 0,
+          "chosen_score": 0.7083333333333334,
+          "previous_score_known": false,
+          "chosen_feasible": true,
+          "changed": true,
+          "requested_evaluations_end": 37
+        },
+        {
+          "pass": 1,
+          "cell_index": 1,
+          "cell_id": "fixture-cell-2",
+          "previous_configuration": [
+            0,
+            80
+          ],
+          "chosen_configuration": [
+            0,
+            110
+          ],
+          "previous_state_key": "0.0,80.0",
+          "chosen_state_key": "0.0,110.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 110,
+          "chosen_score": 0.7261904761904762,
+          "previous_score_known": false,
+          "chosen_feasible": true,
+          "changed": true,
+          "requested_evaluations_end": 73
+        },
+        {
+          "pass": 2,
+          "cell_index": 0,
+          "cell_id": "fixture-cell-1",
+          "previous_configuration": [
+            0,
+            110
+          ],
+          "chosen_configuration": [
+            0,
+            110
+          ],
+          "previous_state_key": "0.0,110.0",
+          "chosen_state_key": "0.0,110.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 0,
+          "chosen_score": 0.7261904761904762,
+          "previous_score_known": false,
+          "chosen_feasible": true,
+          "changed": false,
+          "requested_evaluations_end": 109
+        },
+        {
+          "pass": 2,
+          "cell_index": 1,
+          "cell_id": "fixture-cell-2",
+          "previous_configuration": [
+            0,
+            110
+          ],
+          "chosen_configuration": [
+            0,
+            110
+          ],
+          "previous_state_key": "0.0,110.0",
+          "chosen_state_key": "0.0,110.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 110,
+          "chosen_score": 0.7261904761904762,
+          "previous_score_known": false,
+          "chosen_feasible": true,
+          "changed": false,
+          "requested_evaluations_end": 145
+        }
+      ],
+      "algorithm": "network_coordinate_descent",
+      "baseline_azimuths": [
+        20,
+        80
+      ],
+      "baseline_stats": {
+        "network_score": 112400,
+        "unique_demand_buildings": 5,
+        "unique_residential_buildings": 2,
+        "overlap_buildings": 0,
+        "demand_score": 90000,
+        "residential_score": 20000,
+        "coverage_score": 2400,
+        "overlap_penalty": 0,
+        "data_quality": "",
+        "raw_metrics": {
+          "served_weighted_demand": 9,
+          "served_demand_weight": 9,
+          "total_weighted_demand": 41,
+          "relevant_demand_weight": 41,
+          "residential_covered": 2,
+          "residential_total": 10,
+          "relevant_residential_total": 10,
+          "coverage_reach_score": 2400,
+          "coverage_reach_maximum": 2400,
+          "propagation_reach_score": 2400,
+          "propagation_reach_maximum": 2400,
+          "covered_units": 5,
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "radio_quality_total_samples": 84,
+          "radio_quality_serviceable_samples": 33,
+          "radio_quality_serviceable_fraction": 0.39285714285714285,
+          "radio_quality_p10_sinr_db": 48.84904622089687,
+          "radio_quality_median_sinr_db": 65.28378320577906,
+          "radio_quality_p10_rsrp_dbm": -76.3900411885463,
+          "radio_quality_median_rsrp_dbm": -59.95530420366412,
+          "radio_quality_p10_rsrq_db": -10.791869068352105,
+          "radio_quality_median_rsrq_db": -10.791813746964802,
+          "radio_quality_outage_by_reason": {
+            "multiple_failures": 0,
+            "no_carrier": 51,
+            "rsrp_failed": 0,
+            "rsrq_failed": 0,
+            "sinr_failed": 0,
+            "unavailable_configuration": 0
+          },
+          "radio_quality_serving_cell_samples": {
+            "fixture-cell-1": 17,
+            "fixture-cell-2": 16
+          }
+        },
+        "objectives": {
+          "demand": 0.21951219512195122,
+          "residential": 0.2,
+          "coverage": 1,
+          "overlap": 1,
+          "radio_quality": 0.39285714285714285
+        },
+        "composite_score": 0.6964285714285714,
+        "score": 69.64285714285714,
+        "objective_breakdown": {
+          "demand": {
+            "utility": 0.21951219512195122,
+            "weight": 0,
+            "contribution": 0
+          },
+          "residential": {
+            "utility": 0.2,
+            "weight": 0,
+            "contribution": 0
+          },
+          "coverage": {
+            "utility": 1,
+            "weight": 0.5,
+            "contribution": 0.5
+          },
+          "overlap": {
+            "utility": 1,
+            "weight": 0,
+            "contribution": 0
+          },
+          "radio_quality": {
+            "utility": 0.39285714285714285,
+            "weight": 0.5,
+            "contribution": 0.19642857142857142
+          }
+        },
+        "objective_status": {
+          "coverage": {
+            "available": true,
+            "configured_priority": 50,
+            "effective_weight": 0.5,
+            "utility": 1,
+            "contribution": 0.5
+          },
+          "demand": {
+            "available": true,
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": 0.21951219512195122,
+            "contribution": 0
+          },
+          "overlap": {
+            "available": true,
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": 1,
+            "contribution": 0
+          },
+          "radio_quality": {
+            "available": true,
+            "configured_priority": 50,
+            "effective_weight": 0.5,
+            "utility": 0.39285714285714285,
+            "contribution": 0.19642857142857142
+          },
+          "residential": {
+            "available": true,
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": 0.2,
+            "contribution": 0
+          }
+        }
+      },
+      "cache_hits": 0,
+      "cycle_detected": false,
+      "cycle_length": 0,
+      "duplicate_requested_states": 40,
+      "evaluated_candidates": 146,
+      "evaluated_state_set_fingerprint": "concept-5a-states-9698b8a7da2de266",
+      "final_azimuths": [
+        0,
+        110
+      ],
+      "final_stats": {
+        "network_score": 82400,
+        "unique_demand_buildings": 4,
+        "unique_residential_buildings": 1,
+        "overlap_buildings": 0,
+        "demand_score": 70000,
+        "residential_score": 10000,
+        "coverage_score": 2400,
+        "overlap_penalty": 0,
+        "data_quality": "",
+        "raw_metrics": {
+          "served_weighted_demand": 7,
+          "served_demand_weight": 7,
+          "total_weighted_demand": 41,
+          "relevant_demand_weight": 41,
+          "residential_covered": 1,
+          "residential_total": 10,
+          "relevant_residential_total": 10,
+          "coverage_reach_score": 2400,
+          "coverage_reach_maximum": 2400,
+          "propagation_reach_score": 2400,
+          "propagation_reach_maximum": 2400,
+          "covered_units": 4,
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "radio_quality_total_samples": 84,
+          "radio_quality_serviceable_samples": 38,
+          "radio_quality_serviceable_fraction": 0.4523809523809524,
+          "radio_quality_p10_sinr_db": 50.12681313571064,
+          "radio_quality_median_sinr_db": 64.70813885244995,
+          "radio_quality_p10_rsrp_dbm": -75.11227427373254,
+          "radio_quality_median_rsrp_dbm": -60.530948556993216,
+          "radio_quality_p10_rsrq_db": -10.791854639923947,
+          "radio_quality_median_rsrq_db": -10.791813929302252,
+          "radio_quality_outage_by_reason": {
+            "multiple_failures": 0,
+            "no_carrier": 46,
+            "rsrp_failed": 0,
+            "rsrq_failed": 0,
+            "sinr_failed": 0,
+            "unavailable_configuration": 0
+          },
+          "radio_quality_serving_cell_samples": {
+            "fixture-cell-1": 19,
+            "fixture-cell-2": 19
+          }
+        },
+        "objectives": {
+          "demand": 0.17073170731707318,
+          "residential": 0.1,
+          "coverage": 1,
+          "overlap": 1,
+          "radio_quality": 0.4523809523809524
+        },
+        "composite_score": 0.7261904761904762,
+        "score": 72.61904761904762,
+        "objective_breakdown": {
+          "demand": {
+            "utility": 0.17073170731707318,
+            "weight": 0,
+            "contribution": 0
+          },
+          "residential": {
+            "utility": 0.1,
+            "weight": 0,
+            "contribution": 0
+          },
+          "coverage": {
+            "utility": 1,
+            "weight": 0.5,
+            "contribution": 0.5
+          },
+          "overlap": {
+            "utility": 1,
+            "weight": 0,
+            "contribution": 0
+          },
+          "radio_quality": {
+            "utility": 0.4523809523809524,
+            "weight": 0.5,
+            "contribution": 0.2261904761904762
+          }
+        },
+        "objective_status": {
+          "coverage": {
+            "available": true,
+            "configured_priority": 50,
+            "effective_weight": 0.5,
+            "utility": 1,
+            "contribution": 0.5
+          },
+          "demand": {
+            "available": true,
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": 0.17073170731707318,
+            "contribution": 0
+          },
+          "overlap": {
+            "available": true,
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": 1,
+            "contribution": 0
+          },
+          "radio_quality": {
+            "available": true,
+            "configured_priority": 50,
+            "effective_weight": 0.5,
+            "utility": 0.4523809523809524,
+            "contribution": 0.2261904761904762
+          },
+          "residential": {
+            "available": true,
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": 0.1,
+            "contribution": 0
+          }
+        }
+      },
+      "fixed_point": true,
+      "label": "production-default",
+      "options": {
+        "label": "production-default",
+        "passes": 2,
+        "azimuth_step_deg": 10,
+        "cell_order_indices": [
+          0,
+          1
+        ],
+        "cell_order_ids": [
+          "fixture-cell-1",
+          "fixture-cell-2"
+        ],
+        "start_azimuths": [
+          20,
+          80
+        ],
+        "start_mode": "request_azimuths_normalized",
+        "search_behavior": "fixed_pass_coordinate_descent"
+      },
+      "pareto_ids": [
+        "190.0,110.0",
+        "0.0,170.0",
+        "0.0,270.0"
+      ],
+      "passes_executed": 2,
+      "production_cache_behavior": true,
+      "recommended_id": "190.0,110.0",
+      "recommended_stats": {
+        "network_score": 122400,
+        "unique_demand_buildings": 6,
+        "unique_residential_buildings": 3,
+        "overlap_buildings": 0,
+        "demand_score": 90000,
+        "residential_score": 30000,
+        "coverage_score": 2400,
+        "overlap_penalty": 0,
+        "data_quality": "",
+        "raw_metrics": {
+          "served_weighted_demand": 9,
+          "served_demand_weight": 9,
+          "total_weighted_demand": 41,
+          "relevant_demand_weight": 41,
+          "residential_covered": 3,
+          "residential_total": 10,
+          "relevant_residential_total": 10,
+          "coverage_reach_score": 2400,
+          "coverage_reach_maximum": 2400,
+          "propagation_reach_score": 2400,
+          "propagation_reach_maximum": 2400,
+          "covered_units": 6,
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "radio_quality_total_samples": 84,
+          "radio_quality_serviceable_samples": 38,
+          "radio_quality_serviceable_fraction": 0.452381,
+          "radio_quality_p10_sinr_db": 51.3728,
+          "radio_quality_median_sinr_db": 65.3194,
+          "radio_quality_p10_rsrp_dbm": -73.8663,
+          "radio_quality_median_rsrp_dbm": -59.9197,
+          "radio_quality_p10_rsrq_db": -10.7918,
+          "radio_quality_median_rsrq_db": -10.7918,
+          "radio_quality_outage_by_reason": {
+            "multiple_failures": 0,
+            "no_carrier": 46,
+            "rsrp_failed": 0,
+            "rsrq_failed": 0,
+            "sinr_failed": 0,
+            "unavailable_configuration": 0
+          },
+          "radio_quality_serving_cell_samples": {
+            "fixture-cell-1": 19,
+            "fixture-cell-2": 19
+          }
+        },
+        "objectives": {
+          "demand": 0.219512,
+          "residential": 0.3,
+          "coverage": 1,
+          "overlap": 1,
+          "radio_quality": 0.452381
+        },
+        "composite_score": 0.72619,
+        "score": 72.619,
+        "objective_breakdown": {
+          "demand": {
+            "utility": 0.219512,
+            "weight": 0,
+            "contribution": 0
+          },
+          "residential": {
+            "utility": 0.3,
+            "weight": 0,
+            "contribution": 0
+          },
+          "coverage": {
+            "utility": 1,
+            "weight": 0.5,
+            "contribution": 0.5
+          },
+          "overlap": {
+            "utility": 1,
+            "weight": 0,
+            "contribution": 0
+          },
+          "radio_quality": {
+            "utility": 0.452381,
+            "weight": 0.5,
+            "contribution": 0.22619
+          }
+        },
+        "objective_status": {
+          "coverage": {
+            "available": true,
+            "configured_priority": 50,
+            "effective_weight": 0.5,
+            "utility": 1,
+            "contribution": 0.5
+          },
+          "demand": {
+            "available": true,
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": 0.219512,
+            "contribution": 0
+          },
+          "overlap": {
+            "available": true,
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": 1,
+            "contribution": 0
+          },
+          "radio_quality": {
+            "available": true,
+            "configured_priority": 50,
+            "effective_weight": 0.5,
+            "utility": 0.452381,
+            "contribution": 0.22619
+          },
+          "residential": {
+            "available": true,
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": 0.3,
+            "contribution": 0
+          }
+        }
+      },
+      "repeated_state_count": 2,
+      "scenario_fingerprint": "network-e505d030838b675015f4e21ba23a8cc2",
+      "search_fingerprint": "concept-5a-search-af2bcdc77b6e0236e5b6b10f",
+      "state_trace": [
+        "20.0,80.0",
+        "0.0,80.0",
+        "0.0,110.0",
+        "0.0,110.0",
+        "0.0,110.0"
+      ],
+      "termination": "fixed_pass_count",
+      "unique_states": 106
+    }
+  },
+  "rf_exhaustive_cases": [
+    {
+      "cells": 2,
+      "name": "coverage-demand",
+      "oracle": {
+        "candidate_count": 1296,
+        "discovered_pareto_count": 4,
+        "discovered_pareto_keys": [
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "80.0,260.0"
+        ],
+        "feasible_candidate_count": 1296,
+        "global_best_key": "70.0,260.0",
+        "global_best_score": 96,
+        "global_best_stats": {
+          "network_score": 452000,
+          "unique_demand_buildings": 9,
+          "unique_residential_buildings": 9,
+          "overlap_buildings": 0,
+          "demand_score": 270000,
+          "residential_score": 180000,
+          "coverage_score": 2000,
+          "overlap_penalty": 0,
+          "data_quality": "",
+          "raw_metrics": {
+            "served_weighted_demand": 27,
+            "served_demand_weight": 27,
+            "total_weighted_demand": 30,
+            "relevant_demand_weight": 30,
+            "residential_covered": 9,
+            "residential_total": 12,
+            "relevant_residential_total": 12,
+            "coverage_reach_score": 2000,
+            "coverage_reach_maximum": 2000,
+            "propagation_reach_score": 2000,
+            "propagation_reach_maximum": 2000,
+            "covered_units": 9,
+            "overlap_buildings": 0,
+            "overlap_ratio": 0,
+            "radio_quality_total_samples": 0,
+            "radio_quality_serviceable_samples": 0,
+            "radio_quality_serviceable_fraction": 0
+          },
+          "objectives": {
+            "demand": 0.9,
+            "residential": 0.75,
+            "coverage": 1,
+            "overlap": 1,
+            "radio_quality": 0
+          },
+          "composite_score": 0.96,
+          "score": 96,
+          "objective_breakdown": {
+            "demand": {
+              "utility": 0.9,
+              "weight": 0.4,
+              "contribution": 0.36000000000000004
+            },
+            "residential": {
+              "utility": 0.75,
+              "weight": 0,
+              "contribution": 0
+            },
+            "coverage": {
+              "utility": 1,
+              "weight": 0.3,
+              "contribution": 0.3
+            },
+            "overlap": {
+              "utility": 1,
+              "weight": 0.3,
+              "contribution": 0.3
+            },
+            "radio_quality": {
+              "utility": 0,
+              "weight": 0,
+              "contribution": 0
+            }
+          },
+          "objective_status": {
+            "coverage": {
+              "available": true,
+              "configured_priority": 30,
+              "effective_weight": 0.3,
+              "utility": 1,
+              "contribution": 0.3
+            },
+            "demand": {
+              "available": true,
+              "configured_priority": 40,
+              "effective_weight": 0.4,
+              "utility": 0.9,
+              "contribution": 0.36000000000000004
+            },
+            "overlap": {
+              "available": true,
+              "configured_priority": 30,
+              "effective_weight": 0.3,
+              "utility": 1,
+              "contribution": 0.3
+            },
+            "radio_quality": {
+              "available": false,
+              "reason": "disabled",
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": null,
+              "contribution": null
+            },
+            "residential": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.75,
+              "contribution": 0
+            }
+          }
+        },
+        "missed_true_pareto_keys": [
+          "80.0,270.0",
+          "80.0,280.0"
+        ],
+        "pareto_intersection_count": 4,
+        "pareto_precision": 1,
+        "pareto_recall": 0.6666666666666666,
+        "production_recommended_key": "70.0,260.0",
+        "production_recommended_score": 96,
+        "recommendation_recovered": true,
+        "recommended_raw_metric_delta_vs_global_best": {
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "propagation_reach_score": 0,
+          "radio_quality_serviceable_fraction": 0,
+          "residential_covered": 0,
+          "served_demand_weight": 0
+        },
+        "score_regret": 0,
+        "search": {
+          "accepted_update_trace": [
+            {
+              "pass": 1,
+              "cell_index": 0,
+              "cell_id": "oracle-a",
+              "previous_configuration": [
+                17,
+                203
+              ],
+              "chosen_configuration": [
+                70,
+                203
+              ],
+              "previous_state_key": "17.0,203.0",
+              "chosen_state_key": "70.0,203.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 70,
+              "chosen_score": 0.8666666666666667,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": true,
+              "requested_evaluations_end": 37
+            },
+            {
+              "pass": 1,
+              "cell_index": 1,
+              "cell_id": "oracle-b",
+              "previous_configuration": [
+                70,
+                203
+              ],
+              "chosen_configuration": [
+                70,
+                260
+              ],
+              "previous_state_key": "70.0,203.0",
+              "chosen_state_key": "70.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 260,
+              "chosen_score": 0.96,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": true,
+              "requested_evaluations_end": 73
+            },
+            {
+              "pass": 2,
+              "cell_index": 0,
+              "cell_id": "oracle-a",
+              "previous_configuration": [
+                70,
+                260
+              ],
+              "chosen_configuration": [
+                70,
+                260
+              ],
+              "previous_state_key": "70.0,260.0",
+              "chosen_state_key": "70.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 70,
+              "chosen_score": 0.96,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": false,
+              "requested_evaluations_end": 109
+            },
+            {
+              "pass": 2,
+              "cell_index": 1,
+              "cell_id": "oracle-b",
+              "previous_configuration": [
+                70,
+                260
+              ],
+              "chosen_configuration": [
+                70,
+                260
+              ],
+              "previous_state_key": "70.0,260.0",
+              "chosen_state_key": "70.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 260,
+              "chosen_score": 0.96,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": false,
+              "requested_evaluations_end": 145
+            }
+          ],
+          "algorithm": "network_coordinate_descent",
+          "baseline_azimuths": [
+            17,
+            203
+          ],
+          "baseline_stats": {
+            "network_score": 212000,
+            "unique_demand_buildings": 5,
+            "unique_residential_buildings": 5,
+            "overlap_buildings": 0,
+            "demand_score": 100000,
+            "residential_score": 110000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 10,
+              "served_demand_weight": 10,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 5,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 5,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.3333333333333333,
+              "residential": 0.4166666666666667,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.7333333333333334,
+            "score": 73.33333333333334,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.3333333333333333,
+                "weight": 0.4,
+                "contribution": 0.13333333333333333
+              },
+              "residential": {
+                "utility": 0.4166666666666667,
+                "weight": 0,
+                "contribution": 0
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 40,
+                "effective_weight": 0.4,
+                "utility": 0.3333333333333333,
+                "contribution": 0.13333333333333333
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.4166666666666667,
+                "contribution": 0
+              }
+            }
+          },
+          "cache_hits": 0,
+          "cycle_detected": false,
+          "cycle_length": 0,
+          "duplicate_requested_states": 38,
+          "evaluated_candidates": 146,
+          "evaluated_state_set_fingerprint": "concept-5a-states-3704791af3e2db9e",
+          "final_azimuths": [
+            70,
+            260
+          ],
+          "final_stats": {
+            "network_score": 452000,
+            "unique_demand_buildings": 9,
+            "unique_residential_buildings": 9,
+            "overlap_buildings": 0,
+            "demand_score": 270000,
+            "residential_score": 180000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 27,
+              "served_demand_weight": 27,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 9,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 9,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.9,
+              "residential": 0.75,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.96,
+            "score": 96,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.9,
+                "weight": 0.4,
+                "contribution": 0.36000000000000004
+              },
+              "residential": {
+                "utility": 0.75,
+                "weight": 0,
+                "contribution": 0
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 40,
+                "effective_weight": 0.4,
+                "utility": 0.9,
+                "contribution": 0.36000000000000004
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.75,
+                "contribution": 0
+              }
+            }
+          },
+          "fixed_point": true,
+          "label": "exhaustive-search-coverage-demand",
+          "options": {
+            "label": "exhaustive-search-coverage-demand",
+            "passes": 2,
+            "azimuth_step_deg": 10,
+            "cell_order_indices": [
+              0,
+              1
+            ],
+            "cell_order_ids": [
+              "oracle-a",
+              "oracle-b"
+            ],
+            "start_azimuths": [
+              17,
+              203
+            ],
+            "start_mode": "request_azimuths_normalized",
+            "search_behavior": "fixed_pass_coordinate_descent"
+          },
+          "pareto_ids": [
+            "70.0,260.0",
+            "70.0,270.0",
+            "70.0,280.0",
+            "80.0,260.0"
+          ],
+          "passes_executed": 2,
+          "production_cache_behavior": true,
+          "recommended_id": "70.0,260.0",
+          "recommended_stats": {
+            "network_score": 452000,
+            "unique_demand_buildings": 9,
+            "unique_residential_buildings": 9,
+            "overlap_buildings": 0,
+            "demand_score": 270000,
+            "residential_score": 180000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 27,
+              "served_demand_weight": 27,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 9,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 9,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.9,
+              "residential": 0.75,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.96,
+            "score": 96,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.9,
+                "weight": 0.4,
+                "contribution": 0.36
+              },
+              "residential": {
+                "utility": 0.75,
+                "weight": 0,
+                "contribution": 0
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.3,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 40,
+                "effective_weight": 0.4,
+                "utility": 0.9,
+                "contribution": 0.36
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 30,
+                "effective_weight": 0.3,
+                "utility": 1,
+                "contribution": 0.3
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.75,
+                "contribution": 0
+              }
+            }
+          },
+          "repeated_state_count": 2,
+          "scenario_fingerprint": "network-e5a7d50fdbdd15dd07f655e94e44a1dd",
+          "search_fingerprint": "concept-5a-search-0d0f3a51b8396228e56da52c",
+          "state_trace": [
+            "17.0,203.0",
+            "70.0,203.0",
+            "70.0,260.0",
+            "70.0,260.0",
+            "70.0,260.0"
+          ],
+          "termination": "fixed_pass_count",
+          "unique_states": 108
+        },
+        "true_pareto_count": 6,
+        "true_pareto_keys": [
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "80.0,260.0",
+          "80.0,270.0",
+          "80.0,280.0"
+        ],
+        "unexpected_discovered_pareto_keys": []
+      },
+      "step_deg": 10
+    },
+    {
+      "cells": 2,
+      "name": "residential-tradeoff",
+      "oracle": {
+        "candidate_count": 1296,
+        "discovered_pareto_count": 5,
+        "discovered_pareto_keys": [
+          "50.0,260.0",
+          "50.0,270.0",
+          "50.0,280.0",
+          "70.0,260.0",
+          "80.0,260.0"
+        ],
+        "feasible_candidate_count": 1296,
+        "global_best_key": "50.0,260.0",
+        "global_best_score": 87.5,
+        "global_best_stats": {
+          "network_score": 422000,
+          "unique_demand_buildings": 9,
+          "unique_residential_buildings": 9,
+          "overlap_buildings": 0,
+          "demand_score": 240000,
+          "residential_score": 180000,
+          "coverage_score": 2000,
+          "overlap_penalty": 0,
+          "data_quality": "",
+          "raw_metrics": {
+            "served_weighted_demand": 24,
+            "served_demand_weight": 24,
+            "total_weighted_demand": 30,
+            "relevant_demand_weight": 30,
+            "residential_covered": 9,
+            "residential_total": 12,
+            "relevant_residential_total": 12,
+            "coverage_reach_score": 2000,
+            "coverage_reach_maximum": 2000,
+            "propagation_reach_score": 2000,
+            "propagation_reach_maximum": 2000,
+            "covered_units": 9,
+            "overlap_buildings": 0,
+            "overlap_ratio": 0,
+            "radio_quality_total_samples": 0,
+            "radio_quality_serviceable_samples": 0,
+            "radio_quality_serviceable_fraction": 0
+          },
+          "objectives": {
+            "demand": 0.8,
+            "residential": 0.75,
+            "coverage": 1,
+            "overlap": 1,
+            "radio_quality": 0
+          },
+          "composite_score": 0.875,
+          "score": 87.5,
+          "objective_breakdown": {
+            "demand": {
+              "utility": 0.8,
+              "weight": 0,
+              "contribution": 0
+            },
+            "residential": {
+              "utility": 0.75,
+              "weight": 0.5,
+              "contribution": 0.375
+            },
+            "coverage": {
+              "utility": 1,
+              "weight": 0.25,
+              "contribution": 0.25
+            },
+            "overlap": {
+              "utility": 1,
+              "weight": 0.25,
+              "contribution": 0.25
+            },
+            "radio_quality": {
+              "utility": 0,
+              "weight": 0,
+              "contribution": 0
+            }
+          },
+          "objective_status": {
+            "coverage": {
+              "available": true,
+              "configured_priority": 25,
+              "effective_weight": 0.25,
+              "utility": 1,
+              "contribution": 0.25
+            },
+            "demand": {
+              "available": true,
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": 0.8,
+              "contribution": 0
+            },
+            "overlap": {
+              "available": true,
+              "configured_priority": 25,
+              "effective_weight": 0.25,
+              "utility": 1,
+              "contribution": 0.25
+            },
+            "radio_quality": {
+              "available": false,
+              "reason": "disabled",
+              "configured_priority": 0,
+              "effective_weight": 0,
+              "utility": null,
+              "contribution": null
+            },
+            "residential": {
+              "available": true,
+              "configured_priority": 50,
+              "effective_weight": 0.5,
+              "utility": 0.75,
+              "contribution": 0.375
+            }
+          }
+        },
+        "missed_true_pareto_keys": [
+          "70.0,270.0",
+          "70.0,280.0",
+          "70.0,320.0",
+          "80.0,270.0",
+          "80.0,280.0",
+          "80.0,320.0"
+        ],
+        "pareto_intersection_count": 5,
+        "pareto_precision": 1,
+        "pareto_recall": 0.45454545454545453,
+        "production_recommended_key": "70.0,260.0",
+        "production_recommended_score": 87.5,
+        "recommendation_recovered": false,
+        "recommended_raw_metric_delta_vs_global_best": {
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "propagation_reach_score": 0,
+          "radio_quality_serviceable_fraction": 0,
+          "residential_covered": 0,
+          "served_demand_weight": -3
+        },
+        "score_regret": 0,
+        "search": {
+          "accepted_update_trace": [
+            {
+              "pass": 1,
+              "cell_index": 0,
+              "cell_id": "oracle-a",
+              "previous_configuration": [
+                17,
+                203
+              ],
+              "chosen_configuration": [
+                50,
+                203
+              ],
+              "previous_state_key": "17.0,203.0",
+              "chosen_state_key": "50.0,203.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 50,
+              "chosen_score": 0.7916666666666667,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": true,
+              "requested_evaluations_end": 37
+            },
+            {
+              "pass": 1,
+              "cell_index": 1,
+              "cell_id": "oracle-b",
+              "previous_configuration": [
+                50,
+                203
+              ],
+              "chosen_configuration": [
+                50,
+                260
+              ],
+              "previous_state_key": "50.0,203.0",
+              "chosen_state_key": "50.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 260,
+              "chosen_score": 0.875,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": true,
+              "requested_evaluations_end": 73
+            },
+            {
+              "pass": 2,
+              "cell_index": 0,
+              "cell_id": "oracle-a",
+              "previous_configuration": [
+                50,
+                260
+              ],
+              "chosen_configuration": [
+                50,
+                260
+              ],
+              "previous_state_key": "50.0,260.0",
+              "chosen_state_key": "50.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 50,
+              "chosen_score": 0.875,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": false,
+              "requested_evaluations_end": 109
+            },
+            {
+              "pass": 2,
+              "cell_index": 1,
+              "cell_id": "oracle-b",
+              "previous_configuration": [
+                50,
+                260
+              ],
+              "chosen_configuration": [
+                50,
+                260
+              ],
+              "previous_state_key": "50.0,260.0",
+              "chosen_state_key": "50.0,260.0",
+              "candidate_count": 36,
+              "chosen_azimuth_deg": 260,
+              "chosen_score": 0.875,
+              "previous_score_known": false,
+              "chosen_feasible": true,
+              "changed": false,
+              "requested_evaluations_end": 145
+            }
+          ],
+          "algorithm": "network_coordinate_descent",
+          "baseline_azimuths": [
+            17,
+            203
+          ],
+          "baseline_stats": {
+            "network_score": 212000,
+            "unique_demand_buildings": 5,
+            "unique_residential_buildings": 5,
+            "overlap_buildings": 0,
+            "demand_score": 100000,
+            "residential_score": 110000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 10,
+              "served_demand_weight": 10,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 5,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 5,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.3333333333333333,
+              "residential": 0.4166666666666667,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.7083333333333334,
+            "score": 70.83333333333334,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.3333333333333333,
+                "weight": 0,
+                "contribution": 0
+              },
+              "residential": {
+                "utility": 0.4166666666666667,
+                "weight": 0.5,
+                "contribution": 0.20833333333333334
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.3333333333333333,
+                "contribution": 0
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 50,
+                "effective_weight": 0.5,
+                "utility": 0.4166666666666667,
+                "contribution": 0.20833333333333334
+              }
+            }
+          },
+          "cache_hits": 0,
+          "cycle_detected": false,
+          "cycle_length": 0,
+          "duplicate_requested_states": 38,
+          "evaluated_candidates": 146,
+          "evaluated_state_set_fingerprint": "concept-5a-states-c843f247da4d0e9d",
+          "final_azimuths": [
+            50,
+            260
+          ],
+          "final_stats": {
+            "network_score": 422000,
+            "unique_demand_buildings": 9,
+            "unique_residential_buildings": 9,
+            "overlap_buildings": 0,
+            "demand_score": 240000,
+            "residential_score": 180000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 24,
+              "served_demand_weight": 24,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 9,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 9,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.8,
+              "residential": 0.75,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.875,
+            "score": 87.5,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.8,
+                "weight": 0,
+                "contribution": 0
+              },
+              "residential": {
+                "utility": 0.75,
+                "weight": 0.5,
+                "contribution": 0.375
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.8,
+                "contribution": 0
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 50,
+                "effective_weight": 0.5,
+                "utility": 0.75,
+                "contribution": 0.375
+              }
+            }
+          },
+          "fixed_point": true,
+          "label": "exhaustive-search-residential-tradeoff",
+          "options": {
+            "label": "exhaustive-search-residential-tradeoff",
+            "passes": 2,
+            "azimuth_step_deg": 10,
+            "cell_order_indices": [
+              0,
+              1
+            ],
+            "cell_order_ids": [
+              "oracle-a",
+              "oracle-b"
+            ],
+            "start_azimuths": [
+              17,
+              203
+            ],
+            "start_mode": "request_azimuths_normalized",
+            "search_behavior": "fixed_pass_coordinate_descent"
+          },
+          "pareto_ids": [
+            "70.0,260.0",
+            "80.0,260.0"
+          ],
+          "passes_executed": 2,
+          "production_cache_behavior": true,
+          "recommended_id": "70.0,260.0",
+          "recommended_stats": {
+            "network_score": 452000,
+            "unique_demand_buildings": 9,
+            "unique_residential_buildings": 9,
+            "overlap_buildings": 0,
+            "demand_score": 270000,
+            "residential_score": 180000,
+            "coverage_score": 2000,
+            "overlap_penalty": 0,
+            "data_quality": "",
+            "raw_metrics": {
+              "served_weighted_demand": 27,
+              "served_demand_weight": 27,
+              "total_weighted_demand": 30,
+              "relevant_demand_weight": 30,
+              "residential_covered": 9,
+              "residential_total": 12,
+              "relevant_residential_total": 12,
+              "coverage_reach_score": 2000,
+              "coverage_reach_maximum": 2000,
+              "propagation_reach_score": 2000,
+              "propagation_reach_maximum": 2000,
+              "covered_units": 9,
+              "overlap_buildings": 0,
+              "overlap_ratio": 0,
+              "radio_quality_total_samples": 0,
+              "radio_quality_serviceable_samples": 0,
+              "radio_quality_serviceable_fraction": 0
+            },
+            "objectives": {
+              "demand": 0.9,
+              "residential": 0.75,
+              "coverage": 1,
+              "overlap": 1,
+              "radio_quality": 0
+            },
+            "composite_score": 0.875,
+            "score": 87.5,
+            "objective_breakdown": {
+              "demand": {
+                "utility": 0.9,
+                "weight": 0,
+                "contribution": 0
+              },
+              "residential": {
+                "utility": 0.75,
+                "weight": 0.5,
+                "contribution": 0.375
+              },
+              "coverage": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "overlap": {
+                "utility": 1,
+                "weight": 0.25,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "utility": 0,
+                "weight": 0,
+                "contribution": 0
+              }
+            },
+            "objective_status": {
+              "coverage": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "demand": {
+                "available": true,
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": 0.9,
+                "contribution": 0
+              },
+              "overlap": {
+                "available": true,
+                "configured_priority": 25,
+                "effective_weight": 0.25,
+                "utility": 1,
+                "contribution": 0.25
+              },
+              "radio_quality": {
+                "available": false,
+                "reason": "disabled",
+                "configured_priority": 0,
+                "effective_weight": 0,
+                "utility": null,
+                "contribution": null
+              },
+              "residential": {
+                "available": true,
+                "configured_priority": 50,
+                "effective_weight": 0.5,
+                "utility": 0.75,
+                "contribution": 0.375
+              }
+            }
+          },
+          "repeated_state_count": 2,
+          "scenario_fingerprint": "network-d3b89b31f0461932391bc40655602ead",
+          "search_fingerprint": "concept-5a-search-618135590ac0a2877df30b1d",
+          "state_trace": [
+            "17.0,203.0",
+            "50.0,203.0",
+            "50.0,260.0",
+            "50.0,260.0",
+            "50.0,260.0"
+          ],
+          "termination": "fixed_pass_count",
+          "unique_states": 108
+        },
+        "true_pareto_count": 11,
+        "true_pareto_keys": [
+          "50.0,260.0",
+          "50.0,270.0",
+          "50.0,280.0",
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "70.0,320.0",
+          "80.0,260.0",
+          "80.0,270.0",
+          "80.0,280.0",
+          "80.0,320.0"
+        ],
+        "unexpected_discovered_pareto_keys": []
+      },
+      "step_deg": 10
+    }
+  ],
+  "synthetic_fixtures": [
+    {
+      "fixture": {
+        "name": "A-separable-convex-discrete",
+        "values": [
+          0,
+          1
+        ],
+        "points": {
+          "0,0": {
+            "score": 0,
+            "feasible": true
+          },
+          "0,1": {
+            "score": 0.6,
+            "feasible": true
+          },
+          "1,0": {
+            "score": 0.7,
+            "feasible": true
+          },
+          "1,1": {
+            "score": 1,
+            "feasible": true
+          }
+        },
+        "start": [
+          0,
+          0
+        ],
+        "expected": {
+          "global": "1,1",
+          "search_should_recover_global": true
+        }
+      },
+      "run": {
+        "fixture": "A-separable-convex-discrete",
+        "start": [
+          0,
+          0
+        ],
+        "final": [
+          1,
+          1
+        ],
+        "score": 1,
+        "feasible": true,
+        "global_best": [
+          1,
+          1
+        ],
+        "global_best_score": 1,
+        "recovered_global": true,
+        "trace": [
+          "0,0",
+          "1,0",
+          "1,1",
+          "1,1",
+          "1,1"
+        ],
+        "strict_tie_policy": "strict greater-than; exact ties retain first candidate order",
+        "feasibility_policy": "feasible candidates dominate infeasible candidates; if none are feasible, maximize soft score"
+      }
+    },
+    {
+      "fixture": {
+        "name": "B-interaction-trap",
+        "values": [
+          0,
+          1
+        ],
+        "points": {
+          "0,0": {
+            "score": 0.8,
+            "feasible": true
+          },
+          "0,1": {
+            "score": 0.7,
+            "feasible": true
+          },
+          "1,0": {
+            "score": 0.7,
+            "feasible": true
+          },
+          "1,1": {
+            "score": 1,
+            "feasible": true
+          }
+        },
+        "start": [
+          0,
+          0
+        ],
+        "expected": {
+          "global": "1,1",
+          "search_should_recover_global": false,
+          "trap_reason": "all one-coordinate moves reduce score"
+        }
+      },
+      "run": {
+        "fixture": "B-interaction-trap",
+        "start": [
+          0,
+          0
+        ],
+        "final": [
+          0,
+          0
+        ],
+        "score": 0.8,
+        "feasible": true,
+        "global_best": [
+          1,
+          1
+        ],
+        "global_best_score": 1,
+        "recovered_global": false,
+        "trace": [
+          "0,0",
+          "0,0",
+          "0,0",
+          "0,0",
+          "0,0"
+        ],
+        "strict_tie_policy": "strict greater-than; exact ties retain first candidate order",
+        "feasibility_policy": "feasible candidates dominate infeasible candidates; if none are feasible, maximize soft score"
+      }
+    },
+    {
+      "alternate_starts": [
+        {
+          "fixture": "C-multiple-local-optima",
+          "start": [
+            0,
+            0
+          ],
+          "final": [
+            0,
+            0
+          ],
+          "score": 0.8,
+          "feasible": true,
+          "global_best": [
+            2,
+            2
+          ],
+          "global_best_score": 1,
+          "recovered_global": false,
+          "trace": [
+            "0,0",
+            "0,0",
+            "0,0",
+            "0,0",
+            "0,0"
+          ],
+          "strict_tie_policy": "strict greater-than; exact ties retain first candidate order",
+          "feasibility_policy": "feasible candidates dominate infeasible candidates; if none are feasible, maximize soft score"
+        },
+        {
+          "fixture": "C-multiple-local-optima",
+          "start": [
+            1,
+            1
+          ],
+          "final": [
+            1,
+            1
+          ],
+          "score": 0.9,
+          "feasible": true,
+          "global_best": [
+            2,
+            2
+          ],
+          "global_best_score": 1,
+          "recovered_global": false,
+          "trace": [
+            "1,1",
+            "1,1",
+            "1,1",
+            "1,1",
+            "1,1"
+          ],
+          "strict_tie_policy": "strict greater-than; exact ties retain first candidate order",
+          "feasibility_policy": "feasible candidates dominate infeasible candidates; if none are feasible, maximize soft score"
+        },
+        {
+          "fixture": "C-multiple-local-optima",
+          "start": [
+            2,
+            2
+          ],
+          "final": [
+            2,
+            2
+          ],
+          "score": 1,
+          "feasible": true,
+          "global_best": [
+            2,
+            2
+          ],
+          "global_best_score": 1,
+          "recovered_global": true,
+          "trace": [
+            "2,2",
+            "2,2",
+            "2,2",
+            "2,2",
+            "2,2"
+          ],
+          "strict_tie_policy": "strict greater-than; exact ties retain first candidate order",
+          "feasibility_policy": "feasible candidates dominate infeasible candidates; if none are feasible, maximize soft score"
+        }
+      ],
+      "fixture": {
+        "name": "C-multiple-local-optima",
+        "values": [
+          0,
+          1,
+          2
+        ],
+        "points": {
+          "0,0": {
+            "score": 0.8,
+            "feasible": true
+          },
+          "0,1": {
+            "score": 0.7,
+            "feasible": true
+          },
+          "0,2": {
+            "score": 0.75,
+            "feasible": true
+          },
+          "1,0": {
+            "score": 0.7,
+            "feasible": true
+          },
+          "1,1": {
+            "score": 0.9,
+            "feasible": true
+          },
+          "1,2": {
+            "score": 0.85,
+            "feasible": true
+          },
+          "2,0": {
+            "score": 0.75,
+            "feasible": true
+          },
+          "2,1": {
+            "score": 0.85,
+            "feasible": true
+          },
+          "2,2": {
+            "score": 1,
+            "feasible": true
+          }
+        },
+        "start": [
+          0,
+          0
+        ],
+        "expected": {
+          "global": "2,2",
+          "local_optima": [
+            "0,0",
+            "1,1",
+            "2,2"
+          ]
+        }
+      },
+      "run": {
+        "fixture": "C-multiple-local-optima",
+        "start": [
+          0,
+          0
+        ],
+        "final": [
+          0,
+          0
+        ],
+        "score": 0.8,
+        "feasible": true,
+        "global_best": [
+          2,
+          2
+        ],
+        "global_best_score": 1,
+        "recovered_global": false,
+        "trace": [
+          "0,0",
+          "0,0",
+          "0,0",
+          "0,0",
+          "0,0"
+        ],
+        "strict_tie_policy": "strict greater-than; exact ties retain first candidate order",
+        "feasibility_policy": "feasible candidates dominate infeasible candidates; if none are feasible, maximize soft score"
+      }
+    },
+    {
+      "fixture": {
+        "name": "D-plateau-and-tie",
+        "values": [
+          0,
+          1
+        ],
+        "points": {
+          "0,0": {
+            "score": 0.5,
+            "feasible": true
+          },
+          "0,1": {
+            "score": 0.5,
+            "feasible": true
+          },
+          "1,0": {
+            "score": 0.5,
+            "feasible": true
+          },
+          "1,1": {
+            "score": 0.5,
+            "feasible": true
+          }
+        },
+        "start": [
+          0,
+          0
+        ],
+        "expected": {
+          "global": "0,0",
+          "strict_greater_keeps_first": true
+        }
+      },
+      "run": {
+        "fixture": "D-plateau-and-tie",
+        "start": [
+          0,
+          0
+        ],
+        "final": [
+          0,
+          0
+        ],
+        "score": 0.5,
+        "feasible": true,
+        "global_best": [
+          0,
+          0
+        ],
+        "global_best_score": 0.5,
+        "recovered_global": true,
+        "trace": [
+          "0,0",
+          "0,0",
+          "0,0",
+          "0,0",
+          "0,0"
+        ],
+        "strict_tie_policy": "strict greater-than; exact ties retain first candidate order",
+        "feasibility_policy": "feasible candidates dominate infeasible candidates; if none are feasible, maximize soft score"
+      }
+    },
+    {
+      "fixture": {
+        "name": "E-pareto-tradeoff",
+        "values": [
+          0,
+          1
+        ],
+        "points": {
+          "0,0": {
+            "score": 0.7,
+            "feasible": true,
+            "objectives": {
+              "coverage": 1,
+              "demand": 0.4
+            }
+          },
+          "0,1": {
+            "score": 0.75,
+            "feasible": true,
+            "objectives": {
+              "coverage": 0.8,
+              "demand": 0.7
+            }
+          },
+          "1,0": {
+            "score": 0.75,
+            "feasible": true,
+            "objectives": {
+              "coverage": 0.6,
+              "demand": 0.9
+            }
+          },
+          "1,1": {
+            "score": 0.65,
+            "feasible": true,
+            "objectives": {
+              "coverage": 0.3,
+              "demand": 1
+            }
+          }
+        },
+        "start": [
+          0,
+          0
+        ],
+        "expected": {
+          "pareto_should_have_multiple_tradeoffs": true
+        }
+      },
+      "independent_pareto_keys": [
+        "0,0",
+        "0,1",
+        "1,0",
+        "1,1"
+      ],
+      "run": {
+        "fixture": "E-pareto-tradeoff",
+        "start": [
+          0,
+          0
+        ],
+        "final": [
+          1,
+          0
+        ],
+        "score": 0.75,
+        "feasible": true,
+        "global_best": [
+          0,
+          1
+        ],
+        "global_best_score": 0.75,
+        "recovered_global": false,
+        "trace": [
+          "0,0",
+          "1,0",
+          "1,0",
+          "1,0",
+          "1,0"
+        ],
+        "strict_tie_policy": "strict greater-than; exact ties retain first candidate order",
+        "feasibility_policy": "feasible candidates dominate infeasible candidates; if none are feasible, maximize soft score"
+      }
+    },
+    {
+      "fixture": {
+        "name": "F-infeasible-high-soft-score",
+        "values": [
+          0,
+          1
+        ],
+        "points": {
+          "0,0": {
+            "score": 0.6,
+            "feasible": true
+          },
+          "0,1": {
+            "score": 0.5,
+            "feasible": true
+          },
+          "1,0": {
+            "score": 0.99,
+            "feasible": false
+          },
+          "1,1": {
+            "score": 0.9,
+            "feasible": false
+          }
+        },
+        "start": [
+          0,
+          0
+        ],
+        "expected": {
+          "global_feasible": "0,0",
+          "infeasible_high_score_must_not_win": true
+        }
+      },
+      "run": {
+        "fixture": "F-infeasible-high-soft-score",
+        "start": [
+          0,
+          0
+        ],
+        "final": [
+          0,
+          0
+        ],
+        "score": 0.6,
+        "feasible": true,
+        "global_best": [
+          0,
+          0
+        ],
+        "global_best_score": 0.6,
+        "recovered_global": true,
+        "trace": [
+          "0,0",
+          "0,0",
+          "0,0",
+          "0,0",
+          "0,0"
+        ],
+        "strict_tie_policy": "strict greater-than; exact ties retain first candidate order",
+        "feasibility_policy": "feasible candidates dominate infeasible candidates; if none are feasible, maximize soft score"
+      }
+    }
+  ]
+}

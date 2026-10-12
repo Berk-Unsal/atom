@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.2",
+  "artifact": "test-evidence",
+  "validation_date": "2026-10-03",
+  "pre_change_baseline": {
+    "backend_go_test_all": "passed",
+    "backend_go_test_race_all": "passed",
+    "backend_go_vet_all": "passed",
+    "targeted_concept_6a": "passed"
+  },
+  "post_audit_validation": [
+    {
+      "command": "cd backend-go && go test ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go test -race ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go vet ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd core-lab-adapter && go test ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd core-lab-adapter && go test -race ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd core-lab-adapter && go vet ./...",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go test ./raytracer -run '^TestGenerateConcept6AArtifacts$' -count=1",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go test ./raytracer -run '^TestConcept6A1' -count=1",
+      "result": "passed"
+    },
+    {
+      "command": "cd backend-go && go test ./raytracer -run '^TestConcept6A1SanitizedRealV6ServingConflictIsNotPromoted$' -count=1",
+      "result": "passed"
+    },
+    {
+      "command": "sh docs/build-reference-pages.sh",
+      "result": "passed_with_existing_pandoc_mathml_deprecation_warnings"
+    },
+    {
+      "command": "PYTHONPATH=/tmp/concept6a1_2_doc_dependencies python3 docs/validate_docs.py",
+      "result": "passed: 43 HTML pages and 41 API paths"
+    },
+    {
+      "command": "python3 scripts/versioning.py check",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "parse all new JSON artifacts and privacy scan",
+      "result": "passed: all 7 Concept 6A.1.2 JSON artifacts parse; sanitized ledgers contain no coordinates or wall-clock timestamps"
+    },
+    {
+      "command": "whitespace scan of new untracked artifacts",
+      "result": "passed"
+    }
+  ],
+  "new_serving_state_test": {
+    "added": false,
+    "reason": "Decision A leaves the production predicate unchanged and introduces no fallback behavior; adding fallback-oriented fixtures would test a rule this evidence does not justify.",
+    "existing_sanitized_conflict_regression": "passed"
+  },
+  "documentation_validator_dependency": {
+    "system_and_bundled_python_missing_pyyaml": true,
+    "pinned_docs_requirement": "PyYAML 6.0.3",
+    "install_location": "/tmp/concept6a1_2_doc_dependencies",
+    "repository_or_system_python_modified": false
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "concept": "8B",
+  "status": "implemented; automated component/workflow/browser checks",
+  "checks": [
+    {"requirement": "Stage trigger exposes accurate expanded state and chooser relationship", "evidence": "WorkspaceChrome.test.jsx asserts false/true aria-expanded, aria-haspopup=dialog; DOM ties aria-controls to open chooser.", "status": "passed"},
+    {"requirement": "Current stage and current tool are programmatically identified", "evidence": "aria-current=step on stage; aria-current=page plus visible Current and descriptive text on active choice.", "status": "passed"},
+    {"requirement": "Unavailable reason is discoverable and activation guarded", "evidence": "WorkspaceChrome.test.jsx checks aria-disabled and accessible description; clicking unavailable Interference does not select it.", "status": "passed"},
+    {"requirement": "Keyboard use", "evidence": "Native buttons support Enter/Space; mobile chooser focuses current or first available tool; existing keyboard disclosure E2E remains passing.", "status": "passed"},
+    {"requirement": "Escape dismisses and focus returns", "evidence": "App.workflow.test.jsx and desktop E2E assert chooser closes, tool is preserved, focus returns to stage trigger.", "status": "passed"},
+    {"requirement": "Outside pointer dismisses without changing tool", "evidence": "App.workflow.test.jsx and desktop E2E click map outside chooser; active drawer remains unchanged.", "status": "passed"},
+    {"requirement": "Closing drawer returns focus to owner", "evidence": "App.workflow.test.jsx: returns drawer focus to the owning stage trigger after close.", "status": "passed"},
+    {"requirement": "Phone touch targets and navigation remain reachable", "evidence": "Mobile choice CSS min-height is 58px; E2E selects Results/Data/Report in the same sheet and reopens the chooser.", "status": "passed"},
+    {"requirement": "Currentness is not color-only", "evidence": "Current has the visible word Current and aria-current=page; unavailable and attention have text/reasons; result freshness uses text labels.", "status": "passed"},
+    {"requirement": "At 390px, operation and result status remain text and do not overlap", "evidence": "Responsive E2E asserts Result out of date and stale state/source visibility; measured boxes do not overlap; screenshot 390-results-stale.jpg.", "status": "passed"}
+  ],
+  "automationLimit": "No separate axe/automated screen-reader audit was run; semantic and focus behaviors are covered by component, workflow, and Playwright assertions."
+}

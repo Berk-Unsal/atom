@@ -1,0 +1,144 @@
+{
+  "audit_version": "concept-5b-audit-v1",
+  "candidate_policies": [
+    {
+      "archive_size": 106,
+      "cache_hits": 39,
+      "policy_label": "baseline-plus-first-1-starts",
+      "quality_and_cost": {
+        "global_best_key": "70.0,260.0",
+        "global_best_score": 96,
+        "pareto_intersection_count": 4,
+        "pareto_precision": 1,
+        "pareto_recall": 0.6666666666666666,
+        "recommendation_recovered": true,
+        "recommended_key": "70.0,260.0",
+        "recommended_score": 96,
+        "score_delta_recommended_minus_global_best": 0,
+        "score_regret": 0,
+        "true_pareto_keys": [
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "80.0,260.0",
+          "80.0,270.0",
+          "80.0,280.0"
+        ]
+      },
+      "start_count": 1,
+      "start_ids": [
+        "baseline"
+      ],
+      "unique_evaluations": 106
+    },
+    {
+      "archive_size": 141,
+      "cache_hits": 149,
+      "policy_label": "baseline-plus-first-2-starts",
+      "quality_and_cost": {
+        "global_best_key": "70.0,260.0",
+        "global_best_score": 96,
+        "pareto_intersection_count": 5,
+        "pareto_precision": 1,
+        "pareto_recall": 0.8333333333333334,
+        "recommendation_recovered": true,
+        "recommended_key": "70.0,260.0",
+        "recommended_score": 96,
+        "score_delta_recommended_minus_global_best": 0,
+        "score_regret": 0,
+        "true_pareto_keys": [
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "80.0,260.0",
+          "80.0,270.0",
+          "80.0,280.0"
+        ]
+      },
+      "start_count": 2,
+      "start_ids": [
+        "baseline",
+        "uniform-90"
+      ],
+      "unique_evaluations": 141
+    },
+    {
+      "archive_size": 208,
+      "cache_hits": 299,
+      "policy_label": "baseline-plus-first-3-starts",
+      "quality_and_cost": {
+        "global_best_key": "70.0,260.0",
+        "global_best_score": 96,
+        "pareto_intersection_count": 5,
+        "pareto_precision": 1,
+        "pareto_recall": 0.8333333333333334,
+        "recommendation_recovered": true,
+        "recommended_key": "70.0,260.0",
+        "recommended_score": 96,
+        "score_delta_recommended_minus_global_best": 0,
+        "score_regret": 0,
+        "true_pareto_keys": [
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "80.0,260.0",
+          "80.0,270.0",
+          "80.0,280.0"
+        ]
+      },
+      "start_count": 3,
+      "start_ids": [
+        "baseline",
+        "uniform-90",
+        "uniform-180"
+      ],
+      "unique_evaluations": 208
+    },
+    {
+      "archive_size": 242,
+      "cache_hits": 410,
+      "policy_label": "baseline-plus-first-4-starts",
+      "quality_and_cost": {
+        "global_best_key": "70.0,260.0",
+        "global_best_score": 96,
+        "pareto_intersection_count": 5,
+        "pareto_precision": 1,
+        "pareto_recall": 0.8333333333333334,
+        "recommendation_recovered": true,
+        "recommended_key": "70.0,260.0",
+        "recommended_score": 96,
+        "score_delta_recommended_minus_global_best": 0,
+        "score_regret": 0,
+        "true_pareto_keys": [
+          "70.0,260.0",
+          "70.0,270.0",
+          "70.0,280.0",
+          "80.0,260.0",
+          "80.0,270.0",
+          "80.0,280.0"
+        ]
+      },
+      "start_count": 4,
+      "start_ids": [
+        "baseline",
+        "uniform-90",
+        "uniform-180",
+        "uniform-270"
+      ],
+      "unique_evaluations": 242
+    }
+  ],
+  "fixture": "concept5AExhaustiveFixture(coverage-demand)",
+  "selected_policy": {
+    "name": "baseline_plus_uniform_global_rotations_v1",
+    "production_start_count": 4,
+    "selection_rule": "retain all deterministic quarter-turn rotations in v1; report the smallest tested policy for this fixture separately rather than imply a universal optimum",
+    "smallest_tested_policy_for_fixture": "baseline-plus-first-2-starts",
+    "starts": [
+      "baseline",
+      "uniform-90",
+      "uniform-180",
+      "uniform-270"
+    ]
+  }
+}

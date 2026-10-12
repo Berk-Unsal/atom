@@ -1,0 +1,278 @@
+{
+  "by_source": {
+    "fabdem": {
+      "endpoint_clearance_contract_m": {
+        "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+        "rx": 1.5,
+        "tx": 25.0
+      },
+      "endpoint_sample_values_are_not_ground_truth": true,
+      "exact_tower_ground_samples": {
+        "LTE-313100": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9054,
+            "lon": 32.8677
+          },
+          "source": "fabdem",
+          "value_m": 937.262972460943,
+          "vertical_datum": "EGM2008"
+        },
+        "LTE-313110": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9062,
+            "lon": 32.8639
+          },
+          "source": "fabdem",
+          "value_m": 928.3686315429552,
+          "vertical_datum": "EGM2008"
+        },
+        "LTE-322828": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9135,
+            "lon": 32.8523
+          },
+          "source": "fabdem",
+          "value_m": 885.4586416015679,
+          "vertical_datum": "EGM2008"
+        },
+        "LTE-35084": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9113,
+            "lon": 32.8477
+          },
+          "source": "fabdem",
+          "value_m": 897.8889694336033,
+          "vertical_datum": "EGM2008"
+        },
+        "LTE-35104": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9081,
+            "lon": 32.8585
+          },
+          "source": "fabdem",
+          "value_m": 906.7749609375041,
+          "vertical_datum": "EGM2008"
+        },
+        "LTE-35877": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.924,
+            "lon": 32.8488
+          },
+          "source": "fabdem",
+          "value_m": 863.9750273437558,
+          "vertical_datum": "EGM2008"
+        }
+      },
+      "minimum_distance_from_rx_distribution_m": {
+        "count": 432,
+        "max": 142.85714285714283,
+        "mean": 8.267195767195766,
+        "median": 0.0,
+        "min": 0.0,
+        "p01": 0.0,
+        "p10": 0.0,
+        "p75": 0.0,
+        "p90": 28.571428571428555,
+        "p99": 105.42857142857136
+      },
+      "minimum_distance_from_rx_histogram": {
+        "0_30m": 400,
+        "100_200m": 5,
+        "200_300m": 0,
+        "300_400m": 0,
+        "30_60m": 21,
+        "60_100m": 6
+      },
+      "minimum_distance_from_tx_distribution_m": {
+        "count": 432,
+        "max": 400.0,
+        "mean": 391.7328042328042,
+        "median": 400.0,
+        "min": 257.14285714285717,
+        "p01": 294.5714285714286,
+        "p10": 371.42857142857144,
+        "p75": 400.0,
+        "p90": 400.0,
+        "p99": 400.0
+      },
+      "minimum_distance_from_tx_histogram": {
+        "0_30m": 0,
+        "100_200m": 0,
+        "200_300m": 5,
+        "300_400m": 427,
+        "30_60m": 0,
+        "60_100m": 0
+      },
+      "minimum_location_counts": {
+        "interior": 76,
+        "rx_endpoint": 356,
+        "tx_endpoint": 0
+      },
+      "near_endpoint_candidate_counts": {
+        "interior": 12,
+        "rx_0_30m": 7,
+        "tx_0_30m": 0
+      },
+      "profile_source_and_datum": {
+        "interpolation": "bilinear",
+        "sample_resolution_m": 28.571428571428573,
+        "source": "fabdem",
+        "vertical_datum": "EGM2008"
+      }
+    },
+    "nasadem": {
+      "endpoint_clearance_contract_m": {
+        "reason": "At u=0 and u=1, radio minus terrain equals the configured AGL height exactly when the endpoint ground samples are valid.",
+        "rx": 1.5,
+        "tx": 25.0
+      },
+      "endpoint_sample_values_are_not_ground_truth": true,
+      "exact_tower_ground_samples": {
+        "LTE-313100": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9054,
+            "lon": 32.8677
+          },
+          "source": "nasadem",
+          "value_m": 940.4336000000009,
+          "vertical_datum": "EGM96 geoid"
+        },
+        "LTE-313110": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9062,
+            "lon": 32.8639
+          },
+          "source": "nasadem",
+          "value_m": 931.9455999999947,
+          "vertical_datum": "EGM96 geoid"
+        },
+        "LTE-322828": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9135,
+            "lon": 32.8523
+          },
+          "source": "nasadem",
+          "value_m": 884.0800000000054,
+          "vertical_datum": "EGM96 geoid"
+        },
+        "LTE-35084": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9113,
+            "lon": 32.8477
+          },
+          "source": "nasadem",
+          "value_m": 901.9200000000092,
+          "vertical_datum": "EGM96 geoid"
+        },
+        "LTE-35104": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.9081,
+            "lon": 32.8585
+          },
+          "source": "nasadem",
+          "value_m": 906.7840000000194,
+          "vertical_datum": "EGM96 geoid"
+        },
+        "LTE-35877": {
+          "method": "source-native sample at the exact canonical tower coordinate using the selected interpolation",
+          "point": {
+            "lat": 39.924,
+            "lon": 32.8488
+          },
+          "source": "nasadem",
+          "value_m": 869.1200000000065,
+          "vertical_datum": "EGM96 geoid"
+        }
+      },
+      "minimum_distance_from_rx_distribution_m": {
+        "count": 432,
+        "max": 200.0,
+        "mean": 18.253968253968257,
+        "median": 0.0,
+        "min": 0.0,
+        "p01": 0.0,
+        "p10": 0.0,
+        "p75": 28.571428571428555,
+        "p90": 85.71428571428572,
+        "p99": 142.85714285714283
+      },
+      "minimum_distance_from_rx_histogram": {
+        "0_30m": 351,
+        "100_200m": 18,
+        "200_300m": 0,
+        "300_400m": 0,
+        "30_60m": 35,
+        "60_100m": 28
+      },
+      "minimum_distance_from_tx_distribution_m": {
+        "count": 432,
+        "max": 400.0,
+        "mean": 381.74603174603175,
+        "median": 400.0,
+        "min": 200.0,
+        "p01": 257.14285714285717,
+        "p10": 314.2857142857143,
+        "p75": 400.0,
+        "p90": 400.0,
+        "p99": 400.0
+      },
+      "minimum_distance_from_tx_histogram": {
+        "0_30m": 0,
+        "100_200m": 1,
+        "200_300m": 17,
+        "300_400m": 414,
+        "30_60m": 0,
+        "60_100m": 0
+      },
+      "minimum_location_counts": {
+        "interior": 121,
+        "rx_endpoint": 311,
+        "tx_endpoint": 0
+      },
+      "near_endpoint_candidate_counts": {
+        "interior": 43,
+        "rx_0_30m": 7,
+        "tx_0_30m": 0
+      },
+      "profile_source_and_datum": {
+        "interpolation": "bilinear",
+        "sample_resolution_m": 28.571428571428573,
+        "source": "nasadem",
+        "vertical_datum": "EGM96 geoid"
+      }
+    }
+  },
+  "captured_at": "2026-09-19",
+  "concept": "4F.3A.4",
+  "curvature_and_refraction": {
+    "comparison": "At 400 m the geometric sagitta is about 3.14 mm and the k=4/3 effective-earth diagnostic is about 2.35 mm; both are far below the source-scale and documented DEM limitations.",
+    "difference_between_k1_and_k4_3_m": 0.0007848063760994462,
+    "distance_m": 400.0,
+    "earth_radius_m": 6371000.0,
+    "effective_earth_bulge_m": 0.0023544184586407157,
+    "effective_k_factor": 1.3333333333333333,
+    "model_change": "Diagnostic magnitude only; no curvature or refraction term is added to the canonical or 4F.3A.4 clearance model.",
+    "small_angle_approximation_m": 0.0031392246115209545,
+    "unmodeled_geometric_bulge_m": 0.003139224834740162
+  },
+  "equation_and_sign": {
+    "candidate_rule": "min(terrain_clearance) < threshold; strict audit threshold is 0 m",
+    "clearance": "terrain_clearance(u) = z_radio(u) - z_terrain(u)",
+    "endpoint_clearance": "Tx=h_tx_agl and Rx=h_rx_agl for valid endpoint samples",
+    "parameter": "u in [0,1]",
+    "positive_sign": "positive means radio line above sampled terrain",
+    "radio_line": "z_radio(u) = (1-u)*(z_tx_ground+h_tx_agl) + u*(z_rx_ground+h_rx_agl)"
+  },
+  "schema_version": 1
+}

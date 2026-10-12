@@ -1,0 +1,56 @@
+{
+  "concept": "8B",
+  "sourceOfTruth": "frontend-react/src/components/workspaceTools.js",
+  "navigationStateOwner": "frontend-react/src/App.jsx (activeTool plus transient chooserStage)",
+  "stages": [
+    {"id": "plan", "label": "Plan", "tools": ["setup", "inventory"]},
+    {"id": "simulate", "label": "Simulate", "tools": ["propagation", "experiments", "surfaces"]},
+    {"id": "analyze", "label": "Analyze", "tools": ["interference", "validation", "building-entry", "core"]},
+    {"id": "review", "label": "Review", "tools": ["results", "history", "data", "report"]}
+  ],
+  "toolCount": 13,
+  "toolMetadataAdditions": ["presentation description"],
+  "runtimeAvailabilityAndAttentionOwner": "App toolState; no duplicated eligibility rules in navigation metadata",
+  "stageTrigger": {
+    "element": "native button",
+    "ariaHasPopup": "dialog",
+    "ariaExpanded": "true only while its own chooser is open",
+    "currentStage": "aria-current=step",
+    "activeTool": "aria-current=page plus visible Current text"
+  },
+  "desktopChooser": {
+    "element": "non-modal role=dialog positioned beside its stage rail item",
+    "selection": "opens the existing single active-tool drawer and closes the chooser",
+    "geometry": "overlay; measured 264x125px for Plan at 1440x900; rail, drawer, and map geometry unchanged"
+  },
+  "phoneChooser": {
+    "element": "vertical choice list inside existing ToolDrawer sheet",
+    "selection": "same active tool drawer and same sheet footprint; no second overlay surface",
+    "choiceMinimumHeightPx": 58,
+    "reviewToolCount": 4
+  },
+  "choiceStates": {
+    "current": "aria-current=page, Current label, and current class",
+    "unavailable": "remains visible and focusable; aria-disabled=true; reason is inline and aria-describedby; click is ignored",
+    "attention": "existing warning badge and reason/needs-attention copy; result/count state remains available",
+    "selection": "selects the existing tool id; does not update RF/domain state"
+  },
+  "dismissal": {
+    "escape": "dismiss and return focus to the originating stage trigger",
+    "outsidePointer": "dismiss without changing active tool",
+    "drawerClose": "focus owning stage trigger",
+    "sameStageTrigger": "toggle its chooser"
+  },
+  "directNavigation": [
+    "RF Diagnostics path-profile action opens Propagation and its existing Advanced disclosure directly",
+    "result-source actions open Results directly",
+    "run-history and report actions retain their direct destination"
+  ],
+  "removedPersistentNavigation": ["ToolSubnav component", ".tool-subnav sibling row", "horizontal sibling scrolling"],
+  "routesIntroduced": false,
+  "testEvidence": [
+    "frontend-react/src/components/WorkspaceChrome.test.jsx: stage-owned tool choices",
+    "frontend-react/src/App.workflow.test.jsx: chooser, Escape, outside pointer, focus return",
+    "frontend-react/e2e/workspace.spec.js: mobile destinations and desktop chooser"
+  ]
+}

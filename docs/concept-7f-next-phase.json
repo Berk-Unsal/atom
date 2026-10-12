@@ -1,0 +1,103 @@
+{
+  "concept": "7F",
+  "artifact": "next-phase-decision",
+  "capturedOn": "2026-09-22",
+  "decisionRule": "Choose the single next implementation concept that improves the most important real workflow while preserving the existing architecture and documented RF/persistence semantics.",
+  "options": [
+    {
+      "id": "7g-a",
+      "label": "Concept 7G — Results, Lineage & Stale-State UX",
+      "status": "selected",
+      "whySupported": [
+        "Wrong-lineage report/apply and stale-result interpretation are the two highest-severity workflow risks.",
+        "Existing Scenario, Version, Run, and Report relationships already provide the data needed for clearer context.",
+        "The risk spans Plan, Simulate, Analyze, Review, map inspection, optimization, and report generation.",
+        "It can be implemented within the current map-first shell without changing RF, optimizer, persistence, or API behavior."
+      ],
+      "scope": [
+        "Persistent compact Project / Scenario / Version identity.",
+        "Explicit Current, Result out of date, Historical, Unavailable, and Unsupported labels.",
+        "Source Run/Version summary on Results, Run History, and Report transitions.",
+        "Safer apply-as-Version/branch and historical-report confirmation.",
+        "Consistent empty/error/status copy around lineage."
+      ],
+      "successSignals": [
+        "A user can name the active Project, Scenario, Version, and current/historical Run without opening a second panel.",
+        "After an RF-affecting edit, the UI says which result is out of date and offers a safe next action.",
+        "A historical Run or Report remains visibly historical after returning to the map.",
+        "Applying a solution or generating a Report shows its source and destination context before commit.",
+        "No RF outputs, persistence semantics, or API contracts change."
+      ],
+      "nonGoals": ["new database", "authentication", "new route system", "RF math changes", "optimizer changes", "broad shell rewrite", "new dashboard"]
+    },
+    {
+      "id": "7g-b",
+      "label": "Concept 7G — RF Configuration Progressive Disclosure",
+      "status": "candidate-after-selected",
+      "whySupported": [
+        "Propagation and RF Diagnostics mix ordinary planning controls with reference/research cards.",
+        "Data combines dataset, model, measurement, and calibration responsibilities."
+      ],
+      "scope": [
+        "Planning / Advanced / Research labels.",
+        "Collapsed reference panels by default.",
+        "Shorter canonical planning path.",
+        "Explicit research-only and validation prerequisites."
+      ],
+      "riskIfFirst": "Without a shared current/historical/Version vocabulary, collapsed panels may reduce visibility without resolving wrong-state risk."
+    },
+    {
+      "id": "7g-c",
+      "label": "Concept 7G — Review and Workspace IA Refinement",
+      "status": "candidate-after-selected",
+      "whySupported": [
+        "Results, Run history, Data, Report, and Scenario revision detail each own adjacent parts of review.",
+        "Report and Run entry points are valid but fragmented."
+      ],
+      "scope": [
+        "Clarify current-result versus durable-record review.",
+        "Standardize source/open/back actions.",
+        "Reduce artifact terminology in ordinary Reports.",
+        "Keep the map and four-stage rail."
+      ],
+      "riskIfFirst": "Review IA would be redesigned around an unstable state vocabulary unless lineage is clarified first."
+    },
+    {
+      "id": "7g-d",
+      "label": "Concept 7G — Safe Feature Lazy Loading",
+      "status": "candidate-follow-up",
+      "whySupported": [
+        "The production JS chunk is 921.62 kB raw / 252.89 kB gzip and Vite warns above 500 kB.",
+        "Rare research, validation, experiment, Core Lab, and report modules are eagerly imported."
+      ],
+      "scope": [
+        "Generate module treemap.",
+        "Lazy-load research/reference panels.",
+        "Lazy-load report export and retained artifact tooling.",
+        "Lazy-load experiments and Core Lab."
+      ],
+      "riskIfFirst": "It improves startup but does not address the highest-severity wrong-lineage workflow; loading boundaries could also expose state-loss bugs."
+    }
+  ],
+  "selected": {
+    "id": "7g-a",
+    "label": "Concept 7G — Results, Lineage & Stale-State UX",
+    "reason": "It improves the most important real workflow—configure, run, inspect, revise, save, report, revisit—while preserving the current map-first architecture and existing domain/persistence semantics.",
+    "implementationOrder": [
+      "Define and test the shared state/lineage vocabulary.",
+      "Expose active Project/Scenario/Version identity in the existing header context.",
+      "Attach current/historical/stale source summaries to Results, Run History, Report, and apply flows.",
+      "Add safe empty/error transitions and focus/context behavior.",
+      "Only then implement research disclosure and code-splitting follow-ups."
+    ],
+    "architecturePreserved": ["map-first shell", "four-stage rail", "Project/Scenario/Version model", "Run History model", "Report Artifact storage", "RF contracts", "optimizer contracts", "local-first persistence"]
+  },
+  "implementationGuardrails": [
+    "Do not change RF computations or request/response contracts.",
+    "Do not change optimizer scoring, search policy, or Pareto semantics.",
+    "Do not change Scenario/Version/Run/Report storage semantics.",
+    "Do not introduce a project dashboard unless later evidence shows a pre-map project triage need.",
+    "Do not use color alone for Current, Historical, Stale, Unavailable, or Unsupported.",
+    "Keep the map visually central and keep expensive computation explicit."
+  ]
+}

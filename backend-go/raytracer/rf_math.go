@@ -18,10 +18,16 @@ func PenetrationLossForFrequencyGHz(frequencyGHz float64) float64 {
 	}
 }
 
+// ReceivedPowerDBm is a legacy default-profile helper retained for source
+// compatibility. Production callers use CellRFProfile.ReceivedPowerDBm so
+// per-cell gain, system loss, height, patterns, and sensitivity are explicit.
 func ReceivedPowerDBm(distanceMeters float64, frequencyGHz float64, txPowerDBm float64, attenuationDB float64) float64 {
 	return EffectiveIsotropicRadiatedPowerDBm(txPowerDBm) - FreeSpacePathLossMetersGHz(distanceMeters, frequencyGHz) - attenuationDB
 }
 
+// MaxTheoreticalDistanceMeters is a legacy default-only helper. It is not the
+// production propagation-reach contract because it uses global sensitivity
+// and gain aliases and does not model per-cell antenna patterns.
 func MaxTheoreticalDistanceMeters(txPowerDBm float64, frequencyGHz float64, attenuationDB float64) float64 {
 	if frequencyGHz <= 0 {
 		return 0

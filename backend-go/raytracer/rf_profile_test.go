@@ -108,6 +108,9 @@ func TestDefaultCellRFProfileCovers6G(t *testing.T) {
 	if profile.FrequencyGHz != 140 || profile.BandwidthMHz != 1000 || profile.Band != "Sub-THz research" || profile.DuplexMode != "tdd" {
 		t.Fatalf("unexpected 6g defaults: %+v", profile)
 	}
+	if profile.ReceiverSensitivityMode != ReceiverSensitivityModeManual || profile.ReceiverSensitivityDBm != DefaultReceiverSensitivityDBm {
+		t.Fatalf("6g default receiver contract changed: %+v", profile)
+	}
 }
 
 func TestOmnidirectionalProfileSamplesFullCircle(t *testing.T) {

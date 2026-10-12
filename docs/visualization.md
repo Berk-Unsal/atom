@@ -48,14 +48,14 @@ The 5G visualization reveals:
 
 ---
 
-## 6G Sub-THz Coverage (140 GHz)
+## 6G Research Profile Coverage (140 GHz)
 
 ![6G Propagation](./assets/6g.png)
 
 ### Characteristics
 
 - **Wavelength**: 2.14 mm (near-optical)
-- **Coverage Type**: Ultra-localized, street-level only
+- **Coverage Type**: Ultra-localized comparative planning overlay
 - **Penetration Loss**: roughly +80 dB per wall crossing in the current Sub-THz model
 - **Line-of-Sight Requirement**: Mandatory for coverage
 
@@ -67,7 +67,7 @@ The 6G heatmap demonstrates:
 - 🟡 **Yellow zones**: Minimal; mostly absent
 - 🔴 **Red zones**: Vast majority (blocked by buildings)
 
-**Key Insight**: 6G requires a **"pave the streets"** deployment model with frequent small cells (every 50-100 meters). Coverage beyond the immediate vicinity is impractical.
+**Key Insight**: The 140 GHz mode is a 6G research profile, not a standardized network-quality model. Its short-range result is useful for comparative planning and is not a deployment guarantee.
 
 ---
 
@@ -97,14 +97,14 @@ The auto-optimized placement achieves:
 
 ## Color Mapping Reference
 
-All visualizations use the same **signal strength to color mapping**:
+The map uses a display-only received-power palette. It is not a universal service-quality legend: receiver sensitivity is per effective cell, building service uses a separate `-100 dBm` threshold, and interference serviceability uses RSRP/SINR/RSRQ thresholds.
 
 | Color | Signal Range | Quality | Use Case |
 |-------|-------------|---------|----------|
 | 🟢 Green | -50 to -70 dBm | Excellent | Voice, video, IoT |
 | 🟡 Yellow | -70 to -90 dBm | Good | Voice, messaging |
 | 🔴 Red | -90 to -110 dBm | Poor | Emergency services |
-| ⚫ Black | < -110 dBm | No service | (Not shown) |
+| ⚫ Black | Below the configured display floor | Visually suppressed | Presentation only; raw values remain in the API |
 
 ---
 
@@ -116,7 +116,7 @@ All visualizations use the same **signal strength to color mapping**:
 |-----------|---------------|-----------|
 | **4G** | 2 km (urban) | 5 km (rural) |
 | **5G mmWave** | 300 m planning preset | 1 km configurable limit |
-| **6G Sub-THz** | 50 m (LOS) | 200 m (exceptional) |
+| **6G research profile** | 50 m (illustrative) | 200 m (illustrative planning bound) |
 
 ### Site Density Required
 
@@ -124,7 +124,7 @@ All visualizations use the same **signal strength to color mapping**:
 |-----------|------------|------------------------|
 | **4G** | 1-3 | Low (penetrates walls) |
 | **5G mmWave** | 10-50 | High (requires LOS) |
-| **6G Sub-THz** | 100+ | Very High (street-level) |
+| **6G research profile** | 100+ | Very High (illustrative street-level comparison) |
 
 ### Urban Canyon Effect
 
@@ -132,7 +132,7 @@ The visualizations clearly show how **building density** impacts each band:
 
 - **4G**: Usually produces the broadest modeled reach because FSPL and wall loss are lower.
 - **5G**: Produces more localized, directional modeled coverage at 28 GHz.
-- **6G**: Is a research overlay with the strongest configured wall attenuation and shortest practical range.
+- **6G**: Is a research profile with the strongest configured wall attenuation and shortest illustrative planning range.
 
 ---
 
@@ -152,7 +152,29 @@ Each heatmap consists of thousands of **ray segments** (colored lines):
 1. **Green Zones**: Primary coverage area; reliable service expected
 2. **Yellow Zones**: Secondary coverage; service possible with optimal conditions
 3. **Red Zones**: Marginal; not recommended for primary coverage
-4. **No Color**: Below sensitivity threshold; no usable signal
+4. **No Color**: Below the visual display floor or outside the rendered evidence; this does not mean the API value is NoData or that it fails every serviceability rule
+
+### Analytical Surface Layer
+
+The Signal surface tool replaces dense point markers with a regular raw single-cell received-power raster drawn below operational markers. Adjust opacity to compare it with the basemap and select a display floor to hide weaker cells; that floor is visual only. Valid below-sensitivity values remain in the surface, while NoData means radius/beam geometry exclusion. Contours are unsmoothed marching-square line segments at the selected dBm thresholds; they are deterministic grid evidence, not kriged measurement isolines. The surface is calculated for one selected cell, so it is not an aggregate network-coverage claim.
+
+### RF Map Display Controls
+
+The compact RF control group keeps the two evidence types independent:
+
+- **Signal** toggles the received-power surface when one has been generated.
+- **Rays** toggles the segmented propagation paths without issuing another RF request.
+- **All cells**, **Selected cell**, and **Hidden** control which network ray paths are rendered. The Selected cell choice uses the separate **Focus** cell selector; it does not change the Pareto solution selected in Results.
+
+Until a surface is generated, rays are the visible RF fallback. Generating a received-power surface switches the map to a surface-first view and hides rays; rays can be enabled again for diagnostic inspection. Presentation-only changes are local browser state. RF settings, cell selection, or a new optimization/evaluation clear incompatible rendered evidence and require the normal explicit analysis action.
+
+The raster uses the fast sector FSPL/antenna/wall model. It does not inherit optional terrain, gas, rain, vegetation, or diffraction settings from a point-to-point profile.
+
+Enable **Viewport buildings** in Layers at zoom 12 or closer to request only the visible building footprints. Fill hue reflects normalized material when known and opacity increases modestly with inferred height; it is contextual geometry, not a surveyed 3D mesh.
+
+### Vertical Path Profile
+
+The Propagation tool's path view shows ground, building tops, endpoint elevations, the direct LOS line, 60% Fresnel clearance, and any dominant obstruction. The adjacent component table is the authoritative explanation of which optional losses were enabled. A red obstruction does not imply a complete multiple-edge diffraction or reflected-path solution.
 
 ### Interactive Exploration
 
@@ -160,6 +182,8 @@ In the web interface, you can:
 
 - 🔄 Adjust antenna azimuth and watch coverage rotate
 - 📊 Switch between frequency bands and compare
+- 🧭 Focus a selected network cell while keeping the planning selection unchanged
+- 🗺️ Switch between the received-power surface and diagnostic ray evidence
 - 🎯 Toggle beamforming on/off to see impact
 - 📍 Click points to see exact signal strength (Rx dBm)
 
@@ -173,7 +197,7 @@ A.T.O.M has not been calibrated against operator drive tests or UE measurements.
 
 ## Export and Integration
 
-All visualizations can be exported as **GeoJSON** for use in:
+Analytical surfaces can be exported as float32 EPSG:4326 GeoTIFF, contour GeoJSON, or grid-center CSV. Viewport building queries return GeoJSON or CSV/WKT. These can be used in:
 
 - 🗺️ **ArcGIS**: Professional GIS analysis
 - 🌍 **Google Earth**: 3D visualization
@@ -183,3 +207,8 @@ All visualizations can be exported as **GeoJSON** for use in:
 ---
 
 **Next**: Learn the physics behind these visualizations in [Algorithms & Physics](algorithms.md).
+
+
+## Application appearance
+
+Use Layers → Appearance to select Light, Dark, or System. The preference is local to the browser. Dark uses a native Alidade Smooth Dark basemap and semantic shell colors; RF categories, thresholds, geometry, results and exported identity stay fixed. Active, selected, inspected and focused cells retain separate ring/order semantics. OpenStreetMap and Alidade Smooth remain selectable. See [appearance details](dark-mode.md) and the [matched comparison report](dark-mode-visual-comparison.md).

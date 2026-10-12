@@ -1,10 +1,10 @@
 # Features
 
-A.T.O.M is a local-first, deterministic RF planning workspace for comparing urban 4G, 5G, and exploratory 6G sector plans. Its outputs are planning estimates, not UE or PHY measurements.
+A.T.O.M is a local-first, deterministic RF planning workspace for comparing urban 4G, 5G, and a 6G research profile. Its outputs are planning estimates, not UE or PHY measurements.
 
 ## Focused Planning Workspace
 
-- Eight workflow tools in one rail: Setup, Inventory, Propagation, Interference, 5G Core, Results, Data, and Report.
+- Ten workflow tools in one rail: Setup, Inventory, Propagation, Experiments, Surfaces, Interference, 5G Core, Results, Data, and Report.
 - A compact command bar keeps the current project, cell context, technology, RF summary, and primary run action visible.
 - The map remains full size while tool and Inspector drawers overlay it.
 - Contextual layers appear only when their results exist.
@@ -15,6 +15,7 @@ A.T.O.M is a local-first, deterministic RF planning workspace for comparing urba
 - Native browser IndexedDB persistence with automatic last-workspace restoration.
 - Named scenarios preserve exact inputs, selected cells, RF settings, result summaries, model metadata, and recent GeoJSON layers.
 - Rename, duplicate, delete, import, and export complete projects as versioned `.atom-project.json` files.
+- Result-bearing six-Cell projects use [lossless project file v3](project-format.md) with bounded import and preserved Version provenance; valid v1/v2 files remain readable. Scenario Undo restores the same saved identity durably across reload.
 - Input changes mark saved results stale instead of presenting them as current.
 - Compare exactly two scenarios using KPI deltas and an A/B map switch.
 - Promote either comparison side to the active plan without modifying the source snapshot.
@@ -25,10 +26,10 @@ Project history is local to the browser. A.T.O.M does not provide accounts, shar
 
 - Place cells manually on the map, drag editable cells, edit coordinates, duplicate or delete them, and import bounded CSV or GeoJSON inventories.
 - Search the inventory and select cells without losing their per-cell overrides.
-- Configure technology, band, frequency, bandwidth, channel, duplex mode, transmit power, antenna gain, system loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and receiver sensitivity independently for every cell.
+- Configure technology, band, frequency, bandwidth, channel, duplex mode, conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and either manual receiver sensitivity or a derived receiver mode with noise bandwidth, noise figure, required SNR, and receiver margin independently for every cell.
 - Validate technology/frequency compatibility and all numeric/text limits before RF execution.
 - Persist the complete inventory and profile overrides in schema-v2 project drafts and scenarios; schema-v1 files remain importable.
-- Include resolved per-cell profiles in simulation, network, interference, recommendation, measurement, and planning-report contracts.
+- Include resolved per-cell profiles and effective receiver-threshold metadata in simulation, network, interference, recommendation, measurement, and planning-report contracts.
 
 Legacy top-level RF controls remain request defaults. A nested `rf_profile` overrides those defaults for its cell, so older API clients continue to work while heterogeneous networks can be modeled explicitly.
 
@@ -40,17 +41,28 @@ Legacy top-level RF controls remain request defaults. A nested `rf_profile` over
 |---|---:|---|
 | 4G LTE | 2.6 GHz | Wider urban coverage planning |
 | 5G NR mmWave | 28 GHz | Directional high-capacity planning |
-| 6G Sub-THz research overlay | 140 GHz | Exploratory propagation comparison |
+| 6G research profile | 140 GHz | Comparative planning overlay; not standardized project-level RF quality |
 
-The backend uses free-space path loss with meter/GHz units:
+The backend exposes explicit propagation modes. `urban_short_range` is the default at 2.6/28 GHz, `legacy_fspl_walls` remains selectable, and `research_sub_thz` is the 140 GHz research-only profile. The separate Building entry analysis estimates service immediately inside a representative facade at 2.6/28 GHz with deterministic low-loss/high-loss O2I scenarios; it does not claim indoor or whole-building coverage. The legacy mode uses free-space path loss with meter/GHz units:
 
 ```text
 FSPL(dB) = 32.45 + 20log10(distance_m) + 20log10(frequency_GHz)
 ```
 
-It then applies configured transmit power, antenna gain, beam/radius eligibility, and cumulative frequency-dependent wall loss. Rays are segmented and returned as GeoJSON with modeled received power.
+The urban mode applies the 3GPP UMa LOS/NLOS median path-loss formula after shared 2D footprint classification; it does not add the legacy wall heuristic to empirical NLOS. Every mode applies the explicit link ledger: conducted TX power, absolute TX boresight gain, relative TX pattern attenuation, propagation/building loss, scalar RX gain, system loss, polarization loss, and calibration. Boresight and directional EIRP are reported separately; the legacy effective-transmit alias is retained only for compatibility. Rays are segmented and returned as GeoJSON with model identity, antenna semantics, and explainability metadata.
 
-The current model does not simulate diffraction, reflections, fast fading, terrain, material-specific penetration, sidelobes, MIMO scheduling, or uplink behavior.
+The `ideal-sector`, `cosine-sector`, and panel presets preserve their deterministic analytic equations and hard beam eligibility. The optional `3gpp-single-element` preset is a full-azimuth single-element reference based on [3GPP TR 38.901 §7.3/Table 7.3-1](https://www.etsi.org/deliver/etsi_tr/138900_138999/138901/19.04.00_60/tr_138901v190400p.pdf); it combines bounded horizontal and vertical cuts with a 30 dB cap and does not model an array factor, beamforming, MIMO, codebooks, vendor diagrams, or measured sidelobes. Positive mechanical downtilt points the antenna boresight downward; mechanical and electrical tilt remain distinct inputs and sum for the current analytic/reference evaluation.
+
+The selected `urban_short_range` model uses deterministic height-aware footprint centerline obstruction with explicit height provenance. It does not use terrain in the current Ankara network evaluator, Fresnel clearance, diffraction, reflection-heavy multipath, fast fading, MIMO scheduling, or uplink behavior; unknown building heights are conservative NLOS. Static usable reach applies the effective per-cell receiver threshold strictly. A separate `path-profile-diagnostic-v1` point-to-point workflow adds terrain/building profiles, LOS and Fresnel classification, material-specific wall planning losses, and an explicitly selected single knife-edge approximation; its result is isolated from network RF. See the [Concept 4F.1 design note](concept-4f1-height-aware-obstruction.md) and the [Concept 4G.2 receiver-noise note](concept-4g2-receiver-noise-sensitivity.md).
+
+### 2.5D Path Profiles And Fidelity
+
+- Loads an optional north-up EPSG:4326 COG/GeoTIFF terrain layer lazily by strip/tile, or a declared standard HGT posting layer, and samples it bilinearly.
+- Combines ground elevation, inferred or explicit building height, transmitter/receiver height above ground, direct geometric LOS, 60% first-Fresnel clearance, and a dominant obstruction. Fresnel concern never changes geometric LOS/NLOS.
+- Provides `terrain-profile` (30 MHz–6 GHz), `urban-short-range` (300 MHz–100 GHz), and explicitly out-of-range research profiles. These applicability labels are tracked against [ITU-R P.1812-8 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf) and [ITU-R P.1411-13 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf); the implementation is an inspectable planning approximation, not either complete method.
+- Exposes free-space, antenna-pattern, conducted-power, TX boresight-gain, directional-EIRP, RX-gain, system, polarization, wall, diffraction, clutter, vegetation, atmospheric-gas, rain, calibration, and shadow-sensitivity components rather than hiding them in one total.
+- Uses the isolated [Concept 4F.2 P.526-16 single-edge diagnostic](concept-4f2-diffraction-diagnostic.md) only when explicit or levels-derived roof evidence is available. Generic fallback heights are unavailable for diffraction; the diagnostic is never added to canonical UMa NLOS. Material, gas, and rain controls are planning inputs informed by [ITU-R P.2040](https://www.itu.int/rec/r-rec-p.2040/en), [ITU-R P.676](https://www.itu.int/rec/R-REC-P.676/en), and [ITU-R P.838](https://www.itu.int/rec/R-REC-P.838/en), not automatic weather or construction-data inference.
+- Displays a vertical terrain/building/LOS/Fresnel cross section with the loss budget and P50/P90-style shadow-sensitivity bounds.
 
 ## Demand-Aware Planning
 
@@ -58,18 +70,39 @@ The current model does not simulate diffraction, reflections, fast fading, terra
 - Demand scoring distinguishes POI and residential signals from empty geometry.
 - Single-sector optimization performs a deterministic azimuth sweep.
 - Network evaluation scores two to six selected cells using coverage, unique demand, and overlap.
-- Network optimization coordinates selected-cell azimuths and renders each cell through a bounded sequential queue.
+- Network optimization coordinates selected-cell azimuths using selected objectives/weights, optional minimum coverage/demand and maximum-overlap constraints, feasibility violations, and an explained Pareto frontier. Tilt, power, and site selection are not silently adjusted.
+
+## Batch Experiments
+
+- Sweeps frequency, conducted TX power, beam width, azimuth, and calibration offset across at most 64 deterministic combinations.
+- Executes through bounded asynchronous jobs with progress, cancellation, a dataset/model/request fingerprint, and a small result cache.
+- Compares runs in a scenario table and Pareto view and exports the exact experiment definition.
+- Runs headlessly through `go run ./cmd/run-experiment -definition experiment.json` or the process/job API.
+- Follows the asynchronous execution shape of [OGC API Processes](https://www.ogc.org/standards/ogcapi-processes/) without claiming a complete conformance class implementation.
+
+## Analytical Surfaces And GIS Interchange
+
+- Evaluates bounded regular received-power grids with a 100,000-cell ceiling and produces unsmoothed marching-square isolines.
+- Returns a raw single-cell received-power surface: valid cells below receiver sensitivity remain numeric, while NoData is reserved for radius/beam geometry exclusion; the effective threshold is metadata/statistics, not a mask.
+- Renders the raster below the cell/measurement overlays with opacity and minimum-display-threshold controls.
+- Exports the regular grid as float32 EPSG:4326 GeoTIFF, valid grid cells as CSV, and isolines as GeoJSON.
+- Queries building footprints through mandatory viewport `bbox`, pagination, a 50 km diagonal ceiling, and a 5,000-feature page ceiling; outputs GeoJSON or CSV/WKT.
+- Provides an opt-in material/height-tinted map overlay at zoom 12 or closer; panning cancels stale requests and loads only the current bounded viewport.
+- Uses OGC API Features-style collections and query parameters, informed by [OGC API Features](https://www.ogc.org/standards/ogcapi-features/). Vector tiles and GeoPackage export remain future work; [OGC API Tiles](https://www.ogc.org/standards/ogcapi-tiles/) and [GeoPackage](https://www.ogc.org/standards/geopackage/) are the intended interoperability references.
 
 ## Interference And Radio Quality
 
 Planning-grade 4G and 5G interference analysis calculates:
 
-- Serving-cell selection by strongest modeled RSRP.
+- Serving-cell selection by strongest modeled RSRP, or an explicit serving-cell diagnostic override.
 - RSRP, SINR, RSRQ, RSSI, noise, strongest interferer, and contributing-cell count.
 - Co-channel loading and reuse-factor behavior using linear power addition.
 - Adaptive spatial sampling capped to keep requests bounded.
 - Serviceable, interference-limited, and affected-demand statistics.
 - SINR, RSRP, and RSRQ map surfaces with threshold-specific legends.
+- Uses separate serviceability thresholds (`RSRP >= -110 dBm`, `SINR >= 0 dB`, `RSRQ >= -20 dB`), not receiver sensitivity or the `-100 dBm` building-service threshold.
+- Keeps receiver noise-equivalent bandwidth and per-RE interference noise separate; receiver sensitivity gates carrier admission but is not added as a second SINR noise term.
+- Exposes raw received carrier power separately from planning RSRP, a linear-domain desired/interference/noise ledger, exact co-channel exclusion reasons, and deterministic scenario fingerprints.
 
 Near-equal co-channel powers can correctly produce SINR near `0 dB`; the Inspector explains this and other no-signal or poor-quality states.
 
@@ -89,7 +122,8 @@ Recommendations are RF planning options, not claims of rooftop availability, own
 - Imports up to 5,000 CSV records with ID, longitude, latitude, technology, measured RSRP, and optional cell ID.
 - Predicts RSRP at each measurement location using the active selected cells and RF assumptions.
 - Reports residual GeoJSON, MAE, RMSE, mean/median bias, no-signal count, and per-cell statistics.
-- With at least 20 valid points, uses a deterministic training/holdout split to evaluate a robust global bias correction.
+- With at least 20 valid points, requires at least five distinct 50 m spatial areas spanning at least 100 m, then evaluates a robust global bias through deterministic spatially blocked five-fold validation.
+- Reports per-cell and per-band residuals, residual-versus-distance and residual-versus-obstruction bins, robust MAD outliers, P50/P90 errors, a median-adjustment confidence interval, fold evidence, and provenance/expiration state.
 - Applies correction only after explicit user confirmation and stores the profile with the project.
 - Invalidates calibration when technology, frequency, model version, or dataset changes.
 
@@ -106,7 +140,7 @@ This is global path-loss bias correction, not full propagation calibration.
 - Active dataset identity and provenance appear in Data, scenarios, reports, and `/api/meta`.
 - `ATOM_DATASETS_ROOT` enables a local installed-pack catalog. Switching accepts a manifest ID rather than a path, rejects root escapes and duplicate IDs, validates the whole candidate, and swaps the immutable runtime snapshot only after success.
 
-Schema-v1 packs remain loadable. The application does not perform arbitrary-city live ingestion or large browser uploads; building is an explicit local CLI workflow. Optional layers are not yet consumed by RF calculations.
+Schema-v1 packs remain loadable. The application does not perform arbitrary-city live ingestion or large browser uploads; building is an explicit local CLI workflow. The optional terrain layer is consumed only by the 2.5D point-to-point profile. Clutter and material controls can be selected explicitly, but raster clutter and separate height/material sidecar layers are not yet automatically joined into every RF workflow.
 
 ## 5G Communication Paths
 
@@ -123,7 +157,8 @@ It is a planning overlay, not an LTE/EPC model or a complete bundled Open5GS dep
 
 ## Reproducibility And Reports
 
-- `/api/meta` exposes application version, build commit, model version, supported technologies, and active dataset identity.
+- `/api/meta` exposes application version, build commit, default propagation model and catalog, the RF semantic contract, supported technology capabilities, and active dataset identity.
+- Network responses preserve request-level defaults alongside normalized effective per-cell RF profiles.
 - Scenarios and reports retain exact request inputs and runtime metadata.
 - Markdown and printable PDF reports include RF assumptions, radio quality, communication paths, calibration evidence, recommendations, and scenario comparison where available.
 - The downloadable OpenAPI 3.1 specification documents current REST routes and error envelopes.
@@ -131,7 +166,7 @@ It is a planning overlay, not an LTE/EPC model or a complete bundled Open5GS dep
 
 ## Deliberately Out Of Scope
 
-- Full 3D ray tracing, multipath, diffraction, fading, and MIMO scheduling.
+- Full 3D reflection-heavy ray tracing, multiple-obstacle diffraction, fading, MIMO scheduling, PHY/MCS/throughput modeling, and UE conformance sensitivity validation.
 - Live network control, LTE/EPC integration, and 6G Core integration.
 - Cloud accounts, multi-user collaboration, and hosted project storage.
 - Guessed cost, fiber, equity, or emergency-priority scoring without authoritative data.

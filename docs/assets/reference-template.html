@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="description" content="$summary$" />
   <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
   <link rel="stylesheet" href="./assets/docs.css" />
   <title>$title$ | A.T.O.M Documentation</title>
 </head>
@@ -54,6 +55,16 @@
           </div>
         </div>
       </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
       <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
         <span class="nav-toggle-lines" aria-hidden="true"></span>
       </button>
@@ -62,7 +73,7 @@
         <a href="./architecture.html">Architecture</a>
         <a href="./api.html"$if(api_page)$ aria-current="page"$endif$>API</a>
         <a href="./changelog.html"$if(changelog_page)$ aria-current="page"$endif$>Changelog</a>
-        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
         <a class="nav-cta" href="./download.html">Download &amp; Use</a>
       </nav>
     </div>
@@ -81,7 +92,7 @@
         <p>$summary$</p>
         <div class="hero-actions">
 $if(changelog_page)$
-          <a class="button" href="https://github.com/Berk-Unsal/urban-ray-tracer/blob/main/CHANGELOG.md">View Markdown source</a>
+          <a class="button" href="https://github.com/Berk-Unsal/atom/blob/main/CHANGELOG.md">View Markdown source</a>
 $else$
           <a class="button" href="./$source$">View Markdown source</a>
 $endif$
@@ -101,7 +112,7 @@ $body$
   <footer class="site-footer">
     <div class="footer-inner">
       <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
-      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/urban-ray-tracer">Source on GitHub</a></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
     </div>
   </footer>
 

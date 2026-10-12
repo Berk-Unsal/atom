@@ -1,14 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { combineNetworkSimulations, networkAzimuthMap, normalizeSimulationStats } from "./appWorkspace.js";
+import {
+  combineNetworkSimulations,
+  formatCompactNumber,
+  formatMetric,
+  formatNumber,
+  isCalibrationProfileCompatible,
+  networkAzimuthMap,
+  normalizeNetworkStats,
+  normalizedNetworkScore,
+  normalizeSimulationStats,
+} from "./appWorkspace.js";
 
 describe("app workspace helpers", () => {
+  it("uses one UI contract for precision, units, and missing values", () => {
+    expect(formatNumber(12.34, 1)).toBe("12.3");
+    expect(formatNumber(null)).toBe("—");
+    expect(formatCompactNumber(undefined)).toBe("—");
+    expect(formatMetric(-92.44, "dBm")).toBe("-92.4 dBm");
+    expect(formatMetric(81.25, "%")).toBe("81.3%");
+  });
+
   it("combines network features and aggregate statistics deterministically", () => {
     const combined = combineNetworkSimulations([
       { geojson: { features: [{ properties: { ray: 1 } }] }, stats: { avg_rx_dbm: -80, blocked_pct: 10, min_range_m: 20, max_range_m: 100 } },
       { geojson: { features: [{ properties: { ray: 2 } }] }, stats: { avg_rx_dbm: -60, blocked_pct: 30, min_range_m: 10, max_range_m: 120 } },
-    ]);
+    ], [{ id: "tower-a", cellId: "cell-a" }, { id: "tower-b", cellId: "cell-b" }]);
     expect(combined.stats).toEqual({ avg_rx_dbm: -70, blocked_pct: 20, min_range_m: 10, max_range_m: 120 });
     expect(combined.geojson.features[1].properties.network_tower_index).toBe(1);
+    expect(combined.geojson.features[0].properties.cell_id).toBe("cell-a");
+    expect(combined.geojson.features[1].properties.network_tower_id).toBe("cell-b");
   });
 
   it("maps optimized cell IDs without discarding existing azimuths", () => {
@@ -19,5 +39,29 @@ describe("app workspace helpers", () => {
 
   it("normalizes absent simulation evidence", () => {
     expect(normalizeSimulationStats(null, null)).toMatchObject({ avgPower: null, rayCount: 0 });
+  });
+
+  it("keeps raw network aggregates separate from normalized recommendation scores", () => {
+    expect(normalizedNetworkScore({ network_score: 6567105.4 })).toBeNull();
+    expect(normalizedNetworkScore({ composite_score: 0.405071 })).toBeCloseTo(40.5071, 6);
+    expect(normalizeNetworkStats({ stats: { network_score: 6567105.4, composite_score: 0.405071 } })).toMatchObject({
+      networkScore: 40.5071,
+      optimizationScore: 40.5071,
+      rawNetworkScore: 6567105.4,
+    });
+  });
+
+  it("accepts spatial calibration profiles and rejects expired provenance", () => {
+    const settings = { frequencyGHz: 28 };
+    const meta = { model_version: "m1", dataset: { id: "d1", version: "1", sha256: {} } };
+    const profile = {
+      kind: "spatially_validated_robust_global_path_loss_bias",
+      technology: "5g",
+      frequencyGHz: 28,
+      modelVersion: "m1",
+      dataset: { id: "d1", version: "1", hashes: {} },
+    };
+    expect(isCalibrationProfileCompatible(profile, settings, meta)).toBe(true);
+    expect(isCalibrationProfileCompatible({ ...profile, expiresAt: "2000-01-01T00:00:00Z" }, settings, meta)).toBe(false);
   });
 });

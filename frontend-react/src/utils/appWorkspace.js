@@ -1,22 +1,28 @@
 import { networkTechnologyForFrequency } from "../generated/policy.js";
 import { isDatasetCompatible } from "./projectStore.js";
 
+export const UNAVAILABLE_VALUE = "—";
+
 export function formatCompactNumber(value) {
+  if (value === null || value === undefined || value === "") return UNAVAILABLE_VALUE;
   const number = Number(value);
-  if (!Number.isFinite(number)) return "n/a";
+  if (!Number.isFinite(number)) return UNAVAILABLE_VALUE;
   return Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(number);
 }
 
 export function formatNumber(value, digits = 1) {
+  if (value === null || value === undefined || value === "") return UNAVAILABLE_VALUE;
   const number = Number(value);
-  if (!Number.isFinite(number)) return "n/a";
+  if (!Number.isFinite(number)) return UNAVAILABLE_VALUE;
   return number.toLocaleString("en", { maximumFractionDigits: digits, minimumFractionDigits: digits });
 }
 
 export function formatMetric(value, unit) {
-  if (value === null || value === undefined) return "n/a";
+  if (value === null || value === undefined) return UNAVAILABLE_VALUE;
   const number = Number(value);
-  return Number.isFinite(number) ? `${number.toFixed(1)} ${unit}` : "n/a";
+  if (!Number.isFinite(number)) return UNAVAILABLE_VALUE;
+  const separator = unit === "%" || unit === "°" ? "" : " ";
+  return `${number.toFixed(1)}${separator}${unit}`;
 }
 
 export function formatCoreLabState(state) {
@@ -36,7 +42,10 @@ export function formatScenario(value) {
 
 export function isCalibrationProfileCompatible(profile, settings, meta) {
   if (!profile || !meta) return true;
-  return profile.kind === "robust_global_path_loss_bias"
+  const supportedKind = profile.kind === "robust_global_path_loss_bias"
+    || profile.kind === "spatially_validated_robust_global_path_loss_bias";
+  const notExpired = !profile.expiresAt || Date.parse(profile.expiresAt) > Date.now();
+  return supportedKind && notExpired
     && profile.technology === networkTechnologyForFrequency(settings.frequencyGHz)
     && Number(profile.frequencyGHz) === Number(settings.frequencyGHz)
     && profile.modelVersion === meta.model_version
@@ -84,12 +93,21 @@ export function buildNetworkComparisonSnapshot({ label, optimization, settings, 
   };
 }
 
-export function combineNetworkSimulations(simulations) {
-  const features = simulations.flatMap((payload, simulationIndex) =>
-    (payload?.geojson?.features ?? []).map((feature) => ({
+export function combineNetworkSimulations(simulations, towers = []) {
+  const features = simulations.flatMap((payload, simulationIndex) => {
+    const tower = towers[simulationIndex];
+    const cellID = tower?.cellId ?? tower?.id;
+    return (payload?.geojson?.features ?? []).map((feature) => ({
       ...feature,
-      properties: { ...(feature.properties ?? {}), network_tower_index: simulationIndex },
-    })));
+      properties: {
+        ...(feature.properties ?? {}),
+        network_tower_index: simulationIndex,
+        ...(cellID === null || cellID === undefined || cellID === ""
+          ? {}
+          : { cell_id: String(cellID), network_tower_id: String(cellID) }),
+      },
+    }));
+  });
   const stats = simulations.map((payload) => payload?.stats).filter(Boolean);
   return {
     geojson: { type: "FeatureCollection", features },
@@ -128,14 +146,32 @@ export function normalizeSimulationStats(simulation, coverageGaps) {
 
 export function normalizeNetworkStats(optimization) {
   const stats = optimization?.stats ?? {};
+  const raw = stats.raw_metrics ?? {};
   return {
     coverageScore: stats.coverage_score ?? null,
     demandScore: stats.demand_score ?? null,
-    networkScore: stats.network_score ?? null,
+    networkScore: normalizedNetworkScore(stats),
+    optimizationScore: normalizedNetworkScore(stats),
+    rawNetworkScore: Number.isFinite(Number(stats.network_score)) ? Number(stats.network_score) : null,
     overlapBuildings: stats.overlap_buildings ?? null,
     overlapPenalty: stats.overlap_penalty ?? null,
     residentialScore: stats.residential_score ?? null,
     uniqueDemandBuildings: stats.unique_demand_buildings ?? null,
     uniqueResidentialBuildings: stats.unique_residential_buildings ?? null,
+    propagationReachScore: raw.propagation_reach_score ?? raw.coverage_reach_score ?? null,
+    propagationReachMaximum: raw.propagation_reach_maximum ?? raw.coverage_reach_maximum ?? null,
+    relevantDemandWeight: raw.relevant_demand_weight ?? raw.total_weighted_demand ?? null,
+    relevantResidentialTotal: raw.relevant_residential_total ?? raw.residential_total ?? null,
+    optimizationDomain: optimization?.optimization_domain ?? null,
   };
+}
+
+export function normalizedNetworkScore(stats) {
+  if (typeof stats === "number") {
+    return Number.isFinite(stats) ? stats : null;
+  }
+  const score = Number(stats?.score);
+  if (Number.isFinite(score)) return score;
+  const composite = Number(stats?.composite_score);
+  return Number.isFinite(composite) ? composite * 100 : null;
 }

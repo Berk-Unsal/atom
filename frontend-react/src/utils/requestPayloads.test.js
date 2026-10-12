@@ -1,7 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
   buildInterferencePayload,
+  buildCoverageSurfacePayload,
+  buildCoverageSurfaceSourceKey,
+  buildBuildingEntryAnalysisPayload,
+  buildBuildingEntryAnalysisSourceKey,
+  buildMeasurementPayload,
+  buildNetworkCellExplanationPayload,
   buildNetworkOptimizationPayload,
+  buildPathProfilePayload,
+  buildP1411ReferencePayload,
+  buildSpecularReflectionReferencePayload,
+  buildSubTHZReferencePayload,
   buildRecommendationPayload,
 } from "./requestPayloads.js";
 
@@ -47,9 +57,22 @@ describe("interference request payload", () => {
   });
 
   it("preserves explicit per-cell azimuths for later network evaluations", () => {
-    const payload = buildNetworkOptimizationPayload(towers, settings, { "lte-1": 45, "lte-2": 180 });
+    const payload = buildNetworkOptimizationPayload(towers, settings, { "lte-1": 45, "lte-2": 180 }, {
+      objectives: [{ id: "coverage", weight: 2 }, { id: "overlap", weight: 4 }],
+      constraints: { max_overlap_buildings: 3 },
+    });
 
     expect(payload.towers.map((tower) => tower.azimuth)).toEqual([45, 180]);
+    expect(payload.optimization).toEqual({
+      objectives: [
+        { id: "demand", weight: 0 },
+        { id: "residential", weight: 0 },
+        { id: "coverage", weight: 2 },
+        { id: "overlap", weight: 4 },
+        { id: "radio_quality", weight: 0 },
+      ],
+      constraints: { max_overlap_buildings: 3 },
+    });
   });
 
   it("serializes independent per-cell RF profiles", () => {
@@ -60,5 +83,182 @@ describe("interference request payload", () => {
 
     expect(payload.towers[0].rf_profile).toMatchObject({ network_tech: "4g", frequency_ghz: 2.6, tx_power_dbm: 43, channel_id: "A" });
     expect(payload.towers[1].rf_profile).toMatchObject({ network_tech: "5g", frequency_ghz: 28, tx_power_dbm: 30, channel_id: "B" });
+  });
+
+  it("builds a profile-specific 2.5D path request with inspectable fidelity inputs", () => {
+    const payload = buildPathProfilePayload(towers[0], [32.851, 39.921], settings, {
+      gasSpecificAttenuationDbPerKm: 0.2,
+      rainSpecificAttenuationDbPerKm: 1.1,
+      shadowSigmaDb: 7,
+    });
+
+    expect(payload).toMatchObject({
+      transmitter: { lon: 32.85, lat: 39.92 },
+      receiver: { lon: 32.851, lat: 39.921 },
+      model_profile: "terrain-profile",
+      fidelity: {
+        building_loss_mode: "screen-diffraction",
+        diffraction_model: "single-knife-edge",
+        gas_specific_attenuation_db_per_km: 0.2,
+        rain_specific_attenuation_db_per_km: 1.1,
+        shadow_sigma_db: 7,
+      },
+    });
+  });
+
+  it("keeps the sub-THz atmospheric reference opt-in and explicit", () => {
+    const payload = buildSubTHZReferencePayload(towers[0], [32.851, 39.921], settings, {
+      frequencyGHz: 140,
+      txHeightM: 25,
+      rxHeightM: 1.5,
+      pressureHpa: 1013.25,
+      temperatureK: 288.15,
+      waterVapourDensityGm3: 7.5,
+      rainEnabled: true,
+      rainRateMmh: 25,
+      rainPolarization: "circular",
+      localFogEnabled: false,
+      localFogDensityGm3: 0.5,
+      linkBudgetEnabled: false,
+    });
+
+    expect(payload).toMatchObject({
+      frequency_ghz: 140,
+      transmitter: { lon: 32.85, lat: 39.92, height_m: 25 },
+      receiver: { lon: 32.851, lat: 39.921, height_m: 1.5 },
+      atmosphere: { enabled: true, pressure_hpa: 1013.25, temperature_k: 288.15, water_vapour_density_g_m3: 7.5 },
+      rain: { enabled: true, rain_rate_mm_h: 25, polarization: "circular" },
+      local_fog: { enabled: false },
+    });
+    expect(payload).not.toHaveProperty("link_budget");
+  });
+
+  it("builds an explicit, isolated P.1411 candidate request", () => {
+    const payload = buildP1411ReferencePayload(towers[0], [32.851, 39.921], settings, {
+      frequencyGHz: 140,
+      txHeightM: 25,
+      rxHeightM: 1.5,
+      morphology: "urban_high_rise",
+      rooftopRelation: "both_below_rooftop",
+      losState: "los",
+      candidateModelID: "all",
+      includeAtmosphericComparison: true,
+      pressureHpa: 1013.25,
+      temperatureK: 288.15,
+      waterVapourDensityGm3: 7.5,
+      includeResearchComparison: true,
+      researchWallEventCount: 1,
+    });
+
+    expect(payload).toMatchObject({
+      frequency_ghz: 140,
+      transmitter: { lon: 32.85, lat: 39.92, height_m: 25 },
+      receiver: { lon: 32.851, lat: 39.921, height_m: 1.5 },
+      morphology: "urban_high_rise",
+      rooftop_relation: "both_below_rooftop",
+      los_state: "los",
+      candidate_model_id: "all",
+      provenance: { morphology: "user_declared", rooftop_relation: "user_declared", los_state: "user_declared" },
+      research_wall_event_count: 1,
+    });
+    expect(payload.atmospheric_reference).toMatchObject({
+      frequency_ghz: 140,
+      atmosphere: { enabled: true, pressure_hpa: 1013.25, temperature_k: 288.15, water_vapour_density_g_m3: 7.5 },
+    });
+  });
+
+  it("builds an explicit local-ENU one-bounce reflection request without network fields", () => {
+    const payload = buildSpecularReflectionReferencePayload({
+      frequencyGHz: 140,
+      tx: { x: 50, y: -50, z: 10, gainDBi: 0, antennaMode: "isotropic" },
+      rx: { x: 50, y: 50, z: 10, gainDBi: 0, antennaMode: "isotropic" },
+      facade: { startX: 0, startY: -10, endX: 0, endY: 10, planeX: 0, planeY: 0, baseZ: 0, topZ: 20, normalX: 1, normalY: 0, normalZ: 0 },
+      material: { mode: "interface", materialSource: "user_defined", relativePermittivity: 4, conductivitySPerM: 0 },
+      polarization: "TE",
+      terrainMode: "flat_ground_relative_datum",
+      linkBudget: { ptConductedDbm: 30 },
+    });
+
+    expect(payload).toMatchObject({
+      schema_version: 1,
+      coordinate_frame: { mode: "local_enu" },
+      tx: { position: { x: 50, y: -50, z: 10 }, antenna: { mode: "isotropic", absolute_gain_dbi: 0 } },
+      facade: { base_z: 0, top_z: 20, outward_normal: { x: 1, y: 0, z: 0 } },
+      material: { mode: "interface", material_source: "user_defined", user_material: { relative_permittivity: 4, conductivity_s_per_m: 0 } },
+      link_budget: { pt_conducted_dbm: 30 },
+    });
+    expect(payload).not.toHaveProperty("model_profile");
+    expect(payload).not.toHaveProperty("rf_profile");
+  });
+
+  it("attaches calibration campaign provenance to measurement evaluation", () => {
+    const payload = buildMeasurementPayload(towers, settings, [{ id: "m1" }], null, {}, {
+      source: "drive-test.csv",
+      collected_at: "2026-07-01T10:00:00.000Z",
+    });
+    expect(payload.calibration_provenance).toEqual({
+      source: "drive-test.csv",
+      collected_at: "2026-07-01T10:00:00.000Z",
+    });
+  });
+
+  it("builds a bounded analytical coverage surface request", () => {
+    const payload = buildCoverageSurfacePayload(towers[0], { ...settings, rayCount: 72 }, {
+      cellSizeMeters: 50,
+      thresholdsDBm: [-105, -90],
+    });
+    expect(payload).toMatchObject({ tower_lon: 32.85, tower_lat: 39.92, cell_size_m: 50, thresholds_dbm: [-105, -90] });
+  });
+
+  it("keys a surface to the RF source while ignoring raster presentation options", () => {
+    const first = buildCoverageSurfacePayload(towers[0], { ...settings, rayCount: 72 }, {
+      cellSizeMeters: 25,
+      thresholdsDBm: [-110, -90],
+    });
+    const second = buildCoverageSurfacePayload(towers[0], { ...settings, rayCount: 72 }, {
+      cellSizeMeters: 100,
+      thresholdsDBm: [-100, -80],
+    });
+
+    expect(buildCoverageSurfaceSourceKey(first, "1")).toBe(buildCoverageSurfaceSourceKey(second, "1"));
+    expect(buildCoverageSurfaceSourceKey(first, "1")).not.toBe(buildCoverageSurfaceSourceKey(first, "2"));
+    expect(buildCoverageSurfaceSourceKey({ ...first, azimuth: 180 }, "1")).not.toBe(buildCoverageSurfaceSourceKey(first, "1"));
+  });
+
+  it("serializes the retained baseline and selected solution for one-cell explanation", () => {
+    const payload = buildNetworkCellExplanationPayload({
+      baseline: { cell_configurations: [{ id: "1" }] },
+      cellID: "1",
+      optimization: { objectives: [{ id: "demand", weight: 100 }] },
+      optimizationDomain: { source: "selected_cell_radius_union" },
+      runID: "run-1",
+      solution: { id: "solution-1", towers: [{ id: "1", azimuth_deg: 90 }] },
+      solutionID: "solution-1",
+    });
+    expect(payload).toMatchObject({
+      run_id: "run-1",
+      solution_id: "solution-1",
+      cell_id: "1",
+      baseline: { cell_configurations: [{ id: "1" }] },
+      solution: { id: "solution-1" },
+      optimization_domain: { source: "selected_cell_radius_union" },
+    });
+    expect(payload.optimization.objectives).toHaveLength(5);
+  });
+});
+
+describe("building-entry request payload", () => {
+  it("batches selected cells into one RF-derived request and keys only RF state", () => {
+    const payload = buildBuildingEntryAnalysisPayload(towers, null, { ...settings, rayCount: 72 }, { "lte-1": 45, "lte-2": 180 });
+    expect(payload.towers.map((tower) => tower.id)).toEqual(["1", "2"]);
+    expect(payload.towers.map((tower) => tower.azimuth)).toEqual([45, 180]);
+    expect(payload.frequency_ghz).toBe(2.6);
+    expect(buildBuildingEntryAnalysisSourceKey(payload, 3)).toBe(JSON.stringify({ dataset_revision: 3, payload }));
+  });
+
+  it("uses the single selected cell when network selection is empty", () => {
+    const payload = buildBuildingEntryAnalysisPayload([], towers[0], { ...settings, rayCount: 72 });
+    expect(payload.towers).toHaveLength(1);
+    expect(payload.towers[0].id).toBe("1");
   });
 });

@@ -8,11 +8,11 @@ describe("report formatting", () => {
     expect(table).toContain("&lt;script&gt;");
     expect(table).toContain("a&amp;b");
     expect(table).toContain("&quot;quoted&quot;&#039;");
-    expect(escapeHtml(null)).toBe("n/a");
+    expect(escapeHtml(null)).toBe("—");
   });
 
   it("uses one numeric and markdown fallback contract", () => {
-    expect(formatNumber(null)).toBe("n/a");
+    expect(formatNumber(null)).toBe("—");
     expect(formatNumber(12.34, 1)).toBe("12.3");
     expect(formatCompactNumber(1200)).toBe("1.2K");
     expect(markdownValue("left|right")).toBe("left\\|right");

@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2",
+  "artifact": "pre-change-baseline",
+  "audit_version": "concept-6a2-external-rf-benchmark-audit-v1",
+  "captured_at": "2026-09-21",
+  "repository": {
+    "branch": "main",
+    "head_commit": "92711dbcccae5a4de6e4d63c9f274082e890a50f",
+    "working_tree_dirty_before_audit": true,
+    "pre_existing_changes_preserved": true,
+    "note": "The checkout already contained uncommitted Concept 5D, 6A, and 6A.1 work. This audit records the working tree as found and does not replace or normalize those changes."
+  },
+  "concept_6a": {
+    "readiness_file": "docs/concept-6a-readiness.json",
+    "state": "no_measurement_data",
+    "production_candidate": false,
+    "calibration_active": false,
+    "validated_for_declared_scope": false,
+    "allowed_interpretation": "validation infrastructure complete, real-data validation unavailable",
+    "evidence": {
+      "validation_infrastructure": "complete",
+      "synthetic_controls": "complete",
+      "public_measurement_data": "unavailable",
+      "Ankara_campaign": "design_only",
+      "canonical_RF_invariance": "required and tested by snapshot comparison"
+    },
+    "6b_gate": "closed"
+  },
+  "concept_6a1": {
+    "readiness_file": "docs/concept-6a1-readiness.json",
+    "state": "dry_run_ready_real_data_unavailable",
+    "real_data_available": false,
+    "production_candidate": false,
+    "calibration_active": false,
+    "suitable_for_received_power_validation": false,
+    "suitable_for_rsrp_validation": true,
+    "suitable_for_rsrq_validation": false,
+    "suitable_for_sinr_validation": false,
+    "holdout_policy": "spatial_blocks with primary holdout",
+    "remaining_blockers": [
+      "lawful real receive-side measurements with raw export retained",
+      "deterministic serving-cell-to-transmitter truth and provenance",
+      "receiver/device/antenna/calibration and detection/censoring semantics",
+      "neighbor/resource context for SINR, RSRQ, and RSSI"
+    ]
+  },
+  "validation_schema": {
+    "file": "docs/concept-6a-validation-schema.json",
+    "schema_version": 1,
+    "max_observations": 5000,
+    "max_transmitters": 512,
+    "observation_required_fields": [
+      "observation_id",
+      "campaign_id",
+      "site_id",
+      "technology",
+      "frequency_ghz",
+      "quantity",
+      "outdoor",
+      "los_nlos",
+      "rx_height_m",
+      "rx_height_source",
+      "aggregation_method",
+      "provenance"
+    ],
+    "transmitter_required_fields": ["cell_id", "lat", "lon", "rf_profile"],
+    "quantities": [
+      "received_power_dbm",
+      "rsrp_dbm",
+      "sinr_db",
+      "rsrq_db",
+      "rssi_dbm",
+      "path_loss_db"
+    ],
+    "policies": {
+      "residual": "measured - predicted",
+      "frequency": "2.6 GHz and 28 GHz are reported separately",
+      "matching": "explicit transmitter/cell mapping; never strongest predicted cell",
+      "censoring": "detection floors remain censored evidence, never exact values",
+      "receiver_height": "height and provenance required; no silent 1.5 m default",
+      "device_antenna": "retain effects as provenance; do not silently compensate",
+      "aggregation": "preserve source raw/mean/median/percentile semantics",
+      "calibration": "diagnostic-only frequency-specific constant bias, held out before any promotion"
+    },
+    "readiness_states": [
+      "no_measurement_data",
+      "insufficient_metadata",
+      "validation_only",
+      "calibration_unstable",
+      "calibration_candidate",
+      "validated_for_declared_scope"
+    ]
+  },
+  "inventory": {
+    "capability_artifact": "docs/concept-6a2-inventory-capability.json",
+    "effective_cell_representation": "project cell object plus normalized CellRFProfile",
+    "wire_request_identity": "TowerRequestInput.id plus tower_lon/tower_lat/azimuth and optional rf_profile",
+    "external_site_id": "not a first-class inventory field",
+    "external_operator_id": "not a first-class inventory field",
+    "eirp": "not a first-class field; the canonical link budget expects conducted power plus absolute TX gain",
+    "antenna_pattern": "finite built-in pattern IDs only; arbitrary source radiation files are unsupported",
+    "defaults_are_allowed_for_normal_planning": true,
+    "defaults_are_allowed_for_external_audit": false
+  },
+  "canonical_rf_profiles": {
+    "model_id": "urban_short_range",
+    "model_family": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+    "reference": "3GPP TR 38.901 V19.4.0 Table 7.4.1-1 UMa deterministic planning subset",
+    "profiles": [
+      {
+        "frequency_ghz": 2.6,
+        "technology": "4g",
+        "band": "LTE Band 7",
+        "bandwidth_mhz": 20,
+        "tx_power_semantics": "conducted transmitter output power before absolute TX antenna gain",
+        "default_antenna_pattern": "ideal-sector / flat vertical"
+      },
+      {
+        "frequency_ghz": 28,
+        "technology": "5g",
+        "band": "NR n257",
+        "bandwidth_mhz": 100,
+        "tx_power_semantics": "conducted transmitter output power before absolute TX antenna gain",
+        "default_antenna_pattern": "ideal-sector / flat vertical"
+      }
+    ],
+    "link_budget": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL - L_system - L_polarization + G_rx + calibration",
+    "terrain": "not used by the canonical urban_short_range RF path",
+    "buildings": "used for height-aware footprint LOS/NLOS classification when available"
+  },
+  "scenario_fingerprint_semantics": {
+    "schema_version": "atom-scenario-v1",
+    "network_fingerprint": "NetworkScenarioFingerprint normalizes the request, sorts towers by ID, and includes tower geometry/RF profiles, global RF inputs, optimization objectives/constraints, and radio-quality policy semantics",
+    "interference_fingerprint": "InterferenceScenarioFingerprint normalizes the request, sorts towers by ID, and includes network/RF/resource/load/noise/threshold/co-channel policy semantics",
+    "validation_fingerprint": "CanonicalRFValidationFingerprint includes dataset identity, observation checksum, adapter/evaluator versions, RF scenario, matching/applicability/residual/spatial/calibration policies",
+    "excluded_from_fingerprints": ["timestamps", "runtime paths", "worker counts", "memory", "UI state", "presentation state"],
+    "baseline_fixture_fingerprint": "network-def2ab8c875ff267a6e7969d297216f0",
+    "optimizer_independent": true
+  },
+  "invariance_targets": [
+    "canonical 2.6 GHz RF",
+    "canonical 28 GHz RF",
+    "3GPP UMa and height-aware LOS/NLOS behavior",
+    "antenna/link-budget accounting",
+    "receiver sensitivity",
+    "interference and radio quality",
+    "optimizers and recommendations",
+    "terrain state",
+    "research_sub_thz and 140 GHz references",
+    "scenario fingerprints",
+    "Concept 6A and Concept 6A.1 readiness"
+  ]
+}

@@ -65,6 +65,13 @@ def add_layer_arguments(command: argparse.ArgumentParser, required: bool) -> Non
     for layer in ("towers", "buildings", *OPTIONAL_LAYERS):
         command.add_argument(f"--{layer.replace('_', '-')}-crs", dest=f"{layer}_crs")
     command.add_argument("--terrain-units", default="m")
+    command.add_argument("--terrain-kind", choices=("dtm", "dsm", "dem_unspecified"), default="dem_unspecified")
+    command.add_argument("--terrain-vertical-datum", default="")
+    command.add_argument("--terrain-vertical-datum-kind", choices=("orthometric", "ellipsoidal", "unknown"), default="unknown")
+    command.add_argument("--terrain-geoid-model", default="")
+    command.add_argument("--terrain-resolution-m", type=float, default=0)
+    command.add_argument("--terrain-interpolation", choices=("nearest", "bilinear"), default="bilinear")
+    command.add_argument("--terrain-acquisition-epoch", default="")
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -103,6 +110,12 @@ def inspect_sources(args: argparse.Namespace) -> Dict[str, Any]:
             "crs": args.terrain_crs or "unspecified",
             "format": file_format(terrain),
             "bytes": terrain.stat().st_size,
+            "elevation_kind": args.terrain_kind,
+            "vertical_datum": args.terrain_vertical_datum or "unspecified",
+            "vertical_datum_kind": args.terrain_vertical_datum_kind,
+            "geoid_model": args.terrain_geoid_model or "unspecified",
+            "resolution_m": args.terrain_resolution_m or None,
+            "interpolation": args.terrain_interpolation,
             "note": "Raster contents are copied and hashed; supply CRS metadata explicitly when it is not embedded.",
         }
     data_bounds = union_bounds(all_bounds)
@@ -132,6 +145,10 @@ def build_pack(args: argparse.Namespace) -> Dict[str, Any]:
             raise ValueError("terrain requires --terrain-crs metadata")
         validate_crs(args.terrain_crs, "terrain CRS")
         validate_statement(args.terrain_units, "terrain units")
+        if args.terrain_kind == "dtm" and (args.terrain_vertical_datum_kind == "unknown" or not args.terrain_vertical_datum.strip()):
+            raise ValueError("dtm terrain requires --terrain-vertical-datum and --terrain-vertical-datum-kind")
+        if args.terrain_resolution_m < 0 or not math.isfinite(args.terrain_resolution_m):
+            raise ValueError("terrain resolution must be finite and non-negative")
     output = args.output.expanduser().resolve()
     if output.exists() and any(output.iterdir() if output.is_dir() else [output]):
         raise ValueError(f"output must not already contain files: {output}")
@@ -176,7 +193,10 @@ def build_pack(args: argparse.Namespace) -> Dict[str, Any]:
         if args.terrain:
             source = checked_source(args.terrain)
             suffix = source.suffix.lower() or ".bin"
-            filename = f"terrain{suffix}"
+            # HGT encodes its one-degree origin in the filename (for example
+            # N39E032.hgt). Preserve that basename so the runtime adapter can
+            # resolve the tile bounds after the pack is copied.
+            filename = source.name if suffix == ".hgt" else f"terrain{suffix}"
             shutil.copyfile(source, staging / filename)
             files["terrain"] = filename
             layers["terrain"] = layer_metadata(
@@ -188,6 +208,13 @@ def build_pack(args: argparse.Namespace) -> Dict[str, Any]:
                 args.licenses[0],
                 args.confidence,
                 units=args.terrain_units,
+                elevation_kind=args.terrain_kind,
+                vertical_datum=args.terrain_vertical_datum,
+                vertical_datum_kind=args.terrain_vertical_datum_kind,
+                geoid_model=args.terrain_geoid_model,
+                resolution_m=args.terrain_resolution_m,
+                interpolation=args.terrain_interpolation,
+                acquisition_epoch=args.terrain_acquisition_epoch,
             )
 
         data_bounds = union_bounds(source_bounds)
@@ -220,6 +247,16 @@ def build_pack(args: argparse.Namespace) -> Dict[str, Any]:
                 },
             },
             "sha256": hashes,
+            "spatial_evidence": {
+                "schema_version": "atom-spatial-evidence-v1",
+                "matching_policy_version": "footprint-height-match-v1",
+                "source_precedence": [
+                    "user_supplied", "lidar_derived", "osm_explicit_height", "external_building_height",
+                    "osm_levels_derived", "dsm_minus_dtm", "generic_fallback", "unavailable",
+                ],
+                "terrain_interpolation": args.terrain_interpolation if args.terrain else "bilinear",
+                "datum_transformation_policy": "explicit-compatible-datum-v1",
+            },
         }
         (staging / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         if output.exists():
@@ -414,7 +451,7 @@ def missing_field_counts(frame, fields: Iterable[str]) -> Dict[str, int]:
     return result
 
 
-def layer_metadata(layer: str, format_name: str, crs: str, optional: bool, source: str, license_name: str, confidence: str, units: str = "") -> Dict[str, Any]:
+def layer_metadata(layer: str, format_name: str, crs: str, optional: bool, source: str, license_name: str, confidence: str, units: str = "", **spatial_metadata: Any) -> Dict[str, Any]:
     metadata = {
         "kind": {
             "towers": "cell_inventory",
@@ -433,6 +470,11 @@ def layer_metadata(layer: str, format_name: str, crs: str, optional: bool, sourc
     }
     if units:
         metadata["units"] = units
+    for key, value in spatial_metadata.items():
+        if key == "resolution_m" and (value is None or value <= 0):
+            continue
+        if value not in (None, ""):
+            metadata[key] = value
     return metadata
 
 
@@ -495,7 +537,7 @@ def sha256_file(path: Path) -> str:
 
 
 def file_format(path: Path) -> str:
-    return {".tif": "geotiff", ".tiff": "geotiff", ".gpkg": "geopackage", ".geojson": "geojson", ".json": "geojson"}.get(path.suffix.lower(), path.suffix.lower().lstrip(".") or "binary")
+    return {".tif": "geotiff", ".tiff": "geotiff", ".hgt": "hgt", ".gpkg": "geopackage", ".geojson": "geojson", ".json": "geojson"}.get(path.suffix.lower(), path.suffix.lower().lstrip(".") or "binary")
 
 
 def validate_identity(value: str, label: str) -> None:

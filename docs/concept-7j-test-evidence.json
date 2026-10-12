@@ -1,0 +1,142 @@
+{
+  "concept": "7J",
+  "capturedAt": "2026-09-23",
+  "startingCheckpoint": {
+    "commit": "5bd064a653f726d7eefe2284fb299b4145dd7afb",
+    "branch": "main",
+    "tree": "Concept 7I working tree; existing changes were preserved"
+  },
+  "frontend": {
+    "baselineBefore7J": {
+      "command": "npm test",
+      "filesPassed": 52,
+      "testsPassed": 275,
+      "result": "pass"
+    },
+    "finalUnitSuite": {
+      "command": "npm test",
+      "filesPassed": 55,
+      "testsPassed": 282,
+      "result": "pass"
+    },
+    "focusedEquivalenceAndLifecycleSuite": {
+      "command": "npx vitest run src/domain/requestEquivalence.test.js src/utils/requestPayloads.test.js src/utils/optimizationConfig.test.js src/domain/domain.test.js src/domain/resultContext.test.js src/hooks/useRunExecution.test.jsx src/hooks/useReportWorkflow.test.jsx src/domain/reportSource.test.js",
+      "filesPassed": 8,
+      "testsPassed": 80,
+      "result": "pass"
+    },
+    "endToEnd": {
+      "command": "npm run test:e2e",
+      "testsPassed": 74,
+      "testsSkipped": 14,
+      "testsFailed": 0,
+      "result": "pass",
+      "projects": [
+        "desktop-1440",
+        "desktop-1024",
+        "tablet-768",
+        "mobile-390"
+      ],
+      "skipBreakdown": {
+        "realBackendOptInScenarios": 8,
+        "mainJourneyNonDesktopViewports": 3,
+        "mobileRailNonMobileViewports": 3
+      },
+      "realBackendOptInEnabled": false,
+      "mainJourney": "Completes simulation, result inspection, network optimization, apply into a new Version, historical source inspection, and historical Report generation on desktop-1440; the same long workflow is skipped on the other three projects.",
+      "projectTransition": "Switches Projects and clears live Run association while scoping Run History.",
+      "coldFeatureActivation": "Verifies specialized feature chunks are absent at startup and load on Research, Diagnostics, Experiments, Core Lab, Run History, and Report activation.",
+      "viewportSweepWidths": [1440, 1280, 1024, 640, 390],
+      "viewportSweepAssertions": "Disclosure headers and the propagation drawer stay visible and fit without horizontal overflow."
+    },
+    "hookLifecycleCoverage": [
+      "successful result remains usable when Run History persistence fails",
+      "cancelled Run does not replace current result association",
+      "workspace transition clears current association",
+      "report output remains usable if artifact retention fails",
+      "report implementation imports only after an export action"
+    ],
+    "lint": {
+      "command": "npm run lint",
+      "result": "pass"
+    },
+    "productionBuild": {
+      "command": "npm run build",
+      "result": "pass",
+      "entryRawBytes": 771408,
+      "entryGzipLevel9Bytes": 218425,
+      "javascriptChunkCount": 12,
+      "totalJavascriptRawBytes": 967676,
+      "notes": "Vite emitted its existing advisory for a JavaScript chunk above 500 kB; no build failure."
+    },
+    "coldResourceGraph": {
+      "freshChromiumContexts": 5,
+      "initialScriptsPerContext": ["index-CXcsYZlG.js"],
+      "specializedChunksRequestedBeforeActivation": false,
+      "lazyFeatureActivationCoveredBy": "workspace.spec.js feature activation E2E"
+    },
+    "invariantEvidence": {
+      "runSnapshots": "Normalized simulation and optimization golden records match before/after; public Pareto IDs are retained. See concept-7j-run-snapshot-equivalence.json.",
+      "reportSemantics": "Historical source binding, retained evidence, selected solution, public Pareto IDs and fixed-time Markdown digest match before/after. See concept-7j-report-equivalence.json.",
+      "requestEquivalence": "Focused request suite passed with unchanged request fixtures.",
+      "resultFreshnessAndInvalidation": "Existing current/stale/historical rules and centralized invalidation remain covered by workflow tests and concept-7j-invalidation-matrix.json."
+    }
+  },
+  "backend": {
+    "changed": false,
+    "backendGo": {
+      "commands": ["go vet ./...", "go test -race ./..."],
+      "result": "pass"
+    },
+    "coreLabAdapter": {
+      "commands": ["go vet ./...", "go test -race ./..."],
+      "result": "pass"
+    },
+    "realBackendBrowserE2E": "Not run; ATOM_REAL_E2E=1 is an explicit opt-in. Go backend and adapter vet/race suites were run separately."
+  },
+  "documentationAndRepository": {
+    "referenceBuild": {
+      "command": "sh docs/build-reference-pages.sh",
+      "result": "pass",
+      "notes": "Existing Markdown tooling emitted --mathml deprecation warnings."
+    },
+    "docsValidator": {
+      "command": "/tmp/atom-7j-docs-venv/bin/python docs/validate_docs.py",
+      "result": "pass",
+      "htmlPagesValidated": 41,
+      "apiPathsValidated": 41,
+      "environmentNote": "The host Python lacked PyYAML; a temporary environment installed the repository-pinned requirements from docs/requirements.txt."
+    },
+    "jsonParse": {
+      "command": "python JSON parse of every docs/**/*.json",
+      "result": "pass",
+      "filesParsed": 232,
+      "scope": "All documentation JSON, including Concept 7J evidence and comparison files."
+    },
+    "versionMetadata": {
+      "command": "python3 scripts/versioning.py check",
+      "result": "pass",
+      "version": "0.8.0"
+    },
+    "diffWhitespace": {
+      "command": "git diff --check",
+      "result": "pass"
+    }
+  },
+  "changeScope": {
+    "implementationFiles": [
+      "frontend-react/src/hooks/useRunExecution.js",
+      "frontend-react/src/hooks/useReportWorkflow.js",
+      "frontend-react/src/hooks/useReportArtifacts.js",
+      "frontend-react/src/App.jsx"
+    ],
+    "testFiles": [
+      "frontend-react/src/hooks/useRunExecution.test.jsx",
+      "frontend-react/src/hooks/useReportWorkflow.test.jsx",
+      "frontend-react/src/hooks/useReportArtifacts.test.jsx",
+      "frontend-react/src/domain/reportSource.test.js",
+      "frontend-react/e2e/workspace.spec.js"
+    ],
+    "architectureDecision": "No global store or dependency was introduced. App remains the application composition root; Concept 7K was not started."
+  }
+}

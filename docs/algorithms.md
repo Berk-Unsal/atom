@@ -2,11 +2,73 @@
 
 A.T.O.M combines deterministic planning equations with computational geometry to produce inspectable RF estimates. It is not a calibrated propagation solver or a substitute for field measurements.
 
+## Concept 4D: Urban Short-Range Propagation
+
+The production planning default for 2.6 GHz and 28 GHz is `urban_short_range`, a deterministic 3GPP TR 38.901 UMa outdoor-to-outdoor median path-loss baseline. It uses known Tx/Rx heights and one shared `footprint-height-los-v1` centerline classifier across rays, surfaces, interference, and network scoring. Known building heights can clear a footprint when the roof stays below the Tx-to-Rx line; unknown-height intersections are conservative NLOS. Missing footprint data, unknown LOS/NLOS, unsupported endpoint cases, or out-of-envelope distances produce an explicit applicability result and use `legacy_fspl_walls` as the reported fallback.
+
+The urban formula uses metres, GHz, base-10 logarithms, and the 3GPP breakpoint:
+
+```text
+d3D = sqrt(d2D^2 + (hBS - hUT)^2)
+dBP' = 4 (hBS - 1) (hUT - 1) fc_Hz / 3e8
+PL_LOS = PL1 or PL2 at dBP'
+PL_NLOS = max(PL_LOS, 13.54 + 39.08 log10(d3D) + 20 log10(fc_GHz) - 0.6(hUT - 1.5))
+```
+
+The urban path-loss result is not combined with FSPL or the legacy wall heuristic. The `research_sub_thz` mode is the explicit 140 GHz safety profile, while the separate [`Concept 4D design note`](concept-4d-urban-propagation.md) records scope, limitations, fallback policy, and references.
+
+## Concept 4F.1: Height-Aware Centerline Obstruction
+
+The height-aware branch keeps the equations above unchanged and changes only the urban LOS/NLOS input. For each footprint interval `[t_entry, t_exit]`, it compares the roof evidence with `h_los(t) = h_tx + (h_rx - h_tx)t` on flat ground. Exact roof contact is deterministic obstruction; no Fresnel or diffraction margin is applied. Explicit `height` tags are `observed_tag`, `building:levels` uses 3 m per level and is `derived_from_levels`, and the existing generic 9 m fallback is `unavailable` evidence and therefore conservative NLOS. See the [`Concept 4F.1 design note`](concept-4f1-height-aware-obstruction.md) for the result metadata, multipart identity contract, terrain status, and Ankara audit.
+
+## Concept 4E: Building Entry
+
+The separate [`Concept 4E design note`](concept-4e-building-entry.md) evaluates a representative building facade in one batched analysis. It first evaluates the Concept 4D outdoor baseline to the facade, then subtracts the deterministic median O2I external-wall term from [3GPP TR 38.901 V19.4.0, §7.4.3.1](https://www.etsi.org/deliver/etsi_tr/138900_138999/138901/19.04.00_60/tr_138901v190400p.pdf). Indoor depth is fixed at zero, so no interior loss, room/floor geometry, or whole-building claim is produced. Outdoor NLOS does not receive a second legacy wall loss. At 28 GHz the standard low/high terms are evaluated from the glass/concrete compositions; at 2.6 GHz the single-frequency 20 dB compatibility value is used for both API scenarios. Material tags are evidence only, and the deterministic median omits random shadow-fading draws.
+
+## Concept 4G.2: Receiver Noise and Sensitivity
+
+[`Concept 4G.2`](concept-4g2-receiver-noise-sensitivity.md) adds a deterministic receiver usability contract while preserving the manual `-115 dBm` default. Manual mode uses the configured per-cell threshold. Opt-in derived mode uses the rounded 290 K reference `-174 dBm/Hz` and evaluates:
+
+```text
+Nfloor = -174 + 10 log10(B_noise_Hz) + NF_dB
+Sensitivity = Nfloor + RequiredSNR_dB + ReceiverMargin_dB
+RxMargin = ReceivedPower_dBm - Sensitivity_dBm
+```
+
+Usability is strict (`received_power_dbm > sensitivity_dbm`). Noise-equivalent receiver bandwidth is independent of interference SCS/resource-element bandwidth. The same resolved threshold is surfaced in link diagnostics, static reach, building-entry indoor scenarios, surfaces, interference carrier admission, optimization, and reports, while building service (`> -100 dBm`), raw surface values, and interference RSRP/SINR/RSRQ serviceability retain their separate semantics. See the standalone note for equations, references, canonical evidence, and non-claims.
+
+## Concept 4H.1: Interference and Radio Quality
+
+[`Concept 4H.1`](concept-4h1-interference-radio-quality.md) formalizes the existing interference path as an inspectable planning contract. Propagation first returns total received carrier power. The path then applies a declared uniform full-carrier-to-reference-resource conversion, sums desired/interfering powers in mW on that same basis, and adds independent `kTB` thermal noise at the serving subcarrier spacing. RSRP, RSSI, RSRQ, and SINR are labeled planning approximations rather than UE measurements. Serving selection, exact co-channel matching, deterministic load, serving-only receiver-sensitivity admission, finite per-cell interference horizons, failure reasons, a per-cell power ledger, and a scenario fingerprint are returned with the result. Radio-quality diagnostics never feed the canonical propagation-only optimizer.
+
+## Concept 4H.2: Interference-Aware Optimization
+
+[`Concept 4H.2`](concept-4h2-radio-quality-optimization.md) adds the optional
+`radio_quality` soft objective. It evaluates the existing 4H.1 planning policy
+(`RSRP >= -110 dBm`, `SINR >= 0 dB`, `RSRQ >= -20 dB`) over one fixed,
+candidate-independent row-major union grid. The serviceable fraction is a
+stable utility; no-carrier points remain denominator failures. A positive
+priority adds the utility to composite ranking and Pareto dominance, while a
+zero priority leaves the propagation-only candidate, score, recommendation,
+and Pareto dimensions unchanged. Stored raw candidate metrics support local
+priority reranking and the same fixed-domain counterfactual used by per-cell
+explanations.
+
+The optimizer prepares geometry once and keeps the candidate hot loop compact:
+azimuth-dependent antenna/link evaluation, automatic strongest eligible
+serving selection, exact co-channel linear power summation, thermal noise, and
+aggregate serviceability/outage/percentile metrics. It does not call the
+public interference endpoint per candidate. The reported result is conditional
+on the finite per-cell effective-radius compatibility horizon and is not a
+network-wide interference, throughput, MCS, scheduler, indoor, adjacent
+channel, or 140 GHz model. The 140 GHz research profile returns
+`unsupported_radio_quality_model` and renormalizes available objectives.
+
 ## Radio Frequency Physics Foundation
 
 ### Free-Space Path Loss (FSPL)
 
-The fundamental equation for all propagation calculations:
+The fundamental free-space term uses the current [ITU-R P.525-5 (2024-11)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf) equation as a mathematical reference:
 
 $$L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45$$
 
@@ -14,16 +76,36 @@ $$L = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45$$
 
 $$L[dB] = 20 \log_{10}(d[m]) + 20 \log_{10}(f[GHz]) + 32.45$$
 
-### Received Power Calculation
+### Legacy Received Power Calculation
 
-$$P_{rx}[dBm] = EIRP_{dBm} - L_{path} - L_{walls}$$
+The selectable compatibility mode is `legacy_fspl_walls` (historically reported as `fspl-walls-2p5d-v3`). Its link budget is:
+
+$$P_{rx}[dBm] = P_{tx} + G_{tx} - L_{system} + C - L_{FSPL} - L_{building} - A_{horizontal} - A_{vertical}$$
 
 Where:
-- $EIRP$ = Transmit power plus antenna gain
-- $L_{path}$ = Free-space path loss (FSPL equation)
-- $L_{walls}$ = Cumulative building penetration loss
+- $P_{tx}$ and $G_{tx}$ are the absolute transmit-power and antenna-gain terms
+- $L_{system}$ is the configured system loss and $C$ is the signed global calibration offset
+- $L_{FSPL}$ uses the slant distance between the transmitter and receiver, with meter/GHz units
+- $L_{building}$ is cumulative frequency-dependent, material-agnostic building-boundary loss
+- $A_{horizontal}$ and $A_{vertical}$ are relative analytic antenna-pattern attenuations
 
-The current model does not include diffraction, reflection, fast fading, terrain, or multipath.
+This compatibility mode uses horizontal building-footprint geometry and height-aware FSPL; it does not use the urban roof classifier, terrain, diffraction, reflection, fast fading, or multipath. A positive $C$ raises predicted received power by the same global dB offset. The separate path-profile workflow is an advanced point-to-point diagnostic with its own `path-profile-diagnostic-v1` contract; it does not alter network RF.
+
+## 2.5D Point-To-Point Profiles
+
+For a selected transmitter and receiver, the engine samples a geodesic path at a bounded spacing. Each sample contains ground elevation plus any intersecting building height. Antenna and receiver elevations are their local ground elevations plus configured height above ground.
+
+The result reports direct geometric line-of-sight clearance and a 60% first-Fresnel-zone clearance check. Fresnel concern is a separate geometry diagnostic and does not change LOS/NLOS classification:
+
+```text
+r1 = sqrt(lambda * d1 * d2 / (d1 + d2))
+```
+
+The isolated Concept 4F.2 workflow represents each known flat-roof footprint by deterministic entry and exit roof-edge candidates. It exposes the signed P.526-16 equation (26) parameter and applies equation (31) for `v > -0.78`; the candidate with maximum applicable `v` is selected. Generic fallback heights are unavailable evidence. The diagnostic compares FSPL plus explicit single-edge loss against canonical UMa; it never adds diffraction to UMa NLOS. Deygout/multiple-edge, reflection, and terrain-clutter coupling are not implemented.
+
+The inspectable loss budget keeps FSPL, horizontal/vertical antenna attenuation, system loss, wall penetration, diffraction, clutter, vegetation, gas, rain, and calibration as separate signed components. Shadow sigma produces sensitivity bounds and is not injected as a random field, preserving determinism.
+
+The `terrain-profile` and `urban-short-range` labels use the current recorded scopes of [ITU-R P.1812-8 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1812-8-202509-I!!PDF-E.pdf) and [ITU-R P.1411-13 (2025-09)](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf), while retaining A.T.O.M's existing runtime conditions and limits. The knife-edge, material, gas, and rain controls are informed by [P.526-16](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.526-16-202511-I!!PDF-E.pdf), [P.2040-4](https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf), [P.676](https://www.itu.int/rec/R-REC-P.676/en), and [P.838](https://www.itu.int/rec/R-REC-P.838/en); A.T.O.M does not claim full Recommendation conformance.
 
 ### Frequency Dependence
 
@@ -37,14 +119,14 @@ $$L \propto f^2$$
 
 ## Building Penetration Model
 
-### Generation-Specific Wall Loss
+### Legacy Generation-Specific Wall Loss
 
-A.T.O.M uses the selected network generation to apply a fixed loss each time a ray crosses a building boundary. OSM building tags are still used for demand scoring and diagnostics, but wall penetration is intentionally frequency-driven in the current runtime:
+The selectable `legacy_fspl_walls` mode applies a fixed loss each time a ray crosses a building boundary. OSM building tags are still used for demand scoring and diagnostics, but wall penetration is intentionally frequency-driven in that compatibility mode:
 
 ```
-if frequency_ghz <= 3:
+if frequency_ghz < 10:
     loss_4g = 8 dB
-elif frequency_ghz <= 40:
+elif frequency_ghz < 100:
     loss_5g = 30 dB
 else:
     loss_6g = 80 dB
@@ -73,9 +155,10 @@ A.T.O.M uses a **deterministic segmented sector raytracer**:
 2. Split the selected sector into configurable rays
 3. Split each ray into short segments
 4. Query the R-Tree for buildings intersecting each segment
-5. Apply cumulative wall loss and receiver sensitivity thresholding
-6. Color each segment by received power
-7. Serialize the segments as GeoJSON
+5. Evaluate the selected shared propagation model at each physical endpoint; only the explicit legacy mode applies cumulative wall dB
+6. Apply the effective per-cell receiver sensitivity threshold
+7. Color each segment by received power
+8. Serialize the segments as GeoJSON
 
 ### Pseudocode
 
@@ -85,7 +168,8 @@ func TraceSector(tx Location, req SimulationRequest) GeoJSON {
     if req.rays * ceil(req.radius_m / 25) > 25_000 {
         return error("simulation response feature limit exceeded")
     }
-    maxDistance := min(req.radius_m, sensitivityLimitedDistance(req))
+    maxDistance := req.radius_m
+    receiverSensitivity := effectiveReceiverSensitivity(req)
 
     for angle in sector_angles(req.azimuth, req.beam_width, req.rays) {
         current := tx
@@ -103,9 +187,12 @@ func TraceSector(tx Location, req SimulationRequest) GeoJSON {
 
             distance := haversine_distance(tx, segmentEnd)
             fspl := 20*log10(distance) + 20*log10(req.frequency_ghz) + 32.45
-            rxPower := EIRP_DBM - fspl - wallLoss
+            txGain := effectiveTxAntennaGain(req)
+            patternLoss := sharedAntennaPatternLoss(req, segmentEnd)
+            propagationLoss := fspl + wallLoss
+            rxPower := req.tx_power_dbm + txGain - patternLoss + req.rx_antenna_gain_dbi - req.system_loss_db - req.polarization_loss_db + req.calibration_offset_db - propagationLoss
 
-            if rxPower < ReceiverSensitivityDBm {
+            if rxPower <= receiverSensitivity {
                 break
             }
 
@@ -122,11 +209,11 @@ func TraceSector(tx Location, req SimulationRequest) GeoJSON {
 
 **Problem**: Does a ray (line segment) intersect a building (polygon)?
 
-**Solution**: Use **separating axis theorem** (SAT):
+**Solution**: Query the R-Tree's segment bounding box, then test each candidate polygon with exact segment-edge intersections and point-in-polygon checks. Duplicate boundary points for the same building are collapsed within the current 5 cm tolerance, and intersections are processed in distance order.
 
 ```go
 func SegmentIntersectsPolygon(segment Line, polygon Polygon) bool {
-    // Test segment against all polygon edges
+    // Test the segment against all polygon edges
     for i := 0; i < len(polygon.Edges); i++ {
         edge := polygon.Edges[i]
         if SegmentIntersectsSegment(segment, edge) {
@@ -134,7 +221,7 @@ func SegmentIntersectsPolygon(segment Line, polygon Polygon) bool {
         }
     }
     
-    // Test if segment start/end inside polygon
+    // Test if segment start/end is inside the polygon
     return PointInPolygon(segment.Start, polygon) ||
            PointInPolygon(segment.End, polygon)
 }
@@ -225,7 +312,7 @@ Coverage: 12.5° to 77.5°
         /─────────────\
        /               \
       |    Main Lobe     |
-      |   (Gain = 0 dBi)  |
+      | (relative loss=0dB)|
        \               /
         \─────────────/
              θ = 65°
@@ -241,7 +328,7 @@ func IsInsideSector(direction float64, antennaAzimuth float64,
 }
 ```
 
-Samples outside the configured sector or radius do not contribute. Version 1 does not model sidelobes or a continuous antenna gain pattern.
+Samples outside the configured sector or radius do not contribute. Configured antenna gain is applied separately in the link budget; the diagram's zero value means zero relative preset attenuation at boresight. Version 1 does not model sidelobes or a continuous vendor antenna diagram.
 
 ---
 
@@ -252,7 +339,7 @@ Samples outside the configured sector or radius do not contribute. Version 1 doe
 **Find**: The antenna azimuth that best serves demand-weighted coverage
 
 **Constraints**:
-- Distance range: 50 m to 5 km
+- Distance range: 25 m to 5 km
 - Beam width: user configured
 - Frequency: user selected
 
@@ -301,11 +388,11 @@ func OptimizeAzimuth(tx Location, request SimulationRequest) float64 {
 
 ### Complexity Analysis
 
-- **Loop iterations**: 360° / 5° = 72
+- **Loop iterations**: 360° / 10° = 36
 - **Per iteration**:
   - Ray tracing: O(90,000 rays × log n intersections) ~1 second
   - Coverage calculation: O(90,000)
-- **Total time**: ~72 seconds (naive)
+- **Total time**: ~36 seconds (naive)
 - **Optimized time**: ~250 ms (with parallelization)
 
 ### Parallelization
@@ -324,20 +411,20 @@ type Result struct {
 }
 
 // Dispatch all azimuths to workers
-jobs := make(chan Job, 72)
-results := make(chan Result, 72)
+jobs := make(chan Job, 36)
+results := make(chan Result, 36)
 
 // 4 workers process in parallel
 for w := 1; w <= 4; w++ {
     go worker(jobs, results)
 }
 
-for azimuth := 0; azimuth < 360; azimuth += 5 {
+for azimuth := 0; azimuth < 360; azimuth += 10 {
     jobs <- Job{azimuth}
 }
 
 // Collect results
-for i := 1; i <= 72; i++ {
+for i := 1; i <= 36; i++ {
     result := <-results
     if result.coverage > bestCoverage {
         bestCoverage = result.coverage
@@ -347,6 +434,17 @@ for i := 1; i <= 72; i++ {
 ```
 
 **Result**: 4× speedup on quad-core machine.
+
+## Network Objective Model
+
+Network azimuth optimization keeps the existing RF evaluation and hard feasibility checks separate from preference scoring. Each feasible evaluated configuration stores raw measurements and stable utilities. Demand and residential measurements use the same indexed `BuildingFootprint` unit for both numerator and denominator; multipart source geometries remain separate suffixed footprints because the RF engine has no stable logical-building ID to merge safely:
+
+- **Demand**: served relevant demand weight / relevant demand weight inside the fixed selected-cell radius-union domain. Demand relevance uses the existing building-centroid convention.
+- **Residential**: covered relevant residential footprints / residential footprints intersecting the fixed selected-cell radius-union domain.
+- **Propagation reach**: the existing capped aggregate usable-ray-reach score / `towers × rays × 100`, the stable maximum of that metric. The legacy objective ID remains `coverage` for compatibility; it does not mean spatial-area coverage.
+- **Overlap**: `1 - (overlapping covered buildings / covered buildings)`.
+
+Utilities are clamped to `[0, 1]`; they are not normalized against the current candidate set. The optimization domain is prepared once per request from the logical union of each selected cell's configured service-radius envelope and is independent of candidate azimuths. User priorities are 0–100 values; unavailable objectives are marked N/A and excluded from the effective-priority denominator without mutating their configured values. The composite score is the weighted utility sum over available objectives, exposed as `score = composite_score × 100`. Hard constraint violations exclude candidates from the feasible Pareto frontier; they are not converted into score penalties. The same stored frontier can therefore be re-ranked when priorities change without repeating RF evaluation.
 
 ---
 
@@ -360,7 +458,7 @@ for i := 1; i <= 72; i++ {
 | Build R-Tree | 1 second | O(n log n) |
 | Single ray trace | < 1 μs | O(log n) |
 | Up to 25,000 returned ray features | Bounded | O(n log n) parallelized |
-| Optimization (72 iterations) | 250 ms | O(72 × n log n) with Goroutines |
+| Network optimization | See `BenchmarkCanonicalAnkaraNetworkOptimization` in the repository | Fixed-domain entity discovery is prepared once; candidate RF scoring remains the dominant work |
 | API response | < 100 ms p99 | Network + serialization |
 
 ### Memory Usage

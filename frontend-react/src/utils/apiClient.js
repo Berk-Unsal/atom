@@ -1,5 +1,6 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 export const MAX_JSON_RESPONSE_BYTES = 32 * 1024 * 1024;
+export const MAX_BLOB_RESPONSE_BYTES = 64 * 1024 * 1024;
 const MAX_ERROR_TEXT_BYTES = 4096;
 
 export async function requestJSON(path, {
@@ -7,14 +8,19 @@ export async function requestJSON(path, {
   method = "GET",
   payload,
   signal,
+  headers,
+  onResponse,
 } = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     cache: "no-store",
     method,
-    headers: payload === undefined ? undefined : { "Content-Type": "application/json" },
+    headers: headers || payload !== undefined ? { ...(payload === undefined ? {} : { "Content-Type": "application/json" }), ...headers } : undefined,
     body: payload === undefined ? undefined : JSON.stringify(payload),
     signal,
   });
+  if (response.ok && onResponse) {
+    try { onResponse(response.headers); } catch (error) { await response.body?.cancel?.(); throw error; }
+  }
   const responsePayload = await readResponsePayload(response);
   if (!response.ok) {
     const message = typeof responsePayload === "object" && responsePayload?.error
@@ -30,12 +36,31 @@ export async function requestJSON(path, {
   return responsePayload;
 }
 
-export function postJSON(path, payload, fallbackMessage, signal) {
-  return requestJSON(path, { fallbackMessage, method: "POST", payload, signal });
+export function postJSON(path, payload, fallbackMessage, signal, options = {}) {
+  return requestJSON(path, { ...options, fallbackMessage, method: "POST", payload, signal });
 }
 
 export function getJSON(path, fallbackMessage, signal) {
   return requestJSON(path, { fallbackMessage, signal });
+}
+
+export async function postBlob(path, payload, fallbackMessage = "Export failed", signal) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    cache: "no-store",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    signal,
+  });
+  if (!response.ok) {
+    const message = await readBoundedText(response, MAX_ERROR_TEXT_BYTES, true);
+    throw new Error(message || fallbackMessage);
+  }
+  const declaredLength = Number(response.headers.get("Content-Length"));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BLOB_RESPONSE_BYTES) throw oversizedResponseError(MAX_BLOB_RESPONSE_BYTES);
+  const blob = await response.blob();
+  if (blob.size > MAX_BLOB_RESPONSE_BYTES) throw oversizedResponseError(MAX_BLOB_RESPONSE_BYTES);
+  return blob;
 }
 
 export function isAbortError(error) {

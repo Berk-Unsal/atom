@@ -1,0 +1,123 @@
+{
+  "concept": "8B.1",
+  "date": "2026-09-23",
+  "validation": {
+    "frontendUnit": {
+      "command": "cd frontend-react && npm test",
+      "status": "passed",
+      "testFilesPassed": 55,
+      "testsPassed": 290
+    },
+    "frontendLint": {
+      "command": "cd frontend-react && npm run lint",
+      "status": "passed"
+    },
+    "productionBuild": {
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "modulesTransformed": 1705,
+      "javascriptChunks": 12,
+      "cssFiles": 1,
+      "javascript": {
+        "rawBytes": 778804,
+        "viteGzipKB": 221.09
+      },
+      "css": {
+        "rawBytes": 164880,
+        "viteGzipKB": 30.77
+      },
+      "startingConcept8B": {
+        "javascriptRawBytes": 778271,
+        "javascriptViteGzipKB": 220.98,
+        "cssRawBytes": 162609,
+        "cssViteGzipKB": 30.45,
+        "javascriptChunks": 12
+      },
+      "impact": "8B.1 build is +533 JS raw bytes / +0.11 KB Vite gzip and +2,271 CSS raw bytes / +0.32 KB Vite gzip from the Concept 8B build. No new dependencies. Existing Vite warning for the >500 kB initial JS entry remains."
+    },
+    "responsiveE2E": {
+      "command": "cd frontend-react && npm run test:e2e",
+      "status": "passed",
+      "total": 104,
+      "passed": 77,
+      "failed": 0,
+      "skipped": 27,
+      "workers": 5,
+      "scope": "The full responsive matrix includes desktop-1440, desktop-1024, tablet-768, and mobile-390 projects. Skips are declared project/feature skips.",
+      "targetedFollowUps": [
+        {
+          "command": "ATOM_8B1_CAPTURE=after npm run test:e2e -- --grep \"captures Concept 8B.1 workspace chrome evidence\" --project=desktop-1440",
+          "status": "passed",
+          "testsPassed": 1,
+          "captures": 22
+        },
+        {
+          "command": "npx playwright test --grep \"opens the exact Run source Version while keeping the current Version active\" --workers=1",
+          "status": "passed",
+          "testsPassed": 4,
+          "viewportProjects": [
+            "desktop-1440",
+            "desktop-1024",
+            "tablet-768",
+            "mobile-390"
+          ]
+        }
+      ],
+      "stabilityNote": "Earlier full parallel runs intermittently showed a Run History record as Working draft · No saved Version; a cold-Report test failed at one viewport in two intermediate full runs. The historical-Version assertion passed its serial 4-viewport rerun, and the final full E2E matrix passed. Older 8B baseline evidence already records viewport-dependent historical Version failures. 8B.1 changes no lineage/domain code."
+    },
+    "requestEquivalence": {
+      "command": "cd frontend-react && npx vitest run src/domain/requestEquivalence.test.js",
+      "status": "passed",
+      "testFilesPassed": 1,
+      "testsPassed": 3
+    },
+    "backendGo": {
+      "command": "cd backend-go && go vet ./... && go test -race ./...",
+      "status": "passed",
+      "packagesWithTests": 2,
+      "packagesWithoutTests": 3
+    },
+    "coreLabAdapter": {
+      "command": "cd core-lab-adapter && go vet ./... && go test -race ./...",
+      "status": "passed",
+      "packagesWithTests": 1
+    },
+    "referencePages": {
+      "command": "sh docs/build-reference-pages.sh",
+      "status": "passed",
+      "warnings": "Existing Pandoc --mathml deprecation warnings."
+    },
+    "documentationValidator": {
+      "command": "/tmp/atom-8b1-docs-venv/bin/python docs/validate_docs.py",
+      "status": "passed",
+      "result": "41 HTML pages and 41 API paths; pinned PyYAML 6.0.3 installed in disposable /tmp virtual environment."
+    },
+    "jsonParsing": {
+      "command": "python3 json.loads for docs/concept-8b1-*.json",
+      "status": "passed",
+      "count": 9
+    },
+    "versionConsistency": {
+      "command": "python3 scripts/versioning.py check",
+      "status": "passed",
+      "version": "0.9.0"
+    },
+    "gitDiffCheck": {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  },
+  "baselineContext": {
+    "historicalConcept8BBaseline": "The pre-8B recorded historical source-Version test failed in all 4 viewport projects; after 8B it failed in 3 and passed in 1; immediate pre-8B.1 target reproduction passed 4/4. See docs/concept-8b-pre-change-baseline.json and docs/concept-8b-test-evidence.json.",
+    "bundleBaseline": "Concept 8B starting build: 12 JS chunks; entry 771,408 bytes raw / 219.05 KB gzip; CSS 152,345 bytes raw / 28.89 KB gzip."
+  },
+  "accessibilityEvidence": {
+    "automatedEvidence": {
+      "unit": "passed",
+      "e2e": "passed",
+      "keyboard": "passed",
+      "phoneTouchTargets": "passed",
+      "reducedMotion": "CSS rule verified"
+    }
+  }
+}

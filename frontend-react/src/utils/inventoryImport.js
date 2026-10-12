@@ -57,8 +57,10 @@ function normalizeInventoryRecord(record, index, settings, used, usedCellIDs) {
     channelId: profileField(nestedProfile, properties, "channel_id", "channelId"),
     duplexMode: profileField(nestedProfile, properties, "duplex_mode", "duplexMode"),
     txPowerDbm: optionalNumber(profileField(nestedProfile, properties, "tx_power_dbm", "txPowerDbm")),
-    antennaGainDbi: optionalNumber(profileField(nestedProfile, properties, "antenna_gain_dbi", "antennaGainDbi")),
+    antennaGainDbi: optionalNumber(profileField(nestedProfile, properties, "tx_antenna_gain_dbi", "txAntennaGainDbi", "antenna_gain_dbi", "antennaGainDbi")),
+    rxAntennaGainDbi: optionalNumber(profileField(nestedProfile, properties, "rx_antenna_gain_dbi", "rxAntennaGainDbi")),
     systemLossDb: optionalNumber(profileField(nestedProfile, properties, "system_loss_db", "systemLossDb")),
+    polarizationLossDb: optionalNumber(profileField(nestedProfile, properties, "polarization_loss_db", "polarizationLossDb")),
     radiusMeters: optionalNumber(profileField(nestedProfile, properties, "radius_m", "radiusMeters")),
     beamWidthDeg: optionalNumber(profileField(nestedProfile, properties, "beam_width", "beamWidthDeg")),
     antennaHeightM: optionalNumber(profileField(nestedProfile, properties, "antenna_height_m", "antennaHeightM")),
@@ -72,6 +74,11 @@ function normalizeInventoryRecord(record, index, settings, used, usedCellIDs) {
     pci: optionalNumber(profileField(nestedProfile, properties, "pci")),
     receiverHeightM: optionalNumber(profileField(nestedProfile, properties, "receiver_height_m", "receiverHeightM")),
     receiverSensitivityDbm: optionalNumber(profileField(nestedProfile, properties, "receiver_sensitivity_dbm", "receiverSensitivityDbm")),
+    receiverSensitivityMode: profileField(nestedProfile, properties, "receiver_sensitivity_mode", "receiverSensitivityMode"),
+    receiverNoiseBandwidthHz: optionalNumber(profileField(nestedProfile, properties, "receiver_noise_bandwidth_hz", "receiverNoiseBandwidthHz")),
+    receiverNoiseFigureDb: optionalNumber(profileField(nestedProfile, properties, "receiver_noise_figure_db", "receiverNoiseFigureDb")),
+    receiverRequiredSnrDb: optionalNumber(profileField(nestedProfile, properties, "receiver_required_snr_db", "receiverRequiredSnrDb")),
+    receiverMarginDb: optionalNumber(profileField(nestedProfile, properties, "receiver_margin_db", "receiverMarginDb")),
   };
   const rfProfile = resolveRFProfile({ rfProfile: compactDefined(profileFields) }, settings, index);
   const errors = validateRFProfile(rfProfile);

@@ -72,7 +72,7 @@ export const NETWORK_TECHNOLOGIES = Object.freeze([
   },
   {
     "id": "6g",
-    "label": "6G Sub-THz",
+    "label": "6G research profile (140 GHz)",
     "default_frequency_ghz": 140,
     "minimum_frequency_ghz": 100,
     "maximum_frequency_ghz": 300,
@@ -98,6 +98,7 @@ export const NETWORK_TECH_OPTIONS = Object.freeze(NETWORK_TECHNOLOGIES.map((tech
 
 export const DEFAULT_SIMULATION = Object.freeze({
   "frequencyGHz": 28,
+  "propagationModelID": "urban_short_range",
   "txPowerDbm": 30,
   "rayCount": 120,
   "radiusMeters": 400,
@@ -120,7 +121,9 @@ export const DEFAULT_RF_PROFILE = Object.freeze({
   "channelId": "CH-1",
   "duplexMode": "tdd",
   "antennaGainDbi": 25,
+  "rxAntennaGainDbi": 0,
   "systemLossDb": 0,
+  "polarizationLossDb": 0,
   "antennaHeightM": 25,
   "mechanicalDowntiltDeg": 0,
   "electricalDowntiltDeg": 0,
@@ -131,7 +134,12 @@ export const DEFAULT_RF_PROFILE = Object.freeze({
   "reuseFactor": 1,
   "pci": null,
   "receiverHeightM": 1.5,
-  "receiverSensitivityDbm": -115
+  "receiverSensitivityDbm": -115,
+  "receiverSensitivityMode": "manual",
+  "receiverNoiseBandwidthHz": 100000000,
+  "receiverNoiseFigureDb": 7,
+  "receiverRequiredSnrDb": 3,
+  "receiverMarginDb": 0
 });
 
 export const RF_PROFILE_OPTIONS = Object.freeze({
@@ -153,6 +161,20 @@ export const RF_PROFILE_OPTIONS = Object.freeze({
     {
       "id": "omni",
       "label": "Omnidirectional"
+    },
+    {
+      "id": "3gpp-single-element",
+      "label": "3GPP single element (reference)"
+    }
+  ],
+  "receiverSensitivityModes": [
+    {
+      "id": "manual",
+      "label": "Manual"
+    },
+    {
+      "id": "derived",
+      "label": "Derived"
     }
   ],
   "verticalPatterns": [
@@ -191,7 +213,7 @@ export const POLICY_LIMITS = Object.freeze({
   "calibration_offset_db_min": -40,
   "calibration_offset_db_max": 40,
   "network_towers_min": 2,
-  "network_towers_max": 6,
+  "network_towers_max": 8,
   "recommendation_towers_max": 5,
   "measurement_towers_min": 1,
   "measurement_towers_max": 6,
@@ -208,8 +230,12 @@ export const POLICY_LIMITS = Object.freeze({
   "bandwidth_mhz_max": 2000,
   "antenna_gain_dbi_min": -20,
   "antenna_gain_dbi_max": 80,
+  "rx_antenna_gain_dbi_min": -20,
+  "rx_antenna_gain_dbi_max": 80,
   "system_loss_db_min": 0,
   "system_loss_db_max": 100,
+  "polarization_loss_db_min": 0,
+  "polarization_loss_db_max": 40,
   "antenna_height_m_min": 0.5,
   "antenna_height_m_max": 300,
   "downtilt_deg_min": -30,
@@ -221,7 +247,15 @@ export const POLICY_LIMITS = Object.freeze({
   "receiver_height_m_min": 0.1,
   "receiver_height_m_max": 100,
   "receiver_sensitivity_dbm_min": -180,
-  "receiver_sensitivity_dbm_max": -20
+  "receiver_sensitivity_dbm_max": -20,
+  "receiver_noise_bandwidth_hz_min": 1,
+  "receiver_noise_bandwidth_hz_max": 2000000000,
+  "receiver_noise_figure_db_min": 0,
+  "receiver_noise_figure_db_max": 20,
+  "receiver_required_snr_db_min": -100,
+  "receiver_required_snr_db_max": 100,
+  "receiver_margin_db_min": -100,
+  "receiver_margin_db_max": 100
 });
 
 export function networkTechnologyForFrequency(frequencyGHz) {

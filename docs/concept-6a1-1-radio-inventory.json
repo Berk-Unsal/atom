@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "radio-inventory",
+  "interpretation": "Every listed radio row is a registered=true field in the raw snapshot, not a confirmed serving observation: all corresponding connection_status values are NONE.",
+  "bands": [
+    {
+      "band": "LTE B1",
+      "earfcn": [
+        "451"
+      ],
+      "frequency_mhz": [
+        2155.1
+      ],
+      "stationary": {
+        "rows": 8,
+        "distinct_identities": 2,
+        "rsrp_valid": 8,
+        "rsrq_valid": 8,
+        "rssi_valid": 8,
+        "sinr_rssnr_valid": 8,
+        "bandwidth_valid": 0,
+        "gps_le_20m": 6
+      },
+      "walking": {
+        "rows": 17,
+        "distinct_identities": 2,
+        "rsrp_valid": 16,
+        "rsrq_valid": 17,
+        "rssi_valid": 17,
+        "sinr_rssnr_valid": 17,
+        "bandwidth_valid": 0,
+        "gps_le_20m": 17
+      },
+      "combined_registered_flag_rows": 25,
+      "combined_distinct_identity_tuples": 3
+    },
+    {
+      "band": "LTE B3",
+      "earfcn": [
+        "1306"
+      ],
+      "frequency_mhz": [
+        1815.6
+      ],
+      "stationary": {
+        "rows": 1,
+        "distinct_identities": 1,
+        "rsrp_valid": 1,
+        "rsrq_valid": 1,
+        "rssi_valid": 1,
+        "sinr_rssnr_valid": 1,
+        "bandwidth_valid": 0,
+        "gps_le_20m": 0
+      },
+      "walking": {
+        "rows": 27,
+        "distinct_identities": 2,
+        "rsrp_valid": 26,
+        "rsrq_valid": 27,
+        "rssi_valid": 27,
+        "sinr_rssnr_valid": 27,
+        "bandwidth_valid": 0,
+        "gps_le_20m": 25
+      },
+      "combined_registered_flag_rows": 28,
+      "combined_distinct_identity_tuples": 2
+    },
+    {
+      "band": "LTE B7",
+      "earfcn": [
+        "3200"
+      ],
+      "frequency_mhz": [
+        2665.0
+      ],
+      "stationary": {
+        "rows": 1,
+        "distinct_identities": 1,
+        "rsrp_valid": 1,
+        "rsrq_valid": 1,
+        "rssi_valid": 1,
+        "sinr_rssnr_valid": 1,
+        "bandwidth_valid": 0,
+        "gps_le_20m": 1
+      },
+      "walking": {
+        "rows": 28,
+        "distinct_identities": 2,
+        "rsrp_valid": 27,
+        "rsrq_valid": 28,
+        "rssi_valid": 28,
+        "sinr_rssnr_valid": 28,
+        "bandwidth_valid": 0,
+        "gps_le_20m": 27
+      },
+      "combined_registered_flag_rows": 29,
+      "combined_distinct_identity_tuples": 2
+    },
+    {
+      "band": "LTE B20",
+      "earfcn": [
+        "6200"
+      ],
+      "frequency_mhz": [
+        796.0
+      ],
+      "stationary": {
+        "rows": 1,
+        "distinct_identities": 1,
+        "rsrp_valid": 1,
+        "rsrq_valid": 1,
+        "rssi_valid": 1,
+        "sinr_rssnr_valid": 1,
+        "bandwidth_valid": 0,
+        "gps_le_20m": 1
+      },
+      "walking": {
+        "rows": 0,
+        "distinct_identities": 0,
+        "rsrp_valid": 0,
+        "rsrq_valid": 0,
+        "rssi_valid": 0,
+        "sinr_rssnr_valid": 0,
+        "bandwidth_valid": 0,
+        "gps_le_20m": 0
+      },
+      "combined_registered_flag_rows": 1,
+      "combined_distinct_identity_tuples": 1
+    }
+  ],
+  "all_cell_rows": {
+    "total": 224,
+    "technology_counts": {
+      "LTE": 224,
+      "NR": 0
+    },
+    "cell_identity_status_counts": {
+      "registered_true_connection_NONE": 83,
+      "registered_false_connection_NONE": 141
+    },
+    "frequency_present": 224,
+    "normalized_bandwidth_present": 0
+  },
+  "nr_audit": {
+    "technology_NR_rows": 0,
+    "nrarfcn_nonempty": 0,
+    "ss_rsrp_nonempty": 0,
+    "ss_rsrq_nonempty": 0,
+    "ss_sinr_nonempty": 0,
+    "conclusion": "No NR observations in these sessions; this LTE-focused collection is not a collection failure."
+  },
+  "quantity_policy": {
+    "rsrp": "preserve as LTE rsrp -> rsrp_dbm",
+    "rsrq": "preserve as LTE rsrq -> rsrq_db",
+    "rssnr_or_sinr": "preserve as sinr_db; zero values are not replaced",
+    "rssi": "preserve as rssi_dbm",
+    "generic_dbm": "not used as RSRP or received_power_dbm"
+  },
+  "neighbor_context": {
+    "complete": false,
+    "stationary_groups": 10,
+    "stationary_groups_with_unregistered_neighbors": 9,
+    "walking_groups": 71,
+    "walking_groups_with_unregistered_neighbors": 50,
+    "groups_without_neighbor_rows": 22,
+    "limitation": "Neighbor scans are incomplete and no resource-level interference denominator is established; handset RSRQ/SINR/RSSI source availability does not enable A.T.O.M interference validation."
+  }
+}

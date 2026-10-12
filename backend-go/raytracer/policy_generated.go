@@ -36,7 +36,7 @@ const (
 	MinCalibrationOffsetDB             = -40
 	MaxCalibrationOffsetDB             = 40
 	MinNetworkTowers                   = 2
-	MaxNetworkTowers                   = 6
+	MaxNetworkTowers                   = 8
 	MaxRecommendationTowers            = 5
 	MinMeasurementTowers               = 1
 	MaxMeasurementTowers               = 6
@@ -50,20 +50,31 @@ const (
 	MaxSampleSpacingM                  = 200
 	RFProfileSchemaVersion             = 1
 	DefaultAntennaGainDBi              = 25
+	DefaultRxAntennaGainDBi            = 0
 	DefaultSystemLossDB                = 0
+	DefaultPolarizationLossDB          = 0
 	DefaultAntennaHeightM              = 25
 	DefaultMechanicalDowntiltDeg       = 0
 	DefaultElectricalDowntiltDeg       = 0
 	DefaultOrientationDeg              = 0
 	DefaultReceiverHeightM             = 1.5
 	DefaultReceiverSensitivityDBm      = -115
+	DefaultReceiverSensitivityMode     = "manual"
+	DefaultReceiverNoiseBandwidthHz    = 100000000
+	DefaultReceiverNoiseFigureDB       = 7
+	DefaultReceiverRequiredSNRDB       = 3
+	DefaultReceiverMarginDB            = 0
 	MaxRFProfileTextBytes              = 64
 	MinBandwidthMHz                    = 0.1
 	MaxBandwidthMHz                    = 2000
 	MinAntennaGainDBi                  = -20
 	MaxAntennaGainDBi                  = 80
+	MinRxAntennaGainDBi                = -20
+	MaxRxAntennaGainDBi                = 80
 	MinSystemLossDB                    = 0
 	MaxSystemLossDB                    = 100
+	MinPolarizationLossDB              = 0
+	MaxPolarizationLossDB              = 40
 	MinAntennaHeightM                  = 0.5
 	MaxAntennaHeightM                  = 300
 	MinDowntiltDeg                     = -30
@@ -76,6 +87,14 @@ const (
 	MaxReceiverHeightM                 = 100
 	MinReceiverSensitivityDBm          = -180
 	MaxReceiverSensitivityDBm          = -20
+	MinReceiverNoiseBandwidthHz        = 1
+	MaxReceiverNoiseBandwidthHz        = 2000000000
+	MinReceiverNoiseFigureDB           = 0
+	MaxReceiverNoiseFigureDB           = 20
+	MinReceiverRequiredSNRDB           = -100
+	MaxReceiverRequiredSNRDB           = 100
+	MinReceiverMarginDB                = -100
+	MaxReceiverMarginDB                = 100
 )
 
 func NetworkTechnologyForFrequency(frequencyGHz float64) string {

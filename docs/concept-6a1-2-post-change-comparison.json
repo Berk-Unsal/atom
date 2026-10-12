@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.2",
+  "artifact": "post-change-comparison",
+  "baseline_head": "6ab445e8ff4eb091a678c7c66990d67c6cd04838",
+  "post_change_head": "6ab445e8ff4eb091a678c7c66990d67c6cd04838",
+  "version": "0.9.2",
+  "decision": "A_SEMANTICS_UNRESOLVED",
+  "production_code_changed": false,
+  "importer_predicate_changed": false,
+  "sanitized_source_fixture_changed": false,
+  "canonical_reimport_performed": false,
+  "canonical_observations_before": 0,
+  "canonical_observations_after": 0,
+  "canonical_b7_observations_after": 0,
+  "observation_count_status": "unchanged_existing_result; no production re-import was run under Decision A",
+  "raw_files_modified": false,
+  "raw_files_tracked": false,
+  "precise_coordinates_or_wall_clock_times_added": false,
+  "exact_plmn_cell_id_transmitter_mappings": 0,
+  "readiness": {
+    "concept_6a": "no_measurement_data",
+    "concept_6a1": "real_data_ingested_serving_semantics_blocked",
+    "bandwidth": "b7_measurement_bandwidth_unavailable",
+    "absolute_rsrp_validation": false,
+    "calibration": false,
+    "production_candidate": false
+  },
+  "invariance": {
+    "rf_equations": "unchanged",
+    "canonical_propagation": "unchanged",
+    "link_budget": "unchanged",
+    "antenna_model": "unchanged",
+    "optimizer": "unchanged",
+    "request_builders": "unchanged",
+    "scenario_fingerprints": "unchanged",
+    "optimization_fingerprints": "unchanged",
+    "persistence": "unchanged",
+    "frontend": "unchanged"
+  },
+  "change_boundary": "Documentation, readiness metadata, generated documentation search index, and generated reference page only.",
+  "changed_paths": {
+    "modified": [
+      "docs/build-reference-pages.sh",
+      "docs/concept-6a1-readiness.json",
+      "docs/index.md",
+      "docs/search-index.json"
+    ],
+    "created": [
+      "docs/concept-6a1-2-decision.json",
+      "docs/concept-6a1-2-post-change-comparison.json",
+      "docs/concept-6a1-2-pre-change-baseline.json",
+      "docs/concept-6a1-2-service-state-consistency.json",
+      "docs/concept-6a1-2-serving-state-semantics.html",
+      "docs/concept-6a1-2-serving-state-semantics.md",
+      "docs/concept-6a1-2-source-state-audit.json",
+      "docs/concept-6a1-2-test-evidence.json",
+      "docs/concept-6a1-2-transition-consistency.json",
+      "docs/concept-6a1-2-vendor-questions.md"
+    ]
+  }
+}

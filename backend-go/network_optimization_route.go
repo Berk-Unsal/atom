@@ -37,8 +37,14 @@ func registerNetworkOptimizationRoute(router *gin.Engine, buildings func() *rayt
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
+		if !prebookRFWorkflow(c, len(req.Towers), input) {
+			return
+		}
 		decodeDone()
-		payload, runErr := raytracer.OptimizeNetworkContext(c.Request.Context(), req, buildings())
+		payload, runErr := raytracer.OptimizeNetworkContext(c.Request.Context(), req, workflowBuildings(c, buildings))
+		if !issueRFWorkflow(c, networkRFChildren(input, &payload), payload.ScenarioFingerprint, runErr) {
+			return
+		}
 		serializationDone := timing.Measure("response_serialization")
 		writeRFResponse(c, payload, runErr)
 		serializationDone()

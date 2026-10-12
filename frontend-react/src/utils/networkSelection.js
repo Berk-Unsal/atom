@@ -1,4 +1,7 @@
-export const MAX_NETWORK_CELLS = 6;
+import { POLICY_LIMITS } from "../generated/policy.js";
+
+export const MAX_NETWORK_CELLS = POLICY_LIMITS.network_towers_max;
+export const MAX_RECOMMENDATION_CELLS = POLICY_LIMITS.recommendation_towers_max;
 
 export function normalizeNetworkSelection(ids, towers, limit = MAX_NETWORK_CELLS) {
   const availableIDs = new Set((towers ?? []).map((tower) => String(tower?.id ?? "")));

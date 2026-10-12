@@ -6,6 +6,7 @@ on:
     paths:
       - "CHANGELOG.md"
       - "docs/**"
+      - "frontend-react/src/theme.css"
       - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
 
@@ -36,6 +37,7 @@ jobs:
         run: |
           sh docs/build-reference-pages.sh
           node --check docs/assets/docs.js
+          node --check docs/assets/docs-theme.js
           python docs/validate_docs.py
       - name: Publish documentation
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0

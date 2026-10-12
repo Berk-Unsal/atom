@@ -4,11 +4,31 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-10-09
+
+### Changed
+
+- Refresh the README for 0.12.1 capabilities, qualified eight-cell planning and independent workflow limits, with four current Ankara workspace screenshots.
+
 ### Fixed
 
 - Wait for imported projects to finish saving and keep narrow tool drawers within their viewport.
+- Upgrade to Go 1.26.9 and golang.org/x/net 0.60.0 to include fixes for newly reported Go HTTP and HTTP/2 vulnerabilities.
 
 ### Added
+
+- Add documentation appearance using the application palette and shared browser preference, with a sun/moon toggle, System appearance by default, and matching light and dark landing-page previews.
+
+- Promote normal network selection from six to eight Cells within the qualified Ankara W1/Profile A scope; bounded verified follow-ups allow the complete28-call analysis/optimization journey. Independent Recommendation5 and Measurement Validation6 limits remain.
+
+
+- Bounded verified RF follow-ups: retain 20 ordinary attempts per ClientIP/60s and prebook up to 8 shared verified follow-up units for network maps and Azimuth refreshes. Add one-time input-bound capabilities, finite expiry, cleanup, operational headers and legacy-server compatibility. The original implementation was validated at six Cells; the normal product cap is now eight within the separately qualified W1/Profile A scope.
+
+- Document the eight-Cell request-budget/workflow policy design, comparing alternatives and specifying a bounded verified-follow-up recommendation without implementing a limiter or changing the six-Cell product cap.
+
+- Record the clean successor eight-Cell qualification with verified pre-measurement real E2Es and a request-budget policy blocker; preserve the prior invalid audit, six-Cell product cap and fixed production policy.
+
+- Record the audit-only eight-Cell W1 operational and request-budget re-audit while preserving the six-Cell product cap and fixed production policy.
 
 - Record the independent W1 shipping-runtime reference qualification, preserving previous studies and fixed production policy.
 
@@ -16,6 +36,13 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 - Observe CPU, cgroup and memory constraints with provenance at startup; add local Auto profile diagnostics and controlled-container calibration while preserving fixed RF admission, deadlines, workers and scientific identities.
 - Document locked estimator validation on fresh Ankara domains and unchanged models: retain the invalid-validation decision, numerical failures, HTTP evidence and sustained-load limitations; keep Auto observation-only.
+
+## [0.12.0] - 2026-10-08
+
+### Added
+
+- Promote normal selected-network planning from six to eight Cells within the frozen Ankara W1/Profile A qualification; retain independent Recommendation5 and Measurement Validation6 limits.
+- Enable complete eight-Cell workflows with20 ordinary attempts plus8 bounded verified follow-up units, preserving concurrency2/1, deadline60s, worker1/queue16 and existing RF science and persistence guards.
 
 ## [0.11.0] - 2026-10-04
 
@@ -279,7 +306,9 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.1...HEAD
+[0.12.1]: https://github.com/Berk-Unsal/atom/compare/v0.12.0...v0.12.1
+[0.12.0]: https://github.com/Berk-Unsal/atom/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/Berk-Unsal/atom/compare/v0.10.2...v0.11.0
 [0.10.2]: https://github.com/Berk-Unsal/atom/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/Berk-Unsal/atom/compare/v0.10.0...v0.10.1

@@ -213,7 +213,7 @@ export const POLICY_LIMITS = Object.freeze({
   "calibration_offset_db_min": -40,
   "calibration_offset_db_max": 40,
   "network_towers_min": 2,
-  "network_towers_max": 6,
+  "network_towers_max": 8,
   "recommendation_towers_max": 5,
   "measurement_towers_min": 1,
   "measurement_towers_max": 6,

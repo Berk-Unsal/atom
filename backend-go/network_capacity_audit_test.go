@@ -1,7 +1,7 @@
 package main
 
 // Opt-in capacity measurements. Larger fixtures require a disposable audit copy
-// with only MaxNetworkTowers overridden; the production checkout stays at six.
+// with only MaxNetworkTowers overridden; historical larger-cardinality overrides stay isolated; production now supports eight.
 import (
 	"ankara-5g-raytracer/raytracer"
 	"bytes"
@@ -325,7 +325,7 @@ func TestNetworkCapacityProductionValidation(t *testing.T) {
 	if os.Getenv("ATOM_CAPACITY_FIXTURES") == "" {
 		t.Skip("inventory fixtures required")
 	}
-	if raytracer.MaxNetworkTowers != 6 {
+	if raytracer.MaxNetworkTowers != 8 {
 		t.Skip("production cap check applies only to unmodified checkout")
 	}
 	rows := []map[string]any{}
@@ -343,7 +343,7 @@ func TestNetworkCapacityProductionValidation(t *testing.T) {
 		_ = json.Unmarshal(f.Interference, &inter)
 		networkError := validateNetworkOptimizationRequest(req)
 		interError := raytracer.ValidateInterferenceRequest(inter.ToRequest())
-		if (n <= 6) != (networkError == "") || (n <= 6) != (interError == "") {
+		if (n <= 8) != (networkError == "") || (n <= 8) != (interError == "") {
 			t.Fatalf("validation mismatch N=%d network=%s interference=%s", n, networkError, interError)
 		}
 		configs := make([]raytracer.NetworkOptimizationCellConfiguration, n)

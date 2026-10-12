@@ -332,7 +332,7 @@ func ValidateInterferenceRequest(req InterferenceRequest) string {
 		return "network_tech must be 4g or 5g; 6g interference KPIs are not applicable"
 	}
 	if len(req.Towers) < MinNetworkTowers || len(req.Towers) > MaxNetworkTowers {
-		return "towers must contain between 2 and 6 selected cells"
+		return "towers must contain between 2 and 8 selected cells"
 	}
 	seen := make(map[string]bool, len(req.Towers))
 	for _, tower := range req.Towers {

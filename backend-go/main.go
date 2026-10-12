@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -66,6 +67,24 @@ func main() {
 		envInt("MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT", defaultRFClientLimit),
 		envInt("RF_REQUESTS_PER_MINUTE", defaultRFRequestsPerMinute),
 	)
+	rfLimiter.currentContext = func() rfWorkflowContext {
+		pack := datasets.Current()
+		if pack == nil {
+			return rfWorkflowContext{}
+		}
+		data, _ := json.Marshal(struct {
+			Model    string
+			Manifest raytracer.DatasetManifest
+		}{modelVersion, pack.Manifest})
+		return rfWorkflowContext{Identity: sha256.Sum256(data), Buildings: pack.BuildingIndex}
+	}
+	defer func() {
+		rfLimiter.mu.Lock()
+		if rfLimiter.expiryTimer != nil {
+			rfLimiter.expiryTimer.Stop()
+		}
+		rfLimiter.mu.Unlock()
+	}()
 	rfDeadline := time.Duration(envInt("RF_REQUEST_TIMEOUT_SECONDS", int(defaultRFRequestTimeout/time.Second))) * time.Second
 	profile := collectAutoResourceProfile(datasetPack, rfLimiter, rfDeadline, experiments)
 	if len(os.Args) == 2 && os.Args[1] == "--resource-profile" {
@@ -89,7 +108,8 @@ func main() {
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173"},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodOptions},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Key"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Key", "RF-Workflow", "RF-Workflow-ID", "RF-Workflow-Index"},
+		ExposeHeaders:    []string{"RateLimit-Limit", "RateLimit-Remaining", "RateLimit-Reset", "Retry-After", "RF-Budget-Policy", "RF-Followup-Limit", "RF-Followup-Remaining", "RF-Followup-Reset", "RF-Workflow-ID", "RF-Workflow-Remaining", "RF-Workflow-Expires"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
@@ -122,6 +142,7 @@ func main() {
 		rfDeadline,
 		strings.TrimSpace(os.Getenv("RF_API_KEY")),
 	))
+	router.DELETE("/api/rf-workflows", rfLimiter.cleanupWorkflow)
 	buildingAPIKey := strings.TrimSpace(os.Getenv("BUILDINGS_API_KEY"))
 	buildingLimiter := newRFRequestLimiterWithBudget(
 		envInt("MAX_CONCURRENT_BUILDING_DOWNLOADS", defaultBuildingDownloadCapacity),
@@ -136,7 +157,8 @@ func main() {
 	buildingCacheControl := buildingDatasetCacheControl(buildingAPIKey != "")
 	router.GET("/api/meta", func(c *gin.Context) {
 		response := gin.H{
-			"application_version":     appVersion,
+			"application_version": appVersion,
+
 			"build_commit":            buildCommit,
 			"model_version":           modelVersion,
 			"model_id":                raytracer.UrbanShortRangePropagationID,
@@ -146,6 +168,9 @@ func main() {
 			"rf_contract":             raytracer.RFContractMetadataForModel(raytracer.UrbanShortRangePropagationID, raytracer.DefaultCalibrationOffsetDB),
 			"supported_technologies":  []string{"4g", "5g", "6g-research"},
 			"technology_capabilities": raytracer.RFTechnologyEndpointCapabilityMatrix(),
+		}
+		if rfLimiter.workflowPolicyEnabled() {
+			response["rf_budget_policy"] = rfBudgetPolicy
 		}
 		if pack := datasets.Current(); pack != nil {
 			response["dataset"] = pack.Manifest
@@ -210,7 +235,10 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
-		payload, runErr := raytracer.AnalyzeSectorContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		if !verifyRFChild(c, input) {
+			return
+		}
+		payload, runErr := raytracer.AnalyzeSectorContext(c.Request.Context(), req, workflowBuildings(c, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) }))
 		writeRFResponse(c, payload, runErr)
 	})
 	router.POST("/api/simulate", func(c *gin.Context) {
@@ -227,7 +255,10 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
-		payload, runErr := raytracer.SimulateStaticRaysContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		if !verifyRFChild(c, input) {
+			return
+		}
+		payload, runErr := raytracer.SimulateStaticRaysContext(c.Request.Context(), req, workflowBuildings(c, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) }))
 		writeRFResponse(c, payload, runErr)
 	})
 	router.POST("/api/optimize-azimuth", func(c *gin.Context) {
@@ -244,7 +275,15 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
-		payload, runErr := raytracer.OptimizeAzimuthContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		if !prebookRFWorkflow(c, 1, input) {
+			return
+		}
+		payload, runErr := raytracer.OptimizeAzimuthContext(c.Request.Context(), req, workflowBuildings(c, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) }))
+		child := input
+		child.AzimuthDeg = rfPointer(payload.OptimalAzimuth)
+		if !issueRFWorkflow(c, []raytracer.StaticSimulationRequestInput{child}, "", runErr) {
+			return
+		}
 		writeRFResponse(c, payload, runErr)
 	})
 	registerNetworkOptimizationRoute(router, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) })
@@ -275,7 +314,13 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationError})
 			return
 		}
-		payload, runErr := raytracer.EvaluateNetworkContext(c.Request.Context(), req, currentBuildingIndex(datasets))
+		if !prebookRFWorkflow(c, len(req.Towers), input) {
+			return
+		}
+		payload, runErr := raytracer.EvaluateNetworkContext(c.Request.Context(), req, workflowBuildings(c, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) }))
+		if !issueRFWorkflow(c, networkRFChildren(input, nil), payload.ScenarioFingerprint, runErr) {
+			return
+		}
 		writeRFResponse(c, payload, runErr)
 	})
 	router.POST("/api/building-entry-analysis", func(c *gin.Context) {
@@ -469,7 +514,7 @@ func validateSimulationRequest(req raytracer.StaticSimulationRequest) string {
 
 func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest) string {
 	if len(req.Towers) < raytracer.MinNetworkTowers || len(req.Towers) > raytracer.MaxNetworkTowers {
-		return "towers must contain between 2 and 6 selected towers"
+		return "towers must contain between 2 and 8 selected towers"
 	}
 	if req.Rays < raytracer.MinSimulationRays || req.Rays > raytracer.MaxSimulationRays {
 		return "rays must be between 8 and 720"

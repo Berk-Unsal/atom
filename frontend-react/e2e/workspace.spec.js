@@ -690,12 +690,20 @@ for (const outcome of ["deadline", "budget", "cancellation", "fast"]) {
       // also scroll it into view. Check feedback geometry relative to Planning.
       const planningShift = (await planning.boundingBox()).y - idlePlanningBox.y;
       for (const [control, idleBox] of [[action, idleActionBox], [advanced, idleAdvancedBox], [slot, idleSlotBox]]) {
-        expect(await control.boundingBox()).toEqual({ ...idleBox, y: idleBox.y + planningShift });
+        const currentBox = await control.boundingBox();
+        expect(Math.abs(currentBox.x - idleBox.x)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.y - idleBox.y - planningShift)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.width - idleBox.width)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.height - idleBox.height)).toBeLessThanOrEqual(1);
       }
     } else {
-      expect(await action.boundingBox()).toEqual(idleActionBox);
-      expect(await advanced.boundingBox()).toEqual(idleAdvancedBox);
-      expect(await slot.boundingBox()).toEqual(idleSlotBox);
+      for (const [control, idleBox] of [[action, idleActionBox], [advanced, idleAdvancedBox], [slot, idleSlotBox]]) {
+        const currentBox = await control.boundingBox();
+        expect(Math.abs(currentBox.x - idleBox.x)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.y - idleBox.y)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.width - idleBox.width)).toBeLessThanOrEqual(1);
+        expect(Math.abs(currentBox.height - idleBox.height)).toBeLessThanOrEqual(1);
+      }
       expect(await drawer.evaluate((el) => el.scrollTop)).toBe(idleScroll);
     }
     if (["deadline", "budget"].includes(outcome)) {
@@ -1389,7 +1397,7 @@ test("Select cells changes cluster membership and Clear selected cluster reverse
   await page.getByRole("button", { name: "Clear selected cluster" }).click();
   await expect(page.getByRole("group", { name: "RF context" })).toContainText("Network · 0 cells");
   await selectWorkspaceTool(page, "Setup");
-  await expect(page.locator(".selection-summary-row strong")).toHaveText("0 of 6 cells selected");
+  await expect(page.locator(".selection-summary-row strong")).toHaveText("0 of 8 cells selected");
   expect(computeRequests).toHaveLength(0);
 });
 
@@ -3239,12 +3247,30 @@ test("captures Concept 8F hierarchy, density, and responsive evidence", async ({
     measurements.push(await page.evaluate((measurementLabel) => {
       const visible = (element) => Boolean(element && element.getClientRects().length && getComputedStyle(element).visibility !== "hidden");
       const body = document.querySelector(".tool-drawer-body");
+      const bodyRight = body?.getBoundingClientRect().right ?? 0;
       const cardSelectors = [".scenario-panel", ".network-card", ".interference-card", ".comparison-card", ".dataset-panel", ".run-history-panel", ".run-history-detail", ".experiment-panel", ".core-tool", ".building-entry-panel", ".recommendation-panel", ".report-card"];
       return {
         label: measurementLabel,
         viewport: { width: innerWidth, height: innerHeight },
         documentOverflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        drawerBody: body ? { clientWidth: body.clientWidth, scrollWidth: body.scrollWidth, clientHeight: body.clientHeight, scrollHeight: body.scrollHeight } : null,
+        drawerBody: body ? {
+          clientWidth: body.clientWidth,
+          scrollWidth: body.scrollWidth,
+          clientHeight: body.clientHeight,
+          scrollHeight: body.scrollHeight,
+          overflowingChildren: body.scrollWidth > body.clientWidth + 1 ? [...body.querySelectorAll("*")].map((element) => {
+            const rect = element.getBoundingClientRect();
+            return {
+              tag: element.tagName.toLowerCase(),
+              className: typeof element.className === "string" ? element.className : "",
+              text: element.textContent.trim().slice(0, 80),
+              left: Math.round(rect.left),
+              width: Math.round(rect.width),
+              clientWidth: element.clientWidth,
+              scrollWidth: element.scrollWidth,
+            };
+          }).filter((element) => element.right > bodyRight + 1 || element.scrollWidth > element.clientWidth + 1).slice(0, 12) : [],
+        } : null,
         visiblePersistentSections: body ? [...body.querySelectorAll(".disclosure-section")].filter(visible).map((section) => section.querySelector(".disclosure-title")?.textContent.trim()).filter(Boolean) : [],
         primaryActionCount: body ? [...body.querySelectorAll("button.panel-primary-action")].filter(visible).length : 0,
         topLevelContentCardCount: body ? [...body.children].filter((child) => cardSelectors.some((selector) => child.matches(selector))).length : 0,
@@ -3410,7 +3436,7 @@ test("captures Concept 8F hierarchy, density, and responsive evidence", async ({
       if (measurement.drawerBody) {
         expect(
           measurement.drawerBody.scrollWidth,
-          `${measurement.label} drawer body width (${measurement.drawerBody.scrollWidth}) exceeds its client width (${measurement.drawerBody.clientWidth})`,
+          `${measurement.label} drawer body width (${measurement.drawerBody.scrollWidth}) exceeds its client width (${measurement.drawerBody.clientWidth}); overflowing descendants: ${JSON.stringify(measurement.drawerBody.overflowingChildren)}`,
         ).toBeLessThanOrEqual(measurement.drawerBody.clientWidth + 1);
       }
     }

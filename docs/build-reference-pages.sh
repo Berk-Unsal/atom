@@ -4,6 +4,8 @@ set -eu
 DOCS_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 cd "$DOCS_DIR"
 
+python3 build_theme_assets.py
+
 build_page() {
   source_file=$1
   output_file=$2
@@ -45,6 +47,9 @@ build_page auto-resource-estimator-locked-validation.md auto-resource-estimator-
   "Frozen workload estimators, fresh Ankara domains, unseen settings, actual HTTP streaming and sustained-load decision evidence."
 build_page fixed-deployment-profile-certification.md fixed-deployment-profile-certification.html "Fixed Deployment Profile Certification" "Operations evidence"   "Frozen Ankara workload envelopes, bounded reference resources, actual HTTP evidence, concurrency, background overlap and conservative operational headroom."
 build_page w1-shipping-runtime-qualification.md w1-shipping-runtime-qualification.html "W1 Shipping Runtime Qualification" "Operations evidence" "Exact W1 successor on the shipping Go runtime, resource floors, actual HTTP evidence and sustained background activity."
+build_page eight-cell-operational-budget-audit.md eight-cell-operational-budget-audit.html "Eight-Cell Operational and Request-Budget Re-audit" "Audit-only capacity evidence" "Paired six-to-eight W1 operational measurements and unchanged request-budget workflows on the minimum certified deployment; product cap remains six."
+build_page eight-cell-operational-budget-successor.md eight-cell-operational-budget-successor.html "Eight-Cell Clean Successor Qualification" "Audit-only operations evidence" "Verified pre-measurement real E2Es, unchanged paired W1 qualification and request-budget product-fit decision; production cap remains six."
+build_page eight-cell-request-budget-policy-design.md eight-cell-request-budget-policy-design.html "Eight-Cell Request-Budget Policy Design" "Design study" "Source-derived workflows, bounded abuse envelopes, candidate comparisons and a verified-follow-up recommendation; production policy and Cell cap remain unchanged."
 build_page algorithms.md algorithms.html "Algorithms and RF Physics" "Model reference" \
   "The deterministic propagation, geometry, optimization, and radio-quality methods behind A.T.O.M results."
 build_page features.md features.html "Capabilities" "Product reference" \
@@ -127,5 +132,12 @@ build_page bug-fixes.md bug-fixes.html "Bug-Fix Register" "Quality history" \
   "Prioritized confirmed defects, user impact, root causes, corrections, and regression evidence for A.T.O.M releases."
 build_page ../CHANGELOG.md changelog.html "Changelog" "Release history" \
   "User-visible additions, changes, fixes, and release milestones generated from the canonical project changelog." false true
+
+
+build_page bounded-followup-policy-implementation.md bounded-followup-policy-implementation.html "Bounded Verified Follow-up Policy Implementation" "Operational policy" \
+  "Verified child prebooking, one-time capabilities, bounded state, six-Cell production invariance and eight-Cell audit validation."
+
+build_page eight-cell-product-cap-promotion.md eight-cell-product-cap-promotion.html "Eight-Cell Product Cap Promotion" "Product promotion" \
+  "Normal selected-network cap8, independent limits, frozen W1/Profile A scope and0.12.0 readiness."
 
 python3 build_search_index.py

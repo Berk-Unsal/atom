@@ -9,6 +9,8 @@ from urllib.parse import unquote, urlsplit
 
 import yaml
 
+from build_theme_assets import generated_theme
+
 
 DOCS = Path(__file__).resolve().parent
 ROOT = DOCS.parent
@@ -21,9 +23,15 @@ class PageParser(HTMLParser):
         self.references = []
         self.anchors = set()
         self.search_indexes = []
+        self.theme_controls = 0
+        self.theme_script_before_css = False
 
     def handle_starttag(self, tag, attrs):
         values = dict(attrs)
+        if tag == "button" and "data-theme-toggle" in values and values.get("role") == "switch" and values.get("aria-label") == "Dark mode" and values.get("aria-checked") in ("true", "false"):
+            self.theme_controls += 1
+        if tag == "link" and values.get("href") == "./assets/docs.css":
+            self.theme_script_before_css = "./assets/docs-theme.js" in self.references
         if values.get("id"):
             self.anchors.add(values["id"])
         if "data-docs-search" in values:
@@ -64,7 +72,13 @@ def main():
         if path.name != "reference-template.html"
     }
     errors = duplicate_asset_errors()
+    if (DOCS / "assets/app-theme.css").read_text(encoding="utf-8") != generated_theme():
+        errors.append("app-theme.css: rebuild documentation to match application colors")
     for page, parser in pages.items():
+        if parser.theme_controls != 1:
+            errors.append(f"{page.relative_to(DOCS)}: expected one accessible dark-mode switch")
+        if not parser.theme_script_before_css:
+            errors.append(f"{page.relative_to(DOCS)}: appearance must initialize before the stylesheet")
         if parser.search_indexes != ["./search-index.json"]:
             errors.append(f"{page.relative_to(DOCS)}: expected one documentation search control")
         for reference in parser.references:

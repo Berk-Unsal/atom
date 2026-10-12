@@ -146,6 +146,6 @@ describe("ControlPanel interference controls", () => {
     expect(research).toHaveTextContent("6G research140 GHz");
     expect(screen.getByText("Valid range: 0–60 dBm")).toBeInTheDocument();
     expect(screen.getByText("Selected network")).toBeInTheDocument();
-    expect(screen.getByText("6 of 6 cells selected")).toBeInTheDocument();
+    expect(screen.getByText("6 of 8 cells selected")).toBeInTheDocument();
   });
 });

@@ -240,7 +240,7 @@ export default function ControlPanel({
       return (
         <ToolReadinessState
           actionLabel="Switch to Network mode"
-          description="Interference compares serving and co-channel cells, so it needs a network cluster of two to six cells."
+          description="Interference compares serving and co-channel cells, so it needs a network cluster of two to eight cells."
           onAction={() => onPlanningModeChange("network")}
           title="Network mode required"
         />

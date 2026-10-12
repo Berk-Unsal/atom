@@ -166,7 +166,7 @@ The selected direction is deterministic for the same request and dataset.
 
 ### Network Evaluation and Optimization
 
-Network evaluation scores the supplied azimuth for each of two to six selected cells. Network optimization searches candidate azimuths and includes an overlap penalty. Both return network score, unique demand coverage, overlap, and per-cell azimuth records.
+Network evaluation scores the supplied azimuth for each of two to eight selected cells. Network optimization searches candidate azimuths and includes an overlap penalty. Both return network score, unique demand coverage, overlap, and per-cell azimuth records.
 
 The frontend renders selected-cell propagation with a sequential `/api/simulate` queue after the network score is returned.
 

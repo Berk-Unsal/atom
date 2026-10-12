@@ -592,7 +592,7 @@ Run RF propagation simulation with given parameters.
 **Endpoint**: `POST /api/building-entry-analysis`
 
 Estimate service immediately inside one representative facade point for one to
-six selected cells. This is a separate Concept 4E analysis, not a replacement
+eight selected cells. This is a separate Concept 4E analysis, not a replacement
 for `/api/coverage-gaps` or `/api/interference`. It is supported at 2.6 GHz
 and 28 GHz only; 140 GHz returns a structured `unsupported_frequency`
 applicability result and remains `research_sub_thz`.
@@ -761,7 +761,7 @@ Calculate planning-grade LTE or NR RSRP, SINR, RSRQ, RSSI, serving-cell, and str
 }
 ```
 
-The request accepts 2–6 unique cells. LTE bandwidths are `1.4`, `3`, `5`, `10`, `15`, or `20` MHz; 5G NR bandwidths are `50`, `100`, `200`, or `400` MHz. Reuse must be `1` or `3`. 6G is rejected because standardized project-level RSRP/RSRQ assumptions are not defined for the 6G research profile.
+The request accepts 2–8 unique cells. LTE bandwidths are `1.4`, `3`, `5`, `10`, `15`, or `20` MHz; 5G NR bandwidths are `50`, `100`, `200`, or `400` MHz. Reuse must be `1` or `3`. 6G is rejected because standardized project-level RSRP/RSRQ assumptions are not defined for the 6G research profile.
 
 The response contains:
 
@@ -854,7 +854,7 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 
 **Endpoints**: `POST /api/evaluate-network` and `POST /api/optimize-network`
 
-Network requests contain two to six `towers` and may add an `optimization` object:
+Network requests contain two to eight `towers` and may add an `optimization` object:
 
 ```json
 {
@@ -1274,7 +1274,7 @@ Rejected requests return `429` with `Retry-After`, `RateLimit-Limit`, `RateLimit
 
 The budget counts protected HTTP POST attempts before handler validation and computation, including failures, cancellations, and concurrency/capacity rejections. Requests already denied for exhausted budget do not add a charge or extend the window. The 60-second fixed window starts on the client's first protected request; reset occurs on the next request at or after expiry. `RateLimit-Reset` and budget-exhaustion `Retry-After` are relative seconds rounded up to expiry. Concurrency/capacity rejections use `Retry-After: 1`.
 
-All protected RF routes share this bucket, including interference, diagnostics, signal-surface exports, and optimizer API calls. Internal optimizer evaluations do not consume HTTP request units. A six-cell Evaluate Network action sends one `/api/evaluate-network` plus six sequential `/api/simulate` requests; Interference sends one `/api/interference`. Evaluate → Interference → Re-evaluate costs 15 of 20 requests in a fresh window. Earlier runs and other tabs on the same IP also count. Denied admissions log operation, limiter-local request ID, process-local hashed client key, remaining budget, retry timing, and reason without request payloads. See the [request-budget audit](rf-analysis-request-budget-audit.md) for the measured trace and regression evidence.
+All protected RF routes share the ordinary bucket, including independent tools, exports and experiments. Internal optimizer evaluations do not consume HTTP units. With advertised `bounded-followups-v1`, network Evaluate/Optimize roots prebook their exact sequential map children using up to eight shared verified units, then ordinary units. Normal eight-Cell Evaluate/maps uses ordinary1/extra8; a full cycle uses11/8; cycle→Optimize/maps uses20/8 across28 successful calls. Standalone Simulate remains ordinary and attempt21 is denied. Capabilities are one-time, input-bound, owner-bound, finite, and carried holds survive reset. Legacy clients remain ordinary-only. See the [validated policy implementation](bounded-followup-policy-implementation.md) and [product promotion](eight-cell-product-cap-promotion.md).
 
 Set `RF_REQUEST_TIMEOUT_SECONDS` to bound compute time; the default is 60 seconds and expiration returns `504`. Keep RF concurrency aligned with CPU allocation and set `RF_API_KEY` for any non-private backend hop.
 

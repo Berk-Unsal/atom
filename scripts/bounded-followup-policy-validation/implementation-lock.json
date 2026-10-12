@@ -1,0 +1,461 @@
+{
+  "frozen_at": "2026-10-07T19:13:54.979197+00:00",
+  "baseline_sha256": "d998d1cf08b92466b0ef307b8e89be4d995acd1b1f48ade213f9ac9ec7812dd2",
+  "request_sha256": "6fb3ae124e73c94786869738b9e52fdb6cb5962f36ec034833bb1f22d43ac68f",
+  "design_sha256": {
+    "docs/eight-cell-request-budget-policy-design.md": "2889ef1d5c22e0bf32f11b8df57d503a0cb651095ca23ff9fdc60dbe48312453",
+    "docs/eight-cell-request-budget-policy-design.json": "8206464469f0f50cd632697b1fa8f4c9bb63aa647078ef2de7586f95c589855f"
+  },
+  "policy": {
+    "policy_category": "D \u2014 VERIFIED ROOT + FOLLOW-UP ALLOWANCE",
+    "variant": "P3-capped",
+    "final_design_verdict": "C \u2014 WORKFLOW-AWARE ACCOUNTING IS PREFERRED",
+    "ordinary_units": 20,
+    "verified_extra_units": 8,
+    "anchored_window_seconds": 60,
+    "max_total_retained_window_admissions": 28,
+    "max_followups_per_root": 8,
+    "current_product_cap": 6,
+    "identity": "unchanged Gin ClientIP",
+    "eligible_parents": {
+      "/api/evaluate-network": "N /api/simulate at selected azimuths",
+      "/api/optimize-network": "N /api/simulate at winning returned azimuths",
+      "/api/optimize-azimuth": "1 /api/analyze-sector at returned azimuth"
+    },
+    "opaque_id_bits": 128,
+    "idle_expiry_seconds": 60,
+    "absolute_expiry_formula": "root admission+(N+1)*60s",
+    "max_absolute_8C_seconds": 540,
+    "max_clients": 4096,
+    "max_indexed_held_records": 114688,
+    "max_transitional_per_client_receipts": 4096,
+    "persistent_state": false,
+    "external_infrastructure": false,
+    "implemented": false,
+    "fallback": "retainP0/cap6 until implementation validates"
+  },
+  "statuses": {
+    "malformed": 400,
+    "wrong_owner_operation": 403,
+    "replay_stale": 409,
+    "expired_missing": 410,
+    "budget": 429,
+    "state_capacity": 503,
+    "auth": 401,
+    "cleanup_unknown": 404,
+    "cleanup_success": 204
+  },
+  "failure_semantics": "spent never refunded; failed root no grant; child failure retires unused siblings; unknown claims ordinary-charged denial no RF",
+  "normal_cap": 6,
+  "audit_only_cap": 8,
+  "concurrency": [
+    2,
+    1
+  ],
+  "deadline_seconds": 60,
+  "absolute_expiry": "root admission+(N+1)*60 seconds",
+  "state_memory_gate": {
+    "incremental_heap_alloc_max_bytes": 268435456,
+    "incremental_RSS_max_bytes": 402653184,
+    "cgroup_peak_max_bytes": 805306368,
+    "rationale": "metadata-only test bounded to <=256MiB live Go heap, <=384MiB RSS delta and <=768MiB cgroup peak (18.75% Profile A); leaves at least 3.25GiB for application and RF. Includes fixed hashes and actual Go metadata; immutable before measurement."
+  },
+  "RF_resource_gates": {
+    "max_interactive_seconds": 45,
+    "min_deadline_headroom_seconds": 15,
+    "kernel_cgroup_peak_bytes": 3221225472,
+    "oom": 0,
+    "oom_kill": 0,
+    "memory_max_events": 0,
+    "cpus": 2,
+    "memory_bytes": 4294967296,
+    "runtime": "Go1.26.6 Linux/arm64 CGO=0 cgroupv2"
+  },
+  "validation_matrix": [
+    {
+      "phase": 0,
+      "title": "BASELINE / FREEZE"
+    },
+    {
+      "phase": 1,
+      "title": "CURRENT SOURCE AUDIT"
+    },
+    {
+      "phase": 2,
+      "title": "REFACTOR BUDGET MODEL"
+    },
+    {
+      "phase": 3,
+      "title": "WINDOW RESET WITH CARRIED HOLDS"
+    },
+    {
+      "phase": 4,
+      "title": "WORKFLOW RECORD MODEL"
+    },
+    {
+      "phase": 5,
+      "title": "CAPABILITY IDS"
+    },
+    {
+      "phase": 6,
+      "title": "ELIGIBLE ROOT FAMILIES"
+    },
+    {
+      "phase": 7,
+      "title": "INELIGIBLE ROUTES"
+    },
+    {
+      "phase": 8,
+      "title": "ROOT OPT-IN HEADER"
+    },
+    {
+      "phase": 9,
+      "title": "ROOT ADMISSION"
+    },
+    {
+      "phase": 10,
+      "title": "CHILD PREBOOKING"
+    },
+    {
+      "phase": 11,
+      "title": "PENDING ROOT STATE"
+    },
+    {
+      "phase": 12,
+      "title": "DERIVE EXPECTED CHILDREN"
+    },
+    {
+      "phase": 13,
+      "title": "AUTHORIZATION DIGEST"
+    },
+    {
+      "phase": 14,
+      "title": "ISSUE WORKFLOW"
+    },
+    {
+      "phase": 15,
+      "title": "CHILD REQUEST METADATA"
+    },
+    {
+      "phase": 16,
+      "title": "CLAIM BEFORE CONCURRENCY"
+    },
+    {
+      "phase": 17,
+      "title": "CHILD FUNDING CONVERSION"
+    },
+    {
+      "phase": 18,
+      "title": "CHILD BODY VERIFICATION"
+    },
+    {
+      "phase": 19,
+      "title": "UNKNOWN / INVALID WORKFLOW CLAIMS"
+    },
+    {
+      "phase": 20,
+      "title": "AUTH / OWNER BINDING"
+    },
+    {
+      "phase": 21,
+      "title": "CONCURRENCY PRESERVATION"
+    },
+    {
+      "phase": 22,
+      "title": "CHILD FAILURE CLEANUP"
+    },
+    {
+      "phase": 23,
+      "title": "CHILD SUCCESS / LIFETIME"
+    },
+    {
+      "phase": 24,
+      "title": "IDLE EXPIRY"
+    },
+    {
+      "phase": 25,
+      "title": "ABSOLUTE EXPIRY"
+    },
+    {
+      "phase": 26,
+      "title": "EXPIRY DATA STRUCTURE"
+    },
+    {
+      "phase": 27,
+      "title": "CLIENT STATE LIMIT"
+    },
+    {
+      "phase": 28,
+      "title": "GLOBAL WORKFLOW STATE BOUNDS"
+    },
+    {
+      "phase": 29,
+      "title": "CLEANUP ENDPOINT"
+    },
+    {
+      "phase": 30,
+      "title": "SERVER-OBSERVED CLEANUP"
+    },
+    {
+      "phase": 31,
+      "title": "API META CAPABILITY"
+    },
+    {
+      "phase": 32,
+      "title": "POLICY HEADERS"
+    },
+    {
+      "phase": 33,
+      "title": "RETRY-AFTER"
+    },
+    {
+      "phase": 34,
+      "title": "CORS"
+    },
+    {
+      "phase": 35,
+      "title": "OBSERVABILITY"
+    },
+    {
+      "phase": 36,
+      "title": "FRONTEND SERVER CAPABILITY DETECTION"
+    },
+    {
+      "phase": 37,
+      "title": "API CLIENT METADATA"
+    },
+    {
+      "phase": 38,
+      "title": "EVALUATE FRONTEND FLOW"
+    },
+    {
+      "phase": 39,
+      "title": "OPTIMIZE FRONTEND FLOW"
+    },
+    {
+      "phase": 40,
+      "title": "AZIMUTH FRONTEND FLOW"
+    },
+    {
+      "phase": 41,
+      "title": "FRONTEND ABORT CLEANUP"
+    },
+    {
+      "phase": 42,
+      "title": "REQUEST COORDINATOR"
+    },
+    {
+      "phase": 43,
+      "title": "NO VISUAL REDESIGN"
+    },
+    {
+      "phase": 44,
+      "title": "SCIENTIFIC INVARIANCE"
+    },
+    {
+      "phase": 45,
+      "title": "ORDINARY REQUEST REGRESSION"
+    },
+    {
+      "phase": 46,
+      "title": "SIX-CELL ACCOUNTING"
+    },
+    {
+      "phase": 47,
+      "title": "EIGHT-CELL AUDIT ACCOUNTING"
+    },
+    {
+      "phase": 48,
+      "title": "PREBOOKING AT RESIDUAL BALANCE"
+    },
+    {
+      "phase": 49,
+      "title": "REPLAY TESTS"
+    },
+    {
+      "phase": 50,
+      "title": "FORGERY TESTS"
+    },
+    {
+      "phase": 51,
+      "title": "PAYLOAD MUTATION TESTS"
+    },
+    {
+      "phase": 52,
+      "title": "ROOT FAILURE MATRIX"
+    },
+    {
+      "phase": 53,
+      "title": "CHILD FAILURE MATRIX"
+    },
+    {
+      "phase": 54,
+      "title": "EXPIRY TESTS"
+    },
+    {
+      "phase": 55,
+      "title": "WINDOW RESET / CARRY TESTS"
+    },
+    {
+      "phase": 56,
+      "title": "BOUNDARY BURST TESTS"
+    },
+    {
+      "phase": 57,
+      "title": "SHARED IP / TABS"
+    },
+    {
+      "phase": 58,
+      "title": "DISTINCT IP"
+    },
+    {
+      "phase": 59,
+      "title": "CONCURRENCY"
+    },
+    {
+      "phase": 60,
+      "title": "STATE CAPACITY"
+    },
+    {
+      "phase": 61,
+      "title": "EXPIRY HEAP STRESS"
+    },
+    {
+      "phase": 62,
+      "title": "CLEANUP DELETE TESTS"
+    },
+    {
+      "phase": 63,
+      "title": "RESTART SEMANTICS"
+    },
+    {
+      "phase": 64,
+      "title": "HEADER TESTS"
+    },
+    {
+      "phase": 65,
+      "title": "API META / LEGACY CLIENT"
+    },
+    {
+      "phase": 66,
+      "title": "FRONTEND UNIT TESTS"
+    },
+    {
+      "phase": 67,
+      "title": "SIX-CELL REAL E2E"
+    },
+    {
+      "phase": 68,
+      "title": "EIGHT-CELL AUDIT BUILD"
+    },
+    {
+      "phase": 69,
+      "title": "FULL F28 VALIDATION"
+    },
+    {
+      "phase": 70,
+      "title": "EIGHT-CELL RESOURCE GATES"
+    },
+    {
+      "phase": 71,
+      "title": "STATE-SATURATION RESOURCE TEST"
+    },
+    {
+      "phase": 72,
+      "title": "SCIENCE HASH REGRESSION"
+    },
+    {
+      "phase": 73,
+      "title": "SECURITY RACE TESTS"
+    },
+    {
+      "phase": 74,
+      "title": "PROPERTY / INVARIANT TESTS"
+    },
+    {
+      "phase": 75,
+      "title": "OBSERVABILITY VALIDATION"
+    },
+    {
+      "phase": 76,
+      "title": "ROLLBACK TEST"
+    },
+    {
+      "phase": 77,
+      "title": "OPENAPI / API DOCS"
+    },
+    {
+      "phase": 78,
+      "title": "DOCUMENTATION"
+    },
+    {
+      "phase": 79,
+      "title": "VERSIONING"
+    },
+    {
+      "phase": 80,
+      "title": "FULL QUALITY SUITE"
+    },
+    {
+      "phase": 81,
+      "title": "PRODUCTION CAP INVARIANCE"
+    },
+    {
+      "phase": 82,
+      "title": "FINAL POLICY VERDICT"
+    },
+    {
+      "phase": 83,
+      "title": "CAP PROMOTION DECISION"
+    }
+  ],
+  "workflow_expected": {
+    "six": {
+      "eval": [
+        1,
+        6
+      ],
+      "opt": [
+        1,
+        6
+      ],
+      "cycle": [
+        7,
+        8
+      ],
+      "eval_opt": [
+        6,
+        8
+      ],
+      "F": [
+        14,
+        8
+      ]
+    },
+    "eight": {
+      "eval": [
+        1,
+        8
+      ],
+      "opt": [
+        1,
+        8
+      ],
+      "cycle": [
+        11,
+        8
+      ],
+      "eval_opt": [
+        10,
+        8
+      ],
+      "F": [
+        20,
+        8
+      ]
+    }
+  },
+  "preserve_prior_evidence": true,
+  "publish": false,
+  "version_if_all_gates_pass": "0.12.0"
+}

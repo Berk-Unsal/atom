@@ -160,7 +160,9 @@ test("docs retain responsive controls, search, navigation and code in both theme
         });
         expect(colors).toEqual(["#151b1f", "#e3eae7", "#b3c0bb", "#1b2328"]);
       }
-      await page.screenshot({ path: testInfo.outputPath(`${name}-${value}.png`), fullPage: true });
+      if (testInfo.project.name === "desktop-1440") {
+        await page.screenshot({ path: testInfo.outputPath(`${name}-${value}.png`), fullPage: true });
+      }
       await page.screenshot({ path: testInfo.outputPath(`${name}-${value}-viewport.png`) });
     }
     await page.goto("/docs/index.html");
